@@ -37,34 +37,9 @@ class GCPConfig(object):
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
-    CORE_PACKS_LIST = [BASE_PACK,
-                       "rasterize",
-                       "DemistoRESTAPI",
-                       "DemistoLocking",
-                       "ImageOCR",
-                       "WhereIsTheEgg",
-                       "FeedAutofocus",
-                       "AutoFocus",
-                       "UrlScan",
-                       "Active_Directory_Query",
-                       "FeedTAXII",
-                       "VirusTotal",
-                       "Whois",
-                       "Phishing",
-                       "CommonScripts",
-                       "CommonPlaybooks",
-                       "CommonTypes",
-                       "CommonDashboards",
-                       "CommonReports",
-                       "CommonWidgets",
-                       "TIM_Processing",
-                       "TIM_SIEM",
-                       "HelloWorld",
-                       "ExportIndicators",
-                       "Malware",
-                       "DefaultPlaybook",
-                       "CalculateTimeDifference"
-                       ]  # cores packs list
+
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
+        CORE_PACKS_LIST = json.load(core_packs_list_file)
 
 
 class Metadata(object):
@@ -882,7 +857,7 @@ class Pack(object):
                 PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
                 PackFolders.REPORTS.value: "report",
                 PackFolders.INDICATOR_TYPES.value: "reputation",
-                PackFolders.LAYOUTS.value: "layout",
+                PackFolders.LAYOUTS.value: "layoutscontainer",
                 PackFolders.CLASSIFIERS.value: "classifier",
                 PackFolders.WIDGETS.value: "widget"
             }
@@ -988,11 +963,13 @@ class Pack(object):
                             'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
                         })
                     elif current_directory == PackFolders.LAYOUTS.value:
-                        folder_collected_items.append({
-                            'typeId': content_item.get('typeId', ""),
-                            'kind': content_item.get('kind', ""),
-                            'version': 'v2' if 'tabs' in content_item.get('layout', {}) else 'v1'
-                        })
+                        layout_metadata = {
+                            'name': content_item.get('name', '')
+                        }
+                        layout_description = content_item.get('description')
+                        if layout_description is not None:
+                            layout_metadata['description'] = layout_description
+                        folder_collected_items.append(layout_metadata)
                     elif current_directory == PackFolders.CLASSIFIERS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name') or content_item.get('id', ""),
@@ -1430,7 +1407,7 @@ def input_to_list(input_data, capitalize_input=False):
     input_data = input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
 
     if capitalize_input:
-        return [i.title() for i in input_data]
+        return [" ".join([w.title() if w.islower() else w for w in i.split()]) for i in input_data]
     else:
         return input_data
 

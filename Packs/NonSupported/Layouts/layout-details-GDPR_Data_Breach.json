@@ -1,419 +1,420 @@
 {
-	"typeId": "GDPR Data Breach",
-	"kind": "details",
-	"fromVersion": "4.5.0",
-	"toversion": "4.9.9",
-	"layout": {
-		"id": "GDPR Data Breach",
-		"version": -1,
-		"modified": "2019-04-17T12:50:11.619310551Z",
-		"name": "",
-		"sections": [
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Basic Information",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_type",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_severity",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_owner",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_dbotstatus",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_sourcebrand",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_sourceinstance",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_playbookid",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_phase",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_roles",
-						"isVisible": true
-					}
-				],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Data Breach Information",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_sectorofaffectedparty",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_sizenumberofemployees",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_sizeturnover",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_countrywherebusinesshasitsmainestablishment",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_countrywherethebreachtookplace",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_datetimeofthebreach",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_occurred",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_approximatenumberofaffecteddatasubjects",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_whereisdatahosted",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_possiblecauseofthebreach",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_maliciouscauseifthecauseisamaliciousattack",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_likelyimpact",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_affecteddata",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_dataencryptionstatus",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_isthedatasubjecttodpia",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_companyhasinsuranceforthebreach",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_measurestomitigate",
-						"isVisible": true
-					}
-				],
-				"description": "The GDPR defines a \"personal data breach\" in Article 4(12) as:\n\"A breach of security leading to the accidental or unlawful destruction, loss, alteration, unauthorized disclosure of, or access to, personal data transmitted, stored or otherwise processed.\"\nArt. 4 - https://gdpr-info.eu/art-4-gdpr/",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Details of Company",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_companyname",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_companyaddress",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_companypostalcode",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_companycity",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_companycountry",
-						"isVisible": true
-					}
-				],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Contact person (to obtain complementary information)",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_contactname",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_position",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_contactaddress",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_postalcode",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_city",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_country",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_dpoemailaddress",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_telephoneno",
-						"isVisible": true
-					}
-				],
-				"description": "A controller or processor may have a Data Protection Officer (DPO), either as required by Article 37, or voluntarily as a matter of good practice.\nArt. 37 - https://gdpr-info.eu/art-37-gdpr/",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Affected Individuals Contact Information",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_affectedindividualscontactinformation",
-						"isVisible": true
-					}
-				],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Work Plan",
-				"type": "workplan",
-				"isVisible": true,
-				"readOnly": true,
-				"fields": [],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Details",
-				"type": "",
-				"isVisible": true,
-				"readOnly": true,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_details",
-						"isVisible": true
-					}
-				],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Attachments",
-				"type": "",
-				"isVisible": true,
-				"readOnly": true,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_attachment",
-						"isVisible": true
-					}
-				],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			}
-		]
-	}
+    "typeId": "GDPR Data Breach",
+    "kind": "details",
+    "fromVersion": "4.5.0",
+    "toVersion": "4.9.9",
+    "layout": {
+        "id": "GDPR Data Breach",
+        "version": -1,
+        "modified": "2019-04-17T12:50:11.619310551Z",
+        "name": "",
+        "sections": [
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Basic Information",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
+                "fields": [
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_dbotstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_sourcebrand",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_sourceinstance",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    }
+                ],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Data Breach Information",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
+                "fields": [
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_sectorofaffectedparty",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_sizenumberofemployees",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_sizeturnover",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_countrywherebusinesshasitsmainestablishment",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_countrywherethebreachtookplace",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_datetimeofthebreach",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_approximatenumberofaffecteddatasubjects",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_whereisdatahosted",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_possiblecauseofthebreach",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_maliciouscauseifthecauseisamaliciousattack",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_likelyimpact",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_affecteddata",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_dataencryptionstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_isthedatasubjecttodpia",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_companyhasinsuranceforthebreach",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_measurestomitigate",
+                        "isVisible": true
+                    }
+                ],
+                "description": "The GDPR defines a \"personal data breach\" in Article 4(12) as:\n\"A breach of security leading to the accidental or unlawful destruction, loss, alteration, unauthorized disclosure of, or access to, personal data transmitted, stored or otherwise processed.\"\nArt. 4 - https://gdpr-info.eu/art-4-gdpr/",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Details of Company",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
+                "fields": [
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_companyname",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_companyaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_companypostalcode",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_companycity",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_companycountry",
+                        "isVisible": true
+                    }
+                ],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Contact person (to obtain complementary information)",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
+                "fields": [
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_contactname",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_position",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_contactaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_postalcode",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_city",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_country",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_dpoemailaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_telephoneno",
+                        "isVisible": true
+                    }
+                ],
+                "description": "A controller or processor may have a Data Protection Officer (DPO), either as required by Article 37, or voluntarily as a matter of good practice.\nArt. 37 - https://gdpr-info.eu/art-37-gdpr/",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Affected Individuals Contact Information",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
+                "fields": [
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_affectedindividualscontactinformation",
+                        "isVisible": true
+                    }
+                ],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Work Plan",
+                "type": "workplan",
+                "isVisible": true,
+                "readOnly": true,
+                "fields": [],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Details",
+                "type": "",
+                "isVisible": true,
+                "readOnly": true,
+                "fields": [
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    }
+                ],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Attachments",
+                "type": "",
+                "isVisible": true,
+                "readOnly": true,
+                "fields": [
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_attachment",
+                        "isVisible": true
+                    }
+                ],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            }
+        ]
+    },
+    "version": -1
 }

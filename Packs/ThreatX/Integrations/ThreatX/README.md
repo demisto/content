@@ -18,7 +18,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li>
 <strong>Customer Name</strong>: Contact the ThreatX SOC for your Customer Name</li>
-<li><strong>ThreatX Server URL (e.g.,<span> </span><a href="https://provision.threatx.io/" rel="nofollow">https://provision.threatx.io</a>)</strong></li>
+<li><strong>ThreatX Server URL (e.g., https://provision.threatx.io/ )</strong></li>
 <li>
 <strong>API Key</strong>: Contact the ThreatX SOC for your API Key</li>
 <li>

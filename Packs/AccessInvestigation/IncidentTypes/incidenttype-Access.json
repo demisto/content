@@ -23,5 +23,6 @@
     "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "layout": "Access"
 }
