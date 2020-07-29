@@ -38,6 +38,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Sepio",
+            "playbookID": "SepioPrimeAPI-Test" 
+        },
+        {
             "integrations": "URLhaus",
             "playbookID": "Test_URLhaus",
             "timeout": 1000
@@ -1274,6 +1278,12 @@
         },
         {
             "integrations": "SplunkPy",
+            "playbookID": "SplunkPy KV commands",
+            "memory_threshold": 200,
+            "instance_names": "use_default_handler"
+        },
+        {
+            "integrations": "SplunkPy",
             "playbookID": "SplunkPy-Test-V2",
             "memory_threshold": 500,
             "instance_names": "use_python_requests_handler"
@@ -1287,6 +1297,12 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test",
+            "memory_threshold": 200,
+            "instance_names": "use_python_requests_handler"
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "SplunkPy KV commands",
             "memory_threshold": 200,
             "instance_names": "use_python_requests_handler"
         },
@@ -2806,6 +2822,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Recorded Future v2",
+            "playbookID": "Recorded Future Test Playbook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Azure AD Connect Health Feed",
             "playbookID": "FeedAzureADConnectHealth_Test",
             "fromversion": "5.5.0"
@@ -2846,6 +2867,13 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "CrowdStrikeMalquery",
+            "playbookID": "CrowdStrikeMalquery-Test",
+            "fromversion": "5.0.0",
+            "timeout": 1500
+
+        },
+        {
             "playbookID": "hashIncidentFields-test",
             "fromversion": "4.5.0",
             "timeout": 60000
@@ -2856,12 +2884,20 @@
             "timeout": 500
         },
         {
+            "integrations": "RSA Archer v2",
+            "playbookID": "Archer v2 - Test"
+        },
+        {
             "integrations": "Ivanti Heat",
             "playbookID": "Ivanti Heat - Test"
         },
         {
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "IncreaseIncidentSeverity-Test",
             "fromversion": "5.0.0"
         },
         {
@@ -2915,7 +2951,6 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
-        "Cortex XDR - IOC - Test": "issue #25598",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
         "SMB test": "Issue 26454",
@@ -2925,9 +2960,7 @@
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
         "Keylight v2 - Test": "Issue 26462",
-        "AutoFocus V2 test": "Issue 26464",
         "HybridAnalysis-Test": "Issue 26599",
-        "Logzio - Test": "Issue 26729",
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
         "URL Enrichment - Generic v2 - Test": "Issue 26463",
@@ -2940,10 +2973,11 @@
         "hashIncidentFields-test": "Issue 26850",
         "MISP V2 Test": "Issue 26905",
         "Mimecast test": "Issue 26906",
-        "Mail Sender (New) Test": "Issue 25602"
+        "Mail Sender (New) Test": "Issue 25602",
+        "TAXII_Feed_Test": "Issue 22423"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -3036,12 +3070,12 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
@@ -3050,14 +3084,15 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
+
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
+        "Recorded Future v2": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-        
+
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Cisco ASA": "Issue 25741",
@@ -3092,6 +3127,7 @@
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
+        "SplunkPy": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
@@ -3218,7 +3254,7 @@
         "Cortex Data Lake"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
