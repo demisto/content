@@ -104,7 +104,7 @@ def test_list_files_command(requests_mock):
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/files/5f077ebfc3b664209dae1f6b',
                       json=FILES_BY_ID_DATA)
     res = list_files_command(client_mocker, {'file_id': '5f077ebfc3b664209dae1f6b'})
-    assert res.outputs == FILES_BY_ID_DATA
+    assert res.outputs == FILES_BY_ID_DATA_CONTEXT
 
 
 def test_list_users_accounts_command(requests_mock):
@@ -552,6 +552,177 @@ ACTIVITIES_BY_ID_DATA = {
 }
 
 FILES_BY_ID_DATA = {
+    "_id": "5f077ebfc3b664209dae1f6b",
+    "_tid": 97134000,
+    "appId": 15600,
+    "id": "cac4b654-5fcf-44f0-818e-479cf8ae42ac|56aa5551-0c4c-42d7-93f1-57ccdca766aa",
+    "saasId": 15600,
+    "instId": 0,
+    "fileSize": 149,
+    "createdDate": 1594326579000,
+    "modifiedDate": 1594326594000,
+    "driveId": "cac4b654-5fcf-44f0-818e-479cf8ae42ac|ac8c3025-8b97-4758-ac74-c4b7c5c04ea0",
+    "scanVersion": 4,
+    "parentId": "cac4b654-5fcf-44f0-818e-479cf8ae42ac|8f83a489-34b7-4bb6-a331-260d1291ef6b",
+    "alternateLink": "https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com"
+                     "/Documents/20200325_104025.jpg.txt",
+    "isFolder": False,
+    "fileType": [4, "TEXT"],
+    "name": "20200325_104025.jpg.txt",
+    "isForeign": False,
+    "noGovernance": False,
+    "fileAccessLevel": [0, "PRIVATE"],
+    "ownerAddress": "avishai@demistodev.onmicrosoft.com",
+    "externalShares": [],
+    "emails": [
+        "avishai@demistodev.onmicrosoft.com"
+    ],
+    "groupIds": [],
+    "groups": [],
+    "domains": [
+        "demistodev.onmicrosoft.com"
+    ],
+    "mimeType": "text/plain",
+    "parentIds": [
+        "cac4b654-5fcf-44f0-818e-479cf8ae42ac|8f83a489-34b7-4bb6-a331-260d1291ef6b"
+    ],
+    "ownerExternal": False,
+    "fileExtension": "txt",
+    "lastNrtTimestamp": 1594326781863,
+    "effectiveParents": [
+        "cac4b654-5fcf-44f0-818e-479cf8ae42ac|ac8c3025-8b97-4758-ac74-c4b7c5c04ea0",
+        "cac4b654-5fcf-44f0-818e-479cf8ae42ac|8f83a489-34b7-4bb6-a331-260d1291ef6b"
+    ],
+    "collaborators": [],
+    "sharepointItem": {
+        "UniqueId": "111111111111111",
+        "ServerRelativeUrl": "/personal/avishai_demistodev_onmicrosoft_com/Documents/20200325_104025.jpg.txt",
+        "Name": "20200325_104025.jpg.txt",
+        "Length": 149,
+        "TimeLastModified": "2020-07-09T20:29:54Z",
+        "TimeCreated": "2020-07-09T20:29:39Z",
+        "Author": {
+            "sourceBitmask": 0,
+            "oneDriveEmail": "avishai@demistodev.onmicrosoft.com",
+            "trueEmail": "avishai@demistodev.onmicrosoft.com",
+            "externalUser": False,
+            "LoginName": "i:0#.f|membership|avishai@demistodev.onmicrosoft.com",
+            "name": "Avishai Brandeis",
+            "idInSiteCollection": "4",
+            "sipAddress": "avishai@demistodev.onmicrosoft.com",
+            "Email": "avishai@demistodev.onmicrosoft.com",
+            "Title": "Avishai Brandeis"
+        },
+        "LinkingUrl": "",
+        "parentUniqueId": "8f83a489-34b7-4bb6-a331-260d1291ef6b",
+        "roleAssignments": [],
+        "hasUniqueRoleAssignments": False,
+        "urlFromMetadata": None,
+        "ModifiedBy": {
+            "LoginName": "i:0#.f|membership|tmcassp_fa02d7a6fe55edb22020060112572594@demistodev.onmicrosoft.com",
+            "Title": "Cloud App Security Service Account for SharePoint",
+            "Email": ""
+        },
+        "scopeId": "D853886D-DDEE-4A5D-BCB9-B6F072BC1413",
+        "isFolder": False,
+        "encodedAbsUrl": "https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com/Documents/"
+                         "20200325_104025.jpg.txt"
+    },
+    "siteCollection": "/personal/avishai_demistodev_onmicrosoft_com",
+    "sitePath": "/personal/avishai_demistodev_onmicrosoft_com",
+    "filePath": "/personal/avishai_demistodev_onmicrosoft_com/Documents/20200325_104025.jpg.txt",
+    "spDomain": "https://demistodev-my.sharepoint.com",
+    "siteCollectionId": "cac4b654-5fcf-44f0-818e-479cf8ae42ac",
+    "ftype": 4,
+    "facl": 0,
+    "fstat": 0,
+    "unseenScans": 0,
+    "fileStatus": [0, "EXISTS"],
+    "name_l": "20200325_104025.jpg.txt",
+    "snapshotLastModifiedDate": "2020-07-09T22:15:39.820Z",
+    "ownerName": "Avishai Brandeis",
+    "originalId": "5f077ebfc3b664209dae1f6b",
+    "dlpScanResults": [],
+    "fTags": [],
+    "enriched": True,
+    "display_collaborators": [],
+    "appName": "Microsoft OneDrive for Business",
+    "actions": [
+        {
+            "task_name": "QuarantineTask",
+            "display_title": "TASKS_ADALIBPY_QUARANTINE_FILE_SHARING_PERMISSION_DISPLAY_TITLE",
+            "type": "file",
+            "governance_type": None,
+            "bulk_support": True,
+            "has_icon": True,
+            "display_description": {
+                "template": "TASKS_ADALIBPY_QUARANTINE_FILE_SHARING_PERMISSION_DISPLAY_DESCRIPTION",
+                "parameters": {
+                    "fileName": "20200325_104025.jpg.txt"
+                }
+            },
+            "bulk_display_description": "TASKS_ADALIBPY_QUARANTINE_FILE_SHARING_PERMISSION_BULK_DISPLAY_DESCRIPTION",
+            "preview_only": False,
+            "display_alert_text": "TASKS_ADALIBPY_QUARANTINE_FILE_SHARING_PERMISSION_DISPLAY_ALERT_TEXT",
+            "display_alert_success_text": "TASKS_ADALIBPY_QUARANTINE_FILE_SHARING_PERMISSION_DISPLAY_ALERT_SUCCESS_TEXT",
+            "is_blocking": None,
+            "confirm_button_style": "red",
+            "optional_notify": None,
+            "uiGovernanceCategory": 1,
+            "alert_display_title": None,
+            "confirmation_button_text": None,
+            "confirmation_link": None
+        },
+        {
+            "task_name": "RescanFileTask",
+            "display_title": "TASKS_ADALIBPY_RESCAN_FILE_DISPLAY_TITLE",
+            "type": "file",
+            "governance_type": None,
+            "bulk_support": True,
+            "has_icon": True,
+            "display_description": None,
+            "bulk_display_description": None,
+            "preview_only": False,
+            "display_alert_text": None,
+            "display_alert_success_text": None,
+            "is_blocking": None,
+            "confirm_button_style": "red",
+            "optional_notify": None,
+            "uiGovernanceCategory": 0,
+            "alert_display_title": None,
+            "confirmation_button_text": None,
+            "confirmation_link": None
+        },
+        {
+            "task_name": "TrashFileTask",
+            "display_title": "TASKS_ADALIBPY_TRASH_FILE_DISPLAY_TITLE",
+            "type": "file",
+            "governance_type": None,
+            "bulk_support": True,
+            "has_icon": True,
+            "display_description": {
+                "template": "TASKS_ADALIBPY_TRASH_FILE_DISPLAY_DESCRIPTION",
+                "parameters": {
+                    "fileName": "20200325_104025.jpg.txt"
+                }
+            },
+            "bulk_display_description": "TASKS_ADALIBPY_TRASH_FILE_BULK_DISPLAY_DESCRIPTION",
+            "preview_only": False,
+            "display_alert_text": "TASKS_ADALIBPY_TRASH_FILE_DISPLAY_ALERT_TEXT",
+            "display_alert_success_text": "TASKS_ADALIBPY_TRASH_FILE_ALERT_SUCCESS_TEXT",
+            "is_blocking": None,
+            "confirm_button_style": "red",
+            "optional_notify": None,
+            "uiGovernanceCategory": 1,
+            "alert_display_title": None,
+            "confirmation_button_text": None,
+            "confirmation_link": None
+        }
+    ],
+    "fileTypeDisplay": "File"
+}
+
+FILES_BY_ID_DATA_CONTEXT = {
     "_id": "5f077ebfc3b664209dae1f6b",
     "_tid": 97134000,
     "appId": 15600,
