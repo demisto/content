@@ -1,7 +1,7 @@
 id: add_indicator_to_miner_-_palo_alto_mineMeld
 version: -1
 name: Add Indicator to Miner - Palo Alto MineMeld
-description: Add indicators to the relevant Miner using MineMeld.
+description: DEPRECATED. Add indicators to the relevant Miner using MineMeld.
 fromversion: 4.0.0
 starttaskid: "0"
 tasks:
@@ -231,4 +231,4 @@ inputs:
   description: The Name of the miner
 outputs: []
 tests:
-  - block_indicators_-_generic_-_test
+  - No test - Deprecated playbook

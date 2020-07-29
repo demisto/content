@@ -1,23 +1,22 @@
 id: Block File - Generic v2
 version: -1
-fromversion: 4.5.0
 name: Block File - Generic v2
-description: "This playbook is used to block files from running on endpoints. \nThis
-  playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Cybereason\n-
-  Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+description: "This playbook is used to block files from running on endpoints. \nThis\
+  \ playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Cybereason\n\
+  - Carbon Black Enterprise Response\n- Cylance Protect v2\n"
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 49ac9316-5f77-48f9-8d21-9f05c335c2e4
+    taskid: 420a534c-a6e6-4cf5-8b86-ac7dd1a91441
     type: start
     task:
-      id: 49ac9316-5f77-48f9-8d21-9f05c335c2e4
+      id: 420a534c-a6e6-4cf5-8b86-ac7dd1a91441
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -35,31 +34,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: e3fbf02a-78a1-4329-837e-a6116bcf92af
+    taskid: 24babe11-954f-4415-8d3d-a1100cdbb3df
     type: playbook
     task:
-      id: e3fbf02a-78a1-4329-837e-a6116bcf92af
+      id: 24babe11-954f-4415-8d3d-a1100cdbb3df
       version: -1
       name: Block File - Carbon Black Response
       playbookName: Block File - Carbon Black Response
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      MD5:
-        complex:
-          root: inputs.MD5
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -70,18 +68,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "3":
     id: "3"
-    taskid: fceba42b-c11f-4521-8b0a-f86d410adc0e
+    taskid: c8476a84-8d87-4ff2-8d6c-1dd1cccc503a
     type: title
     task:
-      id: fceba42b-c11f-4521-8b0a-f86d410adc0e
+      id: c8476a84-8d87-4ff2-8d6c-1dd1cccc503a
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -93,16 +93,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 0b7eb74d-0e93-4850-8e16-2c0d4828e5b7
+    taskid: 2efe2a1a-1d31-438c-828f-b6ae50f3899d
     type: playbook
     task:
-      id: 0b7eb74d-0e93-4850-8e16-2c0d4828e5b7
+      id: 2efe2a1a-1d31-438c-828f-b6ae50f3899d
       version: -1
       name: Block File - Cybereason
-      description: This playbook accepts an MD5 hash and blocks the file using the Cybereason
-        integration.
+      description: This playbook accepts an MD5 hash and blocks the file using the
+        Cybereason integration.
       playbookName: Block File - Cybereason
       type: playbook
       iscommand: false
@@ -110,15 +112,12 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      MD5:
-        complex:
-          root: inputs.MD5
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -129,12 +128,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "5":
     id: "5"
-    taskid: e8748c4f-4281-472a-887f-177492c1f435
+    taskid: a887370c-f94a-42f9-866f-2d80b7707f41
     type: playbook
     task:
-      id: e8748c4f-4281-472a-887f-177492c1f435
+      id: a887370c-f94a-42f9-866f-2d80b7707f41
       version: -1
       name: Block File - Cylance Protect v2
       description: This playbook accepts a SHA256 hash and adds the hash to the Global
@@ -146,15 +147,12 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      SHA256:
-        complex:
-          root: inputs.SHA256
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -165,31 +163,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 7b67cfd5-71a9-4ddb-81f0-efbf0fb72408
+    taskid: 4e936a4c-b781-40a1-831a-be0c62a727d6
     type: playbook
     task:
-      id: 7b67cfd5-71a9-4ddb-81f0-efbf0fb72408
+      id: 4e936a4c-b781-40a1-831a-be0c62a727d6
       version: -1
       name: Traps Blacklist File
       playbookName: Traps Blacklist File
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      SHA256:
-        complex:
-          root: inputs.SHA256
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -200,31 +197,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 599c8e61-1a9f-4860-8c2d-b9e31949f82e
+    taskid: ca09ee7f-ce03-43e9-8eed-0bfeef2b2ef3
     type: playbook
     task:
-      id: 599c8e61-1a9f-4860-8c2d-b9e31949f82e
+      id: ca09ee7f-ce03-43e9-8eed-0bfeef2b2ef3
       version: -1
       name: Traps Quarantine Event
       playbookName: Traps Quarantine Event
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      EventId:
-        complex:
-          root: inputs.EventId
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -235,18 +231,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 5f8b3671-3dc9-49db-8a77-3416c2edf8e5
+    taskid: e46175f0-26fc-4f24-87f7-d531354ca0dd
     type: title
     task:
-      id: 5f8b3671-3dc9-49db-8a77-3416c2edf8e5
+      id: e46175f0-26fc-4f24-87f7-d531354ca0dd
       version: -1
       name: Palo Alto Networks - Traps
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -262,18 +260,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 38f390ec-5a46-4954-8660-8f1e657c2ad3
+    taskid: 32d4b47a-e972-4e30-875b-b563130cc4ca
     type: title
     task:
-      id: 38f390ec-5a46-4954-8660-8f1e657c2ad3
+      id: 32d4b47a-e972-4e30-875b-b563130cc4ca
       version: -1
       name: Cybereason
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -288,18 +288,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 944eb95d-f07b-4d1b-8c97-ae26d1d2d81b
+    taskid: 0c07d0e1-59b1-436c-8e90-f2d0410df813
     type: title
     task:
-      id: 944eb95d-f07b-4d1b-8c97-ae26d1d2d81b
+      id: 0c07d0e1-59b1-436c-8e90-f2d0410df813
       version: -1
       name: Carbon Black Enterprise Response
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -314,18 +316,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: e65c3923-7562-4fba-805c-6b340d2a31e7
+    taskid: dcc8e191-213c-4ffd-8bc7-a8e1bc8894d7
     type: title
     task:
-      id: e65c3923-7562-4fba-805c-6b340d2a31e7
+      id: dcc8e191-213c-4ffd-8bc7-a8e1bc8894d7
       version: -1
       name: Cylance Protect v2
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -340,6 +344,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -360,6 +367,7 @@ inputs:
       accessor: MD5
   required: false
   description: The MD5 hash of the file you want to block.
+  playbookInputQuery:
 - key: SHA256
   value:
     complex:
@@ -367,10 +375,12 @@ inputs:
       accessor: SHA256
   required: false
   description: ""
+  playbookInputQuery:
 - key: EventId
   value: {}
   required: false
   description: Traps event ID that contains the malicious file to block.
+  playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
   description: Last block time
@@ -378,5 +388,6 @@ outputs:
   description: Last block hostname
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
   description: Last block sensor ID
+fromversion: 4.5.0
 tests:
-  - block_indicators_-_generic_-_test
+- block_indicators_-_generic_-_test

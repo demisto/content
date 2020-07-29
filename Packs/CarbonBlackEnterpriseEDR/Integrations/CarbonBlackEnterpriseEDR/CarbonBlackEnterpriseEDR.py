@@ -911,8 +911,8 @@ def create_report_command(client: Client, args: Dict) -> CommandResults:
             'Link': ioc.get('link')
         })
 
-    readable_output = tableToMarkdown(f'The report was created successfully.', contents, headers, removeNull=True)
-    ioc_output = tableToMarkdown(f'The IOCs for the report', ioc_contents, removeNull=True)
+    readable_output = tableToMarkdown('The report was created successfully.', contents, headers, removeNull=True)
+    ioc_output = tableToMarkdown('The IOCs for the report', ioc_contents, removeNull=True)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.Report',
         outputs_key_field='ID',
@@ -1016,7 +1016,7 @@ def update_report_command(client: Client, args: Dict) -> CommandResults:
             'Link': ioc.get('link')
         })
 
-    readable_output = tableToMarkdown(f'The report was updated successfully.', contents, headers, removeNull=True)
+    readable_output = tableToMarkdown('The report was updated successfully.', contents, headers, removeNull=True)
     ioc_output = tableToMarkdown('The IOCs for the report', ioc_contents, removeNull=True)
     results = CommandResults(
         outputs_prefix='CarbonBlackEEDR.Report',

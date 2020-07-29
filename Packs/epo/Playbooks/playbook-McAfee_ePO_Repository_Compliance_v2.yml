@@ -1,0 +1,815 @@
+id: McAfee ePO Repository Compliance Playbook v2
+version: -1
+name: McAfee ePO Repository Compliance Playbook v2
+description: Ensures that ePO servers are updated to the latest McAfee published AV
+  signatures (DAT file version).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ee018e04-2610-4998-87d0-f5217127bbad
+    type: start
+    task:
+      id: ee018e04-2610-4998-87d0-f5217127bbad
+      version: -1
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 4d3e8911-2cd9-4f8c-89fa-1d1418bc3dfa
+    type: regular
+    task:
+      id: 4d3e8911-2cd9-4f8c-89fa-1d1418bc3dfa
+      version: -1
+      name: Retrieve DAT version and date from McAfee
+      script: epo|||epo-get-latest-dat
+      type: regular
+      iscommand: true
+      brand: epo
+      description: Check the latest DAT file in local ePO repository.
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 284,
+          "y": 186
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: b7e28ac8-487e-4946-8316-7361f08ac1c5
+    type: regular
+    task:
+      id: b7e28ac8-487e-4946-8316-7361f08ac1c5
+      version: -1
+      name: Initiate update task in each local repository
+      script: epo|||epo-update-repository
+      type: regular
+      iscommand: true
+      brand: epo
+      description: Update local ePO repository.
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      repos:
+        simple: ${olddatrepos}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 504,
+          "y": 554
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 1167464f-532f-42ce-80c1-9b0f0c479c2d
+    type: regular
+    task:
+      id: 1167464f-532f-42ce-80c1-9b0f0c479c2d
+      version: -1
+      name: Send report to admin with update results
+      description: Sends an email using EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: ePO Update Successful.
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: 'Demisto: ePO Update Results'
+      to:
+        simple: ${incident.labels.adminEmail}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 335,
+          "y": 1207
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 42fe8618-3aac-45e8-82eb-c2ce899ba8b9
+    type: regular
+    task:
+      id: 42fe8618-3aac-45e8-82eb-c2ce899ba8b9
+      version: -1
+      name: Send email alert with list of faulty repositories to admin
+      description: Sends an email using EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: ePO Update Error. Please review status of Cortex XSOAR incident ${incident.id}
+          - ${incident.name}
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: 'Demisto: Faulty ePO Repositories Alert'
+      to:
+        simple: ${incident.labels.adminEmail}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 753,
+          "y": 1207
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: df033737-b882-4409-8ff2-ed4f90b8d942
+    type: regular
+    task:
+      id: df033737-b882-4409-8ff2-ed4f90b8d942
+      version: -1
+      name: Close the investigation
+      description: Closes the incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 56,
+          "y": 1386
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: dd5d9578-ca9e-4a3b-8088-940627f3fe9e
+    type: regular
+    task:
+      id: dd5d9578-ca9e-4a3b-8088-940627f3fe9e
+      version: -1
+      name: Retrieve DAT version and date from ePO
+      description: Check the existing DAT file version in ePO.
+      script: epo|||epo-get-current-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -175,
+          "y": 186
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 4405829c-0e70-4c29-8a33-3c17a9644b00
+    type: condition
+    task:
+      id: 4405829c-0e70-4c29-8a33-3c17a9644b00
+      version: -1
+      name: Check if ePO has latest DAT from McAfee
+      description: Check whether the values provided in arguments are equal.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "10"
+    scriptarguments:
+      left:
+        simple: ${mcafee.latestDAT}
+      right:
+        simple: ${mcafee.epoDAT=val.substr(0,val.indexOf('.'))}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 8de9cf55-b3d6-46d0-8aa6-3de9bcd2a64b
+    type: regular
+    task:
+      id: 8de9cf55-b3d6-46d0-8aa6-3de9bcd2a64b
+      version: -1
+      name: Wait for 5 minutes
+      description: Sleep for X seconds. Default is 300 seconds (5 minutes).
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      seconds:
+        simple: "300"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 504,
+          "y": 713
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: b766e4a2-8988-46e1-84ab-d91d118d48a7
+    type: regular
+    task:
+      id: b766e4a2-8988-46e1-84ab-d91d118d48a7
+      version: -1
+      name: Get ePO current DAT version
+      description: Check the existing DAT file version in ePO.
+      script: epo|||epo-get-current-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      extend-context:
+        simple: mcafee.newEpoDAT=productDetectionProductVersion
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 504,
+          "y": 867
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 5b82d2b7-4ac6-4759-8f19-4810dff0b0ad
+    type: condition
+    task:
+      id: 5b82d2b7-4ac6-4759-8f19-4810dff0b0ad
+      version: -1
+      name: Check if ePO has latest DAT from McAfee
+      description: Check whether the values provided in arguments are equal.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      left:
+        simple: ${mcafee.latestDAT}
+      right:
+        simple: ${mcafee.newEpoDAT=val.substr(1,val.indexOf('.'))}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 504,
+          "y": 1033
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 20175a15-e592-48ae-832b-b77b59f33e41
+    type: regular
+    task:
+      id: 20175a15-e592-48ae-832b-b77b59f33e41
+      version: -1
+      name: Set incident to High severity
+      description: Sets the incident severity to High.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      attackerusername: {}
+      blockedaction: {}
+      bpareport: {}
+      breachconfirmation: {}
+      bugtraq: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      dest: {}
+      desthostname: {}
+      destinationip: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      digitalguardianactivity: {}
+      digitalguardianalarmname: {}
+      digitalguardianarcuid: {}
+      digitalguardianattachmentfilename: {}
+      digitalguardianclassification: {}
+      digitalguardiancommandline: {}
+      digitalguardiancomputername: {}
+      digitalguardiandestinationaddress: {}
+      digitalguardiandestinationdnsdomain: {}
+      digitalguardianemailrecipient: {}
+      digitalguardianemailsender: {}
+      digitalguardianemailsubject: {}
+      digitalguardianfilename: {}
+      digitalguardianparentprocessname: {}
+      digitalguardianpolicy: {}
+      digitalguardianprocessname: {}
+      digitalguardianremoteport: {}
+      digitalguardiansensitivity: {}
+      digitalguardiansourceaddress: {}
+      digitalguardiansourceip: {}
+      digitalguardianthreattype: {}
+      digitalguardianusername: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      duoaccountstatus: {}
+      duration: {}
+      email: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailheaders2: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      exactlywhathappenedandatwhattimes: {}
+      exfiltratedfiles: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      grid: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      id: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      illusivenetworkshasforensics: {}
+      illusivenetworkshostname: {}
+      illusivenetworksid: {}
+      illusivenetworkslastseenuser: {}
+      illusivenetworkssourceoperatingsystem: {}
+      illusivenetworksstepstocrownjewel: {}
+      illusivenetworksstepstodomainadmin: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      individualsnotification: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      logzioalerteventid: {}
+      logzioalertid: {}
+      logzioalertsummary: {}
+      logziotags: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      managementnotification: {}
+      manageremail: {}
+      markdowntest: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      name: {}
+      niststage: {}
+      numberofports: {}
+      numberofuniqueports: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      otherpiidatabreached: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      penteraoperationdetails: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      portscantimestamp: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      quarantined: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      severity:
+        simple: High
+      signature: {}
+      signindatetime: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      statewherethebreachtookplace: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      terminatedaction: {}
+      test2: {}
+      threatactor: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 753,
+          "y": 1386
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_10_yes": 0.16,
+      "12_4_#default#": 0.62,
+      "15_5_yes": 0.56,
+      "15_7_#default#": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1441,
+        "width": 1308,
+        "x": -175,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -198,7 +198,7 @@ def main():
     feedParams = {
         "serviceType": demisto.params().get('serviceType', 'all'),
         "addrType": demisto.params().get('addrType', 'all'),
-        "location": demisto.params().get('Location', 'all')
+        "location": demisto.params().get('location', 'all')
     }
     clientConfigs = [{'FeedURL': feedURL,
                       'feedParams': feedParams}]

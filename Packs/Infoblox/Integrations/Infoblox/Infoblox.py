@@ -466,7 +466,7 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     substitute_name = args.get('substitute_name')
     rpz_type = args.get('rpz_type')
     if rpz_policy == 'SUBSTITUTE' and not substitute_name:
-        raise DemistoException(f'Response policy zone with policy SUBSTITUTE requires a substitute name')
+        raise DemistoException('Response policy zone with policy SUBSTITUTE requires a substitute name')
     raw_response = client.create_response_policy_zone(fqdn, rpz_policy, rpz_severity, substitute_name, rpz_type)
     zone = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
@@ -511,7 +511,7 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     comment = args.get('comment')
     substitute_name = args.get('substitute_name')
     if rule_type == 'Substitute (domain name)' and not substitute_name:
-        raise DemistoException(f'Substitute (domain name) rules requires a substitute name argument')
+        raise DemistoException('Substitute (domain name) rules requires a substitute name argument')
     raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, substitute_name, comment)
     rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in

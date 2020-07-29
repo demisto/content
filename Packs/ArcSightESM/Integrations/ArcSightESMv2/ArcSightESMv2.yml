@@ -35,6 +35,13 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- display: Use REST Endpoints
+  name: use_rest
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Use REST endpoints for the commands related to 'entries' instead
+    of the default legacy SOAP endpoints.
 - display: Incident type
   name: incidentType
   required: false

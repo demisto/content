@@ -47,6 +47,14 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- additionalinfo: Because this is a push-based streaming integration, it cannot fetch sample events in
+    the mapping wizard. In order to view sample events, you need to enable events storage and
+    run the crowdstrike-falcon-streaming-get-sample-events command.
+  display: Store sample events for mapping
+  hidden: false
+  name: store_samples
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -59,7 +67,12 @@ description: Use the CrowdStrike Falcon Stream v2 integration to stream detectio
 display: CrowdStrike Falcon Streaming v2
 name: CrowdStrike Falcon Streaming v2
 script:
-  dockerimage: demisto/aiohttp:1.0.0.6695
+  commands:
+  - deprecated: false
+    description: Returns a list of sample events fetched from the stream.
+    execution: false
+    name: crowdstrike-falcon-streaming-get-sample-events
+  dockerimage: demisto/aiohttp:1.0.0.8854
   feed: false
   isfetch: false
   longRunning: true

@@ -102,7 +102,7 @@ def analysis_to_entry(title, info):
 
         dbot_scores.append({
             'Vendor': 'JoeSecurity',
-            'Indicator': analysis_info['MD5'],
+            'Indicator': analysis.get('MD5', analysis.get('filename')),
             'Type': 'file' if analysis_info['MD5'] else 'url',
             'Score': dbot_score,
             'Malicious': malicious,

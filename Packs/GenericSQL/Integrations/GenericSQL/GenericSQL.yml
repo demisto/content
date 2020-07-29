@@ -42,6 +42,18 @@ configuration:
   name: ssl_connect
   required: false
   type: 8
+- display: Use Connection Pooling
+  hidden: false
+  name: use_pool
+  required: false
+  type: 8
+- display: Connection Pool Time to Live (seconds)
+  additionalinfo: After this time the connection pool will be refreshed
+  defaultvalue: 600
+  hidden: false
+  name: pool_ttl
+  required: false
+  type: 0
 description: 'Use the Generic SQL integration to run SQL queries on the following
   databases: MYSQL, PostgreSQL,Microsoft SQL Server, and Oracle.'
 display: Generic SQL
@@ -123,7 +135,7 @@ script:
     execution: false
     name: sql-command
   dockerimage45: demisto/genericsql:1.0.0.6768
-  dockerimage: demisto/genericsql:1.1.0.8102
+  dockerimage: demisto/genericsql:1.1.0.9726
   feed: false
   isfetch: false
   longRunning: false

@@ -1,8 +1,6 @@
 {
-	"associatedToAll": false,
-	"associatedTypes": [
-		"Traps"
-	],
+	"associatedToAll": true,
+	"associatedTypes": [],
 	"breachScript": "",
 	"caseInsensitive": true,
 	"cliName": "devicename",

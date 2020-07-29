@@ -123,8 +123,7 @@ def test_build_title_with_page_numbers_zero_div():
     (archive_search_command, {'query': 'domain:google.com', 'start': '4 days ago', 'groupby': 'subject', 'limit': 1,
                               'offset': 1}, SEARCH_ARCHIVE_RESP, EXPECTED_SEARCH_ARCHIVE_RSLT),
     (archive_search_status_command, {'search_id': '82,83'}, SEARCH_ARCHIVE_RESP, EXPECTED_SEARCH_ARCHIVE_STATUS_RSLT),
-    (
-    archive_search_results_command, {'search_id': 82}, SEARCH_ARCHIVE_RESULTS_RESP, EXPECTED_SEARCH_ARCHIVE_RESULTS_RSLT)
+    (archive_search_results_command, {'search_id': 82}, SEARCH_ARCHIVE_RESULTS_RESP, EXPECTED_SEARCH_ARCHIVE_RESULTS_RSLT)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     headers = {

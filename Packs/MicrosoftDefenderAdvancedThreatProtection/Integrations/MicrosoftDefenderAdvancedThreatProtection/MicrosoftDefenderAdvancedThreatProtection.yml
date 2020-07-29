@@ -2252,7 +2252,7 @@ script:
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags
       type: String
-  dockerimage: demisto/crypto:1.0.0.303
+  dockerimage: demisto/crypto:1.0.0.8854
   feed: false
   isfetch: true
   longRunning: false
