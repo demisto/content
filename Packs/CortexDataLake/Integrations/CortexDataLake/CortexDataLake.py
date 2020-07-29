@@ -801,7 +801,6 @@ def build_query(args, table_name):
     limit = args.get('limit', '5')
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
     query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'
-    print(query)
     return fields, query
 
 
