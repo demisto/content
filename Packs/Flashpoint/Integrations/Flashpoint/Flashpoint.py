@@ -6,6 +6,7 @@ import requests
 import urllib.parse
 from typing import Dict, Any
 
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
