@@ -243,27 +243,6 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_id, customer_filters, co
         request_data = json.loads(customer_filters)
     return request_data
 
-#
-# def params_to_filter(parameters):
-#     """
-#     Turns the parameters to filters.
-#     Args:
-#         parameters: The parameters that should to be filter.
-#     Returns:
-#         The filter we built using the parameters.
-#     """
-#     filters = {}
-#     if 'severity' in parameters.keys():
-#         filters['severity'] = {'eq': SEVERITY_OPTIONS[parameters['severity']]}
-#     if 'resolution_status' in parameters.keys():
-#         filters['resolutionStatus'] = {'eq': RESOLUTION_STATUS_OPTIONS[parameters['resolution_status']]}
-#     if 'service' in parameters.keys():
-#         filters['entity.service'] = {'eq': (int(parameters['service']))}
-#     if 'instance' in parameters.keys():
-#         filters['entity.instance'] = {'eq': (int(parameters['instance']))}
-#     return filters
-#
-
 
 def test_module(client):
     try:
@@ -331,7 +310,7 @@ def bulk_dismiss_alert_command(client, args):
     return CommandResults(
         readable_output=dismiss_alerts,
         outputs_prefix='MicrosoftCloudAppSecurity.AlertDismiss',
-        outputs_key_field='alert_id',
+        outputs_key_field='_id',
         outputs=dismiss_alerts
     )
 
@@ -410,13 +389,13 @@ def list_activities_command(client, args):
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Activities',
-        outputs_key_field='activity_id',
+        outputs_key_field='_id',
         outputs=activities
     )
 
 
 def file_to_human_readable(file):
-    readable_output = assign_params(owner_name=file.get('ownerName'), file_create_date=file.get('createdDate'),
+    readable_output = assign_params(owner_name=file.get('ownerName'), file_id=file.get('_id'),
                                     file_type=file.get('fileType'), file_name=file.get('name'),
                                     file_access_level=file.get('fileAccessLevel'), app_name=file.get('appName'),
                                     file_status=file.get('fileStatus'))
@@ -430,7 +409,7 @@ def files_to_human_readable(files, file_id):
             files_readable_outputs.append(file_to_human_readable(file))
     else:
         files_readable_outputs = file_to_human_readable(files)
-    headers = ['owner_name', 'file_create_date', 'file_type', 'file_name', 'file_access_level', 'file_status',
+    headers = ['owner_name', 'file_id', 'file_type', 'file_name', 'file_access_level', 'file_status',
                'app_name']
     human_readable = tableToMarkdown('Results', files_readable_outputs, headers, removeNull=True)
     return human_readable
@@ -452,7 +431,7 @@ def list_files_command(client, args):
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Files',
-        outputs_key_field='file_id',
+        outputs_key_field='_id',
         outputs=files
     )
 
@@ -538,7 +517,7 @@ def arrange_alerts_by_incident_type(alerts):
 
 def alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time):
     incidents = []
-    for alert in alerts['data']:
+    for alert in alerts:
         incident_created_time = (alert['timestamp'])
         incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()
         incident_occurred = incident_created_datetime.split('.')
