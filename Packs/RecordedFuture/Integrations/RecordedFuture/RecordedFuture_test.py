@@ -27,21 +27,21 @@ class RFTest(unittest.TestCase):
         m.register_uri('POST',
                        'https://api.recordedfuture.com/v2/soar/enrichment',
                        text=json.dumps(IP_REP))
-        resp = lookup_command(self.client, '37.48.83.137', 'ip')
+        resp = lookup_command(self.client, '1.2.3.4', 'ip')
         self.assertIsInstance(resp, CommandResults)
-        self.assertEqual('37.48.83.137',
+        self.assertEqual('1.2.3.4',
                          resp.to_context()['Contents']['data']
                          ['results'][0]['entity']['name'])
 
     def test_intelligence(self, m) -> None:
         m.register_uri('GET',
-                       'https://api.recordedfuture.com/v2/ip/184.168.221.96?'
+                       'https://api.recordedfuture.com/v2/ip/1.2.3.4?'
                        'fields=entity,risk,timestamps,threatLists,intelCard,'
                        'metrics,location,relatedEntities,riskyCIDRIPs',
                        text=json.dumps(IP_LOOKUP))
-        resp = enrich_command(self.client, '184.168.221.96', 'ip', True, True)
+        resp = enrich_command(self.client, '1.2.3.4', 'ip', True, True)
         self.assertIsInstance(resp, CommandResults)
-        self.assertEqual('184.168.221.96',
+        self.assertEqual('1.2.3.4',
                          resp.to_context()['Contents']['data']['name'])
 
     def test_threat_assessment(self, m) -> None:

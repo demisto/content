@@ -1367,8 +1367,8 @@ Get threat intelligence for an IP, Domain, CVE, URL or File.
                         },
                         {
                             "count": 158918,
-                            "id": "ip:66.171.248.178",
-                            "name": "66.171.248.178",
+                            "id": "ip:1.2.3.4",
+                            "name": "1.2.3.4",
                             "type": "IpAddress"
                         }
                     ]
