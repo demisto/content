@@ -131,8 +131,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Comma-separated list of tags, which will be added to indicators created
-    by this feed.
+- additionalinfo: Supports CSV values.
   display: Tags
   hidden: false
   name: feedTags

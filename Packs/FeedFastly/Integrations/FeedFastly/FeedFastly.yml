@@ -61,7 +61,8 @@ configuration:
   required: false
   type: 8
   defaultvalue: "true"
-- display: Tags
+- additionalinfo: Supports CSV values.
+  display: Tags
   name: feedTags
   required: false
   type: 0

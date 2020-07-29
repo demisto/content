@@ -60,7 +60,8 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- display: Tags
+- additionalinfo: Supports CSV values.
+  display: Tags
   name: feedTags
   required: false
   type: 0
