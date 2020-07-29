@@ -2956,7 +2956,8 @@
         "hashIncidentFields-test": "Issue 26850",
         "MISP V2 Test": "Issue 26905",
         "Mimecast test": "Issue 26906",
-        "Mail Sender (New) Test": "Issue 25602"
+        "Mail Sender (New) Test": "Issue 25602",
+        "TAXII_Feed_Test": "Issue 22423"
     },
     "skipped_integrations": {
 
