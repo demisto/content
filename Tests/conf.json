@@ -2832,8 +2832,9 @@
         },
         {
             "playbookID": "PCAP Analysis Test",
+            "instance_names": "virus_total_private_api_general",
             "integrations": [
-                "AutoFocus V2",
+                "VirusTotal - Private API",
                 "WildFire-v2"
             ],
             "fromversion": "5.0.0",
