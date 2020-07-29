@@ -1578,7 +1578,7 @@ tasks:
       script: '|||send-mail'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "Gmail"
     nexttasks:
       '#none#':
       - "40"
