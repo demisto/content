@@ -6,9 +6,7 @@ fromversion: 4.5.0
 type: python
 tags:
 - Utility
-comment: Checks if the specified value exists in context.
-  If the value exists, it will be set in context, otherwise
-  no value will be set in context.
+comment: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 enabled: true
 args:
 - name: key
@@ -38,7 +36,7 @@ scripttarget: 0
 script: '-'
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.7.4.2728
+dockerimage: demisto/python3:3.8.3.9324
 runas: DBotWeakRole
 tests:
   - SetAndHandleEmpty test
