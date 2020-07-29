@@ -50,7 +50,7 @@ tasks:
     scriptarguments:
       body: {}
       filename:
-        simple: nb6-http.pcap
+        simple: smb-on-windows-10.pcapng
       headers: {}
       insecure: {}
       method:
