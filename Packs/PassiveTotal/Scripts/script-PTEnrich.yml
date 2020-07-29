@@ -78,4 +78,5 @@ dependson:
   - pt-ssl-cert
 timeout: 0s
 tests:
-  - No test
+- No test
+fromversion: 4.1.0
