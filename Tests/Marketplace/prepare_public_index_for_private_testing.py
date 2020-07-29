@@ -141,7 +141,7 @@ def main():
     update_index_with_priced_packs(private_storage_bucket, extract_public_index_path, public_index_folder_path)
     change_packs_price_to_zero(public_index_folder_path)
     edit_index_json_file(public_index_folder_path, build_number)
-    upload_index_to_storage(public_index_folder_path, extract_public_index_path, public_index_blob, build_number)
+    upload_modified_index(public_index_folder_path, extract_public_index_path, public_index_blob, build_number)
 
 
 if __name__ == '__main__':
