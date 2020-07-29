@@ -48,12 +48,13 @@ class Client:
             scope='',
             tenant_id=tenant_id,
             auth_code=auth_code,
-            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404),
+            ok_codes=(200, 204, 400, 401, 403, 404, 409),
             multi_resource=True,
             resources=[AZURE_MANAGEMENT_RESOURCE, LOG_ANALYTICS_RESOURCE]
         )
 
-    def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, resource=None):
+    def http_request(self, method, url_suffix=None, full_url=None, params=None,
+                     data=None, resource=None):
         if not params:
             params = {}
         if not full_url:
@@ -66,9 +67,13 @@ class Client:
                                           params=params,
                                           resp_type='response',
                                           resource=resource)
+
+        if res.status_code in (200, 204) and not res.text:
+            return res
+
         res_json = res.json()
 
-        if res.status_code in (400, 401, 403, 404):
+        if res.status_code in (400, 401, 403, 404, 409):
             code = res_json.get('error', {}).get('code', 'Error')
             error_msg = res_json.get('error', {}).get('message', res_json)
             raise ValueError(
@@ -89,22 +94,24 @@ def format_query_table(table):
         {k: v for k, v in zip(columns, row)} for row in rows
     ]
 
-    return tableToMarkdown(name=name,
-                           t=data,
-                           headers=columns,
-                           removeNull=True)
+    return name, columns, data
 
 
 def query_output_to_readable(tables):
     readable_output = '## Query Results\n'
-    readable_output += '\n'.join(tables)
+    tables_markdown = [tableToMarkdown(name=name,
+                                       t=data,
+                                       headers=columns,
+                                       headerTransform=pascalToSpace,
+                                       removeNull=True) for name, columns, data in tables]
+    readable_output += '\n'.join(tables_markdown)
 
     return readable_output
 
 
 def flatten_saved_search_object(saved_search_obj):
     ret = saved_search_obj.get('properties')
-    ret['id'] = saved_search_obj.get('id')
+    ret['id'] = saved_search_obj.get('id').split('/')[-1]
     ret['etag'] = saved_search_obj.get('etag')
     ret['type'] = saved_search_obj.get('type')
 
@@ -150,12 +157,25 @@ def execute_query_command(client, args):
     response = client.http_request('POST', full_url=full_url, data=data,
                                    resource=LOG_ANALYTICS_RESOURCE)
 
-    output = [format_query_table(table) for table in response]
+    output = []
+
+    readable_output = '## Query Results\n'
+    for table in response.get('tables'):
+        name, columns, data = format_query_table(table)
+        readable_output += tableToMarkdown(name=name,
+                                           t=data,
+                                           headers=columns,
+                                           headerTransform=pascalToSpace,
+                                           removeNull=True)
+        output.append({
+            'name': name,
+            'data': data
+        })
 
     return CommandResults(
-        readable_output=query_output_to_readable(output),
+        readable_output=readable_output,
         outputs_prefix='AzureLogAnalytics.Query',
-        outputs=response,
+        outputs=output,
         raw_response=response
     )
 
@@ -168,7 +188,7 @@ def list_saved_searches_command(client, args):
     response = client.http_request('GET', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
     response = response.get('value')
 
-    from_index = min(page, len(response))
+    from_index = min(page * limit, len(response))
     to_index = min(from_index + limit, len(response))
 
     output = [
@@ -226,7 +246,7 @@ def create_or_update_saved_search_command(client, args):
       }
     }
 
-    remove_nulls_from_dictionary(data)
+    remove_nulls_from_dictionary(data.get('properties'))
 
     response = client.http_request('PUT', url_suffix, data=data, resource=AZURE_MANAGEMENT_RESOURCE)
     output = flatten_saved_search_object(response)
@@ -252,7 +272,7 @@ def delete_saved_search_command(client, args):
 
     client.http_request('DELETE', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
 
-    return f'Successfully deleted the saved search `{saved_search_id}`.'
+    return f'Successfully deleted the saved search {saved_search_id}.'
 
 
 def main():
@@ -299,7 +319,7 @@ def main():
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
-from MicrosoftApiModule import *  # noqa: E402
+from Packs.ApiModules.MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

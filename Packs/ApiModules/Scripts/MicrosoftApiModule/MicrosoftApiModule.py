@@ -302,8 +302,6 @@ class MicrosoftClient(BaseClient):
             data['grant_type'] = AUTHORIZATION_CODE
             data['code'] = self.auth_code
 
-        demisto.results(str(data))
-
         response_json: dict = {}
         try:
             response = requests.post(self.token_retrieval_url, data, verify=self.verify)
