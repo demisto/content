@@ -533,7 +533,7 @@ tasks:
       max_size: {}
       min_date: {}
       min_size: {}
-      search command:
+      search_command:
         simple: exact-search
       wide_string: {}
       yara_rule: {}
@@ -581,7 +581,7 @@ tasks:
       max_size: {}
       min_date: {}
       min_size: {}
-      search command:
+      search_command:
         simple: hunt
       wide_string: {}
       yara_rule:
