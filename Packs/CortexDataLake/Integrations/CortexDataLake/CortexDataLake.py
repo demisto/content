@@ -481,7 +481,7 @@ def build_where_clause(args: dict) -> str:
     if args.get('ip') and (args.get('source_ip') or args.get('dest_ip')):
         raise DemistoException('Error: "ip" argument cannot appear with either "source_ip" nor "dest_ip"')
 
-    if args.get('port') and args.get('source_port') or args.get('port') and args.get('dest_port'):
+    if args.get('port') and (args.get('source_port') or args.get('dest_port')):
         raise DemistoException('Error: "port" argument cannot appear with either "source_port" nor "dest_port"')
 
     non_string_keys = {'dest_port', 'source_port'}
