@@ -16,17 +16,15 @@ def test_main_localhost_https(mocker):
     - Return localhost url with internal=true
     """
     from IsUrlPartOfDomain import main
-    url = 'https://localhost:443'
-    mocker.patch.object(demisto, 'executeCommand', return_value=[
-        {
-            "Contents": '',
-            "Type": "ok"
-        }
-    ])
-    mocker.patch.object(demisto, 'results')
-    results = main(urls=url, domains='')
-    assert results.outputs[0].get('URL') == url
-    assert results.outputs[0].get('IsInternal') is True
+
+    url = "https://localhost:443"
+    mocker.patch.object(
+        demisto, "executeCommand", return_value=[{"Contents": "", "Type": "ok"}]
+    )
+    mocker.patch.object(demisto, "results")
+    results = main(urls=url, domains="")
+    assert results.outputs[0].get("URL") == url
+    assert results.outputs[0].get("IsInternal") is True
 
 
 def test_main_localhost_http(mocker):
@@ -43,14 +41,12 @@ def test_main_localhost_http(mocker):
     - Return localhost url with internal=true
     """
     from IsUrlPartOfDomain import main
-    url = 'http://localhost:8080'
-    mocker.patch.object(demisto, 'executeCommand', return_value=[
-        {
-            "Contents": '',
-            "Type": "ok"
-        }
-    ])
-    mocker.patch.object(demisto, 'results')
-    results = main(urls=url, domains='')
-    assert results.outputs[0].get('URL') == url
-    assert results.outputs[0].get('IsInternal') is True
+
+    url = "http://localhost:8080"
+    mocker.patch.object(
+        demisto, "executeCommand", return_value=[{"Contents": "", "Type": "ok"}]
+    )
+    mocker.patch.object(demisto, "results")
+    results = main(urls=url, domains="")
+    assert results.outputs[0].get("URL") == url
+    assert results.outputs[0].get("IsInternal") is True
