@@ -1,6 +1,8 @@
 id: Darkfeed IOC detonation and proactive blocking
 version: -1
 name: Darkfeed IOC detonation and proactive blocking
+description: Download malicious files from a Darkfeed IOC, detonate them in automated
+  sandboxes, and extract and block any additional indicators and files.
 starttaskid: "0"
 tasks:
   "0":
@@ -162,7 +164,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
   "9":
     id: "9"
     taskid: 4004e6b2-ee9f-4ab1-8b24-c9761aa37e41
@@ -231,10 +233,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 6b6682d8-7592-4bd7-8a13-93236fa0f8b0
+    taskid: b203e1bf-a3c7-409b-84fd-7fca587b99f9
     type: playbook
     task:
-      id: 6b6682d8-7592-4bd7-8a13-93236fa0f8b0
+      id: b203e1bf-a3c7-409b-84fd-7fca587b99f9
       version: -1
       name: Detonate File - Generic
       description: Detonate file through active integrations that support file detonation
@@ -273,16 +275,16 @@ tasks:
     quietmode: 2
   "12":
     id: "12"
-    taskid: c02a2c18-ab97-4e9b-8c64-f9a06350fa5c
+    taskid: 4c8828c4-638d-48a0-8e07-3694f982c8ae
     type: condition
     task:
-      id: c02a2c18-ab97-4e9b-8c64-f9a06350fa5c
+      id: 4c8828c4-638d-48a0-8e07-3694f982c8ae
       version: -1
       name: Are there downloaded files?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#default#':
       - "27"
@@ -295,7 +297,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: File
+              simple: File.EntryID
             iscontext: true
     view: |-
       {
@@ -311,10 +313,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: de2acb87-e8b4-4ccb-8544-da275a13644c
+    taskid: 1c2ae049-4c5d-4e81-855d-b8a24ff972b5
     type: title
     task:
-      id: de2acb87-e8b4-4ccb-8544-da275a13644c
+      id: 1c2ae049-4c5d-4e81-855d-b8a24ff972b5
       version: -1
       name: Block malicious indicators found
       type: title
@@ -340,10 +342,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 9dcc39e1-9cd3-41b4-8057-a8cc2644e6a9
+    taskid: 560288c4-abdc-455b-8858-164f35859ecf
     type: playbook
     task:
-      id: 9dcc39e1-9cd3-41b4-8057-a8cc2644e6a9
+      id: 560288c4-abdc-455b-8858-164f35859ecf
       version: -1
       name: Block Indicators - Generic v2
       playbookName: Block Indicators - Generic v2
@@ -447,10 +449,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: d893ab9d-f5d3-4f1f-8b98-4f195b018864
+    taskid: 5251a632-1945-40ed-8273-af73f4342795
     type: playbook
     task:
-      id: d893ab9d-f5d3-4f1f-8b98-4f195b018864
+      id: 5251a632-1945-40ed-8273-af73f4342795
       version: -1
       name: Block File - Generic v2
       playbookName: Block File - Generic v2
@@ -491,10 +493,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 86631016-bfb0-437a-8094-b8d38ee9266c
+    taskid: d1136233-b785-4d82-8e9a-187dbb8844de
     type: condition
     task:
-      id: 86631016-bfb0-437a-8094-b8d38ee9266c
+      id: d1136233-b785-4d82-8e9a-187dbb8844de
       version: -1
       name: Are there URLs to download files?
       type: condition
@@ -529,16 +531,16 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: d9f3f6fb-0bff-460a-8139-41c7df67e5b7
+    taskid: 89a32190-ca51-43fd-84a8-59830c2ce9d1
     type: condition
     task:
-      id: d9f3f6fb-0bff-460a-8139-41c7df67e5b7
+      id: 89a32190-ca51-43fd-84a8-59830c2ce9d1
       version: -1
       name: Is manual download enabled
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#default#':
       - "21"
@@ -571,16 +573,16 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 0d6976e5-9108-453e-8b9c-306c6a48b98a
+    taskid: b6ad5c26-8b8a-4a7a-8e07-6d6729716caa
     type: collection
     task:
-      id: 0d6976e5-9108-453e-8b9c-306c6a48b98a
+      id: b6ad5c26-8b8a-4a7a-8e07-6d6729716caa
       version: -1
       name: Ask to upload file to warroom
       type: collection
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "20"
@@ -719,16 +721,16 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: c55966f5-8519-4be4-8ffc-e54141bda4ef
+    taskid: 63e64654-5aa7-4fc4-8c7d-66a9563e3084
     type: condition
     task:
-      id: c55966f5-8519-4be4-8ffc-e54141bda4ef
+      id: 63e64654-5aa7-4fc4-8c7d-66a9563e3084
       version: -1
       name: Are there MD5 hashes?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#default#':
       - "26"
@@ -757,16 +759,16 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 608edde3-7f16-4dc7-831d-39175ae7ef26
+    taskid: 171d2016-cb9a-494b-8bd1-dc8e8d4eb963
     type: condition
     task:
-      id: 608edde3-7f16-4dc7-831d-39175ae7ef26
+      id: 171d2016-cb9a-494b-8bd1-dc8e8d4eb963
       version: -1
       name: Are there SHA-1 hashes?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#default#':
       - "26"
@@ -795,10 +797,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: f6e40cbf-8e3c-4d0f-8b92-0026214e10b2
+    taskid: 6e804c7a-2323-4932-870a-dd2c7246b0ab
     type: regular
     task:
-      id: f6e40cbf-8e3c-4d0f-8b92-0026214e10b2
+      id: 6e804c7a-2323-4932-870a-dd2c7246b0ab
       version: -1
       name: Download SHA-1 file from Virustotal
       description: Downloads a file from VirusTotal's store given one of its hashes.
@@ -828,7 +830,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
   "25":
     id: "25"
     taskid: 27ffce27-2939-4b0a-8e6e-cb08705a187b
@@ -854,27 +856,27 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
-          "y": 1100
+          "x": -700,
+          "y": 750
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
   "26":
     id: "26"
-    taskid: 68786943-682a-4f55-8388-567c90783deb
+    taskid: 30f90e8b-444d-4cde-826b-111dd18f5f85
     type: title
     task:
-      id: 68786943-682a-4f55-8388-567c90783deb
+      id: 30f90e8b-444d-4cde-826b-111dd18f5f85
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -890,17 +892,17 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: ee84f104-02fd-4019-84df-da964ea89117
+    taskid: 1b63b056-70e1-4d5d-80ff-611d5ce4da35
     type: playbook
     task:
-      id: ee84f104-02fd-4019-84df-da964ea89117
+      id: 1b63b056-70e1-4d5d-80ff-611d5ce4da35
       version: -1
       name: Darkfeed Threat hunting-research
       playbookName: Darkfeed Threat hunting-research
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "26"
@@ -940,16 +942,16 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: adad7eaf-0503-448f-86d6-d0c3e4416c8f
+    taskid: 2b8b5406-f168-42f8-8329-5453f993d398
     type: condition
     task:
-      id: adad7eaf-0503-448f-86d6-d0c3e4416c8f
+      id: 2b8b5406-f168-42f8-8329-5453f993d398
       version: -1
       name: Is download from Virustotal enabled?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#default#':
       - "27"
@@ -982,16 +984,16 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 2e28a2ae-f8e1-4377-82e7-84f1c4c6874e
+    taskid: 6a8337d5-09a1-413f-8e01-1137ed24f77b
     type: condition
     task:
-      id: 2e28a2ae-f8e1-4377-82e7-84f1c4c6874e
+      id: 6a8337d5-09a1-413f-8e01-1137ed24f77b
       version: -1
       name: Is automated indicator blocking enabled?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#default#':
       - "30"
@@ -1024,16 +1026,16 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 23cc800d-e86f-4053-82df-df7af704f64f
+    taskid: dbceb339-e5fe-458a-8c03-1d292d6a9524
     type: regular
     task:
-      id: 23cc800d-e86f-4053-82df-df7af704f64f
+      id: dbceb339-e5fe-458a-8c03-1d292d6a9524
       version: -1
       name: Manually block indicators
       type: regular
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "26"
@@ -1069,7 +1071,7 @@ inputs:
       root: File
   required: false
   description: File hash (MD5, SHA-1, SHA-256) from Darkfeed
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ""
   value: {}
   required: false
@@ -1077,7 +1079,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results:
+    results: null
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -1085,8 +1087,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue:
-        fromvalue:
+        tovalue: null
+        fromvalue: null
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
@@ -1122,32 +1124,30 @@ inputs:
   required: false
   description: URL from Darkfeed_010 - Malware available for download from the deep
     and dark web
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Manual download
   value:
     simple: "true"
   required: false
   description: Set "true" if analyst can manually download malware from deep and dark
     web filesharing site.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: VTdownload
   value:
     simple: "true"
   required: false
   description: Set "true" if you would like to automatically download file from Virustotal
     API.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: AutomatedIndicatorBlocking
   value:
     simple: "true"
   required: false
   description: Set "true" if you would like to automatically block discovered malicious
     indicators.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 quiet: true
-description: Download malicious files from a Darkfeed IOC, detonate them in automated
-  sandboxes, and extract and block any additional indicators and files.
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
