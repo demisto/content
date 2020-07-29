@@ -1,6 +1,6 @@
 commonfields:
   id: AMP
-  version: -1
+  version: 1.0.1
 name: AMP
 display: AMP
 category: Endpoint
