@@ -6,7 +6,7 @@ import sys
 import shutil
 import json
 import argparse
-import datetime
+from datetime import datetime
 from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS
 
 
