@@ -433,6 +433,24 @@ def files_to_human_readable(files, file_id):
     return human_readable
 
 
+def arrange_file_type_access_level_and_status(file):
+    if file.get('fileType'):
+        file['fileType'] = file['fileType'][1]
+    if file.get('fileAccessLevel'):
+        file['fileAccessLevel'] = file['fileAccessLevel'][1]
+    if file.get('fileStatus'):
+        file['fileStatus'] = file['fileStatus'][1]
+
+
+def arrange_files_type_access_level_and_status(files, file_id):
+    if not file_id:
+        for file in files:
+            arrange_file_type_access_level_and_status(file)
+    else:
+        arrange_file_type_access_level_and_status(files)
+    return files
+
+
 def list_files_command(client, args):
     url_suffix = '/files/'
     file_id = args.get('file_id')
@@ -445,6 +463,7 @@ def list_files_command(client, args):
     files = client.list_files(url_suffix, request_data)
     if files.get('data'):
         files = files.get('data')
+    files = arrange_files_type_access_level_and_status(files, file_id)
     human_readable = files_to_human_readable(files, file_id)
     return CommandResults(
         readable_output=human_readable,
@@ -457,7 +476,7 @@ def list_files_command(client, args):
 def user_account_to_human_readable(entity):
     readable_output = assign_params(display_name=entity.get('displayName'), last_seen=entity.get('lastSeen'),
                                     is_admin=entity.get('isAdmin'), is_external=entity.get('isExternal'),
-                                    email=entity.get('email'), username=entity.get('username'))
+                                    email=entity.get('email'), identifier=entity.get('username'))
     return readable_output
 
 
@@ -468,8 +487,9 @@ def users_accounts_to_human_readable(users_accounts, username):
             users_accounts_readable_outputs.append(user_account_to_human_readable(entity))
     else:
         users_accounts_readable_outputs = user_account_to_human_readable(users_accounts)
-    headers = ['display_name', 'last_seen', 'is_admin', 'is_external', 'email', 'username']
-    human_readable = tableToMarkdown('Microsoft CAS Users And Accounts', users_accounts_readable_outputs, headers, removeNull=True)
+    headers = ['display_name', 'last_seen', 'is_admin', 'is_external', 'email', 'identifier']
+    human_readable = tableToMarkdown('Microsoft CAS Users And Accounts', users_accounts_readable_outputs, headers,
+                                     removeNull=True)
     return human_readable
 
 

@@ -567,17 +567,11 @@ FILES_BY_ID_DATA = {
     "alternateLink": "https://demistodev-my.sharepoint.com/personal/avishai_demistodev_onmicrosoft_com"
                      "/Documents/20200325_104025.jpg.txt",
     "isFolder": False,
-    "fileType": [
-        4,
-        "TEXT"
-    ],
+    "fileType": "TEXT",
     "name": "20200325_104025.jpg.txt",
     "isForeign": False,
     "noGovernance": False,
-    "fileAccessLevel": [
-        0,
-        "PRIVATE"
-    ],
+    "fileAccessLevel": "PRIVATE",
     "ownerAddress": "avishai@demistodev.onmicrosoft.com",
     "externalShares": [],
     "emails": [
@@ -643,10 +637,7 @@ FILES_BY_ID_DATA = {
     "facl": 0,
     "fstat": 0,
     "unseenScans": 0,
-    "fileStatus": [
-        0,
-        "EXISTS"
-    ],
+    "fileStatus": "EXISTS",
     "name_l": "20200325_104025.jpg.txt",
     "snapshotLastModifiedDate": "2020-07-09T22:15:39.820Z",
     "ownerName": "Avishai Brandeis",
