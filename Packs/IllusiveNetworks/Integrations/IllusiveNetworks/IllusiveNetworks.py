@@ -503,7 +503,7 @@ def is_deceptive_user_command(client: Client, args: dict) -> Tuple:
     return (
         readable_output,
         outputs,
-        result  # raw response - the original response
+        None  # raw response - the original response
     )
 
 
@@ -522,7 +522,7 @@ def is_deceptive_server_command(client: Client, args: dict) -> Tuple:
     return (
         readable_output,
         outputs,
-        result  # raw response - the original response
+        None  # raw response - the original response
     )
 
 
@@ -549,7 +549,7 @@ def delete_deceptive_users_command(client: Client, args: dict) -> Tuple:
     return (
         readable_output,
         outputs,
-        result  # raw response - the original response
+        None  # raw response - the original response
     )
 
 
@@ -577,7 +577,7 @@ def delete_deceptive_servers_command(client: Client, args: dict) -> Tuple:
     return (
         readable_output,
         outputs,
-        result  # raw response - the original response
+        None  # raw response - the original response
     )
 
 
@@ -616,7 +616,7 @@ def get_incidents_command(client: Client, args: dict) -> Tuple:
 
 
 def get_event_incident_id_command(client: Client, args: dict) -> Tuple:
-    event_id = args.get("event_id")
+    event_id = int(args.get("event_id", None))
     status = "Done"
     try:
         incident = client.get_event_incident_id(event_id)
@@ -645,7 +645,7 @@ def get_event_incident_id_command(client: Client, args: dict) -> Tuple:
     return (
         readable_output,
         outputs,
-        incident  # raw response - the original response
+        None  # raw response - the original response
     )
 
 

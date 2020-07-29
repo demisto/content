@@ -396,7 +396,7 @@ script:
     outputs:
     - contextPath: Illusive.Event.eventId
       description: 'The created event ID of the operation '
-      type: String
+      type: Number
   - arguments:
     - default: false
       description: |
@@ -512,10 +512,10 @@ script:
     outputs:
     - contextPath: Illusive.Event.incidentId
       description: The Incident ID
-      type: String
+      type: Number
     - contextPath: Illusive.Event.eventId
       description: The given event ID
-      type: String
+      type: Number
     - contextPath: Illusive.Event.status
       description: The status command ( Done, InProgress)
       type: String
