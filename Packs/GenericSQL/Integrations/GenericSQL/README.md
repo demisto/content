@@ -233,7 +233,30 @@ Command executed
 ##### Human Readable Output
 Command executed
 
+## Troubleshooting
+
+### General Test Connection Error
+In cases where you receive an error that is not clear when you **Test** the integration instance you can get detailed logs.
+1. Save the configured instance even though the **Test** doesn't work.
+2. In the playground, run the `!sql-command` with `debug-mode=true`. For example:
+  ```
+  !sql-command query="some simple query" debug-mode=true
+  ```
+A log file will be generated in the Playground. Examine the log file for further details that explain why the integration is failing.
+
+### SQL Server
+When configuring *SQL Server*, if you receive an error of the form:
+```
+('08S01', '[08S01] [FreeTDS][SQL Server]Unable to connect: Adaptive Server is unavailable or does not exist (20009) (SQLDriverConnect)')
+(Background on this error at: http://sqlalche.me/e/13/e3q8) 
+``` 
+It means there is a communication problem from the Generic SQL docker to the SQL Server. It usually means the dns hostname of the sql server is not resolving. You can try using an IP instead of the DNS. You can further test the from docker by running the following command on the Cortex XSOAR machine: 
+```
+echo "select @@version" | sudo docker run --rm -i  demisto/genericsql:1.1.0.9726 tsql -H <sql_server_host> -p <sql_port_number> -U <user> -P <password> -D <db_to_connect> -v -o v
+```
+
+**Note:** Kerberos authentication is not supported.
 
 ## Possible Errors:
 * The bind variables lists are not is the same length
-* command is not an existing Generic SQL command'
+* Command is not an existing Generic SQL command
