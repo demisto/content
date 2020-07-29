@@ -37,7 +37,7 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: Sets a value into the context with the given context key
+comment: Set a value in context under the key you entered.
 enabled: true
 args:
 - name: key
