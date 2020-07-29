@@ -445,8 +445,9 @@ def create_user_command(client, args):
         user_id = res_json.get('result').get('id', None)
         user_email = res_json.get('result').get('email', None)
         res_json = res_json.get('result')
+        active = res_json.get('status', False)
         generic_iam_context = OutputContext(success=True, iden=user_id, email=user_email, details=res_json,
-                                            active=False)  # active is always Pending in smartsheet while creating user.
+                                            active=active)  # active is always Pending in smartsheet while creating user.
     elif (res_json.get('result').get('statusCode', None) == 403):
         errorMessage = res_json.get('result').get('message', None)
         generic_iam_context = OutputContext(success=False, iden=None, email=parsed_scim.get('email'), errorCode=409,
