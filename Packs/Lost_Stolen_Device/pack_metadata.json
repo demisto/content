@@ -1,8 +1,8 @@
 {
     "name": "Lost / Stolen Device",
-    "description": "This manaul playbook handles lost or stolen device. it will guide the analyst troght the various steps to validate the type and the content on the device and required stetps for the response and remidiation process",
+    "description": "Looking to reduce the multiple triage, response and mitigation steps involved in handling lost/stolen devices? We’ve got just the Content Pack for you!",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

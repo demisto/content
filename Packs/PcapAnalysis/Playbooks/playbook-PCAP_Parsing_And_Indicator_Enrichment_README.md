@@ -27,7 +27,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| PcapFilter | This input specifies a search filter to be used on the pcap file. Filters can be used to search only for a specific IP, protocols, and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man\-pages/wireshark\-filter.html Using a filter can improve performance and decrease the output results. |  | Optional |
+| PcapFilter | This input specifies a search filter to be used on the pcap file. Filters can be used to search only for a specific IP, protocols, and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html Using a filter can improve performance and decrease the output results. |  | Optional |
 | ProtocolsToOutput | This input provides which protocols to output to context. This can be a single or several protocols from this list HTTP DNS LLMNR SYSLOG SMTP NETBIOS ICMP KERBEROS TELNET SSH IRC FTP SMB2 To provide more than one protocol use comma separation such as  DNS,FTP Each selected protocol will have its own unique data displayed in context. Such as HTTP data, SMTP data etc. | DNS,SMB2,HTTP,LLMNR,SYSLOG,SMTP,NETBIOS,ICMP,KERBEROS,TELNET,SSH,IRC,FTP | Optional |
 | RegexToSearch | This input value is used to provide a python regular expression to search in the the packet body. An example can be \\w\{10\} for expressions that have 10 letter words. |  | Optional |
 | WpaPassword | This input value is used to provide a WPA \(Wi\-Fi Protected Access\) password to decrypt encrypted Wi\-FI traffic. |  | Optional |
