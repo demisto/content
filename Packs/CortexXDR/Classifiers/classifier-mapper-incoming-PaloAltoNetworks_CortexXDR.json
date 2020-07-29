@@ -1,4 +1,4 @@
-[{
+{
 	"fromVersion": "6.0.0",
     "name": "Cortex XDR - Incoming Mapper",
     "type": "mapping-incoming",
@@ -373,4 +373,4 @@
 		}
 	},
 	"version": -1
-}]
+}

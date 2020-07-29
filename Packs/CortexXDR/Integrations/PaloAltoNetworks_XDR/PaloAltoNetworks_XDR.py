@@ -1719,22 +1719,8 @@ def get_remote_data_command(client, args):
 
 
 def get_update_args(delta, inc_status):
-    """Change the updated field names from XSOAR name to XDR name"""
-    update_args = {}
-    for field in XDR_INCIDENT_FIELDS:
-        xsoar_field_name = XDR_INCIDENT_FIELDS[field].get('xsoar_field_name')
-        if xsoar_field_name in delta:
-            if xsoar_field_name == 'severity':
-                severity_mapping = {
-                    1: "low",
-                    2: "medium",
-                    3: "high",
-                    4: "high"
-                }
-                update_args['manual_severity'] = severity_mapping[delta.get('severity')]
-
-            else:
-                update_args[field] = delta.get(xsoar_field_name)
+    """Change the updated field names to fit the update command"""
+    update_args = delta
 
     if ('assigned_user_mail' in update_args and update_args.get('assigned_user_mail') in ['None', 'null', '', None]) \
             or ('assigned_user_pretty_name' in update_args
@@ -1795,24 +1781,6 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None):
             'name': f'#{incident_id} - {description}',
             'occurred': occurred,
             'rawJSON': json.dumps(incident_data),
-            'xdrincidentid': incident_id,
-            'xdrdetectiontime': incident_data.get('detection_time'),
-            'xdrstatus': incident_data.get('status'),
-            'xdrdescription': description,
-            'xdrassigneduseremail': incident_data.get('assigned_user_mail'),
-            'xdrassigneduserprettyname': incident_data.get('assigned_user_pretty_name'),
-            'xdralertcount': incident_data.get('alert_count'),
-            'xdrlowseverityalertcount': incident_data.get('low_severity_alert_count'),
-            'xdrmediumseverityalertcount': incident_data.get('med_severity_alert_count'),
-            'xdrhighseverityalertcount': incident_data.get('high_severity_alert_count'),
-            'xdrusercount': incident_data.get('user_count'),
-            'xdrhostcount': incident_data.get('host_count'),
-            'xdrnotes': incident_data.get('notes'),
-            'xdrurl': incident_data.get('xdr_url'),
-            'xdralerts': incident_data.get('alerts'),
-            'xdrresolvecomment': incident_data.get('resolve_comment'),
-            'xdrnetworkartifacts': incident_data.get('network_artifacts'),
-            'xdrfileartifacts': incident_data.get('file_artifacts'),
         }
 
         # Update last run and add incident if the incident is newer than last fetch

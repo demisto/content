@@ -230,7 +230,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromvesion: 6.0.0
-deprercated: true
 tests:
   - No test
