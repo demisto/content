@@ -104,8 +104,7 @@ def test_list_files_command(requests_mock):
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/files/5f077ebfc3b664209dae1f6b',
                       json=FILES_BY_ID_DATA)
     res = list_files_command(client_mocker, {'file_id': '5f077ebfc3b664209dae1f6b'})
-    context = res.to_context().get('EntryContext')
-    assert context.get('MicrosoftCloudAppSecurity.Files(val.file_id == obj.file_id)') == FILES_BY_ID_DATA
+    assert res.outputs == FILES_BY_ID_DATA
 
 
 def test_list_users_accounts_command(requests_mock):
