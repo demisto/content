@@ -38,6 +38,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Sepio",
+            "playbookID": "SepioPrimeAPI-Test" 
+        },
+        {
             "integrations": "URLhaus",
             "playbookID": "Test_URLhaus",
             "timeout": 1000
@@ -2814,6 +2818,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Recorded Future v2",
+            "playbookID": "Recorded Future Test Playbook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Azure AD Connect Health Feed",
             "playbookID": "FeedAzureADConnectHealth_Test",
             "fromversion": "5.5.0"
@@ -2975,7 +2984,8 @@
         "hashIncidentFields-test": "Issue 26850",
         "MISP V2 Test": "Issue 26905",
         "Mimecast test": "Issue 26906",
-        "Mail Sender (New) Test": "Issue 25602"
+        "Mail Sender (New) Test": "Issue 25602",
+        "TAXII_Feed_Test": "Issue 22423"
     },
     "skipped_integrations": {
 
@@ -3090,6 +3100,7 @@
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
+        "Recorded Future v2": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
 
@@ -3254,7 +3265,7 @@
         "Cortex Data Lake"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
