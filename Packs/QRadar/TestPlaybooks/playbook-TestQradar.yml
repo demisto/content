@@ -1,7 +1,13 @@
-id: test_Qradar
-version: -1
-fromversion: 5.5.0
-name: test_Qradar
+id: 335649b6-a990-46cb-8c0f-849962798a9a
+version: 2
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    itemVersion: 1.0.7
+    fromServerVersion: ""
+    toServerVersion: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: test_Qradar_copy
 starttaskid: "0"
 tasks:
   "0":
@@ -153,7 +159,6 @@ tasks:
       brand: QRadar
     nexttasks:
       '#none#':
-      - "2"
       - "11"
     scriptarguments:
       fields: {}
@@ -411,6 +416,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -436,6 +444,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -500,6 +511,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
     separatecontext: false
     view: |-
       {
@@ -593,6 +607,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
     separatecontext: false
     view: |-
       {
@@ -618,6 +635,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -647,11 +667,6 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
-      - "1"
-      - "27"
-      - "26"
-      - "37"
-      - "44"
     scriptarguments:
       all:
         simple: "yes"
@@ -1024,6 +1039,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
     scriptarguments:
       ref_name:
         simple: test_playbookk
@@ -1108,6 +1126,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
     separatecontext: false
     view: |-
       {
@@ -1312,3 +1333,4 @@ view: |-
   }
 inputs: []
 outputs: []
+sourceplaybookid: test_Qradar
