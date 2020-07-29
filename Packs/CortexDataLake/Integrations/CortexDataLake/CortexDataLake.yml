@@ -1803,6 +1803,15 @@ script:
       name: port
       required: false
       secret: false
+    - default: false
+      description: |-
+        This argument allows to perform a LIKE search of the specified values on the Url and Uri fields
+        An example value will be paloaltonetworks.com,demisto
+        which will provide results like https://apps.paloaltonetworks.com and https://demisto.com
+      isArray: false
+      name: url
+      required: false
+      secret: false
     deprecated: false
     description: Searches the URL table
     execution: false

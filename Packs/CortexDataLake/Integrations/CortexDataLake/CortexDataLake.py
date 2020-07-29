@@ -494,13 +494,20 @@ def build_where_clause(args: dict) -> str:
         ips = argToList(args.pop('ip'))
         # Creating a query for ip argument using source ip and dest ip
         where_clause += '(' + ' OR '.join(f'source_ip.value = "{ip}" OR dest_ip.value = "{ip}"' for ip in ips) + ')'
-        if any(args.get(key) for key in args_dict) or args.get('port'):
+        if any(args.get(key) for key in args_dict) or args.get('port') or args.get('url'):
             where_clause += ' AND '
 
     if args.get('port'):
         ports = argToList(args.pop('port'))
         # Creating a query for port argument using source port and dest port
         where_clause += '(' + ' OR '.join(f'source_port = {port} OR dest_port = {port}' for port in ports) + ')'
+        if any(args.get(key) for key in args_dict):
+            where_clause += ' AND '
+
+    if args.get('url'):
+        urls = argToList(args.pop('url'))
+        # Creating a query for url argument using uri and referer
+        where_clause += '(' + ' OR '.join(f'uri LIKE "%{url}%" OR referer LIKE "%{url}%"' for url in urls) + ')'
         if any(args.get(key) for key in args_dict):
             where_clause += ' AND '
 
@@ -794,6 +801,7 @@ def build_query(args, table_name):
     limit = args.get('limit', '5')
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
     query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'
+    print(query)
     return fields, query
 
 
