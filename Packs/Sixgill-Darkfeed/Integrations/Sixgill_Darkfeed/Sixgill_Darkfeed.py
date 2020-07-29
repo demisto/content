@@ -101,7 +101,7 @@ def post_id_to_full_url(post_id):
 
 
 def to_demisto_indicator(value, indicators_name, stix2obj):
-    return {
+    indicator = {
         "value": value,
         "type": indicators_name,
         "rawJSON": stix2obj,
@@ -134,6 +134,18 @@ def to_demisto_indicator(value, indicators_name, stix2obj):
                                                                            "mitre_attack_technique"),
         },
         "score": to_demisto_score(stix2obj.get("sixgill_feedid"), stix2obj.get("revoked", False))}
+
+    mitre_id = extract_external_reference_field(stix2obj, ExternalReferenceSourceTypes.MITRE_ATTACK,
+                                                "mitre_attack_tactic_id")
+    mitre_url = extract_external_reference_field(stix2obj, ExternalReferenceSourceTypes.MITRE_ATTACK,
+                                                 "mitre_attack_tactic_url")
+    if mitre_id and mitre_url:
+        indicator['fields']['feedrelatedindicators'] = [{
+            "type": "MITRE ATT&CK",
+            "value": mitre_id,
+            "description": mitre_url
+        }]
+    return indicator
 
 
 def get_limit(str_limit, default_limit):

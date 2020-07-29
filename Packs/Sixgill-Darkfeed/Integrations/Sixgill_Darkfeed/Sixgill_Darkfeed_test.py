@@ -484,7 +484,11 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                    'sixgilldescription': 'IP address was listed as a proxy',
                                    'sixgillvirustotaldetectionrate': None, 'sixgillvirustotalurl': None,
                                    'sixgillmitreattcktactic': 'Adversary OPSEC',
-                                   'sixgillmitreattcktechnique': 'Proxy/protocol relays'}, 'score': 3}]
+                                   'sixgillmitreattcktechnique': 'Proxy/protocol relays',
+                                   'feedrelatedindicators': [{'type': 'MITRE ATT&CK', 'value': 'TA0021',
+                                                              'description':
+                                                                  'https://attack.mitre.org/tactics/TA0021/'}]},
+                        'score': 3}]
 
 
 class MockedResponse(object):
