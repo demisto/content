@@ -61,7 +61,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/Packs/PcapAnalysis/Scripts/PcapMinerV2/TestData/nb6-http.pcap
+        simple: https://github.com/demisto/content/raw/master/Packs/PcapAnalysis/Scripts/PcapMinerV2/TestData/smb-on-windows-10.pcapng
       username: {}
     separatecontext: false
     view: |-
