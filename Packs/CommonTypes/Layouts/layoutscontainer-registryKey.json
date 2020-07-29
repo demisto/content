@@ -1,7 +1,7 @@
 {
     "id": "registryKey",
     "group": "indicator",
-    "name": "Registry Key layout by XSOAR",
+    "name": "Registry Key Indicator",
     "description": "",
     "version": -1,
     "fromVersion": "6.0.0",

@@ -1,7 +1,7 @@
 {
     "id": "emailRep",
     "group": "indicator",
-    "name": "Email layout by XSOAR",
+    "name": "Email Indicator",
     "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
