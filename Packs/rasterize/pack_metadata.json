@@ -1,16 +1,17 @@
 {
-  "name": "Rasterize",
-  "description": "Converts URLs, PDF files, and emails to an image file or PDF file.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-03-09T16:54:23Z",
-  "categories": [
-    "Utilities"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Rasterize",
+    "description": "Converts URLs, PDF files, and emails to an image file or PDF file.",
+    "support": "xsoar",
+    "currentVersion": "1.0.3",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-03-09T16:54:23Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {}
 }

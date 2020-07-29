@@ -1536,7 +1536,7 @@ tasks:
     type: condition
     task:
       id: 7c07c4aa-f0d0-4b3f-8066-06638dc7dd4d
-      description: Is Cortex Data Lake enabled? 
+      description: Is Cortex Data Lake enabled?
       version: -1
       name: Is Cortex Data Lake enabled?
       type: condition
@@ -3479,4 +3479,4 @@ outputs:
   type: string
 
 tests:
-- PANW - Hunting and threat detection by indicator type Test
+- No tests

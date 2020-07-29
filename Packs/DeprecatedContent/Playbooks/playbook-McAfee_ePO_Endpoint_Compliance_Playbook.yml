@@ -3,7 +3,7 @@ version: -1
 system: true
 fromversion: 2.5.0
 name: McAfee ePO Endpoint Compliance Playbook
-description: Discover endpoints that are not using the latest McAfee AV Signatures
+description: DEPRECATED. Use "McAfee ePO Endpoint Compliance Playbook v2" playbook instead. Discover endpoints that are not using the latest McAfee AV Signatures
 starttaskid: "0"
 tasks:
   "0":
@@ -533,4 +533,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Test Playbook McAfee ePO
+- No test - Deprecated playbook

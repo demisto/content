@@ -365,7 +365,7 @@ def main():
         )
     )
     commands = {
-        f"test-module": test_module_command,
+        "test-module": test_module_command,
         f"{INTEGRATION_COMMAND_NAME}-get-events": get_events_command
     }
     command = demisto.command()

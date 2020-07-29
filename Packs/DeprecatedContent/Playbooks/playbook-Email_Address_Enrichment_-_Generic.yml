@@ -1,7 +1,7 @@
 id: email_address_enrichment_-_generic
 version: -1
 name: Email Address Enrichment - Generic
-description: Get email address reputation using one or more integrations
+description: DEPRECATED. Use "Email Address Enrichment - Generic v2.1" playbook instead. Get email address reputation using one or more integrations
 fromversion: 3.6.0
 starttaskid: "0"
 tasks:

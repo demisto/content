@@ -137,7 +137,7 @@ If you're experiencing further issues, contact us at [support@demisto.com](mailt
 ## Demo Video
 ---
 <video controls>
-    <source src="https://github.com/demisto/content/raw/59db426d41882c9b2d61e39ad7b3dfb0fec335e1/Packs/Syslog/Integrations/SyslogSender/doc_assets/syslog-sender-demo.mp4"
+    <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/Syslog/syslog-sender-demo.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/blob/59db426d41882c9b2d61e39ad7b3dfb0fec335e1/Packs/Syslog/Integrations/SyslogSender/doc_assets/syslog-sender-demo.mp4 
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/Syslog/syslog-sender-demo.mp4 
 </video>

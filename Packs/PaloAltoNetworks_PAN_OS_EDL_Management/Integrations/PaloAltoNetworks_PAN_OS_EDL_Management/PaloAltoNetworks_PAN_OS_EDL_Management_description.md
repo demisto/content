@@ -7,3 +7,4 @@
  4. To verify the location of the document root where the files are stored, run the following command.
    - **CentOS**: `"httpd -S"` 
    - **Ubuntu**: `apcahe2 -S"`
+

@@ -1,0 +1,555 @@
+id: Detonate File - CrowdStrike Falcon X
+version: -1
+name: Detonate File - CrowdStrike Falcon X
+description: |-
+  Detonates a File using CrowdStrike Falcon X sandbox.
+  Accepted file formats:
+  Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
+  Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
+  PDF
+  APK
+  Executable JAR
+  Windows script component: .sct
+  Windows shortcut: .lnk
+  Windows help: .chm
+  HTML application: .hta
+  Windows script file: .wsf
+  Javascript: .js
+  Visual Basic: .vbs, .vbe
+  Shockwave Flash: .swf
+  Perl: .pl
+  Powershell: .ps1, .psd1, .psm1
+  Scalable vector graphics: .svg
+  Python: .py
+  Linux ELF executables
+  Email files: MIME RFC 822 .eml, Outlook .msg.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2e14779f-7f47-4445-845c-bfea5627cbe3
+    type: start
+    task:
+      id: 2e14779f-7f47-4445-845c-bfea5627cbe3
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 334792b6-7e5d-4494-85a1-aa4bc2274105
+    type: playbook
+    task:
+      id: 334792b6-7e5d-4494-85a1-aa4bc2274105
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: csfalconx
+          accessor: resource.submitted_id
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: cs-fx-get-analysis-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: csfalconx(val.resource.state !== 'success').resource.id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
+    type: regular
+    task:
+      id: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
+      version: -1
+      name: CrowdStrike Falcon X Get Report
+      description: Get a full version of a sandbox report.
+      script: CrowdStrike Falcon X|||cs-fx-get-full-report
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ids:
+        simple: ${csfalconx.resource.submitted_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 73843b9d-b556-4e1c-895c-93ae4f6671dc
+    type: title
+    task:
+      id: 73843b9d-b556-4e1c-895c-93ae4f6671dc
+      version: -1
+      name: Done
+      description: finished
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ee402758-5d33-4edd-89fb-816dee6233c5
+    type: condition
+    task:
+      id: ee402758-5d33-4edd-89fb-816dee6233c5
+      version: -1
+      name: Is CrowdStrike Falcon X enabled?
+      description: |
+        Verify that there is a valid instance of CrowdStrike Falcon X enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike Falcon X
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 44e9c26f-c38e-4c1c-8b60-80a92220810e
+    type: condition
+    task:
+      id: 44e9c26f-c38e-4c1c-8b60-80a92220810e
+      version: -1
+      name: Filter taskId
+      description: Checks that only valid files have been sent to detonation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: csfalconx.resource.submitted_id(val != -1)
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: dd7a0c59-4cf4-4a46-8316-19dadac61a1b
+    type: condition
+    task:
+      id: dd7a0c59-4cf4-4a46-8316-19dadac61a1b
+      version: -1
+      name: Is file type supported?
+      description: Checks if the file type is supported.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:EXE|DLL|COM|SCR|CPL|DOC|DOCX|XLS|XSLX|PPS|PPSX|PPT|PPTX|RTF|PDF|ETC|PUB|SCT|INK|CHM|HTA|WSF|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|ELF|EML|MSG)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:EXE|DLL|COM|SCR|CPL|DOC|DOCX|XLS|XSLX|PPS|PPSX|PPT|PPTX|RTF|PDF|ETC|PUB|SCT|INK|CHM|HTA|WSF|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|ELF|EML|MSG)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:EXE|DLL|COM|SCR|CPL|DOC|DOCX|XLS|XSLX|PPS|PPSX|PPT|PPTX|RTF|PDF|ETC|PUB|SCT|INK|CHM|HTA|WSF|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|ELF|EML|MSG)\b
+                    ignorecase: true
+                accessor: EntryID
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: e0e4b29f-fe26-47b2-8930-00d6087bdbeb
+    type: regular
+    task:
+      id: e0e4b29f-fe26-47b2-8930-00d6087bdbeb
+      version: -1
+      name: Set File to context
+      description: Set the file object into context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 813639b9-9c78-44dc-8600-afad5cc1c5db
+    type: condition
+    task:
+      id: 813639b9-9c78-44dc-8600-afad5cc1c5db
+      version: -1
+      name: Is there a File to Detonate?
+      description: Checks that there is a file in the playbook’s input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 33e04243-7824-4475-8ea1-5c2366c22fd6
+    type: regular
+    task:
+      id: 33e04243-7824-4475-8ea1-5c2366c22fd6
+      version: -1
+      name: CrowdStrike Falcon X Upload File to Sandbox
+      description: Upload a file for sandbox analysis.
+      script: CrowdStrike Falcon X|||cs-fx-upload-file
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      comment: {}
+      file:
+        simple: ${inputs.File.EntryID}
+      file_name:
+        simple: inputs.File.EntryID
+      is_confidential: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 5a968f27-55f8-4761-88d0-a89b4d023bda
+    type: regular
+    task:
+      id: 5a968f27-55f8-4761-88d0-a89b4d023bda
+      version: -1
+      name: CrowdStrike FalconX Detonate Uploaded File
+      description: Submit a sample SHA256 for sandbox analysis.
+      script: '|||cs-fx-submit-uploaded-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      action_script: {}
+      command_line: {}
+      document_password: {}
+      enable_tor:
+        simple: "false"
+      environment_id:
+        simple: '160: Windows 10'
+      sha256:
+        simple: ${csfalconx.resource.sha256}
+      submit_name: {}
+      system_date: {}
+      system_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 790,
+        "x": 50,
+        "y": 20
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: The file to detonate. The file is taken from the context.
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+outputs:
+    - contextPath: csfalconx.resource.id
+      description: Analysis ID.
+      type: String
+    - contextPath: csfalconx.resource.verdict
+      description: Analysis verdict.
+      type: String
+    - contextPath: csfalconx.resource.created_timpestamp
+      description: Analysis start time.
+      type: String
+    - contextPath: csfalconx.resource.environment_id
+      description: Environment ID.
+      type: String
+    - contextPath: csfalconx.resource.snadbox.environment_description
+      description: Environment description.
+      type: String
+    - contextPath: csfalconx.resource.threat_score
+      description: Score of the threat.
+      type: Int
+    - contextPath: csfalconx.resource.submit_url
+      description: URL submitted for analysis.
+      type: String
+    - contextPath: csfalconx.resource.submission_type
+      description: Type of submitted artifact, for example file, URL, etc.
+      type: String
+    - contextPath: csfalconx.resource.filetype
+      description: File type.
+      type: String
+    - contextPath: csfalconx.resource.filesize
+      description: File size.
+      type: Int
+    - contextPath: csfalconx.resource.sha256
+      description: SHA256 hash of the submitted file.
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_strict_csv_artifact_id
+      description: ID of the IOC pack to download (CSV).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_broad_csv_artifact_id
+      description: ID of the IOC pack to download (CSV).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_strict_json_artifact_id
+      description: ID of the IOC pack to download (JSON).
+      type: Int
+    - contextPath: csfalconx.resource.ioc_report_broad_json_artifact_id
+      description: ID of the IOC pack to download (JSON).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_strict_stix_artifact_id
+      description: ID of the IOC pack to download (STIX).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_broad_stix_artifact_id
+      description: ID of the IOC pack to download (STIX).
+      type: Int
+    - contextPath: csfalconx.resource.ioc_report_strict_maec_artifact_id
+      description: ID of the IOC pack to download (MAEC).
+      type: String
+    - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
+      description: ID of the IOC pack to download (MAEC).
+      type: String
+fromversion: 5.0.0
+tests:
+ -  No tests

@@ -274,11 +274,6 @@ class MITMProxy:
             prints_manager.add_print_job(err_msg, print_error, thread_index)
             return
         problem_keys = json.loads(self.ami.check_output(['cat', problem_keys_filepath]))
-        prints_manager.add_print_job(
-            f'Test "{playbook_id}" problem_keys: \n{json.dumps(problem_keys, indent=4)}',
-            print,
-            thread_index
-        )
 
         # is there data in problematic_keys.json that needs whitewashing?
         prints_manager.add_print_job('checking if there is data to whitewash', print, thread_index)
@@ -305,12 +300,7 @@ class MITMProxy:
             split_command = command.split()
             prints_manager.add_print_job('Let\'s try and clean the mockfile from timestamp data!', print, thread_index)
             try:
-                clean_cmd_output = check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
-                prints_manager.add_print_job(
-                    f'clean_cmd_output.decode()={clean_cmd_output.decode()}',
-                    print,
-                    thread_index
-                )
+                check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
             except CalledProcessError as e:
                 cleaning_err_msg = 'There may have been a problem when filtering timestamp data from the mock file.'
                 prints_manager.add_print_job(cleaning_err_msg, print_error, thread_index)
@@ -373,16 +363,17 @@ class MITMProxy:
         repo_problem_keys_filepath = os.path.join(
             self.repo_folder, get_folder_path(playbook_id), 'problematic_keys.json'
         )
-        prints_manager.add_print_job(f'repo_problem_keys_filepath={repo_problem_keys_filepath}', print, thread_index)
         current_problem_keys_filepath = os.path.join(path, get_folder_path(playbook_id), 'problematic_keys.json')
-        prints_manager.add_print_job(
-            f'current_problem_keys_filepath={current_problem_keys_filepath}', print, thread_index
-        )
+
+        # when recording, copy the `problematic_keys.json` for the test to current temporary directory if it exists
+        # that way previously recorded or manually added keys will only be added upon and not wiped with an overwrite
+        if record:
+            silence_output(
+                self.ami.call, ['mv', repo_problem_keys_filepath, current_problem_keys_filepath], stdout='null'
+            )
 
         script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
-        prints_manager.add_print_job(f'script_filepath={script_filepath}', print, thread_index)
         remote_script_path = self.ami.copy_file(script_filepath)
-        prints_manager.add_print_job(f'remote_script_path={remote_script_path}', print, thread_index)
 
         # if recording
         # record with detect_timestamps and then rewrite mock file
@@ -409,7 +400,6 @@ class MITMProxy:
         command = "source .bash_profile && mitmdump --ssl-insecure --verbose --listen-port {} {} {}{}".format(
             self.PROXY_PORT, actions, os.path.join(path, get_mock_file_path(playbook_id)), debug_opt
         )
-        prints_manager.add_print_job(f'mitm command: "{command}"', print, thread_index)
         command = command.split()
 
         # Start proxy server

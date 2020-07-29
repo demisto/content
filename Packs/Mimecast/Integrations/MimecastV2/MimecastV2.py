@@ -100,30 +100,12 @@ def auto_refresh_token():
             demisto.setIntegrationContext({'token_last_update': current_ts})
 
 
-def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False):
+def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers=None):
     is_user_auth = True
     url = BASE_URL + api_endpoint
     # 2 types of auth, user and non user, mostly user is needed
     if user_auth:
-        # Generate request header values
-        request_id = str(uuid.uuid4())
-        hdr_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S") + " UTC"
-
-        # Create the HMAC SHA1 of the Base64 decoded secret key for the Authorization header
-        hmac_sha1 = hmac.new(SECRET_KEY.decode("base64"), ':'.join([hdr_date, request_id, api_endpoint, APP_KEY]),  # type: ignore
-                             digestmod=hashlib.sha1).digest()
-
-        # Use the HMAC SHA1 value to sign the hdrDate + ":" requestId + ":" + URI + ":" + appkey
-        signature = base64.encodestring(hmac_sha1).rstrip()
-
-        # Create request headers
-        headers = {
-            'Authorization': 'MC ' + ACCESS_KEY + ':' + signature,
-            'x-mc-app-id': APP_ID,
-            'x-mc-date': hdr_date,
-            'x-mc-req-id': request_id,
-            'Content-Type': 'application/json'
-        }
+        headers = headers or generate_user_auth_headers(api_endpoint)
 
     else:
         # This type of auth is only supported for basic commands: login/discover/refresh-token
@@ -168,6 +150,36 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
     except Exception as e:
         LOG(e)
         raise
+
+
+def generate_user_auth_headers(api_endpoint):
+    # type: (str) -> dict
+    """
+        Generate headers for a request
+        Args:
+            api_endpoint: The request's endpoint
+
+        Returns:
+            A dict of headers for the request
+        """
+    # Generate request header values
+    request_id = str(uuid.uuid4())
+    hdr_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S") + " UTC"
+    # Create the HMAC SHA1 of the Base64 decoded secret key for the Authorization header
+    hmac_sha1 = hmac.new(SECRET_KEY.decode("base64"), ':'.join([hdr_date, request_id, api_endpoint, APP_KEY]),
+                         # type: ignore
+                         digestmod=hashlib.sha1).digest()
+    # Use the HMAC SHA1 value to sign the hdrDate + ":" requestId + ":" + URI + ":" + appkey
+    signature = base64.encodestring(hmac_sha1).rstrip()
+    # Create request headers
+    headers = {
+        'Authorization': 'MC ' + ACCESS_KEY + ':' + signature,
+        'x-mc-app-id': APP_ID,
+        'x-mc-date': hdr_date,
+        'x-mc-req-id': request_id,
+        'Content-Type': 'application/json'
+    }
+    return headers
 
 
 def parse_query_args(args):
@@ -963,7 +975,6 @@ def get_url_logs():
     context = {}
     url_logs_context = []
     search_params = {}
-    result_number = demisto.args().get('resultsNumber', '').encode('utf-8')
     from_date = demisto.args().get('fromDate', '').encode('utf-8')
     to_date = demisto.args().get('toDate', '').encode('utf-8')
     scan_result = demisto.args().get('resultType', '').encode('utf-8')
@@ -976,9 +987,7 @@ def get_url_logs():
     if scan_result:
         search_params['scanResult'] = scan_result
 
-    url_logs = get_url_logs_request(search_params, result_number)
-    if limit:
-        url_logs = url_logs[:limit]
+    url_logs = get_url_logs_request(search_params, limit=limit)
     for url_log in url_logs:
         contents.append({
             'Action': url_log.get('action'),
@@ -1019,23 +1028,48 @@ def get_url_logs():
     return results
 
 
-def get_url_logs_request(search_params, result_number=None):
+def get_url_logs_request(search_params, limit=None):
+    """
+    Getting logs using pagination as specified here
+    https://www.mimecast.com/tech-connect/documentation/endpoint-reference/logs-and-statistics/get-ttp-url-logs/
+    Args:
+        search_params: The search parameter
+        limit: The maximum number of logs to return
+
+    Returns:
+        A generator of logs
+    """
     # Setup required variables
+    page_size = 100
     api_endpoint = '/api/ttp/url/get-logs'
-    pagination = {}  # type: Dict[Any, Any]
-    if result_number:
-        pagination = {'page_size': result_number}
+    pagination = {'page_size': page_size}
     payload = {
         'meta': {
             'pagination': pagination
         },
         'data': [search_params]
-    }
-
-    response = http_request('POST', api_endpoint, str(payload))
-    if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
-    return response.get('data')[0].get('clickLogs')
+    }  # type: Dict[str, Any]
+    headers = generate_user_auth_headers(api_endpoint)
+    response = http_request('POST', api_endpoint, str(payload), headers=headers)
+    next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
+    logs_counter = 0
+    while True:
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        logs = response.get('data')[0].get('clickLogs')
+        for log in logs:
+            # If returning this log will not exceed the specified limit
+            if not limit or logs_counter < limit:
+                logs_counter += 1
+                yield log
+        # If limit is reached or there are no more pages
+        if not next_page or (limit and logs_counter >= limit):
+            break
+        pagination = {'page_size': page_size,
+                      'pageToken': next_page}  # type: ignore
+        payload['meta']['pagination'] = pagination
+        response = http_request('POST', api_endpoint, str(payload), headers=headers)
+        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
 
 
 def get_attachment_logs():
@@ -1769,11 +1803,11 @@ def group_members_api_response_to_markdown(api_response):
     users_list = list()
     for user in api_response['data'][0]['groupMembers']:
         user_entry = {
-            'Name': user['name'],
-            'Email address': user['emailAddress'],
-            'Domain': user['domain'],
-            'Type': user['type'],
-            'Internal user': user['internal']
+            'Name': user.get('name'),
+            'Email address': user.get('emailAddress'),
+            'Domain': user.get('domain'),
+            'Type': user.get('type'),
+            'Internal user': user.get('internal')
         }
 
         users_list.append(user_entry)
@@ -1809,11 +1843,11 @@ def group_members_api_response_to_context(api_response, group_id=-1):
     users_list = list()
     for user in api_response['data'][0]['groupMembers']:
         user_entry = {
-            'Name': user['name'],
-            'EmailAddress': user['emailAddress'],
-            'Domain': user['domain'],
-            'Type': user['type'],
-            'InternalUser': user['internal'],
+            'Name': user.get('name'),
+            'EmailAddress': user.get('emailAddress'),
+            'Domain': user.get('domain'),
+            'Type': user.get('type'),
+            'InternalUser': user.get('internal'),
             'IsRemoved': False
         }
 
@@ -1825,6 +1859,14 @@ def group_members_api_response_to_context(api_response, group_id=-1):
 
 
 def add_remove_member_to_group(action_type):
+    """Adds or remove a member from a group
+
+    Args:
+        action_type: the action type
+
+    Returns:
+        Demisto Outputs
+    """
     if action_type == 'add':
         api_endpoint = '/api/directory/add-group-member'
     else:
@@ -1835,10 +1877,18 @@ def add_remove_member_to_group(action_type):
     markdown_output = add_remove_api_response_to_markdown(api_response, action_type)
     entry_context = add_remove_api_response_to_context(api_response, action_type)
 
-    return_outputs(markdown_output, entry_context, api_response)
+    return markdown_output, entry_context, api_response
 
 
 def create_add_remove_group_member_request(api_endpoint):
+    """Adds or remove a member from a group
+
+    Args:
+        api_endpoint: the add or the remove endpoint
+
+    Returns:
+        response from API
+    """
     group_id = demisto.args().get('group_id', '').encode('utf-8')
     email = demisto.args().get('email_address', '').encode('utf-8')
     domain = demisto.args().get('domain_address', '').encode('utf-8')
@@ -1864,8 +1914,19 @@ def create_add_remove_group_member_request(api_endpoint):
 
 
 def add_remove_api_response_to_markdown(api_response, action_type):
-    address_modified = api_response['data'][0]['emailAddress']
-    group_id = api_response['data'][0]['folderId']
+    """Create a markdown response for the add or remove member operation
+
+    Args:
+        api_response: response from api
+        action_type: the action type
+
+    Returns:
+        response from API
+    """
+    address_modified = api_response['data'][0].get('emailAddress')
+    if not address_modified:
+        address_modified = api_response['data'][0].get('domain', 'Address')
+    group_id = api_response['data'][0].get('folderId', '')
 
     if action_type == 'add':
         return address_modified + ' had been added to group ID ' + group_id
@@ -1881,7 +1942,7 @@ def change_user_status_removed_in_context(user_info, group_id):
             for group in groups_entry_in_context:
                 if group['ID'] == group_id:
                     for user in group['Users']:
-                        if user['EmailAddress'] == user_info['EmailAddress']:
+                        if user['EmailAddress'] == user_info.get('EmailAddress', ''):
                             user['IsRemoved'] = True
                     return groups_entry_in_context
 
@@ -1902,7 +1963,7 @@ def add_remove_api_response_to_context(api_response, action_type):
         api_response = create_get_group_members_request(group_id=group_id)
         return group_members_api_response_to_context(api_response, group_id=group_id)
     else:
-        address_removed = api_response['data'][0]['emailAddress']
+        address_removed = api_response['data'][0].get('emailAddress', '')
 
         removed_user = {
             'EmailAddress': address_removed,
@@ -2296,9 +2357,9 @@ def main():
         elif demisto.command() == 'mimecast-get-group-members':
             get_group_members()
         elif demisto.command() == 'mimecast-add-group-member':
-            add_remove_member_to_group('add')
+            return_outputs(add_remove_member_to_group('add'))
         elif demisto.command() == 'mimecast-remove-group-member':
-            add_remove_member_to_group('remove')
+            return_outputs(add_remove_member_to_group('remove'))
         elif demisto.command() == 'mimecast-create-group':
             create_group()
         elif demisto.command() == 'mimecast-update-group':

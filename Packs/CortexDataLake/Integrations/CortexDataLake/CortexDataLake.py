@@ -1,8 +1,5 @@
-from dateutil import parser
-
+""" IMPORTS """
 from CommonServerPython import *
-
-''' IMPORTS '''
 import os
 import requests
 import json
@@ -10,6 +7,8 @@ from pancloud import QueryService, Credentials, exceptions
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Any, List, Tuple, Callable
+from tempfile import gettempdir
+from dateutil import parser
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -501,7 +500,7 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
     Returns:
         SQL query that matches the arguments
     """
-    query = f'SELECT * FROM `firewall.threat` '  # guardrails-disable-line
+    query = 'SELECT * FROM `firewall.threat` '  # guardrails-disable-line
     query += f'WHERE (TIME(time_generated) Between TIME(TIMESTAMP("{fetch_timestamp}")) ' \
              f'AND TIME(CURRENT_TIMESTAMP))'
     if fetch_subtype and 'all' not in fetch_subtype:
@@ -577,7 +576,7 @@ def get_critical_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str
     """
     logs_amount = args.get('limit')
     query_start_time, query_end_time = query_timestamp(args)
-    query = f'SELECT * FROM `firewall.threat` WHERE severity = "Critical" '  # guardrails-disable-line
+    query = 'SELECT * FROM `firewall.threat` WHERE severity = "Critical" '  # guardrails-disable-line
     query += f'AND (TIME(time_generated) BETWEEN TIME(TIMESTAMP("{query_start_time}")) AND ' \
              f'TIME(TIMESTAMP("{query_end_time}"))) LIMIT {logs_amount}'
 
@@ -611,7 +610,7 @@ def get_social_applications_command(args: dict,
     """ Queries Cortex Logging according to a pre-set query """
     logs_amount = args.get('limit')
     query_start_time, query_end_time = query_timestamp(args)
-    query = f'SELECT * FROM `firewall.traffic` WHERE app_sub_category = "social-networking" '  # guardrails-disable-line
+    query = 'SELECT * FROM `firewall.traffic` WHERE app_sub_category = "social-networking" '  # guardrails-disable-line
     query += f' AND (TIME(time_generated) BETWEEN TIME(TIMESTAMP("{query_start_time}")) AND ' \
              f'TIME(TIMESTAMP("{query_end_time}"))) LIMIT {logs_amount}'
 
@@ -741,6 +740,7 @@ def fetch_incidents(client: Client,
 
 
 def main():
+    os.environ['PAN_CREDENTIALS_DBFILE'] = os.path.join(gettempdir(), 'pancloud_credentials.json')
     params = demisto.params()
     registration_id_and_url = params.get(REGISTRATION_ID_CONST).split('@')
     if len(registration_id_and_url) != 2:
