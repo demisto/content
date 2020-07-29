@@ -145,8 +145,8 @@ def parse_relationships(indicators: list, relationships: list = [], pivots: list
                                 if 'url' in item or 'external_id' in item:
                                     feedrelatedindicators_obj = {
                                         'type': 'MITRE ATT&CK',
-                                        'value': item.get('external_id') if 'external_id' in item else None,
-                                        'description': item.get('url') if 'url' in item else None
+                                        'value': item.get('external_id'),
+                                        'description': item.get('url')
                                     }
                                     indicator['fields'][field_type].extend([feedrelatedindicators_obj])
 
