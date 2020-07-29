@@ -1,5 +1,5 @@
 Exceed LMS Integration consists of a set of API endpoints that allow customers to perform CRUD operation on their user profiles.
-This integration was integrated and tested with version xx of Exceed LMS IT Admin
+This integration was integrated and tested with version v2 of Exceed LMS IT Admin
 ## Configure Exceed LMS IT Admin on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
