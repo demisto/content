@@ -191,9 +191,9 @@ def args_or_params_to_filter(arguments, url_suffix='', args_or_params='args'):
             filters[username_key] = {'eq': json.loads(value)}
         if key == 'taken_action':
             filters['activity.takenAction'] = {'eq': value}
-        if key == 'severity':
+        if key == 'severity' and value != 'All':
             filters[key] = {'eq': SEVERITY_OPTIONS[value]}
-        if key == 'resolution_status':
+        if key == 'resolution_status' and value != 'All':
             filters['resolutionStatus'] = {'eq': RESOLUTION_STATUS_OPTIONS[value]}
         if key == 'file_type':
             filters['fileType'] = {'eq': FILE_TYPE_OPTIONS[value]}
@@ -230,11 +230,11 @@ def build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments,
     return request_data, url_suffix
 
 
-def args_to_filter_for_dismiss_and_resolve_alerts(alert_id, customer_filters, comments):
+def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filters, comments):
     request_data = {}
     filters = {}
-    if alert_id:
-        ids = {'eq': alert_id.split(',')}
+    if alert_ids:
+        ids = {'eq': alert_ids.split(',')}
         filters['id'] = ids
         if comments:
             request_data['comment'] = comments
@@ -249,8 +249,10 @@ def test_module(client):
         client.list_alerts(url_suffix='/alerts/', request_data={})
         if demisto.params().get('isFetch'):
             client.list_incidents(filters={}, limit=1)
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
+    except Exception as e:
+        if 'No connection' in str(e):
+            return 'Connection Error: The URL you entered is probably incorrect, please try again.'
+        if 'Invalid token' in str(e):
             return 'Authorization Error: make sure API Key is correctly set.'
         return str(e)
     return 'ok'
@@ -275,8 +277,23 @@ def alerts_to_human_readable(alerts, alert_id):
     else:
         alerts_readable_outputs = alert_to_human_readable(alerts)
     headers = ['alert_id', 'alert_date', 'title', 'description', 'status_value', 'severity_value']
-    human_readable = tableToMarkdown('Results', alerts_readable_outputs, headers, removeNull=True)
+    human_readable = tableToMarkdown('Microsoft CAS Alerts', alerts_readable_outputs, headers, removeNull=True)
     return human_readable
+
+
+def arrange_alert_description(alert):
+    if alert.get('description') and '__siteIcon__' in alert.get('description'):
+        description = alert.get('description').replace('__siteIcon__', 'siteIcon')
+        alert['description'] = description
+
+
+def arrange_alerts_descriptions(alerts, alert_id):
+    if not alert_id:
+        for alert in alerts:
+            arrange_alert_description(alert)
+    else:
+        arrange_alert_description(alerts)
+    return alerts
 
 
 def list_alerts_command(client, args):
@@ -289,44 +306,45 @@ def list_alerts_command(client, args):
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, alert_id)
     alerts = client.list_alerts(url_suffix, request_data)
     alerts = arrange_alerts_by_incident_type(alerts)
+    alerts = arrange_alerts_descriptions(alerts, alert_id)
     human_readable = alerts_to_human_readable(alerts, alert_id)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
-        outputs_key_field='alert_id',
+        outputs_key_field='_id',
         outputs=alerts
     )
 
 
 def bulk_dismiss_alert_command(client, args):
-    alert_id = args.get('alert_id')
+    alert_ids = args.get('alert_ids')
     customer_filters = args.get('customer_filters')
     comment = args.get('comment')
-    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_id, customer_filters, comment)
+    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment)
     try:
         dismiss_alerts = client.dismiss_bulk_alerts(request_data)
-    except DemistoException as e:
-        return str(e)
+    except Exception as e:
+        if 'alertsNotFound' in str(e):
+            return_error('Error: This alert id is already dismiss or not found in alerts')
+    number_of_dismissed_alerts = dismiss_alerts['dismissed']
     return CommandResults(
-        readable_output=dismiss_alerts,
-        outputs_prefix='MicrosoftCloudAppSecurity.AlertDismiss',
+        readable_output=f'{number_of_dismissed_alerts} alerts dismissed',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
         outputs_key_field='_id',
         outputs=dismiss_alerts
     )
 
 
 def bulk_resolve_alert_command(client, args):
-    alert_id = args.get('alert_id')
+    alert_ids = args.get('alert_ids')
     customer_filters = args.get('customer_filters')
     comment = args.get('comment')
-    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_id, customer_filters, comment)
-    try:
-        resolve_alerts = client.resolve_bulk_alerts(request_data)
-    except DemistoException as e:
-        return str(e)
+    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment)
+    resolve_alerts = client.resolve_bulk_alerts(request_data)
+    number_of_resolved_alerts = resolve_alerts['dismissed']
     return CommandResults(
-        readable_output=resolve_alerts,
-        outputs_prefix='MicrosoftCloudAppSecurity.AlertResolve',
+        readable_output=f'{number_of_resolved_alerts} alerts resolved',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
         outputs_key_field='alert_id',
         outputs=resolve_alerts
     )
@@ -348,7 +366,7 @@ def activities_to_human_readable(activities, activity_id):
     else:
         activities_readable_outputs = (activity_to_human_readable(activities))
     headers = ['activity_id', 'activity_date', 'app_name', 'description', 'severity']
-    human_readable = tableToMarkdown('Results', activities_readable_outputs, headers, removeNull=True)
+    human_readable = tableToMarkdown('Microsoft CAS Activities', activities_readable_outputs, headers, removeNull=True)
     return human_readable
 
 
@@ -411,7 +429,7 @@ def files_to_human_readable(files, file_id):
         files_readable_outputs = file_to_human_readable(files)
     headers = ['owner_name', 'file_id', 'file_type', 'file_name', 'file_access_level', 'file_status',
                'app_name']
-    human_readable = tableToMarkdown('Results', files_readable_outputs, headers, removeNull=True)
+    human_readable = tableToMarkdown('Microsoft CAS Files', files_readable_outputs, headers, removeNull=True)
     return human_readable
 
 
@@ -451,7 +469,7 @@ def users_accounts_to_human_readable(users_accounts, username):
     else:
         users_accounts_readable_outputs = user_account_to_human_readable(users_accounts)
     headers = ['display_name', 'last_seen', 'is_admin', 'is_external', 'email', 'username']
-    human_readable = tableToMarkdown('Results', users_accounts_readable_outputs, headers, removeNull=True)
+    human_readable = tableToMarkdown('Microsoft CAS Users And Accounts', users_accounts_readable_outputs, headers, removeNull=True)
     return human_readable
 
 
@@ -549,7 +567,7 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     token = demisto.params().get('token')
-    base_url = demisto.params().get("url", "")
+    base_url = f'{demisto.params().get("url")}/api/v1'
     verify_certificate = not demisto.params().get('insecure', False)
     first_fetch = demisto.params().get('first_fetch')
     max_results = demisto.params().get('max_fetch')
@@ -568,10 +586,13 @@ def main():
 
         elif demisto.command() == 'fetch-incidents':
             params = demisto.params()
-            parameters = assign_params(severity=params.get('severity'), instance=params.get('instance'),
-                                       resolution_status=params.get('resolutionStatus'),
-                                       service=params.get('service'))
-            filters = args_or_params_to_filter(parameters, url_suffix="", args_or_params="params")
+            if params.get('custom_filter'):
+                filters = json.loads(params.get('custom_filter'))
+            else:
+                parameters = assign_params(severity=params.get('severity'), instance=params.get('instance'),
+                                           resolution_status=params.get('resolutionStatus'),
+                                           service=params.get('service'))
+                filters = args_or_params_to_filter(parameters, url_suffix="", args_or_params="params")
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,

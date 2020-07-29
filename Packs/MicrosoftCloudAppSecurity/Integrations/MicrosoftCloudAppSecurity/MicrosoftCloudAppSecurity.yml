@@ -34,6 +34,7 @@ configuration:
   - Low
   - Medium
   - High
+  - All
   required: false
   type: 16
 - display: Maximum alerts to fetch
@@ -41,7 +42,8 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- display: First fetch time
+- additionalinfo: Date template - 2020-03-20T14:28:23.382748
+  display: First fetch time
   hidden: false
   name: first_fetch
   required: false
@@ -53,10 +55,19 @@ configuration:
   - Open
   - Dismissed
   - Resolved
+  - All
   required: false
   type: 16
-description: This is the MicrosoftCloudAppSecurity integration.
-display: MicrosoftCloudAppSecurity
+- additionalinfo: Filter that the customer builds himself. (If the customer use "custom_filter"
+    other filters will not work, Filter template - https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters)
+  display: Custom Filter
+  hidden: false
+  name: custom_filter
+  required: false
+  type: 0
+description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker
+  (CASB)
+display: Microsoft Cloud App Security
 name: MicrosoftCloudAppSecurity
 script:
   commands:
@@ -66,13 +77,13 @@ script:
         Multiple alerts matching the specified filters.
         Alert_id should be like this template - "55af7415f8a0a7a29eef2e1f".
       isArray: false
-      name: alert_id
+      name: alert_ids
       required: false
       secret: false
     - default: false
-      description: Filter that the customer builds himself.
+      description: Filter that the customer builds himself. (Filter template - https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters)
       isArray: false
-      name: customer_filters
+      name: custom_filter
       required: false
       secret: false
     - default: false
@@ -139,9 +150,9 @@ script:
       secret: false
     - default: false
       description: Filter that the customer builds himself. (If the customer use "customer_filters"
-        other filters will not work)
+        other filters will not work - https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters)
       isArray: false
-      name: customer_filters
+      name: custom_filter
       required: false
       secret: false
     - default: false
@@ -290,13 +301,13 @@ script:
         Multiple alerts matching the specified filters.
         Alert_id should be like this template - "55af7415f8a0a7a29eef2e1f".
       isArray: false
-      name: alert_id
+      name: alert_ids
       required: false
       secret: false
     - default: false
-      description: Filter that the customer builds himself.
+      description: Filter that the customer builds himself. (Filter template - https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters)
       isArray: false
-      name: customer_filters
+      name: custom_filter
       required: false
       secret: false
     - default: false
@@ -400,9 +411,9 @@ script:
       secret: false
     - default: false
       description: Filter that the customer builds himself. (If the customer use "customer_filters"
-        other filters will not work)
+        other filters will not work, Filter template - https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters)
       isArray: false
-      name: customer_filters
+      name: custom_filter
       required: false
       secret: false
     - default: false
@@ -629,9 +640,9 @@ script:
       secret: false
     - default: false
       description: Filter that the customer builds himself. (If the customer use "customer_filters"
-        other filters will not work)
+        other filters will not work, Filter template - https://docs.microsoft.com/en-us/cloud-app-security/api-files#filters)
       isArray: false
-      name: customer_filters
+      name: custom_filter
       required: false
       secret: false
     - default: false
@@ -806,9 +817,9 @@ script:
       secret: false
     - default: false
       description: Filter that the customer builds himself. (If the customer use "customer_filters"
-        other filters will not work)
+        other filters will not work, Filter template - https://docs.microsoft.com/en-us/cloud-app-security/api-entities#filters)
       isArray: false
-      name: customer_filters
+      name: custom_filter
       required: false
       secret: false
     deprecated: false
