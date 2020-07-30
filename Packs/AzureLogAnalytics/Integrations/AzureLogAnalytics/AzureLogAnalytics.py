@@ -321,10 +321,10 @@ def main():
 
         commands = {
             'azure-log-analytics-execute-query': execute_query_command,
-            'azure-log-analytics-saved-search-list': list_saved_searches_command,
+            'azure-log-analytics-list-saved-searches': list_saved_searches_command,
             'azure-log-analytics-get-saved-search-by-id': get_saved_search_by_id_command,
-            'azure-log-analytics-saved-search-create-or-update': create_or_update_saved_search_command,
-            'azure-log-analytics-saved-search-delete': delete_saved_search_command
+            'azure-log-analytics-create-or-update-saved-search': create_or_update_saved_search_command,
+            'azure-log-analytics-delete-saved-search': delete_saved_search_command
         }
 
         if demisto.command() == 'test-module':
