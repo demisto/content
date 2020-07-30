@@ -19,13 +19,21 @@ import zlib
 from base64 import b64encode
 from nltk import ngrams
 from datetime import datetime
+import tldextract
+from email.utils import parseaddr
+
+NO_FETCH_EXTRACT = tldextract.TLDExtract(suffix_list_urls=None)
+NON_POSITIVE_VALIDATION_VALUES = set(['none', 'fail', 'softfail'])
+
+VALIDATION_OTHER = 'other'
+
+VALIDATION_NA = 'na'
 
 CHARACTERS_TO_COUNT = list(string.printable) + ['$', '€', '£', '¥', '₪', '₽']
 
 MIN_TEXT_LENGTH = 20
 
 MODIFIED_QUERY_TIMEFORMAT = '%Y-%m-%d %H:%M:%S'
-CREATED_FIELD_TIMEFORMAT  = '%Y-%m-%dT%H:%M:%S%z'
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
@@ -35,10 +43,12 @@ EMAIL_ATTACHMENT_FIELD = 'attachment'
 GLOVE_50_PATH = '/var/glove_50_top_20k.p'
 GLOVE_100_PATH = '/var/glove_100_top_20k.p'
 FASTTEXT_PATH = '/var/fasttext_top_20k.p'
+DOMAIN_TO_RANK_PATH = '/var/domain_to_rank.p'
 
 EMBEDDING_DICT_GLOVE_50 = None
 EMBEDDING_DICT_GLOVE_100 = None
 EMBEDDING_DICT_FASTTEXT = None
+DOMAIN_TO_RANK = None
 
 FETCH_DATA_VERSION = '1.0'
 LAST_EXECUTION_LIST_NAME = 'FETCH_DATA_ML_LAST_EXECUTION'
@@ -47,6 +57,11 @@ MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 IMG_FORMATS = ['.jpeg', '.gif', '.bmp', '.png' '.jfif', '.tiff', '.eps', '.indd', '.jpg']
+
+RECEIVED_SERVER_REGEX = r'(?<=from )[a-zA-Z0-9_.+-]+'
+ENVELOP_FROM_REGEX = r'(?<=envelope-from )<?[a-zA-Z0-9@_\.\+\-]+>?'
+
+IP_DOMAIN_TOKEN = 'IP_DOMAIN'
 
 '''
 Define time out functionality
@@ -772,7 +787,10 @@ def get_characters_features(text):
 def get_url_features(email_body, email_html, soup):
     url_regex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
                 r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
-    embedded_urls = [a['href'] for a in soup.findAll('a')]
+    embedded_urls = []
+    for a in soup.findAll('a'):
+        if a.has_attr('href'):
+            embedded_urls.append(a['href'])
     plain_urls = re.findall(url_regex, email_body)
     all_urls = plain_urls + embedded_urls
     all_urls_lengths = [len(u) for u in all_urls]
@@ -803,14 +821,16 @@ def get_html_features(soup):
     return html_counter
 
 
-def load_embedding_dicts():
-    global EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_100, EMBEDDING_DICT_FASTTEXT
+def load_external_resources():
+    global EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_100, EMBEDDING_DICT_FASTTEXT, DOMAIN_TO_RANK, DOMAIN_TO_RANK_PATH
     with open(GLOVE_50_PATH, 'rb') as file:
         EMBEDDING_DICT_GLOVE_50 = pickle.load(file)
     with open(GLOVE_100_PATH, 'rb') as file:
         EMBEDDING_DICT_GLOVE_100 = pickle.load(file)
     with open(FASTTEXT_PATH, 'rb') as file:
         EMBEDDING_DICT_FASTTEXT = pickle.load(file)
+    with open(DOMAIN_TO_RANK_PATH, 'rb') as file:
+        DOMAIN_TO_RANK = pickle.load(file)
 
 
 def get_avg_embedding_vector_for_text(tokenized_text, embedding_dict, size, prefix):
@@ -824,9 +844,6 @@ def get_avg_embedding_vector_for_text(tokenized_text, embedding_dict, size, pref
 
 
 def get_embedding_features(tokenized_text):
-    global EMBEDDING_DICT_GLOVE_50
-    if EMBEDDING_DICT_GLOVE_50 is None:
-        load_embedding_dicts()
     res_glove_50 = get_avg_embedding_vector_for_text(tokenized_text, EMBEDDING_DICT_GLOVE_50, 50, 'glove50')
     res_glove_100 = get_avg_embedding_vector_for_text(tokenized_text, EMBEDDING_DICT_GLOVE_100, 100, 'glove100')
     res_fasttext = get_avg_embedding_vector_for_text(tokenized_text, EMBEDDING_DICT_FASTTEXT, 300, 'fasttext')
@@ -836,13 +853,88 @@ def get_embedding_features(tokenized_text):
 def get_header_value(email_headers, header_name, index=0, ignore_case=False):
     if ignore_case:
         header_name = header_name.lower()
-        headers_with_name = [header_dict for header_dict in email_headers if header_dict['name'].lower() == header_name]
+        headers_with_name = [header_dict for header_dict in email_headers if header_dict['headername'].lower() == header_name]
     else:
-        headers_with_name = [header_dict for header_dict in email_headers if header_dict['name'] == header_name]
+        headers_with_name = [header_dict for header_dict in email_headers if header_dict['headername'] == header_name]
     if len(headers_with_name) == 0:
         return None
     else:
-        return headers_with_name[index]['value']
+        return headers_with_name[index]['headervalue']
+
+
+def parse_email_header(email_headers, header_name):
+    global NO_FETCH_EXTRACT
+    header_value = get_header_value(email_headers, header_name=header_name)
+    if header_value is None:
+        email_address = email_domain = None
+    else:
+        email_address = parseaddr(header_value)[1]
+        email_domain = NO_FETCH_EXTRACT(email_address).domain
+
+    return {'name': header_name, 'address': email_address, 'domain': email_domain}
+
+
+def extract_server_address(received_value):
+    global RECEIVED_SERVER_REGEX, NO_FETCH_EXTRACT, IP_DOMAIN_TOKEN
+    server_address_list = re.findall(RECEIVED_SERVER_REGEX, received_value)
+    if len(server_address_list) == 0:
+        server_domain = IP_DOMAIN_TOKEN
+    else:
+        server_address = server_address_list[0]
+        server_domain = NO_FETCH_EXTRACT(server_address).domain
+    return server_domain
+
+
+def extract_envelop_from_address(received_value):
+    global ENVELOP_FROM_REGEX, NO_FETCH_EXTRACT
+    from_envelop_address_list = re.findall(ENVELOP_FROM_REGEX, received_value)
+    if len(from_envelop_address_list) == 0:
+        from_envelop_address = from_envelop_domain = None
+    else:
+        from_envelop_address = from_envelop_address_list[0]
+        from_envelop_address = parseaddr(from_envelop_address)[1]
+        from_envelop_domain = NO_FETCH_EXTRACT(from_envelop_address).domain
+    return from_envelop_address, from_envelop_domain
+
+
+def parse_single_received_value(received_headers, index, name):
+    if len(received_headers) >= index:
+        last_received_value = received_headers[-index]['headervalue']
+        server_domain = extract_server_address(last_received_value)
+        from_envelop_address, from_envelop_domain = extract_envelop_from_address(last_received_value)
+    else:
+        server_domain = from_envelop_domain = from_envelop_address = None
+    server_info = {'name': '{}-Server'.format(name), 'domain': server_domain}
+    envelop_info = {'name': '{}-Envelope'.format(name), 'address': from_envelop_address, 'domain': from_envelop_domain}
+    return server_info, envelop_info
+
+
+def parse_received_headers(email_headers):
+    received_headers = [header_dict for header_dict in email_headers if header_dict['headername'] == 'Received']
+    n_received_headers = len(received_headers)
+    first_server_info, first_envelop_info = parse_single_received_value(received_headers, 1, 'First-Received')
+    second_server_info, second_envelop_info = parse_single_received_value(received_headers, 2, 'Second-Received')
+    return n_received_headers, [first_server_info, first_envelop_info, second_server_info, second_envelop_info]
+
+
+def get_rank_address(address):
+    global DOMAIN_TO_RANK
+    if address is None:
+        return float('nan')
+    if '@' in address:
+        full_domain = address.split('@')[1]
+    else:
+        full_domain = address
+    if full_domain in DOMAIN_TO_RANK:
+        return DOMAIN_TO_RANK[full_domain]
+    else:
+        return -1
+
+
+def compare_values(v1, v2):
+    if v1 is None or v2 is None:
+        return float('nan')
+    return v1 == v2
 
 
 def get_headers_features(email_headers):
@@ -850,85 +942,63 @@ def get_headers_features(email_headers):
     if spf_result is not None:
         spf_result = spf_result.split()[0].lower()
     else:
-        spf_result = 'other'
-    res_spf = {k: 0 for k in ['none', 'neutral', 'pass', 'fail', 'softfail', 'other', 'temperror', 'permerror']}
+        spf_result = VALIDATION_NA
+    res_spf = {k: 0 for k in ['none', 'neutral', 'pass', 'fail', 'softfail', 'temperror', 'permerror', VALIDATION_NA]}
     if spf_result in res_spf:
         res_spf[spf_result] += 1
     else:
-        res_spf['other'] += 1
-    res_spf['non-positive'] = spf_result in set(['none', 'fail', 'softfail'])
+        res_spf[VALIDATION_OTHER] = 1
+    res_spf['non-positive'] = spf_result in NON_POSITIVE_VALIDATION_VALUES
     authentication_results = get_header_value(email_headers, header_name='Authentication-Results')
     if authentication_results is not None:
         if 'dkim=' in authentication_results:
             dkim_result = authentication_results.split('dkim=')[-1].split()[0].lower().strip()
         else:
-            dkim_result = 'other'
+            dkim_result = VALIDATION_NA
     else:
-        dkim_result = 'other'
-    res_dkim = {k: 0 for k in ['none', 'neutral', 'pass', 'fail', 'softfail', 'other', 'temperror', 'permerror']}
+        dkim_result = VALIDATION_NA
+    res_dkim = {k: 0 for k in ['none', 'neutral', 'pass', 'fail', 'softfail', 'temperror', 'permerror', VALIDATION_NA]}
     if dkim_result in res_dkim:
         res_dkim[dkim_result] += 1
     else:
-        res_dkim['other'] += 1
-    res_dkim['non-positive'] = spf_result in set(['none', 'fail', 'softfail'])
+        res_dkim[VALIDATION_OTHER] = 1
+    res_dkim['non-positive'] = spf_result in NON_POSITIVE_VALIDATION_VALUES
     list_unsubscribe = get_header_value(email_headers, header_name='List-Unsubscribe')
     unsubscribe_post = get_header_value(email_headers, header_name='List-Unsubscribe-Post-SPF')
     res_unsubscribe = 1 if list_unsubscribe is not None or unsubscribe_post is not None else 0
-    from_value = get_header_value(email_headers, header_name='From')
-    return_path_value = get_header_value(email_headers, header_name='Return-Path')
-    last_received_value = get_header_value(email_headers, header_name='Received', index=-1)
-    if from_value is not None:
-        from_address = re.findall(r'<\S+>', from_value)[0][1:-1]
-    else:
-        from_address = ''
-    if return_path_value is not None:
-        return_path_adress = return_path_value.strip().lstrip('<').rstrip('>').strip()
-    else:
-        return_path_adress = ''
-    if last_received_value is not None:
-        received_address_list = re.findall(r'(?<=from )\S+', last_received_value)
-        if len(received_address_list) > 0:
-            received_address = received_address_list[0]
-        else:
-            received_address = ''
-    else:
-        received_address = ''
-    try:
-        from_domain = from_address.split('@')[-1].split('.')[-2] if from_address != '' else ''
-    except Exception:
-        print('error on from_address: {}'.format(from_address))
-        from_domain = ''
+    from_dict = parse_email_header(email_headers, header_name='From')
+    return_path_dict = parse_email_header(email_headers, header_name='Return-Path')
+    reply_to_dict = parse_email_header(email_headers, header_name='Reply-To')
+    n_received_headers, received_dicts_list = parse_received_headers(email_headers)
+    all_addresses_dicts = received_dicts_list + [from_dict, return_path_dict, reply_to_dict]
+    addresses_res = {}
+    for a in all_addresses_dicts:
+        addresses_res['{}::Exists'.format(a['name'])] = a['domain'] is not None
+        if 'address' in a:
+            addresses_res['{}::Rank'.format(a['name'])] = get_rank_address(a['address'])
+        if 'Received' in a['name'] and 'Server' in a['name']:
+            addresses_res['{}::IP_DOMAIN'.format(a['name'])] = a['domain'] == IP_DOMAIN_TOKEN
 
-    if from_address == '':
-        return_path_same_as_from = float('nan')
-    else:
-        return_path_same_as_from = from_address == return_path_adress
+    for a1, a2 in combinations(all_addresses_dicts, 2):
+        if 'address' in a1 and 'address' in a2:
+            addresses_res['{}.Address=={}.Addres'.format(a1['name'], a2['name'])] = compare_values(a1['address'],
+                                                                                                   a2['address'])
+        addresses_res['{}.Domain=={}.Domain'.format(a1['name'], a2['name'])] = compare_values(a1['domain'],
+                                                                                              a2['domain'])
 
-    if from_domain == '' or received_address == '':
-        from_domain_with_received = float('nan')
-    else:
-        from_domain_with_received = from_domain in received_address
-    received_res = {}
-    recevied_headers = [header_dict for header_dict in email_headers if header_dict['name'] == 'Received']
-    count_received = len(recevied_headers)
-    received_res['count_received'] = count_received
+    addresses_res['count_received'] = n_received_headers
     content_type_value = get_header_value(email_headers, header_name='Content-Type', index=0, ignore_case=True)
     if content_type_value is not None and ';' in content_type_value:
         content_type_value = content_type_value.split(';')[0]
-    adress_res = {
-        'return_path_same_as_from': return_path_same_as_from,
-        'from_domain_with_received': from_domain_with_received
-    }
+
     res = {}
     for k, v in res_spf.items():
         res['spf::{}'.format(k)] = v
     for k, v in res_dkim.items():
         res['dkim::{}'.format(k)] = v
     res['unsubscribe_headers'] = res_unsubscribe
-    for k, v in adress_res.items():
+    for k, v in addresses_res.items():
         res[k] = v  # type: ignore
-    for k, v in received_res.items():
-        res[k] = v
     res['content-type::{}'.format(content_type_value)] = 1
     return res
 
@@ -1063,12 +1133,15 @@ def extract_data_from_incidents(incidents):
     else:
         incidents_df_for_finding_labels_fields_candidates = incidents_df
     label_fields = find_label_fields_candidates(incidents_df_for_finding_labels_fields_candidates)
+    for l in label_fields:
+        incidents_df[l].replace('', float('nan'), regex=True, inplace=True)
+    incidents_df.dropna(how='all', subset=label_fields, inplace=True)
     y = []
     for i, label in enumerate(label_fields):
         y.append({'field_name': label,
                   'rank': '#{}'.format(i + 1),
                   'values': incidents_df[label].tolist()})
-    incidents_df.dropna(how='all', subset=label_fields, inplace=True)
+    load_external_resources()
     X, exceptions_log, exception_indices, timeout_indices = extract_features_from_all_incidents(incidents_df)
     indices_to_drop = exception_indices.union(timeout_indices)
     for label_dict in y:

@@ -2,7 +2,7 @@ from DBotMLFetchData import *
 from CommonServerPython import *
 import string
 from bs4 import BeautifulSoup
-
+import math
 
 # disable-secrets-detection-start
 
@@ -11,7 +11,7 @@ def test_get_ml_features(mocker):
     mock_read = mocker.mock_open(read_data='dummy data')
     mocker.patch('DBotMLFetchData.open', mock_read)
     mocker.patch.object(pickle, 'load', return_value=dummy_word_to_vec)
-
+    load_external_resources()
     text = ['hello', 'world']
     featurs = get_embedding_features(text)
     assert featurs['glove50_0'] == 1.5
@@ -64,9 +64,9 @@ def test_get_characters_features(mocker):
 
 def test_get_url_features(mocker):
     email_body = 'https://www.a.com https://www.b.com http://www.c.com/vcvc/vcvc/vc/b'   # disable-secrets-detection
-    embedded_url = 'https://www.w3schools.com'   # disable-secrets-detection
+    embedded_url = 'https://www.a.com'   # disable-secrets-detection
     all_urls = email_body.split() + [embedded_url]
-    email_html = '<a href="{}">Visit W3Schools</a>'.format(embedded_url)
+    email_html = '<a href="{}">Link</a>'.format(embedded_url)
     soup = BeautifulSoup(email_html, "html.parser")
     url_features = get_url_features(email_body, email_html, soup)
 
@@ -84,20 +84,76 @@ def test_get_url_features(mocker):
     url_features_2 = get_url_features(email_body_2, '', empty_bs)
     assert url_features_2['shortened_urls_count'] == 1
 
-    email_body_3 = 'https://drive.google.com/file/d/1f9pBukhG_5jB-uh0TeZiYq0rV2GUXftr/view'   # disable-secrets-detection
+    email_body_3 = 'https://drive.google.com/file/d/1f9pBukhG_5jB-uh0TeZiYq0rV2GUXftr/view'  # disable-secrets-detection
     url_features_3 = get_url_features(email_body_3, '', empty_bs)
     assert url_features_3['drive_count'] == 1
 
 
+
+def test_parse_email_header():
+    header_value = 'Taylor Evans <example_from@dc.edu>'
+    email_headers = [{'headername': 'From', 'headervalue': header_value }]
+    res = parse_email_header(email_headers, header_name='From')
+    assert res['address'] == 'example_from@dc.edu'
+    assert res['domain'] == 'dc'
+
+    header_value = '"Taylor Evans" <example_from@dc.edu>'
+    email_headers = [{'headername': 'From', 'headervalue': header_value }]
+    res = parse_email_header(email_headers, header_name='From')
+    assert res['address'] == 'example_from@dc.edu'
+    assert res['domain'] == 'dc'
+
+
+    header_value = 'example_from@dc.edu'
+    email_headers = [{'headername': 'From', 'headervalue': header_value }]
+    res = parse_email_header(email_headers, header_name='From')
+    assert res['address'] == 'example_from@dc.edu'
+    assert res['domain'] == 'dc'
+
+
+def test_parse_received_headers_2():
+    value = 'from po-out-1718.google.com ([72.14.252.155]:54907) by cl35.gs01.gridserver.com with esmtp (Exim 4.63) ' \
+            '(envelope-from <mt.kb.user@gmail.com>) id 1KDoNH-0000f0-RL for user@example.com;' \
+            ' Tue, 25 Jan 2011 15:31:01 -0700'
+
+    email_headers = [{'headername': 'Received', 'headervalue': value }]*2
+    n_received_headers, [first_server, first_envelop, _, _]  = parse_received_headers(email_headers)
+    assert n_received_headers == 2
+    assert first_server['domain'] == 'google'
+    assert first_envelop['address'] == 'mt.kb.user@gmail.com'
+    assert first_envelop['domain'] == 'gmail'
+
+
+def test_parse_received_headers_3():
+    value = 'from po-out-1718.google.com ([72.14.252.155]:54907) by cl35.gs01.gridserver.com with esmtp (Exim 4.63) ' \
+            '(envelope-from <mt.kb.user@gmail.com>) id 1KDoNH-0000f0-RL for user@example.com;' \
+            ' Tue, 25 Jan 2011 15:31:01 -0700'
+
+    email_headers = [{'headername': 'Received', 'headervalue': value }]
+    n_received_headers, [_, _ , second_server, second_envelop]  = parse_received_headers(email_headers)
+    assert n_received_headers == 1
+    assert second_server['domain'] is None
+    assert second_envelop['address'] is None
+    assert second_envelop['domain'] is None
+
+    email_headers = [ {'headername': 'Received', 'headervalue': value }, {'headername': 'Received', 'headervalue': ''}]
+    n_received_headers, [_, _ , second_server, second_envelop]  = parse_received_headers(email_headers)
+    assert n_received_headers == 2
+    assert second_server['domain'] == 'google'
+    assert second_envelop['address'] == 'mt.kb.user@gmail.com'
+    assert second_envelop['domain'] == 'gmail'
+
+
 def test_headers_features():
     headers = [
-        {'name': 'Received-SPF', 'value': 'SoftFail (protection.outlook.com: domain of xvxdvcx.com discourages use of '
-                                          'xxx.xxx.xxx.xxx.xxx permitted sender)'},   # disable-secrets-detection
-        {'name': 'Authentication-Results', 'value': 'spf=neutral (sender IP is xxx.xxx.xxx.xxx) smtp.mailfrom=xxx.net; '
-                                                    'dkim=fail (body hash did not verify) '
-                                                    'header.d=salesenablementworld.com;hbo.com; dmarc=fail action=none '
-                                                    'header.from=salesenablementworld.com;compauth=none '
-                                                    'reason=405'}  # disable-secrets-detection
+        {'headername': 'Received-SPF', 'headervalue': 'SoftFail (xxx.com: domain of xxx.com '
+                                                      'discourages use of xxx.xxx.xxx.xxx.xxx '
+                                                      'permitted sender)'},   # disable-secrets-detection
+        {'headername': 'Authentication-Results', 'headervalue': 'spf=neutral (sender IP is xxx.xxx.xxx.xxx) '
+                                                                'smtp.mailfrom=xxx.net; dkim=fail (body hash did not '
+                                                                'verify) header.d=xxxx.com;xxxx.com; dmarc=fail '
+                                                                'action=none header.from=xxxx.com;compauth=none '
+                                                                'reason=405'}  # disable-secrets-detection
     ]
     res = get_headers_features(headers)
     assert res['spf::softfail'] == 1
@@ -107,37 +163,56 @@ def test_headers_features():
     assert res['unsubscribe_headers'] == 0
 
 
-def test_headers_features_2():
+def test_headers_features_2(mocker):
+    mocker.patch('DBotMLFetchData.open', mock_read_func)
+    load_external_resources()
     headers = [
-        {'name': 'From', 'value': ' =?UTF-8?B?TcKqIElzYWJlbCBHYXJjw61hIExvc2FkYSA8TUlHQGVsemFidXJ1LmVzPg==?= '
-                                  '<fonsecaj@pecosacr.com>'},   # disable-secrets-detection
-        {'name': 'Return-Path', 'value': 'fonsecaj@pecosacr.com'},   # disable-secrets-detection
-        {'name': 'Received', 'value': 'from [194.152.220.26] ([194.152.220.26]) by pecosacr.com with MailEnable ESMTPA; '
-                                      'Tue, 21 Jan 2020 05:16:47 -0600'},   # disable-secrets-detection
+        {'headername': 'From', 'headervalue': ' =?UTF-8?B?TcKqIElzYWJlbCBHYXJjw61hIExvc2FkYSA8TUlHQGVsemFidXJ1LmVz'
+                                              'Pg==?= <name@domain.com>'},   # disable-secrets-detection
+        {'headername': 'Return-Path', 'headervalue': 'name@domain.com'},   # disable-secrets-detection
+        {'headername': 'Received', 'headervalue': 'from [xxx.xxx.xxx.xxx] ([xxx.xxx.xxx.xxx]) by domain.com with '
+                                                  'MailEnable ESMTPA; Tue, 21 Jan 2020 05:16:47 '
+                                                  '-0600'},   # disable-secrets-detection
     ]
     res = get_headers_features(headers)
-    assert res['return_path_same_as_from']
-    assert not res['from_domain_with_received']
+    assert res['From.Domain==Return-Path.Domain']
+    assert res['First-Received-Server::IP_DOMAIN']
+    assert not res['First-Received-Server.Domain==From.Domain']
 
 
-def test_headers_features_3_virus_total_format():
+def test_headers_features_3_virus_total_format(mocker):
+    mocker.patch('DBotMLFetchData.open', mock_read_func)
+    load_external_resources()
     headers = [
-        {'name': 'From', 'value': 'Harry Clark<purchase@allislandequipment.com>'},   # disable-secrets-detection
-        {'name': 'Return-Path', 'value': '<>'},
-        {'name': 'Received', 'value': 'from allislandequipment.com ([213.227.154.65] [213.227.154.65]) by '
-                                      'spin.electroputere.ro (amavisd-milter) with ESMTP id 009ALXqe015078; '
+        {'headername': 'From', 'headervalue': 'Jhon Jhon<purchase@domain.com>'},   # disable-secrets-detection
+        {'headername': 'Return-Path', 'headervalue': '<>'},
+        {'headername': 'Received', 'headervalue': 'from domain.com ([xxx.xxx.xxx.xxx] [xxx.xxx.xxx.xxx]) by '
+                                      'xxx.xxx.ro (amavisd-milter) with ESMTP id xxx; '
                                       'Thu, 9 Jan 2020 12:21:34 +0200 '
-                                      '(envelope-from <purchase@allislandequipment.com>)'},  # disable-secrets-detection
+                                      '(envelope-from <purchase@domain.com>)'},  # disable-secrets-detection
     ]
     res = get_headers_features(headers)
-    assert not res['return_path_same_as_from']
-    assert res['from_domain_with_received']
+    assert not res['From.Domain==Return-Path.Domain']
+    assert res['First-Received-Server.Domain==From.Domain']
+    assert math.isnan(res['Second-Received-Server.Domain==From.Domain'])
+    assert res['First-Received-Server.Domain==From.Domain']
+    assert not res['First-Received-Server::IP_DOMAIN']
+
+
+
+def test_headers_features_domain_rank(mocker):
+    mocker.patch('DBotMLFetchData.open', mock_read_func)
+    load_external_resources()
+    headers = {'headername': 'From', 'headervalue': 'Jhon <jhon@google.com>'},  # disable-secrets-detection
+    res = get_headers_features(headers)
+    assert res['From::Rank'] == 1
 
 
 def test_headers_features_4():
     headers = [
-        {'name': 'List-Unsubscribe', 'value': 'Message-Id: Sender: Date; bh=GExv5cay5SOdSeHjP5vfnhswJAlO/X4tR2EBLXjqN'
-                                              'Xw=; b=KPBtMUsmW0F+wD5qXzQoS6U2fzWPSEWbAVK+AEha2hxQ7q1PWplkMU7xIiehm0vlO'
+        {'headername': 'List-Unsubscribe', 'headervalue': 'Message-Id: Sender: Date; bh=GExv5cay5SOdSeHjP5vfnhswJAlO/X4'
+                                                          'tR2EBLXjqNXw=; b=KPBtMUsmW0F+wD5qXzQoS6U2fzWPSEWbAVK+AEha2hx'
+                                                          'Q7q1PWplkMU7xIiehm0vlO'
                                               'C7eTrUh'},   # disable-secrets-detection
     ]
     res = get_headers_features(headers)
@@ -146,19 +221,19 @@ def test_headers_features_4():
 
 def test_headers_features_5():
     headers = [
-        {'name': 'Content-type', 'value': 'text/plain;'},
+        {'headername': 'Content-type', 'headervalue': 'text/plain;'},
     ]
     res = get_headers_features(headers)
     assert res['content-type::text/plain'] == 1
     headers_2 = [
-        {'name': 'content-type', 'value': 'text/plain;'},
+        {'headername': 'content-type', 'headervalue': 'text/plain;'},
     ]
     res_2 = get_headers_features(headers_2)
     assert res_2['content-type::text/plain'] == 1
 
 
 def test_headers_features_6():
-    headers = [{'name': 'Received', 'value': ''}] * 5
+    headers = [{'headername': 'Received', 'headervalue': ''}] * 5
     res = get_headers_features(headers)
     assert res['count_received'] == 5
 
@@ -219,17 +294,31 @@ def test_attachments_features_2():
     assert all(extension in res['raw_extensions'] for extension in ['zip', 'xls'])
 
 
+def mock_read_func(file_path, mode='r'):
+    test_files = False
+    if test_files:
+        docker_path_to_test_path = {
+            GLOVE_50_PATH: 'test_data/glove_50_top_10.p',
+            GLOVE_100_PATH: 'test_data/glove_100_top_10.p',
+            FASTTEXT_PATH: 'test_data/fasttext_top_10.p',
+            DOMAIN_TO_RANK_PATH: 'test_data/domain_to_rank_top_5.p'
+        }
+    else:
+        docker_path_to_test_path = {
+            GLOVE_50_PATH: 'real_data/glove_50_top_20k.p',
+            GLOVE_100_PATH: 'real_data/glove_100_top_20k.p',
+            FASTTEXT_PATH: 'real_data/fasttext_top_20k.p',
+            DOMAIN_TO_RANK_PATH: 'real_data/domain_to_rank.p'
+        }
+    return open(docker_path_to_test_path[file_path], mode=mode)
+
+
 def test_whole_preprocessing(mocker):
     import cProfile
     debug = False
-    glove_path = './glove_50_top_10.p'
-    with open(glove_path, 'rb') as file:
-        glove_data = file.read()
-    mock_read = mocker.mock_open(read_data=glove_data)
-    mocker.patch('DBotMLFetchData.open', mock_read)
-    # mocker.patch.object(pickle, 'load', return_value = dummy_word_to_vec)
+    mocker.patch('DBotMLFetchData.open', mock_read_func)
 
-    data_file_path = 'test_data.p'
+    data_file_path = 'test_data/650_incidents.p'
     with open(data_file_path, 'rb') as file:
         incidents = pickle.load(file)
     prof = cProfile.Profile()
@@ -238,5 +327,6 @@ def test_whole_preprocessing(mocker):
         with open('output.txt', 'w') as file:
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
+    assert all('Text length is shorter than allowed' in e_msg for e_msg in data['log']['exceptions'])
 
 # disable-secrets-detection-end
