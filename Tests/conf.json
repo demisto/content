@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "AWS - Security Hub",
+            "playbookID": "AWS-securityhub Test"
+        },
+        {
             "integrations": "Humio",
             "playbookID": "Humio-Test",
             "fromversion": "5.0.0"
@@ -39,7 +43,7 @@
         },
         {
             "integrations": "Sepio",
-            "playbookID": "SepioPrimeAPI-Test" 
+            "playbookID": "SepioPrimeAPI-Test"
         },
         {
             "integrations": "URLhaus",
@@ -349,7 +353,8 @@
         },
         {
             "integrations": "AWS - CloudWatchLogs",
-            "playbookID": "AWS - CloudWatchLogs Test Playbook"
+            "playbookID": "AWS - CloudWatchLogs Test Playbook",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "SlackV2",
@@ -520,7 +525,8 @@
         },
         {
             "integrations": "HashiCorp Vault",
-            "playbookID": "hashicorp_test"
+            "playbookID": "hashicorp_test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "AWS - Athena - Beta",
@@ -948,6 +954,10 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Detonate URL - WildFire-v2 - Test"
+        },
+        {
+            "integrations": "WildFire-v2",
+            "playbookID": "Detonate URL - WildFire v2.1 - Test"
         },
         {
             "integrations": "GRR",
@@ -2860,14 +2870,14 @@
         {
             "integrations": "Unit42 Feed",
             "playbookID": "Unit42 Feed - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 600
         },
         {
             "integrations": "CrowdStrikeMalquery",
             "playbookID": "CrowdStrikeMalquery-Test",
             "fromversion": "5.0.0",
             "timeout": 1500
-
         },
         {
             "playbookID": "hashIncidentFields-test",
@@ -2970,7 +2980,10 @@
         "MISP V2 Test": "Issue 26905",
         "Mimecast test": "Issue 26906",
         "Mail Sender (New) Test": "Issue 25602",
-        "TAXII_Feed_Test": "Issue 22423"
+        "TAXII_Feed_Test": "Issue 22423",
+        "Recorded Future Test": "Issue 26741",
+        "CirclIntegrationTest": "Issue 25600",
+        "Luminate-TestPlaybook": "Issue 27016"
     },
     "skipped_integrations": {
 
@@ -3112,6 +3125,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "AWS - Security Hub": "Issue 24926",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
         "ThreatConnect v2": "Issue 26794",
         "Infocyte": "Proxy issues",
@@ -3247,7 +3261,8 @@
         "Lastline v2",
         "McAfee DXL",
         "GCP Whitelist Feed",
-        "Cortex Data Lake"
+        "Cortex Data Lake",
+        "AWS - Security Hub"
     ],
     "docker_thresholds": {
 
