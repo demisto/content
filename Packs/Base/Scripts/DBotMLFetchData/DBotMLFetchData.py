@@ -790,7 +790,8 @@ def get_url_features(email_body, email_html, soup):
     embedded_urls = []
     for a in soup.findAll('a'):
         if a.has_attr('href'):
-            embedded_urls.append(a['href'])
+            if a['href'] not in a.get_text():
+                embedded_urls.append(a['href'])
     plain_urls = re.findall(url_regex, email_body)
     all_urls = plain_urls + embedded_urls
     all_urls_lengths = [len(u) for u in all_urls]
