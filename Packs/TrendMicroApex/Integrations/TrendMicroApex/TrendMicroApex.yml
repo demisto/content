@@ -62,7 +62,7 @@ configuration:
   type: 16
 description: Trend Micro Apex central automation to manage agents and User-Defined
   Suspicious Objects
-display: Trend Micro Apex (Beta)
+display: Trend Micro Apex
 name: Trend Micro Apex_copy
 script:
   commands:
@@ -392,29 +392,29 @@ script:
       name: product
       required: false
       secret: false
-    outputs:
-      - contextPath: TrendMicroApex.Server.entity_id
-        description: 'The GUID of the managed product server.'
-        type: String
-      - contextPath: TrendMicroApex.Server.product
-        description: 'The Trend Micro product on the server instance.'
-        type: String
-      - contextPath: TrendMicroApex.Server.ad_domain
-        description: 'The Active Directory domain that the server belongs to (if applicable).'
-        type: String
-      - contextPath: TrendMicroApex.Server.ip_address_list
-        description: 'The IP address list on the server.'
-        type: String
-      - contextPath: TrendMicroApex.Server.host_name
-        description: 'The host name of the server.'
-        type: String
-      - contextPath: TrendMicroApex.Server.capabilities
-        description: 'Lists the API actions that can be performed on the server.'
-        type: String
     deprecated: false
     description: Retrieves a list of managed product servers reporting to Apex Central.
     execution: false
     name: trendmicro-apex-managed-servers-list
+    outputs:
+    - contextPath: TrendMicroApex.Server.entity_id
+      description: The GUID of the managed product server.
+      type: String
+    - contextPath: TrendMicroApex.Server.product
+      description: The Trend Micro product on the server instance.
+      type: String
+    - contextPath: TrendMicroApex.Server.ad_domain
+      description: The Active Directory domain that the server belongs to (if applicable).
+      type: String
+    - contextPath: TrendMicroApex.Server.ip_address_list
+      description: The IP address list on the server.
+      type: String
+    - contextPath: TrendMicroApex.Server.host_name
+      description: The host name of the server.
+      type: String
+    - contextPath: TrendMicroApex.Server.capabilities
+      description: Lists the API actions that can be performed on the server.
+      type: String
   - arguments:
     - default: false
       description: The GUID of the Security Agent.
@@ -452,41 +452,41 @@ script:
       name: managing_server_id
       required: false
       secret: false
-    outputs:
-      - contextPath: TrendMicroApex.Agent.entity_id
-        description: 'The GUID of the Security Agent.'
-        type: String
-      - contextPath: TrendMicroApex.Agent.product
-        description: 'The Trend Micro product name.'
-        type: String
-      - contextPath: TrendMicroApex.Agent.managing_server_id
-        description: 'The GUID of the product server that manages the Security Agent.'
-        type: String
-      - contextPath: TrendMicroApex.Agent.ad_domain
-        description: 'The Active Directory domain that the agent belongs to (if applicable).'
-        type: String
-      - contextPath: TrendMicroApex.Agent.folder_path
-        description: 'The folder path of the agent in the machine'
-        type: String
-      - contextPath: TrendMicroApex.Agent.ip_address_list
-        description: 'The IP address list on the server.'
-        type: String
-      - contextPath: TrendMicroApex.Agent.mac_address_list
-        description: 'The MAC address of the endpoint.'
-        type: String
-      - contextPath: TrendMicroApex.Agent.host_name
-        description: 'The name of the endpoint.'
-        type: String
-      - contextPath: TrendMicroApex.Agent.isolation_status
-        description: 'The isolation status of the agent.'
-        type: String
-      - contextPath: TrendMicroApex.Agent.capabilities
-        description: 'Lists the API actions that can be performed on the agent.'
-        type: String
     deprecated: false
     description: Retrieves a list of Security Agents.
     execution: false
     name: trendmicro-apex-security-agents-list
+    outputs:
+    - contextPath: TrendMicroApex.Agent.entity_id
+      description: The GUID of the Security Agent.
+      type: String
+    - contextPath: TrendMicroApex.Agent.product
+      description: The Trend Micro product name.
+      type: String
+    - contextPath: TrendMicroApex.Agent.managing_server_id
+      description: The GUID of the product server that manages the Security Agent.
+      type: String
+    - contextPath: TrendMicroApex.Agent.ad_domain
+      description: The Active Directory domain that the agent belongs to (if applicable).
+      type: String
+    - contextPath: TrendMicroApex.Agent.folder_path
+      description: The folder path of the agent in the machine
+      type: String
+    - contextPath: TrendMicroApex.Agent.ip_address_list
+      description: The IP address list on the server.
+      type: String
+    - contextPath: TrendMicroApex.Agent.mac_address_list
+      description: The MAC address of the endpoint.
+      type: String
+    - contextPath: TrendMicroApex.Agent.host_name
+      description: The name of the endpoint.
+      type: String
+    - contextPath: TrendMicroApex.Agent.isolation_status
+      description: The isolation status of the agent.
+      type: String
+    - contextPath: TrendMicroApex.Agent.capabilities
+      description: Lists the API actions that can be performed on the agent.
+      type: String
   - arguments:
     - default: false
       defaultValue: '50'
@@ -551,57 +551,57 @@ script:
       - Windows General
       required: false
       secret: false
-    outputs:
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.agentGuid
-        description: 'The GUID of the agent.'
-        type: String
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.serverGuid
-        description: 'The GUID of the server which manages the agent.'
-        type: String
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineName
-        description: 'The Host name of the endpoint.'
-        type: String
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.isImportant
-        description: 'Whether the agent is tagged as important.'
-        type: Boolean
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.isOnline
-        description: 'Whether the agent is online.'
-        type: Boolean
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.ip
-        description: 'The IP address of the agent.'
-        type: String
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineGuid
-        description: 'The GUID of the endpoint.'
-        type: String
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineType
-        description: 'The Type of endpoint.'
-        type: String
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineLabels
-        description: 'The machine labels'
-        type: Number
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineOS
-        description: 'The operating system of the endpoint.'
-        type: String
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.isolateStatus
-        description: 'The isolation status of the agent.'
-        type: String
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.isEnable
-        description: 'Whether the agent is enabled or not'
-        type: Boolean
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.userName
-        description: 'The user name of the agent'
-        type: String
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.userGuid
-        description: 'The GUID of the user.'
-        type: String
-      - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.productType
-        description: 'The Trend Micro product type on the server instance.'
-        type: Number
     deprecated: false
     description: Retrieves a list of Security Agents with the Endpoint Sensor feature
       enabled.
     execution: false
     name: trendmicro-apex-endpoint-sensors-list
+    outputs:
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.agentGuid
+      description: The GUID of the agent.
+      type: String
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.serverGuid
+      description: The GUID of the server which manages the agent.
+      type: String
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineName
+      description: The Host name of the endpoint.
+      type: String
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.isImportant
+      description: Whether the agent is tagged as important.
+      type: Boolean
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.isOnline
+      description: Whether the agent is online.
+      type: Boolean
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.ip
+      description: The IP address of the agent.
+      type: String
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineGuid
+      description: The GUID of the endpoint.
+      type: String
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineType
+      description: The Type of endpoint.
+      type: String
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineLabels
+      description: The machine labels
+      type: Number
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineOS
+      description: The operating system of the endpoint.
+      type: String
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.isolateStatus
+      description: The isolation status of the agent.
+      type: String
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.isEnable
+      description: Whether the agent is enabled or not
+      type: Boolean
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.userName
+      description: The user name of the agent
+      type: String
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.userGuid
+      description: The GUID of the user.
+      type: String
+    - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.productType
+      description: The Trend Micro product type on the server instance.
+      type: Number
   - arguments:
     - default: false
       description: 'Json formatted agents to terminate the process in. The key is
@@ -1156,6 +1156,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Creates a scheduled live Investigation using OpenIOC or YARA file.
     execution: false
     name: trendmicro-apex-create-scheduled-investigation
   - arguments:
@@ -1303,28 +1304,28 @@ script:
       - Twelve months
       required: false
       secret: false
-    outputs:
-      - contextPath: TrendMicroApex.HistoricalInvestigation.taskId
-        description: 'Task ID received from the investigation creation request'
-        type: String
-      - contextPath: TrendMicroApex.HistoricalInvestigation.lastContentId
-        description: 'ID used to retrieve the next set of results.'
-        type: String
-      - contextPath: TrendMicroApex.HistoricalInvestigation.hasMore
-        description: 'Whether the source has more results.'
-        type: Boolean
-      - contextPath: TrendMicroApex.HistoricalInvestigation.serverName
-        description: 'The Name of the server.'
-        type: String
-      - contextPath: TrendMicroApex.HistoricalInvestigation.serverGuid
-        description: 'The GUID of the server.'
-        type: String
     deprecated: false
     description: Creates a new historical investigation on all Security Agents with
       Endpoint Sensor enabled using the specified criteria, search operator, and match
       condition
     execution: false
     name: trendmicro-apex-historical-investigation-create
+    outputs:
+    - contextPath: TrendMicroApex.HistoricalInvestigation.taskId
+      description: Task ID received from the investigation creation request
+      type: String
+    - contextPath: TrendMicroApex.HistoricalInvestigation.lastContentId
+      description: ID used to retrieve the next set of results.
+      type: String
+    - contextPath: TrendMicroApex.HistoricalInvestigation.hasMore
+      description: Whether the source has more results.
+      type: Boolean
+    - contextPath: TrendMicroApex.HistoricalInvestigation.serverName
+      description: The Name of the server.
+      type: String
+    - contextPath: TrendMicroApex.HistoricalInvestigation.serverGuid
+      description: The GUID of the server.
+      type: String
   - arguments:
     - default: false
       defaultValue: '50'
@@ -1383,89 +1384,90 @@ script:
       name: scan_type
       required: true
       secret: false
-    outputs:
-      - contextPath: TrendMicroApex.InvestigationResult.scanSummaryId
-        description: 'The ID of the investigation.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.scanSummaryGuid
-        description: 'The GUID of the investigation.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResult.status
-        description: 'Status of the investigation'  # TODO check the status values
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.statusForUI
-        description: 'Status of the investigation shown in the web console.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.scanType
-        description: 'Method used for the investigation.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResult.submitTime
-        description: 'Date and time when the investigation was submitted.'
-        type: Date
-      - contextPath: TrendMicroApex.InvestigationResult.finishTime
-        description: 'Date and time when the investigation was finished.'
-        type: Date
-      - contextPath: TrendMicroApex.InvestigationResult.specificAgentType
-        description: 'Indicates how targets were selected for the investigation. 0-All, 1-Specific.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.progressInfo.safeCount
-        description: 'Number of agents with "No match" status.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.progressInfo.riskCount
-        description: 'Number of agents with "Matched" status.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.progressInfo.pendingCount
-        description: 'Number of agents with "Pending" status.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.progressInfo.timeoutCount
-        description: 'Number of agents with "Timeout" status.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.progressInfo.noneCount
-        description: 'Number of agents with "None" status.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.progressInfo.processingCount
-        description: 'Number of agents with "Processing" status.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.progressInfo.errorCount
-        description: 'Number of agents with errors.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.progressInfo.abortCount
-        description: 'Number of aborted agents.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.progressInfo.connectionFailCount
-        description: 'Number of agents that fail to connect.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.name
-        description: 'The name of the investigation.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResult.agentCount
-        description: 'The number of agents in the investigation.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.matchedAgentCount
-        description: 'The number of matched agents in the investigation.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.serverGuidList
-        description: 'Trend Micro GUID list of the servers.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResult.creator
-        description: 'The name of the user who created the investigation.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResult.scanCriteriaEntity.criteriaId
-        description: 'Unique identifier used by the server to store the criteria.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResult.scanCriteriaEntity.criteriaName
-        description: 'The name of the criteria.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResult.scanCriteriaEntity.criteriaContent
-        description: 'The the criteria used to perform "registry" investigation.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResult.errorServers
-        description: 'Error response if server communication is unsuccessful.'
-        type: String
     deprecated: false
     description: Retrieves a list of all investigation results.
     execution: false
     name: trendmicro-apex-investigation-result-list
+    outputs:
+    - contextPath: TrendMicroApex.InvestigationResult.scanSummaryId
+      description: The ID of the investigation.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.scanSummaryGuid
+      description: The GUID of the investigation.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResult.status
+      description: Status of the investigation
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.statusForUI
+      description: Status of the investigation shown in the web console.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.scanType
+      description: Method used for the investigation.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResult.submitTime
+      description: Date and time when the investigation was submitted.
+      type: Date
+    - contextPath: TrendMicroApex.InvestigationResult.finishTime
+      description: Date and time when the investigation was finished.
+      type: Date
+    - contextPath: TrendMicroApex.InvestigationResult.specificAgentType
+      description: Indicates how targets were selected for the investigation. 0-All,
+        1-Specific.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.progressInfo.safeCount
+      description: Number of agents with "No match" status.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.progressInfo.riskCount
+      description: Number of agents with "Matched" status.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.progressInfo.pendingCount
+      description: Number of agents with "Pending" status.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.progressInfo.timeoutCount
+      description: Number of agents with "Timeout" status.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.progressInfo.noneCount
+      description: Number of agents with "None" status.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.progressInfo.processingCount
+      description: Number of agents with "Processing" status.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.progressInfo.errorCount
+      description: Number of agents with errors.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.progressInfo.abortCount
+      description: Number of aborted agents.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.progressInfo.connectionFailCount
+      description: Number of agents that fail to connect.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.name
+      description: The name of the investigation.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResult.agentCount
+      description: The number of agents in the investigation.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.matchedAgentCount
+      description: The number of matched agents in the investigation.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.serverGuidList
+      description: Trend Micro GUID list of the servers.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResult.creator
+      description: The name of the user who created the investigation.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResult.scanCriteriaEntity.criteriaId
+      description: Unique identifier used by the server to store the criteria.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResult.scanCriteriaEntity.criteriaName
+      description: The name of the criteria.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResult.scanCriteriaEntity.criteriaContent
+      description: The the criteria used to perform "registry" investigation.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResult.errorServers
+      description: Error response if server communication is unsuccessful.
+      type: String
   - arguments:
     - default: false
       defaultValue: '50'
@@ -1538,105 +1540,105 @@ script:
       - Unsuccessful
       required: true
       secret: false
-    outputs:
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.rowId
-        description: 'Unique id assigned to the investigation row.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.agentGuid
-        description: 'The GUID of the agent.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.scanSummaryGuid
-        description: 'The GUID of the investigation.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.status
-        description: 'The Status of the investigation.'  # TODO check the status values
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.name
-        description: 'The name of the investigation.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.riskCount
-        description: 'The number of matched objects in the investigation.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.triggerTime
-        description: 'Date and time when the investigation was triggered'
-        type: Date
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.finishTime
-        description: 'Date and time when the investigation was completed for each agent.'
-        type: Date
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.submitTime
-        description: 'Date and time when the investigation was submitted.'
-        type: Date
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.exceedLeafModuleCountLimit
-        description: 'Whether the investigation returned more than 1000 matched objects.'
-        type: Boolean
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.scanType
-        description: 'The method used for the investigation.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.traceId
-        description: ''
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.region
-        description: ''
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.serverGuid
-        description: 'Trend Micro GUID of the server.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.serverName
-        description: 'The name of the server.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.isOnline
-        description: 'Whether the server is online.'
-        type: Boolean
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.isImportant
-        description: 'Whether the agent is tagged as important.'
-        type: Boolean
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.ip
-        description: 'The IP address of agent.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.machineGuid
-        description: 'The GUID of the endpoint.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.machineName
-        description: 'The name of the endpoint.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.machineType
-        description: 'The type of agent.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.userName
-        description: 'The user name of agent.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.userGuid
-        description: 'The GUID of the user.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.isolateStatus
-        description: 'Isolation status of the agent.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.machineOS
-        description: 'The operating system of the endpoint.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.productType
-        description: 'The Trend Micro product type on the server instance.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.taskType
-        description: 'Type of API request. For Endpoint Sensor, the value is always 4.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.creator
-        description: 'The name of the user who created the investigation.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.scanCriteriaEntity.criteriaId
-        description: 'Unique identifier used by the server to store the criteria.'
-        type: Number
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.scanCriteriaEntity.criteriaName
-        description: 'The name of the criteria.'
-        type: String
-      - contextPath: TrendMicroApex.InvestigationResultByStatus.scanCriteriaEntity.criteriaContent
-        description: 'The criteriaContent is the criteria used to perform registry investigation.'
-        type: String
     deprecated: false
     description: Retrieves a list of filtered investigation results.
     execution: false
     name: trendmicro-apex-investigation-result-list-by-status
-  dockerimage: devdemisto/pycef:1.0.0.9953
+    outputs:
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.rowId
+      description: Unique id assigned to the investigation row.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.agentGuid
+      description: The GUID of the agent.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.scanSummaryGuid
+      description: The GUID of the investigation.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.status
+      description: The Status of the investigation.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.name
+      description: The name of the investigation.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.riskCount
+      description: The number of matched objects in the investigation.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.triggerTime
+      description: Date and time when the investigation was triggered
+      type: Date
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.finishTime
+      description: Date and time when the investigation was completed for each agent.
+      type: Date
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.submitTime
+      description: Date and time when the investigation was submitted.
+      type: Date
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.exceedLeafModuleCountLimit
+      description: Whether the investigation returned more than 1000 matched objects.
+      type: Boolean
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.scanType
+      description: The method used for the investigation.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.traceId
+      description: The trace ID of the investigation.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.region
+      description: The region of the investigation.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.serverGuid
+      description: Trend Micro GUID of the server.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.serverName
+      description: The name of the server.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.isOnline
+      description: Whether the server is online.
+      type: Boolean
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.isImportant
+      description: Whether the agent is tagged as important.
+      type: Boolean
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.ip
+      description: The IP address of agent.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.machineGuid
+      description: The GUID of the endpoint.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.machineName
+      description: The name of the endpoint.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.machineType
+      description: The type of agent.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.userName
+      description: The user name of agent.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.userGuid
+      description: The GUID of the user.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.isolateStatus
+      description: Isolation status of the agent.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.machineOS
+      description: The operating system of the endpoint.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.productType
+      description: The Trend Micro product type on the server instance.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.taskType
+      description: Type of API request. For Endpoint Sensor, the value is always 4.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.creator
+      description: The name of the user who created the investigation.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.scanCriteriaEntity.criteriaId
+      description: Unique identifier used by the server to store the criteria.
+      type: Number
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.scanCriteriaEntity.criteriaName
+      description: The name of the criteria.
+      type: String
+    - contextPath: TrendMicroApex.InvestigationResultByStatus.scanCriteriaEntity.criteriaContent
+      description: The criteriaContent is the criteria used to perform registry investigation.
+      type: String
+  dockerimage: demisto/pycef:1.0.0.10122
   feed: false
   isfetch: false
   longRunning: false
@@ -1647,4 +1649,3 @@ script:
   type: python
 tests:
 - No test
-beta: true

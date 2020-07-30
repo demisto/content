@@ -208,6 +208,8 @@ class Client(BaseClient):
                                                                    headers='', request_body=json.dumps(req_body))}
             response = self._http_request("PUT", UDSOAPIPATH + '/', full_url=self.base_url + UDSOAPIPATH + '/',
                                           headers=headers, data=json.dumps(req_body))
+            if response.get('Meta', {}).get('ErrorCode', '') != 0:
+                raise ValueError(f'Operation failed - {response.get("Meta", {}).get("ErrorMsg")}')
 
             return response
 
@@ -914,12 +916,8 @@ def udso_add_command(client: Client, args):
     scan_action = args.get('scan_action')
     response = client.udso_add(add_type=add_type, content=content, scan_action=scan_action)
 
-    if response.get('Meta', {}).get('ErrorCode', '') == 0:
-        readable_output = f'### UDSO "{content}" of type "{add_type}" was added successfully with scan action ' \
-                          f'"{scan_action}"'
-    else:
-        readable_output = f'There has been a problem adding {content} UDSO to the list. Reason: \n' \
-                          f'{response.get("Meta", {}).get("ErrorMsg")}'
+    readable_output = f'### UDSO "{content}" of type "{add_type}" was added successfully with scan action ' \
+                      f'"{scan_action}"'
     return CommandResults(
         readable_output=readable_output,
         raw_response=response
