@@ -1,14 +1,33 @@
-## ModifyDateTime
-This is a transformer script that will take in a date / time and apply a human readable variation to it. This uses the Python library **dateparser** and the syntax assiciated with it as outlined [here](https://dateparser.readthedocs.io/en/latest/)
+Takes a date / time input and adds or subtracts a determined amount of time. Returns a string in date / time in ISO Format.
+## Script Data
+---
 
-The required input is named *"variation"* and is the human readable variation the is applied to the default input value. This can be expressed, for example, as:
+| **Name** | **Description** |
+| --- | --- |
+| Script Type | python3 |
+| Tags | transformer, date |
+| Demisto Version | 0.0.0 |
 
-`1 day ago`
+## Inputs
+---
 
-`3 months ago`
+| **Argument Name** | **Description** |
+| --- | --- |
+| value | Input date or time in a format that is supported by the dateparser.parse\(\) function as outlined here\- https://dateparser.readthedocs.io/en/latest/\#popular\-formats. For example: '2020\-01\-01' or '1999/02/03 12:01:59' |
+| variation | Variation of time \(for example: 'in 1 day', or '3 months ago'\). Must be supported by the dateparser.parse\(\) function here \- https://dateparser.readthedocs.io/en/latest/\#relative\-dates |
 
-`in 2 years`
+## Outputs
+---
+There are no outputs for this script.
 
-`in 20 minutes`
 
-The time variation is applied to the default input date / time and an ISO formatted date is returned.
+## Script Example
+```!ModifyDateTime value=2020,02,02 variation="1 day"```
+
+## Context Example
+```
+{}
+```
+
+## Human Readable Output
+2020-02-01T00:00:00

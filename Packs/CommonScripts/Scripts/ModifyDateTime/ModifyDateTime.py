@@ -9,10 +9,9 @@ from typing import Optional
 def apply_variation(original_datetime: Optional[datetime] = None, variation: str = None) -> Optional[datetime]:
     try:
         new_time = dateparser.parse(variation, settings={'RELATIVE_BASE': original_datetime})
-        return new_time
-
     except Exception as err:
         return_error(f"Error adding variation to the date / time - {err}")
+    return new_time
 
 
 def main():
@@ -25,9 +24,10 @@ def main():
 
     variation = args.get('variation')
     new_time = apply_variation(original_datetime, variation)
-    if not new_time:
+    if isinstance(new_time, datetime):
+        demisto.results(new_time.isoformat())
+    else:
         return_error('Invalid variation specified')
-    demisto.results(new_time.isoformat())
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
