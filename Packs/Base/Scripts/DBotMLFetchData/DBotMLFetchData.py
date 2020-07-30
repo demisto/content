@@ -822,7 +822,8 @@ def get_html_features(soup):
 
 
 def load_external_resources():
-    global EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_100, EMBEDDING_DICT_FASTTEXT, DOMAIN_TO_RANK, DOMAIN_TO_RANK_PATH
+    global EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_100, EMBEDDING_DICT_FASTTEXT,\
+        DOMAIN_TO_RANK, DOMAIN_TO_RANK_PATH
     with open(GLOVE_50_PATH, 'rb') as file:
         EMBEDDING_DICT_GLOVE_50 = pickle.load(file)
     with open(GLOVE_100_PATH, 'rb') as file:
@@ -847,7 +848,7 @@ def get_embedding_features(tokenized_text):
     res_glove_50 = get_avg_embedding_vector_for_text(tokenized_text, EMBEDDING_DICT_GLOVE_50, 50, 'glove50')
     res_glove_100 = get_avg_embedding_vector_for_text(tokenized_text, EMBEDDING_DICT_GLOVE_100, 100, 'glove100')
     res_fasttext = get_avg_embedding_vector_for_text(tokenized_text, EMBEDDING_DICT_FASTTEXT, 300, 'fasttext')
-    return {**res_glove_50, **res_glove_100, **res_fasttext }
+    return {**res_glove_50, **res_glove_100, **res_fasttext}
 
 
 def get_header_value(email_headers, header_name, index=0, ignore_case=False):

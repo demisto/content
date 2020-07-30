@@ -6,6 +6,7 @@ import math
 
 # disable-secrets-detection-start
 
+
 def test_get_ml_features(mocker):
     dummy_word_to_vec = {'hello': [1.0, 0], 'world': [2.0, -1.0]}
     mock_read = mocker.mock_open(read_data='dummy data')
@@ -89,23 +90,21 @@ def test_get_url_features(mocker):
     assert url_features_3['drive_count'] == 1
 
 
-
 def test_parse_email_header():
     header_value = 'Taylor Evans <example_from@dc.edu>'
-    email_headers = [{'headername': 'From', 'headervalue': header_value }]
+    email_headers = [{'headername': 'From', 'headervalue': header_value}]
     res = parse_email_header(email_headers, header_name='From')
     assert res['address'] == 'example_from@dc.edu'
     assert res['domain'] == 'dc'
 
     header_value = '"Taylor Evans" <example_from@dc.edu>'
-    email_headers = [{'headername': 'From', 'headervalue': header_value }]
+    email_headers = [{'headername': 'From', 'headervalue': header_value}]
     res = parse_email_header(email_headers, header_name='From')
     assert res['address'] == 'example_from@dc.edu'
     assert res['domain'] == 'dc'
 
-
     header_value = 'example_from@dc.edu'
-    email_headers = [{'headername': 'From', 'headervalue': header_value }]
+    email_headers = [{'headername': 'From', 'headervalue': header_value}]
     res = parse_email_header(email_headers, header_name='From')
     assert res['address'] == 'example_from@dc.edu'
     assert res['domain'] == 'dc'
@@ -116,8 +115,8 @@ def test_parse_received_headers_2():
             '(envelope-from <mt.kb.user@gmail.com>) id 1KDoNH-0000f0-RL for user@example.com;' \
             ' Tue, 25 Jan 2011 15:31:01 -0700'
 
-    email_headers = [{'headername': 'Received', 'headervalue': value }]*2
-    n_received_headers, [first_server, first_envelop, _, _]  = parse_received_headers(email_headers)
+    email_headers = [{'headername': 'Received', 'headervalue': value}] * 2
+    n_received_headers, [first_server, first_envelop, _, _] = parse_received_headers(email_headers)
     assert n_received_headers == 2
     assert first_server['domain'] == 'google'
     assert first_envelop['address'] == 'mt.kb.user@gmail.com'
@@ -129,15 +128,15 @@ def test_parse_received_headers_3():
             '(envelope-from <mt.kb.user@gmail.com>) id 1KDoNH-0000f0-RL for user@example.com;' \
             ' Tue, 25 Jan 2011 15:31:01 -0700'
 
-    email_headers = [{'headername': 'Received', 'headervalue': value }]
-    n_received_headers, [_, _ , second_server, second_envelop]  = parse_received_headers(email_headers)
+    email_headers = [{'headername': 'Received', 'headervalue': value}]
+    n_received_headers, [_, _, second_server, second_envelop] = parse_received_headers(email_headers)
     assert n_received_headers == 1
     assert second_server['domain'] is None
     assert second_envelop['address'] is None
     assert second_envelop['domain'] is None
 
-    email_headers = [ {'headername': 'Received', 'headervalue': value }, {'headername': 'Received', 'headervalue': ''}]
-    n_received_headers, [_, _ , second_server, second_envelop]  = parse_received_headers(email_headers)
+    email_headers = [{'headername': 'Received', 'headervalue': value}, {'headername': 'Received', 'headervalue': ''}]
+    n_received_headers, [_, _, second_server, second_envelop] = parse_received_headers(email_headers)
     assert n_received_headers == 2
     assert second_server['domain'] == 'google'
     assert second_envelop['address'] == 'mt.kb.user@gmail.com'
@@ -186,10 +185,10 @@ def test_headers_features_3_virus_total_format(mocker):
     headers = [
         {'headername': 'From', 'headervalue': 'Jhon Jhon<purchase@domain.com>'},   # disable-secrets-detection
         {'headername': 'Return-Path', 'headervalue': '<>'},
-        {'headername': 'Received', 'headervalue': 'from domain.com ([xxx.xxx.xxx.xxx] [xxx.xxx.xxx.xxx]) by '
-                                      'xxx.xxx.ro (amavisd-milter) with ESMTP id xxx; '
-                                      'Thu, 9 Jan 2020 12:21:34 +0200 '
-                                      '(envelope-from <purchase@domain.com>)'},  # disable-secrets-detection
+        {'headername': 'Received', 'headervalue': 'from domain.com ([xxx.xxx.xxx.xxx] [xxx.xxx.xxx.xxx]) by xxx.xxx.ro '
+                                                  '(amavisd-milter) with ESMTP id xxx; Thu, 9 Jan 2020 12:21:34 +0200 '
+                                                  '(envelope-from '
+                                                  '<purchase@domain.com>)'},  # disable-secrets-detection
     ]
     res = get_headers_features(headers)
     assert not res['From.Domain==Return-Path.Domain']
@@ -197,7 +196,6 @@ def test_headers_features_3_virus_total_format(mocker):
     assert math.isnan(res['Second-Received-Server.Domain==From.Domain'])
     assert res['First-Received-Server.Domain==From.Domain']
     assert not res['First-Received-Server::IP_DOMAIN']
-
 
 
 def test_headers_features_domain_rank(mocker):
@@ -213,7 +211,7 @@ def test_headers_features_4():
         {'headername': 'List-Unsubscribe', 'headervalue': 'Message-Id: Sender: Date; bh=GExv5cay5SOdSeHjP5vfnhswJAlO/X4'
                                                           'tR2EBLXjqNXw=; b=KPBtMUsmW0F+wD5qXzQoS6U2fzWPSEWbAVK+AEha2hx'
                                                           'Q7q1PWplkMU7xIiehm0vlO'
-                                              'C7eTrUh'},   # disable-secrets-detection
+                                                          'C7eTrUh'},   # disable-secrets-detection
     ]
     res = get_headers_features(headers)
     assert res['unsubscribe_headers']
