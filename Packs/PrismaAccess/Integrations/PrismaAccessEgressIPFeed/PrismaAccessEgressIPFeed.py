@@ -18,7 +18,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, clientConfigs: list, api_key: str, insecure: bool = False, proxy: bool = False,
-                 tags: Optional[list] = None):
+                 tags: Optional[list] = []):
         """
         Implements class for Prisma Access feed.
         :param clientConfigs: config data
@@ -89,6 +89,7 @@ class Client(BaseClient):
             except ValueError as err:
                 demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError message: {err}')
+        print(result)
         return result
 
 
