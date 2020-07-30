@@ -1,8 +1,8 @@
 id: Bonusly - AutoGratitude
 version: -1
 name: Bonusly - AutoGratitude
-description: AutoGratitude is a playbook to give back a positive gratitude to security
-  engineers and developers when they successfully complete an SLA
+description: AutoGratitude is a playbook used to show gratitude to security\
+  \ engineers and developers by giving them a Bonusly bonus when they successfully complete an SLA.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
       version: -1
       name: Check SLA
       type: condition
-      description: 'If the inputs to check SLA is set then check against the SLA of the incident'
+      description: 'Checks if the inputs to check SLA is set then check against the SLA of the incident.'
       iscommand: false
       brand: ""
     nexttasks:
@@ -80,10 +80,10 @@ tasks:
     task:
       id: 1ba35c08-1089-4c27-8f6e-68d0801c7168
       version: -1
-      name: Did they meet the SLA Times?
+      name: Did they meet the SLA?
       type: condition
       iscommand: false
-      description: 'Check to see if they met the SLA times'
+      description: 'Checks if they met the SLA.'
       brand: ""
     nexttasks:
       '#default#':
@@ -129,7 +129,7 @@ tasks:
     task:
       id: 91f3d416-125b-4a76-888f-7669433b3874
       version: -1
-      name: Pause & Review Why SLA Was Breached
+      name: Pause & review why SLA was breached
       description: '* Add Tasks For Review'
       type: regular
       iscommand: false
@@ -184,9 +184,8 @@ tasks:
     task:
       id: 5b2ba623-f2be-4473-819a-2666eef274bf
       version: -1
-      name: Convert Owner Email To Bonusly User
-      description: 'This script will get the owner of the incidents email address
-        and then return the Bonusly username '
+      name: Convert the incident owner's email address to the Bonusly username
+      description: 'Returns the Bonusly username that corresponds to the incident owner's email address. '
       scriptName: IncOwnerToBonuslyUser
       type: regular
       iscommand: false
@@ -219,8 +218,8 @@ tasks:
     task:
       id: cdd91c30-4f40-4fea-8041-5830c39472db
       version: -1
-      name: Bonusly - Create Bonus
-      description: Creates a bonusly bonus
+      name: Create a bonus
+      description: Creates a bonus in Bonusly.
       script: '|||bonusly-create-bonus'
       type: regular
       iscommand: true
@@ -264,28 +263,28 @@ inputs:
   value:
     simple: ${lists.Bonusly - Email To User Lookup}
   required: true
-  description: "Create a Lookup JSON List In The Lists Section Containing XSOAR Email\
-    \ To Bonusly User\n\n{\n\"xsoar_user1@your_company.com\":\"@bonusly_user1\", \n\
+  description: "Creates a lookup JSON list in the Lists section that contains the Cortex XSOAR email address\
+    \ to a Bonusly user\n\n{\n\"xsoar_user1@your_company.com\":\"@bonusly_user1\", \n\
     \"xsoar_user2@paloaltonetworks.com\":\"@bonusly_user2\"\n}"
   playbookInputQuery:
 - key: GiverEmail
   value:
     simple: bonusly_bot@companyname.com
   required: true
-  description: 'Add a giver email or set this before hand. '
+  description: 'Add the email address of a bonus giver or set it beforehand. '
   playbookInputQuery:
 - key: GiverReason
   value:
-    simple: 'Great job completing the incident on time +10 #collaboration '
+    simple: 'Great job completing the incident on time +10 #execution '
   required: true
-  description: "Add a Bonusly reason like \nGreat job completing the incident on time\
+  description: "Adds a reason (description) of why the bonust is being given, e.g., \nGreat job completing the incident on time\
     \ +10 #hashtag "
   playbookInputQuery:
 - key: CheckSLA
   value:
     simple: "false"
   required: false
-  description: 'If Check SLA is set to true then it will first see if the owner has
+  description: 'If the Check SLA task is set to true then it will first check if the incident owner
     met the SLA agreement. '
   playbookInputQuery:
 outputs: []
@@ -296,8 +295,8 @@ tests:
 id: Bonusly - AutoGratitude
 version: -1
 name: Bonusly - AutoGratitude
-description: "AutoGratitude is a playbook to give back a positive gratitude to security\
-  \ engineers and developers when they successfully complete an SLA"
+description: "AutoGratitude is a playbook used to show gratitude to security\
+  \ engineers and developers by giving them a Bonusly bonus when they successfully complete an SLA."
 starttaskid: "0"
 tasks:
   "0":
@@ -375,7 +374,7 @@ tasks:
     task:
       id: 0896de03-9242-41af-8d15-088a52755f8b
       version: -1
-      name: Did they meet the SLA Times?
+      name: Did they meet the SLA?
       description: ""
       type: condition
       iscommand: false
@@ -480,8 +479,7 @@ tasks:
       id: 3cc2cf9e-99ac-456d-8020-290b0fbe7aad
       version: -1
       name: Convert Owner Email To Bonusly User
-      description: 'This script will get the owner of the incidents email address
-        and then return the Bonusly username '
+      description: 'Gets the email address of the incident owner and returns the corresponding username in Bonusly. '
       scriptName: IncOwnerToBonuslyUser
       type: regular
       iscommand: false
@@ -573,7 +571,7 @@ inputs:
   value:
     simple: '+10 @bonusly.username #collaboration'
   required: true
-  description: Add a Bonusly reason like +10 etc and a user name
+  description: Adds a message to the bonus, e.g.,   +10 etc and a user name
   playbookInputQuery:
 - key: CheckSLA
   value:
