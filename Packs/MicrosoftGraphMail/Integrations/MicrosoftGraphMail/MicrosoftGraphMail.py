@@ -86,13 +86,11 @@ class MsGraphClient:
         """
         responses = [response]
         i = page_count
-        while i != 0:
+        while i != 1:
             next_link = response.get('@odata.nextLink')
             if next_link:
-                responses.append(
-                    self.ms_client.http_request('GET', full_url=next_link, url_suffix=None)
-                )
-
+                response = self.ms_client.http_request('GET', full_url=next_link, url_suffix=None)
+                responses.append(response)
             else:
                 return responses
             i -= 1
