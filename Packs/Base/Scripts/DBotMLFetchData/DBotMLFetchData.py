@@ -1,3 +1,7 @@
+from itertools import combinations
+
+import dateutil
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -1053,7 +1057,7 @@ def extract_features_from_all_incidents(incidents_df):
 def extract_data_from_incidents(incidents):
     incidents_df = pd.DataFrame(incidents)
     if 'created' in incidents_df:
-        incidents_df['created'] = incidents_df['created'].apply(lambda x: datetime.strptime(x, CREATED_FIELD_TIMEFORMAT))
+        incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))
         incidents_df.sort_values(by='created', inplace=True, ascending=False)
         incidents_df_for_finding_labels_fields_candidates = incidents_df.head(500)
     else:
