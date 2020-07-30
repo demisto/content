@@ -89,7 +89,6 @@ class Client(BaseClient):
             except ValueError as err:
                 demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError message: {err}')
-        print(result)
         return result
 
 
