@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 # IMPORTS
 import requests
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -47,26 +47,6 @@ class Client(BaseClient):
         url_suffix = "/intel/combined/actors/v1"
         return self.http_request('GET', url_suffix)
 
-    # def daily_http_request(self) -> list:
-    #     """The HTTP request for daily feeds.
-    #     Returns:
-    #         list. A list of indicators fetched from the feed.
-    #     """
-    #     headers = {
-    #         "apiKey": self.api_key,
-    #         'Content-Type': "application/json"
-    #     }
-    #
-    #     res = requests.request(
-    #         method="GET",
-    #         url='https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult',
-    #         verify=self.verify,
-    #         headers=headers
-    #     )
-    #     res.raise_for_status()
-    #     indicator_list = res.text.split('\n')
-    #     return indicator_list
-
     def create_indicators_from_response(self, response, feed_tags: list) -> list:
         """
         Creates a list of indicators from a given response
@@ -107,6 +87,21 @@ class Client(BaseClient):
         if limit:
             parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
         return parsed_indicators
+
+    def get_last_modified_time(self):
+        integration_context: Dict = demisto.getIntegrationContext()
+        if not integration_context:
+            filters = {}
+        else:
+            integration_context_to_set = {'token': 'TOKEN'}
+            demisto.setIntegrationContext(integration_context_to_set)
+            integration_context = demisto.getIntegrationContext()
+            demisto.results(integration_context['token'])
+            # >> > "TOKEN"
+            integration_context_to_set = {'token': 'NEW-TOKEN'}
+            demisto.setIntegrationContext(integration_context_to_set)
+            integration_context = demisto.getIntegrationContext()
+            demisto.results(integration_context['token'])
 
 
 def module_test_command(client: Client, args: dict, feed_tags: list):
