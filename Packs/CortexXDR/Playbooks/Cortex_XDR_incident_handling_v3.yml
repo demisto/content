@@ -1077,10 +1077,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 3c7a6fc9-2094-4c64-81dd-7cbff128d56e
+    taskid: 1bd4508c-d9ca-4e17-8b9d-12f28b86b907
     type: regular
     task:
-      id: 3c7a6fc9-2094-4c64-81dd-7cbff128d56e
+      id: 1bd4508c-d9ca-4e17-8b9d-12f28b86b907
       version: -1
       name: Find similar incidents
       description: |-
@@ -1103,7 +1103,8 @@ tasks:
       maxResults: {}
       similarContextKeys: {}
       similarCustomFields: {}
-      similarIncidentFields: {}
+      similarIncidentFields:
+        simple: ${inputs.similarIncidentFields}
       similarIncidentKeys: {}
       similarLabelsKeys: {}
       skipMissingValues: {}
@@ -1569,12 +1570,12 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: 8780f51c-f39d-4a86-863c-7ddf0b3ca072
+    taskid: fd9866a4-1498-42e4-8e9e-7361adcab038
     type: regular
     task:
-      id: 8780f51c-f39d-4a86-863c-7ddf0b3ca072
+      id: fd9866a4-1498-42e4-8e9e-7361adcab038
       version: -1
-      name: xdr-get-incident-extra-data
+      name: Cortex XDR - get incident extra data
       description: Returns additional data for the specified incident, for example,
         related alerts, file artifacts, network artifacts, and so on.
       script: Cortex XDR - IR|||xdr-get-incident-extra-data

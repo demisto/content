@@ -762,3 +762,44 @@ def test_sort_all_lists_incident_fields():
     assert raw_incident.get('alerts')[0].get('alert_id') == "42"
     assert raw_incident.get('alerts')[1].get('alert_id') == "55"
     assert raw_incident.get('alerts')[2].get('alert_id') == "60"
+
+
+def test_get_remote_data_command_should_update(requests_mock):
+    from PaloAltoNetworks_XDR import get_remote_data_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1'
+    )
+    args = {
+        'id': 1,
+        'lastUpdate': 0
+    }
+    raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
+    modified_raw_incident = raw_incident['reply']['incident']
+    modified_raw_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
+    modified_raw_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
+    modified_raw_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
+    modified_raw_incident['id'] = modified_raw_incident.get('incident_id')
+    modified_raw_incident['assigned_user_mail'] = ''
+    modified_raw_incident['assigned_user_pretty_name'] = ''
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
+
+    response = get_remote_data_command(client, args)
+    assert response.mirrored_object == modified_raw_incident
+    assert response.entries == []
+
+
+def test_get_remote_data_command_should_not_update(requests_mock):
+    from PaloAltoNetworks_XDR import get_remote_data_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1'
+    )
+    args = {
+        'id': 1,
+        'lastUpdate': '2020-07-31T00:00:00Z'
+    }
+    raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
+
+    response = get_remote_data_command(client, args)
+    assert response == {}

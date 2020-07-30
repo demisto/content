@@ -1,8 +1,8 @@
 from CommonServerPython import *
 import copy
 import json
-import XDRSyncScript as xdr_script
-from XDRSyncScript import ASSIGNED_USER_MAIL_XDR_FIELD, MODIFICATION_TIME_XDR_FIELD, MANUAL_SEVERITY_XDR_FIELD, \
+import XDRSyncScript_5_9_9 as xdr_script
+from XDRSyncScript_5_9_9 import ASSIGNED_USER_MAIL_XDR_FIELD, MODIFICATION_TIME_XDR_FIELD, MANUAL_SEVERITY_XDR_FIELD, \
     SEVERITY_XDR_FIELD
 
 
@@ -482,7 +482,7 @@ def test_fix_bug_19669(mocker, capfd):
     referenced before assignment`
     - the script should return error entry with message `Raised exception`
     """
-    import XDRSyncScript as xdr_script
+    import XDRSyncScript_5_9_9 as xdr_script
     import demistomock as demisto
     import sys
 
@@ -577,7 +577,7 @@ def test_incident_was_modified_in_xdr(mocker):
     - ensure XDRSyncScript is scheduled to be executed in the next internal with
         xdr_incident_from_previous_run has assignee foo@test.com
     """
-    import XDRSyncScript as xdr_script
+    import XDRSyncScript_5_9_9 as xdr_script
     import demistomock as demisto
 
     # - incident in demisto
@@ -650,7 +650,7 @@ def test_incident_was_modified_in_demisto(mocker):
     - ensure XDRSyncScript is scheduled to be executed in the next internal with
         xdr_incident_from_previous_run has severity=high
     """
-    import XDRSyncScript as xdr_script
+    import XDRSyncScript_5_9_9 as xdr_script
     import demistomock as demisto
 
     # - incident in demisto
