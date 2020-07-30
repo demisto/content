@@ -1,3 +1,6 @@
+import demistomock as demisto
+from CommonServerPython import *
+
 from email import message_from_string
 from email.header import decode_header
 import base64
