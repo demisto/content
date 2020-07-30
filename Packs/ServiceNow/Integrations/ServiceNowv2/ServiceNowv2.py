@@ -1221,6 +1221,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     table_name = str(args.get('table_name', ''))
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     fields = {}
     if fields_str:
@@ -1229,7 +1230,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     if custom_fields_str:
         custom_fields = split_fields(custom_fields_str)
 
-    result = client.create(table_name, fields, custom_fields)
+    result = client.create(table_name, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
         return 'Could not create record.', {}, {}, True
