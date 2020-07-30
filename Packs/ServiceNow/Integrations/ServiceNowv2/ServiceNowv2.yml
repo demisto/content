@@ -2226,18 +2226,6 @@ script:
       name: lastUpdate
       required: false
       secret: false
-    - default: false
-      description: The ticket number.
-      isArray: false
-      name: number
-      required: false
-      secret: false
-    - default: false
-      description: Custom fields.
-      isArray: false
-      name: custom_fields
-      required: false
-      secret: false
     deprecated: false
     description: Get remote data from a remote incident. Please note that this method
       will not update the current incident, it's here for debugging purposes.

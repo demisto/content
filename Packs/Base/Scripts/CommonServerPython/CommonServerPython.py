@@ -4056,7 +4056,7 @@ class DemistoException(Exception):
 
 class GetRemoteDateArgs:
     def __init__(self, args):
-        self.incident_id = args['id']
+        self.remote_incident_id = args['id']
         self.last_update = args['lastUpdate']
 
 
@@ -4065,7 +4065,7 @@ class UpdateRemoteSystemArgs:
         self.data: dict = args.get('data')  # type: ignore
         self.entries = args.get('entries')
         self.incident_changed = args.get('incidentChanged')
-        self.incident_id = args.get('remoteId')
+        self.remote_incident_id = args.get('remoteId')
         self.inc_status = args.get('status')
         self.delta: dict = args.get('delta')
 
@@ -4080,13 +4080,14 @@ class GetRemoteDataResponse:
             demisto.info(f'Updating object {self.mirrored_object["id"]}')
             return [self.mirrored_object] + self.entries
 
+
 class SchemeTypeMapping:
     def __init__(self, type_name='', fields=None):
         self.type_name = type_name
         self.fields = fields if fields else {}
 
     def add_field(self, name, description=''):
-        self.fields.append({
+        self.fields.update({
             name: description
         })
 
@@ -4098,6 +4099,8 @@ class SchemeTypeMapping:
 class GetMappingFieldsResponse:
     def __init__(self, scheme_types_mapping=None):
         self.scheme_types_mappings = scheme_types_mapping if scheme_types_mapping else []
+        if not isinstance(self.scheme_types_mappings, list):
+            self.scheme_types_mappings = [self.scheme_types_mappings]
 
     def add_scheme_type(self, scheme_type_mapping):
         self.scheme_types_mappings.append(scheme_type_mapping)

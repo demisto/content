@@ -1,9 +1,7 @@
 import shutil
 import traceback
 import dateparser
-from typing import List, Tuple, Dict, Callable, Any, Optional
-
-
+from typing import List, Tuple, Dict, Callable, Any, Optional, Union
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1848,22 +1846,18 @@ def test_module(client: Client, *_):
     return '', {}, {}
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """get-remote-data command: Returns an updated incident and entries
+def get_remote_data_command(client: Client, args: Dict[str, Any]) -> Union[List[Dict[str, Any]], str]:
+    """
+    get-remote-data command: Returns an updated incident and entries
+    Args:
+        client: XSOAR client to use
+        args:
+            ``args['id']`` incident id to retrieve
+            ``args['lastUpdate']`` when was the last time we retrieved data
 
-    :type client: ``Client``
-    :param Client: XSOAR client to use
+    Returns: List[Dict[str, Any]]`` first entry is the incident (which can be completely empty) and others are
+             the new entries.
 
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['id']`` incident id to retrieve
-        ``args['lastUpdate']`` when was the last time we retrieved data
-
-    :return:
-        A ``List[Dict[str, Any]]`` first entry is the incident (which can be completely empty) and others are the new entries
-
-    :rtype: ``List[Dict[str, Any]]``
     """
 
     ticket_id = args.get('id')
@@ -1876,17 +1870,17 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> List[Dict[s
     demisto.debug(f'last_update is {last_update}')
 
     ticket_type = client.ticket_type
-    number = str(args.get('number', ''))
-    custom_fields = split_fields(str(args.get('custom_fields', '')))
+    result = client.get(ticket_type, ticket_id)
 
-    result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), number)
     if not result or 'result' not in result:
         return 'Ticket was not found.'
 
     if isinstance(result['result'], list):
         if len(result['result']) == 0:
             return 'Ticket was not found.'
+
         ticket = result['result'][0]
+
     else:
         ticket = result['result']
 
@@ -1901,6 +1895,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> List[Dict[s
     if last_update > ticket_last_update:
         demisto.debug(f'Nothing new in the ticket')
         ticket = {}
+
     else:
         demisto.debug(f'ticket is updated: {ticket}')
 
@@ -1974,48 +1969,37 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> List[Dict[s
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
-    """update-remote-system command: pushes local changes to the remote system
-
-    :type client: ``Client``
-    :param Client: XSOAR client to use
-
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['data']`` the data to send to the remote system
-        ``args['entries']`` the entries to send to the remote system
-        ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
-        ``args['remoteId']`` the remote incident id
-
-    :return:
-        ``str`` containing the remote incident id - really important if the incident is newly created remotely
-
-    :rtype: ``str``
     """
-    data = args.get('data')
-    entries = args.get('entries')
-    incident_changed = args.get('incidentChanged')
-    ticket_id = args.get('remoteId')
-    org_status = args.get('status')
-    delta = args.get('delta')
-
-    if delta:
-        demisto.debug(f'Got the following delta keys {str(list(delta.keys()))}')
+    update-remote-system command: pushes local changes to the remote system
+    :param client: XSOAR Client to use.
+    :param args:
+        args['data']: the data to send to the remote system
+        args['entries']: the entries to send to the remote system
+        args['incident_changed']: boolean telling us if the local incident indeed changed or not
+        args['remote_incident_id']: the remote incident id
+    :return: The remote incident id - ticket_id
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    if parsed_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
     ticket_type = client.ticket_type
-    if incident_changed:
-        fields = get_ticket_fields(data, ticket_type=ticket_type)
+    ticket_id = parsed_args.remote_incident_id
+    if parsed_args.incident_changed:
+        fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
         result = client.update(ticket_type, ticket_id, fields, {})
 
         demisto.info(f'Ticket Update result {result}\n')
 
+    entries = parsed_args.entries
     if len(entries) > 0:
         demisto.debug(f'New entries {entries}\n')
 
         for entry in entries:
             demisto.info(f'Sending entry ' + entry.get('id') + ', type: ' + str(entry.get('type')))
+            # Mirroring files as entries
             if entry.get('type') == 3:
                 path_res = demisto.getFilePath(entry.get('id'))
                 file_name = path_res.get('name')
