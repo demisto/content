@@ -295,7 +295,7 @@ def test_attachments_features_2():
 
 
 def mock_read_func(file_path, mode='r'):
-    test_files = False
+    test_files = True
     if test_files:
         docker_path_to_test_path = {
             GLOVE_50_PATH: 'test_data/glove_50_top_10.p',
@@ -318,7 +318,7 @@ def test_whole_preprocessing(mocker):
     debug = False
     mocker.patch('DBotMLFetchData.open', mock_read_func)
 
-    data_file_path = 'test_data/650_incidents.p'
+    data_file_path = 'test_data/50_incidents.p'
     with open(data_file_path, 'rb') as file:
         incidents = pickle.load(file)
     prof = cProfile.Profile()
