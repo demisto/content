@@ -3415,7 +3415,7 @@ def unfold(s):
     return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
 
 
-def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, is_nested=False):
+def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False, is_nested=False):
     global ENCODINGS_TYPES
     #global IS_NESTED_EML
 
@@ -3428,6 +3428,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         file_data = emlFile.read()
         if b64:
             file_data = b64decode(file_data)
+        if bom:
+            # decode bytes taking into account BOM and re-encode to utf-8
+            file_data = file_data.decode("utf-8-sig").encode("utf-8")
 
         parser = HeaderParser()
         headers = parser.parsestr(file_data)
