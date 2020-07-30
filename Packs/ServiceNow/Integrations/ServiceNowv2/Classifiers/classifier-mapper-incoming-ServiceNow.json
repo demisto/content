@@ -657,10 +657,6 @@
 					},
 					"simple": ""
 				},
-				"ServiceNow Work Notes": {
-					"complex": null,
-					"simple": "work_notes"
-				},
 				"State": {
 					"complex": null,
 					"simple": "state"
