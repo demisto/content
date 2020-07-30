@@ -4,7 +4,7 @@ commonfields:
 name: Druva Ransomware Response
 display: Druva Ransomware Response
 category: Data Enrichment & Threat Intelligence
-description: Druva Ransomware Response Integration provides an API based orchestration framework for Druva Ransomware Recovery customers. The integration allows Druva customers to respond immediately in case of a security incident and recovery their backed up data with Confidence
+description: Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
 configuration:
 - display: Druva API URL
   name: url
@@ -27,189 +27,189 @@ script:
     arguments:
     - name: search_string
       required: true
-      description: Prefix Search String for data source name
+      description: The full string or prefix from the data resource name to search.
     outputs:
     - contextPath: Druva.Resource.resourceID
-      description: Resource ID.
+      description: The ID of the Resource.
       type: number
     - contextPath: Druva.Resource.resourceName
-      description: Resource Name
+      description: The name of the Resource.
       type: string
     - contextPath: Druva.Resource.resourceType
-      description: Resource Type
+      description: The type of the Resource.
     - contextPath: Druva.Resource.resourceParent
-      description: Resource Server or User
+      description: The name of the resource user for a device or server.
       type: string
-    description: Finds Device ID for specific hostname
+    description: Finds device information for a specific hostname.
   - name: druva-list-quarantine-ranges
     arguments: []
     outputs:
     - contextPath: Druva.activeQuarantineRanges.resourceID
-      description: Resource ID.
+      description: The ID of the resource.
       type: number
     - contextPath: Druva.activeQuarantineRanges.resourceName
-      description: Resource Name
+      description: The name of the resource.
       type: string
     - contextPath: Druva.activeQuarantineRanges.resourceParent
-      description: Resource User Or Server
+      description: The name of the resource user for a device or server.
       type: string
     - contextPath: Druva.activeQuarantineRanges.resourceType
-      description: Resource Type
+      description: The type of the resource.
       type: string
     - contextPath: Druva.activeQuarantineRanges.fromDate
-      description: Quarantine Start Date
+      description: The start date of the quarantine.
       type: string
     - contextPath: Druva.activeQuarantineRanges.toDate
-      description: Quarantine End Date
+      description: The end date of the quarantine.
       type: string
     - contextPath: Druva.activeQuarantineRanges.rangeID
-      description: Quarantine Range ID
-    description: Lists all quarantine ranges in your environment
+      description: The range ID of the quarantined resource.
+    description: Lists all quarantine ranges in your environment.
   - name: druva-quarantine-resource
     arguments:
     - name: resource_id
       required: true
-      description: resource id for which you would like to list resources
+      description: The ID of the resource to quarantine.
     - name: resource_type
       required: true
-      description: 'type or resource : Endpoint or  File Server or NAS'
+      description: 'The resource type to quarantine. Can be: "Endpoint", "File Server", or "NAS".'
     - name: from_date
-      description: 'Date from which a quarantine range should start. If not provided
-        then it is considered as open ended. example: 2020-10-25'
+      description: 'Date from which a quarantine range should start. If not provided,
+        it is considered open ended. For example, 2020-10-25.'
     - name: to_date
-      description: 'Date from which a quarantine range should end. If not provided
-        then it is considered as open ended. example: 2020-10-25'
+      description: 'Date from which a quarantine range should end. If not provided,
+        it is considered open ended. For example, 2020-10-25.'
     outputs:
     - contextPath: Druva.QuarantinedRangeID
-      description: RangeID of the Quarantined Resource
+      description: The range ID of the Quarantined Resource.
       type: string
-    description: Quarantine a resource
+    description: Quarantines a resource.
   - name: druva-delete-quarantine-range
     arguments:
     - name: range_id
       required: true
-      description: ID of range to be deleted
+      description: ID of the range to be deleted.
     - name: resource_id
       required: true
-      description: resource id for which you would like to delete the range
-    description: Delete a quarantine range
+      description: The resource ID for which the quarantine range is to be deleted.
+    description: Deletes a quarantine range.
   - name: druva-view-quarantine-range
     arguments:
     - name: range_id
       required: true
-      description: ID of range to be viewed
+      description: The ID of the range to be viewed.
     - name: resource_id
       required: true
-      description: resource id for which you would like to view the range
-    description: View Quarantine Range Details
+      description: The resource ID for which you would like to view the range.
+    description: View details of the quarantine range.
   - name: druva-update-quarantine-range
     arguments:
     - name: resource_id
       required: true
-      description: ID of resource to be updated
+      description: The ID of the resource to be updated.
     - name: range_id
       required: true
-      description: ID of range to be updated
+      description: The ID of range to be updated.
     - name: resource_type
       required: true
-      description: 'type or resource to be updated : Endpoint or  File Server or NAS '
+      description: 'The resource type to be updated. Can be: "Endpoint", "File Server", or "NAS".'
     - name: from_date
-      description: 'Update Date from which a quarantine range should start. If not
-        provided then it is considered as open ended. example: 2020-10-25'
+      description: 'The date from which a quarantine range should start. If not
+        provided, it is open-ended. For example, 2020-10-25.'
     - name: to_date
-      description: 'Updated Date from which a quarantine range should end. If not
-        provided then it is considered as open ended. example: 2020-10-25'
+      description: 'The date from which a quarantine range should end. If not
+        provided, it is open-ended. For example, 2020-10-25.'
     outputs:
     - contextPath: Druva.updatedQuarantineRange
-      description: Range ID of the Updated Quarantined Range
+      description: The range ID of the updated quarantined range.
       type: string
-    description: Updates an existing Quarantine Range
+    description: Updates an existing quarantine range of a resource.
   - name: druva-list-quarantine-snapshots
     arguments:
     - name: resource_id
       required: true
-      description: resource id for which you would like to view the quarantined snapshots
+      description: The resource ID of the quarantined snapshots to view.
     - name: range_id
       required: true
-      description: ID of range for which quarantined snapshots are to be viewed
+      description: The range ID of the quarantined snapshots to view.
     outputs:
     - contextPath: Druva.quarantinedSnapshots.snapshotID
-      description: ID of the quarantined snapshot
+      description: ID of the quarantined snapshot.
       type: string
     - contextPath: Druva.quarantinedSnapshots.name
-      description: Name of the quarantined snapshot
+      description: Name of the quarantined snapshot.
       type: string
-    description: List all quarantine Snapshots for a quarantine range
+    description: List all quarantine snapshots for a quarantine range.
   - name: druva-delete-quarantined-snapshot
     arguments:
     - name: resource_id
       required: true
-      description: resource id for which you would like to delete a quarantined snapshots
+      description: The resource ID to delete a quarantined snapshot.
     - name: snapshot_id
       required: true
-      description: ID of snapshot you would like to delete
+      description: The ID of the snapshot to delete.
     - name: range_id
       required: true
-      description: Range id for which you would like to delete a quarantined snapshots
+      description: The range ID to delete a quarantined snapshot.
     outputs:
     - contextPath: Druva.quarantinedSnapshots.snapshotID
-      description: ID of the quarantined snapshot
+      description: ID of the quarantined snapshot.
       type: string
-    description: 'Delete a quarantined Snapshot. Warning: Snapshots once deleted can
-      not be recovered.'
+    description: 'Deletes a quarantined Snapshot. Snapshots that are deleted cannot
+      be recovered.'
     execution: true
   - name: druva-endpoint-search-file-hash
     arguments:
     - name: sha1_checksum
       required: true
-      description: checksum of the file to be searched
+      description: SHA1 checksum of the file to be searched.
     outputs:
     - contextPath: Druva.searchEndpointsFileHashResults.deviceID
-      description: Device ID of device the input hash
+      description: The device ID on the Endpoint.
       type: string
     - contextPath: Druva.searchEndpointsFileHashResults.fileName
-      description: Name of the file on the Endpoint
+      description: Name of the file on the Endpoint.
       type: string
     - contextPath: Druva.searchEndpointsFileHashResults.objectID
-      description: Object ID
+      description: The object ID on the Endpoint.
       type: string
     - contextPath: Druva.searchEndpointsFileHashResults.userID
-      description: User ID of the Endpoint
+      description: The user ID of the Endpoint.
       type: string
-    description: Search a file use SHA1 checksum
+    description: Searches a file using the SHA1 checksum.
   - name: druva-endpoint-initiate-restore
     arguments:
     - name: source_resourceid
       required: true
-      description: 'Select resource id to restore from '
+      description: 'Select a Resource ID in which to restore. '
     - name: target_resourceid
       required: true
-      description: 'Select resource id to restore to '
+      description: 'Select a Resource ID in which to restore.'
     - name: restore_location
       required: true
-      description: 'Select Target Restore Location: 1) Desktop - If you want to restore
-        the data to the desktop on the target device. 2) Original - If you want to
-        restore data to the same location from which it was backed up. 3) If you want
-        to restore the data at a custom location, specify absolute path of the location.
-        Example - /Users/username/Desktop'
-    description: 'Restore Data to a replacement device. Delete a quarantined Snapshot.
-      Warning: This command will restore your endpoint data from a prior day snapshot.
-      Any changes since the snapshot date may be lost.'
+      description: 'Specify the target Restore Location. Can be: "Desktop" - if you want to restore
+        the data to the desktop on the target device, "Original" - if you want to
+        restore data to the same location from which it was backed up, or 
+        to restore the data to a custom location, specify the absolute path of the location.
+        For example,  /Users/username/Desktop'
+    description: 'Restores data to a replacement device and deletes a quarantined Snapshot.
+      This command restores your endpoint data from a day prior to the snapshot.
+      Any changes made after the snapshot date may be lost.'
     execution: true
   - name: druva-endpoint-check-restore-status
     arguments:
     - name: restore_id
       required: true
-      description: Job ID of Restore
-    description: Check Restore Job Status
+      description: The restore ID of the job.
+    description: Checks the restore job status of the endpoint.
   - name: druva-endpoint-decommission
     arguments:
     - name: resource_id
       required: true
       description: ID of endpoint resource to be decommissioned
-    description: 'Remote Wipe Infected Endpoint Resource. Delete a quarantined Snapshot.
-      Warning: This command will remote wipe data from the end point. This action
-      can not be undone.'
+    description: 'Wipes remotely an infected Endpoint Resource and deletes a quarantined Snapshot.
+      This command remote wipes data from the endpoint. This action
+      cannot be undone.'
     execution: true
   dockerimage: demisto/python3:3.8.3.9324
   isfetch: false
