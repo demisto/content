@@ -605,7 +605,8 @@ class Client(BaseClient):
         query_params = {'sysparm_input_display_value': input_display_value}
         return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', params=query_params, body=body)
 
-    def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {}) -> dict:
+    def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {},
+               input_display_value: bool = False) -> dict:
         """Creates a ticket or a record by sending a POST request.
 
         Args:
@@ -613,12 +614,14 @@ class Client(BaseClient):
         record_id: record id
         fields: fields to update
         custom_fields: custom_fields to update
+        input_display_value: whether to set field values using the display value or the actual value.
 
         Returns:
             Response from API.
         """
         body = generate_body(fields, custom_fields)
-        return self.send_request(f'table/{table_name}', 'POST', body=body)
+        query_params = {'sysparm_input_display_value': input_display_value}
+        return self.send_request(f'table/{table_name}', 'POST', params=query_params, body=body)
 
     def delete(self, table_name: str, record_id: str) -> dict:
         """Deletes a ticket or a record by sending a DELETE request.
@@ -873,6 +876,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     additional_fields = split_fields(str(args.get('additional_fields', '')))
     additional_fields_keys = list(additional_fields.keys())
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     if template:
         template = client.get_template(template)
@@ -880,7 +884,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     if additional_fields:
         fields.update(additional_fields)
 
-    result = client.create(ticket_type, fields, custom_fields)
+    result = client.create(ticket_type, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
