@@ -31,6 +31,7 @@ Fetches indicators from a file.
 ---
 
 Indicators from indicator.csv:
+
 |value|type|
 |---|---|
 | demisto.com | Domain |
