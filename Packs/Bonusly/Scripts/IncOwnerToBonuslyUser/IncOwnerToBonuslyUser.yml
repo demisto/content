@@ -6,14 +6,13 @@ args:
   required: true
   secret: false
 - default: false
-  description: Enter the XSOAR Incident Owner Username (This will lookup the Incident
-    Owners Email Address)
+  description: The username of the Cortex XSOAR incident owner. This will look up the incident
+    owner's email address.
   isArray: false
   name: owner
   required: true
   secret: false
-comment: 'This script will get the owner of the incidents email address and then return
-  the Bonusly username '
+comment: 'This script gets the email address of the incident owner and then returns the incident owner's username in Bonusly. '
 commonfields:
   id: IncOwnerToBonuslyUser
   version: -1
@@ -21,10 +20,10 @@ enabled: true
 name: IncOwnerToBonuslyUser
 outputs:
 - contextPath: IncOwnerEmail
-  description: Incident Owners Email Address
+  description: Email address of the incident owner.
   type: Unknown
 - contextPath: BonuslyUser
-  description: Incident Owner Email Converted To Bonusly Username
+  description: Usernname in Bonusly of the incident owner.
   type: Unknown
 script: '-'
 subtype: python3
