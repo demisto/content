@@ -3,7 +3,6 @@ import os
 import demistomock as demisto
 import pytest
 from TrendMicroApex import list_logs_command, Client
-from pytest import raises
 
 MOCK_URL = "https://TrendMicro-fake-api.com"
 MOCK_API_KEY = "a1b2c3d4e5"
@@ -53,10 +52,9 @@ def test_list_logs_command(requests_mock, mocker):
 
     response = list_logs_command(client, args)
     outputs = response.outputs
-    logs = outputs.get('Logs')
-    assert logs
-    assert len(logs) == 5
-    assert logs[0].get('DeviceVendor')  # check that the cef parse was successful
+    assert outputs
+    assert len(outputs) == 5
+    assert outputs[0].get('DeviceVendor')  # check that the cef parse was successful
     assert 'Logs List' in response.readable_output
     assert response.outputs_prefix == 'TrendMicroApex.Log'
 
@@ -299,10 +297,10 @@ def test_verify_format_and_convert_to_timestamp(since_time, is_valid):
             assert "'since_time' argument should be in one of the following formats:" in str(error)
 
 
-def test_convert_timestamps_to_readable():
+def test_convert_timestamps_and_scan_type_to_readable():
     """ Unit test
     Given
-        - convert_timestamps_to_readable helper function
+        - convert_timestamps_and_scan_type_to_readable helper function
     When
         - function arg is a list containing timestamp values
 
@@ -340,7 +338,7 @@ def test_convert_timestamps_to_readable():
             "scanSummaryGuid": "80e5f8b4-3419-455d-99ce-9699ead90781",
             "status": 3,
             "statusForUI": 3,
-            "scanType": 2,
+            "scanType": "YARA rule file",
             "submitTime": '2020-07-26T17:02:03+00:00',
             "finishTime": '2020-07-27T17:04:03+00:00',
             "name": "Test1",
@@ -350,12 +348,12 @@ def test_convert_timestamps_to_readable():
             "scanSummaryGuid": "5023de82-464e-4694-91a3-f27a48b42ba4",
             "status": 3,
             "statusForUI": 3,
-            "scanType": 2,
+            "scanType": "YARA rule file",
             "submitTime": '2020-07-26T14:14:37+00:00',
             "finishTime": '2020-07-27T14:15:03+00:00',
             "triggerTime": '2020-07-26T14:15:02+00:00',
             "name": "Test2",
         }
     ]
-    result_list = Client.convert_timestamps_to_readable(test_list)
+    result_list = Client.convert_timestamps_and_scan_type_to_readable(test_list)
     assert expected_list == result_list

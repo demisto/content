@@ -1,4 +1,4 @@
-from typing import Dict, Optional, List, Tuple, Any
+from typing import Dict, List
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -295,14 +295,14 @@ class Client(BaseClient):
         return response
 
     @staticmethod
-    def convert_timestamps_to_readable(results_list):
+    def convert_timestamps_and_scan_type_to_readable(results_list):
         """
-        For every item in the list, convert the time values from timestamp to human readable
+        For every item in the list, convert the time values and the scan_type values to human readable
         Args:
             results_list: List of results returned from the API
 
         Returns:
-            list. The updated list with the readable time values
+            list. The updated list with the readable time and type values
         """
         time_keys = ['triggerTime', 'submitTime', 'finishTime']
         for result in results_list:
@@ -530,8 +530,8 @@ class Client(BaseClient):
 
         if time_range_type == 'Specific':
             # TODO convert times to unix timestamps
-            payload["timeRange"]["startUnixTime"] = time_range_start
-            payload["timeRange"]["endUnixTime"] = time_range_end
+            payload["timeRange"] = {"startUnixTime": time_range_start}
+            payload["timeRange"] = {"endUnixTime": time_range_end}
 
         if agent_guids:
             payload = self.update_agents_info_in_payload(payload, agent_guids)
@@ -665,7 +665,8 @@ class Client(BaseClient):
         general_investigation_args = {key: value for key, value in args.items() if
                                       key in GENERAL_INVESTIGATION_ARGS}  # take all general investigation args
 
-        payload = self.build_investigation_payload(**general_investigation_args, scan_type='Custom criteria')
+        general_investigation_args['scan_type'] = 'Custom criteria'  # hardcoded value
+        payload = self.build_investigation_payload(**general_investigation_args)
 
         [args.pop(key) for key in
          general_investigation_args.keys()]  # args now contains only the special investigation args
@@ -761,9 +762,9 @@ class Client(BaseClient):
         self.validate_response(response, error_message='The historical investigation creation was unsuccessful')
         return response
 
-    def create_result_list_payload(self, limit, offset, scan_type, filter_by_task_name: str = '', filter_by_creator_name: str = '',
-                                   filter_by_scan_type: str = '', filter_by_criteria_name: str = '',
-                                   scan_schedule_id: str = ''):
+    def create_result_list_payload(self, limit, offset, scan_type, filter_by_task_name: str = '',
+                                   filter_by_creator_name: str = '', filter_by_scan_type: str = '',
+                                   filter_by_criteria_name: str = '', scan_schedule_id: str = ''):
         payload = {
             "pagination": {
                 "limit": int(limit),
@@ -793,7 +794,7 @@ class Client(BaseClient):
 
         return payload
 
-    def investigation_result_list(self, scan_type: str, limit: str = 50, offset: str = 0, filter_by_task_name: str = '',
+    def investigation_result_list(self, scan_type: str, limit: str = '50', offset: str = '0', filter_by_task_name: str = '',
                                   filter_by_creator_name: str = '', filter_by_scan_type: str = '',
                                   filter_by_criteria_name: str = '', scan_schedule_id: str = ''):
 
@@ -815,9 +816,10 @@ class Client(BaseClient):
 
         return response
 
-    def create_result_list_by_status_payload(self, limit: str, offset: str, scan_type: str, scan_status: str, scan_summary_guid: str,
-                                             endpoint_name: str = '', endpoint_ip_address: str = '',
-                                             endpoint_operating_system: str = '', endpoint_user_name: str = ''):
+    def create_result_list_by_status_payload(self, limit: str, offset: str, scan_type: str, scan_status: str,
+                                             scan_summary_guid: str, endpoint_name: str = '',
+                                             endpoint_ip_address: str = '', endpoint_operating_system: str = '',
+                                             endpoint_user_name: str = ''):
         payload = {
             "pagination": {
                 "limit": int(limit),
@@ -843,8 +845,8 @@ class Client(BaseClient):
 
         return payload
 
-    def investigation_result_list_by_status(self, scan_status: str, scan_summary_guid: str = '', scan_type: str= "",
-                                            limit: str = 50, offset: str = 0, endpoint_name: str = '',
+    def investigation_result_list_by_status(self, scan_status: str, scan_summary_guid: str = '', scan_type: str = "",
+                                            limit: str = '50', offset: str = '0', endpoint_name: str = '',
                                             endpoint_ip_address: str = '',
                                             endpoint_operating_system: str = '',
                                             endpoint_user_name: str = ''):
@@ -993,7 +995,7 @@ def list_logs_command(client: Client, args):
     readable_output = tableToMarkdown('Logs List', parsed_logs_list, removeNull=True)
     context = parsed_logs_list
 
-    return CommandResults(
+    return CommandResults(  # TODO insert a key_field
         readable_output=readable_output,
         outputs_prefix='TrendMicroApex.Log',
         outputs=context,
@@ -1081,7 +1083,7 @@ def endpoint_sensors_list_command(client: Client, args):
         for content_item in content_list:
             agent = content_item.get('content', {}).get('agentEntity', [])
             if agent:
-                if agent.get('isolateStatus'):
+                if agent[0].get('isolateStatus'):
                     agent['isolateStatus'] = AGENT_ISOLATION_STATUS_NUM_TO_VALUE[agent['isolateStatus']]
                 human_readable_table.append(agent[0])
 
@@ -1104,7 +1106,7 @@ def process_terminate_command(client: Client, args):
     if response:
         readable_output = 'The process terminated successfully.'
 
-    return CommandResults(
+    return CommandResults(  # TODO insert a key_field
         readable_output=readable_output,
         outputs_prefix='TrendMicroApex.TerminatedProcess',
         outputs_key_field='',
@@ -1115,10 +1117,10 @@ def process_terminate_command(client: Client, args):
 def create_investigation_from_file(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
     response = client.create_file_investigation(**assign_params(**args))
-    return CommandResults(
-        readable_output=readable_output,
+    return CommandResults(  # TODO fill command results
+        # readable_output=readable_output,
         outputs_prefix='TrendMicroApex.FileInvestigation',
-        outputs=human_readable_table,
+        # outputs={},
         outputs_key_field='',
         raw_response=response
     )
@@ -1127,10 +1129,10 @@ def create_investigation_from_file(client: Client, args):
 def create_investigation_from_registry(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
     response = client.create_registry_investigation(**assign_params(**args))
-    return CommandResults(
-        readable_output=readable_output,
+    return CommandResults(  # TODO fill command results
+        # readable_output=readable_output,
         outputs_prefix='TrendMicroApex.RegistryInvestigation',
-        outputs=human_readable_table,
+        # outputs={},
         outputs_key_field='',
         raw_response=response
     )
@@ -1139,10 +1141,10 @@ def create_investigation_from_registry(client: Client, args):
 def create_custom_live_investigation(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
     response = client.create_custom_investigation(args)
-    return CommandResults(
-        readable_output=readable_output,
+    return CommandResults(  # TODO fill command results
+        # readable_output=readable_output,
         outputs_prefix='TrendMicroApex.CustomInvestigation',
-        outputs=human_readable_table,
+        outputs={},
         outputs_key_field='',
         raw_response=response
     )
@@ -1151,10 +1153,10 @@ def create_custom_live_investigation(client: Client, args):
 def create_scheduled_investigation(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
     response = client.create_scheduled_investigation(args)
-    return CommandResults(
-        readable_output=readable_output,
+    return CommandResults(  # TODO fill command results
+        # readable_output=readable_output,
         outputs_prefix='TrendMicroApex.ScheduledInvestigation',
-        outputs=human_readable_table,
+        outputs={},
         outputs_key_field='',
         raw_response=response
     )
@@ -1189,7 +1191,7 @@ def investigation_result_list_command(client: Client, args):
         if content_list:
             results_list = content_list[0].get('content', {}).get('scanSummaryEntity')
             if results_list:
-                context = results_list = client.convert_timestamps_to_readable(results_list)
+                context = results_list = client.convert_timestamps_and_scan_type_to_readable(results_list)
 
             headers = ['name', 'scanSummaryId', 'scanSummaryGuid', 'submitTime', 'serverGuidList', 'creator']
             readable_output = tableToMarkdown('Investigation result list:', results_list, headers=headers)
@@ -1214,14 +1216,10 @@ def investigation_result_list_by_status_command(client: Client, args):
                 results_list = content_list[0].get('content', {}).get('scanEntity', [])
 
                 if results_list:
-                    for result in results_list:
-                        if result.get('submitTime'):
-                            result['submitTime'] = datetime.fromtimestamp(result.get('submitTime'),
-                                                                          timezone.utc).isoformat()
+                    context = results_list = client.convert_timestamps_and_scan_type_to_readable(results_list)
 
                 headers = ['name', 'scanSummaryGuid', 'submitTime', 'agentGuid', 'serverGuid', 'creator']
                 readable_output = tableToMarkdown('Investigation result list by status:', results_list, headers=headers)
-                context = results_list
 
     return CommandResults(
         readable_output=readable_output,
@@ -1304,23 +1302,22 @@ def main():
             test_result = test_module(client)
             return_results(test_result)
 
-        elif command == 'fetch-incidents':
-
-            first_fetch_time = arg_to_timestamp(
-                arg=demisto.params().get('first_fetch', '3 days'),
-                arg_name='First fetch time',
-                required=True
-            )
-
-            next_run, incidents = fetch_incidents(
-                client=client,
-                last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time,
-                log_type=demisto.params().get('log_type')
-            )
-
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
+        # elif command == 'fetch-incidents':
+            # first_fetch_time = arg_to_timestamp(
+            #     arg=demisto.params().get('first_fetch', '3 days'),
+            #     arg_name='First fetch time',
+            #     required=True
+            # )
+            #
+            # next_run, incidents = fetch_incidents(
+            #     client=client,
+            #     last_run=demisto.getLastRun(),
+            #     first_fetch_time=first_fetch_time,
+            #     log_type=demisto.params().get('log_type')
+            # )
+            #
+            # demisto.setLastRun(next_run)
+            # demisto.incidents(incidents)
 
         elif command == 'trendmicro-apex-udso-list':
             return_results(udso_list_command(client, demisto.args()))
