@@ -2880,6 +2880,10 @@
             "timeout": 500
         },
         {
+            "integrations": "RSA Archer v2",
+            "playbookID": "Archer v2 - Test"
+        },
+        {
             "integrations": "Ivanti Heat",
             "playbookID": "Ivanti Heat - Test"
         },
