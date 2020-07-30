@@ -96,10 +96,6 @@ script:
     description: Command to dismiss multiple alerts matching the specified filters.
     execution: false
     name: microsoft-cas-alert-dismiss-bulk
-    outputs:
-    - contextPath: MicrosoftCloudAppSecurity.AlertDismiss.dismissed
-      description: AlertDismiss dismissed
-      type: Number
   - arguments:
     - default: false
       description: Skips the specified number of records.
@@ -320,10 +316,6 @@ script:
     description: Command to resolve multiple alerts matching the specified filters.
     execution: false
     name: microsoft-cas-alert-resolve-bulk
-    outputs:
-    - contextPath: MicrosoftCloudAppSecurity.AlertResolve.resolved
-      description: AlertResolved resolved
-      type: Number
   - arguments:
     - default: false
       defaultValue: '50'

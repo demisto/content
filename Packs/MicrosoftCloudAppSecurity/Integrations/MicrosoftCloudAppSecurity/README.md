@@ -41,10 +41,7 @@ Command to dismiss multiple alerts matching the specified filters.
 
 
 #### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MicrosoftCloudAppSecurity.AlertDismiss.dismissed | Number | AlertDismiss dismissed | 
+Because the api does not return a value relevant to this command, this command has no outputs.
 
 
 #### Command Example
@@ -54,11 +51,6 @@ Command to dismiss multiple alerts matching the specified filters.
 ```
 {}
 ```
-
-#### Human Readable Output
-
->Error in API call [400] - Bad Request
->{"filters": [{"error": "This field is required", "errorMessageCode": "CONSOLE_FORMS_FIELD_REQUIRED"}], "error": true}
 
 ### microsoft-cas-alerts-list
 ***
@@ -156,9 +148,7 @@ Command to resolve multiple alerts matching the specified filters.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MicrosoftCloudAppSecurity.AlertResolve.resolved | Number | AlertResolved resolved | 
+Because the api does not return a value relevant to this command, this command has no outputs.
 
 
 #### Command Example
@@ -171,8 +161,6 @@ Command to resolve multiple alerts matching the specified filters.
 
 #### Human Readable Output
 
->Error in API call [400] - Bad Request
->{"filters": [{"error": "This field is required", "errorMessageCode": "CONSOLE_FORMS_FIELD_REQUIRED"}], "error": true}
 
 ### microsoft-cas-activities-list
 ***

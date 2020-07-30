@@ -219,18 +219,18 @@ def args_or_params_to_filter(arguments, url_suffix='', args_or_params='args'):
     return request_data
 
 
-def build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, specific_id_to_search=''):
+def build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, specific_id_to_search=''):
     request_data = {}
     if specific_id_to_search:
         url_suffix += specific_id_to_search
-    elif customer_filters:
-        request_data = json.loads(customer_filters)
+    elif custom_filter:
+        request_data = json.loads(custom_filter)
     else:
         request_data = args_or_params_to_filter(arguments, url_suffix)
     return request_data, url_suffix
 
 
-def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filters, comments):
+def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comments):
     request_data = {}
     filters = {}
     if alert_ids:
@@ -239,8 +239,8 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filters, c
         if comments:
             request_data['comment'] = comments
         request_data['filters'] = filters
-    elif customer_filters:
-        request_data = json.loads(customer_filters)
+    elif custom_filter:
+        request_data = json.loads(custom_filter)
     return request_data
 
 
@@ -260,7 +260,7 @@ def test_module(client):
 
 def alert_to_human_readable(alert):
     readable_output = assign_params(alert_id=alert.get('_id'), title=alert.get('title'),
-                                    description=alert.get('description'),
+                                    description=alert.get('description'), is_open=alert.get('is_open'),
                                     status_value=[key for key, value in STATUS_OPTIONS.items()
                                                   if alert.get('statusValue') == value],
                                     severity_value=[key for key, value in SEVERITY_OPTIONS.items()
@@ -276,7 +276,7 @@ def alerts_to_human_readable(alerts, alert_id):
             alerts_readable_outputs.append(alert_to_human_readable(alert))
     else:
         alerts_readable_outputs = alert_to_human_readable(alerts)
-    headers = ['alert_id', 'alert_date', 'title', 'description', 'status_value', 'severity_value']
+    headers = ['alert_id', 'alert_date', 'title', 'description', 'status_value', 'severity_value', 'is_open']
     human_readable = tableToMarkdown('Microsoft CAS Alerts', alerts_readable_outputs, headers, removeNull=True)
     return human_readable
 
@@ -296,17 +296,34 @@ def arrange_alerts_descriptions(alerts, alert_id):
     return alerts
 
 
+def set_alert_is_open(alert):
+    if alert.get('resolveTime'):
+        alert['is_open'] = False
+    else:
+        alert['is_open'] = True
+
+
+def set_alerts_is_open(alerts, alert_id):
+    if not alert_id:
+        for alert in alerts:
+            set_alert_is_open(alert)
+    else:
+        set_alert_is_open(alerts)
+    return alerts
+
+
 def list_alerts_command(client, args):
     url_suffix = '/alerts/'
     alert_id = args.get('alert_id')
-    customer_filters = args.get('customer_filters')
+    custom_filter = args.get('custom_filter')
     arguments = assign_params(skip=args.get('skip'), limit=args.get('limit'), severity=args.get('severity'),
                               service=args.get('service'), instance=args.get('instance'),
                               resolution_status=args.get('resolution_status'), username=args.get('username'))
-    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, alert_id)
+    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, alert_id)
     alerts = client.list_alerts(url_suffix, request_data)
     alerts = arrange_alerts_by_incident_type(alerts)
     alerts = arrange_alerts_descriptions(alerts, alert_id)
+    alerts = set_alerts_is_open(alerts, alert_id)
     human_readable = alerts_to_human_readable(alerts, alert_id)
     return CommandResults(
         readable_output=human_readable,
@@ -318,28 +335,28 @@ def list_alerts_command(client, args):
 
 def bulk_dismiss_alert_command(client, args):
     alert_ids = args.get('alert_ids')
-    customer_filters = args.get('customer_filters')
+    custom_filter = args.get('custom_filter')
     comment = args.get('comment')
-    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment)
+    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comment)
+    dismiss_alerts_data = {}
     try:
-        dismiss_alerts = client.dismiss_bulk_alerts(request_data)
+        dismiss_alerts_data = client.dismiss_bulk_alerts(request_data)
     except Exception as e:
         if 'alertsNotFound' in str(e):
             return_error('Error: This alert id is already dismiss or not found in alerts')
-    number_of_dismissed_alerts = dismiss_alerts['dismissed']
+    number_of_dismissed_alerts = dismiss_alerts_data['dismissed']
     return CommandResults(
         readable_output=f'{number_of_dismissed_alerts} alerts dismissed',
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
-        outputs_key_field='_id',
-        outputs=dismiss_alerts
+        outputs_key_field='_id'
     )
 
 
 def bulk_resolve_alert_command(client, args):
     alert_ids = args.get('alert_ids')
-    customer_filters = args.get('customer_filters')
+    custom_filter = args.get('custom_filter')
     comment = args.get('comment')
-    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filters, comment)
+    request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comment)
     resolve_alerts = client.resolve_bulk_alerts(request_data)
     number_of_resolved_alerts = resolve_alerts['dismissed']
     return CommandResults(
@@ -393,12 +410,12 @@ def arrange_entities_data(activities, activity_id):
 def list_activities_command(client, args):
     url_suffix = '/activities/'
     activity_id = args.get('activity_id')
-    customer_filters = args.get('customer_filters')
+    custom_filter = args.get('custom_filter')
     arguments = assign_params(skip=args.get('skip'), limit=args.get('limit'), service=args.get('service'),
                               instance=args.get('instance'), ip=args.get('ip'), ip_category=args.get('ip_category'),
                               username=args.get('username'), taken_action=args.get('taken_action'),
                               source=args.get('source'))
-    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, activity_id)
+    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, activity_id)
     activities = client.list_activities(url_suffix, request_data)
     if activities.get('data'):  # more than one activity
         activities = activities.get('data')
@@ -454,12 +471,12 @@ def arrange_files_type_access_level_and_status(files, file_id):
 def list_files_command(client, args):
     url_suffix = '/files/'
     file_id = args.get('file_id')
-    customer_filters = args.get('customer_filters')
+    custom_filter = args.get('custom_filter')
     arguments = assign_params(skip=args.get('skip'), limit=args.get('limit'), service=args.get('service'),
                               instance=args.get('instance'), file_type=args.get('file_type'),
                               username=args.get('username'), sharing=args.get('sharing'),
                               extension=args.get('extension'), quarantined=args.get('quarantined'))
-    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments, file_id)
+    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, file_id)
     files = client.list_files(url_suffix, request_data)
     if files.get('data'):
         files = files.get('data')
@@ -495,12 +512,12 @@ def users_accounts_to_human_readable(users_accounts, username):
 
 def list_users_accounts_command(client, args):
     url_suffix = '/entities/'
-    customer_filters = args.get('customer_filters')
+    custom_filter = args.get('custom_filter')
     arguments = assign_params(skip=args.get('skip'), limit=args.get('limit'), service=args.get('service'),
                               instance=args.get('instance'), type=args.get('type'), username=args.get('username'),
                               group_id=args.get('group_id'), is_admin=args.get('is_admin'), status=args.get('status'),
                               is_external=args.get('is_external'))
-    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, customer_filters, arguments)
+    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments)
     users_accounts = client.list_users_accounts(url_suffix, request_data)
     if users_accounts.get('data'):
         users_accounts = users_accounts.get('data')
