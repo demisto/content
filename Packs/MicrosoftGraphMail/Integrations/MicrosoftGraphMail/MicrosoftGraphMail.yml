@@ -178,8 +178,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the form
-        ''<message-id>'', can not be used.'
+      description: The message ID.
       isArray: false
       name: message_id
       required: true
@@ -283,8 +282,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the form
-        ''<message-id>'', can not be used.'
+      description: Message ID.
       isArray: false
       name: message_id
       required: true
@@ -308,8 +306,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the form
-        ''<message-id>'', can not be used.'
+      description: Message ID.
       isArray: false
       name: message_id
       required: true
@@ -349,8 +346,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the form
-        ''<message-id>'', can not be used.'
+      description: Message ID.
       isArray: false
       name: message_id
       required: true
@@ -590,8 +586,7 @@ script:
     name: msgraph-mail-delete-folder
   - arguments:
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the form
-        ''<message-id>'', can not be used.'
+      description: Message ID.
       isArray: false
       name: message_id
       required: true
@@ -632,8 +627,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the form
-        ''<message-id>'', can not be used.'
+      description: The message ID.
       isArray: false
       name: message_id
       required: true
@@ -1018,7 +1012,7 @@ script:
     description: Sends a draft email using Microsoft Graph.
     execution: false
     name: msgraph-mail-send-draft
-  dockerimage: demisto/crypto:1.0.0.8854
+  dockerimage: demisto/crypto:1.0.0.10043
   feed: false
   isfetch: true
   longRunning: false
