@@ -1,5 +1,5 @@
 {
-    "name": "Security Intelligence Services Feed",
+    "name": "SecurityIntelligenceServicesFeed",
     "description": "A PassiveTotal with Security Intelligence Services Feed can provide you newly observed Domain, Host, Malware, Phishing and Scam Blacklist.",
     "support": "partner",
     "currentVersion": "1.0.0",

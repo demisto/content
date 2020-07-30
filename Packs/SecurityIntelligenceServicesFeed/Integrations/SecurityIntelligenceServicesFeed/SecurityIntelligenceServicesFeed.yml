@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Security Intelligence Services Feed
+  id: SecurityIntelligenceServicesFeed
   version: -1
 configuration:
 - display: S3 Access Key
@@ -70,13 +70,18 @@ configuration:
   required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  defaultvalue: "60"
+  defaultvalue: "5"
   type: 19
   required: false
+- display: Max Indicators Per Interval
+  name: MaxIndicators
+  required: true
+  defaultvalue: "2000"
+  type: 0
 - display: First Fetch Time Range (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
-  additionalinfo: All indicators from the given day(s) will be fetched.
+  additionalinfo: The historical indicators available in the time-range provided will be fetched.
   name: firstFetchInterval
-  defaultvalue: Today
+  defaultvalue: 1 day
   type: 0
   required: true
 - display: Bypass exclusion list
@@ -97,10 +102,10 @@ configuration:
   defaultvalue: "false"
   type: 8
 description: A PassiveTotal with Security Intelligence Services Feed provides you
-  with newly observed Domain, Host, Malware, Phishing, and Scam Blacklist with options
-  for Daily and Hourly ingestion available.
+  with newly observed Domain, Host, Malware, Phishing, and Scam Blacklist with
+  options for Daily and Hourly ingestion available.
 display: Security Intelligence Services Feed
-name: Security Intelligence Services Feed
+name: SecurityIntelligenceServicesFeed
 script:
   commands:
   - name: sis-get-indicators
@@ -125,7 +130,7 @@ script:
       - Malware
     - name: search
       description: Indicators that match the given search pattern will be fetched.
-  dockerimage: demisto/boto3py3:1.0.0.9909
+  dockerimage: demisto/boto3py3:1.0.0.10113
   feed: true
   isfetch: false
   longRunning: false

@@ -13,7 +13,7 @@ pytest-asyncio = "*"
 [packages]
 pytest = "*"
 requests = "*"
-python-dateutil = "*"
+dateparser = "*"
 
 [requires]
 python_version = "3.7"

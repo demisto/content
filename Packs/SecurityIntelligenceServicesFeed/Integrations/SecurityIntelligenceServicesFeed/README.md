@@ -1,9 +1,9 @@
 A PassiveTotal with Security Intelligence Services Feed provides you with newly observed Domain, Host, Malware, Phishing, and Scam Blacklist with options for Daily and Hourly ingestion available.
 This integration was integrated and tested with version xx of Security Intelligence Services Feed
-## Configure Security Intelligence Services Feed on Cortex XSOAR
+## Configure SecurityIntelligenceServicesFeed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Security Intelligence Services Feed.
+2. Search for SecurityIntelligenceServicesFeed.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
