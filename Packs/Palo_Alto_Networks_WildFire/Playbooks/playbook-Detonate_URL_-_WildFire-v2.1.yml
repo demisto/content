@@ -3,9 +3,9 @@ version: -1
 name: Detonate URL - WildFire v2.1
 fromversion: 4.0.0
 description: |-
-  The webpage detonation is only supported in US cloud.
-  Detonate a webpage or a remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
-  The detonation supports the following file types -
+  Currently, webpage detonation is only supported in US cloud.
+  Detonate a webpage or remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+  The detonation supports the following file types:
   APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
 starttaskid: "0"
 tasks:
@@ -201,7 +201,7 @@ tasks:
       id: 8089eb7a-a9e8-4efd-8c2e-74a4583af22e
       version: -1
       name: Is WildFire-v2 enabled?
-      description: Check if integration instance is enabled
+      description: Check if integration instance is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -330,7 +330,7 @@ tasks:
       id: e51f57ef-047a-4485-894b-0d99dcfb4d6f
       version: -1
       name: Was file url submission successful?
-      description: ""
+      description: "Was the file successfully submitted using the URL provided."
       type: condition
       iscommand: false
       brand: ""
@@ -369,7 +369,7 @@ tasks:
     task:
       id: 82a36b69-5d34-4346-85c2-7e8545cb16c1
       version: -1
-      name: Was upload finished successfully and a Report is Pending?
+      name: Was the file uploaded successfully and is a report pending?
       description: ""
       type: condition
       iscommand: false
@@ -517,8 +517,8 @@ tasks:
     task:
       id: 11c1bedb-67b4-4714-85b0-cbe931920d44
       version: -1
-      name: WildFire Get Report - Check If a Report already exist
-      description: Retrieves results for a file hash using WildFire.
+      name: WildFire Get Report - Check If a Report already exists
+      description: Checks if a report already exists for the file or URL submitted.
       script: '|||wildfire-report'
       type: regular
       iscommand: true
@@ -577,19 +577,19 @@ inputs:
   value:
     simple: "1"
   required: false
-  description: Duration for executing the pooling (in minutes)
+  description: Duration for executing the polling (in minutes).
   playbookInputQuery: null
 - key: Timeout
   value:
     simple: "60"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook
-    (in minutes)
+  description: The duration after which to stop polling and to resume the playbook
+    (in minutes).
   playbookInputQuery: null
 - key: ReportFileType
   value: {}
   required: false
-  description: The resource type to download. Default is pdf. xml is also possible.
+  description: The resource type to download. Default is PDF. XML is also possible.
   playbookInputQuery: null
 outputs:
 - contextPath: DBotScore
@@ -602,85 +602,85 @@ outputs:
   description: File size
   type: number
 - contextPath: File.MD5
-  description: MD5 hash of the file
+  description: MD5 hash 
   type: string
 - contextPath: File.SHA1
-  description: SHA1 hash of the file
+  description: SHA1 hash
   type: string
 - contextPath: File.Type
   description: File type e.g. "PE"
   type: string
 - contextPath: File.SHA256
-  description: SHA256 hash of the file
+  description: SHA256 hash
   type: string
 - contextPath: File.EntryID
   description: The Entry ID of the sample
   type: string
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: For malicious files, the vendor that determined that the file is malicious.
   type: string
 - contextPath: File.Name
   description: Filename
   type: string
 - contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
+  description: For malicious files, the reason the vendor determined that the file is malicious.
   type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested
+  description: The indicator we tested.
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator
+  description: The type of indicator.
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: Vendor used to calculate the score.
   type: string
 - contextPath: IP.Address
-  description: IP's relevant to the sample
+  description: IPs relevant to the sample.
   type: string
 - contextPath: File
-  description: The File object
+  description: The File object.
   type: unknown
 - contextPath: InfoFile
-  description: The report file object
+  description: The report file object.
   type: unknown
 - contextPath: InfoFile.EntryID
-  description: The EntryID of the report file
+  description: The EntryID of the report file.
   type: string
 - contextPath: InfoFile.Extension
-  description: The extension of the report file
+  description: The extension of the report file.
   type: string
 - contextPath: InfoFile.Name
-  description: The name of the report file
+  description: The name of the report file.
   type: string
 - contextPath: InfoFile.Info
-  description: The info of the report file
+  description: The info of the report file.
   type: string
 - contextPath: InfoFile.Size
-  description: The size of the report file
+  description: The size of the report file.
   type: number
 - contextPath: InfoFile.Type
-  description: The type of the report file
+  description: The type of the report file.
   type: string
 - contextPath: File.Malicious
-  description: The malicious object
+  description: The malicious object.
   type: unknown
 - contextPath: WildFire.Report
-  description: The submission object
+  description: The submission object.
   type: unknown
 - contextPath: WildFire.Report.MD5
-  description: MD5 of the submission
+  description: MD5 of the submission.
   type: string
 - contextPath: WildFire.Report.SHA256
-  description: SHA256 of the submission
+  description: SHA256 of the submission.
   type: string
 - contextPath: WildFire.Report.FileType
-  description: The type of the submission
+  description: The type of the submission.
   type: string
 - contextPath: WildFire.Report.Status
-  description: The status of the submission
+  description: The status of the submission.
   type: string
 - contextPath: WildFire.Report.Size
-  description: The size of the submission
+  description: The size of the submission.
   type: number
 - contextPath: WildFire.Report.URL
   description: URL of the submission.
