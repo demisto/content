@@ -14,7 +14,7 @@ Generates a report summary for past incidents.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| name | The name of the report to generate. |
+| name | Template name of the generated report in the incident. |
 | type | The report type to generate. |
 | ids | The incident IDs for which to generate. |
 

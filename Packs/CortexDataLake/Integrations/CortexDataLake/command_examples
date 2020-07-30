@@ -4,3 +4,4 @@
 !cdl-search-by-file-hash SHA256="cbdf1f3cccd949e6e96c425b3d7ccc463b956f002f694472e4d24a12ff2cea4d" limit=1 time_range="10 days"
 !cdl-query-traffic-logs action="allow" fields="vendor_name,log_source,rule_matched,dest_location,log_time" time_range="10 days" limit="5"
 !cdl-query-threat-logs action="allow" fields="vendor_name,log_source,rule_matched,dest_location,log_time" time_range="10 days" limit="1"
+!cdl-query-url-logs action="alert" ip="1.1.1.1" limit="1"
