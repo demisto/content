@@ -137,6 +137,7 @@ ALERT_BY_ID_DATA_CONTEXT = {
     'handledByUser': 'null',
     'idValue': 15728642,
     'isSystemAlert': False,
+    'is_open': False,
     'policy': {'id': '5f01dce13de79160fbec4150',
                'label': 'block png files',
                'policyType': 'FILE',
