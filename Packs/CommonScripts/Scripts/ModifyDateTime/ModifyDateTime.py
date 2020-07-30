@@ -6,7 +6,7 @@ import dateparser
 from typing import Optional
 
 
-def apply_variation(original_datetime: datetime = None, variation: str = None) -> Optional[datetime, None]:
+def apply_variation(original_datetime: Optional[datetime] = None, variation: str = None) -> Optional[datetime]:
     try:
         new_time = dateparser.parse(variation, settings={'RELATIVE_BASE': original_datetime})
         return new_time
