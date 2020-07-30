@@ -213,8 +213,7 @@ def create_base_time(internal_date_timestamp, header_date):
         internal_date_timestamp = int(str(internal_date_timestamp)[:timestamp_len])
 
     utc, delta_in_seconds = localization_extract(header_date)
-    base_time = datetime.utcfromtimestamp(internal_date_timestamp) + \
-                timedelta(seconds=delta_in_seconds)
+    base_time = datetime.utcfromtimestamp(internal_date_timestamp) + timedelta(seconds=delta_in_seconds)
     base_time = str(base_time.strftime('%a, %d %b %Y %H:%M:%S')) + " " + utc
     return base_time
 
@@ -417,12 +416,11 @@ def users_to_entry(title, response, next_page_token=None):
     context = []
 
     for user_data in response:
-        username = user_data.get('name').get('givenName') if user_data.get('name') \
-                                                             and 'givenName' in user_data.get('name') else None
+        username = user_data.get('name').get('givenName') if user_data.get('name') and 'givenName' in \
+                                                             user_data.get('name') else None
 
-        display = user_data.get('name').get('fullName') if user_data.get('name') \
-                                                           and 'fullName' in user_data.get('name') else None
-
+        display = user_data.get('name').get('fullName') if user_data.get('name') and 'fullName' in \
+                                                           user_data.get('name') else None
         context.append({
             'Type': 'Google',
             'ID': user_data.get('id'),
@@ -1672,7 +1670,6 @@ def attachment_handler(message, attachments):
 
 def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
               transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
-    message = MIMEMultipart()
     demisto.log("the body is " + str(body))
     demisto.log("the attach_cid is " + str(attach_cid))
     demisto.log("htmlBody is " + str(htmlBody))
@@ -1686,6 +1683,8 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         # if there is only body and no attachments to the mail , we would like to send it without attaching every part
         demisto.log("entered to only body without attachments")
         message = MIMEText(body, 'plain', 'utf-8')
+    else:
+        message = MIMEMultipart()
 
     message['to'] = header(','.join(emailto))
     message['cc'] = header(','.join(cc))
