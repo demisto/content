@@ -77,14 +77,14 @@ class MicrosoftClient(BaseClient):
             self.resource = resource
             self.scope = scope
             self.redirect_uri = redirect_uri
-            self.multi_resource = multi_resource
-
-            if self.multi_resource:
-                self.resources = resources
-                self.resource_to_access_token = {}
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
+
+        self.multi_resource = multi_resource
+        if self.multi_resource:
+            self.resources = resources
+            self.resource_to_access_token = {}
 
     def http_request(self, *args, resp_type='json', headers=None, return_empty_response=False, resource='', **kwargs):
         """
@@ -99,6 +99,7 @@ class MicrosoftClient(BaseClient):
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
+
         if headers:
             default_headers.update(headers)
 
@@ -159,6 +160,7 @@ class MicrosoftClient(BaseClient):
                 for resource in self.resources:
                     access_token, expires_in, refresh_token = self._oproxy_authorize(resource)
                     self.resource_to_access_token[resource] = access_token
+                    self.refresh_token = refresh_token
         else:
             access_token, expires_in, refresh_token = self._get_self_deployed_token(refresh_token)
         time_now = self.epoch_seconds()

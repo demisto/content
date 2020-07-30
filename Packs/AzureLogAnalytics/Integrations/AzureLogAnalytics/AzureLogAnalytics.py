@@ -114,22 +114,31 @@ def flatten_saved_search_object(saved_search_obj):
     ret['id'] = saved_search_obj.get('id').split('/')[-1]
     ret['etag'] = saved_search_obj.get('etag')
     ret['type'] = saved_search_obj.get('type')
+    if ret.get('tags'):
+        ret['tags'] = json.dumps(ret.get('tags'))
 
     return ret
 
 
-def parse_tags(tags):
+def tags_arg_to_request_format(tags):
+    bad_arg_msg = 'The `tags` argument is malformed. ' \
+                  'Value should be in the following format: `name=value;name=value`'
     if not tags:
         return None
     try:
         tags = tags.split(';')
         tags = [tag.split('=') for tag in tags]
+
+        for tag in tags:
+            if len(tag) != 2:
+                return_error(bad_arg_msg)
+
         return [{
-            tag[0]: tag[1]
+            'name': tag[0],
+            'value': tag[1]
         } for tag in tags]
     except IndexError:
-        raise ValueError('The `tags` argument is malformed. '
-                         'Value should be in the following format: `name=value;name=value`')
+        return_error(bad_arg_msg)
 
 
 ''' INTEGRATION COMMANDS '''
@@ -143,12 +152,13 @@ def test_connection(client, params):
 
 
 def execute_query_command(client, args):
-    workspace_id = args.get('workspace_id')
+    query = args.get('query')
+    workspace_id = demisto.params().get('workspaceID')
     full_url = f'https://api.loganalytics.io/v1/workspaces/{workspace_id}/query'
 
     data = {
         "timespan": args.get('timespan'),
-        "query": args.get('query'),
+        "query": query,
         "workspaces": argToList(args.get('workspaces'))
     }
 
@@ -168,13 +178,15 @@ def execute_query_command(client, args):
                                            headerTransform=pascalToSpace,
                                            removeNull=True)
         output.append({
-            'name': name,
-            'data': data
+            'TableName': name,
+            'Data': data,
+            'Query': query
         })
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureLogAnalytics.Query',
+        outputs_key_field='Query',
         outputs=output,
         raw_response=response
     )
@@ -233,20 +245,30 @@ def get_saved_search_by_id_command(client, args):
 
 def create_or_update_saved_search_command(client, args):
     saved_search_id = args.get('saved_search_id')
+    etag = args.get('etag')
+    category = args.get('category')
+    display_name = args.get('display_name')
+    query = args.get('query')
+
+    if not etag and not (category and query and display_name):
+        return_error('You must specify category, display_name and query arguments for creating a new saved search.')
     url_suffix = f'/savedSearches/{saved_search_id}'
 
     data = {
       'properties': {
-        'category': args.get('category'),
-        'displayName': args.get('display_name'),
+        'category': category,
+        'displayName': display_name,
         'functionAlias': args.get('function_alias'),
         'functionParameters': args.get('function_parameters'),
-        'query': args.get('query'),
-        'tags': parse_tags(args.get('tags'))
+        'query': query,
+        'tags': tags_arg_to_request_format(args.get('tags'))
       }
     }
 
     remove_nulls_from_dictionary(data.get('properties'))
+
+    if etag:
+        data['etag'] = etag
 
     response = client.http_request('PUT', url_suffix, data=data, resource=AZURE_MANAGEMENT_RESOURCE)
     output = flatten_saved_search_object(response)
@@ -285,14 +307,14 @@ def main():
     try:
         client = Client(
             self_deployed=params.get('self_deployed', False),
-            auth_and_token_url=params.get('auth_id', ''),
-            refresh_token=params.get('refresh_token', ''),
-            enc_key=params.get('enc_key', ''),
+            auth_and_token_url=params.get('auth_id'),
+            refresh_token=params.get('refresh_token'),
+            enc_key=params.get('enc_key'),
             redirect_uri=params.get('redirect_uri', ''),
-            auth_code=params.get('auth_code', ''),
-            subscription_id=params.get('subscriptionID', ''),
-            resource_group_name=params.get('resourceGroupName', ''),
-            workspace_name=params.get('workspaceName', ''),
+            auth_code=params.get('auth_code'),
+            subscription_id=params.get('subscriptionID'),
+            resource_group_name=params.get('resourceGroupName'),
+            workspace_name=params.get('workspaceID'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False)
         )

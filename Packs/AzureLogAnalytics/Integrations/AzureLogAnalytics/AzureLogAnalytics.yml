@@ -39,8 +39,8 @@ configuration:
   name: resourceGroupName
   required: true
   type: 0
-- display: Workspace Name
-  name: workspaceName
+- display: Workspace ID (the UUID of the workspace, e.g. 123e4567-e89b-12d3-a456-426614174000)
+  name: workspaceID
   required: true
   type: 0
 - display: Trust any certificate (not secure)
@@ -59,13 +59,6 @@ script:
   commands:
   - arguments:
     - default: false
-      description: ID of the workspace. This is Workspace ID from the Properties blade
-        in the Azure portal.
-      isArray: false
-      name: workspace_id
-      required: true
-      secret: false
-    - default: false
       description: The query to execute.
       isArray: false
       name: query
@@ -79,16 +72,17 @@ script:
       name: timespan
       required: false
       secret: false
-    - default: false
-      description: A comma-separated list of workspaces that are included in the query.
-      isArray: false
-      name: workspaces
-      required: false
-      secret: false
     deprecated: false
     description: Executes an Analytics query for data.
     execution: false
     name: azure-log-analytics-execute-query
+    outputs:
+    - contextPath: AzureLogAnalytics.Query.Query
+      description: The executed query.
+      type: String
+    - contextPath: AzureLogAnalytics.Query.TableName
+      description: The name of the query table.
+      type: String
   - deprecated: false
     description: Tests connectivity to Azure Log Analytics.
     execution: false
@@ -115,7 +109,7 @@ script:
     name: azure-log-analytics-saved-search-list
     outputs:
     - contextPath: AzureLogAnalytics.SavedSearch.id
-      description: Fully qualified resource Id for the resource, e.g. /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+      description: The ID of the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.etag
       description: The ETag of the saved search.
@@ -139,11 +133,8 @@ script:
     - contextPath: AzureLogAnalytics.SavedSearch.query
       description: The query expression for the saved search.
       type: String
-    - contextPath: AzureLogAnalytics.SavedSearch.tags.name
-      description: The name of a tag attached to the saved search.
-      type: String
-    - contextPath: AzureLogAnalytics.SavedSearch.tags.value
-      description: The value of a tag attached to the saved search.
+    - contextPath: AzureLogAnalytics.SavedSearch.tags
+      description: The tags attached to the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.version
       description: The version number of the query language. The current version is
@@ -166,7 +157,7 @@ script:
     name: azure-log-analytics-get-saved-search-by-id
     outputs:
     - contextPath: AzureLogAnalytics.SavedSearch.id
-      description: Fully qualified resource Id for the resource, e.g. /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+      description: The ID of the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.etag
       description: The ETag of the saved search.
@@ -190,11 +181,8 @@ script:
     - contextPath: AzureLogAnalytics.SavedSearch.query
       description: The query expression for the saved search.
       type: String
-    - contextPath: AzureLogAnalytics.SavedSearch.tags.name
-      description: The name of a tag attached to the saved search.
-      type: String
-    - contextPath: AzureLogAnalytics.SavedSearch.tags.value
-      description: The value of a tag attached to the saved search.
+    - contextPath: AzureLogAnalytics.SavedSearch.tags
+      description: The tags attached to the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.version
       description: The version number of the query language. The current version is
@@ -210,6 +198,13 @@ script:
       isArray: false
       name: saved_search_id
       required: true
+      secret: false
+    - default: false
+      description: The ETag of the saved search. This argument is required for updating
+        an existing saved search.
+      isArray: false
+      name: etag
+      required: false
       secret: false
     - default: false
       description: The category of the saved search. This helps the user to find a
@@ -258,7 +253,7 @@ script:
     name: azure-log-analytics-saved-search-create-or-update
     outputs:
     - contextPath: AzureLogAnalytics.SavedSearch.id
-      description: Fully qualified resource Id for the resource, e.g. /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+      description: The id of the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.etag
       description: The ETag of the saved search.
@@ -282,11 +277,8 @@ script:
     - contextPath: AzureLogAnalytics.SavedSearch.query
       description: The query expression for the saved search.
       type: String
-    - contextPath: AzureLogAnalytics.SavedSearch.tags.name
-      description: The name of a tag attached to the saved search.
-      type: String
-    - contextPath: AzureLogAnalytics.SavedSearch.tags.value
-      description: The value of a tag attached to the saved search.
+    - contextPath: AzureLogAnalytics.SavedSearch.tags
+      description: The tags attached to the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.version
       description: The version number of the query language. The current version is
