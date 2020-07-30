@@ -253,7 +253,7 @@ def test_module(client):
         if 'No connection' in str(e):
             return 'Connection Error: The URL you entered is probably incorrect, please try again.'
         if 'Invalid token' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set.'
+            return 'Authorization Error: make sure API Key is correctly set'
         return str(e)
     return 'ok'
 
