@@ -1,16 +1,18 @@
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 import dateparser
+from typing import Optional
 
 
-def apply_variation(original_datetime: datetime = None, variation: str = None) -> datetime:
-    new_time = dateparser.parse("2020-01-01")
+def apply_variation(original_datetime: datetime = None, variation: str = None) -> Optional[datetime, None]:
     try:
         new_time = dateparser.parse(variation, settings={'RELATIVE_BASE': original_datetime})
+        return new_time
+
     except Exception as err:
         return_error(f"Error adding variation to the date / time - {err}")
-    return new_time
 
 
 def main():
