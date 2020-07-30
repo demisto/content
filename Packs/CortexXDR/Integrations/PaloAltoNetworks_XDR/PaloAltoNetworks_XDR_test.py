@@ -756,6 +756,14 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
 
 
 def test_sort_all_lists_incident_fields():
+    """
+    Given:
+        -  A raw incident
+    When
+        - running sort_all_lists_incident_fields on it
+    Then
+        - the list fields (alerts for example) are sorted
+    """
     from PaloAltoNetworks_XDR import sort_all_lists_incident_fields
     raw_incident = load_test_data('test_data/raw_fetched_incident.json')
     sort_all_lists_incident_fields(raw_incident)
@@ -763,8 +771,22 @@ def test_sort_all_lists_incident_fields():
     assert raw_incident.get('alerts')[1].get('alert_id') == "55"
     assert raw_incident.get('alerts')[2].get('alert_id') == "60"
 
+    assert raw_incident.get('hosts')[0] == 'host1'
+    assert raw_incident.get('hosts')[1] == 'host2'
+
+    assert raw_incident.get('file_artifacts')[0].get('file_name') == 'file.exe'
+    assert raw_incident.get('file_artifacts')[1].get('file_name') == 'file2.exe'
+
 
 def test_get_mapping_fields_command():
+    """
+    Given:
+        -  nothing
+    When
+        - running get_mapping_fields_command
+    Then
+        - the result fits the expected mapping.
+    """
     from PaloAltoNetworks_XDR import get_mapping_fields_command
     expected_mapping = [{"Cortex XDR Incident": {
         "status": "Current status of the incident: \"new\",\"under_investigation\",\"resolved_threat_handled\","
@@ -780,6 +802,17 @@ def test_get_mapping_fields_command():
 
 
 def test_get_remote_data_command_should_update(requests_mock):
+    """
+    Given:
+        -  an XDR client
+        - arguments (id and lastUpdate time set to a lower than incident modification time)
+        - a raw incident (get-extra-data results)
+    When
+        - running get_remote_data_command
+    Then
+        - the mirrored_object in the GetRemoteDataResponse is the same as the modified raw incident
+        - the entries in the GetRemoteDataResponse in empty
+    """
     from PaloAltoNetworks_XDR import get_remote_data_command, Client
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1'
@@ -805,6 +838,16 @@ def test_get_remote_data_command_should_update(requests_mock):
 
 
 def test_get_remote_data_command_should_not_update(requests_mock):
+    """
+    Given:
+        -  an XDR client
+        - arguments (id and lastUpdate time set to a higher than incident modification time)
+        - a raw incident (get-extra-data results)
+    When
+        - running get_remote_data_command
+    Then
+        - returns an empty dict
+    """
     from PaloAltoNetworks_XDR import get_remote_data_command, Client
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1'
@@ -821,6 +864,17 @@ def test_get_remote_data_command_should_not_update(requests_mock):
 
 
 def test_get_remote_data_command_should_close_issue(requests_mock):
+    """
+    Given:
+        -  an XDR client
+        - arguments (id and lastUpdate time set to a lower than incident modification time)
+        - a raw incident (get-extra-data results) indicating the incident was closed on XDR side
+    When
+        - running get_remote_data_command
+    Then
+        - the mirrored_object in the GetRemoteDataResponse is the same as the modified raw incident
+        - the entries in the GetRemoteDataResponse holds the closing entry
+    """
     from PaloAltoNetworks_XDR import get_remote_data_command, Client
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1'
@@ -857,3 +911,39 @@ def test_get_remote_data_command_should_close_issue(requests_mock):
     response = get_remote_data_command(client, args)
     assert response.mirrored_object == modified_raw_incident
     assert expected_closing_entry in response.entries
+
+
+def test_get_update_args_unassgning_user():
+    """
+    Given:
+        -  a dict indicating changed fields (delta) with assigned_user_mail set to "None"
+        - the incident status - set to 1 == Active
+    When
+        - running get_update_args
+    Then
+        - update_args have assigned_user_mail and assigned_user_pretty_name set to None and unassign_user set to 'true'
+    """
+    from PaloAltoNetworks_XDR import get_update_args
+    delta = {'assigned_user_mail': 'None'}
+    update_args = get_update_args(delta, 1)
+    assert update_args.get('assigned_user_mail') is None
+    assert update_args.get('assigned_user_pretty_name') is None
+    assert update_args.get('unassign_user') == 'true'
+
+
+def test_get_update_args_close_incident():
+    """
+    Given:
+        -  a dict indicating changed fields (delta) with closeReason set to Other and a closeNotes
+        - the incident status - set to 2 == Closed
+    When
+        - running get_update_args
+    Then
+        - update_args status has the correct status (resolved_other)
+        - the resolve_comment is the same as the closeNotes
+    """
+    from PaloAltoNetworks_XDR import get_update_args
+    delta = {'closeReason': 'Other', "closeNotes": "Not Relevant"}
+    update_args = get_update_args(delta, 2)
+    assert update_args.get('status') == 'resloved_other'
+    assert update_args.get('resolve_comment') == 'Not Relevant'
