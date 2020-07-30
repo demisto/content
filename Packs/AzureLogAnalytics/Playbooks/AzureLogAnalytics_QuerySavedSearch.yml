@@ -1,7 +1,8 @@
 id: Azure Log Analytics - Query From Saved Search
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Azure Log Analytics - Query From Saved Search
+description: Executes a query from a saved search in Azure Log Analytics.
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -108,6 +110,7 @@ tasks:
       name: Done
       type: title
       iscommand: false
+      description: ""
       brand: ""
     separatecontext: false
     view: |-
@@ -154,3 +157,5 @@ outputs:
 - contextPath: AzureLogAnalytics.Query.TableName
   description: The name of the query table.
   type: string
+tests:
+- No tests
