@@ -9,7 +9,7 @@ This integration was integrated and tested with version xx of Blueliv ThreatComp
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://demisto.blueliv.com/api/v2\) | False |
+| url | Server URL (e.g. `https://demisto.blueliv.com/api/v2` ) | False |
 | credentials | Username | False |
 | organization | Organization ID | True |
 | type | Module Type | True |

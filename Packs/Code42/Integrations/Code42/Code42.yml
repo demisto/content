@@ -805,7 +805,7 @@ script:
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
       type: Unknown
-  dockerimage: demisto/py42:1.0.0.9806
+  dockerimage: demisto/py42:1.0.0.10082
   feed: false
   isfetch: true
   longRunning: false

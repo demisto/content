@@ -1,2 +1,5 @@
 [file:playbook-Access_Investigation_-_QRadar.yml]
 ignore=BA101
+
+[file:QRadar]
+ignore=PA116

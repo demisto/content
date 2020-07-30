@@ -463,6 +463,7 @@ def search_group_members(default_base_dn, page_size):
     args = demisto.args()
     member_type = args.get('member-type')
     group_dn = args.get('group-dn')
+    nested_search = '' if args.get('disable-nested-search') == 'true' else ':1.2.840.113556.1.4.1941:'
     time_limit = int(args.get('time_limit', 180))
 
     custome_attributes: List[str] = []
@@ -473,9 +474,7 @@ def search_group_members(default_base_dn, page_size):
 
     attributes = list(set(custome_attributes + default_attributes))
 
-    # neasted search
-    query = "(&(objectCategory={})(objectClass=user)(memberOf:1.2.840.113556.1.4.1941:={}))".format(member_type,
-                                                                                                    group_dn)
+    query = "(&(objectCategory={})(objectClass=user)(memberOf{}={}))".format(member_type, nested_search, group_dn)
 
     entries = search_with_paging(
         query,
