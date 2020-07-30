@@ -1,7 +1,9 @@
 import json
 import os
 import demistomock as demisto
+import pytest
 from TrendMicroApex import list_logs_command, Client
+from pytest import raises
 
 MOCK_URL = "https://TrendMicro-fake-api.com"
 MOCK_API_KEY = "a1b2c3d4e5"
@@ -28,6 +30,7 @@ MOCK_AGENTS_LIST = load_test_data('./test_data/agent_list_command_mock.json')
 MOCK_SENSORS_LIST = load_test_data('./test_data/sensors_list_command_mock.json')
 MOCK_HISTORICAL_INVESTIGATION = load_test_data('./test_data/historical_investigation_command_mock.json')
 MOCK_RESULT_LIST = load_test_data('./test_data/result_list_command_mock.json')
+MOCK_RESULT_LIST_BY_STATUS = load_test_data('./test_data/result_list_by_status_mock.json')
 
 
 def test_list_logs_command(requests_mock, mocker):
@@ -234,10 +237,10 @@ def test_investigation_result_list_command(requests_mock, mocker):
     assert response.outputs_prefix == 'TrendMicroApex.InvestigationResult'
 
 
-def test_investigation_result_list_command(requests_mock, mocker):
+def test_investigation_result_list_by_status_command(requests_mock, mocker):
     """ Unit test
     Given
-        - investigation_result_list_command command
+        - investigation_result_list_by_status command
     When
         - mock the server response to http_request.
         - mock the response to the create_jwt_token method.
@@ -245,18 +248,114 @@ def test_investigation_result_list_command(requests_mock, mocker):
     Then
         Validate the content of the CommandResult
     """
-    from TrendMicroApex import investigation_result_list_command
-    requests_mock.put(f'{MOCK_URL}/WebApp/OSCE_iES/OsceIes/ApiEntry', json=MOCK_RESULT_LIST)
+    from TrendMicroApex import investigation_result_list_by_status_command
+    requests_mock.put(f'{MOCK_URL}/WebApp/OSCE_iES/OsceIes/ApiEntry', json=MOCK_RESULT_LIST_BY_STATUS)
     mocker.patch.object(client, 'create_jwt_token', return_value="fake_token")
     args = {
-        'scan_type': 'YARA rule file'
+        'scan_type': 'YARA rule file',
+        'scan_summary_guid': 'fake_guid',
+        'scan_status': 'All'
     }
-    response = investigation_result_list_command(client, args)
+    response = investigation_result_list_by_status_command(client, args)
 
     outputs = response.outputs
     assert outputs
-    assert len(outputs) == 2
+    assert len(outputs) == 1
     assert 'Meta' not in outputs  # check that unnecessary fields was removed from the response
-    assert 'Investigation result list' in response.readable_output
-    assert outputs[0].get('submitTime') == '2020-07-26T17:02:03+00:00'  # check that time values were parsed
-    assert response.outputs_prefix == 'TrendMicroApex.InvestigationResult'
+    assert outputs[0].get('submitTime') == '2020-07-26T14:14:37+00:00'  # check that time values were parsed
+    assert 'Investigation result list by status' in response.readable_output
+    assert response.outputs_prefix == 'TrendMicroApex.InvestigationResultByStatus'
+
+
+''' HELPER FUNCTIONS'''
+
+SINCE_TIME_INPUTS = [
+    ('2020-06-21T08:00:00Z', True),
+    ('2020-06-21T08:00:00', False),  # missing 'Z' at the end
+    ('Jun 21 2020 08:00:00 GMT+00:00', True),
+    ('Jun 21 2020 08:00:00 GMT+08:00', False)  # not utc since GMT is +8
+]
+
+
+@pytest.mark.parametrize('since_time, is_valid', SINCE_TIME_INPUTS)
+def test_verify_format_and_convert_to_timestamp(since_time, is_valid):
+    """ Unit test
+    Given
+        - verify_format_and_convert_to_timestamp helper function
+    When
+        - There are two allowed date formats
+
+    Then
+        - Validate the timestamp parsing is successful
+        - Validate that error is thrown if needed
+    """
+    if is_valid:
+        timestamp = Client.verify_format_and_convert_to_timestamp(since_time)
+        assert timestamp == 1592726400
+    else:
+        try:
+            _ = Client.verify_format_and_convert_to_timestamp(since_time)
+        except ValueError as error:
+            assert "'since_time' argument should be in one of the following formats:" in str(error)
+
+
+def test_convert_timestamps_to_readable():
+    """ Unit test
+    Given
+        - convert_timestamps_to_readable helper function
+    When
+        - function arg is a list containing timestamp values
+
+    Then
+        - Validate all the timestamp values are being successful parsed
+        - Validate there are no other fields that changed.
+    """
+    test_list = [
+        {
+            "scanSummaryId": 2,
+            "scanSummaryGuid": "80e5f8b4-3419-455d-99ce-9699ead90781",
+            "status": 3,
+            "statusForUI": 3,
+            "scanType": 2,
+            "submitTime": 1595782923,
+            "finishTime": 1595869443,
+            "name": "Test1",
+        },
+        {
+            "scanSummaryId": 1,
+            "scanSummaryGuid": "5023de82-464e-4694-91a3-f27a48b42ba4",
+            "status": 3,
+            "statusForUI": 3,
+            "scanType": 2,
+            "submitTime": 1595772877,
+            "finishTime": 1595859303,
+            "triggerTime": 1595772902,
+            "name": "Test2",
+        }
+    ]
+
+    expected_list = [
+        {
+            "scanSummaryId": 2,
+            "scanSummaryGuid": "80e5f8b4-3419-455d-99ce-9699ead90781",
+            "status": 3,
+            "statusForUI": 3,
+            "scanType": 2,
+            "submitTime": '2020-07-26T17:02:03+00:00',
+            "finishTime": '2020-07-27T17:04:03+00:00',
+            "name": "Test1",
+        },
+        {
+            "scanSummaryId": 1,
+            "scanSummaryGuid": "5023de82-464e-4694-91a3-f27a48b42ba4",
+            "status": 3,
+            "statusForUI": 3,
+            "scanType": 2,
+            "submitTime": '2020-07-26T14:14:37+00:00',
+            "finishTime": '2020-07-27T14:15:03+00:00',
+            "triggerTime": '2020-07-26T14:15:02+00:00',
+            "name": "Test2",
+        }
+    ]
+    result_list = Client.convert_timestamps_to_readable(test_list)
+    assert expected_list == result_list

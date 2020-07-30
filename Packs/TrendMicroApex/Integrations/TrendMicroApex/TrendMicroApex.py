@@ -13,6 +13,7 @@ import hashlib
 import time
 import json
 from datetime import datetime, timezone
+from dateutil.parser import parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -79,6 +80,14 @@ SCAN_TYPE_TO_NUM = {
     "Disk IOC rule file": 6
 }
 
+SCAN_NUM_TO_TYPE = {
+    0: "Custom criteria",
+    1: "Windows registry",
+    2: "YARA rule file",
+    3: "IOC rule file",
+    6: "Disk IOC rule file"
+}
+
 SCAN_STATUS_TO_NUM = {
     "All": 1,
     "Matched": 2,
@@ -126,6 +135,14 @@ INVESTIGATION_RESULT_SCAN_TYPE_TO_NUM = {
     'Search Windows registry': 1,
     'Memory scan using YARA': 2,
     'Disk scan using OpenIOC': 6
+}
+
+AGENT_ISOLATION_STATUS_NUM_TO_VALUE = {
+    0: "Unknown",
+    1: "Normal",
+    2: "Isolated",
+    3: "Isolate command sent -pending",
+    4: "Restore agent from isolation -pending",
 }
 
 
@@ -208,8 +225,8 @@ class Client(BaseClient):
                                                                headers='', request_body=json.dumps(payload))}
         response = self._http_request("PUT", self.suffix, headers=headers, data=json.dumps(payload))
         if response.get('result_code', '') != 1:
-            return_error(f'There has been a problem while trying to create the file: \n'
-                         f'{response.get("result_description")}')
+            err_msg = f'Operation failed - {response.get("result_description", "")}'
+            raise ValueError(err_msg)
         return response
 
     def _prodagent_command(self, action, multi_match=False, entity_id="", ip_add="", mac_add="", host="", prod=""):
@@ -246,12 +263,24 @@ class Client(BaseClient):
         action = "cmd_restore_isolated_agent"
         return self._prodagent_command(action, multi_match, entity_id, ip_add, mac_add, host, prod)
 
+    @staticmethod
+    def verify_format_and_convert_to_timestamp(since_time: str):
+        if since_time == '0':  # '0' is the default timestamp
+            return since_time
+        if not (since_time.endswith('GMT+00:00') or since_time.endswith('Z')):
+            raise ValueError("'since_time' argument should be in one of the following formats:"
+                             "'2020-06-21T08:00:00Z', 'Jun 21 2020 08:00:00 GMT+00:00'")
+
+        since_time_timestamp = int(parse(since_time).timestamp())
+        return since_time_timestamp
+
     def logs_list(self, log_type: str, since_time: str = '0', page_token: str = '0'):
         log_type = LOG_NAME_TO_LOG_TYPE.get(log_type)
         if log_type in ["pattern_updated_status", "engine_updated_status"] and page_token != '0':
-            return_error("For 'Pattern Update Status' and 'Engine Update Status' log types, \n"
-                         "the value of page_token must be '0'.")
-        querystring = f'?output_format=1&page_token={page_token}&since_time={since_time}'
+            raise ValueError("For 'Pattern Update Status' and 'Engine Update Status' log types, \n"
+                             "the value of page_token must be '0'.")
+        since_time_timestamp = self.verify_format_and_convert_to_timestamp(since_time)
+        querystring = f'?output_format=1&page_token={page_token}&since_time={since_time_timestamp}'
         request_suffix = f'{self.suffix}/{log_type}{querystring}'
         jwt_token = self.create_jwt_token(http_method='GET', api_path=request_suffix, headers='', request_body='')
 
@@ -261,15 +290,25 @@ class Client(BaseClient):
         }
 
         response = self._http_request("GET", url_suffix=request_suffix, headers=headers)
-        return_error(json.dumps(response, indent=4))
         return response
 
     @staticmethod
     def convert_timestamps_to_readable(results_list):
-        for result in results_list:
-            if result.get('submitTime'):
-                result['submitTime'] = datetime.fromtimestamp(result.get('submitTime'), timezone.utc).isoformat()
+        """
+        For every item in the list, convert the time values from timestamp to human readable
+        Args:
+            results_list: List of results returned from the API
 
+        Returns:
+            list. The updated list with the readable time values
+        """
+        time_keys = ['triggerTime', 'submitTime', 'finishTime']
+        for result in results_list:
+            for time_key in time_keys:
+                if result.get(time_key):
+                    result[time_key] = datetime.fromtimestamp(result.get(time_key), timezone.utc).isoformat()
+            if result.get('scanType'):
+                result['scanType'] = SCAN_NUM_TO_TYPE[result['scanType']]
         return results_list
 
     @staticmethod
@@ -318,7 +357,9 @@ class Client(BaseClient):
         }
 
         response = self._http_request("GET", url_suffix=suffix, headers=headers)
-
+        if response.get('result_code') != 1:
+            err_msg = f'Operation failed - {response.get("result_description", "")}'
+            raise ValueError(err_msg)
         return response
 
     @staticmethod
@@ -383,6 +424,7 @@ class Client(BaseClient):
         if payload_filter:
             payload_data["filter"] = payload_filter
 
+        # return_error(payload_data)
         request_data = {
             "Url": "V1/Task/ShowAgentList",
             "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
@@ -395,6 +437,8 @@ class Client(BaseClient):
                                                                headers='', request_body=json.dumps(request_data))}
 
         response = self._http_request("PUT", self.suffix, headers=headers, data=json.dumps(request_data))
+        # return_error(response)
+        self.validate_response(response, error_message="Endpoint sensors list operation failed")
         return response
 
     @staticmethod
@@ -447,7 +491,7 @@ class Client(BaseClient):
     def validate_response(response, error_message):
         response_message = response.get('Data', {}).get('Message', '')
         if response_message and response_message != 'OK':
-            return_error(f'{error_message}. Reason: \n {response_message}')
+            raise DemistoException(f'{error_message}. Reason:\n{response_message}')
 
     def process_terminate_request(self, agent_guids: Dict = {}, server_guids: List = [], object_name: str = "",
                                   processes_to_terminate: List = [], filter_by_endpoint_name="",
@@ -764,15 +808,14 @@ class Client(BaseClient):
             'Content-Type': 'application/json;charset=utf-8',
             'Authorization': 'Bearer ' + self.create_jwt_token(http_method='PUT', api_path=self.suffix,
                                                                headers='', request_body=json.dumps(request_data))}
-        # return_error(json.dumps(request_data, indent=4))
         response = self._http_request("PUT", self.suffix, headers=headers, data=json.dumps(request_data))
         self.validate_response(response, 'The investigation result list command was unsuccessfu')
 
         return response
 
     def create_result_list_by_status_payload(self, limit: str, offset: str, scan_type: str, scan_status: str, scan_summary_guid: str,
-                                            filter_by_endpoint_name: str = '', filter_by_endpoint_ip_address: str = '',
-                                            filter_by_endpoint_operating_system: str = '', filter_by_endpoint_user_name: str = ''):
+                                             endpoint_name: str = '', endpoint_ip_address: str = '',
+                                             endpoint_operating_system: str = '', endpoint_user_name: str = ''):
         payload = {
             "pagination": {
                 "limit": int(limit),
@@ -784,30 +827,30 @@ class Client(BaseClient):
         }
 
         payload_filter = []
-        if filter_by_endpoint_name:
-            payload_filter.append(self.create_filter_entry(filter_by_endpoint_name, 'endpoint_name'))
-        if filter_by_endpoint_ip_address:
-            payload_filter.append(self.create_filter_entry(filter_by_endpoint_ip_address, 'endpoint_ip_address',))
-        if filter_by_endpoint_operating_system:
-            payload_filter.append(self.create_filter_entry(filter_by_endpoint_operating_system, 'endpoint_OS',))
-        if filter_by_endpoint_user_name:
-            payload_filter.append(self.create_filter_entry(filter_by_endpoint_user_name, 'endpoint_user_name'))
+        if endpoint_name:
+            payload_filter.append(self.create_filter_entry(endpoint_name, 'endpoint_name'))
+        if endpoint_ip_address:
+            payload_filter.append(self.create_filter_entry(endpoint_ip_address, 'endpoint_ip_address',))
+        if endpoint_operating_system:
+            payload_filter.append(self.create_filter_entry(endpoint_operating_system, 'endpoint_OS',))
+        if endpoint_user_name:
+            payload_filter.append(self.create_filter_entry(endpoint_user_name, 'endpoint_user_name'))
 
         if payload_filter:
             payload["filter"] = payload_filter
 
         return payload
 
-    def investigation_result_list_by_status(self, scan_type: str, scan_status: str, scan_summary_guid: str = '',
-                                            limit: str = 50, offset: str = 0, filter_by_endpoint_name: str = '',
-                                            filter_by_endpoint_ip_address: str = '',
-                                            filter_by_endpoint_operating_system: str = '',
-                                            filter_by_endpoint_user_name: str = ''):
+    def investigation_result_list_by_status(self, scan_status: str, scan_summary_guid: str = '', scan_type: str= "",
+                                            limit: str = 50, offset: str = 0, endpoint_name: str = '',
+                                            endpoint_ip_address: str = '',
+                                            endpoint_operating_system: str = '',
+                                            endpoint_user_name: str = ''):
 
         payload = self.create_result_list_by_status_payload(limit, offset, scan_type, scan_status, scan_summary_guid,
-                                                            filter_by_endpoint_name, filter_by_endpoint_ip_address,
-                                                            filter_by_endpoint_operating_system,
-                                                            filter_by_endpoint_user_name)
+                                                            endpoint_name, endpoint_ip_address,
+                                                            endpoint_operating_system,
+                                                            endpoint_user_name)
 
         request_data = {
             "Url": "V1/Task/ShowScanListByScanSummaryGuid",
@@ -819,11 +862,8 @@ class Client(BaseClient):
             'Content-Type': 'application/json;charset=utf-8',
             'Authorization': 'Bearer ' + self.create_jwt_token(http_method='PUT', api_path=self.suffix,
                                                                headers='', request_body=json.dumps(request_data))}
-        # return_error(json.dumps(request_data, indent=4))
         response = self._http_request("PUT", self.suffix, headers=headers, data=json.dumps(request_data))
-        if response.get('Data', {}).get('Message', '') != 'OK':
-            error_message = response.get('Data', {}).get('Message', '')
-            return_error(f'The investigation result list command was unsuccessful. Reason: \n{error_message}')
+        self.validate_response(response, 'The investigation result list command was unsuccessful')
         return response
 
 
@@ -843,11 +883,16 @@ def udso_list_command(client: Client, args):
     content_filter = args.get('content_filter', '')
 
     response = client.udso_list(list_type, content_filter)
+    list_data = response.get('Data')
+    readable_output = tableToMarkdown("Apex UDSO List", list_data)
 
-    data = response.get('Data')
-
-    return (tableToMarkdown("Apex UDSO List", data),
-            {"TrendMicroApex.UDSO": data}, response)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='TrendMicroApex.UDSO',
+        outputs_key_field='content',
+        outputs=list_data,
+        raw_response=response
+    )
 
 
 def udso_delete_command(client: Client, args):
@@ -856,17 +901,29 @@ def udso_delete_command(client: Client, args):
 
     response = client.udso_delete(list_type, content)
 
-    return f'UDSO {content} of type {list_type} was deleted successfully', None, response
+    readable_output = f'### UDSO "{content}" of type "{list_type}" was deleted successfully'
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response
+    )
 
 
 def udso_add_command(client: Client, args):
     add_type = args.get('type')
     content = args.get('content')
     scan_action = args.get('scan_action')
-
     response = client.udso_add(add_type=add_type, content=content, scan_action=scan_action)
 
-    return f'UDSO {content} of type {add_type} was added successfully with scan action {scan_action}', None, response
+    if response.get('Meta', {}).get('ErrorCode', '') == 0:
+        readable_output = f'### UDSO "{content}" of type "{add_type}" was added successfully with scan action ' \
+                          f'"{scan_action}"'
+    else:
+        readable_output = f'There has been a problem adding {content} UDSO to the list. Reason: \n' \
+                          f'{response.get("Meta", {}).get("ErrorMsg")}'
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response
+    )
 
 
 def prodagent_isolate_command(client: Client, args):
@@ -885,10 +942,17 @@ def prodagent_isolate_command(client: Client, args):
                                         prod=product)
     result_content = response.get('result_content', [])
     if result_content:
-        return (tableToMarkdown("Apex ProductAgent Isolate", result_content),
-                {"TrendMicroApex.ProductAgent": result_content}, response)
+        readable_output = tableToMarkdown("Apex ProductAgent Isolate", result_content)
+
     else:
-        return 'No agents were affected.', None, None
+        readable_output = '### No agents were affected.'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='TrendMicroApex.ProductAgent',
+        outputs=result_content,
+        raw_response=response
+    )
 
 
 def prodagent_restore_command(client: Client, args):
@@ -907,10 +971,16 @@ def prodagent_restore_command(client: Client, args):
                                         prod=product)
     result_content = response.get('result_content', [])
     if result_content:
-        return (tableToMarkdown("Apex ProductAgent Restore", result_content),
-                {"TrendMicroApex.ProductAgent": result_content}, response)
+        readable_output = tableToMarkdown("Apex ProductAgent Restore", result_content)
     else:
-        return 'No agents were affected.', None, None
+        readable_output = '### No agents were affected.'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='TrendMicroApex.ProductAgent',
+        outputs=result_content,
+        raw_response=response
+    )
 
 
 def list_logs_command(client: Client, args):
@@ -1005,13 +1075,17 @@ def endpoint_sensors_list_command(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
 
     response = client.endpoint_sensors_list(**assign_params(**args))
-
+    # return_error(json.dumps(response))
     human_readable_table = []
     if response:
         # extract the sensor agents entities from the response
         content_list = response.get('Data', {}).get('Data', {}).get('content', {})
         for content_item in content_list:
-            human_readable_table.append(content_item.get('content', {}).get('agentEntity')[0])
+            agent = content_item.get('content', {}).get('agentEntity', [])
+            if agent:
+                if agent.get('isolateStatus'):
+                    agent['isolateStatus'] = AGENT_ISOLATION_STATUS_NUM_TO_VALUE[agent['isolateStatus']]
+                human_readable_table.append(agent[0])
 
     readable_output = tableToMarkdown('Security Agents with Endpoint Sensor enabled', human_readable_table,
                                       removeNull=True)
@@ -1079,7 +1153,6 @@ def create_custom_live_investigation(client: Client, args):
 def create_scheduled_investigation(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
     response = client.create_scheduled_investigation(args)
-    return_error(response)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroApex.ScheduledInvestigation',
@@ -1135,7 +1208,6 @@ def investigation_result_list_command(client: Client, args):
 def investigation_result_list_by_status_command(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
     response = client.investigation_result_list_by_status(**assign_params(**args))
-
     context = response
     if response:
         if response.get('Data', {}).get('Message', '') == 'OK':
@@ -1150,7 +1222,7 @@ def investigation_result_list_by_status_command(client: Client, args):
                                                                           timezone.utc).isoformat()
 
                 headers = ['name', 'scanSummaryGuid', 'submitTime', 'agentGuid', 'serverGuid', 'creator']
-                readable_output = tableToMarkdown('Investigation result list:', results_list, headers=headers)
+                readable_output = tableToMarkdown('Investigation result list by status:', results_list, headers=headers)
                 context = results_list
 
     return CommandResults(
@@ -1253,19 +1325,19 @@ def main():
             demisto.incidents(incidents)
 
         elif command == 'trendmicro-apex-udso-list':
-            return_outputs(*udso_list_command(client, demisto.args()))
+            return_results(udso_list_command(client, demisto.args()))
 
         elif command == 'trendmicro-apex-udso-add':
-            return_outputs(*udso_add_command(client, demisto.args()))
+            return_results(udso_add_command(client, demisto.args()))
 
         elif command == 'trendmicro-apex-udso-delete':
-            return_outputs(*udso_delete_command(client, demisto.args()))
+            return_results(udso_delete_command(client, demisto.args()))
 
         elif command == 'trendmicro-apex-isolate':
-            return_outputs(*prodagent_isolate_command(client, demisto.args()))
+            return_results(prodagent_isolate_command(client, demisto.args()))
 
         elif command == 'trendmicro-apex-restore':
-            return_outputs(*prodagent_restore_command(client, demisto.args()))
+            return_results(prodagent_restore_command(client, demisto.args()))
 
         elif command == 'trendmicro-apex-list-logs':
             return_results(list_logs_command(client, demisto.args()))
