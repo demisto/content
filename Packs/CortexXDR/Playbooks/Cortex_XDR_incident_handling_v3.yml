@@ -13,10 +13,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ad3efb21-065a-4ec0-8308-33650ab173dd
+    taskid: 32fed714-e66e-4472-82c2-3404f0411159
     type: start
     task:
-      id: ad3efb21-065a-4ec0-8308-33650ab173dd
+      id: 32fed714-e66e-4472-82c2-3404f0411159
       version: -1
       name: ""
       iscommand: false
@@ -40,10 +40,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 2dc3b245-319e-45f5-84e3-106e06393f3f
+    taskid: 57d2b28c-a17a-4f13-8318-d6e813eb9872
     type: title
     task:
-      id: 2dc3b245-319e-45f5-84e3-106e06393f3f
+      id: 57d2b28c-a17a-4f13-8318-d6e813eb9872
       version: -1
       name: Loop on alert id - Alert enrichment
       type: title
@@ -68,10 +68,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: df7fa2f8-d44f-42e7-87b0-339431c5cf27
+    taskid: 272882c6-f87e-434c-88ce-1240c4a889c6
     type: title
     task:
-      id: df7fa2f8-d44f-42e7-87b0-339431c5cf27
+      id: 272882c6-f87e-434c-88ce-1240c4a889c6
       version: -1
       name: Remediation
       type: title
@@ -96,10 +96,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 8be758da-da32-451a-8075-fe1228b91c83
+    taskid: 4b67ad30-ffbc-4fe8-8b6d-f19875f8ead7
     type: condition
     task:
-      id: 8be758da-da32-451a-8075-fe1228b91c83
+      id: 4b67ad30-ffbc-4fe8-8b6d-f19875f8ead7
       version: -1
       name: Are there new un-handled alerts?
       description: Check if there are new un-handled alerts.
@@ -108,7 +108,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "13"
+      - "17"
       "yes":
       - "30"
     separatecontext: false
@@ -140,45 +140,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "13":
-    id: "13"
-    taskid: dd6e57fa-d839-4298-8771-6061a85f79bf
-    type: regular
-    task:
-      id: dd6e57fa-d839-4298-8771-6061a85f79bf
-      version: -1
-      name: Stop XDR alerts sync
-      description: This stops the scheduled task whose ID is given in the taskID argument.
-      scriptName: StopScheduledTask
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      taskID:
-        complex:
-          root: XDRSyncScriptTaskID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "15":
     id: "15"
-    taskid: 2cdf086e-63b8-408a-80e6-a16a0f2aaa54
+    taskid: 71a82ecc-7f86-4384-8257-e78fb76f466e
     type: playbook
     task:
-      id: 2cdf086e-63b8-408a-80e6-a16a0f2aaa54
+      id: 71a82ecc-7f86-4384-8257-e78fb76f466e
       version: -1
       name: Cortex XDR Alerts Handling
       playbookName: Cortex XDR Alerts Handling
@@ -219,10 +186,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 554f7f72-fad5-482e-8fd3-9723d16fc4bf
+    taskid: 97bebbb3-dca5-4516-882f-d318cb8e1cb9
     type: title
     task:
-      id: 554f7f72-fad5-482e-8fd3-9723d16fc4bf
+      id: 97bebbb3-dca5-4516-882f-d318cb8e1cb9
       version: -1
       name: Done
       type: title
@@ -244,10 +211,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: d73e32b3-dcdf-4e84-85b4-3d1b974c1d2c
+    taskid: cb942697-898c-411c-87df-03f40b525ff5
     type: regular
     task:
-      id: d73e32b3-dcdf-4e84-85b4-3d1b974c1d2c
+      id: cb942697-898c-411c-87df-03f40b525ff5
       version: -1
       name: Cortex XDR - close incident
       description: Updates one or more fields of a specified incident. Missing fields
@@ -287,10 +254,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: f8761a25-9e4e-4169-8618-eabcff6bdcd4
+    taskid: d148decf-e833-4217-8117-bc95437fae54
     type: regular
     task:
-      id: f8761a25-9e4e-4169-8618-eabcff6bdcd4
+      id: d148decf-e833-4217-8117-bc95437fae54
       version: -1
       name: Close investigation
       description: Closes the incident.
@@ -327,10 +294,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: a2bdfea8-96ca-4da8-8bef-284fe28010be
+    taskid: ae2a0244-4655-414d-8923-ac7d115bcbaf
     type: title
     task:
-      id: a2bdfea8-96ca-4da8-8bef-284fe28010be
+      id: ae2a0244-4655-414d-8923-ac7d115bcbaf
       version: -1
       name: Investigation
       type: title
@@ -355,10 +322,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: e2c79796-2cfa-4f68-878b-872845b68fa1
+    taskid: 5f4dc38f-0363-443f-85f4-5bab6f7fa039
     type: playbook
     task:
-      id: e2c79796-2cfa-4f68-878b-872845b68fa1
+      id: 5f4dc38f-0363-443f-85f4-5bab6f7fa039
       version: -1
       name: Calculate Severity - Generic v2
       description: |-
@@ -424,10 +391,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: e23c687b-e038-4b7b-824f-c3e75f9ebc33
+    taskid: 3c23eccd-6dcf-4d7b-8af8-979b3987710f
     type: regular
     task:
-      id: e23c687b-e038-4b7b-824f-c3e75f9ebc33
+      id: 3c23eccd-6dcf-4d7b-8af8-979b3987710f
       version: -1
       name: Manual malware analysis and forensics
       description: Manual malware analysis and forensics by the analyst.
@@ -452,10 +419,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 45aa1f5e-2dbe-42d5-89a2-9426aa8b22d8
+    taskid: aa4c0270-342c-4a45-8139-744fe8031b12
     type: condition
     task:
-      id: 45aa1f5e-2dbe-42d5-89a2-9426aa8b22d8
+      id: aa4c0270-342c-4a45-8139-744fe8031b12
       version: -1
       name: Auto remediation?
       description: Should the playbook perform auto-remediation or manual remediation?
@@ -493,10 +460,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: f5698791-8af9-4b54-8f06-9d7ad0fe7c9a
+    taskid: acde242d-801a-439c-8310-f9b2b18365b3
     type: regular
     task:
-      id: f5698791-8af9-4b54-8f06-9d7ad0fe7c9a
+      id: acde242d-801a-439c-8310-f9b2b18365b3
       version: -1
       name: Manual remediation
       description: Manual remediation by the analyst.
@@ -521,10 +488,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 239dad9c-851e-4447-8ea0-3a757b4f604e
+    taskid: 65ba9f2c-123a-45e4-8fd7-c121c8771d67
     type: condition
     task:
-      id: 239dad9c-851e-4447-8ea0-3a757b4f604e
+      id: 65ba9f2c-123a-45e4-8fd7-c121c8771d67
       version: -1
       name: Continue investigation?
       description: Continue investigation?
@@ -532,8 +499,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
-      - "13"
+      "No":
+      - "17"
       "yes":
       - "31"
     separatecontext: false
@@ -551,10 +518,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: d523fdfb-977b-4e0a-8c2f-6543f0574c56
+    taskid: 5ae8c57e-e751-4d54-84a2-b51d48060b5a
     type: regular
     task:
-      id: d523fdfb-977b-4e0a-8c2f-6543f0574c56
+      id: 5ae8c57e-e751-4d54-84a2-b51d48060b5a
       version: -1
       name: Manual - continue investigation for new alerts
       description: Manual - continue investigation for new alerts.
@@ -563,7 +530,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "17"
     separatecontext: false
     view: |-
       {
@@ -579,10 +546,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: c59c72b2-ecb6-46ea-866f-b5599be3c38c
+    taskid: 04d770d5-a6df-4254-82df-cec71ae49a85
     type: playbook
     task:
-      id: c59c72b2-ecb6-46ea-866f-b5599be3c38c
+      id: 04d770d5-a6df-4254-82df-cec71ae49a85
       version: -1
       name: Block Indicators - Generic v2
       description: |+
@@ -747,10 +714,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: cd944b91-0ca9-4977-8926-c0c3548eeee8
+    taskid: e9bdaf78-306c-463f-8229-90e86d485a40
     type: condition
     task:
-      id: cd944b91-0ca9-4977-8926-c0c3548eeee8
+      id: e9bdaf78-306c-463f-8229-90e86d485a40
       version: -1
       name: Hunt for related IOCs?
       description: Run hunting playbook to find related IOCs?
@@ -791,10 +758,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: c511b6e4-2151-487d-812b-c1ee3efcdb70
+    taskid: e318312d-7dfd-4abb-8764-9428c3cc5178
     type: playbook
     task:
-      id: c511b6e4-2151-487d-812b-c1ee3efcdb70
+      id: e318312d-7dfd-4abb-8764-9428c3cc5178
       version: -1
       name: PANW - Hunting and threat detection by indicator type V2
       description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is
@@ -909,10 +876,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 38cd4187-7e82-450c-85c5-bca244953ad5
+    taskid: 7dc2b6e3-7baa-4d8c-8f60-d3d03207a344
     type: playbook
     task:
-      id: 38cd4187-7e82-450c-85c5-bca244953ad5
+      id: 7dc2b6e3-7baa-4d8c-8f60-d3d03207a344
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -1002,10 +969,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 4781b595-9336-4b01-8734-ce86b779d0f4
+    taskid: 1edf2861-dac0-4563-8ce3-7b55d810efbe
     type: regular
     task:
-      id: 4781b595-9336-4b01-8734-ce86b779d0f4
+      id: 1edf2861-dac0-4563-8ce3-7b55d810efbe
       version: -1
       name: Count XDR alerts
       description: Sets a value in context with the given context key.
@@ -1040,10 +1007,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 12d08e21-04a6-4d24-83e6-cfaeb4bb9fad
+    taskid: 7d8525b9-dc35-430b-80f8-a9245491d7c3
     type: condition
     task:
-      id: 12d08e21-04a6-4d24-83e6-cfaeb4bb9fad
+      id: 7d8525b9-dc35-430b-80f8-a9245491d7c3
       version: -1
       name: Continue to Remediation or close as false positive?
       description: Continue to Remediation or close the investigation as false positive?
@@ -1070,10 +1037,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 4b2f07d5-f660-4524-81ff-19418033602d
+    taskid: a6944a7e-83bf-4492-82f2-03de98559d46
     type: regular
     task:
-      id: 4b2f07d5-f660-4524-81ff-19418033602d
+      id: a6944a7e-83bf-4492-82f2-03de98559d46
       version: -1
       name: Close XDR incident as false positive
       description: Updates one or more fields of a specified incident. Missing fields
@@ -1108,45 +1075,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "39":
-    id: "39"
-    taskid: 87725e17-4cc5-4f63-83b8-944418f83c51
-    type: regular
-    task:
-      id: 87725e17-4cc5-4f63-83b8-944418f83c51
-      version: -1
-      name: Stop XDR alerts sync
-      description: This stops the scheduled task whose ID is given in the taskID argument.
-      scriptName: StopScheduledTask
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      taskID:
-        complex:
-          root: XDRSyncScriptTaskID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -240,
-          "y": 3660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "40":
     id: "40"
-    taskid: 1d057108-3ae1-4fda-8c1d-4deec019a587
+    taskid: 3c7a6fc9-2094-4c64-81dd-7cbff128d56e
     type: regular
     task:
-      id: 1d057108-3ae1-4fda-8c1d-4deec019a587
+      id: 3c7a6fc9-2094-4c64-81dd-7cbff128d56e
       version: -1
       name: Find similar incidents
       description: |-
@@ -1189,10 +1123,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 93954b4e-6ab2-431e-818a-61f9da43ae49
+    taskid: 9b27b19e-efdf-4a40-88d9-755418a60413
     type: condition
     task:
-      id: 93954b4e-6ab2-431e-818a-61f9da43ae49
+      id: 9b27b19e-efdf-4a40-88d9-755418a60413
       version: -1
       name: Link similar incidents?
       description: Link similar incidents?
@@ -1233,10 +1167,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: e0a7d186-2409-4a41-87ff-f2716b10841e
+    taskid: f12b97db-bc7d-4994-853a-d1f398f5f871
     type: regular
     task:
-      id: e0a7d186-2409-4a41-87ff-f2716b10841e
+      id: f12b97db-bc7d-4994-853a-d1f398f5f871
       version: -1
       name: Link similar incidents
       description: Link two or more incidents
@@ -1272,10 +1206,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 68ae540d-74ce-4bd9-83c8-eb0957831d02
+    taskid: c2aec0c1-f71e-4491-8e12-76532a7a67d4
     type: condition
     task:
-      id: 68ae540d-74ce-4bd9-83c8-eb0957831d02
+      id: c2aec0c1-f71e-4491-8e12-76532a7a67d4
       version: -1
       name: Similar incidents found?
       description: Were any similar incidents found?
@@ -1316,10 +1250,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 1a34dc51-4e1d-4e81-8325-a076a08dc856
+    taskid: be51922a-ec94-4123-83ba-08aa886294af
     type: condition
     task:
-      id: 1a34dc51-4e1d-4e81-8325-a076a08dc856
+      id: be51922a-ec94-4123-83ba-08aa886294af
       version: -1
       name: Close as duplicate?
       description: Close the incident as duplicate?
@@ -1346,10 +1280,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 31fcd25f-d140-4c0b-8d7c-1efe0fe642f8
+    taskid: 6c90a02a-b03d-429f-818a-898941090b59
     type: regular
     task:
-      id: 31fcd25f-d140-4c0b-8d7c-1efe0fe642f8
+      id: 6c90a02a-b03d-429f-818a-898941090b59
       version: -1
       name: Resolve XDR incident as duplicate
       description: Updates one or more fields of a specified incident. Missing fields
@@ -1389,10 +1323,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: b5a75fb6-c980-49e5-88e9-d9c921ffd2d4
+    taskid: 57acc01c-fda3-4450-8956-50d777319742
     type: title
     task:
-      id: b5a75fb6-c980-49e5-88e9-d9c921ffd2d4
+      id: 57acc01c-fda3-4450-8956-50d777319742
       version: -1
       name: Close as duplicate
       type: title
@@ -1400,7 +1334,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "47"
+      - "45"
     separatecontext: false
     view: |-
       {
@@ -1414,45 +1348,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "47":
-    id: "47"
-    taskid: 3c96ee69-fb6c-40ba-8fdc-4e0e8ef4f436
-    type: regular
-    task:
-      id: 3c96ee69-fb6c-40ba-8fdc-4e0e8ef4f436
-      version: -1
-      name: Stop XDR alerts sync
-      description: This stops the scheduled task whose ID is given in the taskID argument.
-      scriptName: StopScheduledTask
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "45"
-    scriptarguments:
-      taskID:
-        complex:
-          root: XDRSyncScriptTaskID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1030,
-          "y": 3660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "48":
     id: "48"
-    taskid: f11b130d-8070-4e2c-87e9-a5748038d96c
+    taskid: 688ae526-42f4-42a0-861a-cc33cafe7398
     type: title
     task:
-      id: f11b130d-8070-4e2c-87e9-a5748038d96c
+      id: 688ae526-42f4-42a0-861a-cc33cafe7398
       version: -1
       name: False Positive
       type: title
@@ -1460,7 +1361,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "38"
     separatecontext: false
     view: |-
       {
@@ -1476,10 +1377,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: ae4d0b12-01ff-4d3a-84c1-d6e36b2df724
+    taskid: 083bf155-a250-456f-8431-311055e94da1
     type: regular
     task:
-      id: ae4d0b12-01ff-4d3a-84c1-d6e36b2df724
+      id: 083bf155-a250-456f-8431-311055e94da1
       version: -1
       name: Close investigation - false positive
       description: Closes the incident.
@@ -1516,10 +1417,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: dd7c54a6-d44e-44c1-8de4-51dc1baee1ac
+    taskid: 0c969fc5-e156-408c-87ae-abae0e606640
     type: regular
     task:
-      id: dd7c54a6-d44e-44c1-8de4-51dc1baee1ac
+      id: 0c969fc5-e156-408c-87ae-abae0e606640
       version: -1
       name: Close investigation- duplicate
       description: Closes the incident.
@@ -1556,10 +1457,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: 31fb2c60-dd1b-4f93-895b-5eaeefe5379e
+    taskid: 5a87bb98-42ec-4ecd-8e5c-d0630ac22d1a
     type: regular
     task:
-      id: 31fb2c60-dd1b-4f93-895b-5eaeefe5379e
+      id: 5a87bb98-42ec-4ecd-8e5c-d0630ac22d1a
       version: -1
       name: Manually block ports used for exploitation on the scanned host.
       description: Manually block ports used for exploitation on the scanned host.
@@ -1584,10 +1485,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 1a6b307f-ceed-4bde-89e0-f373893c0cb8
+    taskid: e8adae33-103d-479c-876f-b2a2e17010f1
     type: condition
     task:
-      id: 1a6b307f-ceed-4bde-89e0-f373893c0cb8
+      id: e8adae33-103d-479c-876f-b2a2e17010f1
       version: -1
       name: Was there a port scan alert investigated?
       description: Was there a port scan alert investigated as a part of the incident?
@@ -1623,10 +1524,10 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: 62959ca9-5431-4350-88d6-e21d9a6b3d1c
+    taskid: a76df66b-2002-4b7f-8f9f-828eeab133aa
     type: condition
     task:
-      id: 62959ca9-5431-4350-88d6-e21d9a6b3d1c
+      id: a76df66b-2002-4b7f-8f9f-828eeab133aa
       version: -1
       name: Block ports?
       description: Is port blocking required?
@@ -1666,10 +1567,10 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: 87801df9-c96b-430a-84f7-fbcb4b78d16b
+    taskid: 8780f51c-f39d-4a86-863c-7ddf0b3ca072
     type: regular
     task:
-      id: 87801df9-c96b-430a-84f7-fbcb4b78d16b
+      id: 8780f51c-f39d-4a86-863c-7ddf0b3ca072
       version: -1
       name: xdr-get-incident-extra-data
       description: Returns additional data for the specified incident, for example,
@@ -1703,8 +1604,8 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "11_13_#default#": 0.55,
-      "30_13_no": 0.38,
+      "11_17_#default#": 0.43,
+      "30_17_No": 0.39,
       "33_23_#default#": 0.53,
       "33_34_yes": 0.44,
       "37_7_CONTINUE": 0.77,

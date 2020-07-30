@@ -11,7 +11,6 @@ import urllib3
 import traceback
 from operator import itemgetter
 
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -1687,10 +1686,10 @@ def get_remote_data_command(client, args):
         incident_data['assigned_user_pretty_name'] = ''
 
     # handle closed issue in XDR
-    closing_entry = []
+    closing_entry = {}  # type: Dict
     if incident_data.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
         demisto.debug(f"Closing XDR issue {remote_args.remote_incident_id}")
-        closing_entry = [{
+        closing_entry = {
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
@@ -1698,7 +1697,7 @@ def get_remote_data_command(client, args):
                 'closeNotes': incident_data.get('resolve_comment')
             },
             'ContentsFormat': EntryFormat.JSON
-        }]
+        }
         incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
         incident_data['closeNotes'] = incident_data.get('resolve_comment')
 
@@ -1710,7 +1709,7 @@ def get_remote_data_command(client, args):
         demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
         return GetRemoteDataResponse(
             mirrored_object=incident_data,
-            entries=closing_entry
+            entries=[closing_entry] if closing_entry else []
         )
 
     else:
