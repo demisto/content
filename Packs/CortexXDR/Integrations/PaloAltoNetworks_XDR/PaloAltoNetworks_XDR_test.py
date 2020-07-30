@@ -24,8 +24,8 @@ def test_get_incident_list(requests_mock):
     _, outputs, _ = get_incidents_command(client, args)
 
     expected_output = {
-        'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': get_incidents_list_response.get('reply')
-        .get('incidents')
+        'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)':
+            get_incidents_list_response.get('reply').get('incidents')
     }
     assert expected_output == outputs
 
@@ -120,11 +120,8 @@ def test_get_endpoints(requests_mock):
     }
 
     _, outputs, _ = get_endpoints_command(client, args)
-    expected_output = {
-        'PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)':
-            get_endpoints_response.get('reply').get('endpoints')
-    }
-    assert expected_output == outputs
+    assert get_endpoints_response.get('reply').get('endpoints') == \
+           outputs['PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
@@ -144,12 +141,8 @@ def test_get_all_endpoints_using_limit(requests_mock):
 
     _, outputs, _ = get_endpoints_command(client, args)
     expected_endpoint = get_endpoints_response.get('reply')[0]
-    expected_output = {
-        'PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)': [expected_endpoint]
 
-    }
-
-    assert expected_output == outputs
+    assert [expected_endpoint] == outputs['PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_insert_parsed_alert(requests_mock):
@@ -501,8 +494,8 @@ def test_blacklist_files_command_with_more_than_one_file(requests_mock):
 
     from PaloAltoNetworks_XDR import blacklist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
-    expected_command_result = {'PaloAltoNetworksXDR.blackList.fileHash(val.fileHash == obj.fileHash)':
-                               test_data['multi_command_args']['hash_list']}
+    expected_command_result = {'PaloAltoNetworksXDR.blackList.fileHash(val.fileHash == obj.fileHash)': test_data[
+        'multi_command_args']['hash_list']}
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blacklist/', json=test_data['api_response'])
 
     client = Client(
@@ -578,8 +571,8 @@ def test_whitelist_files_command_with_more_than_one_file(requests_mock):
 
     from PaloAltoNetworks_XDR import whitelist_files_command, Client
     test_data = load_test_data('test_data/blacklist_whitelist_files_success.json')
-    expected_command_result = {'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)':
-                               test_data['multi_command_args']['hash_list']}
+    expected_command_result = {'PaloAltoNetworksXDR.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data[
+        'multi_command_args']['hash_list']}
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
 
     client = Client(
@@ -654,8 +647,8 @@ def test_quarantine_files_command(requests_mock):
     """
     from PaloAltoNetworks_XDR import quarantine_files_command, Client
     test_data = load_test_data('test_data/quarantine_files.json')
-    quarantine_files_expected_tesult = {'PaloAltoNetworksXDR.quarantineFiles.actionIds(val.actionId === obj.actionId)':
-                                        test_data['context_data']}
+    quarantine_files_expected_tesult = {
+        'PaloAltoNetworksXDR.quarantineFiles.actionIds(val.actionId === obj.actionId)': test_data['context_data']}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/quarantine/', json=test_data['api_response'])
 
     client = Client(
@@ -768,4 +761,4 @@ def test_sort_all_lists_incident_fields():
     sort_all_lists_incident_fields(raw_incident)
     assert raw_incident.get('alerts')[0].get('alert_id') == "42"
     assert raw_incident.get('alerts')[1].get('alert_id') == "55"
-    assert raw_incident.get('alerts')[2].get('alert_id') == "62"
+    assert raw_incident.get('alerts')[2].get('alert_id') == "60"
