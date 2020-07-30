@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "AWS - Security Hub",
+            "playbookID": "AWS-securityhub Test"
+        },
+        {
             "integrations": "Humio",
             "playbookID": "Humio-Test",
             "fromversion": "5.0.0"
@@ -36,6 +40,10 @@
             "integrations": "MITRE ATT&CK",
             "playbookID": "Mitre Attack List 10 Indicators Feed Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Sepio",
+            "playbookID": "SepioPrimeAPI-Test"
         },
         {
             "integrations": "URLhaus",
@@ -946,6 +954,10 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Detonate URL - WildFire-v2 - Test"
+        },
+        {
+            "integrations": "WildFire-v2",
+            "playbookID": "Detonate URL - WildFire v2.1 - Test"
         },
         {
             "integrations": "GRR",
@@ -2816,6 +2828,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Recorded Future v2",
+            "playbookID": "Recorded Future Test Playbook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Azure AD Connect Health Feed",
             "playbookID": "FeedAzureADConnectHealth_Test",
             "fromversion": "5.5.0"
@@ -2853,14 +2870,14 @@
         {
             "integrations": "Unit42 Feed",
             "playbookID": "Unit42 Feed - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 600
         },
         {
             "integrations": "CrowdStrikeMalquery",
             "playbookID": "CrowdStrikeMalquery-Test",
             "fromversion": "5.0.0",
             "timeout": 1500
-
         },
         {
             "playbookID": "hashIncidentFields-test",
@@ -2871,6 +2888,10 @@
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
             "timeout": 500
+        },
+        {
+            "integrations": "RSA Archer v2",
+            "playbookID": "Archer v2 - Test"
         },
         {
             "integrations": "Ivanti Heat",
@@ -2936,7 +2957,6 @@
         "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
-        "Cortex XDR - IOC - Test": "issue #25598",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DuoAdmin API test playbook": "Issue 24937",
         "SMB test": "Issue 26454",
@@ -2959,7 +2979,11 @@
         "hashIncidentFields-test": "Issue 26850",
         "MISP V2 Test": "Issue 26905",
         "Mimecast test": "Issue 26906",
-        "Mail Sender (New) Test": "Issue 25602"
+        "Mail Sender (New) Test": "Issue 25602",
+        "TAXII_Feed_Test": "Issue 22423",
+        "Recorded Future Test": "Issue 26741",
+        "CirclIntegrationTest": "Issue 25600",
+        "Luminate-TestPlaybook": "Issue 27016"
     },
     "skipped_integrations": {
 
@@ -3074,6 +3098,7 @@
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
         "IllusiveNetworks": "supported by partner",
+        "Recorded Future v2": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
 
@@ -3100,6 +3125,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "AWS - Security Hub": "Issue 24926",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
         "ThreatConnect v2": "Issue 26794",
         "Infocyte": "Proxy issues",
@@ -3235,10 +3261,11 @@
         "Lastline v2",
         "McAfee DXL",
         "GCP Whitelist Feed",
-        "Cortex Data Lake"
+        "Cortex Data Lake",
+        "AWS - Security Hub"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
