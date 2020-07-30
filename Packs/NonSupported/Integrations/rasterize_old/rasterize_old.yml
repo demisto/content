@@ -3,10 +3,10 @@ commonfields:
   id: Rasterize
   version: -1
 configuration:
-- display: Return Errors
+- display: 'Return Errors '
   name: with_error
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -14,6 +14,7 @@ configuration:
 description: Rasterize URLs or emails given to it
 display: Rasterize
 name: Rasterize
+toversion: '4.5.9'
 script:
   commands:
   - arguments:
@@ -98,15 +99,11 @@ script:
     execution: false
     name: rasterize-image
   dockerimage: demisto/rasterize
-  feed: false
   isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
   type: python
+  subtype: python2
 defaultEnabled: true
 tests:
-- Rasterize Test
-toversion: 4.5.9
+  - Rasterize Test

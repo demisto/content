@@ -3,9 +3,9 @@ commonfields:
   id: Office 365 Feed
   version: -1
 configuration:
-- defaultvalue: 'true'
-  display: Fetch indicators
+- display: Fetch indicators
   name: feed
+  defaultvalue: true
   required: false
   type: 8
 - defaultvalue: Worldwide
@@ -57,6 +57,7 @@ configuration:
   type: 15
 - defaultvalue: suddenDeath
   name: feedExpirationPolicy
+  display: ""
   options:
   - never
   - interval
@@ -65,6 +66,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
+  display: ""
   name: feedExpirationInterval
   required: false
   type: 1
@@ -81,12 +83,13 @@ configuration:
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
-  defaultvalue: 'true'
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
-- display: Trust any certificate (not secure)
+  defaultvalue: "true"
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
