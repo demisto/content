@@ -90,6 +90,20 @@ def test_get_url_features(mocker):
     assert url_features_3['drive_count'] == 1
 
 
+def test_extract_server_address():
+    value = 'from po-out-1718.google.co.uk ([72.14.252.155]:54907) by cl35.gs01.gridserver.com with esmtp (Exim 4.63) ' \
+            '(envelope-from <mt.kb.user@gmail.com>) id 1KDoNH-0000f0-RL for user@example.com;' \
+            ' Tue, 25 Jan 2011 15:31:01 -0700'
+    domain, suffix = extract_server_address(value)
+    assert domain == 'google'
+    assert suffix == 'co.uk'
+
+    address, domain, suffix = extract_envelop_from_address(value)
+    assert domain == 'gmail'
+    assert suffix == 'com'
+    assert address == 'mt.kb.user@gmail.com'
+
+
 def test_parse_email_header():
     header_value = 'Taylor Evans <example_from@dc.edu>'
     email_headers = [{'headername': 'From', 'headervalue': header_value}]

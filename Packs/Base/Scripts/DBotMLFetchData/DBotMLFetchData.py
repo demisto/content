@@ -867,12 +867,14 @@ def parse_email_header(email_headers, header_name):
     global NO_FETCH_EXTRACT
     header_value = get_header_value(email_headers, header_name=header_name)
     if header_value is None:
-        email_address = email_domain = None
+        email_address = email_domain = email_suffix = None
     else:
         email_address = parseaddr(header_value)[1]
-        email_domain = NO_FETCH_EXTRACT(email_address).domain
+        ext = NO_FETCH_EXTRACT(email_address)
+        email_domain = ext.domain
+        email_suffix = ext.suffix
 
-    return {'name': header_name, 'address': email_address, 'domain': email_domain}
+    return {'name': header_name, 'address': email_address, 'domain': email_domain, 'suffix': email_suffix}
 
 
 def extract_server_address(received_value):
@@ -880,33 +882,39 @@ def extract_server_address(received_value):
     server_address_list = re.findall(RECEIVED_SERVER_REGEX, received_value)
     if len(server_address_list) == 0:
         server_domain = IP_DOMAIN_TOKEN
+        server_suffix = None
     else:
         server_address = server_address_list[0]
-        server_domain = NO_FETCH_EXTRACT(server_address).domain
-    return server_domain
+        ext = NO_FETCH_EXTRACT(server_address)
+        server_domain = ext.domain
+        server_suffix = ext.suffix
+    return server_domain, server_suffix
 
 
 def extract_envelop_from_address(received_value):
     global ENVELOP_FROM_REGEX, NO_FETCH_EXTRACT
     from_envelop_address_list = re.findall(ENVELOP_FROM_REGEX, received_value)
     if len(from_envelop_address_list) == 0:
-        from_envelop_address = from_envelop_domain = None
+        from_envelop_address = from_envelop_domain = from_envelop_suffix = None
     else:
         from_envelop_address = from_envelop_address_list[0]
         from_envelop_address = parseaddr(from_envelop_address)[1]
-        from_envelop_domain = NO_FETCH_EXTRACT(from_envelop_address).domain
-    return from_envelop_address, from_envelop_domain
+        ext = NO_FETCH_EXTRACT(from_envelop_address)
+        from_envelop_domain = ext.domain
+        from_envelop_suffix = ext.suffix
+    return from_envelop_address, from_envelop_domain, from_envelop_suffix
 
 
 def parse_single_received_value(received_headers, index, name):
     if len(received_headers) >= index:
-        last_received_value = received_headers[-index]['headervalue']
-        server_domain = extract_server_address(last_received_value)
-        from_envelop_address, from_envelop_domain = extract_envelop_from_address(last_received_value)
+        received_value = received_headers[-index]['headervalue']
+        server_domain, server_suffix = extract_server_address(received_value)
+        from_envelop_address, from_envelop_domain, from_envelop_suffix = extract_envelop_from_address(received_value)
     else:
-        server_domain = from_envelop_domain = from_envelop_address = None
-    server_info = {'name': '{}-Server'.format(name), 'domain': server_domain}
-    envelop_info = {'name': '{}-Envelope'.format(name), 'address': from_envelop_address, 'domain': from_envelop_domain}
+        server_domain = server_suffix = from_envelop_domain = from_envelop_address = from_envelop_suffix = None
+    server_info = {'name': '{}-Server'.format(name), 'domain': server_domain, 'suffix': server_suffix}
+    envelop_info = {'name': '{}-Envelope'.format(name), 'address': from_envelop_address, 'domain': from_envelop_domain,
+                    'suffix': from_envelop_suffix}
     return server_info, envelop_info
 
 
@@ -979,6 +987,7 @@ def get_headers_features(email_headers):
             addresses_res['{}::Rank'.format(a['name'])] = get_rank_address(a['address'])
         if 'Received' in a['name'] and 'Server' in a['name']:
             addresses_res['{}::IP_DOMAIN'.format(a['name'])] = a['domain'] == IP_DOMAIN_TOKEN
+        addresses_res['{}::Suffix'.format(a['name'])] = a['suffix'] if a['suffix'] is not None else float('nan')
 
     for a1, a2 in combinations(all_addresses_dicts, 2):
         if 'address' in a1 and 'address' in a2:
