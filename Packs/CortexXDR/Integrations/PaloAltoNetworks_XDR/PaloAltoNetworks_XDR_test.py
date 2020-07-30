@@ -764,6 +764,21 @@ def test_sort_all_lists_incident_fields():
     assert raw_incident.get('alerts')[2].get('alert_id') == "60"
 
 
+def test_get_mapping_fields_command():
+    from PaloAltoNetworks_XDR import get_mapping_fields_command
+    expected_mapping = [{"Cortex XDR Incident": {
+        "status": "Current status of the incident: \"new\",\"under_investigation\",\"resolved_threat_handled\","
+                  "\"resolved_known_issue\",\"resolved_duplicate\",\"resolved_false_positive\",\"resolved_other\"",
+        "assigned_user_mail": "Email address of the assigned user.",
+        "assigned_user_pretty_name": "Full name of the user assigned to the incident.",
+        "resolve_comment": "Comments entered by the user when the incident was resolved.",
+        "manual_severity": "Incident severity assigned by the user. This does not "
+                           "affect the calculated severity low medium high"
+    }}]
+    res = get_mapping_fields_command()
+    assert expected_mapping == res.extract_mapping()
+
+
 def test_get_remote_data_command_should_update(requests_mock):
     from PaloAltoNetworks_XDR import get_remote_data_command, Client
     client = Client(
@@ -803,3 +818,42 @@ def test_get_remote_data_command_should_not_update(requests_mock):
 
     response = get_remote_data_command(client, args)
     assert response == {}
+
+
+def test_get_remote_data_command_should_close_issue(requests_mock):
+    from PaloAltoNetworks_XDR import get_remote_data_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1'
+    )
+    args = {
+        'id': 1,
+        'lastUpdate': 0
+    }
+    raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
+    raw_incident['reply']['incident']['status'] = 'resolved_threat_handled'
+    raw_incident['reply']['incident']['resolve_comment'] = 'Handled'
+    modified_raw_incident = raw_incident['reply']['incident']
+    modified_raw_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
+    modified_raw_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
+    modified_raw_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
+    modified_raw_incident['id'] = modified_raw_incident.get('incident_id')
+    modified_raw_incident['assigned_user_mail'] = ''
+    modified_raw_incident['assigned_user_pretty_name'] = ''
+    modified_raw_incident['closeReason'] = 'Resolved'
+    modified_raw_incident['closeNotes'] = 'Handled'
+
+    expected_closing_entry = {
+        'Type': 1,
+        'Contents': {
+            'dbotIncidentClose': True,
+            'closeReason': 'Resolved',
+            'closeNotes': 'Handled'
+        },
+        'ContentsFormat': 'json'
+    }
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
+
+    response = get_remote_data_command(client, args)
+    assert response.mirrored_object == modified_raw_incident
+    assert expected_closing_entry in response.entries

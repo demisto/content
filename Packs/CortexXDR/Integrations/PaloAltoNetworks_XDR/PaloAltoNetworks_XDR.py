@@ -1727,6 +1727,7 @@ def get_remote_data_command(client, args):
 
         if incident_data.get('status') == 'resolved_known_issue':
             closing_entry['Contents']['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
+            incident_data['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
 
     if arg_to_timestamp(current_modified_time, 'modification_time') > \
             arg_to_timestamp(remote_args.last_update, 'last_update'):
