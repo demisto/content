@@ -5,10 +5,10 @@ import jmespath
 
 def jmespath_search(expression: str, value: dict) -> dict:
     try:
-        expression = jmespath.compile(expression)
+        expression_compiled = jmespath.compile(expression)
     except Exception as err:
         return_error(f"Invalid expression - {err}")
-    result = expression.search(value)
+    result = expression_compiled.search(value)
     return result
 
 
