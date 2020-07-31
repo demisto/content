@@ -668,7 +668,7 @@ Creates a Code42 user.
 | --- | --- | --- |
 | orgname | The name of the Code42 organization from which to add the user. | Required |
 | username | The username to give to the user. | Required |
-| email |  | Required |
+| email | The email of the user to create. | Required |
 
 
 #### Context Output
