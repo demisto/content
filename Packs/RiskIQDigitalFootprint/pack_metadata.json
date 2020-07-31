@@ -1,0 +1,16 @@
+{
+    "name": "RiskIQ Digital Footprint",
+    "description": "RiskIQ Digital Footprint integration enables your security team to manage assets outside your firewall, by bringing its details, providing you to add or update assets and analyze your digital footprint from the view of the global adversary with the help of various commands that summarise the activities performed on your assets.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "RiskIQ",
+    "url": "https://www.riskiq.com",
+    "email": "sales@riskiq.com",
+    "created": "2020-05-19T11:24:24Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
