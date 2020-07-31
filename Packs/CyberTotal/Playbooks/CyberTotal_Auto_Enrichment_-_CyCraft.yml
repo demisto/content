@@ -135,29 +135,27 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 9b76065f-fbe7-47ad-8ba1-20b88d79037b
+    taskid: 778a0b84-f202-489f-8280-11fdef12178f
     type: regular
     task:
-      id: 9b76065f-fbe7-47ad-8ba1-20b88d79037b
+      id: 778a0b84-f202-489f-8280-11fdef12178f
       version: -1
       name: Run URL Enrichment
       description: Return domain information and reputation
-      script: CyberTotal|||url
+      script: '|||url'
       type: regular
       iscommand: true
-      brand: CyberTotal
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
     scriptarguments:
-      long: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
+      threshold:
+        complex:
+          root: inputs.threshold
       url:
-        simple: ${inputs.URL}
-      wait: {}
+        complex:
+          root: inputs.URL
     separatecontext: false
     view: |-
       {
@@ -173,10 +171,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: aac1e3f0-9533-4b6f-843c-75bd6233a148
+    taskid: b6de8100-c874-49aa-8774-22c10421a37d
     type: condition
     task:
-      id: aac1e3f0-9533-4b6f-843c-75bd6233a148
+      id: b6de8100-c874-49aa-8774-22c10421a37d
       version: -1
       name: Is there any IP?
       description: Check if a given value exists in the context. Will return 'no'
@@ -192,7 +190,8 @@ tasks:
       - "8"
     scriptarguments:
       value:
-        simple: ${inputs.IP}
+        complex:
+          root: inputs.IP
     separatecontext: false
     view: |-
       {
@@ -208,29 +207,27 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 3df71e1f-c3d6-4879-8bc8-281020bdaab3
+    taskid: 87dc0900-7cd1-41a1-833b-a618217b22f1
     type: regular
     task:
-      id: 3df71e1f-c3d6-4879-8bc8-281020bdaab3
+      id: 87dc0900-7cd1-41a1-833b-a618217b22f1
       version: -1
       name: Run IP Enrichment
       description: Return IP information and reputation
-      script: CyberTotal|||ip
+      script: '|||ip'
       type: regular
       iscommand: true
-      brand: CyberTotal
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
     scriptarguments:
-      fullResponse: {}
       ip:
-        simple: ${inputs.IP}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
+        complex:
+          root: inputs.IP
+      threshold:
+        complex:
+          root: inputs.threshold
     separatecontext: false
     view: |-
       {
@@ -246,10 +243,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 849a318a-68f7-40d9-8438-2a6fd13b7f1a
+    taskid: 5028dfa8-3731-4a22-8f06-7319e7e6a6f3
     type: condition
     task:
-      id: 849a318a-68f7-40d9-8438-2a6fd13b7f1a
+      id: 5028dfa8-3731-4a22-8f06-7319e7e6a6f3
       version: -1
       name: Is there any Domain?
       description: Check if a given value exists in the context. Will return 'no'
@@ -265,7 +262,8 @@ tasks:
       - "10"
     scriptarguments:
       value:
-        simple: ${inputs.Domain}
+        complex:
+          root: inputs.Domain
     separatecontext: false
     view: |-
       {
@@ -281,29 +279,27 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: e8d1d20d-de15-45de-8405-915cceba61be
+    taskid: 80911205-bc62-4b08-856b-8f52e318d98f
     type: regular
     task:
-      id: e8d1d20d-de15-45de-8405-915cceba61be
+      id: 80911205-bc62-4b08-856b-8f52e318d98f
       version: -1
       name: Run Domain Enrichment
-      description: Return domain  information and reputation
-      script: CyberTotal|||domain
+      description: Return domain information and reputation
+      script: '|||domain'
       type: regular
       iscommand: true
-      brand: CyberTotal
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
     scriptarguments:
       domain:
-        simple: ${inputs.Domain}
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
+        complex:
+          root: inputs.Domain
+      threshold:
+        complex:
+          root: inputs.threshold
     separatecontext: false
     defaultassigneecomplex: {}
     view: |-
@@ -320,10 +316,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 3ded3e2f-22d3-4bd8-8a3f-ed8b91b1400f
+    taskid: abad9fc0-dd8f-42d8-841c-8c409504cf7c
     type: condition
     task:
-      id: 3ded3e2f-22d3-4bd8-8a3f-ed8b91b1400f
+      id: abad9fc0-dd8f-42d8-841c-8c409504cf7c
       version: -1
       name: Is there any MD5?
       description: Check if a given value exists in the context. Will return 'no'
@@ -339,7 +335,8 @@ tasks:
       - "12"
     scriptarguments:
       value:
-        simple: ${inputs.MD5}
+        complex:
+          root: inputs.MD5
     separatecontext: false
     view: |-
       {
@@ -355,31 +352,32 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 30c7040d-ec78-4252-847b-1bafbe1e5fbf
+    taskid: a44a4f8e-6222-4e38-8505-1e41047e6afb
     type: regular
     task:
-      id: 30c7040d-ec78-4252-847b-1bafbe1e5fbf
+      id: a44a4f8e-6222-4e38-8505-1e41047e6afb
       version: -1
       name: Run MD5 Enrichment
       description: Return file's information and reputation
-      script: CyberTotal|||file
+      script: '|||file'
       type: regular
       iscommand: true
-      brand: CyberTotal
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
     scriptarguments:
       file:
-        simple: ${inputs.MD5}
-      hash:
-        simple: ${inputs.MD5}
-      threshold: {}
+        complex:
+          root: inputs.MD5
+      threshold:
+        complex:
+          root: inputs.threshold
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 300,
+          "x": 310,
           "y": 600
         }
       }
@@ -415,10 +413,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 39df88b3-efb7-4532-88ba-09ed1440a2f6
+    taskid: d37a5528-ce40-473a-8f50-c567aefc3375
     type: condition
     task:
-      id: 39df88b3-efb7-4532-88ba-09ed1440a2f6
+      id: d37a5528-ce40-473a-8f50-c567aefc3375
       version: -1
       name: Is there any SHA1?
       description: Check if a given value exists in the context. Will return 'no'
@@ -434,7 +432,8 @@ tasks:
       - "15"
     scriptarguments:
       value:
-        simple: ${inputs.SHA1}
+        complex:
+          root: inputs.SHA1
     separatecontext: false
     view: |-
       {
@@ -450,26 +449,27 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 9f372c7a-d595-4f93-815d-e21a6ba66b85
+    taskid: 0f912fb2-f393-4faa-8cb4-838d0f9da2a9
     type: regular
     task:
-      id: 9f372c7a-d595-4f93-815d-e21a6ba66b85
+      id: 0f912fb2-f393-4faa-8cb4-838d0f9da2a9
       version: -1
       name: Run SHA1 Enrichment
       description: Return file's information and reputation
-      script: CyberTotal|||file
+      script: '|||file'
       type: regular
       iscommand: true
-      brand: CyberTotal
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
     scriptarguments:
       file:
-        simple: ${inputs.SHA1}
-      hash:
-        simple: ${inputs.SHA1}
-      threshold: {}
+        complex:
+          root: inputs.SHA1
+      threshold:
+        complex:
+          root: inputs.threshold
     separatecontext: false
     view: |-
       {
@@ -485,10 +485,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: aa3465e3-86d5-4a0f-84c5-90bd43319d08
+    taskid: d14a72a3-5280-496a-8494-6c5d405a88cf
     type: condition
     task:
-      id: aa3465e3-86d5-4a0f-84c5-90bd43319d08
+      id: d14a72a3-5280-496a-8494-6c5d405a88cf
       version: -1
       name: Is there any SHA256?
       description: Check if a given value exists in the context. Will return 'no'
@@ -504,7 +504,8 @@ tasks:
       - "18"
     scriptarguments:
       value:
-        simple: ${inputs.SHA256}
+        complex:
+          root: inputs.SHA256
     separatecontext: false
     view: |-
       {
@@ -520,26 +521,27 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 5347324a-8c8f-44ca-8259-e26a09fdd3f9
+    taskid: 12ed018e-59b5-49c6-8bb7-2d1a43ac1252
     type: regular
     task:
-      id: 5347324a-8c8f-44ca-8259-e26a09fdd3f9
+      id: 12ed018e-59b5-49c6-8bb7-2d1a43ac1252
       version: -1
       name: Run SHA256 Enrichment
       description: Return file's information and reputation
-      script: CyberTotal|||file
+      script: '|||file'
       type: regular
       iscommand: true
-      brand: CyberTotal
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
     scriptarguments:
       file:
-        simple: ${inputs.SHA256}
-      hash:
-        simple: ${inputs.SHA256}
-      threshold: {}
+        complex:
+          root: inputs.SHA256
+      threshold:
+        complex:
+          root: inputs.threshold
     separatecontext: false
     view: |-
       {
@@ -632,8 +634,162 @@ inputs:
   description: The input SHA256 will be searched automatically on CyberTotal to retrieve
     reputation data.
   playbookInputQuery:
-outputs: []
-quiet: true
+- key: threshold
+  value:
+    simple: "10"
+  required: false
+  description: Threshold for reputation commands. default is 10.
+  playbookInputQuery:
+outputs:
+- contextPath: CyberTotal.URL.scan_date
+  description: 'Scan date format: ISO 8601'
+- contextPath: CyberTotal.URL.resource
+  description: The scan target sent to CyberTotal.
+- contextPath: CyberTotal.URL.task_id
+  description: The unique id of each scan in CyberTotal.
+- contextPath: CyberTotal.URL.permalink
+  description: The link of this URL’s report in CyberTotal.
+- contextPath: CyberTotal.URL.severity
+  description: Severity of this URL. The range is from 0 to 10.
+- contextPath: CyberTotal.URL.confidence
+  description: Confidence of this URL. The range is from 0 to 10.
+- contextPath: CyberTotal.URL.threat
+  description: Threat of this URL, which is a select from ‘High’, ‘Medium’ and ‘Low’.
+- contextPath: CyberTotal.URL.detection_engines
+  description: The number of all antivirus vendors scanned.
+- contextPath: CyberTotal.URL.positive_detections
+  description: The number of antivirus vendors scanned with positive detection.
+- contextPath: CyberTotal.URL.detection_ratio
+  description: The ratio of positive_detections and detection_engines.
+- contextPath: CyberTotal.URL.message
+  description: Message about this search.
+- contextPath: URL.Data
+  description: The URL
+- contextPath: URL.DetectionEngines
+  description: The total number of engines that checked the indicator.
+- contextPath: URL.PositiveDetections
+  description: The number of engines that positively detected the indicator as malicious.
+- contextPath: URL.Malicious.Vendor
+  description: The vendor reporting the URL as malicious.
+- contextPath: URL.Malicious.Description
+  description: A description of the malicious URL.
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+- contextPath: DBotScore.Type
+  description: The indicator type.
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+- contextPath: DBotScore.Score
+  description: The actual score.
+- contextPath: CyberTotal.IP.scan_date
+  description: 'Scan date format: ISO 8601'
+- contextPath: CyberTotal.IP.resource
+  description: ' The scan target sent to CyberTotal.'
+- contextPath: CyberTotal.IP.task_id
+  description: The unique id of each scan in CyberTotal.
+- contextPath: CyberTotal.IP.permalink
+  description: The link of this IP’s report in CyberTotal.
+- contextPath: CyberTotal.IP.severity
+  description: Severity of this IP. The range is from 0 to 10.
+- contextPath: CyberTotal.IP.confidence
+  description: Confidence of this IP. The range is from 0 to 10.
+- contextPath: CyberTotal.IP.threat
+  description: Threat of this IP, which is a select from ‘High’, ‘Medium’ and ‘Low’.
+- contextPath: CyberTotal.IP.detection_engines
+  description: The number of all antivirus vendors scanned.
+- contextPath: CyberTotal.IP.positive_detections
+  description: The number of antivirus vendors scanned with positive detection.
+- contextPath: CyberTotal.IP.detection_ratio
+  description: The ratio of positive_detections and detection_engines.
+- contextPath: CyberTotal.IP.message
+  description: Message about this search.
+- contextPath: IP.Address
+  description: IP address
+- contextPath: IP.DetectionEngines
+  description: The total number of engines that checked the indicator.
+- contextPath: IP.PositiveDetections
+  description: The number of engines that positively detected the indicator as malicious.
+- contextPath: IP.Malicious.Vendor
+  description: The vendor reporting the IP address as malicious.
+- contextPath: IP.Malicious.Description
+  description: A description explaining why the IP address was reported as malicious.
+- contextPath: CyberTotal.Domain.scan_date
+  description: 'Scan date format: ISO 8601'
+- contextPath: CyberTotal.Domain.resource
+  description: The scan target sent to CyberTotal.
+- contextPath: CyberTotal.Domain.permalink
+  description: The link of this domain’s report in CyberTotal.
+- contextPath: CyberTotal.Domain.severity
+  description: Severity of this domain. The range is from 0 to 10.
+- contextPath: CyberTotal.Domain.confidence
+  description: Confidence of this domain. The range is from 0 to 10.
+- contextPath: CyberTotal.Domain.threat
+  description: Threat of this domain, which is a select from ‘High’, ‘Medium’ and
+    ‘Low’.
+- contextPath: CyberTotal.Domain.detection_engines
+  description: The number of all antivirus vendors scanned.
+- contextPath: CyberTotal.Domain.positive_detections
+  description: The number of antivirus vendors scanned with positive detection.
+- contextPath: CyberTotal.Domain.detection_ratio
+  description: The ratio of positive_detections and detection_engines.
+- contextPath: CyberTotal.Domain.message
+  description: Message about this search.
+- contextPath: Domain.Name
+  description: 'The domain name, for example: "google.com".'
+- contextPath: Domain.DetectionEngines
+  description: The total number of engines that checked the indicator.
+- contextPath: Domain.PositiveDetections
+  description: The number of engines that positively detected the indicator as malicious.
+- contextPath: Domain.Malicious.Vendor
+  description: The vendor reporting the domain as malicious.
+- contextPath: Domain.Malicious.Description
+  description: A description explaining why the domain was reported as malicious.
+- contextPath: CyberTotal.File.scan_date
+  description: 'Scan date format: ISO 8601'
+- contextPath: CyberTotal.File.resource
+  description: The scan target sent to CyberTotal.
+- contextPath: CyberTotal.File.task_id
+  description: The unique id of each scan in CyberTotal.
+- contextPath: CyberTotal.File.permalink
+  description: The link of this HASH’s report in CyberTotal.
+- contextPath: CyberTotal.File.severity
+  description: Severity of this HASH. The range is from 0 to 10.
+- contextPath: CyberTotal.File.confidence
+  description: Confidence of this HASH. The range is from 0 to 10.
+- contextPath: CyberTotal.File.threat
+  description: Threat of this HASH, which is a select from ‘High’, ‘Medium’ and ‘Low’.
+- contextPath: CyberTotal.File.detection_engines
+  description: The number of all antivirus vendors scanned.
+- contextPath: CyberTotal.File.positive_detections
+  description: The number of antivirus vendors scanned with positive detection.
+- contextPath: CyberTotal.File.detection_ratio
+  description: The ratio of positive_detections and detection_engines.
+- contextPath: CyberTotal.File.message
+  description: Message about this search.
+- contextPath: CyberTotal.File.size
+  description: Size of this file.
+- contextPath: CyberTotal.File.md5
+  description: This file’s md5 value.
+- contextPath: CyberTotal.File.sha1
+  description: This file’s sha1 value.
+- contextPath: CyberTotal.File.sha256
+  description: This file’s sha256 value.
+- contextPath: CyberTotal.File.extension
+  description: This file’s extension type.
+- contextPath: CyberTotal.File.name
+  description: This file’s name, separated by ‘,’ if more than 2 names.
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+- contextPath: File.SHA256
+  description: The SHA1 hash of the file.
+- contextPath: File.Name
+  description: The full file name (including file extension).
+- contextPath: File.Extension
+  description: 'The file extension, for example: ''xls''.'
+- contextPath: File.Size
+  description: The size of the file in bytes.
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
