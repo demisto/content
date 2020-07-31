@@ -531,3 +531,24 @@ def test_get_indicators_command(mocker):
     submitted_indicators = 0
 
     assert output[2] == expected_ioc_output
+
+
+def test_feed_tags(mocker):
+    global bundle_index
+    global submitted_indicators
+
+    mocker.patch.object(demisto, 'params', return_value=init_params())
+    mocker.patch('requests.sessions.Session.send', new=mocked_request)
+
+    from Sixgill_Darkfeed import fetch_indicators_command
+    from sixgill.sixgill_feed_client import SixgillFeedClient
+    from sixgill.sixgill_constants import FeedStream
+
+    client = SixgillFeedClient("client_id",
+                               "client_secret",
+                               "some_channel",
+                               FeedStream.DARKFEED,
+                               demisto, 1000)
+
+    output = fetch_indicators_command(client, tags=['tag1', 'tag2'])
+    assert all(item in output[0]['fields']['tags'] for item in ['tag1', 'tag2'])

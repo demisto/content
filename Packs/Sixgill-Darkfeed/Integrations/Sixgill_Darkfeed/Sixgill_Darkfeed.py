@@ -185,7 +185,7 @@ def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indi
 
     for stix_indicator in bundle.get("objects"):
         if is_indicator(stix_indicator):
-            demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto, feed_tags)
+            demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto, tags)
             indicators_to_create.extend(demisto_indicators)
 
         if get_indicators_mode and len(indicators_to_create) == limit:
