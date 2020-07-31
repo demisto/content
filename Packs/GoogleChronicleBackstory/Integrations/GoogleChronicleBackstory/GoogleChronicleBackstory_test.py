@@ -471,7 +471,7 @@ def test_get_artifact_type():
     """
     from GoogleChronicleBackstory import get_artifact_type
 
-    ip = get_artifact_type('10.0.0.1')
+    ip = get_artifact_type('10.0.0.1')  # NOSONAR
     assert ip == 'destination_ip_address'
 
     ipv6 = get_artifact_type('000::000')
