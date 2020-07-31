@@ -15,7 +15,9 @@ args:
   description: Jmespath expression
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/jmespath:1.0.0.8854
 runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
