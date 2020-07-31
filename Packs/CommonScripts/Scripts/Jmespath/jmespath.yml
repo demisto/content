@@ -1,7 +1,6 @@
 commonfields:
   id: jmespath
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: jmespath
 script: ''
 type: python
