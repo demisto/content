@@ -4,7 +4,7 @@
     "TypeName": "TD Incident",
     "kind": "details",
     "fromVersion": "5.0.0",
-    "toVersion": "5.0.0",
+    "toVersion": "5.9.9",
     "layout": {
         "TypeName": "TD Incident",
         "id": "TD Incident",
