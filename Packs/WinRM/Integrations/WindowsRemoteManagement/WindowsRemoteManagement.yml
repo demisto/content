@@ -1,7 +1,6 @@
 commonfields:
   id: Windows Remote Management
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Windows Remote Management
 display: Windows Remote Management
 category: Endpoint
@@ -44,7 +43,7 @@ script:
       description: Comma separate list of arguments
     outputs:
     - contextPath: WinRM.Process
-      description: ""
+      description: The command executed
     - contextPath: WinRM.Process.Output
       description: STDOUT of the WinRM command
     - contextPath: WinRM.Process.Error
@@ -63,7 +62,6 @@ script:
     - name: scriptname
       description: Name of the script (optional)
     outputs:
-    - contextPath: WinRM.Powershell
     - contextPath: WinRM.Powershell.Output
       description: STDOUT of the WinRM command
     - contextPath: WinRM.Powershell.Error
@@ -74,3 +72,6 @@ script:
   dockerimage: demisto/winrm:1.0.0.8882
   runonce: false
   subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
