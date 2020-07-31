@@ -14,8 +14,8 @@ requests.packages.urllib3.disable_warnings()
 class Client(BaseClient):
 
     def __init__(self, params):
-        self.client_id = params.get('client_id')
-        self.client_secret = params.get('client_secret')
+        self._client_id = params.get('client_id')
+        self._client_secret = params.get('client_secret')
         super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))
         self._token = self._generate_token()
@@ -38,16 +38,17 @@ class Client(BaseClient):
         :return: valid token
         """
         body = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret
+            'client_id': self._client_id,
+            'client_secret': self._client_secret
         }
-        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self.client_id, self.client_secret))
+        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
         return token_res.get('access_token')
 
     def check_quota_status(self) -> dict:
         url_suffix = "/intel/combined/actors/v1"
         params = self.get_last_modified_time()
-        return self.http_request('GET', url_suffix, params=params)
+        url_suffix = url_suffix + params if params else url_suffix
+        return self.http_request('GET', url_suffix)
 
     def create_indicators_from_response(self, response, feed_tags: list) -> list:
         """
@@ -64,13 +65,19 @@ class Client(BaseClient):
             if actor:
                 indicator = {
                     "type": 'Actor',
-                    "value": actor['name'],
+                    "value": actor.get('name'),
                     "rawJSON": {
                         'type': 'Actor',
-                        'value': actor['name'],
+                        'value': actor.get('name'),
                         'service': 'List Actors Feed'
                     },
-                    'fields': {'service': 'Daily Threat Feed', 'tags': feed_tags}
+                    'fields': {'tags': feed_tags, 'actor': actor.get('name'), 'region': actor.get('region'),
+                               'actor_capability': actor.get('capability'), 'geo_country': actor.get('origins'),
+                               'description': actor.get('short_description'), 'alias': actor.get('known_as'),
+                               'creation_date': actor.get('created_date'), 'actor_motivation': actor.get('motivations'),
+                               'updated_date': actor.get('last_modified_date'),
+                               'actor_target_country': actor.get('target_countries'),
+                               'actor_target_industry': actor.get('target_industries')}
                 }
                 indicator['rawJSON'].update(actor)
             parsed_indicators.append(indicator)
@@ -90,25 +97,24 @@ class Client(BaseClient):
             parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
         return parsed_indicators
 
+    def set_last_modified_time(self):
+        current_time = datetime.now()
+        current_timestamp = datetime.timestamp(current_time)
+        timestamp = str(int(current_timestamp))
+        integration_context_to_set = {'last_modified_time': timestamp}
+        demisto.setIntegrationContext(integration_context_to_set)
+
     def get_last_modified_time(self):
+        demisto.setIntegrationContext(None)
         integration_context = demisto.getIntegrationContext()
         if not integration_context:
             params = {}
-            current_time = datetime.now()
-            current_timestamp = datetime.timestamp(current_time)
-            timestamp = str(int(current_timestamp))
-            integration_context_to_set = {'last_modified_time': timestamp}
-            demisto.setIntegrationContext(integration_context_to_set)
+            self.set_last_modified_time()
         else:
             last_modified_time = demisto.getIntegrationContext()
-            filter = f"last_modified_date%3A%3E{last_modified_time['last_modified_time']}"
-            params = {"filter": filter}
-
-            current_time = datetime.now()
-            current_timestamp = datetime.timestamp(current_time)
-            timestamp = str(int(current_timestamp))
-            integration_context_to_set = {'last_modified_time': timestamp}
-            demisto.setIntegrationContext(integration_context_to_set)
+            relevant_time = int(last_modified_time['last_modified_time'])
+            params = f"?filter=last_modified_date%3A%3E{relevant_time}"
+            self.set_last_modified_time()
         return params
 
 
@@ -117,7 +123,7 @@ def module_test_command(client: Client, args: dict, feed_tags: list):
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
     Args:
-        client(Client): Autofocus Feed client
+        client(Client): CrowdStrike Feed client
         args(Dict): The instance parameters
         feed_tags: The indicator tags
 
@@ -127,8 +133,8 @@ def module_test_command(client: Client, args: dict, feed_tags: list):
     try:
         client.build_iterator(argToList(demisto.params().get('feedTags')), 1, 0)
     except Exception:
-        raise Exception("Could not fetch Daily Threat Feed\n"
-                        "\nCheck your API key and your connection to AutoFocus.")
+        raise Exception("Could not fetch CrowdStrike Feed\n"
+                        "\nCheck your API key and your connection to CrowdStrike.")
     return 'ok', {}, {}
 
 
@@ -136,14 +142,14 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple
     """Initiate a single fetch-indicators
 
     Args:
-        client(Client): The AutoFocus Client.
+        client(Client): The CrowdStrike Client.
         args(dict): Command arguments.
         feed_tags: The indicator tags
     Returns:
         str, dict, list. the markdown table, context JSON and list of indicators
     """
     offset = int(args.get('offset', 0))
-    limit = int(args.get('limit', 100))
+    limit = int(args.get('limit', 150))
 
     indicators = fetch_indicators_command(client, feed_tags, limit, offset)
 
@@ -156,23 +162,19 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple
             'fields': indicator.get('fields'),
         })
 
-    human_readable = tableToMarkdown("Indicators from Crowdstrike:", hr_indicators,
+    human_readable = tableToMarkdown("Indicators from CrowdStrike:", hr_indicators,
                                      headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
 
     if args.get('limit'):
-        human_readable = human_readable + f"\nTo bring the next batch of indicators " \
-                                          f"run:\n!crowdstrike-falcon-intel-get-indicators " \
-                                          f"limit={args.get('limit')} " \
-                                          f"offset={int(str(args.get('limit'))) + int(str(args.get('offset')))}"
-
+        human_readable = human_readable
     return human_readable, {}, indicators
 
 
 def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset=None) -> list:
-    """Fetch-indicators command from AutoFocus Feeds
+    """Fetch-indicators command from CrowdStrike Feeds
 
     Args:
-        client(Client): AutoFocus Feed client.
+        client(Client): CrowdStrike Feed client.
         feed_tags: The indicator tags
         limit: limit the amount of indicators fetched.
         offset: the index of the first index to fetch.
@@ -208,7 +210,7 @@ def main():
                                                                        feed_tags)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        raise Exception(f'Error in Crowdstrike falcon intel  Integration [{e}]')
+        raise Exception(f'Error in CrowdStrike falcon intel Integration [{e}]')
 
 
 if __name__ == '__builtin__' or __name__ == 'builtins':
