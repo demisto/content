@@ -175,7 +175,8 @@ class Client(BaseClient):
             result['auditCreatedAt'] = datetime.fromtimestamp(result['auditCreatedAt'], timezone.utc).isoformat()
         if 'auditUpdatedAt' in result:
             result['auditUpdatedAt'] = datetime.fromtimestamp(result['auditUpdatedAt'], timezone.utc).isoformat()
-
+        if 'rawResponse' in result:
+            result.pop('rawResponse')
         return result
 
     def get_ip_whois(self, ip: str) -> Dict[str, Any]:
@@ -362,9 +363,14 @@ def url_reputation_command(client: Client, args: Dict[str, Any], default_thresho
             continue
 
         reputation = int(url_raw_response.get('positive_detections', 0))
-        score = Common.DBotScore.GOOD
-        if reputation >= threshold:
-            score = Common.DBotScore.BAD
+        if reputation == 0:
+            score = Common.DBotScore.NONE  # unknown
+        elif reputation >= threshold:
+            score = Common.DBotScore.BAD  # bad
+        elif reputation >= threshold / 2:
+            score = Common.DBotScore.SUSPICIOUS  # suspicious
+        else:
+            score = Common.DBotScore.GOOD  # good
 
         dbot_score = Common.DBotScore(
             indicator=url,
@@ -439,12 +445,15 @@ def file_reputation_command(client: Client, args: Dict[str, Any], default_thresh
             hash_message_list.append({'file': _hash})
             continue
 
-        score = Common.DBotScore.GOOD
         reputation = int(hash_reputation_response.get('positive_detections', 0))
-        if reputation > threshold:
-            score = Common.DBotScore.BAD
-        if reputation > 3:
-            score = Common.DBotScore.SUSPICIOUS
+        if reputation == 0:
+            score = Common.DBotScore.NONE  # unknown
+        elif reputation >= threshold:
+            score = Common.DBotScore.BAD  # bad
+        elif reputation >= threshold / 2:
+            score = Common.DBotScore.SUSPICIOUS  # suspicious
+        else:
+            score = Common.DBotScore.GOOD  # good
 
         dbot_score = Common.DBotScore(
             indicator=_hash,
@@ -522,7 +531,6 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
             demisto.debug(f'search this domain {domain} on cybertotal with status: {task_state}')
             domain_message_list.append({'domain': domain})
             continue
-        score = 0
         reputation = int(domain_data.get('positive_detections', 0))
         if reputation == 0:
             score = Common.DBotScore.NONE  # unknown
