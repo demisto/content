@@ -1674,11 +1674,11 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     demisto.log("htmlBody is " + str(htmlBody))
     demisto.log("entry_ids is " + str(entry_ids))
     demisto.log("file_names is " + str(file_names))
-    if entry_ids == [] and file_names == [] and attach_cid == [] and htmlBody:
+    if entry_ids == [] and file_names == [] and attach_cid == [] and htmlBody and body is None:
         # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
         demisto.log("entered to only html body without attachments")
         message = MIMEText(htmlBody, 'html')
-    elif entry_ids == [] and file_names == [] and attach_cid == [] and body:
+    elif entry_ids == [] and file_names == [] and attach_cid == [] and body and htmlBody is None:
         # if there is only body and no attachments to the mail , we would like to send it without attaching every part
         demisto.log("entered to only body without attachments")
         message = MIMEText(body, 'plain', 'utf-8')
@@ -1692,8 +1692,9 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     message['subject'] = header(subject)
     message['reply-to'] = header(replyTo)
 
+    demisto.log("type of message "+str(type(message)))
     # if there are any attachments to the mail
-    if entry_ids or file_names or attach_cid:
+    if entry_ids or file_names or attach_cid or (body and htmlBody):
         templateParams = template_params(templateParams)
         if templateParams is not None:
             if body is not None:
