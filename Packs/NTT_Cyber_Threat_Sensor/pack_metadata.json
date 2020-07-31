@@ -15,5 +15,6 @@
         "alert"
     ],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {}
 }
