@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
 ''' IMPORTS '''
 import re
 import json
@@ -1679,7 +1678,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
         demisto.log("entered to only html body without attachments")
         message = MIMEText(htmlBody, 'html')
-    if entry_ids == [] and file_names == [] and attach_cid == [] and body:
+    elif entry_ids == [] and file_names == [] and attach_cid == [] and body:
         # if there is only body and no attachments to the mail , we would like to send it without attaching every part
         demisto.log("entered to only body without attachments")
         message = MIMEText(body, 'plain', 'utf-8')
