@@ -375,6 +375,7 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
                     f"SafeBreachInsightId: {insight.get('ruleId')}",
                 ]
             }
+            mapping['tags'] = list((set(mapping['tags'])).union(set(client.tags))),
             indicator = {
                 'value': str(item["value"]),
                 'type': INDICATOR_TYPE_MAPPER.get(str(item['type'])),

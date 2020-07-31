@@ -137,7 +137,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Supports comma-separated values.
+- additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   required: false
