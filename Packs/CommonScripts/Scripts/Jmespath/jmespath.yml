@@ -1,6 +1,6 @@
 commonfields:
-  id: 387d5e2e-3ca3-4a54-86f4-aba6d03c076e
-  version: 12
+  id: jmespath
+  version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: jmespath
 script: ''
@@ -14,7 +14,6 @@ args:
 - name: expression
   required: true
   description: Jmespath expression
-- name: value
 scripttarget: 0
 subtype: python3
 pswd: ""

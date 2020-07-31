@@ -1,0 +1,24 @@
+import demistomock as demisto
+from CommonServerPython import *
+import jmespath
+
+
+def jmespath_search(expression: str, value: dict) -> dict:
+    try:
+        expression = jmespath.compile(expression)
+    except Exception as err:
+        return_error(f"Invalid expression - {err}")
+    result = expression.search(value)
+    return result
+
+
+def main():
+    args = demisto.args()
+    value = args.get("value")
+    expression = args.get("expression")
+    result = jmespath_search(expression, value)
+    demisto.results(result)
+
+
+if __name__ in ['__builtin__', 'builtins']:
+    main()
