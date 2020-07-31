@@ -15,7 +15,7 @@ requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 # api list size limit
-PAGELENGTH = 1000
+PAGELENGTH = 100
 
 
 class Client(BaseClient):
@@ -23,10 +23,13 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
-    def __init__(self, base_url, tenant_id, api_timeout=60, verify=True, proxy=False, ok_codes=tuple(), headers=None):
+    def __init__(self, base_url, tenant_id, first_fetch='-1', max_fetch=10, api_timeout=60, verify=True, proxy=False,
+                 ok_codes=tuple(), headers=None):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
         self.tenant_id = tenant_id
         self.api_timeout = api_timeout
+        self.first_fetch = first_fetch
+        self.max_fetch = min(max_fetch, PAGELENGTH)
 
     def get_device(self, id):
         """
@@ -42,7 +45,7 @@ class Client(BaseClient):
             timeout=self.api_timeout
         )
 
-    def list_alerts(self, stime='-1', offset=0, sortdirection='asc'):
+    def list_alerts(self, stime='-1', offset=0, pagelength=100, sortdirection='asc'):
         """
         returns alerts inventory list
         """
@@ -52,7 +55,7 @@ class Client(BaseClient):
             params={
                 'customerid': self.tenant_id,
                 'offset': offset,
-                'pagelength': PAGELENGTH,
+                'pagelength': pagelength,
                 'stime': stime,
                 'type': 'policy_alert',
                 'resolved': 'no',
@@ -63,7 +66,7 @@ class Client(BaseClient):
         )
         return data['items']
 
-    def list_vulns(self, stime='-1', offset=0):
+    def list_vulns(self, stime='-1', offset=0, pagelength=100):
         """
         returns vulnerability instances
         """
@@ -73,7 +76,7 @@ class Client(BaseClient):
             params={
                 'customerid': self.tenant_id,
                 'offset': offset,
-                'pagelength': PAGELENGTH,
+                'pagelength': pagelength,
                 'stime': stime,
                 'type': 'vulnerability',
                 'status': 'Confirmed',
@@ -154,6 +157,8 @@ def test_module(client):
         'ok' if test passed, anything else will fail the test.
     """
     client.get_device("")
+    if demisto.params().get('isFetch'):
+        fetch_incidents(client, last_run=demisto.getLastRun(), is_test=True)
     return 'ok'
 
 
@@ -175,7 +180,7 @@ def iot_get_device(client, args):
     result = client.get_device(device_id)
 
     return CommandResults(
-        outputs_prefix='PaloAltoNetworksIoT.device',
+        outputs_prefix='PaloAltoNetworksIoT.Device',
         outputs_key_field='deviceid',
         outputs=result
     )
@@ -195,7 +200,7 @@ def iot_list_devices(client, args):
         CommandResults
     """
     offset = args.get('offset', '0')
-    pagelength = args.get('pagelength', '1000')
+    pagelength = args.get('limit', client.max_fetch)
     result = client.list_devices(offset, pagelength)
 
     outputs = {
@@ -203,8 +208,8 @@ def iot_list_devices(client, args):
     }
 
     return CommandResults(
-        outputs_prefix="",
-        outputs_key_field="",
+        outputs_prefix="PaloAltoNetworksIoT.Devices",
+        outputs_key_field='deviceid',
         outputs=outputs
     )
 
@@ -222,17 +227,18 @@ def iot_list_alerts(client, args):
 
         CommandResults
     """
-    stime = args.get('stime', '-1')
+    stime = args.get('start_time', '-1')
     offset = args.get('offset', 0)
-    result = client.list_alerts(stime, offset, 'desc')
+    pagelength = int(args.get('limit', client.max_fetch), PAGELENGTH)
+    result = client.list_alerts(stime, offset, pagelength, 'desc')
 
     outputs = {
         'alerts': result
     }
 
     return CommandResults(
-        outputs_prefix="",
-        outputs_key_field="",
+        outputs_prefix="PaloAltoNetworksIoT.Alerts",
+        outputs_key_field="id",
         outputs=outputs
     )
 
@@ -250,17 +256,18 @@ def iot_list_vulns(client, args):
 
         CommandResults
     """
-    stime = args.get('stime', '-1')
+    stime = args.get('start_time', '-1')
     offset = args.get('offset', 0)
-    result = client.list_vulns(stime, offset)
+    pagelength = int(args.get('limit', client.max_fetch), PAGELENGTH)
+    result = client.list_vulns(stime, offset, pagelength)
 
     outputs = {
         'vulns': result
     }
 
     return CommandResults(
-        outputs_prefix="",
-        outputs_key_field="",
+        outputs_prefix="PaloAltoNetworksIoT.Vulns",
+        outputs_key_field="zb_ticketid",
         outputs=outputs
     )
 
@@ -283,9 +290,10 @@ def iot_resolve_alert(client, args):
     result = client.resolve_alert(alert_id, reason, reason_type)
 
     return CommandResults(
+        readable_output=f'{json.dumps(result)}',
         outputs_prefix="",
         outputs_key_field="",
-        outputs=result
+        outputs=None
     )
 
 
@@ -307,19 +315,20 @@ def iot_resolve_vuln(client, args):
     result = client.resolve_vuln(vuln_id, full_name, reason)
 
     return CommandResults(
+        readable_output=f'{json.dumps(result)}',
         outputs_prefix="",
         outputs_key_field="",
-        outputs=result
+        outputs=None
     )
 
 
-def fetch_incidents(client, last_run):
+def fetch_incidents(client, last_run, is_test=False):
     """
     This function will execute each interval (default is 1 minute).
 
     Args:
-        client (Client): HelloWorld client
-        last_run: The greatest incident date we fetched from last fetch
+        client (Client): IoT client
+        last_run: last_run dict containing the timestamps of the latest incident we fetched from previous fetch
 
     Returns:
         next_run: This will be last_run in the next fetch-incidents
@@ -328,33 +337,34 @@ def fetch_incidents(client, last_run):
     # Get the last fetch time, if exists
     last_alerts_fetch = last_run.get('last_alerts_fetch')
     last_vulns_fetch = last_run.get('last_vulns_fetch')
+    max_fetch = client.max_fetch
 
     incidents = []
 
     if demisto.params().get('fetch_alerts', True):
-        stime = '-1'
+        stime = client.first_fetch
         if last_alerts_fetch is not None:
             # need to add 1ms for the stime
             stime = datetime.utcfromtimestamp(last_alerts_fetch + 0.001).isoformat() + "Z"
 
-        alerts = client.list_alerts(stime)
+        alerts = client.list_alerts(stime, pagelength=max_fetch)
 
         # special handling for the case of having more than the pagelength
-        if len(alerts) == PAGELENGTH:
+        if len(alerts) == max_fetch:
             # get the last date
             last_date = alerts[-1]['date']
             offset = 0
             done = False
             while not done:
-                offset += PAGELENGTH
-                others = client.list_alerts(stime, offset)
+                offset += max_fetch
+                others = client.list_alerts(stime, offset, pagelength=max_fetch)
                 for alert in others:
                     if alert['date'] == last_date:
                         alerts.append(alert)
                     else:
                         done = True
                         break
-                if len(others) != PAGELENGTH:
+                if len(others) != max_fetch:
                     break
 
         for alert in alerts:
@@ -378,29 +388,29 @@ def fetch_incidents(client, last_run):
                 last_alerts_fetch = alert_date_epoch
 
     if demisto.params().get('fetch_vulns', True):
-        stime = '-1'
+        stime = client.first_fetch
         if last_vulns_fetch is not None:
             # need to add 1ms for the stime
             stime = datetime.utcfromtimestamp(last_vulns_fetch + 0.001).isoformat() + "Z"
 
-        vulns = client.list_vulns(stime)
+        vulns = client.list_vulns(stime, pagelength=max_fetch)
 
         # special handling for the case of having more than the pagelength
-        if len(vulns) == PAGELENGTH:
+        if len(vulns) == max_fetch:
             # get the last date
             last_date = vulns[-1]['detected_date']
             offset = 0
             done = False
             while not done:
-                offset += PAGELENGTH
-                others = client.list_vulns(stime, offset)
+                offset += max_fetch
+                others = client.list_vulns(stime, offset, pagelength=max_fetch)
                 for vuln in others:
                     if vuln['detected_date'] == last_date:
                         vulns.append(vuln)
                     else:
                         done = True
                         break
-                if len(others) != PAGELENGTH:
+                if len(others) != max_fetch:
                     break
 
         for vuln in vulns:
@@ -427,6 +437,10 @@ def fetch_incidents(client, last_run):
         'last_alerts_fetch': last_alerts_fetch,
         'last_vulns_fetch': last_vulns_fetch
     }
+
+    if is_test:
+        return None, None
+
     return next_run, incidents
 
 
@@ -438,6 +452,8 @@ def main():
     access_key_id = demisto.params()['access_key_id']
     secret_access_key = demisto.params()['secret_access_key']
     api_timeout = int(demisto.params().get('api_timeout', '60'))
+    first_fetch = demisto.params().get('first_fetch', '-1')
+    max_fetch = int(demisto.params().get('max_fetch', '10'))
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/pub/v4.0')
@@ -446,12 +462,14 @@ def main():
 
     proxy = demisto.params().get('proxy', False)
 
-    LOG(f'Command being called is {demisto.command()}')
+    demisto.info(f'Command being called is {demisto.command()}')
     try:
         client = Client(
             base_url=base_url,
             tenant_id=tenant_id,
             api_timeout=api_timeout,
+            first_fetch=first_fetch,
+            max_fetch=max_fetch,
             verify=verify_certificate,
             proxy=proxy,
             ok_codes=(200,),
@@ -471,8 +489,11 @@ def main():
                 client=client,
                 last_run=demisto.getLastRun())
 
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
+            if next_run is not None:
+                demisto.setLastRun(next_run)
+
+            if incidents is not None:
+                demisto.incidents(incidents)
 
         elif demisto.command() == 'iot-security-get-device':
             return_results(iot_get_device(client, demisto.args()))

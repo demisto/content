@@ -132,6 +132,18 @@ _CONFIG_WITH_DEFAULT = {
 
 
 def test_iot_get_raci_normal(monkeypatch):
+    """
+    Scenario: getting the raci result in a normal case
+
+    Given
+    - A device with an IoT alert named "DOUBLEPULSAR Backdoor traffic"
+
+    When
+    - Calculating the RACI model result
+
+    Then
+    - Ensure the correct RACI model is calculated
+    """
     monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG)
 
     outputs = get_raci({
@@ -151,6 +163,18 @@ def test_iot_get_raci_normal(monkeypatch):
 
 
 def test_iot_get_raci_no_default_email(monkeypatch):
+    """
+    Scenario: checking the responsiblie email is None if a default email is missing in IOT_CONFIG
+
+    Given
+    - A device with an IoT Vulnerability
+
+    When
+    - Calculating the RACI model result
+
+    Then
+    - Ensure the r_email is None even though r is not None
+    """
     monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG_WITHOUT_DEFAULT)
 
     outputs = get_raci({
@@ -170,6 +194,18 @@ def test_iot_get_raci_no_default_email(monkeypatch):
 
 
 def test_iot_get_raci_default_email(monkeypatch):
+    """
+    Scenario: checking the responsiblie email is the default one specified in IOT_CONFIG
+
+    Given
+    - A device with an IoT Vulnerability
+
+    When
+    - Calculating the RACI model result
+
+    Then
+    - Ensure the r_email is the default email in IOT_CONFIG
+    """
     monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG_WITH_DEFAULT)
 
     outputs = get_raci({
@@ -189,6 +225,18 @@ def test_iot_get_raci_default_email(monkeypatch):
 
 
 def test_iot_get_raci_no_name_regex(monkeypatch):
+    """
+    Scenario: checking the IOT_CONFIG is working without the name regex in the "alerts" section of the JSON
+
+    Given
+    - A device with an IoT Vulnerability
+
+    When
+    - Calculating the RACI model result
+
+    Then
+    - Ensure the r is correct
+    """
     monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG)
 
     outputs = get_raci({
@@ -222,6 +270,18 @@ def test_iot_get_raci_no_name_regex(monkeypatch):
 
 
 def test_iot_snow(monkeypatch):
+    """
+    Scenario: checking the ServiceNow config is returned from the IOT_CONFIG
+
+    Given
+    - A device with an IoT Vulnerability
+
+    When
+    - Calculating the RACI model result
+
+    Then
+    - Ensure the r_snow is returned
+    """
     monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG)
     outputs = get_raci({
         'alert_name': 'FooBar',
@@ -244,6 +304,18 @@ def test_iot_snow(monkeypatch):
 
 
 def test_iot_get_raci_no_raci(monkeypatch):
+    """
+    Scenario: checking the case of missing the group defined in IOT_CONFIG
+
+    Given
+    - A device with an owner WPR_SECURITY, and its email is not listed
+
+    When
+    - Calculating the RACI model result
+
+    Then
+    - Ensure the code is still returning the raci
+    """
     monkeypatch.setattr(iot_get_raci, 'get_iot_config', lambda x: _CONFIG)
     outputs = get_raci({
         'alert_name': 'FooBar',

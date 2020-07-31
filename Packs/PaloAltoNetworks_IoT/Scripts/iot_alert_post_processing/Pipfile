@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 pytest = "==5.0.1"
+pytest-mock = "*"
 
 [packages]
 pytest = "*"

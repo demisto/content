@@ -1,4 +1,5 @@
 import demistomock as demisto
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 
 def _get_incident():
@@ -32,7 +33,7 @@ def main():
     try:
         iot_resolve_vuln()
     except Exception as ex:
-        demisto.error(f'Failed to execute iot-security-vuln-post-processing. Error: {str(ex)}')
+        return_error(f'Failed to execute iot-security-vuln-post-processing. Error: {str(ex)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
