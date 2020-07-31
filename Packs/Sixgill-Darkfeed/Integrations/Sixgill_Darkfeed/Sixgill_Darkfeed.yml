@@ -85,7 +85,6 @@ configuration:
   required: false
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   required: false
   type: 0
@@ -107,7 +106,7 @@ script:
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.7092
+  dockerimage: demisto/sixgill:1.0.0.8958
   feed: true
   isfetch: false
   longRunning: false
