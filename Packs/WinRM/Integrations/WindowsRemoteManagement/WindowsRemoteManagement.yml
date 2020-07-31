@@ -1,0 +1,76 @@
+commonfields:
+  id: Windows Remote Management
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Windows Remote Management
+display: Windows Remote Management
+category: Endpoint
+description: Uses the Python pywinrm library and commands to execute either a process
+  or using Powershell scripts.
+configuration:
+- display: Credentials
+  name: credentials
+  type: 9
+  required: true
+- display: Authentication Type
+  name: authType
+  defaultvalue: ntlm
+  type: 15
+  required: true
+  options:
+  - ntlm
+- display: Realm
+  name: realm
+  type: 0
+  required: false
+  additionalinfo: Default realm to use for Kerberos based authentication
+- display: Default Host (This is ONLY used with the 'Test' button below)
+  name: testhost
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: winrm-run-process
+    arguments:
+    - name: hostname
+      required: true
+      description: The hostname to run the command on
+    - name: command
+      required: true
+      description: Command to execute
+    - name: arguments
+      description: Comma separate list of arguments
+    outputs:
+    - contextPath: WinRM.Process
+      description: ""
+    - contextPath: WinRM.Process.Output
+      description: STDOUT of the WinRM command
+    - contextPath: WinRM.Process.Error
+      description: STDERR of the WinRM command
+    - contextPath: WinRM.Process.Status
+      description: Status code of the WInRM command
+    description: Executes a command on the host
+    execution: true
+  - name: winrm-run-powershell
+    arguments:
+    - name: hostname
+      required: true
+      description: Hostname to execute on
+    - name: script
+      description: The powershell script to execute (requires code, not a file input)
+    - name: scriptname
+      description: Name of the script (optional)
+    outputs:
+    - contextPath: WinRM.Powershell
+    - contextPath: WinRM.Powershell.Output
+      description: STDOUT of the WinRM command
+    - contextPath: WinRM.Powershell.Error
+      description: STDERR of the WinRM command
+    - contextPath: WinRM.Powershell.Status
+      description: Status code of the WInRM command
+    description: Executes a Powershell script on the endpoint
+  dockerimage: demisto/winrm:1.0.0.8882
+  runonce: false
+  subtype: python3
