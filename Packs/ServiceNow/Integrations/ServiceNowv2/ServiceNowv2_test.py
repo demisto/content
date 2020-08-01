@@ -428,9 +428,8 @@ def test_sysparm_input_display_value(mocker, requests_mock):
                         )
     requests_mock.post('https://server_url.com/table/alm_asset?sysparm_input_display_value=True', json={})
     # will raise a requests_mock.exceptions.NoMockAddress if the url address will not be as given in the requests_mock
-    result = create_record_command(client, demisto.args())
+    create_record_command(client, demisto.args())
     assert requests_mock.request_history[0].method == 'POST'
-
 
     mocker.patch.object(demisto, 'args', return_value={'input_display_value': 'false',
                                                        'table_name': "alm_asset",
@@ -439,5 +438,5 @@ def test_sysparm_input_display_value(mocker, requests_mock):
                         )
     requests_mock.post('https://server_url.com/table/alm_asset?sysparm_input_display_value=False', json={})
     # will raise a requests_mock.exceptions.NoMockAddress if the url address will not be as given in the requests_mock
-    result = create_record_command(client, demisto.args())
+    create_record_command(client, demisto.args())
     assert requests_mock.request_history[1].method == 'POST'
