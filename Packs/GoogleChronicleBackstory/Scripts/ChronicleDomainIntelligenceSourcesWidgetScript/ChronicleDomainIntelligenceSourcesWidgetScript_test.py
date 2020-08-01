@@ -5,14 +5,11 @@ import demistomock as demisto
 
 INCIDENT_DETAILS = [{'details': {"Artifact": "e9428.b.akamaiedge.net", "IocIngestTime": "2020-07-17T20:00:00Z",
                                  "FirstAccessedTime": "2018-11-05T12:01:29Z",
-                                 "LastAccessedTime": "2018-11-09T11:51:03Z", "Sources": [{"Category":
-                                                                                              "Observed served execute",
-                                                                                          "IntRawConfidenceScore": 0,
-                                                                                          "NormalizedConfidenceScore":
-                                                                                              "Low",
-                                                                                          "RawSeverity": "Low",
-                                                                                          "Source": "ET Intelligence"
-                                                                                                    " Rep List"}]}}]
+                                 "LastAccessedTime": "2018-11-09T11:51:03Z", "Sources":
+                                     [{"Category": "Observed served execute", "IntRawConfidenceScore": 0,
+                                       "NormalizedConfidenceScore": "Low",
+                                       "RawSeverity": "Low", "Source": "ET Intelligence Rep List"}
+                                      ]}}]
 
 
 def test_main_success(mocker):
@@ -48,6 +45,6 @@ def test_get_source_hr_success(mocker):
 
     mocker.patch.object(demisto, 'incidents', return_value=INCIDENT_DETAILS)
     source_details = ChronicleDomainIntelligenceSourcesWidgetScript.get_source_hr(INCIDENT_DETAILS[0].get('details', {})
-                                                                      .get('Sources', [])[0])
+                                                                                  .get('Sources', [])[0])
     assert {'Category/Description': 'Observed served execute', 'Confidence': 0, 'Normalized Confidence': 'Low',
             'Severity': 'Low'} == source_details
