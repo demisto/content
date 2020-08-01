@@ -1692,7 +1692,6 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     message['subject'] = header(subject)
     message['reply-to'] = header(replyTo)
 
-    demisto.log("type of message "+str(type(message)))
     # if there are any attachments to the mail
     if entry_ids or file_names or attach_cid or (body and htmlBody):
         templateParams = template_params(templateParams)
