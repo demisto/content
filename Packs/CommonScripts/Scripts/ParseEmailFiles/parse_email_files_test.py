@@ -523,6 +523,9 @@ def test_smime_msg(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
+    print(results[0])
+    print(results[0]['EntryContext'])
+    print(results[0]['EntryContext']['Email'])
     assert results[0]['EntryContext']['Email']['Subject'] == 'test'
 
 
