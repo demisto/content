@@ -1,4 +1,3 @@
-from unittest.mock import patch
 import demistomock as demisto
 
 import ExtractDomainFromIOCDomainMatchRes

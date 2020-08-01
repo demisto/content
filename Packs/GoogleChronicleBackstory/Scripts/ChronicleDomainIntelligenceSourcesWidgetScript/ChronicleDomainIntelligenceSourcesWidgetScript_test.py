@@ -1,8 +1,7 @@
-from unittest import mock
 from unittest.mock import patch
-import demistomock as demisto
 
 import ChronicleDomainIntelligenceSourcesWidgetScript
+import demistomock as demisto
 
 INCIDENT_DETAILS = [{'details': {"Artifact": "e9428.b.akamaiedge.net", "IocIngestTime": "2020-07-17T20:00:00Z",
                                  "FirstAccessedTime": "2018-11-05T12:01:29Z",
@@ -11,7 +10,6 @@ INCIDENT_DETAILS = [{'details': {"Artifact": "e9428.b.akamaiedge.net", "IocInges
                                                                                           "IntRawConfidenceScore": 0,
                                                                                           "NormalizedConfidenceScore":
                                                                                               "Low",
-                                                                                          "RawSeverity": "Low",
                                                                                           "Source": "ET Intelligence"
                                                                                                     " Rep List"}]}}]
 
