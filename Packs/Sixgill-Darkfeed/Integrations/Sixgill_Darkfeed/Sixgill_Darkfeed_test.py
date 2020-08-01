@@ -534,6 +534,14 @@ def test_get_indicators_command(mocker):
 
 
 def test_feed_tags(mocker):
+    """
+    Given:
+    - tags parameters
+    When:
+    - Executing fetch command on feed
+    Then:
+    - Validate the tags supplied are added to the tags list in addition to the tags that were there before
+    """
     global bundle_index
     global submitted_indicators
 
