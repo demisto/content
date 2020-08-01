@@ -199,6 +199,14 @@ def test_rerun_simulation(requests_mock, mocker):
 
 
 def test_feed_tags(requests_mock, mocker):
+    """
+    Given:
+    - client which has tag params
+    When:
+    - Executing get indicators command on feed
+    Then:
+    - Validate the tags supplied are added to the tags list in addition to the tags that were there before
+    """
     mocker.patch.object(demisto, 'args', return_value={'limit': '10'})
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'params', return_value={'url': MOCK_URL})
