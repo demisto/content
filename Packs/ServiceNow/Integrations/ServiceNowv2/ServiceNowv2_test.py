@@ -407,7 +407,7 @@ def test_sysparm_input_display_value(mocker, requests_mock):
     """Unit test
     Given
     - create_record_command function
-    - command args, including input_display_value as true
+    - command args, including input_display_value
     - command raw response
     When
     - mock the requests url destination.
@@ -420,14 +420,24 @@ def test_sysparm_input_display_value(mocker, requests_mock):
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
+
     mocker.patch.object(demisto, 'args', return_value={'input_display_value': 'true',
                                                        'table_name': "alm_asset",
                                                        'fields': "asset_tag=P4325434;display_name=my_test_record"
                                                        }
                         )
     requests_mock.post('https://server_url.com/table/alm_asset?sysparm_input_display_value=True', json={})
-
     # will raise a requests_mock.exceptions.NoMockAddress if the url address will not be as given in the requests_mock
     result = create_record_command(client, demisto.args())
-
     assert requests_mock.request_history[0].method == 'POST'
+
+
+    mocker.patch.object(demisto, 'args', return_value={'input_display_value': 'false',
+                                                       'table_name': "alm_asset",
+                                                       'fields': "asset_tag=P4325434;display_name=my_test_record"
+                                                       }
+                        )
+    requests_mock.post('https://server_url.com/table/alm_asset?sysparm_input_display_value=False', json={})
+    # will raise a requests_mock.exceptions.NoMockAddress if the url address will not be as given in the requests_mock
+    result = create_record_command(client, demisto.args())
+    assert requests_mock.request_history[1].method == 'POST'
