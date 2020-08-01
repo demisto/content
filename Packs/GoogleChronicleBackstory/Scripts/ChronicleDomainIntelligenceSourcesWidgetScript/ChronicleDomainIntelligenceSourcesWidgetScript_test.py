@@ -10,6 +10,7 @@ INCIDENT_DETAILS = [{'details': {"Artifact": "e9428.b.akamaiedge.net", "IocInges
                                                                                           "IntRawConfidenceScore": 0,
                                                                                           "NormalizedConfidenceScore":
                                                                                               "Low",
+                                                                                          "RawSeverity": "Low",
                                                                                           "Source": "ET Intelligence"
                                                                                                     " Rep List"}]}}]
 
