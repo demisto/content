@@ -1208,7 +1208,7 @@ def investigation_result_list_command(client: Client, args):
 def investigation_result_list_by_status_command(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
     response = client.investigation_result_list_by_status(**assign_params(**args))
-    context = response
+    context = {}
     if response:
         if response.get('Data', {}).get('Message', '') == 'OK':
             content_list = response.get('Data', {}).get('Data', {}).get('content', [])
