@@ -1,0 +1,192 @@
+id: Detonate URL - WildFire v2.1 - Test
+version: -1
+name: Detonate URL - WildFire v2.1 - Test
+description: |-
+  test pb of:
+  Detonate URL - WildFire-v2.1
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1a768224-0f47-4939-8fa0-daec2589fa97
+    type: start
+    task:
+      id: 1a768224-0f47-4939-8fa0-daec2589fa97
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: f602d4b5-6d13-494c-8752-63d59fb7b79d
+    type: regular
+    task:
+      id: f602d4b5-6d13-494c-8752-63d59fb7b79d
+      version: -1
+      name: set url
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL.Data
+      stringify: {}
+      value:
+        simple: http://www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 22ac5ac5-ea32-4bbc-8b68-799992a3d8f8
+    type: title
+    task:
+      id: 22ac5ac5-ea32-4bbc-8b68-799992a3d8f8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 420bcc87-fa7d-4d79-88d9-d21d167cfda7
+    type: playbook
+    task:
+      id: 420bcc87-fa7d-4d79-88d9-d21d167cfda7
+      version: -1
+      name: Detonate URL - WildFire v2.1
+      description: |-
+        The webpage detonation is only supported in US cloud.
+        Detonate a webpage or a remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+        The detonation supports the following file types -
+        APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
+      playbookName: Detonate URL - WildFire v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      ReportFileType: {}
+      Timeout:
+        simple: "60"
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2a3e8ca2-8ea5-4b4b-8db0-1df8a1e3e821
+    type: regular
+    task:
+      id: 2a3e8ca2-8ea5-4b4b-8db0-1df8a1e3e821
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
