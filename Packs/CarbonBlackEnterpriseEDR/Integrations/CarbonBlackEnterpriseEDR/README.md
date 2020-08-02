@@ -3,11 +3,11 @@
 
 VMware Carbon Black Enterprise EDR is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter)
 
-## Configure Carbon Black Enterprise EDR on Demisto
+## Configure VMware Carbon Black Enterprise EDR on Demisto
 ---
 
 1. Navigate to __Settings__ \> __Integrations__ \> __Servers & Services__.
-2. Search for Carbon Black Enterprise EDR.
+2. Search for VMware Carbon Black Enterprise EDR.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Server URL (e.g. https://defense.conferdeploy.net)__

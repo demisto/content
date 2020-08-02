@@ -1,0 +1,7 @@
+!sepio-query-agents uuid=BFEBFBFF000806EAL1HF8C4003Z ip_address=192.168.10.107 host_identifier=DESKTOP-ANTONY has_known_attack_tools=False has_unapproved_peripherals=False has_vulnerable_peripherals=False limit=1000
+!sepio-query-peripherals host_uuid=BFEBFBFF000806EAL1HF8C4003Z vendor_name="Logitech, Inc." product_name="Keyboard K120" limit=20
+!sepio-query-switches switch_name=sepio2960g ios_version=12.2(52)SE ip_address=192.168.100.25 model=WS-C2960G-24TC-L
+!sepio-query-switch-ports switch_name=sepio2960g switch_ip_address=192.168.100.25 port_id=Gi0/17 link_partner_data_contains=042AE2D31AC0,04D590D51701
+!sepio-query-system-events start_datetime=2020-07-16T16:50:00Z end_datetime=2020-07-21T11:02:00Z min_severity=Warning peripheral_type=1,2,3,4
+!sepio-set-agent-mode mode=Free uuid=BFEBFBFF000806EAL1HF8C4003Z
+!sepio-set-peripherals-mode mode=Approve uuid=BFEBFBFF000806EAL1HF8C4003Z vid=046D pid=C31C
