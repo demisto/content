@@ -1585,5 +1585,5 @@ script:
 tests:
 - test_Qradar
 fromversion: 5.5.0
-defaultClassifier: QRadar
-defaultMapperIn: QRadar-mapper
+defaultclassifier: QRadar
+defaultmapperin: QRadar-mapper

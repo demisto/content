@@ -9,6 +9,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Any, List, Tuple, Callable
 from tempfile import gettempdir
 from dateutil import parser
+import demistomock as demisto
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -325,6 +326,59 @@ def threat_context_transformer(row_content: dict) -> dict:
     }
 
 
+def url_context_transformer(row_content: dict) -> dict:
+    """
+    This function retrieves data from a row of raw data into context path locations
+
+    Args:
+        row_content: a dict representing raw data of a row
+
+    Returns:
+        a dict with context paths and their corresponding value
+    """
+
+    return {
+        'SessionID': row_content.get('session_id'),
+        'Action': row_content.get('action', {}).get('value'),
+        'App': row_content.get('app'),
+        'PcapID': row_content.get('pcap_id'),
+        'DestinationPort': row_content.get('dest_port'),
+        'AppCategory': row_content.get('app_category'),
+        'AppSubcategory': row_content.get('app_sub_category'),
+        'SourceLocation': row_content.get('source_location'),
+        'DestinationLocation': row_content.get('dest_location'),
+        'ToZone': row_content.get('to_zone'),
+        'FromZone': row_content.get('from_zone'),
+        'Protocol': row_content.get('protocol', {}).get('value'),
+        'DestinationIP': row_content.get('dest_ip', {}).get('value'),
+        'SourceIP': row_content.get('source_ip', {}).get('value'),
+        'RuleMatched': row_content.get('rule_matched'),
+        'ThreatCategory': row_content.get('threat_category', {}).get('value'),
+        'ThreatName': row_content.get('threat_name'),
+        'Subtype': row_content.get('sub_type', {}).get('value'),
+        'LogTime': human_readable_time_from_epoch_time(row_content.get('log_time', 0)),
+        'LogSourceName': row_content.get('log_source_name'),
+        'Denied': row_content.get('is_url_denied'),
+        'Category': row_content.get('url_category', {}).get('value'),
+        'SourcePort': row_content.get('source_port'),
+        'URL': row_content.get('url_domain'),
+        'URI': row_content.get('uri'),
+        'ContentType': row_content.get('content_type'),
+        'HTTPMethod': row_content.get('http_method', {}).get('value'),
+        'Severity': row_content.get('severity'),
+        'UserAgent': row_content.get('user_agent'),
+        'RefererProtocol': row_content.get('referer_protocol', {}).get('value'),
+        'RefererPort': row_content.get('referer_port'),
+        'RefererFQDN': row_content.get('referer_fqdn'),
+        'RefererURL': row_content.get('referer_url_path'),
+        'SrcUser': row_content.get('source_user'),
+        'SrcUserInfo': row_content.get('source_user_info'),
+        'DstUser': row_content.get('dest_user'),
+        'DstUserInfo': row_content.get('dest_user_info'),
+        'TechnologyOfApp': row_content.get('technology_of_app'),
+    }
+
+
 def records_to_human_readable_output(fields: str, table_name: str, results: list) -> str:
     """
     This function gets all relevant data for the human readable output of a specific table.
@@ -424,10 +478,38 @@ def build_where_clause(args: dict) -> str:
         'file_sha_256': 'file_sha_256',
         'file_name': 'file_name',
     }
+    if args.get('ip') and (args.get('source_ip') or args.get('dest_ip')):
+        raise DemistoException('Error: "ip" argument cannot appear with either "source_ip" nor "dest_ip"')
+
+    if args.get('port') and (args.get('source_port') or args.get('dest_port')):
+        raise DemistoException('Error: "port" argument cannot appear with either "source_port" nor "dest_port"')
+
     non_string_keys = {'dest_port', 'source_port'}
     if 'query' in args:
         # if query arg is supplied than we just need to parse it and only it
         return args['query'].strip()
+
+    where_clause = ''
+    if args.get('ip'):
+        ips = argToList(args.pop('ip'))
+        # Creating a query for ip argument using source ip and dest ip
+        where_clause += '(' + ' OR '.join(f'source_ip.value = "{ip}" OR dest_ip.value = "{ip}"' for ip in ips) + ')'
+        if any(args.get(key) for key in args_dict) or args.get('port') or args.get('url'):
+            where_clause += ' AND '
+
+    if args.get('port'):
+        ports = argToList(args.pop('port'))
+        # Creating a query for port argument using source port and dest port
+        where_clause += '(' + ' OR '.join(f'source_port = {port} OR dest_port = {port}' for port in ports) + ')'
+        if any(args.get(key) for key in args_dict):
+            where_clause += ' AND '
+
+    if args.get('url'):
+        urls = argToList(args.pop('url'))
+        # Creating a query for url argument using uri and referer
+        where_clause += '(' + ' OR '.join(f'uri LIKE "%{url}%" OR referer LIKE "%{url}%"' for url in urls) + ')'
+        if any(args.get(key) for key in args_dict):
+            where_clause += ' AND '
 
     # We want to add only keys that are part of the query
     string_query_fields = {key: value for key, value in args.items() if key in args_dict and key not in non_string_keys}
@@ -442,7 +524,7 @@ def build_where_clause(args: dict) -> str:
         non_string_values_list: list = argToList(values)
         field = args_dict[key]
         or_statements.append(' OR '.join([f'{field} = {value}' for value in non_string_values_list]))
-    where_clause = ' AND '.join([f'({or_statement})' for or_statement in or_statements if or_statement])
+    where_clause += ' AND '.join([f'({or_statement})' for or_statement in or_statements if or_statement])
     return where_clause
 
 
@@ -672,6 +754,18 @@ def query_threat_logs_command(args: dict, client: Client) -> Tuple[str, dict, Li
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
+def query_url_logs_command(args: dict, client: Client) -> Tuple[str, dict, List[Dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.url table
+
+        Returns: a Demisto's entry with all the parsed data
+    """
+    query_table_name: str = 'url'
+    context_transformer_function = url_context_transformer
+    table_context_path: str = 'CDL.Logging.URL'
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
 def query_table_logs(args: dict,
                      client: Client,
                      table_name: str,
@@ -772,6 +866,8 @@ def main():
             return_outputs(*query_traffic_logs_command(args, client))
         elif command == 'cdl-query-threat-logs':
             return_outputs(*query_threat_logs_command(args, client))
+        elif command == 'cdl-query-url-logs':
+            return_outputs(*query_url_logs_command(args, client))
         elif command == 'fetch-incidents':
             first_fetch_timestamp = params.get('first_fetch_timestamp', '24 hours').strip()
             fetch_severity = params.get('firewall_severity')

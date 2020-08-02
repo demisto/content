@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+- DEPRECATED. Use "PAN-OS EDL Setup v3" playbook instead. 
 
 ## [20.5.0] - 2020-05-12
 Added test playbook
