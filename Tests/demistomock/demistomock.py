@@ -388,18 +388,19 @@ def params():
     """(Integration only)
     Retrieves the integration parameters object
 
-    :return: Integrations parameters object
-    :rtype: ``dict``
+    Returns:
+      dict: Integrations parameters object
+
     """
     return {}
 
 
 def args():
-    """
-    Retrieves a command / script arguments object
+    """Retrieves a command / script arguments object
 
-    :return: Arguments object
-    :rtype: ``dict``
+    Returns:
+      dict: Arguments object
+
     """
     return {}
 
@@ -408,37 +409,35 @@ def command():
     """(Integration only)
        Retrieves the integration command that is being run
 
-       :return: Integrations command name
-       :rtype: ``str``
+    Returns:
+      str: Integrations command name
+
     """
     return ""
 
 
 def log(msg):
-    """
-    Prints a message to the current incidents war room log
+    """Prints a message to the current incidents war room log
 
-    :type msg: ``str``
-    :param msg: The message to be logged
+    Args:
+      msg (str): The message to be logged
 
-    :return: No data returned
-    :rtype: ``None``
+    Returns:
+      None: No data returned
     """
     logging.getLogger().info(msg)
 
 
 def get(obj, field):
-    """
-    Extracts field value from nested object
+    """Extracts field value from nested object
 
-    :type obj: ``dict``
-    :param obj: The object to extract the field from
+    Args:
+      obj (dict): The object to extract the field from
+      field (str): The field to extract from the object, given in dot notation
 
-    :type field: ``str``
-    :param field: The field to extract from the object, given in dot notation
+    Returns:
+      str: The value of the extracted field
 
-    :return: The value of the extracted field
-    :rtype: ``str``
     """
     parts = field.split(".")
     for part in parts:
@@ -450,37 +449,35 @@ def get(obj, field):
 
 
 def gets(obj, field):
-    """
-    Extracts field value from nested object
+    """Extracts field value from nested object
 
-    :type obj: ``dict``
-    :param obj: The object to extract the field from
+    Args:
+      obj (dict): The object to extract the field from
+      field (str): The field to extract from the object, given in dot notation
 
-    :type field: ``str``
-    :param field: The field to extract from the object, given in dot notation
+    Returns:
+      str: The value of the extracted field
 
-    :return: The value of the extracted field
-    :rtype: ``str``
     """
     return str(get(obj, field))
 
 
 def context():
-    """
-    Retrieves the context data object of the current incident
+    """Retrieves the context data object of the current incident
 
-    :return: Context data object
-    :rtype: ``dict``
+    Returns:
+      dict: Context data object
+
     """
     return {}
 
 
 def uniqueFile():
-    """
-    Generate a unique file name based upon a random UUID
+    """Generate a unique file name based upon a random UUID
 
-    :return: Random UUID
-    :rtype: ``str``
+    Returns:
+      str: Random UUID
+
     """
     return str(uuid.uuid4())
 
@@ -489,8 +486,9 @@ def getLastRun():
     """(Integration only)
     Retrieves the LastRun object
 
-    :return: LastRun object
-    :rtype: ``dict``
+    Returns:
+      dict: LastRun object
+
     """
     return {"lastRun": "2018-10-24T14:13:20+00:00"}
 
@@ -499,60 +497,55 @@ def setLastRun(obj):
     """(Integration only)
     Stores given object in the LastRun object
 
-    :type obj: ``dict``
-    :param obj: The object to store
+    Args:
+      obj (dict): The object to store
 
-    :return: No data returned
-    :rtype: ``None``
+    Returns:
+      None: No data returned
+
     """
     return None
 
 
 def info(msg, *args):
-    """
-    Prints a message to the server logs in info level
+    """Prints a message to the server logs in info level
 
-    :type msg: ``str``
-    :param msg: The message to be logged
+    Args:
+      msg (str): The message to be logged
+      args (dict): Additional arguments to log
 
-    :type args: ``dict``
-    :param args: Additional arguments to log
+    Returns:
+      None: No data returned
 
-    :return: No data returned
-    :rtype: ``None``
     """
     logging.getLogger().info(msg, *args)
 
 
 def error(msg, *args):
-    """
-    Prints a message to the server logs in error level
+    """Prints a message to the server logs in error level
 
-    :type msg: ``str``
-    :param msg: The message to be logged
+    Args:
+      msg (str): The message to be logged
+      args (dict): Additional arguments to log
 
-    :type args: ``tuple``
-    :param args: Additional arguments to log
+    Returns:
+      None: No data returned
 
-    :return: No data returned
-    :rtype: ``None``
     """
     # print to stdout so pytest fail if not mocked
     print(msg, *args)
 
 
 def debug(msg, *args):
-    """
-    Prints a message to the server logs in debug level
+    """Prints a message to the server logs in debug level
 
-    :type msg: ``str``
-    :param msg: The message to be logged
+    Args:
+      msg (str): The message to be logged
+      args (dict): Additional arguments to log
 
-    :type args: ``tuple``
-    :param args: Additional arguments to log
+    Returns:
+      None: No data returned
 
-    :return: No data returned
-    :rtype: ``None``
     """
     logging.getLogger().info(msg, *args)
 
@@ -561,21 +554,22 @@ def getAllSupportedCommands():
     """(Script only)
     Retrieves all available integration commands and scripts
 
-    :return: Object of all available integrations and scripts
-    :rtype: ``dict``
+    Returns:
+      dict: Object of all available integrations and scripts
+
     """
     return {}
 
 
 def results(results):
-    """
-    Outputs entries to the war-room
+    """Outputs entries to the war-room
 
-    :type results: ``list`` or ``dict``
-    :param results: The entry object or array of entry objects to output
+    Args:
+      results (Union[list, dict]): The entry object or array of entry objects to output
 
-    :return: No data returned
-    :rtype: ``None``
+    Returns:
+      None: No data returned
+
     """
     if type(results) is dict and results.get("contents"):
         results = results.get("contents")
@@ -586,34 +580,36 @@ def credentials(credentials):
     """(Integration only)
     For integrations that support fetching credentials. Send the fetched credentials to the server.
 
-    :type credentials: ``list``
-    :param credentials: List of credential objects
+    Args:
+      credentials (list): List of credential objects
 
-    :return: No data returned
-    :rtype: ``None``
+    Returns:
+      None: No data returned
+
     """
     log("credentials: {}".format(credentials))
 
 
 def getFilePath(id):
-    """
-    Retrieves file path and name, given file entry ID
+    """Retrieves file path and name, given file entry ID
 
-    :type id: ``str``
-    :param id: File entry ID to get details of
+    Args:
+      id (str): File entry ID to get details of
 
-    :return: Object contains file ID, path and name
-    :rtype: ``dict``
+    Returns:
+      dict: Object contains file ID, path and name
+
     """
     return {'id': id, 'path': 'test/test.txt', 'name': 'test.txt'}
 
 
 def investigation():
-    """
-    Retrieves the ID of the investigation in which being run in
+    """Retrieves the ID of the investigation in which being run in
 
-    :return: Object contains the investigation ID
-    :rtype: ``dict``
+
+    Returns:
+      dict: Object contains the investigation ID
+
     """
     return {"id": "1"}
 
@@ -622,14 +618,13 @@ def executeCommand(command, args):
     """(Script only)
     Executes given integration command / script and arguments
 
-    :type command: ``str``
-    :param command: Integration command name or script name to run
+    Args:
+      command (str): Integration command name or script name to run
+      args (dict): Integration command / script arguments
 
-    :type args: ``dict``
-    :param args: Integration command / script arguments
+    Returns:
+      Union[dict, list]: Command execution response wrapped in Demisto entry object
 
-    :return: Command execution response wrapped in Demisto entry object
-    :rtype: ``dict`` or  ``list``
     """
     commands = {
         "getIncidents": exampleIncidents,
@@ -646,24 +641,25 @@ def getParam(param):
     """(Integration only)
     Extracts given parameter from the integration parameters object
 
-    :type param: ``str``
-    :param param: Integration parameter to get value of
+    Args:
+      param (str): Integration parameter to get value of
 
-    :return: Integration parameter value
-    :rtype: ``str``
+    Returns:
+      str: Integration parameter value
+
     """
     return params().get(param)
 
 
 def getArg(arg):
-    """
-    Extracts given argument from the arguments object
+    """Extracts given argument from the arguments object
 
-    :type arg: ``str``
-    :param arg: Argument to get value of
+    Args:
+      arg (str): Argument to get value of
 
-    :return: Argument value
-    :rtype: ``str``
+    Returns:
+      str: Argument value
+
     """
     return args().get(arg)
 
@@ -672,11 +668,12 @@ def setIntegrationContext(context):
     """(Integration only)
     Stores given object in the IntegrationContext object
 
-    :type obj: ``dict``
-    :param obj: The object to store
+    Args:
+      context (dict): The object to store
 
-    :return: No data returned
-    :rtype: ``None``
+    Returns:
+      None: No data returned
+
     """
     global integrationContext
     integrationContext = context
@@ -686,8 +683,9 @@ def getIntegrationContext():
     """(Integration only)
     Retrieves the IntegrationContext object
 
-    :return: IntegrationContext object
-    :rtype: ``dict``
+    Returns:
+      dict: IntegrationContext object
+
     """
     return integrationContext
 
@@ -696,18 +694,15 @@ def setIntegrationContextVersioned(context, version=-1, sync=False):
     """(Integration only)
     Stores given object in the IntegrationContext object in given version
 
-    :type context: ``dict``
-    :param context: The object to store
+    Args:
+      context (dict): The object to store
+      version (int): The context version to set. If the version is older than the current, an error will be thrown. (Default value = -1)  # noqa
+      sync (bool): Whether to save the context to the DB right away.
+    If false, the context will be saved at the end of the command. (Default value = False)
 
-    :type version: ``int``
-    :param version: The context version to set. If the version is older than the current, an error will be thrown.
+    Returns:
+      None: No data returned
 
-    :type sync: ``bool``
-    :param sync: Whether to save the context to the DB right away.
-    If false, the context will be saved at the end of the command.
-
-    :return: No data returned
-    :rtype: ``None``
     """
     global integrationContext
     integrationContext = context
@@ -717,25 +712,26 @@ def getIntegrationContextVersioned(refresh=False):
     """(Integration only)
     Retrieves the versioned IntegrationContext object
 
-    :type refresh: ``bool``
-    :param refresh: Whether to get the integration context straight from the DB and not from the instance memory.
+    Args:
+      refresh (bool): Whether to get the integration context straight from the DB and not from the instance memory. (Default value = False) # noqa
 
-    :return: IntegrationContext versioned object
-    :rtype: ``dict``
+    Returns:
+      dict: IntegrationContext versioned object
+
     """
     return integrationContext
 
 
 def incidents(incidents=None):
-    """
-    In script, retrieves the `Incidents` list from the context
+    """In script, retrieves the `Incidents` list from the context
     In integration, used to return incidents to the server
 
-    :type incidents: ``list``
-    :param incidents: List of incident objects
+    Args:
+      incidents (list): In integration only, list of incident objects (Default value = None)
 
-    :return: List of incident objects
-    :rtype: ``list``
+    Returns:
+      list: List of incident objects
+
     """
     if incidents is None:
         return exampleIncidents[0]['Contents']['data']
@@ -749,40 +745,37 @@ def setContext(contextPath, value):
     """(Script only)
     Sets given value in path in the context data
 
-    :type contextPath: ``str``
-    :param contextPath: The context data path to set the value in
+    Args:
+      contextPath (str): The context data path to set the value in
+      value (str): The value to set in the context data path
 
-    :type value: ``str``
-    :param value: The value to set in the context data path
+    Returns:
+      dict: Object contains operation result status
 
-    :return: Object contains operation result status
-    :rtype: ``dict``
     """
     return {"status": True}
 
 
 def demistoUrls():
-    """
-    Retrieves Demisto server URLs of incident ran in
+    """Retrieves Demisto server URLs of incident ran in
 
-    :return: Object contains server URLs with page as key and URL as value
-    :rtype: ``dict``
+    Returns:
+      dict: Object contains server URLs with page as key and URL as value
+
     """
     return exampleDemistoUrls
 
 
 def dt(obj=None, trnsfrm=None):
-    """
-    Extracts field from object using DT language syntax
+    """Extracts field from object using DT language syntax
 
-    :type obj: ``dict``
-    :param obj: The object to look in for the requested field
+    Args:
+      obj (dict): The object to look in for the requested field (Default value = None)
+      trnsfrm (str): The field to get value of (Default value = None)
 
-    :type trnsfrm: ``str``
-    :param trnsfrm: The field to get value of
+    Returns:
+      str: The field value in the object
 
-    :return: The field value in the object
-    :rtype: ``str``
     """
     return ""
 
@@ -791,23 +784,16 @@ def addEntry(id, entry, username=None, email=None, footer=None):
     """(Integration only)
     Adds an entry to a mirrored investigation war room
 
-    :type id: ``str``
-    :param id: Incident ID to add the entry in
+    Args:
+      id (str): Incident ID to add the entry in
+      entry (str): The text to add in the entry
+      username (str): The username of the user to be the entry creator (Default value = None)
+      email (str): The email address of the user to be the entry creator (Default value = None)
+      footer (str): The email address of the user to be the entry creator (Default value = None)
 
-    :type entry: ``str``
-    :param entry: The text to add in the entry
+    Returns:
+      None: No data returned
 
-    :type username: ``str``
-    :param username: The username of the user to be the entry creator
-
-    :type email: ``str``
-    :param email: The email address of the user to be the entry creator
-
-    :type footer: ``str``
-    :param footer: The email address of the user to be the entry creator
-
-    :return: No data returned
-    :rtype: ``None``
     """
     return ""
 
@@ -816,17 +802,14 @@ def mirrorInvestigation(id, mirrorType, autoClose=False):
     """(Integration only)
     Marks an investigation as mirrored
 
-    :type id: ``str``
-    :param id: Incident ID to mirror
+    Args:
+      id (str): Incident ID to mirror
+      mirrorType (str): Contains mirror type and mirror direction separated by colon, e.g. all:both
+      autoClose (bool): Whether to close the investigation when the mirrored channel is closed/archived (Default value = False)
 
-    :type mirrorType: ``str``
-    :param mirrorType: Contains mirror type and mirror direction separated by colon, e.g. all:both
+    Returns:
+      None: No data returned
 
-    :type autoClose: ``bool``
-    :param autoClose: Whether to close the investigation when the mirrored channel is closed/archived
-
-    :return: No data returned
-    :rtype: ``None``
     """
     return ""
 
@@ -835,11 +818,12 @@ def updateModuleHealth(error):
     """(Integration only)
     Updated integration module health with given error message
 
-    :type error: ``str``
-    :param error: The error message to display in the integration module health
+    Args:
+      error (str): The error message to display in the integration module health
 
-    :return: No data returned
-    :rtype: ``None``
+    Returns:
+      None: No data returned
+
     """
     return ""
 
@@ -848,20 +832,15 @@ def directMessage(message, username=None, email=None, anyoneCanOpenIncidents=Non
     """(Integration only)
     Executes command provided in direct message to messaging bot
 
-    :type message: ``str``
-    :param message: The message sent in personal context
+    Args:
+      message (str): The message sent in personal context
+      username (str): The username of the user that sent the direct message (Default value = None)
+      email (str): The email address of the user that sent the direct message (Default value = None)
+      anyoneCanOpenIncidents (bool): Whether external users can create incidents or not (Default value = None)
 
-    :type username: ``str``
-    :param username: The username of the user that sent the direct message
+    Returns:
+      str: Server response to command executed in the direct message
 
-    :type email: ``str``
-    :param email: The email address of the user that sent the direct message
-
-    :type anyoneCanOpenIncidents: ``bool``
-    :param anyoneCanOpenIncidents: Whether external users can create incidents or not
-
-    :return: Server response to command executed in the direct message
-    :rtype: ``str``
     """
     return ""
 
@@ -870,17 +849,14 @@ def createIncidents(incidents, lastRun=None, userID=None):
     """(Integration only)
     Creates incident in long running execution
 
-    :type incidents: ``list``
-    :param incidents: List of incident objects to create
+    Args:
+      incidents (list): List of incident objects to create
+      lastRun (dict): the LastRun object to set (Default value = None)
+      userID lastIndicator: The user associated with the request (Default value = None)
 
-    :type lastRun: ``dict``
-    :param lastRun: the LastRun object to set
+    Returns:
+      Union[list, dict]: Created incident object
 
-    :type userID: ``str``
-    :param userID: The user associated with the request
-
-    :return: Created incident object
-    :rtype: ``list`` or ``dict``
     """
     return []
 
@@ -889,14 +865,13 @@ def findUser(username=None, email=None):
     """(Integration only)
     Looks up for a user in the system
 
-    :type username: ``str``
-    :param username: The username of the user to search for
+    Args:
+      username (str): The username of the user to search for (Default value = None)
+      email (str): The email address of the user to search for (Default value = None)
 
-    :type email: ``str``
-    :param email: The email address of the user to search for
+    Returns:
+      dict: Object representing the user found
 
-    :return: Object representing the user found
-    :rtype: ``dict``
     """
     return {}
 
@@ -905,33 +880,26 @@ def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
     """(Integration only)
     Sends request to server to process entitlement response given from messaging client
 
-    :type incidentID: ``str``
-    :param incidentID: The incident ID in which the question was sent in
+    Args:
+      incidentID (str): The incident ID in which the question was sent in
+      guid (str): The entitlement UUID which identifies the question
+      email (str): The email address of the user that responded
+      content (str): The content of the response
+      taskID (str): The playbook task ID to mark as complete (Default value = "")
 
-    :type guid: ``str``
-    :param guid: The entitlement UUID which identifies the question
+    Returns:
+      None: No data returned
 
-    :type email: ``str``
-    :param email: The email address of the user that responded
-
-    :type content: ``str``
-    :param content: The content of the response
-
-    :type taskID: ``str``
-    :param taskID: The playbook task ID to mark as complete
-
-    :return: No data returned
-    :rtype: ``None``
     """
     return {}
 
 
 def demistoVersion():
-    """
-    Retrieves server version and build number
+    """Retrieves server version and build number
 
-    :return: Objects contains server version and build number
-    :rtype: ``dict``
+    Returns:
+      dict: Objects contains server version and build number
+
     """
     return {
         'version': '5.5.0',
@@ -943,8 +911,9 @@ def integrationInstance():
     """(Integration only)
     Retrieves the integration instance name in which ran in
 
-    :return: The integration instance name
-    :rtype: ``str``
+    Returns:
+      str: The integration instance name
+
     """
     return ""
 
@@ -953,39 +922,30 @@ def createIndicators(indicators_batch):
     """(Integration only)
     Creates indicators from given indicator objects batch
 
-    :type indicators_batch: ``list``
-    :param indicators_batch: List of indicators objects to create
+    Args:
+      indicators_batch (list): List of indicators objects to create
 
-    :return: No data returned
-    :rtype: ``None``
+    Returns:
+      None: No data returned
+
     """
     return ""
 
 
 def searchIndicators(fromdate='', query='', size=100, page=0, todate='', value=''):
-    """
-    Searches for indicators according to given query
+    """Searches for indicators according to given query
 
-    :type fromdate: ``str``
-    :param fromdate: The start date to search from
+    Args:
+      fromdate (str): The start date to search from (Default value = '')
+      query (str): Indicator search query (Default value = '')
+      size (int): Limit the number of returned results (Default value = 100)
+      page (int): Response paging (Default value = 0)
+      todate (str): The end date to search until to (Default value = '')
+      value (str): The indicator value to search (Default value = '')
 
-    :type query: ``str``
-    :param query: Indicator search query
+    Returns:
+      dict: Object contains the search results
 
-    :type size: ``int``
-    :param size: Limit the number of returned results
-
-    :type page: ``int``
-    :param page: Response paging
-
-    :type todate: ``str``
-    :param todate: The end date to search until to
-
-    :type value: ``str``
-    :param value: The indicator value to search
-
-    :return: Object contains the search results
-    :rtype: ``dict``
     """
     return {}
 
@@ -994,17 +954,18 @@ def getIndexHash():
     """(Integration only)
     Retrieves the hashed value of the tenant in which ran in
 
-    :return: Hashed value of tenant name
-    :rtype: ``str``
+    Returns:
+      str: Hashed value of tenant name
+
     """
     return ''
 
 
 def getLicenseID():
-    """
-    Retrieves the ID of the license used in the server
+    """Retrieves the ID of the license used in the server
 
-    :return: The license ID
-    :rtype: ``str``
+    Returns:
+      str: The license ID
+
     """
     return ''
