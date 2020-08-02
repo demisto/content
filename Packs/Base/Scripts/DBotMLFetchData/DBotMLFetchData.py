@@ -599,8 +599,8 @@ def extract_data_from_incidents(incidents):
     else:
         incidents_df_for_finding_labels_fields_candidates = incidents_df
     label_fields = find_label_fields_candidates(incidents_df_for_finding_labels_fields_candidates)
-    for l in label_fields:
-        incidents_df[l].replace('', float('nan'), regex=True, inplace=True)
+    for label in label_fields:
+        incidents_df[label].replace('', float('nan'), regex=True, inplace=True)
     incidents_df.dropna(how='all', subset=label_fields, inplace=True)
     y = []
     for i, label in enumerate(label_fields):
@@ -658,12 +658,12 @@ def update_last_execution_time():
 def main():
     incidents_query_args = demisto.args()
     args = get_args_based_on_last_execution()
-    # if 'query' in incidents_query_args and 'query' in args:
-    #     incidents_query_args['query'] = '({}) and ({}) and (status:Closed)'.format(incidents_query_args['query'], args['query'])
-    # elif 'query' in args:
-    #     incidents_query_args['query'] = '({}) and (status:Closed)'.format(args['query'])
-    # if 'limit' in args:
-    #     incidents_query_args['limit'] = args['limit']
+    if 'query' in incidents_query_args and 'query' in args:
+        incidents_query_args['query'] = '({}) and ({}) and (status:Closed)'.format(incidents_query_args['query'], args['query'])
+    elif 'query' in args:
+        incidents_query_args['query'] = '({}) and (status:Closed)'.format(args['query'])
+    if 'limit' in args:
+        incidents_query_args['limit'] = args['limit']
     demisto.results(str(incidents_query_args))
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', incidents_query_args)
     if is_error(incidents_query_res):
@@ -676,7 +676,6 @@ def main():
     compressed_hr_data = b64encode(compressed_data).decode('utf-8')
     res = {'PayloadVersion': FETCH_DATA_VERSION, 'PayloadData': compressed_hr_data}
     return_json_entry(res)
-    # return_json_entry(json.dumps(data, indent=3))
     update_last_execution_time()
 
 
