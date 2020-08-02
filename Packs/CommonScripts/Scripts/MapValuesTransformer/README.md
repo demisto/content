@@ -1,12 +1,12 @@
 # MapValuesTransformer
 
-This transformer script takes the input value and translates it based on 2 list arguments.
+This transformer script takes the input value and translates it based on two list arguments.
 
-The script that takes 2 arguments:
+The script that takes two arguments:
 
 `input_values` and `mapped_values`
 
-Both arguments are comma separated values. The total number of values for each input must be the same. For example:
+Both arguments are comma-separated values. The total number of values for each input must be the same. For example:
 
 `input_values = "1,2,3,4"`
 
