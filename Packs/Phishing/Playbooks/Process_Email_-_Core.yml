@@ -648,7 +648,6 @@ tasks:
         simple: headername
       unpack_nested_elements:
         simple: "true"
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -803,4 +802,4 @@ outputs:
   type: unknown
 fromversion: 4.5.0
 tests:
-- Phishing - Core - Test
+- Phishing - Core - Test - Incident Starter

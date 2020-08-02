@@ -218,6 +218,7 @@
       "fake_test_playbook": {
         "name": "fake_test_playbook",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "fromversion": "4.1.0",
         "implementing_scripts": [
           "fake-script"
         ],

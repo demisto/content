@@ -132,3 +132,6 @@ ignore=RP102
 
 [file:incidentfield-Detection_URL.json]
 ignore=IF107
+
+[file:CommonTypes]
+ignore=PA116

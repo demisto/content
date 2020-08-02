@@ -642,3 +642,6 @@ script:
     description: Creates (or updates) issue link
   isfetch: true
 system: true
+tests:
+- No Test - Run "Jira-Test" in TestPlaybooks/NonCircleTests/Deprecated/playbook-Jira-Test.yml
+

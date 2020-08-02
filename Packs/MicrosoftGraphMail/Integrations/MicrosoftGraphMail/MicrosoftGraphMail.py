@@ -1308,13 +1308,17 @@ def prepare_args(command, args):
     :rtype: ``dict``
     """
     if command in ['create-draft', 'send-mail']:
+        if args.get('htmlBody', None):
+            email_body = args.get('htmlBody')
+        else:
+            email_body = args.get('body', '')
         return {
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
             'subject': args.get('subject', ''),
-            'body': args.get('body', ''),
-            'body_type': args.get('bodyType', 'text'),
+            'body': email_body,
+            'body_type': args.get('bodyType', 'html'),
             'flag': args.get('flag', 'notFlagged'),
             'importance': args.get('importance', 'Low'),
             'internet_message_headers': argToList(args.get('headers')),
@@ -1392,7 +1396,7 @@ def send_email_command(client: MsGraphClient, args):
     message_content['bccRecipients'] = bcc_recipients
 
     message_content = assign_params(**message_content)
-    human_readable = tableToMarkdown(f'Email was sent successfully.', message_content)
+    human_readable = tableToMarkdown('Email was sent successfully.', message_content)
     ec = {CONTEXT_SENT_EMAIL_PATH: message_content}
 
     return_outputs(human_readable, ec)

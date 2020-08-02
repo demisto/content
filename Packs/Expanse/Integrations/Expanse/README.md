@@ -142,6 +142,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 3. expanse-get-certificate
 4. expanse-get-behavior
 5. expanse-get-exposures
+6. expanse-get-domains-for-certificate
 
 ### 1. ip
 ---
@@ -856,6 +857,101 @@ expanse-get-exposures command
 |---|---|---|---|---|---|---|
 | 0 | NTP_SERVER exposure on 33.2.243.123:UDP123 | 1 | 33.2.243.123 | 1 | 0 | 0 |
 
+
+### 4. expanse-get-domains-for-certificate
+---
+expanse-get-domains-for-certificate command
+##### Required Permissions
+**none**
+##### Base Command
+
+`expanse-get-domains-for-certificate`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| common_name | The certificate common name | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Expanse.IPDomains.SearchTerm | string | The common name that was searched |
+| Expanse.IPDomains.TotalDomainCount | number | The number of domains found matching the specified certificate |
+| Expanse.IPDomains.FlatDomainList | number | An array of all domain names found. This is truncated at 50 |
+| Expanse.IPDomains.DomainList | number | An array of domain objects. This is truncated at 50 |
+
+##### Command Example
+```!expanse-get-domains-for-certificate common_name="*.us.expanse.co"```
+
+##### Context Example
+<!-- disable-secrets-detection-start -->
+```
+{
+    "SearchTerm": "*.us.expanse.co",
+    "TotalDomainCount": 2,
+    "FlatDomainList": ["california.us.expanse.co", "dc.us.expanse.co"]
+    "DomainList": [
+        {
+            "ip": "33.2.243.123",
+            "domain": "california.us.expanse.co",
+            "type": "DOMAIN_RESOLUTION",
+            "assetType": "DOMAIN",
+            "assetKey": "california.us.expanse.co",
+            "provider": {
+                "id": "AWS",
+                "name": "Amazon Web Services"
+            },
+            "lastObserved": "2020-06-22T05:20:32.883Z",
+            "tenant": {
+                "id": "4b7efca7-c595-408e-b4d1-634080e48367",
+                "name": "Palo Alto Networks",
+                "tenantId": "4b7efca7-c595-408e-b4d1-634080e48367"
+            },
+            "businessUnits": [
+                {
+                    "id": "a1f0f39b-f358-3c8c-947b-926887871b88",
+                    "name": "VanDelay Import-Export"
+                    "tenantId": "a1f0f39b-f358-3c8c-947b-926887871b88"
+                }
+            ],
+            "commonName": null
+        },
+        {
+            "ip": "33.2.243.123",
+            "domain": "dc.us.expanse.co",
+            "type": "DOMAIN_RESOLUTION",
+            "assetType": "DOMAIN",
+            "assetKey": "dc.us.expanse.co",
+            "provider": {
+                "id": "AWS",
+                "name": "Amazon Web Services"
+            },
+            "lastObserved": "2020-06-21T07:20:32.883Z",
+            "tenant": {
+                "id": "4b7efca7-c595-408e-b4d1-634080e48367",
+                "name": "Palo Alto Networks",
+                "tenantId": "4b7efca7-c595-408e-b4d1-634080e48367"
+            },
+            "businessUnits": [
+                {
+                    "id": "a1f0f39b-f358-3c8c-947b-926887871b88",
+                    "name": "VanDelay Import-Export"
+                    "tenantId": "a1f0f39b-f358-3c8c-947b-926887871b88"
+                }
+            ],
+            "commonName": null
+        }
+    ]
+}
+```
+<!-- disable-secrets-detection-start -->
+
+##### Human Readable Output
+### Expanse Domains matching Certificate Common Name: *.us.expanse.co
+| FlatDomainList | SearchTerm | TotalDomainCount |
+|---|---|---|
+| california.us.expanse.co, dc.us.expanse.co | *.us.expanse.co | 2 |
 
 ## Additional Information
 ---

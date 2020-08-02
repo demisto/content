@@ -2,9 +2,6 @@
 ---
 
 Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches.
-This integration was integrated and tested with version xx of Have I Been Pwned? V2
-## Have I Been Pwned? V2 Playbook
----
 
 ## Configure Have I Been Pwned? V2 on Demisto
 ---

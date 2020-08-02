@@ -51,10 +51,10 @@ configuration:
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct
     messages.
+  hidden: true
   name: longRunning
   required: false
   type: 8
-  hidden: true
 - display: Bot display name in Slack (Cortex XSOAR by default)
   name: bot_name
   required: false
@@ -521,12 +521,13 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-  dockerimage: demisto/slack:1.0.0.7327
+  dockerimage: demisto/slack:1.0.0.9589
+  feed: false
   isfetch: false
   longRunning: true
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 fromversion: 5.0.0

@@ -35,7 +35,7 @@ FEED_TYPE_CORTEX_MT = 'Cortex XSOAR MT Shared Feed'
 
 class ElasticsearchClient:
     def __init__(self, insecure=None, server=None, username=None, password=None, api_key=None, api_id=None,
-                 time_field=None, time_method=None, fetch_index=None, fetch_time=None, query=None):
+                 time_field=None, time_method=None, fetch_index=None, fetch_time=None, query=None, tags=None):
         self._insecure = insecure
         self._proxy = handle_proxy()
         # _elasticsearch_builder expects _proxy to be None if empty
@@ -51,18 +51,40 @@ class ElasticsearchClient:
         self.fetch_time = fetch_time
         self.query = query
         self.es = self._elasticsearch_builder()
+        self.tags = tags
 
     def _elasticsearch_builder(self):
         """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-        return Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,
-                             verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
+        es = Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,
+                           verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
+        # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
+        if self._api_key and hasattr(es, 'transport'):
+            es.transport.get_connection().session.headers['authorization'] = self._get_api_key_header_val(self._api_key)
+        return es
 
     def send_test_request(self):
         headers = {
             'Content-Type': "application/json"
         }
-        return requests.get(self._server, auth=self._http_auth, verify=self._insecure, headers=headers,
-                            proxies=self._proxy)
+        if self._api_key:
+            headers['authorization'] = self._get_api_key_header_val(self._api_key)
+            auth = None
+        else:
+            auth = self._http_auth
+        return requests.get(self._server, verify=self._insecure, headers=headers, proxies=self._proxy, auth=auth)
+
+    @staticmethod
+    def _get_api_key_header_val(api_key):
+        """
+        Check the type of the passed api_key and return the correct header value
+        for the `API Key authentication
+        <https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html>`
+        :arg api_key, either a tuple or a base64 encoded string
+        """
+        if isinstance(api_key, (tuple, list)):
+            s = "{0}:{1}".format(api_key[0], api_key[1]).encode('utf-8')
+            return "ApiKey " + base64.b64encode(s).decode('utf-8')
+        return "ApiKey " + api_key
 
 
 def extract_api_from_username_password(username, password):
@@ -136,12 +158,12 @@ def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     now = datetime.now()
     if FEED_TYPE_GENERIC in feed_type:
         search = get_scan_generic_format(client, now)
-        ioc_lst = get_generic_indicators(search, src_val, src_type, default_type)
+        ioc_lst = get_generic_indicators(search, src_val, src_type, default_type, client.tags)
         hr = tableToMarkdown('Indicators', ioc_lst, [src_val])
     else:
         # Insight is the name of the indicator object as it's saved into the database
         search = get_scan_insight_format(client, now, feed_type=feed_type)
-        ioc_lst, ioc_enrch_lst = get_demisto_indicators(search)
+        ioc_lst, ioc_enrch_lst = get_demisto_indicators(search, client.tags)
         hr = tableToMarkdown('Indicators', list(set(map(lambda ioc: ioc.get('name'), ioc_lst))), 'Name')
         if ioc_enrch_lst:
             for ioc_enrch in ioc_enrch_lst:
@@ -149,22 +171,22 @@ def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     return_outputs(hr, {}, ioc_lst)
 
 
-def get_generic_indicators(search, src_val, src_type, default_type):
+def get_generic_indicators(search, src_val, src_type, default_type, tags):
     """Implements get indicators in generic format"""
     ioc_lst: list = []
     for hit in search.scan():
-        hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type)
+        hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags)
         ioc_lst.extend(hit_lst)
     return ioc_lst
 
 
-def get_demisto_indicators(search):
+def get_demisto_indicators(search, tags):
     """Implements get indicators in insight format"""
     limit = int(demisto.args().get('limit', FETCH_SIZE))
     ioc_lst: list = []
     ioc_enrch_lst: list = []
     for hit in search.scan():
-        hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit)
+        hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit, tags=tags)
         ioc_lst.extend(hit_lst)
         ioc_enrch_lst.extend(hit_enrch_lst)
         if len(ioc_lst) >= limit:
@@ -182,13 +204,13 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
         # Insight is the name of the indicator object as it's saved into the database
         search = get_scan_insight_format(client, now, last_fetch_timestamp, feed_type)
         for hit in search.scan():
-            hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit)
+            hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit, tags=client.tags)
             ioc_lst.extend(hit_lst)
             ioc_enrch_lst.extend(hit_enrch_lst)
     else:
         search = get_scan_generic_format(client, now, last_fetch_timestamp)
         for hit in search.scan():
-            ioc_lst.extend(extract_indicators_from_generic_hit(hit, src_val, src_type, default_type))
+            ioc_lst.extend(extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, client.tags))
 
     if ioc_lst:
         for b in batch(ioc_lst, batch_size=2000):
@@ -234,10 +256,10 @@ def get_scan_generic_format(client, now, last_fetch_timestamp=None):
     return search
 
 
-def extract_indicators_from_generic_hit(hit, src_val, src_type, default_type):
+def extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, tags):
     """Extracts indicators in generic format"""
     ioc_lst = []
-    ioc = hit_to_indicator(hit, src_val, src_type, default_type)
+    ioc = hit_to_indicator(hit, src_val, src_type, default_type, tags)
     if ioc.get('value'):
         ioc_lst.append(ioc)
     return ioc_lst
@@ -264,11 +286,11 @@ def get_scan_insight_format(client, now, last_fetch_timestamp=None, feed_type=No
     return search
 
 
-def extract_indicators_from_insight_hit(hit):
+def extract_indicators_from_insight_hit(hit, tags):
     """Extracts indicators from an insight hit including enrichments"""
     ioc_lst = []
     ioc_enirhcment_list = []
-    ioc = hit_to_indicator(hit)
+    ioc = hit_to_indicator(hit, tags=tags)
     if ioc.get('value'):
         ioc_lst.append(ioc)
         module_to_feedmap = ioc.get(MODULE_TO_FEEDMAP_KEY)
@@ -286,7 +308,7 @@ def extract_indicators_from_insight_hit(hit):
     return ioc_lst, ioc_enirhcment_list
 
 
-def hit_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_type=None):
+def hit_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_type=None, tags=None):
     """Convert a single hit to an indicator"""
     ioc_dict = hit.to_dict()
     ioc_dict['value'] = ioc_dict.get(ioc_val_key)
@@ -295,6 +317,8 @@ def hit_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_typ
         ioc_dict['type'] = default_ioc_type
     elif ioc_type_key:
         ioc_dict['type'] = ioc_dict.get(ioc_type_key)
+    if tags:
+        ioc_dict['fields'] = {'tags': tags}
     return ioc_dict
 
 
@@ -323,6 +347,7 @@ def main():
         creds = params.get('credentials')
         username, password = (creds.get('identifier'), creds.get('password')) if creds else (None, None)
         insecure = not params.get('insecure')
+        tags = argToList(params.get('feedTags'))
         feed_type = params.get('feed_type')
         time_field = params.get('time_field') if FEED_TYPE_GENERIC in feed_type else 'calculatedTime'
         time_method = params.get('time_method')
@@ -331,7 +356,7 @@ def main():
         query = params.get('es_query')
         api_id, api_key = extract_api_from_username_password(username, password)
         client = ElasticsearchClient(insecure, server, username, password, api_key, api_id, time_field, time_method,
-                                     fetch_index, fetch_time, query)
+                                     fetch_index, fetch_time, query, tags)
         src_val = params.get('src_val')
         src_type = params.get('src_type')
         default_type = params.get('default_type')
