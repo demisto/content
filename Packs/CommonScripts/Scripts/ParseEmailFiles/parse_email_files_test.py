@@ -779,3 +779,17 @@ def test_create_headers_map_empty_headers():
     headers, headers_map = create_headers_map(msg_dict.get('Headers'))
     assert headers == []
     assert headers_map == {}
+
+
+def test_eml_contains_htm_attachment_empty_file(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('eml_contains_emptytxt_htm_file.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 2
+    assert results[1]['Type'] == entryTypes['note']
+    assert results[1]['EntryContext']['Email'][u'Attachments'] == 'SomeTest.HTM'
