@@ -286,6 +286,7 @@ def load_external_resources():
     with open(WORD_TO_REGEX_PATH, 'rb') as file:
         WORD_TO_REGEX = pickle.load(file)
 
+
 def get_avg_embedding_vector_for_text(tokenized_text, embedding_dict, size, prefix):
     vectors = [embedding_dict[w] for w in tokenized_text if w in embedding_dict]
     if len(vectors) == 0:
@@ -657,23 +658,25 @@ def update_last_execution_time():
 def main():
     incidents_query_args = demisto.args()
     args = get_args_based_on_last_execution()
-    if 'query' in incidents_query_args and 'query' in args:
-        incidents_query_args['query'] = '({}) and ({}) and (status:Closed)'.format(incidents_query_args['query'], args['query'])
-    elif 'query' in args:
-        incidents_query_args['query'] = '({}) and (status:Closed)'.format(args['query'])
-    if 'limit' in args:
-        incidents_query_args['limit'] = args['limit']
+    # if 'query' in incidents_query_args and 'query' in args:
+    #     incidents_query_args['query'] = '({}) and ({}) and (status:Closed)'.format(incidents_query_args['query'], args['query'])
+    # elif 'query' in args:
+    #     incidents_query_args['query'] = '({}) and (status:Closed)'.format(args['query'])
+    # if 'limit' in args:
+    #     incidents_query_args['limit'] = args['limit']
     demisto.results(str(incidents_query_args))
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', incidents_query_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents = json.loads(incidents_query_res[-1]['Contents'])
+    demisto.results(str(len(incidents)))
     data = extract_data_from_incidents(incidents)
     encoded_data = json.dumps(data).encode('utf-8', errors='ignore')
     compressed_data = zlib.compress(encoded_data, 4)
     compressed_hr_data = b64encode(compressed_data).decode('utf-8')
     res = {'PayloadVersion': FETCH_DATA_VERSION, 'PayloadData': compressed_hr_data}
     return_json_entry(res)
+    # return_json_entry(json.dumps(data, indent=3))
     update_last_execution_time()
 
 
