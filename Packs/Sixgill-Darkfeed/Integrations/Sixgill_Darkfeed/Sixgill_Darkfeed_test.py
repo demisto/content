@@ -631,3 +631,4 @@ def test_feed_tags(mocker):
 
     output = fetch_indicators_command(client, tags=['tag1', 'tag2'])
     assert all(item in output[0]['fields']['tags'] for item in ['tag1', 'tag2'])
+    assert any(item in output[0]['fields']['tags'] for item in ['compromised', 'ip', 'url'])
