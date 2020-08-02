@@ -2828,6 +2828,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "CyberTotal",
+            "playbookID": "CyberTotal_TestPlaybook",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Azure AD Connect Health Feed",
             "playbookID": "FeedAzureADConnectHealth_Test",
             "fromversion": "5.5.0"
