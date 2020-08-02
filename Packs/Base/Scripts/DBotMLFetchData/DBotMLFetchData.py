@@ -1119,13 +1119,16 @@ def extract_features_from_all_incidents(incidents_df):
     exceptions_log = []
     exception_indices = set()
     timeout_indices = set()
-
+    durations = []
     for index, row in incidents_df.iterrows():
         signal.alarm(5)
         try:
+            start = time.time()
             X_i = extract_features_from_incident(row)
+            end = time.time()
             for k, v in X_i.items():
                 X[k].append(v)
+            durations.append(end - start)
         except TimeoutException:
             timeout_indices.add(index)
         except Exception:
@@ -1133,7 +1136,7 @@ def extract_features_from_all_incidents(incidents_df):
             exceptions_log.append(traceback.format_exc())
         finally:
             signal.alarm(0)
-    return X, exceptions_log, exception_indices, timeout_indices
+    return X, exceptions_log, exception_indices, timeout_indices, durations
 
 
 def extract_data_from_incidents(incidents):
@@ -1154,7 +1157,7 @@ def extract_data_from_incidents(incidents):
                   'rank': '#{}'.format(i + 1),
                   'values': incidents_df[label].tolist()})
     load_external_resources()
-    X, exceptions_log, exception_indices, timeout_indices = extract_features_from_all_incidents(incidents_df)
+    X, exceptions_log, exception_indices, timeout_indices, durations = extract_features_from_all_incidents(incidents_df)
     indices_to_drop = exception_indices.union(timeout_indices)
     for label_dict in y:
         label_dict['values'] = [l for i, l in enumerate(label_dict['values']) if i not in indices_to_drop]
@@ -1163,7 +1166,8 @@ def extract_data_from_incidents(incidents):
             'log':
                 {'exceptions': exceptions_log,
                  'n_timout': len(timeout_indices),
-                 'n_other_exceptions': len(exception_indices)}
+                 'n_other_exceptions': len(exception_indices),
+                 'durations': durations}
             }
 
 
