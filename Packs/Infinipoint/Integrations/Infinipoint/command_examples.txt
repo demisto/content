@@ -9,4 +9,3 @@
 !infinipoint-get-networks alias=GCP
 !infinipoint-get-queries name=os_version
 !infinipoint-run-queries id=0b5004ce-0a18-11ea-9a9f-362b9e155667
-

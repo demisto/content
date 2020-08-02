@@ -24,11 +24,11 @@ detaileddescription: "## Generate Infinipoint API Key:\nTo generate Infinipoint 
   parameters like \"BASE_URL\" and ect"
 configuration:
 - display: Access Key
+  description: JSON Web Token used for authentication. The token is a text string, included in the request header
   name: access_key
   defaultvalue: ""
   type: 4
   required: true
-  description: JSON Web Token used for authentication. The token is a text string, included in the request header
 - display: Private Key
   name: private_key
   defaultvalue: ""

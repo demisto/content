@@ -1,5 +1,4 @@
-Use the Infinipoint integration to retrieve security and policy incompliance events, vulnerabilities or incidents. Investigate and respond to events in real-time.
-This integration was integrated and tested with version xx of Infinipoint
+Use the Infinipoint integration to run queries, retrieve security and policy incompliance events, vulnerabilities or incidents. Investigate and respond to events in real-time.
 ## Configure Infinipoint on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -51,10 +50,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
+```!infinipoint-get-vulnerable-devices "device_risk=9 ```
 
 
 ### infinipoint-get-assets-programs
@@ -92,9 +88,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
+```!infinipoint-get-assets-programs name="VMware" ```
 
-#### Human Readable Output
 
 
 
@@ -183,10 +178,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
+```!infinipoint-get-cve cve_id="CVE-2020-1301 ```
 
 
 ### infinipoint-get-device
@@ -248,9 +240,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
+``` !infinipoint-get-assets-hardware os_type="1"```
+ 
 
 
 
@@ -282,9 +273,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
+``` !infinipoint-get-assets-cloud source="GCP API"```
 
-#### Human Readable Output
 
 
 
@@ -339,9 +329,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
+``` !infinipoint-get-assets-users username="et"```
 
-#### Human Readable Output
 
 
 
@@ -387,9 +376,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
+``` !infinipoint-get-device osType=1```
 
-#### Human Readable Output
 
 
 
@@ -442,9 +430,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
+```!infinipoint-get-vulnerable-devices device_risk=3 ```
 
-#### Human Readable Output
 
 
 
@@ -478,9 +465,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
+``` !infinipoint-get-tag name=et```
 
-#### Human Readable Output
 
 
 
@@ -511,9 +497,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
+``` !infinipoint-get-networks alias=GCP```
 
-#### Human Readable Output
 
 
 
@@ -547,9 +532,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
+``` !infinipoint-get-queries name=os_version```
 
-#### Human Readable Output
 
 
 
@@ -580,9 +564,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
+``` !infinipoint-run-queries id=0b5004ce-0a18-11ea-9a9f-362b9e155667```
 
-#### Human Readable Output
 
 
 
@@ -617,12 +600,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 | Infinipoint.Compliance.Incidents.policyName | String |  | 
 | Infinipoint.Compliance.Incidents.policyVersion | Number |  | 
 | Infinipoint.Compliance.Incidents.timestamp | Number |  | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -679,8 +656,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 
 #### Command Example
-``` ```
+```!infinipoint-get-device-details discoveryId=23eb50e7ceb907975686ba5cebbd3520 ```
 
-#### Human Readable Output
 
 
