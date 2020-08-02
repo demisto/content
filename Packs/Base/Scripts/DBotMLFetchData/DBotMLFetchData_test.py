@@ -360,4 +360,3 @@ def test_whole_preprocessing(mocker):
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
     assert all('Text length is shorter than allowed' in e_msg for e_msg in data['log']['exceptions'])
-
