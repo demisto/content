@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -91,10 +90,6 @@ def get_description(stix_obj):
     return description_string
 
 
-<<<<<<< HEAD
-def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = []):
-    return {
-=======
 def extract_external_reference_field(stix2obj, source_name, field_to_extract):
     for reference in stix2obj.get("external_reference", []):
         if reference.get("source_name") == source_name:
@@ -105,9 +100,8 @@ def post_id_to_full_url(post_id):
     return f'https://portal.cybersixgill.com/#/search?q=_id:{post_id}'
 
 
-def to_demisto_indicator(value, indicators_name, stix2obj):
+def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = []):
     indicator = {
->>>>>>> master
         "value": value,
         "type": indicators_name,
         "rawJSON": stix2obj,
@@ -229,9 +223,9 @@ def test_module_command(*args):
     return 'ok', None, 'ok'
 
 
-def get_indicators_command(client: SixgillFeedClient, args, tags: list = []):
+def get_indicators_command(client: SixgillFeedClient, args):
     limit = int(args.get('limit'))
-    indicators = fetch_indicators_command(client, limit, True, tags)
+    indicators = fetch_indicators_command(client, limit, True)
 
     human_readable = tableToMarkdown('Indicators from Sixgill Dark Feed:', indicators,
                                      headers=['value', 'type', 'rawJSON', 'score'])
@@ -246,17 +240,12 @@ def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indi
 
     for stix_indicator in bundle.get("objects"):
         if is_indicator(stix_indicator):
-<<<<<<< HEAD
             demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto, tags)
-            indicators_to_create.extend(demisto_indicators)
-=======
-            demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto)
 
             for indicator in demisto_indicators:
                 if indicator.get("value") not in indicator_values_set:
                     indicator_values_set.add(indicator.get("value"))
                     indicators_to_create.append(indicator)
->>>>>>> master
 
         if get_indicators_mode and len(indicators_to_create) == limit:
             break
@@ -274,7 +263,7 @@ def main():
     max_indicators = get_limit(demisto.params().get('maxIndicators', MAX_INDICATORS), MAX_INDICATORS)
 
     SESSION.proxies = handle_proxy()
-    tags = argToList(demisto.params().get('feedTags', []))
+
     client = SixgillFeedClient(demisto.params()['client_id'],
                                demisto.params()['client_secret'],
                                CHANNEL_CODE,
@@ -283,7 +272,7 @@ def main():
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
-
+    tags = argToList(demisto.params().get('feedTags', []))
     commands: Dict[str, Callable] = {
         'test-module': test_module_command,
         'sixgill-get-indicators': get_indicators_command
