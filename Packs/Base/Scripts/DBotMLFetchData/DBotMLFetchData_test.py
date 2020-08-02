@@ -31,6 +31,8 @@ def test_get_ml_features(mocker):
 
 
 def test_get_ngrams_features(mocker):
+    mocker.patch('DBotMLFetchData.open', mock_read_func)
+    load_external_resources()
     text = 'great deal no risk only for 24 hours!!! 24 hours!!!!!'
     res = get_ngrams_features(text, transform_text_to_ngrams_counter(word_tokenize(text), []))
     assert res['x hours'] == 2
@@ -40,6 +42,8 @@ def test_get_ngrams_features(mocker):
 
 def test_get_vocab_features_subword(mocker):
     text = 'callable'
+    mocker.patch('DBotMLFetchData.open', mock_read_func)
+    load_external_resources()
     res = get_ngrams_features(text, transform_text_to_ngrams_counter(word_tokenize(text), []))
     assert 'call' not in res
 
@@ -324,14 +328,18 @@ def mock_read_func(file_path, mode='r'):
             GLOVE_50_PATH: 'test_data/glove_50_top_10.p',
             GLOVE_100_PATH: 'test_data/glove_100_top_10.p',
             FASTTEXT_PATH: 'test_data/fasttext_top_10.p',
-            DOMAIN_TO_RANK_PATH: 'test_data/domain_to_rank_top_5.p'
+            DOMAIN_TO_RANK_PATH: 'test_data/domain_to_rank_top_5.p',
+            WORD_TO_NGRAM_PATH: 'test_data/word_to_ngram.p',
+            WORD_TO_REGEX_PATH: 'test_data/word_to_regex.p'
         }
     else:
         docker_path_to_test_path = {
             GLOVE_50_PATH: 'real_data/glove_50_top_20k.p',
             GLOVE_100_PATH: 'real_data/glove_100_top_20k.p',
             FASTTEXT_PATH: 'real_data/fasttext_top_20k.p',
-            DOMAIN_TO_RANK_PATH: 'real_data/domain_to_rank.p'
+            DOMAIN_TO_RANK_PATH: 'real_data/domain_to_rank.p',
+            WORD_TO_NGRAM_PATH: 'test_data/word_to_ngram.p',
+            WORD_TO_REGEX_PATH: 'test_data/word_to_regex.p'
         }
     return open(docker_path_to_test_path[file_path], mode=mode)
 
