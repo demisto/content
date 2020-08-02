@@ -4,7 +4,6 @@ import string
 from bs4 import BeautifulSoup
 import math
 import pandas as pd
-# disable-secrets-detection-start
 
 
 def test_find_label_fields_candidates():
@@ -78,6 +77,7 @@ def test_get_characters_features(mocker):
     assert all(lexical_features[c] == charchters_dict[c] for c in charchters_dict)
 
 
+# disable-secrets-detection-start
 def test_get_url_features(mocker):
     email_body = 'https://www.a.com https://www.b.com http://www.c.com/vcvc/vcvc/vc/b'   # disable-secrets-detection
     embedded_url = 'https://www.a.com'   # disable-secrets-detection
@@ -103,12 +103,13 @@ def test_get_url_features(mocker):
     email_body_3 = 'https://drive.google.com/file/d/1f9pBukhG_5jB-uh0TeZiYq0rV2GUXftr/view'  # disable-secrets-detection
     url_features_3 = get_url_features(email_body_3, '', empty_bs)
     assert url_features_3['drive_count'] == 1
+# disable-secrets-detection-end
 
 
 def test_extract_server_address():
-    value = 'from po-out-1718.google.co.uk ([72.14.252.155]:54907) by cl35.gs01.gridserver.com with esmtp (Exim 4.63) ' \
-            '(envelope-from <mt.kb.user@gmail.com>) id 1KDoNH-0000f0-RL for user@example.com;' \
-            ' Tue, 25 Jan 2011 15:31:01 -0700'
+    value = 'from po-out-1718.google.co.uk ([xxx.xxx.xxx.xxx]:54907) by cl35.gs01.gridserver.com with esmtp' \
+            ' (Exim 4.63) (envelope-from <mt.kb.user@gmail.com>) id 1KDoNH-0000f0-RL for user@example.com;' \
+            ' Tue, 25 Jan 2011 15:31:01 -0700'  # disable-secrets-detection
     domain, suffix = extract_server_address(value)
     assert domain == 'google'
     assert suffix == 'co.uk'
@@ -116,7 +117,7 @@ def test_extract_server_address():
     address, domain, suffix = extract_envelop_from_address(value)
     assert domain == 'gmail'
     assert suffix == 'com'
-    assert address == 'mt.kb.user@gmail.com'
+    assert address == 'mt.kb.user@gmail.com'  # disable-secrets-detection
 
 
 def test_parse_email_header():
@@ -140,22 +141,22 @@ def test_parse_email_header():
 
 
 def test_parse_received_headers_2():
-    value = 'from po-out-1718.google.com ([72.14.252.155]:54907) by cl35.gs01.gridserver.com with esmtp (Exim 4.63) ' \
+    value = 'from po-out-1718.google.com ([xxx.xxx.xxx.xxx]:xxxx) by cl35.gs01.gridserver.com with esmtp (Exim 4.63) ' \
             '(envelope-from <mt.kb.user@gmail.com>) id 1KDoNH-0000f0-RL for user@example.com;' \
-            ' Tue, 25 Jan 2011 15:31:01 -0700'
+            ' Tue, 25 Jan 2011 15:31:01 -0700'  # disable-secrets-detection
 
     email_headers = [{'headername': 'Received', 'headervalue': value}] * 2
     n_received_headers, [first_server, first_envelop, _, _] = parse_received_headers(email_headers)
     assert n_received_headers == 2
     assert first_server['domain'] == 'google'
-    assert first_envelop['address'] == 'mt.kb.user@gmail.com'
+    assert first_envelop['address'] == 'mt.kb.user@gmail.com'   # disable-secrets-detection
     assert first_envelop['domain'] == 'gmail'
 
 
 def test_parse_received_headers_3():
-    value = 'from po-out-1718.google.com ([72.14.252.155]:54907) by cl35.gs01.gridserver.com with esmtp (Exim 4.63) ' \
+    value = 'from po-out-1718.google.com ([xxx.xxx.xxx.xxx]:xxxx) by cl35.gs01.gridserver.com with esmtp (Exim 4.63) ' \
             '(envelope-from <mt.kb.user@gmail.com>) id 1KDoNH-0000f0-RL for user@example.com;' \
-            ' Tue, 25 Jan 2011 15:31:01 -0700'
+            ' Tue, 25 Jan 2011 15:31:01 -0700'    # disable-secrets-detection
 
     email_headers = [{'headername': 'Received', 'headervalue': value}]
     n_received_headers, [_, _, second_server, second_envelop] = parse_received_headers(email_headers)
@@ -168,7 +169,7 @@ def test_parse_received_headers_3():
     n_received_headers, [_, _, second_server, second_envelop] = parse_received_headers(email_headers)
     assert n_received_headers == 2
     assert second_server['domain'] == 'google'
-    assert second_envelop['address'] == 'mt.kb.user@gmail.com'
+    assert second_envelop['address'] == 'mt.kb.user@gmail.com'  # disable-secrets-detection
     assert second_envelop['domain'] == 'gmail'
 
 
@@ -360,4 +361,3 @@ def test_whole_preprocessing(mocker):
         prof.print_stats(sort='cumtime')
     assert all('Text length is shorter than allowed' in e_msg for e_msg in data['log']['exceptions'])
 
-# disable-secrets-detection-end
