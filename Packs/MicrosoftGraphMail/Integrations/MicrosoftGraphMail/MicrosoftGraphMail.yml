@@ -178,8 +178,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the
-        form ''<message-id>'', can not be used.'
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
@@ -283,8 +283,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the
-        form ''<message-id>'', can not be used.'
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
@@ -308,8 +308,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the
-        form ''<message-id>'', can not be used.'
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
@@ -349,8 +349,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the
-        form ''<message-id>'', can not be used.'
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
@@ -590,8 +590,8 @@ script:
     name: msgraph-mail-delete-folder
   - arguments:
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the
-        form ''<message-id>'', can not be used.'
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
@@ -632,8 +632,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The unique id of the mail. Note: the ''MessageID'' key of the
-        form ''<message-id>'', can not be used.'
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
