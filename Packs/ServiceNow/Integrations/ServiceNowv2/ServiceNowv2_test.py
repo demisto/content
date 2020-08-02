@@ -98,7 +98,7 @@ def test_split_fields():
      EXPECTED_QUERY_TABLE, False),
     (query_table_command, {
         'table_name': "sc_task", 'system_params':
-        'sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001',
+            'sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001',
         'fields': "approval,state,escalation,number,description"
     }, RESPONSE_QUERY_TABLE_SYS_PARAMS, EXPECTED_QUERY_TABLE_SYS_PARAMS, False),
     (list_table_fields_command, {'table_name': "alm_asset"}, RESPONSE_LIST_TABLE_FIELDS, EXPECTED_LIST_TABLE_FIELDS,
@@ -401,3 +401,42 @@ def test_test_module(mocker):
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     result = module(client)
     assert result[0] == 'ok'
+
+
+def test_sysparm_input_display_value(mocker, requests_mock):
+    """Unit test
+    Given
+    - create_record_command function
+    - command args, including input_display_value
+    - command raw response
+    When
+    - mock the requests url destination.
+    Then
+    - run the create command using the Client
+    Validate that the sysparm_input_display_value parameter has the correct value
+    """
+
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    mocker.patch.object(demisto, 'args', return_value={'input_display_value': 'true',
+                                                       'table_name': "alm_asset",
+                                                       'fields': "asset_tag=P4325434;display_name=my_test_record"
+                                                       }
+                        )
+    requests_mock.post('https://server_url.com/table/alm_asset?sysparm_input_display_value=True', json={})
+    # will raise a requests_mock.exceptions.NoMockAddress if the url address will not be as given in the requests_mock
+    create_record_command(client, demisto.args())
+    assert requests_mock.request_history[0].method == 'POST'
+
+    mocker.patch.object(demisto, 'args', return_value={'input_display_value': 'false',
+                                                       'table_name': "alm_asset",
+                                                       'fields': "asset_tag=P4325434;display_name=my_test_record"
+                                                       }
+                        )
+    requests_mock.post('https://server_url.com/table/alm_asset?sysparm_input_display_value=False', json={})
+    # will raise a requests_mock.exceptions.NoMockAddress if the url address will not be as given in the requests_mock
+    create_record_command(client, demisto.args())
+    assert requests_mock.request_history[1].method == 'POST'
