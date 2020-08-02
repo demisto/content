@@ -1067,7 +1067,6 @@ def main():
     base_url = urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
     apitoken = demisto.params().get('apitoken')
     verify_certificate = not demisto.params().get('insecure', False)
-    test = demisto.params().get('test')
     proxy = demisto.params().get('proxy', False)
 
     LOG(f'Command being called is {demisto.command()}')

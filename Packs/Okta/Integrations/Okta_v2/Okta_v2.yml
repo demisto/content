@@ -7,10 +7,6 @@ configuration:
   name: url
   required: true
   type: 0
-- display: TEST (https://<domain>.okta.com)
-  name: test
-  required: true
-  type: 0
 - display: API Token (see Detailed Instructions)
   name: apitoken
   required: true
@@ -1964,4 +1960,4 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- OktaV2-Test
