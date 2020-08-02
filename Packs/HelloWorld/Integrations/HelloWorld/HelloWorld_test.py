@@ -249,8 +249,8 @@ def test_search_alerts(requests_mock):
 
     # We modify the timestamp from the raw mock_response of the API, because the
     # integration changes the format from timestamp to ISO8601.
-    mock_response['alerts'][0]['created'] = '2020-02-17T23:34:23.000Z'
-    mock_response['alerts'][1]['created'] = '2020-02-17T23:34:23.000Z'
+    mock_response['alerts'][0]['created'] = '2020-02-17T23:34:23.000Z!!'
+    mock_response['alerts'][1]['created'] = '2020-02-17T23:34:23.000Z!!'
 
     assert response.outputs_prefix == 'HelloWorld.Alert'
     assert response.outputs_key_field == 'alert_id'

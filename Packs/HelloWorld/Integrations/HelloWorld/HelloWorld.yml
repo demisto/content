@@ -20,7 +20,7 @@ configuration:
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
-  type: 0  
+  type: 0
 - display: API Key
   name: apikey
   required: true
@@ -334,10 +334,10 @@ script:
       type: String
     - contextPath: IP.Malicious.Vendor
       description: The vendor reporting the IP address as malicious.
-      type: String            
+      type: String
     - contextPath: IP.Malicious.Description
       description: A description explaining why the IP address was reported as malicious.
-      type: String   
+      type: String
     - contextPath: IP.ASN
       description: The autonomous system name for the IP address.
       type: String
@@ -369,10 +369,10 @@ script:
       description: The domain name.
       type: String
     - contextPath: Domain.Malicious.Vendor
-      description: The vendor reporting the domain as malicious.
+      description: The vendor reporting the domain as malicious .
       type: String
     - contextPath: Domain.Malicious.Description
-      description: A description explaining why the domain was reported as malicious.
+      description: A description explaining why the domain was reported as malicious .
       type: String
     - contextPath: Domain.Registrant.Name
       description: The name of the registrant.
@@ -412,7 +412,7 @@ script:
       type: String
     - contextPath: IP.ASN
       description: The autonomous system name for the IP address.
-      type: String      
+      type: String
     - contextPath: HelloWorld.Domain.address
       description: Domain admin address.
       type: String
@@ -578,7 +578,7 @@ script:
       type: string
     - contextPath: CVE.ID
       description: The ID of the CVE.
-      type: string      
+      type: string
   dockerimage: demisto/python3:3.8.3.9324
   isfetch: true
   longRunning: false
