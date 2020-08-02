@@ -8,9 +8,9 @@ tags:
 - transformer
 - string
 comment: |-
-  This script will convert a value into another value using 2 lists. The input value is searched in the first list (input_values). If it exists, the value from the second list (mapped_values) at the same index is retutrned. If there is no match, the original value is returned.
-
-  If the original input is a dictionary, thne the script will look for a "stringified" version of the key: value pair in the input_values and then map the result in the output_values into the original "value".
+  This script converts the input value into another value using two lists. The input value is searched in the first list (input_values). 
+  If it exists, the value from the second list (mapped_values) at the same index is retutrned. If there is no match, the original value is returned.
+  If the original input is a dictionary, then the script will look for a "stringified" version of the key/:/value pair in the input_values and then map the result in the output_values into the original "value".
 
   Example 1:
 
@@ -33,17 +33,17 @@ comment: |-
                                   "firstkey": "datathere"
                              }
 
-  The reason for matching the key AND value pair in a dictionary is to allow the mappig of values that have a specific key name. Quite often dictionaries will continan key value pairs where the values are the same. The value of KeyA might want to be changed, but, the value of KeyB might not want to be. This method gives control over which one is changed.
+ The reason for matching the key AND value pair in a dictionary is to allow the mappig of values that have a specific key name. In most cases, dictionaries will continan key-value pairs in which the values are the same. You might want to change the value of KeyA, but not the value of KeyB. This method gives control over which key is changed.
 
-  In either case where the input is a dict, str , int, or list, the output is ALWAYS returned as a string.
+ When the input is a dict, str , int, or list, the output is ALWAYS returned as a string.
 enabled: true
 args:
 - name: input_values
   required: true
-  description: Comma separated values to map from.
+  description: Comma-separated values to map from.
 - name: mapped_values
   required: true
-  description: Comma separated values to map to.
+  description: Comma-separated values to map to.
 scripttarget: 0
 subtype: python3
 runonce: false
