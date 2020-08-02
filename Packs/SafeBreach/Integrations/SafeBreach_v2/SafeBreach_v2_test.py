@@ -16,6 +16,7 @@ client = Client(
     account_id=MOCK_ACCOUNT_ID,
     proxies=handle_proxy(),
     verify=False,
+    tags=['tag1', 'tag2'],
 )
 
 
@@ -195,3 +196,32 @@ def test_rerun_simulation(requests_mock, mocker):
     context = outputs['EntryContext']
     assert context['SafeBreach.Simulation(val.Id == obj.Id)']['Id'] == SIMULATION_ID
     assert context['SafeBreach.Simulation(val.Id == obj.Id)']['Rerun']['Id'] == response['data']['runId']
+
+
+def test_feed_tags(requests_mock, mocker):
+    """
+    Given:
+    - client which has tag params
+    When:
+    - Executing get indicators command on feed
+    Then:
+    - Validate the tags supplied are added to the tags list in addition to the tags that were there before
+    """
+    mocker.patch.object(demisto, 'args', return_value={'limit': '10'})
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'params', return_value={'url': MOCK_URL})
+
+    for insight_id in [5, 6, 8, 9, 13, 14, 17]:
+        requests_mock.get(f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights/{insight_id}/remediation',
+                          json=REMEDATION_DATA_LIST)
+
+    requests_mock.get(
+        f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights?type=actionBased',
+        json=GET_INSIGHTS_LIST)
+    requests_mock.get(
+        f'{MOCK_URL}/api/config/v1/accounts/{MOCK_ACCOUNT_ID}/nodes?details=true&deleted=true&assets=true',
+        json=NODES)
+    insight_category = ['Endpoint', 'Web']
+    insight_data_type = ['Hash', 'Domain']
+    res = get_indicators_command(client, insight_category, insight_data_type, demisto.args())
+    assert all(elem in res[0]['fields']['tags'] for elem in ['tag1', 'tag2'])
