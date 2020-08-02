@@ -8,9 +8,9 @@ import pandas as pd
 
 
 def test_find_label_fields_candidates():
-    d = {'phishing_correct_field': [float('nan')] * 50 + ['spam'] * 10 + ['phishing'] * 10,
-         'slightly-related-field': [float('nan')] * 50 + ['spam'] * 10 + ['phishing'] * 10,
-         'non-related-field': [float('nan')] * 50 + ['cat' ] * 10 + ['dog'] * 10
+    d = {'phishing_correct_field': [float('nan')] * 20 + ['spam'] * 10 + ['phishing'] * 10,
+         'slightly-related-field': [float('nan')] * 20 + ['spam'] * 10 + ['phishing'] * 10,
+         'non-related-field': [float('nan')] * 20 + ['cat'] * 10 + ['dog'] * 10
          }
     df = pd.DataFrame(data=d)
     res = find_label_fields_candidates(df)
