@@ -7,7 +7,7 @@
     "commitMessage": "",
     "shouldPublish": false,
     "shouldCommit": false,
-    "regex": "\\b[a-fA-F\\d]{64}|[a-fA-F\\d]{40}|[a-fA-F\\d]{32}|[a-fA-F\\d]{128}\\b",
+    "regex": "\\b[a-fA-F\\d]{32}\\b|\\b[a-fA-F\\d]{40}\\b|\\b[a-fA-F\\d]{64}\\b|\\b[a-fA-F\\d]{128}\\b",
     "details": "File",
     "prevDetails": "File",
     "reputationScriptName": "",
