@@ -1,5 +1,5 @@
 id: MicrosoftGraphMail-Test
-version: 6
+version: -1
 name: MicrosoftGraphMail-Test
 description: Microsoft Graph Mail Test
 starttaskid: "0"
