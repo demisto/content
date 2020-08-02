@@ -18,7 +18,13 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Type of indicator in the feed.
+- additionalinfo: If selected, the indicator type will be auto detected for each indicator.
+  defaultvalue: 'true'
+  display: Auto detect indicator type
+  name: auto_detect_type
+  required: false
+  type: 8
+- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
   display: Indicator Type
   name: indicator_type
   options:
@@ -157,7 +163,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The indicator type.
+      description: The indicator type. If the configuration parameter 'Auto detect indicator type' is marked true for the integration instance, then this value will be ignored.
       isArray: false
       name: indicator_type
       required: false
@@ -166,7 +172,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: plaintext-get-indicators
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/jmespath:1.0.0.6980
   feed: true
   isfetch: false
   longRunning: false

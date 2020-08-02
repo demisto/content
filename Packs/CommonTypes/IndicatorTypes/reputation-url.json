@@ -98,6 +98,20 @@
         ]
       }
     },
+    "category": {
+      "simple": "",
+      "complex": {
+        "root": "URL",
+        "filters": [],
+        "accessor": "Category",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
     "associations": {
       "simple": "",
       "complex": {
@@ -160,5 +174,6 @@
     }
   },
   "manualMapping": null,
-  "fileHashesPriority": null
+  "fileHashesPriority": null,
+  "layout": "urlRep"
 }

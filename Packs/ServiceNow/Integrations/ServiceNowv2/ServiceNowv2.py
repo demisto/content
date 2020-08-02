@@ -432,41 +432,55 @@ class Client(BaseClient):
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
-        if file:
-            # Not supported in v2
-            url = url.replace('v2', 'v1')
+
+        max_retries = 3
+        num_of_tries = 0
+        while num_of_tries < max_retries:
+            if file:
+                # Not supported in v2
+                url = url.replace('v2', 'v1')
+                try:
+                    file_entry = file['id']
+                    file_name = file['name']
+                    shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
+                    with open(file_name, 'rb') as f:
+                        res = requests.request(method, url, headers=headers, data=body, params=params,
+                                               files={'file': f}, auth=(self._username, self._password),
+                                               verify=self._verify, proxies=self._proxies)
+                    shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
+                except Exception as err:
+                    raise Exception('Failed to upload file - ' + str(err))
+            else:
+                res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {},
+                                       params=params,
+                                       auth=(self._username, self._password),
+                                       verify=self._verify, proxies=self._proxies)
+
             try:
-                file_entry = file['id']
-                file_name = file['name']
-                shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
-                with open(file_name, 'rb') as f:
-                    res = requests.request(method, url, headers=headers, data=body, params=params, files={'file': f},
-                                           auth=(self._username, self._password), verify=self._verify,
-                                           proxies=self._proxies)
-                shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
+                json_res = res.json()
             except Exception as err:
-                raise Exception('Failed to upload file - ' + str(err))
-        else:
-            res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
-                                   auth=(self._username, self._password), verify=self._verify, proxies=self._proxies)
+                if not res.content:
+                    return ''
+                raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
 
-        try:
-            json_res = res.json()
-        except Exception as err:
-            if not res.content:
-                return ''
-            raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
+            if 'error' in json_res:
+                message = json_res.get('error', {}).get('message')
+                details = json_res.get('error', {}).get('detail')
+                if message == 'No Record found':
+                    return {'result': []}  # Return an empty results array
+                if res.status_code == 401:
+                    demisto.debug(f'Got status code 401 - {json_res}. Retrying ...')
+                else:
+                    raise Exception(f'ServiceNow Error: {message}, details: {details}')
 
-        if 'error' in json_res:
-            message = json_res.get('error', {}).get('message')
-            details = json_res.get('error', {}).get('detail')
-            if message == 'No Record found':
-                return {'result': []}  # Return an empty results array
-            raise Exception(f'ServiceNow Error: {message}, details: {details}')
-
-        if res.status_code < 200 or res.status_code >= 300:
-            raise Exception(f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
-                            f' with headers {str(res.headers)}')
+            if res.status_code < 200 or res.status_code >= 300:
+                if res.status_code != 401 or num_of_tries == (max_retries - 1):
+                    raise Exception(
+                        f'Got status code {str(res.status_code)} with url {url} with body {str(res.content)}'
+                        f' with headers {str(res.headers)}')
+            else:
+                break
+            num_of_tries += 1
 
         return json_res
 
@@ -574,7 +588,8 @@ class Client(BaseClient):
 
         return self.send_request(path, 'GET', params=query_params)
 
-    def update(self, table_name: str, record_id: str, fields: dict = {}, custom_fields: dict = {}) -> dict:
+    def update(self, table_name: str, record_id: str, fields: dict = {}, custom_fields: dict = {},
+               input_display_value: bool = False) -> dict:
         """Updates a ticket or a record by sending a PATCH request.
 
         Args:
@@ -582,14 +597,16 @@ class Client(BaseClient):
             record_id: record id
             fields: fields to update
             custom_fields: custom_fields to update
-
+            input_display_value: whether to set field values using the display value or the actual value.
         Returns:
             Response from API.
         """
         body = generate_body(fields, custom_fields)
-        return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', body=body)
+        query_params = {'sysparm_input_display_value': input_display_value}
+        return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', params=query_params, body=body)
 
-    def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {}) -> dict:
+    def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {},
+               input_display_value: bool = False) -> dict:
         """Creates a ticket or a record by sending a POST request.
 
         Args:
@@ -597,12 +614,14 @@ class Client(BaseClient):
         record_id: record id
         fields: fields to update
         custom_fields: custom_fields to update
+        input_display_value: whether to set field values using the display value or the actual value.
 
         Returns:
             Response from API.
         """
         body = generate_body(fields, custom_fields)
-        return self.send_request(f'table/{table_name}', 'POST', body=body)
+        query_params = {'sysparm_input_display_value': input_display_value}
+        return self.send_request(f'table/{table_name}', 'POST', params=query_params, body=body)
 
     def delete(self, table_name: str, record_id: str) -> dict:
         """Deletes a ticket or a record by sending a DELETE request.
@@ -825,11 +844,11 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     ticket_id = str(args.get('id', ''))
     additional_fields = split_fields(str(args.get('additional_fields', '')))
     additional_fields_keys = list(additional_fields.keys())
-
     fields = get_ticket_fields(args, ticket_type=ticket_type)
     fields.update(additional_fields)
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
-    result = client.update(ticket_type, ticket_id, fields, custom_fields)
+    result = client.update(ticket_type, ticket_id, fields, custom_fields, input_display_value)
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
@@ -857,6 +876,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     additional_fields = split_fields(str(args.get('additional_fields', '')))
     additional_fields_keys = list(additional_fields.keys())
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     if template:
         template = client.get_template(template)
@@ -864,7 +884,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     if additional_fields:
         fields.update(additional_fields)
 
-    result = client.create(ticket_type, fields, custom_fields)
+    result = client.create(ticket_type, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
@@ -1201,6 +1221,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     table_name = str(args.get('table_name', ''))
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     fields = {}
     if fields_str:
@@ -1209,7 +1230,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     if custom_fields_str:
         custom_fields = split_fields(custom_fields_str)
 
-    result = client.create(table_name, fields, custom_fields)
+    result = client.create(table_name, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
         return 'Could not create record.', {}, {}, True
@@ -1237,6 +1258,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     record_id = str(args.get('id', ''))
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     fields = {}
     if fields_str:
@@ -1245,7 +1267,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     if custom_fields_str:
         custom_fields = split_fields(custom_fields_str)
 
-    result = client.update(table_name, record_id, fields, custom_fields)
+    result = client.update(table_name, record_id, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
         return 'Could not retrieve record.', {}, {}, True
@@ -1780,7 +1802,7 @@ def fetch_incidents(client: Client) -> list:
     return incidents
 
 
-def test_module(client: Client, *_):
+def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
@@ -1795,8 +1817,8 @@ def test_module(client: Client, *_):
             raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket.")
         if client.incident_name not in ticket:
             raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
-    demisto.results('ok')
-    return '', {}, {}
+
+    return 'ok', {}, {}, True
 
 
 def main():
@@ -1817,7 +1839,7 @@ def main():
         sc_api = f'/api/sn_sc/{version}/'
     else:
         api = '/api/now/'
-        sc_api = f'/api/sn_sc/'
+        sc_api = '/api/sn_sc/'
     server_url = params.get('url')
     sc_server_url = f'{get_server_url(server_url)}{sc_api}'
     server_url = f'{get_server_url(server_url)}{api}'
@@ -1827,7 +1849,7 @@ def main():
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
     ticket_type = params.get('ticket_type', 'incident')
-    incident_name = params.get('incident_name', 'number')
+    incident_name = params.get('incident_name', 'number') or 'number'
     get_attachments = params.get('get_attachments', False)
 
     raise_exception = False

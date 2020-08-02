@@ -16,7 +16,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Corporation Name
+- display: Corporation Name (should match the pattern [0-9a-z_.-]+)
   name: corpName
   defaultvalue: ""
   type: 0

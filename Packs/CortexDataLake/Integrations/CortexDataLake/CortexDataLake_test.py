@@ -80,6 +80,20 @@ def test_build_where_clause():
         assert build_where_clause(args) == expected_result
 
 
+def test_build_where_clause_ip_port():
+    from CortexDataLake import build_where_clause
+    test_cases = [({'query': 'Test'}, 'Test'),
+                  ({'ip': 'ip1,ip2',
+                    'port': '555,888'},
+                   '(source_ip.value = "ip1" OR dest_ip.value = "ip1" OR '
+                   'source_ip.value = "ip2" OR dest_ip.value = "ip2") '
+                   'AND (source_port = 555 OR dest_port = 555 OR source_port = 888 OR dest_port = 888)'
+                   ),
+                  ({'source_ip': 'ip1', 'non_relevant_arg': 'value'}, '(source_ip.value = "ip1")')]
+    for args, expected_result in test_cases:
+        assert build_where_clause(args) == expected_result
+
+
 def test_prepare_fetch_incidents_query():
     from CortexDataLake import prepare_fetch_incidents_query
     timestamp = '2020-02-20T16:49:05'
@@ -101,8 +115,7 @@ def test_prepare_fetch_incidents_query():
 
 def test_get_table_name():
     from CortexDataLake import get_table_name
-    # Records in each query should all have the same table (log_type)
-    # In this test records have different log_type just to verify that the function takes the first
-    records = [{'log_type': {'id': 3, 'value': 'threat'}},
-               {'log_type': {'id': 3, 'value': 'traffic'}}]
-    assert get_table_name(records) == 'threat'
+    query = 'SELECT pcap FROM `firewall.threat` WHERE is_packet_capture = true  AND severity = "Critical" LIMIT 10'
+    assert get_table_name(query) == 'firewall.threat'
+    query = 'Wrongly formmated query'
+    assert get_table_name(query) == 'Unrecognized table name'

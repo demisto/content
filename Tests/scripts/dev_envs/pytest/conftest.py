@@ -2,7 +2,7 @@ import pytest
 import logging
 
 
-# File is coppied to each package dir when running tests.
+# File is copied to each package dir when running tests.
 # More info about conftest.py at:
 #   https://docs.pytest.org/en/latest/writing_plugins.html#conftest-py-plugins  # disable-secrets-detection
 
@@ -34,7 +34,7 @@ def check_logging(caplog):
 @pytest.fixture(autouse=True)
 def check_std_out_err(capfd):
     '''
-    Fixture validates that there is no ouput to stdout or stderr.
+    Fixture validates that there is no output to stdout or stderr.
 
     If your test fails and it is ok to have output in stdout/stderr, you can disable the capture use "with capfd.disabled()"
 

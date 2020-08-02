@@ -110,15 +110,15 @@ class MsGraphClient:
         Returns:
             dict or list:
         """
-        no_folder = f'/users/{user_id}/messages/'
-        with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/'
+        no_folder = f'/users/{user_id}/messages'
+        with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages'
         pages_to_pull = demisto.args().get('pages_to_pull', 1)
 
         if search:
-            odata = f'?{odata}$search={search}' if odata else f'?$search={search}'
+            odata = f'{odata}&$search="{search}"' if odata else f'$search="{search}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
-            suffix += odata
+            suffix += f'?{odata}'
         response = self.ms_client.http_request('GET', suffix)
         return self.pages_puller(response, assert_pages(pages_to_pull))
 
@@ -176,7 +176,7 @@ class MsGraphClient:
 
         suffix = with_folder if folder_id else no_folder
         if odata:
-            suffix += odata
+            suffix += f'?{odata}'
         response = self.ms_client.http_request('GET', suffix)
 
         # Add user ID
@@ -1308,13 +1308,17 @@ def prepare_args(command, args):
     :rtype: ``dict``
     """
     if command in ['create-draft', 'send-mail']:
+        if args.get('htmlBody', None):
+            email_body = args.get('htmlBody')
+        else:
+            email_body = args.get('body', '')
         return {
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
             'subject': args.get('subject', ''),
-            'body': args.get('body', ''),
-            'body_type': args.get('bodyType', 'text'),
+            'body': email_body,
+            'body_type': args.get('bodyType', 'html'),
             'flag': args.get('flag', 'notFlagged'),
             'importance': args.get('importance', 'Low'),
             'internet_message_headers': argToList(args.get('headers')),
@@ -1392,7 +1396,7 @@ def send_email_command(client: MsGraphClient, args):
     message_content['bccRecipients'] = bcc_recipients
 
     message_content = assign_params(**message_content)
-    human_readable = tableToMarkdown(f'Email was sent successfully.', message_content)
+    human_readable = tableToMarkdown('Email was sent successfully.', message_content)
     ec = {CONTEXT_SENT_EMAIL_PATH: message_content}
 
     return_outputs(human_readable, ec)

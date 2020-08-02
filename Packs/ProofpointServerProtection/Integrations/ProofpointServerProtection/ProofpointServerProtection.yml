@@ -2,7 +2,7 @@ commonfields:
   id: Proofpoint Server Protection
   version: -1
 name: Proofpoint Server Protection
-display: Proofpoint Protection Server
+display: Proofpoint Protection Server (Beta)
 category: Email Gateway
 description: Proofpoint email security appliance.
 configuration:
@@ -16,6 +16,10 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
+- display: Proofpoint Protection Server Version (e.g., 8.14.2)
+  name: version
+  type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
@@ -273,7 +277,7 @@ script:
       required: true
       description: Email to remove from safe senders list
     description: Removes an email address from safe senders list.
-  dockerimage: demisto/bs4:1.0.0.6538
+  dockerimage: demisto/bs4:1.0.0.8854
   runonce: false
   subtype: python2
 beta: true

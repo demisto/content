@@ -1,604 +1,21 @@
 id: Code42-Test
-version: -1
-name: Code42-Test
-starttaskid: '0'
-tasks:
-  '0':
-    id: '0'
-    taskid: 40d036b7-0908-4e2f-863e-45685a7f6ef1
-    type: start
-    task:
-      id: 40d036b7-0908-4e2f-863e-45685a7f6ef1
-      version: -1
-      name: ''
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '1'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '1':
-    id: '1'
-    taskid: 5f70b6b5-4f8d-4a6f-8bb9-5f1d4050fb2b
-    type: regular
-    task:
-      id: 5f70b6b5-4f8d-4a6f-8bb9-5f1d4050fb2b
-      version: -1
-      name: DeleteContext
-      description: ''
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '2'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '2':
-    id: '2'
-    taskid: a79afed3-2a80-4fcb-8d2f-6b44cfaa4402
-    type: regular
-    task:
-      id: a79afed3-2a80-4fcb-8d2f-6b44cfaa4402
-      version: -1
-      name: code42-alert-get
-      description: ''
-      script: Code42|||code42-alert-get
-      type: regular
-      iscommand: true
-      brand: Code42
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      extend-context:
-        simple: alert=
-      id:
-        simple: ${inputs.alert-id}
-      using:
-        simple: ${inputs.instance}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '3':
-    id: '3'
-    taskid: 89f572cc-baac-4728-8c67-44ae9ed4a51e
-    type: condition
-    task:
-      id: 89f572cc-baac-4728-8c67-44ae9ed4a51e
-      version: -1
-      name: Validate code42-alert-get
-      type: condition
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      'yes':
-      - '4'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: alert
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '4':
-    id: '4'
-    taskid: c8e2d81e-8e8b-4182-8d32-987df1957ab5
-    type: regular
-    task:
-      id: c8e2d81e-8e8b-4182-8d32-987df1957ab5
-      version: -1
-      name: DeleteContext
-      description: ''
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '6'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '6':
-    id: '6'
-    taskid: e0c4e27f-62c0-4c4e-8afc-7d8e0233ddd6
-    type: regular
-    task:
-      id: e0c4e27f-62c0-4c4e-8afc-7d8e0233ddd6
-      version: -1
-      name: code42-alert-resolve
-      description: ''
-      script: Code42|||code42-alert-resolve
-      type: regular
-      iscommand: true
-      brand: Code42
-    nexttasks:
-      '#none#':
-      - '8'
-    scriptarguments:
-      extend-context:
-        simple: alert=
-      id:
-        simple: ${inputs.alert-id}
-      using:
-        simple: ${inputs.instance}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '8':
-    id: '8'
-    taskid: 4f46ad92-bbd6-4680-8684-c22a3d07fe4a
-    type: condition
-    task:
-      id: 4f46ad92-bbd6-4680-8684-c22a3d07fe4a
-      version: -1
-      name: Validate code42-alert-get
-      type: condition
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      'yes':
-      - '9'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: alert
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '9':
-    id: '9'
-    taskid: 1db5d979-5d7e-4828-8741-3bce625d4176
-    type: regular
-    task:
-      id: 1db5d979-5d7e-4828-8741-3bce625d4176
-      version: -1
-      name: DeleteContext
-      description: ''
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '10'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '10':
-    id: '10'
-    taskid: f994fdee-10d8-4ae8-8b1a-7493b10c7a67
-    type: regular
-    task:
-      id: f994fdee-10d8-4ae8-8b1a-7493b10c7a67
-      version: -1
-      name: code42-departingemployee-add
-      description: ''
-      script: Code42|||code42-departingemployee-add
-      type: regular
-      iscommand: true
-      brand: Code42
-    nexttasks:
-      '#none#':
-      - '11'
-    scriptarguments:
-      departuredate: {}
-      extend-context:
-        simple: departingemployee=
-      note: {}
-      username:
-        simple: ${inputs.username}
-      using:
-        simple: ${inputs.instance}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '11':
-    id: '11'
-    taskid: c53ed548-4f18-45a0-80b7-c5e5b9cf1834
-    type: condition
-    task:
-      id: c53ed548-4f18-45a0-80b7-c5e5b9cf1834
-      version: -1
-      name: Validate code42-departingemployee-add
-      type: condition
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      'yes':
-      - '12'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: departingemployee
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '12':
-    id: '12'
-    taskid: 107b35a0-00dc-4de5-8cfc-6a3743c63723
-    type: regular
-    task:
-      id: 107b35a0-00dc-4de5-8cfc-6a3743c63723
-      version: -1
-      name: DeleteContext
-      description: ''
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '13'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '13':
-    id: '13'
-    taskid: cc75b117-4133-4e1c-8249-6626fc7dff56
-    type: regular
-    task:
-      id: cc75b117-4133-4e1c-8249-6626fc7dff56
-      version: -1
-      name: code42-departingemployee-remove
-      description: ''
-      script: Code42|||code42-departingemployee-remove
-      type: regular
-      iscommand: true
-      brand: Code42
-    nexttasks:
-      '#none#':
-      - '14'
-    scriptarguments:
-      extend-context:
-        simple: departingemployee=
-      username:
-        simple: ${inputs.username}
-      using:
-        simple: ${inputs.instance}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '14':
-    id: '14'
-    taskid: 45490495-6e25-49bc-89da-9753e72af54e
-    type: condition
-    task:
-      id: 45490495-6e25-49bc-89da-9753e72af54e
-      version: -1
-      name: Validate code42-departingemployee-remove
-      type: condition
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      'yes':
-      - '15'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: departingemployee
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '15':
-    id: '15'
-    taskid: 1d786a5b-51a8-41fc-8dd7-e1a88989a787
-    type: regular
-    task:
-      id: 1d786a5b-51a8-41fc-8dd7-e1a88989a787
-      version: -1
-      name: DeleteContext
-      description: ''
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '16'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '16':
-    id: '16'
-    taskid: ea04197e-726f-449a-8bab-ed47ee9aeb3a
-    type: regular
-    task:
-      id: ea04197e-726f-449a-8bab-ed47ee9aeb3a
-      version: -1
-      name: code42-securitydata-search
-      description: ''
-      script: Code42|||code42-securitydata-search
-      type: regular
-      iscommand: true
-      brand: Code42
-    nexttasks:
-      '#none#':
-      - '17'
-    scriptarguments:
-      exposure: {}
-      extend-context:
-        simple: searchresults=
-      hash: {}
-      hostname: {}
-      json:
-        simple: ${inputs.search-payload}
-      results:
-        simple: '100'
-      username: {}
-      using:
-        simple: ${inputs.instance}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '17':
-    id: '17'
-    taskid: ef99d4c7-21c2-45c2-84e8-811b7fac735f
-    type: condition
-    task:
-      id: ef99d4c7-21c2-45c2-84e8-811b7fac735f
-      version: -1
-      name: Validate code42-securitydata-search
-      type: condition
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      'yes':
-      - '18'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: searchresults
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: '0'
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '18':
-    id: '18'
-    taskid: 2218905c-a105-487b-83ab-5473ce13a564
-    type: title
-    task:
-      id: 2218905c-a105-487b-83ab-5473ce13a564
-      version: -1
-      name: Test Succeeded
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 2835,
-        "width": 380,
-        "x": 50,
-        "y": 50
-      }
-    }
-  }
 inputs:
-- key: alert-id
+- description: Alert ID to test
+  key: alert-id
+  playbookInputQuery:
+  required: false
   value:
     simple: f484ea0c-9143-46f4-ac0a-ab813264f625
+- description: Username for add/remove to Departing Employee List
+  key: username
+  playbookInputQuery:
   required: false
-  description: Alert ID to test
-- key: username
   value:
     simple: partner.demisto@example.com
+- description: FFS Search Payload
+  key: search-payload
+  playbookInputQuery:
   required: false
-  description: Username for add/remove to Departing Employee Lens
-- key: search-payload
   value:
     simple: |-
       {
@@ -630,13 +47,1245 @@ inputs:
         "pgSize": 100,
         "purpose": "USER_EXECUTED_SEARCH"
       }
+- description: Integration instance to use for testing
+  key: instance
+  playbookInputQuery:
   required: false
-  description: FFS Search Payload
-- key: instance
   value:
     simple: c42_demisto
-  required: false
-  description: Integration instance to use for testing
+name: Code42-Test
 outputs: []
-description: ''
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7cf6bacb-0099-40b0-8775-5da6b87bfd88
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 7cf6bacb-0099-40b0-8775-5da6b87bfd88
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4b833f28-1140-4e78-8eb1-6b8a6a2c01cb
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 4b833f28-1140-4e78-8eb1-6b8a6a2c01cb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: alert=
+      id:
+        simple: ${inputs.alert-id}
+      using:
+        simple: ${inputs.instance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      id: 07bd6b8f-7131-4e99-827d-bb392671171c
+      iscommand: true
+      name: code42-alert-get
+      script: Code42|||code42-alert-get
+      type: regular
+      version: -1
+    taskid: 07bd6b8f-7131-4e99-827d-bb392671171c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Code42.SecurityAlert.ID
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f80bfb2f-dccd-415e-85bc-0427c2d1652c
+      iscommand: false
+      name: Validate code42-alert-get
+      type: condition
+      version: -1
+    taskid: f80bfb2f-dccd-415e-85bc-0427c2d1652c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8c83a2e8-1942-45b0-8d76-13f952996226
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 8c83a2e8-1942-45b0-8d76-13f952996226
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: alert=
+      id:
+        simple: ${inputs.alert-id}
+      using:
+        simple: ${inputs.instance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      id: 42319e0a-9867-4293-886d-4a9985d70585
+      iscommand: true
+      name: code42-alert-resolve
+      script: Code42|||code42-alert-resolve
+      type: regular
+      version: -1
+    taskid: 42319e0a-9867-4293-886d-4a9985d70585
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Code42.SecurityAlert.ID
+          operator: isNotEmpty
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 83227c49-a096-42be-8721-fdc9962efae5
+      iscommand: false
+      name: Validate code42-alert-resolve
+      type: condition
+      version: -1
+    taskid: 83227c49-a096-42be-8721-fdc9962efae5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e796f348-6368-4275-87d1-3f7cbd562b9d
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: e796f348-6368-4275-87d1-3f7cbd562b9d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      departuredate: {}
+      extend-context:
+        simple: departingemployee=
+      note: {}
+      username:
+        simple: ${inputs.username}
+      using:
+        simple: ${inputs.instance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      id: d1621fb2-b4cc-4773-80c8-416e60a33d12
+      iscommand: true
+      name: code42-departingemployee-add
+      script: Code42|||code42-departingemployee-add
+      type: regular
+      version: -1
+    taskid: d1621fb2-b4cc-4773-80c8-416e60a33d12
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Code42.DepartingEmployee.UserID
+          operator: isNotEmpty
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c0d459a9-1d1e-4c78-823e-748d2af904fe
+      iscommand: false
+      name: Validate code42-departingemployee-add
+      type: condition
+      version: -1
+    taskid: c0d459a9-1d1e-4c78-823e-748d2af904fe
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0a5a6f79-facd-4e5d-8283-4af2fe097448
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 0a5a6f79-facd-4e5d-8283-4af2fe097448
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: departingemployee=
+      username:
+        simple: ${inputs.username}
+      using:
+        simple: ${inputs.instance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      id: 4a0f6e3d-6cec-45e4-8ff6-77192be68cbf
+      iscommand: true
+      name: code42-departingemployee-remove
+      script: Code42|||code42-departingemployee-remove
+      type: regular
+      version: -1
+    taskid: 4a0f6e3d-6cec-45e4-8ff6-77192be68cbf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Code42.DepartingEmployee.UserID
+          operator: isNotEmpty
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3e883931-5c04-4175-835d-19279b7f645f
+      iscommand: false
+      name: Validate code42-departingemployee-remove
+      type: condition
+      version: -1
+    taskid: 3e883931-5c04-4175-835d-19279b7f645f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 794e083a-18cd-4f44-80a9-feeb572bd0b6
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 794e083a-18cd-4f44-80a9-feeb572bd0b6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      exposure: {}
+      extend-context:
+        simple: searchresults=
+      hash: {}
+      hostname: {}
+      json:
+        simple: ${inputs.search-payload}
+      results:
+        simple: "100"
+      username: {}
+      using:
+        simple: ${inputs.instance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      id: 152c9178-b877-413d-8868-bcb2b08af2a5
+      iscommand: true
+      name: code42-securitydata-search
+      script: Code42|||code42-securitydata-search
+      type: regular
+      version: -1
+    taskid: 152c9178-b877-413d-8868-bcb2b08af2a5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: SecurityData
+                root: Code42
+                transformers:
+                - operator: count
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "0"
+      label: "yes"
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 09a8dcd7-efa3-4ed6-8003-9924d12387dc
+      iscommand: false
+      name: Validate code42-securitydata-search
+      type: condition
+      version: -1
+    taskid: 09a8dcd7-efa3-4ed6-8003-9924d12387dc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e3f1c3eb-abf9-438d-8e3a-1d409fa66ee2
+      iscommand: false
+      name: Test Succeeded
+      type: title
+      version: -1
+    taskid: e3f1c3eb-abf9-438d-8e3a-1d409fa66ee2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 65f035a8-d6b2-4cc2-8b3c-e2f8a98ce4e5
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 65f035a8-d6b2-4cc2-8b3c-e2f8a98ce4e5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      results: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      description: Get all employees on the Departing Employee List.
+      id: d290b8ae-29b0-46ca-80bb-834238694862
+      iscommand: true
+      name: Code42-departingemployee-get-all
+      script: Code42|||code42-departingemployee-get-all
+      type: regular
+      version: -1
+    taskid: d290b8ae-29b0-46ca-80bb-834238694862
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+  "22":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: DepartingEmployee
+                root: Code42
+                transformers:
+                - operator: count
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "0"
+      label: "yes"
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 84da2359-0662-49bd-84d5-ed3724e48b7e
+      iscommand: false
+      name: Validate code42-departingemployee-get-all
+      type: condition
+      version: -1
+    taskid: 84da2359-0662-49bd-84d5-ed3724e48b7e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 121c9696-a391-439b-809d-6fad7ff4539e
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 121c9696-a391-439b-809d-6fad7ff4539e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      note: {}
+      username:
+        simple: ${inputs.username}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      description: Adds a user from the High Risk Employee List.
+      id: 290f6851-3129-42b2-8c85-df4c0a9ccdc8
+      iscommand: true
+      name: Code42-highriskemployee-add
+      script: Code42|||code42-highriskemployee-add
+      type: regular
+      version: -1
+    taskid: 290f6851-3129-42b2-8c85-df4c0a9ccdc8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Code42.HighRiskEmployee.UserID
+          operator: isNotEmpty
+      label: "yes"
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f3fe075d-34ed-4c26-8d21-f378f5d1c7e8
+      iscommand: false
+      name: Validate code42-highriskemployee-add
+      type: condition
+      version: -1
+    taskid: f3fe075d-34ed-4c26-8d21-f378f5d1c7e8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: db4c0622-0db9-402c-88a0-57a085066441
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: db4c0622-0db9-402c-88a0-57a085066441
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      username:
+        simple: ${inputs.username}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      description: Removes a user from the High Risk Employee List.
+      id: fe761cd2-284a-42b2-873f-709cbf14b73f
+      iscommand: true
+      name: Code42-highriskemployee-remove
+      script: Code42|||code42-highriskemployee-remove
+      type: regular
+      version: -1
+    taskid: fe761cd2-284a-42b2-873f-709cbf14b73f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+  "28":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Code42.HighRiskEmployee.UserID
+          operator: isNotEmpty
+      label: "yes"
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7dfa261d-5d18-4491-8529-4df9b0856d14
+      iscommand: false
+      name: Validate code42-highriskemployee-remove
+      type: condition
+      version: -1
+    taskid: 7dfa261d-5d18-4491-8529-4df9b0856d14
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c2779d4e-9f0c-41c4-8364-58cdd0db3504
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: c2779d4e-9f0c-41c4-8364-58cdd0db3504
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      risktags:
+        simple: FLIGHT_RISK
+      username:
+        simple: ${inputs.username}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      id: 10fa1977-fd58-4524-8688-0ab9725a87d9
+      iscommand: true
+      name: Code42-highriskemployee-add-risk-tags
+      script: Code42|||code42-highriskemployee-add-risk-tags
+      type: regular
+      version: -1
+    taskid: 10fa1977-fd58-4524-8688-0ab9725a87d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+  "31":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Code42.HighRiskEmployee.UserID
+          operator: isNotEmpty
+      label: "yes"
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c8b59082-bec7-4ed4-8cb7-8a32f097e212
+      iscommand: false
+      name: Validate code42-highriskemployee-add-risk-tags
+      type: condition
+      version: -1
+    taskid: c8b59082-bec7-4ed4-8cb7-8a32f097e212
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1a4bb879-ba2c-4825-8c39-fc8b1eb7d27a
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 1a4bb879-ba2c-4825-8c39-fc8b1eb7d27a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      risktags:
+        simple: FLIGHT_RISK
+      username:
+        simple: ${inputs.username}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      id: 3fd90be8-ab7e-4e14-8308-ee4f87ca981a
+      iscommand: true
+      name: Code42-highriskemployee-remove-risk-tags
+      script: Code42|||code42-highriskemployee-remove-risk-tags
+      type: regular
+      version: -1
+    taskid: 3fd90be8-ab7e-4e14-8308-ee4f87ca981a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 84293fd1-6417-4955-8216-18b217cda5a4
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 84293fd1-6417-4955-8216-18b217cda5a4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      results: {}
+      risktags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Code42
+      description: Get all employees on the High Risk Employee List.
+      id: 65767c92-d77b-4e8d-845a-36fac9bbba72
+      iscommand: true
+      name: Code42-highriskemployee-get-all
+      script: Code42|||code42-highriskemployee-get-all
+      type: regular
+      version: -1
+    taskid: 65767c92-d77b-4e8d-845a-36fac9bbba72
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+  "36":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: HighRiskEmployee
+                root: Code42
+                transformers:
+                - operator: count
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "0"
+      label: "yes"
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ccc2ce6a-b83a-47bc-8e31-76b172de259d
+      iscommand: false
+      name: Validate code42-highriskmployee-get-all
+      type: condition
+      version: -1
+    taskid: ccc2ce6a-b83a-47bc-8e31-76b172de259d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+  "37":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Code42.HighRiskEmployee.UserID
+          operator: isNotEmpty
+      label: "yes"
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0294a8f9-5bf9-4be0-873a-85d55c79ac11
+      iscommand: false
+      name: Validate code42-highriskemployee-remove-risk-tags
+      type: condition
+      version: -1
+    taskid: 0294a8f9-5bf9-4be0-873a-85d55c79ac11
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5985,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 fromversion: 5.0.0

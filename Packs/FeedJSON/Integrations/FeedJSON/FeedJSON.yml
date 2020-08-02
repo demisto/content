@@ -63,8 +63,7 @@ configuration:
   name: auto_detect_type
   required: false
   type: 8
-- additionalinfo: Type of the indicator in the feed. Relevant only if auto detect
-    is not selected.
+- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
   display: Indicator Type
   name: indicator_type
   required: false

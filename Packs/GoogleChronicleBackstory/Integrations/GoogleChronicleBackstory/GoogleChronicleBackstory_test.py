@@ -43,6 +43,10 @@ def client():
     return mock.Mock()
 
 
+def return_error(error):
+    raise ValueError(error)
+
+
 def test_gcb_list_ioc_success(client):
     """
     When valid response comes in gcb-list-iocs command it should respond with result.
@@ -83,14 +87,17 @@ def test_gcb_list_ioc_failure_response(client):
     client.http_client.request.return_value = mock_response
     with pytest.raises(ValueError) as error:
         gcb_list_iocs_command(client, {})
-    assert str(error.value) == 'Invalid response format while making API call to Backstory. Response not in JSON format'
+    assert str(error.value) == 'Invalid response format while making API call to Chronicle. Response not in JSON format'
 
 
-def test_gcb_list_ioc_failure_response_400(client):
+def test_gcb_list_ioc_failure_response_400(client, mocker):
     """
     When status code 400 occurred in gcb-list-iocs command it should raise ValueError 'page not found'.
     """
     from GoogleChronicleBackstory import gcb_list_iocs_command
+
+    mocker.patch('GoogleChronicleBackstory.return_error', new=return_error)
+
     mock_response = (
         Response(dict(status=400)),
         b'{"error": { "code": 400, "message": "page not found", "status": "INVALID_ARGUMENT" } }'
@@ -99,7 +106,7 @@ def test_gcb_list_ioc_failure_response_400(client):
     client.http_client.request.return_value = mock_response
     with pytest.raises(ValueError) as error:
         gcb_list_iocs_command(client, {})
-    assert str(error.value) == 'page not found'
+    assert str(error.value) == 'Status code: 400\nError: page not found'
 
 
 def test_gcb_ioc_details_command_success(client):
@@ -150,7 +157,7 @@ def test_gcb_ioc_details_command_empty_response(client):
     assert hr == expected_hr
 
 
-def test_gcb_ioc_details_command_failure(client):
+def test_gcb_ioc_details_command_failure(client, mocker):
     """
     When there is a invalid response then ValueError should be raised with valid message
     """
@@ -167,14 +174,15 @@ def test_gcb_ioc_details_command_failure(client):
 
     client.http_client.request.return_value = mock_response
 
+    mocker.patch('GoogleChronicleBackstory.return_error', new=return_error)
     with pytest.raises(ValueError) as error:
         gcb_ioc_details_command(client, ARGS)
-    expected_message = "Invalid JSON payload received. Unknown name \'artifact.ip_address\': Cannot bind query " \
-                       "parameter. Field \'ip_address\' could not be found in request message."
+    expected_message = "Status code: 400\nError: Invalid JSON payload received. Unknown name \'artifact.ip_address\':" \
+                       " Cannot bind query parameter. Field \'ip_address\' could not be found in request message."
     assert str(error.value) == expected_message
 
 
-def test_gcb_ioc_details_command_failure_permission_denied(client):
+def test_gcb_ioc_details_command_failure_permission_denied(client, mocker):
     """
     When there is a response for permission denied then ValueError should be raised with valid message
     """
@@ -190,9 +198,10 @@ def test_gcb_ioc_details_command_failure_permission_denied(client):
 
     client.http_client.request.return_value = mock_response
 
+    mocker.patch('GoogleChronicleBackstory.return_error', new=return_error)
     with pytest.raises(ValueError) as error:
         gcb_ioc_details_command(client, ARGS)
-    expected_message = 'Permission denied'
+    expected_message = 'Status code: 403\nError: Permission denied'
     assert str(error.value) == expected_message
 
 
@@ -232,7 +241,7 @@ def test_function_success(client):
     mock_demisto_result.assert_called_with('ok')
 
 
-def test_function_failure_status_code_400(client):
+def test_function_failure_status_code_400(client, mocker):
     """
     When unsuccessful response come then test_function command should raise ValueError with appropriate message.
     """
@@ -243,12 +252,14 @@ def test_function_failure_status_code_400(client):
     )
 
     client.http_client.request.return_value = mock_response
+
+    mocker.patch('GoogleChronicleBackstory.return_error', new=return_error)
     with pytest.raises(ValueError) as error:
         test_function(client, PROXY_MOCK)
-    assert str(error.value) == 'Request contains an invalid argument.'
+    assert str(error.value) == 'Status code: 400\nError: Request contains an invalid argument.'
 
 
-def test_function_failure_status_code_403(client):
+def test_function_failure_status_code_403(client, mocker):
     """
     When entered JSON is correct but client has not given any access, should return permission denied
     """
@@ -259,9 +270,11 @@ def test_function_failure_status_code_403(client):
     )
 
     client.http_client.request.return_value = mock_response
+
+    mocker.patch('GoogleChronicleBackstory.return_error', new=return_error)
     with pytest.raises(ValueError) as error:
         test_function(client, PROXY_MOCK)
-    assert str(error.value) == 'Permission denied'
+    assert str(error.value) == 'Status code: 403\nError: Permission denied'
 
 
 def test_validate_parameter_success(mocker):
@@ -559,7 +572,7 @@ def test_fetch_incident_run_ioc_domain_matches(mocker, client):
     assert client.http_client.request.called
 
 
-def test_fetch_incident_error_in_response(client):
+def test_fetch_incident_error_in_response(client, mocker):
     from GoogleChronicleBackstory import fetch_incidents
     param = {}
 
@@ -569,11 +582,12 @@ def test_fetch_incident_error_in_response(client):
     )
     client.http_client.request.return_value = mock_response
 
+    mocker.patch('GoogleChronicleBackstory.return_error', new=return_error)
     with pytest.raises(ValueError) as error:
         fetch_incidents(client, param)
 
     assert client.http_client.request.called
-    assert str(error.value) == "Invalid Argument"
+    assert str(error.value) == "Status code: 400\nError: Invalid Argument"
 
 
 def validate_incident(incidents):
@@ -890,7 +904,7 @@ def test_ip_command_empty_response(client):
     assert hr == expected_hr
 
 
-def test_ip_command_failure(client):
+def test_ip_command_failure(client, mocker):
     """
     When there is a invalid response then ValueError should be raised with valid message
     """
@@ -907,14 +921,15 @@ def test_ip_command_failure(client):
 
     client.http_client.request.return_value = mock_response
 
+    mocker.patch('GoogleChronicleBackstory.return_error', new=return_error)
     with pytest.raises(ValueError) as error:
         ip_command(client, ARGS['ip'])
-    expected_message = "Invalid JSON payload received. Unknown name \'artifact.ip_address\': Cannot bind query " \
-                       "parameter. Field \'ip_address\' could not be found in request message."
+    expected_message = "Status code: 400\nError: Invalid JSON payload received. Unknown name \'artifact.ip_address\':" \
+                       " Cannot bind query parameter. Field \'ip_address\' could not be found in request message."
     assert str(error.value) == expected_message
 
 
-def test_ip_command_failure_permission_denied(client):
+def test_ip_command_failure_permission_denied(client, mocker):
     """
     When there is a response for permission denied then ValueError should be raised with valid message
     """
@@ -923,6 +938,7 @@ def test_ip_command_failure_permission_denied(client):
     dummy_response = "{ \"error\": { \"code\": 403, \"message\": \"Permission denied\" \
                      , \"status\": \"PERMISSION_DENIED\", \"details\": [ {  } ] } } "
 
+    mocker.patch('GoogleChronicleBackstory.return_error', new=return_error)
     mock_response = (
         Response(dict(status=403)),
         dummy_response
@@ -932,7 +948,7 @@ def test_ip_command_failure_permission_denied(client):
 
     with pytest.raises(ValueError) as error:
         ip_command(client, ARGS['ip'])
-    expected_message = 'Permission denied'
+    expected_message = 'Status code: 403\nError: Permission denied'
     assert str(error.value) == expected_message
 
 
@@ -1005,7 +1021,7 @@ def test_gcb_domain_command_empty_response(client):
     assert hr == expected_hr
 
 
-def test_domain_command_failure(client):
+def test_domain_command_failure(client, mocker):
     """
     When there is a invalid response then ValueError should be raised with valid message
     """
@@ -1022,14 +1038,15 @@ def test_domain_command_failure(client):
 
     client.http_client.request.return_value = mock_response
 
+    mocker.patch('GoogleChronicleBackstory.return_error', new=return_error)
     with pytest.raises(ValueError) as error:
         domain_command(client, ARGS['domain'])
-    expected_message = "Invalid JSON payload received. Unknown name \'artifact.domai_name\': Cannot bind query " \
-                       "parameter. Field \'domai_name\' could not be found in request message."
+    expected_message = "Status code: 400\nError: Invalid JSON payload received. Unknown name \'artifact.domai_name\': " \
+                       "Cannot bind query parameter. Field \'domai_name\' could not be found in request message."
     assert str(error.value) == expected_message
 
 
-def test_domain_command_failure_permission_denied(client):
+def test_domain_command_failure_permission_denied(client, mocker):
     """
     When there is a response for permission denied then ValueError should be raised with valid message
     """
@@ -1045,9 +1062,10 @@ def test_domain_command_failure_permission_denied(client):
 
     client.http_client.request.return_value = mock_response
 
+    mocker.patch('GoogleChronicleBackstory.return_error', new=return_error)
     with pytest.raises(ValueError) as error:
         domain_command(client, ARGS['domain'])
-    expected_message = 'Permission denied'
+    expected_message = 'Status code: 403\nError: Permission denied'
     assert str(error.value) == expected_message
 
 
@@ -2042,4 +2060,36 @@ def test_parse_error_message():
 
     with pytest.raises(ValueError) as error:
         parse_error_message('service unavailable')
-    assert str(error.value) == 'Invalid response received from Backstory Search API. Response not in JSON format.'
+    assert str(error.value) == 'Invalid response received from Chronicle Search API. Response not in JSON format.'
+
+
+def test_list_events_command(client):
+    from GoogleChronicleBackstory import gcb_list_events_command
+
+    with open("./TestData/list_events_response.json", "r") as f:
+        dummy_response = f.read()
+
+    with open("./TestData/list_events_ec.json", "r") as f:
+        dummy_ec = json.load(f)
+
+    mock_response = (
+        Response(dict(status=200)),
+        dummy_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, json_data = gcb_list_events_command(client, {})
+
+    event = 'GoogleChronicleBackstory.Events'
+    assert ec[event] == dummy_ec[event]
+
+    # Test command when no events found
+    client.http_client.request.return_value = (
+        Response(dict(status=200)),
+        '{}'
+    )
+
+    hr, ec, json_data = gcb_list_events_command(client, {})
+    assert ec == {}
+    assert hr == 'No Events Found'

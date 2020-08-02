@@ -41,7 +41,7 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li>
-<strong>Minerva Management Console URL</strong>, for example:<span> </span><a href="https://server/OWL">https://SERVER/OWL</a>
+<strong>Minerva Management Console URL</strong>, for example: https://SERVER/OWL
 </li>
 <li><strong>Username</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
