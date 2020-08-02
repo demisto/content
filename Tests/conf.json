@@ -28,10 +28,7 @@
             "timeout": 1000,
             "fromversion": "5.0.0"
         },
-        {
-            "integrations": "Bastille Networks",
-            "playbookID": "BastilleNetworks-Test"
-        },
+
         {
             "integrations": "MITRE ATT&CK",
             "playbookID": "Mitre Attack List 10 Indicators Feed Test",
@@ -69,10 +66,6 @@
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",
             "timeout": 600
-        },
-        {
-            "integrations": "APIVoid",
-            "playbookID": "APIVoid Test"
         },
         {
             "integrations": "Cisco Firepower",
@@ -344,10 +337,6 @@
             "playbookID": "Alienvault_OTX_v2 - Test"
         },
         {
-            "integrations": "AWS - CloudWatchLogs",
-            "playbookID": "AWS - CloudWatchLogs Test Playbook"
-        },
-        {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "timeout": 400,
@@ -513,10 +502,6 @@
         {
             "integrations": "CVE Search v2",
             "playbookID": "cveReputation Test"
-        },
-        {
-            "integrations": "HashiCorp Vault",
-            "playbookID": "hashicorp_test"
         },
         {
             "integrations": "AWS - Athena - Beta",
@@ -727,10 +712,6 @@
             "nightly": true,
             "memory_threshold": 130,
             "timeout": 3600
-        },
-        {
-            "playbookID": "Luminate-TestPlaybook",
-            "integrations": "Luminate"
         },
         {
             "integrations": "MxToolBox",
@@ -945,18 +926,6 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Detonate URL - WildFire-v2 - Test"
-        },
-        {
-            "integrations": "GRR",
-            "playbookID": "GRR Test",
-            "nightly": true
-        },
-        {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "virusTotal-test-playbook",
-            "timeout": 1400,
-            "nightly": true
         },
         {
             "integrations": "VirusTotal",
@@ -1298,11 +1267,6 @@
             "playbookID": "PhishTank Testing"
         },
         {
-            "integrations": "McAfee Web Gateway",
-            "playbookID": "McAfeeWebGatewayTest",
-            "timeout": 500
-        },
-        {
             "integrations": "TCPIPUtils",
             "playbookID": "TCPUtils-Test"
         },
@@ -1343,11 +1307,6 @@
         },
         {
             "playbookID": "TestExtractHTMLTables"
-        },
-        {
-            "integrations": "carbonblackliveresponse",
-            "playbookID": "Carbon Black Live Response Test",
-            "nightly": true
         },
         {
             "integrations": "urlscan.io",
@@ -1457,11 +1416,6 @@
             "nightly": true,
             "timeout": 1200,
             "pid_threshold": 10
-        },
-        {
-            "integrations": "Recorded Future",
-            "playbookID": "Recorded Future Test",
-            "nightly": true
         },
         {
             "integrations": "Microsoft Graph",
@@ -1657,11 +1611,6 @@
             "integrations": "AbuseIPDB",
             "playbookID": "AbuseIPDB PopulateIndicators Test",
             "nightly": true
-        },
-        {
-            "integrations": "LogRhythm",
-            "playbookID": "LogRhythm-Test-Playbook",
-            "timeout": 200
         },
         {
             "integrations": "FireEye HX",
@@ -2858,10 +2807,8 @@
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "IfThenElse-Test"
         }
+
     ],
     "skipped_tests": {
         "PAN-OS DAG Configuration Test": "Issue 60693",

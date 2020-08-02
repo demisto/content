@@ -5,7 +5,6 @@ import click
 import ujson
 from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import FoldedScalarString
-import json
 from pkg_resources import parse_version
 import shutil
 
@@ -224,7 +223,8 @@ def edit_reputations_json(new_to_version):
             reputation['toVersion'] = new_to_version
 
     with open(rep_json_path, 'w') as f:
-        json.dump(rep_content, f, indent=4)
+        ujson.dump(rep_content, f, indent=4, encode_html_chars=True, escape_forward_slashes=False,
+                   ensure_ascii=False)
 
 
 def main():
