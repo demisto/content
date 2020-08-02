@@ -108,15 +108,15 @@ class MsGraphClient:
         Returns:
             dict or list:
         """
-        no_folder = f'/users/{user_id}/messages/'
-        with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/'
+        no_folder = f'/users/{user_id}/messages'
+        with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages'
         pages_to_pull = demisto.args().get('pages_to_pull', 1)
 
         if search:
-            odata = f'?{odata}$search={search}' if odata else f'?$search={search}'
+            odata = f'{odata}&$search="{search}"' if odata else f'$search="{search}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
-            suffix += odata
+            suffix += f'?{odata}'
         response = self.ms_client.http_request('GET', suffix)
         return self.pages_puller(response, assert_pages(pages_to_pull))
 
@@ -174,7 +174,7 @@ class MsGraphClient:
 
         suffix = with_folder if folder_id else no_folder
         if odata:
-            suffix += odata
+            suffix += f'?{odata}'
         response = self.ms_client.http_request('GET', suffix)
 
         # Add user ID
@@ -1157,8 +1157,6 @@ def get_message_command(client: MsGraphClient, args):
     get_body = args.get('get_body') == 'true'
     odata = args.get('odata')
     raw_response = client.get_message(user_id, message_id, folder_id, odata=odata)
-    # todo: delete debug line
-    demisto.debug(f'\n\n\n\n\nGET_MESSAGE_RAW_RESPONSE: {raw_response}\n\n\n\n\n')
     mail_context = build_mail_object(raw_response, user_id=user_id, get_body=get_body)
     entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
     human_readable = tableToMarkdown(
