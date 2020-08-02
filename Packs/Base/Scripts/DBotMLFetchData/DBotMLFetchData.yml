@@ -74,10 +74,10 @@ args:
   secret: false
 comment: Collect telemetry data from the environment
 commonfields:
-  id: DBotMLFetchData2
+  id: DBotMLFetchData
   version: -1
 enabled: false
-name: DBotMLFetchData2
+name: DBotMLFetchData
 script: '-'
 subtype: python3
 system: false

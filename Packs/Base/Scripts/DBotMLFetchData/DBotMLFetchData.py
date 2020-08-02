@@ -514,14 +514,14 @@ def extract_features_from_incident(row):
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_ATTACHMENT_FIELD, EMAIL_HEADERS_FIELD
     email_body = row[EMAIL_BODY_FIELD] if EMAIL_BODY_FIELD in row else ''
     email_subject = row[EMAIL_SUBJECT_FIELD] if EMAIL_SUBJECT_FIELD in row else ''
-    email_html = row[EMAIL_HTML_FIELD] if EMAIL_HTML_FIELD in row else ''
+    email_html = row[EMAIL_HTML_FIELD] if EMAIL_HTML_FIELD in row and isinstance(row[EMAIL_HTML_FIELD], str) else ''
     email_headers = row[EMAIL_HEADERS_FIELD] if EMAIL_HEADERS_FIELD in row else {}
     email_attachments = row[EMAIL_ATTACHMENT_FIELD] if EMAIL_ATTACHMENT_FIELD in row else []
     email_attachments = email_attachments if email_attachments is not None else []
-    if email_body is None or email_body.strip() == '' or isinstance(email_body, float):
-        email_body = get_text_from_html(email_html)
     if isinstance(email_html, float):
         email_html = ''
+    if email_body is None or isinstance(email_body, float) or email_body.strip() == '':
+        email_body = get_text_from_html(email_html)
     if isinstance(email_subject, float):
         email_subject = ''
     email_body, email_subject = email_body.strip().lower(), email_subject.strip().lower()
