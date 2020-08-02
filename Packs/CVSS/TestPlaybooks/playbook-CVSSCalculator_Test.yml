@@ -40,11 +40,11 @@ tasks:
     task:
       id: d7a5abaa-f15e-43be-8783-c897b2ca956c
       version: -1
-      name: cvssCalculator
+      name: CVSSCalculator
       description: This script calculates the CVSS Base Score, Temporal Score and
         Environmental Score using either the CVSS 3.0 or 3.1 calculator according
         to https://www.first.org/cvss/ calculation documentation.
-      scriptName: cvssCalculator
+      scriptName: CVSSCalculator
       type: regular
       iscommand: false
       brand: ""
