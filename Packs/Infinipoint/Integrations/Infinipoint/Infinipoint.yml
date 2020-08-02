@@ -158,6 +158,7 @@ script:
       description: Total software
       type: Number
   - name: infinipoint-get-cve
+    description: infinipoint get cve
     arguments:
     - name: cve_id
       description:
