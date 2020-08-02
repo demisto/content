@@ -1,15 +1,11 @@
 {
-    "typeId": "Illusive Networks Incident",
+    "id": "Illusive Networks Incident",
+    "group": "incident",
+    "name": "Illusive Networks Incident",
+    "description": "Illusive Networks Incident Layout",
     "version": -1,
-    "TypeName": "Illusive Networks Incident",
-    "kind": "details",
-    "fromVersion": "5.0.0",
-    "layout": {
-        "TypeName": "",
-        "id": "Illusive Networks Incident",
-        "kind": "details",
-        "name": "",
-        "system": false,
+    "fromVersion": "6.0.0",
+    "detailsV2": {
         "tabs": [
             {
                 "id": "summary",
@@ -531,9 +527,6 @@
                 "name": "Canvas",
                 "type": "canvas"
             }
-        ],
-        "typeId": "Illusive Networks Incident",
-        "version": -1
-    },
-    "toVersion": "5.9.9"
-}
+        ]
+    }
+  }
