@@ -692,7 +692,7 @@ SHORTENED_DOMAINS = set(
 
 def find_label_fields_candidates(incidents_df):
     candidates = [col for col in list(incidents_df) if
-                  sum(isinstance(x, str) for x in incidents_df[col]) > 0.5 * len(incidents_df)]
+                  sum(isinstance(x, str) for x in incidents_df[col]) > 0.3 * len(incidents_df)]
     candidates = [col for col in candidates if col not in LABEL_FIELDS_BLACKLIST]
 
     candidate_to_values = {col: incidents_df[col].unique() for col in candidates}
@@ -701,11 +701,12 @@ def find_label_fields_candidates(incidents_df):
 
     # filter columns by unique values count
     candidate_to_values = {col: values for col, values in candidate_to_values.items() if 0 < len(values) < 15}
-    candidate_to_values = {col: [v.lower() for v in values] for col, values in candidate_to_values.items()}
+    candidate_to_values = {col: [v.lower() if isinstance(v, str) else v for v in values]
+                           for col, values in candidate_to_values.items()}
     candidate_to_score = {col: 0 for col in candidate_to_values}
     for col, values in candidate_to_values.items():
         for v in values:
-            if any(w in v for w in LABEL_VALUES_KEYWORDS):
+            if any(isinstance(v, str) and w in v for w in LABEL_VALUES_KEYWORDS):
                 candidate_to_score[col] += 1
         if any(w in col.lower() for w in LABEL_FIELD_KEYWORDS):
             candidate_to_score[col] += 1
