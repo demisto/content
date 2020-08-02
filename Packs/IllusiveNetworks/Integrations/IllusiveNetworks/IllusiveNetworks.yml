@@ -634,7 +634,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: DESKTOP_SCREENSHOTS
-      description: 'The type of forensics artifact to retrieve '
+      description: 'The type of forensics artifact to retrieve'
       isArray: false
       name: artifact_type
       predefined:
