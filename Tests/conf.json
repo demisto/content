@@ -2895,6 +2895,11 @@
             "timeout": 1500
         },
         {
+            "integrations": "Sixgill_Darkfeed",
+            "playbookID": "Sixgill-Darkfeed_Test",
+            "fromversion": "5.5.0"
+        },        
+        {
             "playbookID": "hashIncidentFields-test",
             "fromversion": "4.5.0",
             "timeout": 60000
