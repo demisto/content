@@ -24,13 +24,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "54"
+      - "40"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": -815
+          "y": -685
         }
       }
     note: false
@@ -1568,42 +1568,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "54":
-    id: "54"
-    taskid: fd9866a4-1498-42e4-8e9e-7361adcab038
-    type: regular
-    task:
-      id: fd9866a4-1498-42e4-8e9e-7361adcab038
-      version: -1
-      name: Cortex XDR - get incident extra data
-      description: Returns additional data for the specified incident, for example,
-        related alerts, file artifacts, network artifacts, and so on.
-      script: Cortex XDR - IR|||xdr-get-incident-extra-data
-      type: regular
-      iscommand: true
-      brand: Cortex XDR - IR
-    nexttasks:
-      '#none#':
-      - "40"
-    scriptarguments:
-      alerts_limit: {}
-      incident_id:
-        complex:
-          root: incident
-          accessor: xdrincidentid
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": -650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -1621,10 +1585,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5080,
+        "height": 4950,
         "width": 1650,
         "x": -240,
-        "y": -815
+        "y": -685
       }
     }
   }
