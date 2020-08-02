@@ -3284,7 +3284,8 @@
         "McAfee DXL",
         "GCP Whitelist Feed",
         "Cortex Data Lake",
-        "AWS - Security Hub"
+        "AWS - Security Hub",
+        "CyberTotal"
     ],
     "docker_thresholds": {
 
