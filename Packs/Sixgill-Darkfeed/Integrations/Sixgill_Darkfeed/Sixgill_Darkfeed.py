@@ -4,7 +4,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-from typing import Dict, List, Any, Callable, Optional
+from typing import Dict, List, Any, Callable
 from collections import OrderedDict
 import traceback
 import requests
@@ -86,7 +86,7 @@ def get_description(stix_obj):
     return description_string
 
 
-def to_demisto_indicator(value, indicators_name, stix2obj, tags: Optional[list] = None):
+def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = []):
     return {
         "value": value,
         "type": indicators_name,
@@ -107,7 +107,7 @@ def get_limit(str_limit, default_limit):
         return default_limit
 
 
-def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: Optional[list] = None):
+def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: list = []):
     indicators = []
     pattern = stix2obj.get("pattern", "")
     sixgill_feedid = stix2obj.get("sixgill_feedid", "")
@@ -170,7 +170,7 @@ def test_module_command(*args):
     return 'ok', None, 'ok'
 
 
-def get_indicators_command(client: SixgillFeedClient, args, tags: Optional[list] = None):
+def get_indicators_command(client: SixgillFeedClient, args, tags: list = []):
     limit = int(args.get('limit'))
     indicators = fetch_indicators_command(client, limit, True, tags)
 
@@ -180,7 +180,7 @@ def get_indicators_command(client: SixgillFeedClient, args, tags: Optional[list]
 
 
 def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indicators_mode: bool = False,
-                             tags: Optional[list] = None):
+                             tags: list = []):
     bundle = client.get_bundle()
     indicators_to_create: List = []
 
@@ -205,7 +205,7 @@ def main():
     max_indicators = get_limit(demisto.params().get('maxIndicators', MAX_INDICATORS), MAX_INDICATORS)
 
     SESSION.proxies = handle_proxy()
-    tags = argToList(demisto.params().get('feedTags'))
+    tags = argToList(demisto.params().get('feedTags', []))
     client = SixgillFeedClient(demisto.params()['client_id'],
                                demisto.params()['client_secret'],
                                CHANNEL_CODE,
@@ -235,4 +235,3 @@ def main():
 
 if __name__ == '__builtin__' or __name__ == 'builtins':
     main()
-
