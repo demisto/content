@@ -42,8 +42,7 @@ code_2=$?
 
 if [ $code_1 -eq 0 ] && [ $code_2 -eq 0 ] ; then
   role="$(echo -e "${INSTANCE_ROLE}" | tr -d '[:space:]')"
-  filepath="./Tests/is_build_passed_${role}"
-  echo "file_path is: ${filepath} ROLE is: ${INSTANCE_ROLE} role is: ${role}"
+  filepath="./Tests/is_build_passed_${role}.txt"
   touch "$filepath"
 fi
 
