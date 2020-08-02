@@ -71,7 +71,7 @@ We can use `Set up a new classification rule` using actual data from the feed.
 ## Demo Video
 ---
 <video controls>
-    <source src="https://github.com/demisto/content/raw/938ae7b509fa9ccd7d9b293d612c33a731908618/Packs/FeedCSV/Integrations/FeedCSV/doc_files/CSVFeed_Video.mp4"
+    <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedCSV/CSVFeed_Video.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/blob/938ae7b509fa9ccd7d9b293d612c33a731908618/Packs/FeedCSV/Integrations/FeedCSV/doc_files/CSVFeed_Video.mp4 
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedCSV/CSVFeed_Video.mp4 
 </video>

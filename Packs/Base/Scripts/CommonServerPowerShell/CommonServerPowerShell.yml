@@ -10,5 +10,8 @@ tags:
 comment: Common code that will be merged into each PowerShell script/integration when it runs
 system: true
 fromversion: 5.5.0
+dockerimage: demisto/powershell:6.2.4.6166
+alt_dockerimages: # used for unit testing
+  - demisto/powershell:7.0.1.9103
 tests:
   - PowerShellCommon-Test

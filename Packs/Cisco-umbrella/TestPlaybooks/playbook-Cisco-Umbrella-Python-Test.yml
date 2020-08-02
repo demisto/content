@@ -27,6 +27,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: c4637eaa-d766-4f32-8ba6-ca9891b83e8e
@@ -57,6 +59,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 7985f72a-3c57-4143-8f5b-7e34593bd3b8
@@ -86,6 +90,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 22e6df43-af1d-4f1c-8649-a99b0d4241f4
@@ -115,6 +121,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: 08376eb3-ccf6-478c-816b-9a640b0e8783
@@ -144,6 +152,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 3116a1c8-bbb2-4342-8466-6ddf273b1a7e
@@ -173,6 +183,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: df89cc41-7780-44b4-861b-02de9da1aadc
@@ -202,6 +214,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: 29a09303-779d-4918-8a37-0638d7ce609c
@@ -231,6 +245,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: b0a0ac89-1c34-4a9a-8860-e38aec3a0af5
@@ -267,6 +283,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: d95dc3ab-9022-4211-8858-5b348561319b
@@ -301,6 +319,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: 00c10914-72c9-4523-82a4-84b5dae6179c
@@ -337,6 +357,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: a4bdf2bb-a273-4850-86e0-7913cf8570f3
@@ -389,6 +411,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
     taskid: 0c862efe-ff03-4705-8cb3-f6d26e402f0d
@@ -425,6 +449,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: a7256aa8-1be5-4e32-88ad-32ff6f5c8af6
@@ -461,6 +487,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: 9c83d737-b7d3-4bdb-83b6-ae49bee8c8ab
@@ -497,6 +525,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: 9d70346d-c418-4a54-80e7-2d6431fa896f
@@ -526,6 +556,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: fd9e35b8-3f6b-4bb4-87a8-9324c2923340
@@ -594,6 +626,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
     taskid: 6424dcb9-aba8-4a49-8367-da11da8e099c
@@ -627,6 +661,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
     taskid: 7fd36bac-ec55-45f9-89ee-15791555acc8
@@ -660,6 +696,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
     taskid: 86c09fb8-9318-4659-83c0-466b94aa768c
@@ -696,6 +734,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
     taskid: 95771430-7e5c-4f4b-8f17-7aef14e3b45d
@@ -730,6 +770,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
     taskid: adcdff80-eb70-4fb4-8ad5-6e71508e2af1
@@ -779,6 +821,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
     taskid: be3a62e1-eb9a-4618-8245-ebb1da34fd97
@@ -817,12 +861,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 84b37965-d05f-4a5f-86f7-db603a8c22f3
+    taskid: 2d2f6fca-40ad-4b81-8657-03dbc63983e1
     type: regular
     task:
-      id: 84b37965-d05f-4a5f-86f7-db603a8c22f3
+      id: 2d2f6fca-40ad-4b81-8657-03dbc63983e1
       version: -1
       name: umbrella-get-related-domains
       script: '|||umbrella-get-related-domains'
@@ -836,7 +882,7 @@ tasks:
       coOccurences:
         simple: "true"
       domain:
-        simple: walla.com
+        simple: walla.co.il
     separatecontext: false
     view: |-
       {
@@ -848,6 +894,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
     taskid: 248d5be6-fb80-41dc-8b87-aee3e8673bbc
@@ -877,6 +925,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
     taskid: dae7cdb9-af1c-4afc-8974-97fcd9115ca2
@@ -912,6 +962,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
     taskid: 81b1cd8f-a858-4510-836b-7200ea1e7ff0
@@ -941,6 +993,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
     taskid: ffeb645d-5c7f-4ae1-89f3-98e4029578a7
@@ -973,6 +1027,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
     taskid: 46d9e0fe-e1b9-48dc-883d-875a1406d431
@@ -1007,6 +1063,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
     taskid: 8c5db59b-19fa-4a43-8e3d-6fc01968545c
@@ -1045,12 +1103,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: 5475160f-bb68-4706-8af9-dc92b055a574
+    taskid: bbb02bc8-5e70-44e5-857c-95f762155102
     type: condition
     task:
-      id: 5475160f-bb68-4706-8af9-dc92b055a574
+      id: bbb02bc8-5e70-44e5-857c-95f762155102
       version: -1
       name: Test umbrella-get-related-domains Context
       type: condition
@@ -1070,7 +1130,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: walla.com
+              simple: walla.co.il
     view: |-
       {
         "position": {
@@ -1081,6 +1141,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
     taskid: 0c1b2cc2-903b-432d-8034-1c85245f6262
@@ -1117,6 +1179,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
     taskid: 1ac00612-b4d4-4417-8288-bb50963f23dd
@@ -1153,6 +1217,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
     taskid: 6f9ff36c-ab93-4150-8315-ce22d78d0858
@@ -1189,6 +1255,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "35":
     id: "35"
     taskid: bdfd9c58-eb90-4d1b-8a13-2676ef092716
@@ -1225,6 +1293,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
     taskid: 40b88832-c464-44af-81db-63aa2c657aa7
@@ -1269,6 +1339,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "37":
     id: "37"
     taskid: ec510acb-a04c-47b2-82bd-28e8afb7d466
@@ -1298,6 +1370,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "38":
     id: "38"
     taskid: 9732b4ec-02e1-42a0-831e-4c96f8132382
@@ -1327,6 +1401,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "39":
     id: "39"
     taskid: ee3c9c69-9247-495d-8780-f8eea2763d5a
@@ -1364,6 +1440,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "40":
     id: "40"
     taskid: 098ff0da-43ad-4a34-85bb-70d26ce3d048
@@ -1393,6 +1471,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "41":
     id: "41"
     taskid: 07103ccf-6183-4023-88b3-f2f8a16ee68e
@@ -1422,6 +1502,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "42":
     id: "42"
     taskid: b6c2366f-43fa-46e8-8c1d-edff546437b7
@@ -1451,6 +1533,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "43":
     id: "43"
     taskid: d72d59b2-95fc-4417-870e-090d3a0544be
@@ -1578,6 +1662,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "44":
     id: "44"
     taskid: ccf8f214-815c-4ede-80e1-b91a3bf05180
@@ -1603,6 +1689,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "45":
     id: "45"
     taskid: 4317a66e-a467-4975-81d6-dfba1bacdd89
@@ -1663,6 +1751,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "46":
     id: "46"
     taskid: 821c3602-70c0-4660-85f7-d5296a4a62dc
@@ -1707,6 +1797,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "47":
     id: "47"
     taskid: b0da84a1-e95e-47b4-8f96-dc11f4ad2fd7
@@ -1759,6 +1851,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "48":
     id: "48"
     taskid: f8f7eb90-c0b9-43eb-8297-c183c6d604c0
@@ -1795,6 +1889,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "49":
     id: "49"
     taskid: 897e6acb-7449-4829-8756-dd898bac260a
@@ -1831,6 +1927,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "50":
     id: "50"
     taskid: 69b2ed8c-61c5-42b3-8276-24d5510e4328
@@ -1864,6 +1962,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "51":
     id: "51"
     taskid: 4ea3f746-7025-41d8-8701-29ba2f7ac57d
@@ -1889,6 +1989,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "52":
     id: "52"
     taskid: dccdfc85-081c-4ee8-86a1-d69eb5b33580
@@ -1923,6 +2025,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "53":
     id: "53"
     taskid: d5f44f6b-b554-4f20-8a33-98a11f3b2e1f
@@ -1955,6 +2059,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "54":
     id: "54"
     taskid: 4b4beb2d-4cfa-42c9-809e-89849b42c3e6
@@ -2074,6 +2180,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "55":
     id: "55"
     taskid: 60f60aa6-20fb-45bc-8fec-4c97476ba7ea
@@ -2096,6 +2204,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},

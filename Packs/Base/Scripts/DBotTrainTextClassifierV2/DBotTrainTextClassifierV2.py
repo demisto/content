@@ -213,12 +213,12 @@ def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, deta
 
 def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing_labels_counter):
     labels_counter = Counter([x[DBOT_TAG_FIELD] for x in data])
-    labels_below_thresh = [l for l, count in labels_counter.items() if count < MIN_INCIDENTS_THRESHOLD]
+    labels_below_thresh = [label for label, count in labels_counter.items() if count < MIN_INCIDENTS_THRESHOLD]
     if len(labels_below_thresh) > 0:
         err = ['Minimum number of incidents per label required for training is {}.'.format(MIN_INCIDENTS_THRESHOLD)]
         err += ['The following labels have less than {} incidents: '.format(MIN_INCIDENTS_THRESHOLD)]
-        for l in labels_below_thresh:
-            err += ['- {}: {}'.format(l, str(labels_counter[l]))]
+        for label in labels_below_thresh:
+            err += ['- {}: {}'.format(label, str(labels_counter[label]))]
         err += ['Make sure that enough incidents exist in the environment per each of these labels.']
         missing_labels = ', '.join(missing_labels_counter.keys())
         err += ['The following labels were not mapped to any label in the labels mapping: {}.'.format(missing_labels)]
@@ -263,9 +263,9 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
             err += ['Please make sure that incidents of at least 2 labels exist in the environment.']
         else:
             err += ['The following labels were not mapped to any label in the labels mapping:']
-            err += [', '.join([l for l in missing_labels_counter])]
-            not_found_mapped_label = [l for l in labels_mapping if l not in exist_labels_counter
-                                      or exist_labels_counter[l] == 0]
+            err += [', '.join(missing_labels_counter)]
+            not_found_mapped_label = [label_map for label_map in labels_mapping if label_map not in exist_labels_counter
+                                      or exist_labels_counter[label_map] == 0]
             if len(not_found_mapped_label) > 0:
                 miss = ', '.join(not_found_mapped_label)
                 err += ['Notice that the following mapped labels were not found among all incidents: {}.'.format(miss)]

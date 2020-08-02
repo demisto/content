@@ -233,4 +233,5 @@ script: |-
 type: javascript
 tags: []
 enabled: true
+comment: ''
 scripttarget: 0

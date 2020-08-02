@@ -25,10 +25,12 @@ if THRESHOLD:
 domain_regex = r'(?i)(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)+[-A-Z0-9]+' \
                r'(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!:,.\(\);\*|]*[-A-Z0-9+&@#\/%=~_$\(\);\*|])?|' \
                r'\b[-A-Za-z0-9._%+\*|]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
+url_regex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)?(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?(?:(?:\/|\?)'\
+            r'[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
 REGEX_MAP = {
     'email': re.compile(emailRegex, regexFlags),
-    'url': re.compile(urlRegex, regexFlags),
+    'url': re.compile(url_regex, regexFlags),
     'md5': re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags),
     'sha1': re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags),
     'sha256': re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags),
@@ -630,7 +632,7 @@ def get_indicator_type_id(indicator_name: str) -> str:
         if indicator.get('name', '').lower() == indicator_name.lower():
             return indicator.get('id')
 
-    raise ValueError(f'Could not find indicator')
+    raise ValueError('Could not find indicator')
 
 
 def aggregate_search_results(indicators, default_indicator_type, generic_context=None):

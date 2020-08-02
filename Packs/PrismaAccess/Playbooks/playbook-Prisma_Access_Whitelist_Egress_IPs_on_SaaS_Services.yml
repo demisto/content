@@ -1,21 +1,21 @@
 id: Prisma Access Whitelist Egress IPs on SaaS Services
 version: -1
 name: Prisma Access Whitelist Egress IPs on SaaS Services
-description: Retrieve Prisma Access Egress IP for specific geographic Zones and populate
+description: Retrieve Prisma Access Egress IP for specific geographic zones and populate
   in security groups within cloud services.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: aa1a3fba-8ef4-4c29-8c6e-516e657e03cb
+    taskid: 01a1ecce-c3d8-46a8-84f9-0a7d6f214ecc
     type: start
     task:
-      id: aa1a3fba-8ef4-4c29-8c6e-516e657e03cb
+      id: 01a1ecce-c3d8-46a8-84f9-0a7d6f214ecc
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 200
+          "x": 60,
+          "y": 50
         }
       }
     note: false
@@ -34,16 +34,16 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 81cb5852-b5f9-4cd5-8ffb-58af2534ddba
+    taskid: c681a06b-367e-4964-84e0-e7bc8fd89855
     type: condition
     task:
-      id: 81cb5852-b5f9-4cd5-8ffb-58af2534ddba
+      id: c681a06b-367e-4964-84e0-e7bc8fd89855
       version: -1
       name: Is Prisma Access integration enabled?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "34"
@@ -83,8 +83,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 370
+          "x": 60,
+          "y": 195
         }
       }
     note: false
@@ -94,22 +94,34 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: f76c403a-a599-46ce-8e6d-4b5fe75319a5
-    type: title
+    taskid: 1b3817f1-b459-4fb5-8132-d7b0a8fa6405
+    type: regular
     task:
-      id: f76c403a-a599-46ce-8e6d-4b5fe75319a5
+      id: 1b3817f1-b459-4fb5-8132-d7b0a8fa6405
       version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
+      name: Close incident
+      description: Closes the incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 1010
+          "x": 50,
+          "y": 1100
         }
       }
     note: false
@@ -119,13 +131,13 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 98ca16b2-e6b5-49a6-88e7-6de69200df94
+    taskid: d38a143a-83e7-40e6-8b3e-50f86fe28732
     type: playbook
     task:
-      id: 98ca16b2-e6b5-49a6-88e7-6de69200df94
+      id: d38a143a-83e7-40e6-8b3e-50f86fe28732
       version: -1
       name: IP Whitelist - AWS Security Group
-      description: ""
+      description: Sync a list of IP addresses to an AWS Security Group.
       playbookName: IP Whitelist - AWS Security Group
       type: playbook
       iscommand: false
@@ -135,10 +147,11 @@ tasks:
       - "34"
     scriptarguments:
       IP:
-        simple: ${PrismaAccess.Egress.IP(["Cambodia","Argentina"].indexOf(val.Zone)>=0).Address}
+        simple: ${PrismaAccess.Egress.IP(["US West","Argentina"].indexOf(val.Zone)>=0).Address}
       IndicatorTagName:
         simple: AWS_Prisma_IP_Whitelist
-      SecurityGroupName: {}
+      SecurityGroupName:
+        simple: ${inputs.AWSSecurityGroupName}
     separatecontext: true
     loop:
       iscommand: false
@@ -148,8 +161,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 740
+          "x": -790,
+          "y": 915
         }
       }
     note: false
@@ -159,13 +172,13 @@ tasks:
     quietmode: 2
   "36":
     id: "36"
-    taskid: 08285a8e-9b30-456c-8563-e690c7907cb8
+    taskid: 3e5c16ff-bf04-4e03-8419-ace47c265b34
     type: playbook
     task:
-      id: 08285a8e-9b30-456c-8563-e690c7907cb8
+      id: 3e5c16ff-bf04-4e03-8419-ace47c265b34
       version: -1
       name: IP Whitelist - GCP Firewall
-      description: ""
+      description: Set a list of IP addresses in GCP firewall.
       playbookName: IP Whitelist - GCP Firewall
       type: playbook
       iscommand: false
@@ -174,9 +187,10 @@ tasks:
       '#none#':
       - "34"
     scriptarguments:
-      GCPFirewallName: {}
+      GCPFirewallName:
+        simple: ${inputs.GCPFirewallName}
       IP:
-        simple: ${PrismaAccess.Egress.IP(["Cambodia","Argentina"].indexOf(val.Zone)>=0).Address}
+        simple: ${PrismaAccess.Egress.IP(["US West","Argentina"].indexOf(val.Zone)>=0).Address}
       IndicatorTagName:
         simple: GCP_Prisma_IP_Whitelist
     separatecontext: true
@@ -188,8 +202,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 740
+          "x": -1290,
+          "y": 915
         }
       }
     note: false
@@ -199,10 +213,10 @@ tasks:
     quietmode: 2
   "40":
     id: "40"
-    taskid: 92b4a48f-be9d-40f9-8970-0883b0e6d0a6
+    taskid: fab04a1f-5cad-416b-878b-ec87a6fc6409
     type: regular
     task:
-      id: 92b4a48f-be9d-40f9-8970-0883b0e6d0a6
+      id: fab04a1f-5cad-416b-878b-ec87a6fc6409
       version: -1
       name: Prisma Access Egress IP Feed - Get IPs
       description: Gets indicators from the feed.
@@ -212,8 +226,9 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
-      - "36"
+      - "42"
+      - "43"
+      - "44"
     scriptarguments:
       limit:
         simple: "1000"
@@ -221,24 +236,213 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": 560
+          "x": -300,
+          "y": 380
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 2
+  "41":
+    id: "41"
+    taskid: 70af2aa4-8c91-4705-88ef-1deba78c1ee4
+    type: playbook
+    task:
+      id: 70af2aa4-8c91-4705-88ef-1deba78c1ee4
+      version: -1
+      name: Allow IP - Okta Zone
+      description: "Sync a list of IP addresses to the Okta Network Zone with the\
+        \ given ID. \nExisting IPs in the Okta Zone which are not in the input list\
+        \ will be removed and the indicator will be untagged in Cortex XSOAR.\nIDs can be\
+        \ retrieved  using !okta-list-zones. This playbook supports CIDR notation\
+        \ only (1.1.1.1/32) and not range notation (1.1.1.1-1.1.1.1)"
+      playbookName: Allow IP - Okta Zone
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      IP:
+        simple: ${PrismaAccess.Egress.IP(["US West","Argentina"].indexOf(val.Zone)>=0).Address}
+      IndicatorTagName:
+        simple: Prisma_Access_Okta_Zone
+      ZoneID:
+        simple: ${inputs.OktaZoneID}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "42":
+    id: "42"
+    taskid: e1d2c731-1efe-4786-880f-38d3644a3ced
+    type: condition
+    task:
+      id: e1d2c731-1efe-4786-880f-38d3644a3ced
+      version: -1
+      name: Is the Okta Zone ID input set?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.OktaZoneID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: c998f782-d62b-40eb-841f-f2771d701dd6
+    type: condition
+    task:
+      id: c998f782-d62b-40eb-841f-f2771d701dd6
+      version: -1
+      name: Is the AWS Security Group input set?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.AWSSecurityGroupName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -790,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: a8f01ce4-9ee3-4343-8a4d-5bab9c0f1867
+    type: condition
+    task:
+      id: a8f01ce4-9ee3-4343-8a4d-5bab9c0f1867
+      version: -1
+      name: Is the GCP Firewall Name input set?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.GCPFirewallName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: d265c933-47a8-4836-8304-a00a0d651ff2
+    type: title
+    task:
+      id: d265c933-47a8-4836-8304-a00a0d651ff2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "27_34_#default#": 0.11,
+      "42_34_#default#": 0.25,
+      "43_34_#default#": 0.15,
+      "44_34_#default#": 0.1
+    },
     "paper": {
       "dimensions": {
-        "height": 875,
-        "width": 1100,
-        "x": 40,
-        "y": 200
+        "height": 1265,
+        "width": 1730,
+        "x": -1290,
+        "y": 50
       }
     }
   }
@@ -250,7 +454,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -258,13 +462,27 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
+- key: AWSSecurityGroupName
+  value: {}
+  required: false
+  description: Name of the AWS Security Group to update with the IPs.
+  playbookInputQuery:
+- key: GCPFirewallName
+  value: {}
+  required: false
+  description: Name of the GCP Firewall to update with the IPs.
+  playbookInputQuery:
+- key: OktaZoneID
+  value: {}
+  required: false
+  description: ID of the Okta Zone to update. Use !okta-list-zones to obtain
+  playbookInputQuery:
 outputs: []
-quiet: true
 fromversion: 5.5.0
 tests:
 - No tests

@@ -34,7 +34,7 @@ type: python
 subtype: python2
 tags:
 - lightcyber
-comment: Change a host comment in LightCyber Magna.
+comment: This script is deprecated. LightCyber Magna is no longer available.
 args:
 - name: name
   default: true

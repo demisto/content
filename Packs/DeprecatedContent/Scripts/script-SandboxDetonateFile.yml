@@ -178,7 +178,7 @@ tags:
 - sandbox
 - enhancement
 - file
-comment: Detonate the file in available sandboxes.
+comment: This script is deprecated. Use the available generic file detonation playbooks instead.
 enabled: true
 args:
 - name: entryID

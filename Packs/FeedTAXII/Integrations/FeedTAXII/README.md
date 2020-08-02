@@ -11,7 +11,7 @@ The TAXII Feed integration ingests indicator feeds from TAXII 1.x servers.
     * __Reliability__: Reliability of the feed.
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __Discovery Service__: TAXII discovery service endpoint. For example, http://hailataxii.com/taxii-discovery-service
+    * __Discovery Service__: TAXII discovery service endpoint. For example: `http://hailataxii.com/taxii-discovery-service`
     * __Collection__: Collection name to fetch indicators from.
     * __Subscription ID__: Subscription ID for the TAXII consumer.
     * __Username__: Username/Password (if required)

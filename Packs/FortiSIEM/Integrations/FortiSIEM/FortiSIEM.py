@@ -132,15 +132,30 @@ def clear_incident(incident_id, reason):
 @logger
 def getEventsByIncident(incident_id, max_results, extended_data, max_wait_time):
     session = login()
-    response = session.get(HOST + '/phoenix/rest/h5/report/triggerEvent?rawMsg=' + incident_id)
-    validateSuccessfulResponse(response, "triggering events report")
+    # response = session.get(HOST + '/phoenix/rest/h5/report/triggerEvent?rawMsg=' + incident_id)
+    # validateSuccessfulResponse(response, "triggering events report")
+    #
+    # try:
+    #     jsonRes = response.json()
+    #     queryData = jsonRes[0]['right']
+    # except (ValueError, KeyError):
+    #     return_error("Got wrong response format when triggering events report. "
+    #                  "Expected a json array but got:\n" + response.text)
 
-    try:
-        jsonRes = response.json()
-        queryData = jsonRes[0]['right']
-    except (ValueError, KeyError):
-        return_error("Got wrong response format when triggering events report. "
-                     "Expected a json array but got:\n" + response.text)
+    queryData = {
+        "isReportService": True,
+        "selectClause": "eventSeverityCat,incidentLastSeen,eventName,incidentRptDevName,incidentSrc,incidentTarget,"
+                        "incidentDetail,incidentStatus,incidentReso,incidentId,eventType,incidentTicketStatus,"
+                        "bizService,count,incidentClearedTime,incidentTicketUser,incidentNotiRecipients,"
+                        "incidentClearedReason,incidentComments,eventSeverity,incidentFirstSeen,incidentRptIp,"
+                        "incidentTicketId,customer,incidentNotiStatus,incidentClearedUser,incidentExtUser,"
+                        "incidentExtClearedTime,incidentExtResoTime,incidentExtTicketId,incidentExtTicketState,"
+                        "incidentExtTicketType,incidentViewStatus,rawEventMsg,phIncidentCategory,phSubIncidentCategory,"
+                        "incidentRptDevStatus",
+        "eventFilters": [{"name": "Filter_OVERALL_STATUS",
+                          "singleConstraint": "(phEventCategory = 1) AND incidentId = {}".format(incident_id)}],
+        "hints": "IgnoreTime",
+    }
 
     return getEventsByQuery(session, queryData, max_results, extended_data, max_wait_time,
                             "FortiSIEM events for Incident " + incident_id, incident_id=incident_id)

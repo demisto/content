@@ -19,7 +19,7 @@ script: |2
 type: python
 tags:
 - Amazon Web Services
-comment: create ec2 aws instances from image
+comment: This script is deprecated. Use the AWS-EC2 integration instead.
 system: true
 args:
 - default: true

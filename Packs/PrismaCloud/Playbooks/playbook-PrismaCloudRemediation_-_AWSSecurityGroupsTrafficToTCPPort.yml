@@ -141,6 +141,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "3":
     id: "3"
     taskid: 940ce5be-bfa7-4d57-8dd2-3ea599939d63
