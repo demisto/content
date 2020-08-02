@@ -1,0 +1,14 @@
+comment: Create widget for the largest investigations
+commonfields:
+  id: LargestInvestigationsWidget
+  version: -1
+enabled: false
+name: LargestInvestigationsWidget
+script: '-'
+subtype: python3
+system: false
+tags:
+- widget
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.3.9324
