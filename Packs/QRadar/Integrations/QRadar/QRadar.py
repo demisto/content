@@ -517,9 +517,7 @@ def fetch_incidents():
     raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
     demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
     if len(raw_offenses) >= OFFENSES_PER_CALL:
-        last_offense_pos = find_last_page_pos(fetch_query)
-        raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos),
-                                    _filter=fetch_query)
+        raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
     raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
     if full_enrich:
@@ -531,30 +529,6 @@ def fetch_incidents():
         incidents.append(create_incident_from_offense(offense))
     demisto.setLastRun({'id': offense_id})
     return incidents
-
-
-# Finds the last page position for QRadar query that receives a range parameter
-def find_last_page_pos(fetch_query):
-    # Make sure it wasn't a fluke we have exactly OFFENSES_PER_CALL results
-    if len(get_offenses(_range='{0}-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)) == 0:
-        return OFFENSES_PER_CALL - 1
-    # Search up until we don't have any more results
-    pos = OFFENSES_PER_CALL * 2
-    while len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetch_query)) == 1:
-        pos = pos * 2
-    # Binary search the gap from the las step
-    high = pos
-    low = pos / 2
-    while high > low + 1:
-        pos = (high + low) / 2
-        if len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetch_query)) == 1:
-            # we still have results, raise the bar
-            low = pos
-        else:
-            # we're too high, lower the bar
-            high = pos
-    # low holds the last pos of the list
-    return low
 
 
 # Creates incidents from offense
