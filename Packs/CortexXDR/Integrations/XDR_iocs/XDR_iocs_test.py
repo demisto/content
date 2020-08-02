@@ -504,6 +504,52 @@ class TestDemistoIOCToXDR:
         assert output == {}, 'demisto_ioc_to_xdr({})\n\treturns: ' + str(d_sort(output)) + '\n\tinstead: {}'
         assert warnings.call_args.args[0] == "unexpected IOC format in key: 'value', {}"
 
+    data_test_demisto_ioc_to_xdr = [
+        (
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
+             'type': 'IP'},
+            {},
+            'Cortex XDR'
+        ),
+        (
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
+             'type': 'IP'},
+            {'tag': 'tag1'},
+            'tag1'
+        ),
+        (
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
+             'type': 'IP'},
+            {'feedTags': 'tag2'},
+            'tag2'
+        )
+    ]
+
+    @pytest.mark.parametrize('demisto_ioc, xdr_ioc, param_value, expected', data_test_demisto_ioc_to_xdr)
+    def test_feed_tags(self, demisto_ioc, xdr_ioc, param_value, expected, mocker):
+        """
+            Given:
+                - IOC in XDR format.
+
+            Then:
+                - IOC in demisto format.
+        """
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'params', return_value=param_value)
+        mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        outputs = mocker.patch.object(demisto, 'createIndicators')
+        Client.tag = demisto.params().get('feedTags', demisto.params().get('tag', Client.tag))
+        client = Client({'url': 'yana'})
+        xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
+        mocker.patch.object(Client, 'http_request', return_value=xdr_res)
+        get_changes(client)
+        output = outputs.call_args.args[0]
+        assert output[0]['fields']['tags'] == expected
+
 
 class TestXDRIOCToDemisto:
 
@@ -680,3 +726,6 @@ class TestCommands:
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
         xdr_ioc_to_timeline(list(map(lambda x: str(x[0].get('RULE_INDICATOR')), TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto)))    # noqa: E501
+
+
+

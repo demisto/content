@@ -422,7 +422,7 @@ def main():
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
     Client.query = params.get('query', Client.query)
-    Client.tag = params.get('tag', Client.tag) if params.get('tag', Client.tag) else params.get('feedTags', Client.tag)
+    Client.tag = params.get('feedTags', params.get('tag', Client.tag))
     client = Client(params)
     commands = {
         'test-module': module_test,
