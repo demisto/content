@@ -956,7 +956,7 @@ class TestCommandResults:
             outputs=[]
         )
         context = res.to_context()
-        assert {'FoundIndicators(val.value == obj.value)': []} == context.get('EntryContext')
+        assert not context.get('EntryContext')
 
     def test_return_command_results(self, clear_version_cache):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
