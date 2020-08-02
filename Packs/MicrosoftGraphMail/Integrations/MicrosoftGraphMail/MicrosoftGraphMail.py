@@ -1054,7 +1054,7 @@ def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: b
     mails_list = list()
     if isinstance(raw_response, list):  # response from list_emails_command
         for page in raw_response:
-            # raw_response can be a list containing multiple pages or one page
+            # raw_response is a list containing multiple pages or one page
             # if value is not empty, there are emails in the page
             value = page.get('value')
             if value:
@@ -1157,6 +1157,7 @@ def get_message_command(client: MsGraphClient, args):
     get_body = args.get('get_body') == 'true'
     odata = args.get('odata')
     raw_response = client.get_message(user_id, message_id, folder_id, odata=odata)
+    # todo: delete debug line
     demisto.debug(f'\n\n\n\n\nGET_MESSAGE_RAW_RESPONSE: {raw_response}\n\n\n\n\n')
     mail_context = build_mail_object(raw_response, user_id=user_id, get_body=get_body)
     entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
