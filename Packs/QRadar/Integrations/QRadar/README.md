@@ -32,6 +32,7 @@
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Fetch incidents</strong></li>
 <li><strong>Incident type</strong></li>
+<li><strong>Full Incident Enrichment</strong> - when fetching incidents the integration will limit the number of requests it's sending QRadar. As a side effect, this will make the following fields contain their QRadar ids, and not values: source_address_ids, local_destination_address_ids.
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>

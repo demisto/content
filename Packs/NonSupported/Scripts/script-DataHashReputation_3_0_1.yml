@@ -1,6 +1,6 @@
 commonfields:
   id: DataHashReputation
-  version: 1
+  version: -1
 name: DataHashReputation
 script: |-
   var score = -1;

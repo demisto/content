@@ -3,7 +3,7 @@ version: -1
 name: DeDup incidents - ML
 fromversion: "3.5.0"
 description: |+
-  Check for duplicate incidents for the current incident, and close it if any duplicate has been found by machine-learning  find duplicates automation.
+  DEPRECATED. Check for duplicate incidents for the current incident, and close it if any duplicate has been found by machine-learning  find duplicates automation.
 
 starttaskid: "0"
 tasks:

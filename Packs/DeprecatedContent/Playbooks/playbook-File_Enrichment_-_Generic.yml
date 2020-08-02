@@ -3,7 +3,7 @@ version: -1
 name: File Enrichment - Generic
 fromversion: 3.6.0
 description: |-
-  Enrich a file using one or more integrations.
+  DEPRECATED. Use "File Enrichment - Generic v2" playbook instead. Enrich a file using one or more integrations.
 
   File enrichment includes:
   * File history

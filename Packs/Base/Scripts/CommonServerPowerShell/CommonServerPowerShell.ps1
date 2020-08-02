@@ -280,8 +280,12 @@ class DemistoObject {
 }
 
 [DemistoObject]$demisto = [DemistoObject]::New()
-function global:Write-Host($UserInput) { $demisto.Log($UserInput) | Out-Null }
-function global:Write-Output($UserInput) { $demisto.Log($UserInput) | Out-Null }
+
+function global:Write-HostToLog($UserInput) { $demisto.Log($UserInput) | Out-Null }
+# we override Write-Host with a function which writes to the demisto.Log.
+# Incase there is need to undo this Alias, the integration/script can run the following command
+# Remove-Item 'Alias:Write-Host' -Force
+Set-Alias -Name 'Write-Host' -Value 'Write-HostToLog' -Scope Global
 
 # -----------------------------------------------------------------------
 # Utility Functions
@@ -363,7 +367,7 @@ raw response from the 3rd party service (optional)
 .OUTPUTS
 The entry object returned to the server
 #>
-function ReturnOutputs([string]$ReadableOutput, [hashtable]$Outputs, [hashtable]$RawResponse) {
+function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawResponse) {
     $entry = @{
         Type           = [EntryTypes]::note;
         ContentsFormat = [EntryFormats]::json.ToString();

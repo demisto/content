@@ -328,7 +328,7 @@ def get_indicator_fields(line, url, feed_tags: list, client: Client):
     return attributes, value
 
 
-def fetch_indicators_command(client, feed_tags, itype, **kwargs):
+def fetch_indicators_command(client, feed_tags, itype, auto_detect, **kwargs):
     iterators = client.build_iterator(**kwargs)
     indicators = []
     for iterator in iterators:
@@ -343,10 +343,11 @@ def fetch_indicators_command(client, feed_tags, itype, **kwargs):
                     if 'firstseenbysource' in attributes.keys():
                         attributes['firstseenbysource'] = datestring_to_millisecond_timestamp(
                             attributes['firstseenbysource'])
-
+                    indicator_type = determine_indicator_type(
+                        client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
                     indicator_data = {
                         "value": value,
-                        "type": client.feed_url_to_config.get(url, {}).get('indicator_type', itype),
+                        "type": indicator_type,
                         "rawJSON": attributes,
                     }
 
@@ -358,11 +359,30 @@ def fetch_indicators_command(client, feed_tags, itype, **kwargs):
     return indicators
 
 
+def determine_indicator_type(indicator_type, default_indicator_type, auto_detect, value):
+    """
+    Detect the indicator type of the given value.
+    Args:
+        indicator_type: (str) Indicator type given in the config.
+        default_indicator_type: Indicator type which was inserted as a param of the integration by user.
+        auto_detect: (bool) True whether auto detection of the indicator type is wanted.
+        value: (str) The value which we'd like to get indicator type of.
+    Returns:
+        Str which stands for the indicator type after detection.
+    """
+    if auto_detect:
+        indicator_type = auto_detect_indicator_type(value)
+    if not indicator_type:
+        indicator_type = default_indicator_type
+    return indicator_type
+
+
 def get_indicators_command(client: Client, args):
     itype = args.get('indicator_type', client.indicator_type)
     limit = int(args.get('limit'))
     feed_tags = args.get('feedTags')
-    indicators_list = fetch_indicators_command(client, feed_tags, itype)[:limit]
+    auto_detect = demisto.params().get('auto_detect_type')
+    indicators_list = fetch_indicators_command(client, feed_tags, itype, auto_detect)[:limit]
     entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
     return hr, {}, indicators_list
@@ -402,7 +422,8 @@ def feed_main(feed_name, params=None, prefix=''):
     }
     try:
         if command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, feed_tags, params.get('indicator_type'))
+            indicators = fetch_indicators_command(client, feed_tags, params.get('indicator_type'),
+                                                  params.get('auto_detect_type'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)

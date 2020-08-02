@@ -1,6 +1,6 @@
 commonfields:
   id: VolApihooks
-  version: 1
+  version: -1
 name: VolApihooks
 script: |-
   var cmdline = 'apihooks -p ' + args.pid;

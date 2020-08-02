@@ -3,7 +3,7 @@ version: -1
 name: Block IP - Generic
 fromversion: 4.0.0
 description: |-
-  This playbook blocks malicious IPs using all integrations that you have enabled.
+  DEPRECATED. Use "Block IP - Generic v2" playbook instead. This playbook blocks malicious IPs using all integrations that you have enabled.
 
   Supported integrations for this playbook:
   * Check Point Firewall

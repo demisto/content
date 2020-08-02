@@ -1030,12 +1030,10 @@ def request_dpath(alert_id):
     if res.get('decodingPaths'):
         dpath = res.get('decodingPaths')[0]
         link_path = dpath.get('linkPath')
-        encoded_path = urllib.quote(link_path)
-
     else:
-        encoded_path = None
+        raise Exception('Could not find the file path.')
 
-    return encoded_path
+    return link_path
 
 
 def download_malware_file_request(alert_id):

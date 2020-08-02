@@ -47,7 +47,7 @@ tags:
 - threat-intel
 - cylance
 - file
-comment: Retrieve file reputation and upload the file if required for analysis
+comment: This script is deprecated. Use the Cylance integration instead.
 system: true
 deprecated: true
 args:

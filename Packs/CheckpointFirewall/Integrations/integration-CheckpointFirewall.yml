@@ -835,8 +835,9 @@ script:
       description: Whether to block traffic "to" or "from" the IPs, or "both". Default     is
         "both".
     - name: rulename
-      required: true
+      required: false
       description: Base name for added rules inside checkpoint db
+      deprecated: true
     - name: ipname
       required: true
       description: Base name for added ip/hosts inside checkpoint db
@@ -927,10 +928,7 @@ script:
       type: string
     description: Block one or more IP addresses using Checkpoint Firewall
   - name: checkpoint
-    arguments:
-    - name: command
-      required: true
-      description: The command to execute.
+    arguments: []
     description: Use Check Point's Management API (requires management server R80
       or later). Specifying 'command'=<API command> is mandatory
   - name: checkpoint-delete-rule
@@ -946,5 +944,4 @@ script:
     description: Delete rule from firewall
   runonce: false
 tests:
-- blockip_test_playbook
 - CheckpointFW-test

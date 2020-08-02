@@ -1,7 +1,6 @@
 ## [Unreleased]
 -
 
-
 ## [20.3.4] - 2020-03-30
 Fixed an issue where *DisplayName* context path was misspelled in the ***okta-search*** command outputs.
 

@@ -127,8 +127,13 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
         for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
             if pack.name in IGNORED_FILES:
                 continue
+
+            if gcp_path == BUILD_GCP_PATH:
+                pack_prefix = os.path.join(gcp_path, branch_name, circle_build, 'content', 'packs', pack.name)
+            else:
+                pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
+
             # Search for the pack in the bucket
-            pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
             blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
             if blobs:
                 blob = get_latest_pack_zip_from_blob(pack.name, blobs)
@@ -142,6 +147,9 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
             else:
                 print_warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
 
+    if not zipped_packs:
+        print_error('Did not find any pack to download from GCP.')
+        sys.exit(1)
     return zipped_packs
 
 

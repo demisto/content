@@ -161,7 +161,7 @@ def test_parse_key_to_context_exclude_keys_from_list():
             download_file_command,
             {"object_type": "drives", "object_type_id": "123", "item_id": "232"}, File,
             commands_expected_results["download_file"]
-      ),
+        ),
     ],
 )  # noqa: E124
 def test_download_file(command, args, response, expected_result, mocker):

@@ -223,6 +223,36 @@ tasks:
                 value:
                   simple: NotBusinessPartnerUrl
                 iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: DomainsNotApproved
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: DomainsNotResolvedByWhois
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: DomainsNotProcessed
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: NewDomains
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: NotNewDomains
+                iscontext: true
     separatecontext: false
     view: |-
       {
@@ -253,6 +283,7 @@ tasks:
       - "11"
       "yes":
       - "25"
+      - "28"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -569,7 +600,14 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
+    scriptarguments:
+      BusinessPartnersDomainsListName: {}
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -679,14 +717,54 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "28":
+    id: "28"
+    taskid: 3d8f8743-3487-475f-8c37-3efb34fca990
+    type: playbook
+    task:
+      id: 3d8f8743-3487-475f-8c37-3efb34fca990
+      version: -1
+      name: TIM - Process Domains With Whois
+      description: This playbook uses several sub playbooks to process and tag indicators
+        based on the results of the Whois tool.
+      playbookName: TIM - Process Domains With Whois
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      CheckForWhoisDomainAgeCreation:
+        simple: "True"
+      CheckForWhoisRegistrant:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -2740,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 955,
-        "width": 4930,
-        "x": -2660,
+        "width": 5010,
+        "x": -2740,
         "y": -20
       }
     }

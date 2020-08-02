@@ -1,8 +1,6 @@
-## Overview
----
-
 Use the Claroty CTD integration to manage assets and alerts.
 This integration was integrated and tested with version 4.0.1 of Claroty
+
 ## Claroty Playbook
 Playbook 1: OT Asset Discovery
 Maintaining an accurate enterprise asset database is extremely difficult,
@@ -537,16 +535,3 @@ Admin user.
 |AlertType|AlertTypeID|Category|Description|Indicator|NetworkID|RelatedAssets|Resolved|ResourceID|Severity|
 |---|---|---|---|---|---|---|---|---|---|
 | PortScan | 28 | Integrity | UDP Port scan: Asset 192.168.1.10 sent probe packets to 192.168.1.25 IP address on different ports | Alert ID - 75<br/>Description - This Event does not currently support Alert Indicators<br/>Points - 100<br/><br/> | 1 | {'AssetID': 47, 'Name': '192.168.1.10', 'InsightName': None, 'Vendor': 'Hewlett Packard', 'Criticality': 'Low', 'AssetType': 'Endpoint', 'LastSeen': None, 'IP': None, 'MAC': ['00:1A:4B:6A:CE:FE'], 'VirtualZone': 'Endpoint: Other', 'ClassType': 'IT', 'SiteName': 'site-1', 'SiteID': 1, 'WasParsed': None, 'RiskLevel': 0, 'FirmwareVersion': None, 'ResourceID': '47-1'},<br/>{'AssetID': 48, 'Name': '192.168.1.25', 'InsightName': None, 'Vendor': 'VMware', 'Criticality': 'Low', 'AssetType': 'Endpoint', 'LastSeen': None, 'IP': None, 'MAC': ['00:0C:29:86:C8:36'], 'VirtualZone': 'Endpoint: Other', 'ClassType': 'IT', 'SiteName': 'site-1', 'SiteID': 1, 'WasParsed': None, 'RiskLevel': 0, 'FirmwareVersion': None, 'ResourceID': '48-1'} | false | 75-1 | Critical |
-
-
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
-
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):

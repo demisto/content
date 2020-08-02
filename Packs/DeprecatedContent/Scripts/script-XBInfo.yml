@@ -28,7 +28,7 @@ tags:
 - server
 - analytics
 - exabeam
-comment: Retrieve global Exabeam info about number of users, assets and events
+comment: This script is deprecated. Use the Exabeam integration instead.
 system: true
 scripttarget: 0
 deprecated: true

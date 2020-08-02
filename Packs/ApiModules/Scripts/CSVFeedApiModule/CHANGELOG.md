@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added support for auto detection of indicator types.
 
 ## [20.4.1] - 2020-04-29
 Fixed an issue where *firstseenbysource* and *lastseenbysource* fields were not formatted correctly.

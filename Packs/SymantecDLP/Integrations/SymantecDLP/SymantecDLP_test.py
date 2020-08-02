@@ -1,7 +1,8 @@
-from pytest import raises
+from pytest import raises, skip
 from CommonServerPython import *
 from dateutil.parser import parse
 from SymantecDLP import main, get_cache_path
+import os
 
 
 def test_get_incident_attributes():
@@ -251,6 +252,18 @@ def test_get_cache_path():
     f = open(test_path, mode='w')
     f.close()
     os.remove(test_path)
+
+
+def test_get_cache_path_static():
+    # make sure static cache is copied
+    if not os.getenv('DOCKER_IMAGE', None):
+        skip('Skipping test as DOCKER_IMAGE not set. This test is meant to run within docker: demisto/zeep:1.0.0.8897 and above')
+    assert 'cache.db' in os.getenv('ZEEP_STATIC_CACHE_DB')
+    path = get_cache_path()
+    assert path.endswith('cache.db')
+    assert os.path.isfile(path)
+    f = open(path, mode='r+b')
+    f.close()
 
 
 def test_self_signed_insecure_ssl(mocker):

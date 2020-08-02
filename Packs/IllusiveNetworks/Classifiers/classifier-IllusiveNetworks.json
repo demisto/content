@@ -1,0 +1,27 @@
+{
+    "defaultIncidentType": "Illusive Networks Incident",
+    "id": "Illusive Networks",
+    "name": "Illusive Networks - Classifier",
+    "type": "classification",
+    "description": "Classifies Illusive Networks incidents.",
+    "keyTypeMap": {
+        "DECEPTION": "Illusive Networks Incident",
+        "DECOY_SUSPICIOUS_ACTIVITY": "Illusive Networks Incident",
+        "EXTERNAL": "Illusive Networks Incident",
+        "FAILED_UI_LOGIN": "Illusive Networks Incident",
+        "MALICIOUS_DNS": "Illusive Networks Incident",
+        "MALICIOUS_PROCESS": "Illusive Networks Incident",
+        "TRAP_FAILED_LOGIN": "Illusive Networks Incident"
+    },
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "incidentTypes",
+            "transformers": []
+        },
+        "simple": ""
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

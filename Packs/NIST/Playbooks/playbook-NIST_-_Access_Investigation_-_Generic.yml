@@ -32,7 +32,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -1060
+          "y": -1200
         }
       }
     note: false
@@ -86,7 +86,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -605
+          "y": -745
         }
       }
     note: false
@@ -111,8 +111,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1100,
-          "y": -450
+          "x": 1120,
+          "y": -590
         }
       }
     note: false
@@ -138,7 +138,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -450
+          "y": -590
         }
       }
     note: false
@@ -163,8 +163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": -450
+          "x": 220,
+          "y": -590
         }
       }
     note: false
@@ -210,7 +210,7 @@ tasks:
       '#default#':
       - "4"
       "yes":
-      - "19"
+      - "80"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -225,8 +225,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": -140
+          "x": 400,
+          "y": -280
         }
       }
     note: false
@@ -272,7 +272,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
+          "x": -150,
           "y": 60
         }
       }
@@ -886,7 +886,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -920
+          "y": -1060
         }
       }
     note: false
@@ -985,7 +985,7 @@ tasks:
       brand: Active Directory Query v2
     nexttasks:
       '#none#':
-      - "37"
+      - "41"
     scriptarguments:
       base-dn: {}
       username:
@@ -995,8 +995,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 2510
+          "x": -640,
+          "y": 2680
         }
       }
     note: false
@@ -1017,8 +1017,8 @@ tasks:
     nexttasks:
       "No":
       - "39"
-      "Yes":
-      - "33"
+      "yes":
+      - "79"
     separatecontext: false
     view: |-
       {
@@ -1055,7 +1055,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": -180,
           "y": 2680
         }
       }
@@ -1450,8 +1450,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": -310
+          "x": 220,
+          "y": -450
         }
       }
     note: false
@@ -1809,7 +1809,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -780
+          "y": -920
         }
       }
     note: false
@@ -2690,7 +2690,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -310
+          "y": -450
         }
       }
     note: false
@@ -2727,8 +2727,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1100,
-          "y": -310
+          "x": 1120,
+          "y": -450
         }
       }
     note: false
@@ -2797,18 +2797,131 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: 4e8b9ed7-c570-4f71-8cb1-9fe169de94b0
+    type: condition
+    task:
+      id: 4e8b9ed7-c570-4f71-8cb1-9fe169de94b0
+      version: -1
+      name: Is Active Directory enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "37"
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: 5bf0e713-5860-4eda-8160-431e1e45305c
+    type: condition
+    task:
+      id: 5bf0e713-5860-4eda-8160-431e1e45305c
+      version: -1
+      name: Is Active Directory enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
-    "linkLabelsPosition": {
-      "17_19_yes": 0.61,
-      "17_4_#default#": 0.6
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5475,
-        "width": 1420,
-        "x": 60,
-        "y": -1060
+        "height": 5615,
+        "width": 2140,
+        "x": -640,
+        "y": -1200
       }
     }
   }

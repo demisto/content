@@ -23,15 +23,9 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedTypes": [
-        "Malware",
-        "Traps"
-    ],
-    "systemAssociatedTypes": [
-        "Malware",
-        "Traps"
-    ],
-    "associatedToAll": false,
+    "associatedTypes": [],
+    "systemAssociatedTypes": null,
+    "associatedToAll": true,
     "unmapped": false,
     "unsearchable": false
 }

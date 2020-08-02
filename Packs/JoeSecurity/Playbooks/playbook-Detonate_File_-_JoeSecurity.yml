@@ -509,3 +509,4 @@ outputs:
   type: unknown
 tests:
 - Detonate File - Generic Test
+- JoeSecurityTestDetonation

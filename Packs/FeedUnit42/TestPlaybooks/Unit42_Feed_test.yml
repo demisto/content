@@ -1,0 +1,107 @@
+id: Unit42 Feed - Test
+version: -1
+fromversion: 5.5.0
+name: Unit42 Feed - Test
+description: Testing Unit42 Feed
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2d597788-c6f5-4f0f-87d0-14c80e37691f
+    type: start
+    task:
+      id: 2d597788-c6f5-4f0f-87d0-14c80e37691f
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 2a74f443-3c49-42c7-8971-ff040ed7c37e
+    type: regular
+    task:
+      id: 2a74f443-3c49-42c7-8971-ff040ed7c37e
+      version: -1
+      name: unit42-get-indicators
+      description: Retreives a limited number of the indicators.
+      script: '|||unit42-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      execution-timeout:
+        simple: "500"
+      limit:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2b9a2c3a-5d43-4f40-8b33-a6679c2081c5
+    type: title
+    task:
+      id: 2b9a2c3a-5d43-4f40-8b33-a6679c2081c5
+      version: -1
+      name: done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

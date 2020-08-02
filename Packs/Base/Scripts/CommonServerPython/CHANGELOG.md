@@ -1,6 +1,7 @@
 ## [Unreleased]
   - Added **Endpoint** Common class.
   - Added a new function **auto_detect_indicator_type** which detects indicators. 
+  - Fixed an issue where the **argToList** function did not behave as expected. This fix is breaking backward compatibility.
 
 ## [20.5.2] - 2020-05-26
   - Fixed IPv4 regex to only catch IPv4 addresses, not CIDR ranges.

@@ -2,28 +2,17 @@
 <div class="cl-preview-section">
 <p>Use the Microsoft Graph integration to connect to and interact with user objects on Microsoft Platforms. This integration was integrated and tested with Microsoft Graph v1.0.</p>
 </div>
+
+<h2>Authentication</h2>
+For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
+<h3>Required Permissions</h3>
+<li>Directory.Read.All - Delegated</li>
+<li>User.ReadWrite.All - Application</li>
+<li>User.Read - Delegated</li>
+
 <div class="cl-preview-section">
-<h2>Generate Authentication Parameters</h2>
-<p>To use this integration, you have to grant access to Demisto from Microsoft Graph.</p>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Microsoft Graph User.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.</li>
-<li>Click the question mark button in the upper-right corner and read the information, and click the link.</li>
-<li>Click the <strong>Start Authorization Process</strong> button.</li>
-<li>Log in with Microsoft admin user credentials.</li>
-<li>Authorize Demisto application to access data.</li>
-<li>When you are redirected, copy the parameter values, which you will need when configuring the integration instance in Demisto.
-<ul>
-<li>ID</li>
-<li>Key</li>
-<li>Token</li>
-</ul>
-</li>
-</ol>
-</div>
-<div class="cl-preview-section">
-<h2 id="configure-microsoft-graph-user-on-demisto">Configure Microsoft Graph User on Demisto</h2>
+<h2 id="configure-microsoft-graph-user-on-demisto">Configure Microsoft Graph User on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -44,21 +33,6 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 </div>
-
-<h2>Use a Self-Deployed Azure Application</h2>
-<p>To use a self-configured Azure application, a need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following Microsoft article:
-<a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app</a></p>
-<p>The Tenant ID, Client ID, and Client secret are required for the integration.
-To configure the integration in Demisto to use the application, place those parameters in the following manner (instead of how you received them from the admin consent in the current doc):
-<p>ID - Client ID<br>
-Token - Tenant ID<br>
-Key - Client Secret</p></p>
-
-<h2>Required Permissions in the MS Graph User App:</h2>
-<li>Directory.Read.All - Delegated</li>
-<li>User.ReadWrite.All - Application</li>
-<li>User.Read - Delegated</li>
-
 
 <div class="cl-preview-section">
 <h2 id="commands">Commands</h2>

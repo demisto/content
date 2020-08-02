@@ -3,189 +3,276 @@ version: -1
 name: Google Safe Browsing Test
 description: Checking Google Safe Browsing integration by running it on both malicious
   and non-malicious URLs and checking the results
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: 796e6d3d-218d-4bf4-80fe-1c08c23e11e5
+  "0":
+    id: "0"
+    taskid: f93a7db8-bfac-4d8b-8413-7c5d0889807b
     type: start
     task:
-      id: 796e6d3d-218d-4bf4-80fe-1c08c23e11e5
+      id: f93a7db8-bfac-4d8b-8413-7c5d0889807b
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
-  '2':
-    id: '2'
-    taskid: ae2d2096-bb32-4588-8888-c0546ec9c7bf
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4e232e48-e906-416f-8a28-74fba599e4b0
     type: regular
     task:
-      id: ae2d2096-bb32-4588-8888-c0546ec9c7bf
+      id: 4e232e48-e906-416f-8a28-74fba599e4b0
       version: -1
       name: Check non-malicious URL
       script: GoogleSafeBrowsing|||url
       type: regular
       iscommand: true
       brand: GoogleSafeBrowsing
-      description: ''
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       url:
         simple: ${inputs.Non malicious URL}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 185\n  }\n}"
-  '3':
-    id: '3'
-    taskid: d6749a43-d9bb-43d4-8e38-627148734eea
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 2e9c2edc-4fa6-4fc3-853c-a381138e2080
     type: condition
     task:
-      id: d6749a43-d9bb-43d4-8e38-627148734eea
+      id: 2e9c2edc-4fa6-4fc3-853c-a381138e2080
       version: -1
       name: Check if found malicious
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '4'
-      yes:
-      - '9'
+      - "4"
+      "yes":
+      - "9"
     scriptarguments:
       value: {}
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               simple: URL.Malicious
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 346\n  }\n}"
-  '4':
-    id: '4'
-    taskid: 4c5718ec-0a32-4a33-8980-2eeffb9ad1d4
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 0c351e62-60a1-43e1-881c-bd28c939e43a
     type: regular
     task:
-      id: 4c5718ec-0a32-4a33-8980-2eeffb9ad1d4
+      id: 0c351e62-60a1-43e1-881c-bd28c939e43a
       version: -1
       name: Check malicious URL
       script: GoogleSafeBrowsing|||url
       type: regular
       iscommand: true
       brand: GoogleSafeBrowsing
-      description: ''
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     scriptarguments:
       url:
         simple: ${inputs.Malicious URL}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 619\n  }\n}"
-  '7':
-    id: '7'
-    taskid: fc9048f1-5697-48c8-8679-9acd4339484a
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: e443a8ea-90e2-434a-8e63-d2ed4fb0fb4c
     type: condition
     task:
-      id: fc9048f1-5697-48c8-8679-9acd4339484a
+      id: e443a8ea-90e2-434a-8e63-d2ed4fb0fb4c
       version: -1
       name: Check if found malicious
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '10'
-      yes:
-      - '8'
+      - "10"
+      "yes":
+      - "11"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               simple: URL.Malicious
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 794\n  }\n}"
-  '8':
-    id: '8'
-    taskid: 70ccb8d0-2ef5-4d59-872a-2efe223c19fd
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 9f729942-a66e-4486-8123-fc20caf586ec
     type: regular
     task:
-      id: 70ccb8d0-2ef5-4d59-872a-2efe223c19fd
-      version: -1
-      name: Closing incident
-      scriptName: CloseInvestigation
-      type: regular
-      iscommand: false
-      brand: ''
-      description: ''
-    scriptarguments:
-      notes: {}
-      reason: {}
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1121\n  }\n}"
-  '9':
-    id: '9'
-    taskid: 24eca54e-770b-422d-8acd-c060b3ff4253
-    type: regular
-    task:
-      id: 24eca54e-770b-422d-8acd-c060b3ff4253
+      id: 9f729942-a66e-4486-8123-fc20caf586ec
       version: -1
       name: FAIL - False Positive
-      scriptName: RaiseError
+      script: RaiseError
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     scriptarguments:
       error:
         simple: expected ${inputs.Non malicious URL} to not be malicious
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 889,\n    \"y\": 524\n  }\n}"
-  '10':
-    id: '10'
-    taskid: 7e6ad882-22e0-431a-8970-81489de71064
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: b3bdea26-4c06-4e1c-85fb-499891aa5bb2
     type: regular
     task:
-      id: 7e6ad882-22e0-431a-8970-81489de71064
+      id: b3bdea26-4c06-4e1c-85fb-499891aa5bb2
       version: -1
       name: FAIL - False Positive
-      scriptName: RaiseError
+      script: RaiseError
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     scriptarguments:
       error:
         simple: expected ${inputs.Non malicious URL} to not be malicious
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 889,\n    \"y\": 979\n  }\n}"
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 1166,\n      \"width\": 819,\n      \"x\": 450,\n      \"y\":\
-  \ 50\n    }\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 80c67921-4b9c-4a4d-8e86-ec319ffdef57
+    type: title
+    task:
+      id: 80c67921-4b9c-4a4d-8e86-ec319ffdef57
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 1025,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs:
 - key: Malicious URL
   value:
     simple: http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/
   required: false
-  description: ''
+  description: ""
+  playbookInputQuery: null
 - key: Non malicious URL
   value:
     simple: http://google.com
   required: false
-  description: ''
+  description: ""
+  playbookInputQuery: null
 outputs: []
 fromversion: 5.0.0

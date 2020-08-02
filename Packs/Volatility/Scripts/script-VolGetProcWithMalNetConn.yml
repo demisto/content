@@ -1,6 +1,6 @@
 commonfields:
   id: VolGetProcWithMalNetConn
-  version: 1
+  version: -1
 name: VolGetProcWithMalNetConn
 script: |-
   // get all the network connections
