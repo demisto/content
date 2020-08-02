@@ -11,9 +11,9 @@ tasks:
       id: 5af63bf3-d169-4e88-856c-184abc204dae
       version: -1
       name: ""
+      description: Sixgill Darkfeed Test Playbook
       iscommand: false
       brand: ""
-      description: Sixgill Darkfeed Test Playbook
     nexttasks:
       '#none#':
       - "4"
@@ -45,7 +45,7 @@ tasks:
       brand: Sixgill_Darkfeed
     nexttasks:
       '#none#':
-      - "5"
+      - "3"
     scriptarguments:
       extend-context:
         simple: Sixgill.value=value::Sixgill.type=type
@@ -81,7 +81,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 620
         }
       }
     note: false
@@ -125,53 +125,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: 06ab245b-3fe8-4371-86ee-85abaff5a734
-    type: condition
-    task:
-      id: 06ab245b-3fe8-4371-86ee-85abaff5a734
-      version: -1
-      name: Assert Outputs
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Sixgill.value
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Sixgill.type
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 635,
         "width": 380,
         "x": 50,
         "y": 50
@@ -180,5 +139,5 @@ view: |-
   }
 inputs: []
 outputs: []
-description: ''
+sourceplaybookid: Sixgill-Darkfeed_Test
 fromversion: 5.5.0
