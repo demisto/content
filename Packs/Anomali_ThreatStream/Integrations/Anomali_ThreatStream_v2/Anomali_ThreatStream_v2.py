@@ -627,6 +627,33 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
         return_outputs("The data was not imported. Check if valid arguments were passed", None)
 
 
+def import_ioc_without_approval(file_id):
+    """
+        Imports indicators data to ThreatStream.
+        file_id of uploaded file to war room or URL.
+    """
+    try:
+        # entry id of uploaded file to war room
+        file_info = demisto.getFilePath(file_id)
+    except Exception:
+        return_error(F"Entry {file_id} does not contain a file.")
+
+    uploaded_file = open(file_info['path'], 'rb')
+    files = {'file': (file_info['name'], uploaded_file)}
+    params = build_params()
+
+    res = http_request("POST", "v1/intelligence/import/", params=params, files=files)
+    # closing the opened file if exist
+    if uploaded_file:
+        uploaded_file.close()
+    # checking that response contains success key
+    if res.get('success', False):
+        imported_id = res.get('import_session_id', '')
+        ec = {'ThreatStream.Import.ImportID': imported_id}
+        return_outputs(F"The data was imported successfully. The ID of imported job is: {imported_id}", ec, res)
+    else:
+        return_outputs("The data was not imported. Check if valid arguments were passed", None)
+
 def get_model_list(model, limit="50"):
     """
         Returns list of Threat Model that was specified. By default limit is set to 50 results.
@@ -897,6 +924,8 @@ def main():
             get_passive_dns(**args)
         elif command == 'threatstream-import-indicator-with-approval':
             import_ioc_with_approval(**args)
+        elif command == 'threatstream-import-indicator-without-approval':
+            import_ioc_without_approval(**args)
         elif command == 'threatstream-get-model-list':
             get_model_list(**args)
         elif command == 'threatstream-get-model-description':

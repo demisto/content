@@ -623,61 +623,13 @@ script:
       description: The ID of the imported data.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: The type of indicator to be imported.
+    - default: false
+      description: Entry id of uploaded file to war room containing a json with "objects" array and "meta" map object.
       isArray: false
-      name: indicator_type
-      predefined:
-      - srcip
-      - domain
-      - url
-      - email
-      - md5
+      name: file_id
       required: true
       secret: false
-    - default: false
-      description: The indicator value to be imported.
-      isArray: false
-      name: indicator_data
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Classification of the indicator.
-      isArray: false
-      name: classification
-      predefined:
-      - public
-      - ' private'
-      required: false
-      secret: false
-    - default: false
-      description: Level of certainty that an observable is of the reported indicator
-        type.
-      isArray: false
-      name: confidence
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Severity you want to assign to the indicator when it is imported.
-      isArray: false
-      name: severity
-      predefined:
-      - low
-      - medium
-      - high
-      - very-high
-      required: false
-      secret: false
-    - default: false
-      description: Tags applied to the imported observables.
-      isArray: false
-      name: tags
-      required: false
-      secret: false
-    deprecated: true
+    deprecated: false
     description: Imports indicators (observables) into ThreatStream. Approval is not
       required for the imported data. You must have the Approve Intel user permission
       to import without approval using the API.
