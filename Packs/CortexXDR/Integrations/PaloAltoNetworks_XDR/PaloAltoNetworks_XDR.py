@@ -1674,13 +1674,29 @@ def sort_all_lists_incident_fields(incident_data):
 
     if incident_data.get('alerts', []):
         incident_data['alerts'] = sorted(incident_data.get('alerts', []), key=itemgetter('alert_id'))
+        reformat_sublist_fields(incident_data['alerts'])
 
     if incident_data.get('file_artifacts', []):
         incident_data['file_artifacts'] = sorted(incident_data.get('file_artifacts', []), key=itemgetter('file_name'))
+        reformat_sublist_fields(incident_data['file_artifacts'])
 
     if incident_data.get('network_artifacts', []):
         incident_data['network_artifacts'] = sorted(incident_data.get('network_artifacts', []),
                                                     key=itemgetter('network_domain'))
+        reformat_sublist_fields(incident_data['network_artifacts'])
+
+
+def drop_field_underscore(section):
+    section_copy = section.copy()
+    for field in section_copy.keys():
+        if '_' in field:
+            section[field.replace('_', '')] = section.get(field)
+            del section[field]
+
+
+def reformat_sublist_fields(sublist):
+    for section in sublist:
+        drop_field_underscore(section)
 
 
 def get_mapping_fields_command():
