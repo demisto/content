@@ -94,7 +94,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Runs a SQL query.
+    description: Runs a SQL query. Deprecated. Use the generic sql-command instead.
     execution: false
     name: pgsql-query
   - arguments:
@@ -131,7 +131,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Runs a SQL query.
+    description: Runs a SQL query. Deprecated. Use the generic sql-command instead.
     execution: false
     name: query
   - arguments:
