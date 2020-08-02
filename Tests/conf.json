@@ -2983,9 +2983,7 @@
         "TAXII_Feed_Test": "Issue 22423",
         "Recorded Future Test": "Issue 26741",
         "CirclIntegrationTest": "Issue 25600",
-        "Luminate-TestPlaybook": "Issue 27016",
-        "Cherwell - test": "Issue 26780",
-        "Cherwell Example Scripts - test": "Issue 27107"
+        "Luminate-TestPlaybook": "Issue 27016"
     },
     "skipped_integrations": {
         
