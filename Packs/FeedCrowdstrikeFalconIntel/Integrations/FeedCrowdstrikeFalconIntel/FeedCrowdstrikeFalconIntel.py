@@ -143,13 +143,13 @@ class Client(BaseClient):
         if not integration_context:
             params = {}
             self.set_last_modified_time()
-            # demisto.setIntegrationContext(None)
+            demisto.setIntegrationContext(None)
         else:
             last_modified_time = demisto.getIntegrationContext()
             relevant_time = int(last_modified_time['last_modified_time'])
             params = f"last_modified_date%3A%3E{relevant_time}"
             self.set_last_modified_time()
-            # demisto.setIntegrationContext(None)
+            demisto.setIntegrationContext(None)
         return params
 
 
