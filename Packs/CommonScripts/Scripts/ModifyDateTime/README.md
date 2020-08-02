@@ -1,4 +1,4 @@
-Takes a date / time input and adds or subtracts a determined amount of time. Returns a string in date / time in ISO Format.
+Takes a date or time input and adds or subtracts a determined amount of time. Returns a string in date or time in ISO Format.
 ## Script Data
 ---
 
