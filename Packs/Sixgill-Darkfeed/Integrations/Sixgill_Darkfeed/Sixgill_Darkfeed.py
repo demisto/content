@@ -1,9 +1,10 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-from typing import Dict, List, Any, Callable
+from typing import Dict, List, Any, Callable, Optional
 from collections import OrderedDict
 import traceback
 import requests
@@ -85,7 +86,7 @@ def get_description(stix_obj):
     return description_string
 
 
-def to_demisto_indicator(value, indicators_name, stix2obj):
+def to_demisto_indicator(value, indicators_name, stix2obj, tags: Optional[list] = None):
     return {
         "value": value,
         "type": indicators_name,
@@ -93,7 +94,7 @@ def to_demisto_indicator(value, indicators_name, stix2obj):
         "fields": {
             "name": stix2obj.get("sixgill_feedname"),
             "actor": stix2obj.get("sixgill_actor"),
-            "tags": stix2obj.get("labels"),
+            "tags": list((set(stix2obj.get("labels")).union(set(tags)))),
             "firstseenbysource": stix2obj.get("created"),
             "description": get_description(stix2obj)},
         "score": to_demisto_score(stix2obj.get("sixgill_feedid"), stix2obj.get("revoked", False))}
@@ -106,7 +107,7 @@ def get_limit(str_limit, default_limit):
         return default_limit
 
 
-def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
+def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: Optional[list] = None):
     indicators = []
     pattern = stix2obj.get("pattern", "")
     sixgill_feedid = stix2obj.get("sixgill_feedid", "")
@@ -119,7 +120,7 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
             if demisto_indicator_map:
                 indicators_name = demisto_indicator_map.get('name')
                 value = run_pipeline(value, demisto_indicator_map.get('pipeline', []), log)
-                demisto_indicator = to_demisto_indicator(value, indicators_name, stix2obj)
+                demisto_indicator = to_demisto_indicator(value, indicators_name, stix2obj, tags)
 
                 if demisto_indicator.get("type") == FeedIndicatorType.File and \
                         HASH_MAPPING.get(sub_type.lower()) in hashes.keys():
@@ -169,22 +170,23 @@ def test_module_command(*args):
     return 'ok', None, 'ok'
 
 
-def get_indicators_command(client: SixgillFeedClient, args):
+def get_indicators_command(client: SixgillFeedClient, args, tags: Optional[list] = None):
     limit = int(args.get('limit'))
-    indicators = fetch_indicators_command(client, limit, True)
+    indicators = fetch_indicators_command(client, limit, True, tags)
 
     human_readable = tableToMarkdown('Indicators from Sixgill Dark Feed:', indicators,
                                      headers=['value', 'type', 'rawJSON', 'score'])
     return human_readable, {}, indicators
 
 
-def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indicators_mode: bool = False):
+def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indicators_mode: bool = False,
+                             tags: Optional[list] = None):
     bundle = client.get_bundle()
     indicators_to_create: List = []
 
     for stix_indicator in bundle.get("objects"):
         if is_indicator(stix_indicator):
-            demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto)
+            demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto, tags)
             indicators_to_create.extend(demisto_indicators)
 
         if get_indicators_mode and len(indicators_to_create) == limit:
@@ -203,7 +205,7 @@ def main():
     max_indicators = get_limit(demisto.params().get('maxIndicators', MAX_INDICATORS), MAX_INDICATORS)
 
     SESSION.proxies = handle_proxy()
-
+    tags = argToList(demisto.params().get('feedTags'))
     client = SixgillFeedClient(demisto.params()['client_id'],
                                demisto.params()['client_secret'],
                                CHANNEL_CODE,
@@ -219,7 +221,7 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
+            indicators = fetch_indicators_command(client, tags=tags)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
@@ -233,3 +235,4 @@ def main():
 
 if __name__ == '__builtin__' or __name__ == 'builtins':
     main()
+
