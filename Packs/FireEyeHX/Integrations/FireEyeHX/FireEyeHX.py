@@ -13,7 +13,6 @@ import time
 import json
 import os
 import re
-from requests.utils import requote_uri
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -1574,12 +1573,10 @@ def get_indicator_request(category, name):
     """
 
     url = '{}/indicators/{}/{}'.format(BASE_PATH, category, name)
-    print(url)
-    url_uri = requote_uri(url)
-    print(url_uri)
+
     response = http_request(
         'GET',
-        url_uri,
+        url,
         headers=GET_HEADERS,
     )
     return response.json().get('data')
