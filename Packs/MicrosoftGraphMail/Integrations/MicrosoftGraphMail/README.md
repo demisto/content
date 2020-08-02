@@ -7,6 +7,16 @@ For more details about the authentication used in this integration, see [Microso
 * Mail.ReadWrite - Application
 * User.Read - Application
 
+### OData Usage
+The OData parameter can be used to create different queries for the ***msgraph-mail-list-emails*** and ***msgraph-mail-get-email*** commands. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
+Examples:
+* ```!msgraph-mail-list-emails user_id=dev@demistodev.onmicrosoft.com odata="$select=from"```
+* ```!msgraph-mail-list-emails user_id=dev@demistodev.onmicrosoft.com odata="$filter=from/emailAddress/address eq 'azure-noreply@microsoft.com'"```
+* ```!msgraph-mail-list-emails user_id=dev@demistodev.onmicrosoft.com odata="$filter=sentDateTime gt 2020-03-25T09:35:23Z and sentDateTime lt 2020-03-25T12:04:47Z" ```
+
+**NOTE:**
+The query parameter '$filter' is not supported when using the 'search' parameter.
+
 ## Configure Microsoft Graph Mail on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -52,7 +62,7 @@ Gets the properties of returned emails.
 | --- | --- | --- |
 | user_id | The user ID from which to pull emails (can be principal ID (email address)). | Required | 
 | folder_id |  The comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).  | Optional | 
-| odata | An OData query. See REDAME for OData usage examples. | Optional | 
+| odata | An OData query. | Optional | 
 | search | The term for which to search. This argument cannot contain reserved characters such as "!, $, #, @, etc". Click [here](https://tools.ietf.org/html/rfc3986#section-2.2) for further information. | Optional | 
 | pages_to_pull | The number of pages of emails to return. The maximum is 10 emails per page. | Optional | 
 
@@ -135,15 +145,6 @@ Gets the properties of returned emails.
 | Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z |
 | Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z |
 
-#### OData Usage
-The OData parameter can be used to create different queries. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
-Examples:
-* ```!msgraph-mail-list-emails user_id=dev@demistodev.onmicrosoft.com odata="$select=from"```
-* ```!msgraph-mail-list-emails user_id=dev@demistodev.onmicrosoft.com odata="$filter=from/emailAddress/address eq 'azure-noreply@microsoft.com'"```
-* ```!msgraph-mail-list-emails user_id=dev@demistodev.onmicrosoft.com odata="$filter=sentDateTime gt 2020-03-25T09:35:23Z and sentDateTime lt 2020-03-25T12:04:47Z" ```
-
-**NOTE:**
-The query parameter '$filter' is not supported when using the 'search' parameter.
 
 
 ### Get the properties of a single email
