@@ -3541,7 +3541,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                                outputs=None)
                         finally:
                             os.remove(f.name)
-
+                    attachment_names.append(attachment_file_name)
                 else:
                     # .msg and other files (png, jpeg)
                     if part.is_multipart() and max_depth - 1 > 0:
