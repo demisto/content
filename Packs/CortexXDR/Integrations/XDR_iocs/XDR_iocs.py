@@ -257,7 +257,7 @@ def get_last_iocs(batch_size=200) -> List:
 
 def get_indicators(indicators: str) -> List:
     if indicators:
-        iocs = []
+        iocs: list = []
         not_found = []
         for indicator in indicators.split(','):
             data = demisto.searchIndicators(value=indicator).get('iocs')
