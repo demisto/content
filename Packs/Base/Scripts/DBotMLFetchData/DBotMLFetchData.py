@@ -1186,10 +1186,16 @@ def get_args_based_on_last_execution():
         return {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION}
     else:
         last_execution_datetime = datetime.strptime(lst[0]['Contents'], DATETIME_FORMAT)
-        query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_QUERY_TIMEFORMAT))
-        max_incidents_to_fetch = MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION
-        return {'limit': max_incidents_to_fetch,
-                'query': query}
+        try:
+            query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_QUERY_TIMEFORMAT))
+        except Exception:
+            query = None
+        finally:
+            res = {}
+            res['limit'] = MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION
+            if query is not None:
+                res['query'] = query
+            return res
 
 
 def update_last_execution_time():
@@ -1201,7 +1207,13 @@ def update_last_execution_time():
 def main():
     incidents_query_args = demisto.args()
     args = get_args_based_on_last_execution()
-    incidents_query_args.update(args)
+    if 'query' in incidents_query_args and 'query' in args:
+        incidents_query_args['query'] = '({}) and ({}) and (status:Closed)'.format(incidents_query_args['query'], args['query'])
+    elif 'query' in args:
+        incidents_query_args['query'] = '({}) and (status:Closed)'.format(args['query'])
+    if 'limit' in args:
+        incidents_query_args['limit'] = args['limit']
+    demisto.results(str(incidents_query_args))
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', incidents_query_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
