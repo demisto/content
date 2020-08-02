@@ -3580,7 +3580,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             finally:
                                 os.remove(f.name)
 
-                attachment_names.append(attachment_file_name)
+                        attachment_names.append(attachment_file_name)
                 demisto.setContext('AttachmentName', attachment_file_name)
 
             elif part.get_content_type() == 'text/html':

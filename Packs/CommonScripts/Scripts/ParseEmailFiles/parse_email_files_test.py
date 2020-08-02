@@ -785,7 +785,7 @@ def test_eml_contains_htm_attachment_empty_file(mocker):
     """
     Given: An email containing both an empty text file and a base64 encoded htm file.
     When: Parsing a valid email file with default parameters.
-    Then: Three entries will be returned to the war room. One containing the results. Another
+    Then: Three entries will be returned to the war room. One containing the command results. Another
           containing the empty file. The last contains the htm file.
     """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
@@ -798,4 +798,4 @@ def test_eml_contains_htm_attachment_empty_file(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email'][u'Attachments'] == 'SomeTest.HTM'
+    assert results[0]['EntryContext']['Email'][0]['AttachmentNames'] == ['unknown_file_name0', 'SomeTest.HTM']
