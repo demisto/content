@@ -107,7 +107,7 @@ There is no context output for this command.
 ```!phishtank-status```
 
 #### Human Readable Output
-<br>PhishTank Database Status<br>
-<br>Total 15939 URLs loaded.<br>
-<br>Last load time Sun Jul 26 2020 18:56:10 GMT+0300 (IDT)<br>
+<br>PhishTank Database Status</br>
+<br>Total 15939 URLs loaded.</br>
+<br>Last load time Sun Jul 26 2020 18:56:10 GMT+0300 (IDT)</br>
 

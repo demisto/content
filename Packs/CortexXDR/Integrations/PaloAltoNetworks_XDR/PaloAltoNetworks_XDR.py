@@ -923,11 +923,22 @@ def get_incident_extra_data_command(client, args):
         'file_artifacts': file_artifacts,
         'network_artifacts': network_artifacts
     })
+    account_context_output = assign_params(**{
+        'Username': incident.get('users', '')
+    })
+    endpoint_context_output = assign_params(**{
+        'Hostname': incident.get('hosts', '')
+    })
+
+    context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
+    if account_context_output:
+        context_output['Account(val.Username==obj.Username)'] = account_context_output
+    if endpoint_context_output:
+        context_output['Endpoint(val.Hostname==obj.Hostname)'] = endpoint_context_output
+
     return (
         '\n'.join(readable_output),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident
-        },
+        context_output,
         raw_incident
     )
 
@@ -1034,12 +1045,25 @@ def get_endpoints_command(client, args):
             sort_by_first_seen=sort_by_first_seen,
             sort_by_last_seen=sort_by_last_seen
         )
-
     return (
         tableToMarkdown('Endpoints', endpoints),
-        {f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints},
+        {f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
+         'Endpoint(val.ID == obj.ID)': return_endpoint_standard_context(endpoints)},
         endpoints
     )
+
+
+def return_endpoint_standard_context(endpoints):
+    endpoints_context_list = []
+    for endpoint in endpoints:
+        endpoints_context_list.append(assign_params(**{
+            "Hostname": (endpoint['host_name'] if endpoint.get('host_name', '') else endpoint.get('endpoint_name')),
+            "ID": endpoint.get('endpoint_id'),
+            "IPAddress": endpoint.get('ip'),
+            "Domain": endpoint.get('domain'),
+            "OS": endpoint.get('os_type'),
+        }))
+    return endpoints_context_list
 
 
 def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
