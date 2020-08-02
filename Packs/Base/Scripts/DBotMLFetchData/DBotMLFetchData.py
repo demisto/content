@@ -179,11 +179,11 @@ def get_text_from_html(html):
 def get_ngrams_features(text, ngrams_counter):
     global WORD_TO_NGRAMS, WORD_TO_REGEX
     ngrams_features = {}
-    for w, regex in WORD_TO_REGEX.items():
+    for w, regex in WORD_TO_REGEX.items():  # type: ignore
         count = len(re.findall(regex, text))
         if count > 0:
             ngrams_features[w] = count
-    for w, ngram in WORD_TO_NGRAMS.items():
+    for w, ngram in WORD_TO_NGRAMS.items():  # type: ignore
         count = ngrams_counter[ngram] if ngram in ngrams_counter else 0
         if count > 0:
             ngrams_features[w] = count
@@ -387,8 +387,8 @@ def get_rank_address(address):
         full_domain = address.split('@')[1]
     else:
         full_domain = address
-    if full_domain in DOMAIN_TO_RANK:
-        return DOMAIN_TO_RANK[full_domain]
+    if full_domain in DOMAIN_TO_RANK:  # type: ignore
+        return DOMAIN_TO_RANK[full_domain]  # type: ignore
     else:
         return -1
 
@@ -482,7 +482,7 @@ def get_attachments_features(email_attachments):
     res['avg_attachment_name_length'] = float(sum(all_attachments_names_lengths)) / len(  # type: ignore
         all_attachments_names_lengths) if len(all_attachments_names_lengths) > 0 else 0  # type: ignore
     res['image_extension'] = 0
-    res['raw_extensions'] = [name.split('.')[-1] for name in all_attachments_names]
+    res['raw_extensions'] = [name.split('.')[-1] for name in all_attachments_names]  # type: ignore
     for image_format in IMG_FORMATS:
         res['image_extension'] += sum([name.endswith(image_format) for name in all_attachments_names])
     res['txt_extension'] = sum([name.endswith('.txt') for name in all_attachments_names])
@@ -593,7 +593,7 @@ def extract_features_from_all_incidents(incidents_df):
 def extract_data_from_incidents(incidents):
     incidents_df = pd.DataFrame(incidents)
     if 'created' in incidents_df:
-        incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))
+        incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))   # type: ignore
         incidents_df.sort_values(by='created', inplace=True, ascending=False)
         incidents_df_for_finding_labels_fields_candidates = incidents_df.head(500)
     else:
@@ -640,12 +640,11 @@ def get_args_based_on_last_execution():
         try:
             query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_QUERY_TIMEFORMAT))
         except Exception:
-            query = None
+            query = None  # type: ignore
         finally:
-            res = {}
-            res['limit'] = MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION
+            res = {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION}
             if query is not None:
-                res['query'] = query
+                res['query'] = query  # type: ignore
             return res
 
 
