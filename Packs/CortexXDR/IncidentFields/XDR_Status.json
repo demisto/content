@@ -25,12 +25,15 @@
 	"placeholder": "",
 	"required": false,
 	"script": "",
-	"selectValues": [],
+	"selectValues": [
+        "new",
+        "under_investigation"
+    ],
 	"sla": 0,
 	"system": false,
 	"systemAssociatedTypes": null,
 	"threshold": 72,
-	"type": "shortText",
+	"type": "singleSelect",
 	"unmapped": false,
 	"unsearchable": false,
 	"useAsKpi": false,
