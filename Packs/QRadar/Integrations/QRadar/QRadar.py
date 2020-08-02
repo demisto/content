@@ -517,7 +517,7 @@ def fetch_incidents():
     raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
     demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
     if len(raw_offenses) >= OFFENSES_PER_CALL:
-        raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
+        raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL - 1), _filter=fetch_query)
     raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
     if full_enrich:
