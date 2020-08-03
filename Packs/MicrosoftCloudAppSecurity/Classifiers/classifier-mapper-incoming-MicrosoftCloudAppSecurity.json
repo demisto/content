@@ -1,22 +1,67 @@
 {
-    "defaultIncidentType": "",
-    "description": "",
-    "feed": false,
-    "id": "eb888329-9134-4f7e-818f-11317ac7a2a9",
-    "incidentSamples": null,
-    "indicatorSamples": null,
-    "keyTypeMap": {},
-    "name": "Microsoft CAS",
-    "propagationLabels": [
-        "all"
-    ],
-    "sortValues": null,
-    "transformer": {
-        "complex": null,
-        "simple": ""
-    },
-    "type": "mapping-incoming",
-    "unclassifiedCases": null,
-    "version": -1,
-    "fromVersion": "5.0.0"
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "eb888329-9134-4f7e-818f-11317ac7a2a9",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 2,
+	"mapping": {
+		"Microsoft CAS Alert": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Account Name": {
+					"complex": null,
+					"simple": "account.pa"
+				},
+				"Cloud Service": {
+					"complex": null,
+					"simple": "service.label"
+				},
+				"Country": {
+					"complex": null,
+					"simple": "country.label"
+				},
+				"Policy Description": {
+					"complex": null,
+					"simple": "policyRule.label"
+				},
+				"Policy Type": {
+					"complex": null,
+					"simple": "policyRule.policyType"
+				},
+				"Risk Score": {
+					"complex": null,
+					"simple": "threatScore"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "user.label"
+				}
+			}
+		}
+	},
+	"name": "Microsoft CAS",
+	"nameRaw": "Microsoft CAS",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
 }
