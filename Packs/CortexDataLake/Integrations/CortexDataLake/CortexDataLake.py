@@ -24,7 +24,7 @@ REGISTRATION_ID_CONST = 'reg_id'
 ENCRYPTION_KEY_CONST = 'auth_key'
 DEFAULT_API_URL = 'https://api.us.cdl.paloaltonetworks.com'
 MINUTES_60 = 60 * 60
-SECONDS_30 = 3034
+SECONDS_30 = 30
 
 
 class Client(BaseClient):
