@@ -112,7 +112,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
 9. From the left-side navigation pane, under Capabilities, click **Bots > Set up**.
 10. Configure the settings under the **Scope** section, and click **Create bot**.
   - In the **Name** field, enter *Demisto Bot*.
-  - In the **Scope** section, select the following checkboxes: `Personal`, `Team` and `Group Chat`. 
+  - In the **Scope** section, select the following checkboxes: `Personal`, `Team`, and `Group Chat`. 
 
 11. Record the **Bot ID**, which you will need when configuring the integration in Demisto.
 ![image](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/MSTeams-BotID.png)
