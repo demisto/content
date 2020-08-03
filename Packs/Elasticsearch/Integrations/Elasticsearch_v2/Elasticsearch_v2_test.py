@@ -589,6 +589,7 @@ def test_format_to_iso():
 
 @patch("Elasticsearch_v2.USERNAME", "mock")
 @patch("Elasticsearch_v2.PASSWORD", "demisto")
+@patch("Elasticsearch_v2.FETCH_INDEX", "customer")
 def test_elasticsearch_builder_called_with_username_password(mocker):
     from elasticsearch import Elasticsearch
     from Elasticsearch_v2 import elasticsearch_builder
