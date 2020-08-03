@@ -256,6 +256,7 @@ def main():
         commands: Dict[str, Callable[[Client, Dict[str, str], str], Tuple[str, Dict[Any, Any], List[Any]]]] = {
             'test-module': test_module,
             'query': sql_query_execute,
+            'pgsql-query': sql_query_execute,
             'sql-command': sql_query_execute
         }
         if command in commands:

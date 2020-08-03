@@ -85,11 +85,12 @@ IP_REGEX = r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
 
 
 class Client:
-    def __init__(self, base_url, account_id, api_key, proxies, verify):
+    def __init__(self, base_url, account_id, api_key, proxies, verify, tags: Optional[list] = None):
         self.base_url = base_url
         self.account_id = account_id
         self.api_key = api_key
         self.verify = verify
+        self.tags = [] if tags is None else tags
         self.proxies = proxies
 
     def http_request(self, method, endpoint_url, url_suffix, body=None):
@@ -374,6 +375,7 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
                     f"SafeBreachInsightId: {insight.get('ruleId')}",
                 ]
             }
+            mapping['tags'] = list((set(mapping['tags'])).union(set(client.tags)))
             indicator = {
                 'value': str(item["value"]),
                 'type': INDICATOR_TYPE_MAPPER.get(str(item['type'])),
@@ -931,11 +933,13 @@ def main():
     url = fix_url(params.get('url'))
     insight_category_filter = params.get('insightCategory')
     insight_data_type_filter = params.get('insightDataType')
+    tags = argToList(params.get('feedTags'))
     verify_certificate = not params.get('insecure', False)
+
     proxies = handle_proxy()
     try:
         client = Client(base_url=url, account_id=account_id, api_key=api_key, proxies=proxies,
-                        verify=verify_certificate)
+                        verify=verify_certificate, tags=tags)
 
         if command == 'safebreach-get-insights':
             get_insights_command(client, demisto.args(), True)
