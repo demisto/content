@@ -27,6 +27,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
+    from typing import Optional, List
 except Exception:
     pass
 
@@ -2596,8 +2597,11 @@ class CommandResults:
         self.indicators = indicators
 
         self.outputs_prefix = outputs_prefix
-        self.outputs_key_field = outputs_key_field  # this is public field, it is used by a lot of unit tests, so I don't change it
 
+        # this is public field, it is used by a lot of unit tests, so I don't change it
+        self.outputs_key_field = outputs_key_field
+
+        self._outputs_key_field = None  # type: Optional[List[str]]
         if isinstance(outputs_key_field, STRING_TYPES):
             self._outputs_key_field = [outputs_key_field]
         elif isinstance(outputs_key_field, list):
@@ -2639,7 +2643,8 @@ class CommandResults:
                 human_readable = tableToMarkdown('Results', self.outputs)
             if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
-                formatted_outputs_key = ' && '.join(['val.{0} == obj.{0}'.format(key_field) for key_field in self._outputs_key_field])
+                formatted_outputs_key = ' && '.join(['val.{0} == obj.{0}'.format(key_field)
+                                                     for key_field in self._outputs_key_field])
                 outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
