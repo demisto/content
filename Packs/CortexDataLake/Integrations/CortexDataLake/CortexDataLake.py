@@ -24,7 +24,7 @@ REGISTRATION_ID_CONST = 'reg_id'
 ENCRYPTION_KEY_CONST = 'auth_key'
 DEFAULT_API_URL = 'https://api.us.cdl.paloaltonetworks.com'
 MINUTES_60 = 60 * 60
-SECONDS_30 = 30
+SECONDS_30 = 3034
 
 
 class Client(BaseClient):
@@ -814,7 +814,9 @@ def fetch_incidents(client: Client,
 
     if last_fetched_event_timestamp:
         last_fetched_event_timestamp = parser.parse(last_fetched_event_timestamp)
+        demisto.debug(f"last_fetched_event_timestamp {last_fetched_event_timestamp}")
     else:
+        demisto.debug(f"first_fetch_timestamp {parse_date_range(first_fetch_timestamp)}")
         last_fetched_event_timestamp, _ = parse_date_range(first_fetch_timestamp)
         last_fetched_event_timestamp = last_fetched_event_timestamp.replace(microsecond=0)
     query = prepare_fetch_incidents_query(last_fetched_event_timestamp, fetch_severity, fetch_subtype, fetch_limit)
