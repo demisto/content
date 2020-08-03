@@ -2622,7 +2622,7 @@ class CommandResults:
         if self.raw_response:
             raw_response = self.raw_response
 
-        if self.outputs:
+        if self.outputs is not None:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
@@ -2643,21 +2643,6 @@ class CommandResults:
                 'HumanReadable': human_readable,
                 'EntryContext': outputs
             }
-        elif outputs:
-            return_entry = {
-                'Type': EntryType.NOTE,
-                'ContentsFormat': EntryFormat.JSON,
-                'Contents': raw_response,
-                'HumanReadable': human_readable,
-                'EntryContext': outputs
-            }
-        else:  # there are no outputs
-            return_entry = {
-                'Type': EntryType.NOTE,
-                'ContentsFormat': EntryFormat.JSON,
-                'Contents': raw_response,
-                'HumanReadable': human_readable            }
-
         return return_entry
 
 
