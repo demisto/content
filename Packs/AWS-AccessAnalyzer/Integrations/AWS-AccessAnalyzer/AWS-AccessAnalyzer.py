@@ -180,8 +180,7 @@ def list_analyzed_resource_command(args):
     human_readable = tableToMarkdown("AWS Access Analyzer Resource", data)
     return_outputs(human_readable, ec)
 
-
-def list_findings_command(args):
+def get_findings_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -218,6 +217,39 @@ def list_findings_command(args):
     data = json.loads(json.dumps(response, cls=DatetimeEncoder))
 
     return [data] if isinstance(data, dict) else data
+
+def list_findings_command(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+
+    kwargs = {
+        'analyzerArn': args.get('analyzerArn')
+    }
+
+    if args.get('maxResults'):
+        kwargs['maxResults'] = int(args.get('maxResults'))
+
+    filters = {}
+    if args.get('resourceType'):
+        filters['resourceType'] = {"eq": [args.get('resourceType')]}
+
+    if args.get('status'):
+        filters['status'] = {"eq": [args.get('status')]}
+
+    if len(filters) > 0:
+        kwargs['filter'] = filters
+
+    response = client.list_findings(**kwargs)
+
+    data = json.loads(json.dumps(response['findings'], cls=DatetimeEncoder))
+
+    ec = {'AWS.AccessAnalyzer.Findings(val.id === obj.id)': data}
+    human_readable = tableToMarkdown("AWS Access Analyzer Findings", data)
+    return_outputs(human_readable, ec)
 
 
 def get_analyzed_resource_command(args):
@@ -344,7 +376,7 @@ def fetch_incidents(last_run: dict = None):
 
         if nextToken:
             dArgs['nextToken'] = nextToken
-        raw_incidents = list_findings_command(dArgs)
+        raw_incidents = get_findings_command(dArgs)
 
         for raw_incident in raw_incidents[0]['findings']:
             incident = {
@@ -383,10 +415,7 @@ try:
     elif demisto.command() == 'aws-access-analyzer-list-analyzed-resource':
         list_analyzed_resource_command(demisto.args())
     elif demisto.command() == 'aws-access-analyzer-list-findings':
-        data = list_findings_command(demisto.args())
-        ec = {'AWS.AccessAnalyzer.Findings(val.id === obj.id)': data}
-        human_readable = tableToMarkdown("AWS Access Analyzer Findings", data)
-        return_outputs(human_readable, ec)
+        list_findings_command(demisto.args())
     elif demisto.command() == 'aws-access-analyzer-get-analyzed-resource':
         get_analyzed_resource_command(demisto.args())
     elif demisto.command() == 'aws-access-analyzer-get-finding':
