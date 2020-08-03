@@ -1,7 +1,9 @@
 import shutil
-import traceback
 import dateparser
 from typing import List, Tuple, Dict, Callable, Any, Optional, Union
+
+from CommonServerPython import *
+from demistomock import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1842,8 +1844,8 @@ def test_module(client: Client, *_):
             raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket.")
         if client.incident_name not in ticket:
             raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
-    demisto.results('ok')
-    return '', {}, {}
+
+    return 'ok', {}, {}
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any]) -> Union[List[Dict[str, Any]], str]:
