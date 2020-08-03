@@ -4,7 +4,7 @@ import os
 import pytest
 
 
-data_test_unzip_no_password = ['testZip.yml', 'ScanSummary.txt', 'item.png']
+data_test_unzip_no_password = ['testZip.yml', 'ScanSummary.txt', 'item.png', 'Untitled_document.pdf']
 
 
 @pytest.mark.parametrize('file_name', data_test_unzip_no_password)
@@ -24,11 +24,16 @@ def test_unzip_no_password(file_name):
     main_dir = '/'.join(__file__.split('/')[0:-1])
     expected_file_unzipped = os.path.join(main_dir + '/data_test', file_name)
     zipped_file_path = expected_file_unzipped + '.zip'
-    # - empty folder _dir
+    # Creation of file object
+    zipped_file_object = {
+        'name': 'testFile',
+        'path': zipped_file_path
+    }
+    # - empty folder _di
     _dir = mkdtemp()
     # When
     # - run extract on that zip file and export the internal files to _dir
-    extract(zipped_file_path, _dir)
+    extract(zipped_file_object, _dir)
     # Then
     # - ensure zip file content have been saved at _dir directory with the original filename
     with open(_dir + '/' + file_name, 'rb') as f:
@@ -62,11 +67,16 @@ def test_unzip_with_password(file_name, password):
     main_dir = '/'.join(__file__.split('/')[0:-1])
     expected_file_unzipped = os.path.join(main_dir + '/data_test', file_name)
     zipped_file_path = expected_file_unzipped + '.zip'
+    # Creation of file object
+    zipped_file_object = {
+        'name': 'testFile',
+        'path': zipped_file_path
+    }
     # - empty folder _dir
     _dir = mkdtemp()
     # When
     # - run extract on that zip file and export the internal files to _dir
-    extract(zipped_file_path, _dir, password)
+    extract(zipped_file_object, _dir, password)
     # Then
     # - ensure zip file content have been saved at _dir directory with the original filename
     with open(_dir + '/' + file_name, 'rb') as f:
