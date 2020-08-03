@@ -92,9 +92,8 @@ def extract(file_info, dir_path, password=None):
     # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     stdout = str(stdout)
-    stderr = str(stderr)
-    if len(stderr) > 0:
-        if 'Incorrect password' in stderr:
+    if stderr:
+        if 'Incorrect password' in str(stderr):
             return_error("The .rar file provided requires a password.")
         else:
             return_error(str(stderr))
