@@ -2666,6 +2666,10 @@ def return_results(results):
         demisto.results(results.to_context())
         return
 
+    if isinstance(results, BaseWidget):
+        demisto.results(results.publish())
+        return
+
     demisto.results(results)
 
 
@@ -2676,7 +2680,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
 
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
-    :type readable_output: ``str``
+    :type readable_output: ``str`` | ``int``
     :param readable_output: markdown string that will be presented in the warroom, should be human readable -
         (HumanReadable)
 
@@ -4035,3 +4039,115 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 class DemistoException(Exception):
     pass
+
+
+class BaseWidget:
+    @abstractmethod
+    def publish(self):
+        pass
+
+
+class TextWidget(BaseWidget):
+    def __init__(self, text):
+        self.text = text
+
+    def publish(self):
+        return self.text
+
+
+class TrendWidget(BaseWidget):
+    def __init__(self, current_number, previous_number):
+        # type: (int, int) -> TrendWidget
+        self.current_number = current_number
+        self.previous_number = previous_number
+
+    def publish(self):
+        return json.dumps({
+            'currSum': self.current_number,
+            'prevSum': self.previous_number
+        })
+
+
+class NumberWidget(BaseWidget):
+    def __init__(self, number):
+        # type: (int) -> NumberWidget
+        self.number = number
+
+    def publish(self):
+        return self.number
+
+
+class BarColumnPieWidget(BaseWidget):
+    def __init__(self, categories=None):
+        self.categories = categories if categories else []
+
+    def add_category(self, name, number):
+        self.categories.append({
+            'name': name,
+            'data': [number]
+        })
+
+    def publish(self):
+        return json.dumps(self.categories)
+
+
+class LineWidget(BaseWidget):
+    def __init__(self, categories=None):
+        self.categories = categories if categories else []
+
+    def add_category(self, name, number, group):
+        self.categories.append({
+            'name': name,
+            'data': [number],
+            'groups': [
+                {
+                    'name': group,
+                    'data': [number]
+                },
+            ]
+        })
+
+    def publish(self):
+        processed_names = []
+        processed_categories = []
+        for cat in self.categories:
+            if cat['name'] in processed_names:
+                for processed_category in processed_categories:
+                    if cat['name'] == processed_category['name']:
+                        processed_category['data'] = [processed_category['data'][0] + cat['data'][0]]
+                        processed_category['groups'].extend(cat['groups'])
+                        break
+
+            else:
+                processed_categories.append(cat)
+                processed_names.append(cat['name'])
+
+        return json.dumps(processed_categories)
+
+
+class DurationWidget(BaseWidget):  # todo: check this out, doesn't have the option to be custom
+    def __init__(self, name, seconds):
+        self.name = name
+        self.seconds = seconds
+
+    def publish(self):
+        return json.dumps([{
+            'name': self.name,
+            'data': [self.seconds]
+        }])
+
+
+class TableOrListWidget(BaseWidget):
+    def __init__(self, data=None):
+        self.data = data if data else []
+        if not isinstance(self.data, list):
+            self.data = [data]
+
+    def add_row(self, data):
+        self.data.append(data)
+
+    def publish(self):
+        return json.dumps({
+            'total': len(self.data),
+            'data': self.data
+        })
