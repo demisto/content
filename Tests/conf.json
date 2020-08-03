@@ -2934,7 +2934,7 @@
             "playbookID": "checkpoint-testplaybook",
             "timeout": 140,
             "nightly": true
-        },
+        }
 
     ],
     "skipped_tests": {

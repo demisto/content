@@ -1,0 +1,2367 @@
+id: checkpoint-testplaybook
+name: checkpoint-testplaybook
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: checkpoint-host-list
+      description: ''
+      script: '|||checkpoint-host-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: checkpoint-host-get
+      description: ''
+      script: '|||checkpoint-host-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.ipv4-address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.ipv6-address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.read-only
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.Meta-info-creation-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.Meta-info-creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.Meta-info-last-modifier
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: checkpoint-host-add
+      description: ''
+      script: '|||checkpoint-host-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: 7
+    taskid: '7'
+    type: regular
+    task:
+      id: '7'
+      version: -1
+      name: checkpoint-host-update
+      description: ''
+      script: '|||checkpoint-host-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: '8'
+    taskid: '8'
+    type: condition
+    task:
+      id: '8'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.meta-info-creation-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.meta-info-creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.meta-info-last-modifier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.meta-info-last-modify-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.ipv4-address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.meta-info-last-modify-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.read-only
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: 9
+    taskid: '9'
+    type: regular
+    task:
+      id: '9'
+      version: -1
+      name: checkpoint-host-delete
+      description: ''
+      script: '|||checkpoint-host-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: '10'
+    taskid: '10'
+    type: condition
+    task:
+      id: '10'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.host.message
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: 11
+    taskid: '11'
+    type: regular
+    task:
+      id: '11'
+      version: -1
+      name: checkpoint-group-list
+      description: ''
+      script: '|||checkpoint-group-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: '12'
+    taskid: '12'
+    type: condition
+    task:
+      id: '12'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.to
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.total
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.object-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.object-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.object-type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: 13
+    taskid: '13'
+    type: regular
+    task:
+      id: '13'
+      version: -1
+      name: checkpoint-group-get
+      description: ''
+      script: '|||checkpoint-group-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: '14'
+    taskid: '14'
+    type: condition
+    task:
+      id: '14'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '15'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-creation-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-last-modifier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-last-modify-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.read-only
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: 15
+    taskid: '15'
+    type: regular
+    task:
+      id: '15'
+      version: -1
+      name: checkpoint-group-add
+      description: ''
+      script: '|||checkpoint-group-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: '16'
+    taskid: '16'
+    type: condition
+    task:
+      id: '16'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '17'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-creation-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-last-modifier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.read-only
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.groups-name
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: 17
+    taskid: '17'
+    type: regular
+    task:
+      id: '17'
+      version: -1
+      name: checkpoint-group-update
+      description: ''
+      script: '|||checkpoint-group-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: '18'
+    taskid: '18'
+    type: condition
+    task:
+      id: '18'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '19'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-creation-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-last-modifier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-last-modify-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.read-only
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: 19
+    taskid: '19'
+    type: regular
+    task:
+      id: '19'
+      version: -1
+      name: checkpoint-group-delete
+      description: ''
+      script: '|||checkpoint-group-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: '20'
+    taskid: '20'
+    type: condition
+    task:
+      id: '20'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '21'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.message
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: 21
+    taskid: '21'
+    type: regular
+    task:
+      id: '21'
+      version: -1
+      name: checkpoint-address-range-list
+      description: ''
+      script: '|||checkpoint-address-range-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: '22'
+    taskid: '22'
+    type: condition
+    task:
+      id: '22'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '23'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.to
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.total
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.object-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.object-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.object-type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: 23
+    taskid: '23'
+    type: regular
+    task:
+      id: '23'
+      version: -1
+      name: checkpoint-address-range-add
+      description: ''
+      script: '|||checkpoint-address-range-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: '24'
+    taskid: '24'
+    type: condition
+    task:
+      id: '24'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '25'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.ipv4-address-first
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.ipv4-address-last
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.ipv6-address-first
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.ipv6-address-last
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.read-only
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.meta-info-creation-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.meta-info-creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.meta-info-last-modifier
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: 25
+    taskid: '25'
+    type: regular
+    task:
+      id: '25'
+      version: -1
+      name: checkpoint-address-range-update
+      description: ''
+      script: '|||checkpoint-address-range-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: '26'
+    taskid: '26'
+    type: condition
+    task:
+      id: '26'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '27'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.ipv4-address-first
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.ipv4-address-last
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.ipv6-address-first
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.ipv6-address-last
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.read-only
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: 27
+    taskid: '27'
+    type: regular
+    task:
+      id: '27'
+      version: -1
+      name: checkpoint-address-range-delete
+      description: ''
+      script: '|||checkpoint-address-range-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: '28'
+    taskid: '28'
+    type: condition
+    task:
+      id: '28'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.message
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: 29
+    taskid: '29'
+    type: regular
+    task:
+      id: '29'
+      version: -1
+      name: checkpoint-threat-indicator-list
+      description: ''
+      script: '|||checkpoint-threat-indicator-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: '30'
+    taskid: '30'
+    type: condition
+    task:
+      id: '30'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '31'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.to
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.total
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.object-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.object-uid
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: 31
+    taskid: '31'
+    type: regular
+    task:
+      id: '31'
+      version: -1
+      name: checkpoint-threat-indicator-get
+      description: ''
+      script: '|||checkpoint-threat-indicator-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: '32'
+    taskid: '32'
+    type: condition
+    task:
+      id: '32'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '33'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-creation-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-last-modifier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.meta-info-last-modify-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.group.read-only
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: 33
+    taskid: '33'
+    type: regular
+    task:
+      id: '33'
+      version: -1
+      name: checkpoint-threat-indicator-add
+      description: ''
+      script: '|||checkpoint-threat-indicator-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: '34'
+    taskid: '34'
+    type: condition
+    task:
+      id: '34'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '35'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.task-id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: 35
+    taskid: '35'
+    type: regular
+    task:
+      id: '35'
+      version: -1
+      name: checkpoint-threat-indicator-update
+      description: ''
+      script: '|||checkpoint-threat-indicator-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '36'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '36':
+    id: '36'
+    taskid: '36'
+    type: condition
+    task:
+      id: '36'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '37'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.meta-info-creation-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.meta-info-creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.meta-info-last-modifier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.read-only
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '37':
+    id: 37
+    taskid: '37'
+    type: regular
+    task:
+      id: '37'
+      version: -1
+      name: checkpoint-address-range-get
+      description: ''
+      script: '|||checkpoint-address-range-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '38':
+    id: '38'
+    taskid: '38'
+    type: condition
+    task:
+      id: '38'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '39'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.address-range.domain-type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '39':
+    id: 39
+    taskid: '39'
+    type: regular
+    task:
+      id: '39'
+      version: -1
+      name: checkpoint-threat-indicator-delete
+      description: ''
+      script: '|||checkpoint-threat-indicator-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '40'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '40':
+    id: '40'
+    taskid: '40'
+    type: condition
+    task:
+      id: '40'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '41'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.threat-indicator.message
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 8000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '41':
+    id: 41
+    taskid: '41'
+    type: regular
+    task:
+      id: '41'
+      version: -1
+      name: checkpoint-access-rule-list
+      description: ''
+      script: '|||checkpoint-access-rule-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '42'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 8200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '42':
+    id: '42'
+    taskid: '42'
+    type: condition
+    task:
+      id: '42'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '43'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rulebase.object-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rulebase.object-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rulebase.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rulebase.to
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rulebase.total
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 8400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '43':
+    id: 43
+    taskid: '43'
+    type: regular
+    task:
+      id: '43'
+      version: -1
+      name: checkpoint-access-rule-add
+      description: ''
+      script: '|||checkpoint-access-rule-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '44'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 8600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '44':
+    id: '44'
+    taskid: '44'
+    type: condition
+    task:
+      id: '44'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '45'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.layer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.meta-info-creation-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.meta-info-creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.meta-info-last-modifier
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 8800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '45':
+    id: 45
+    taskid: '45'
+    type: regular
+    task:
+      id: '45'
+      version: -1
+      name: checkpoint-access-rule-update
+      description: ''
+      script: '|||checkpoint-access-rule-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 9000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '46':
+    id: '46'
+    taskid: '46'
+    type: condition
+    task:
+      id: '46'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '47'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.action-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.action-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.action-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.action-domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.content-direction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.layer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.meta-info-creation-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.meta-info-creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.meta-info-last-modifier
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 9200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '47':
+    id: 47
+    taskid: '47'
+    type: regular
+    task:
+      id: '47'
+      version: -1
+      name: checkpoint-access-rule-delete
+      description: ''
+      script: '|||checkpoint-access-rule-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 9400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '48':
+    id: '48'
+    taskid: '48'
+    type: condition
+    task:
+      id: '48'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '49'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.access-rule.message
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 9600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '49':
+    id: 49
+    taskid: '49'
+    type: regular
+    task:
+      id: '49'
+      version: -1
+      name: checkpoint-application-site-list
+      description: ''
+      script: '|||checkpoint-application-site-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '50'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 9800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '50':
+    id: '50'
+    taskid: '50'
+    type: condition
+    task:
+      id: '50'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.object-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.object-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.object-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.to
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.total
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 10000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '51':
+    id: 51
+    taskid: '51'
+    type: regular
+    task:
+      id: '51'
+      version: -1
+      name: checkpoint-application-site-add
+      description: ''
+      script: '|||checkpoint-application-site-add'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '52'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 10200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '52':
+    id: '52'
+    taskid: '52'
+    type: condition
+    task:
+      id: '52'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '53'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.application-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.url-list
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.Meta-info-creation-time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.Meta-info-creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.Meta-info-last-modifier
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 10400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '53':
+    id: 53
+    taskid: '53'
+    type: regular
+    task:
+      id: '53'
+      version: -1
+      name: checkpoint-application-site-update
+      description: ''
+      script: '|||checkpoint-application-site-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '54'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 10600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '54':
+    id: '54'
+    taskid: '54'
+    type: condition
+    task:
+      id: '54'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '55'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.application-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.domain-name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.domain-uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.domain-type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.url-list
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 10800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '55':
+    id: 55
+    taskid: '55'
+    type: regular
+    task:
+      id: '55'
+      version: -1
+      name: checkpoint-application-site-delete
+      description: ''
+      script: '|||checkpoint-application-site-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '56'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 11000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '56':
+    id: '56'
+    taskid: '56'
+    type: condition
+    task:
+      id: '56'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '57'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: checkpoint.application-site.message
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 11200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '57':
+    id: 57
+    taskid: '57'
+    type: regular
+    task:
+      id: '57'
+      version: -1
+      name: checkpoint-publish
+      description: ''
+      script: '|||checkpoint-publish'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '58'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 11400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '58':
+    id: '58'
+    taskid: '58'
+    type: title
+    task:
+      id: '58'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 11600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
