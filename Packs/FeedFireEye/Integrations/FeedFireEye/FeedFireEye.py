@@ -1,5 +1,4 @@
 import urllib3
-import datetime
 from requests.auth import HTTPBasicAuth
 
 from CommonServerPython import *
@@ -29,8 +28,8 @@ class Client(BaseClient):
     @staticmethod
     def parse_access_token_expiration_time(expires_in: str) -> int:
         try:
-            current_time = datetime.datetime.now()
-            expiration_time = current_time + datetime.timedelta(seconds=int(expires_in))
+            current_time = datetime.now()
+            expiration_time = current_time + timedelta(seconds=int(expires_in))
             epoch_expiration_time = int(expiration_time.strftime('%s'))
         except ValueError:
             demisto.info('INFO - could not parse expiration time for access token.')
@@ -62,7 +61,7 @@ class Client(BaseClient):
 
     def get_access_token(self):
         last_token_fetched_expiration_time = demisto.getIntegrationContext().get('expiration_time')
-        current_time = int(datetime.datetime.now().strftime('%s'))
+        current_time = int(datetime.now().strftime('%s'))
 
         if last_token_fetched_expiration_time and last_token_fetched_expiration_time > current_time:
             auth_token = demisto.getIntegrationContext().get('auth_token')
@@ -112,7 +111,8 @@ def fetch_indicators_command(client: Client, feedTags: list, limit: int = -1):
             Dict. Data to be entered to context.
             Dict. The raw data of the indicators.
     """
-    iterator = client.build_iterator()
+    # iterator = client.build_iterator()
+    iterator = list()  # type: list
     indicators = []
     raw_response = []
 
