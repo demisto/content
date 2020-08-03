@@ -145,16 +145,6 @@ class Client(BaseClient):
         )
 
 
-def arg_to_timestamp(arg):
-    if isinstance(arg, str) and arg.isdigit():
-        return int(arg)
-    if isinstance(arg, str):
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
-        return int(date.timestamp())
-    if isinstance(arg, (int, float)):
-        return int(arg)
-
-
 def generate_specific_key_by_command_name(url_suffix):
     service_key, instance_key, username_key = '', '', ''
     if url_suffix == '/entities/':
@@ -489,7 +479,7 @@ def calculate_fetch_start_time(last_fetch, first_fetch):
     if last_fetch is None:
         if not first_fetch:
             first_fetch = '3 days'
-        first_fetch_time = arg_to_timestamp(first_fetch)
+        first_fetch_time = date_to_timestamp(first_fetch)
         return first_fetch_time
     else:
         last_fetch = int(last_fetch)
@@ -531,7 +521,8 @@ def fetch_incidents(client, max_results, last_run, first_fetch, filters):
     last_fetch = last_run.get('last_fetch')
     fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
     filters["date"] = {"gte": fetch_start_time}
-    alerts = client.list_incidents(filters, limit=max_results)
+    alerts_response_data = client.list_incidents(filters, limit=max_results)
+    alerts = alerts_response_data.get('data')
     alerts = arrange_alerts_by_incident_type(alerts)
     incidents, fetch_start_time = alerts_to_incidents_and_fetch_start_from(alerts, fetch_start_time)
     next_run = {'last_fetch': fetch_start_time}
