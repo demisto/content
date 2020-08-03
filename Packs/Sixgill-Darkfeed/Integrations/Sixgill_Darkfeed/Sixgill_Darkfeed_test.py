@@ -607,7 +607,7 @@ def test_get_indicators_command(mocker):
 def test_feed_tags(mocker):
     """
     Given:
-    - tags parameters
+    - feedTags parameter
     When:
     - Executing fetch command on feed
     Then:
