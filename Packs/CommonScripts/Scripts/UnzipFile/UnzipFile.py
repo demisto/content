@@ -22,7 +22,7 @@ def get_zip_path(args):
         for entry in entries:
             fn = demisto.get(entry, 'File')
 
-            is_text = type(fn) in [unicode, str]
+            is_text = type(fn) is str
             is_correct_file = args.get('fileName', '').lower() == fn.lower()
             is_zip = fn.lower().endswith('.zip')
 
