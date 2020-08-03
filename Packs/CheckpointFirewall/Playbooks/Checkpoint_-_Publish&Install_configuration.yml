@@ -1,8 +1,7 @@
 id: b79f870c-34fe-4563-8f41-f35d00e8ef94
-version: 1
-fromversion: 5.0.0
+version: 73
 name: Checkpoint - Publish&Install configuration
-description: Publish the Checkpoint Firewall configuration, also, install policy over all the gateways are available  .
+description: Publish the Checkpoint Firewall configuration, also, install policy over all the gateways are available.
 starttaskid: "0"
 tasks:
   "0":
@@ -180,13 +179,13 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 636d15d0-910a-443d-895e-83858ddc17c1
+    taskid: a958142c-d8ed-4d3f-8e26-3a04adb263e8
     type: regular
     task:
-      id: 636d15d0-910a-443d-895e-83858ddc17c1
+      id: a958142c-d8ed-4d3f-8e26-3a04adb263e8
       version: -1
       name: checkpoint-install-policy
-      description: Install Policy  Changes to Checkpoint gateways. Default is "Standard" policy.
+      description: Install Policy  Changes to Checkpoint gateways. Default is "Standard".
       script: '|||checkpoint-install-policy'
       type: regular
       iscommand: true
@@ -201,7 +200,9 @@ tasks:
       session_id:
         simple: ${inputs.sid}
       targets:
-        simple: ${CheckPoint.list-gateways.name}
+        complex:
+          root: CheckPoint
+          accessor: gateways.type
     continueonerror: true
     separatecontext: false
     view: |-
@@ -248,10 +249,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 85924d20-8d5a-4838-8319-3239cce11769
+    taskid: 9b711228-0af3-42a7-8498-d913e684ea50
     type: regular
     task:
-      id: 85924d20-8d5a-4838-8319-3239cce11769
+      id: 9b711228-0af3-42a7-8498-d913e684ea50
       version: -1
       name: checkpoint-show-gateways-and-servers
       description: Show relevant Servers / Instances to Install policy.
@@ -419,10 +420,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: fddba8b0-c5cd-4e90-8a4e-e2700376ce25
+    taskid: 319909f6-6520-48ab-8e04-2dd4f957dc9c
     type: regular
     task:
-      id: fddba8b0-c5cd-4e90-8a4e-e2700376ce25
+      id: 319909f6-6520-48ab-8e04-2dd4f957dc9c
       version: -1
       name: Get  Checkpoint publish status
       description: Get TaskID status for Publish.
@@ -437,7 +438,9 @@ tasks:
       session_id:
         simple: ${inputs.sid}
       task_id:
-        simple: ${CheckPoint.publish.task-id}
+        complex:
+          root: CheckPoint
+          accessor: publish.task-id
     separatecontext: false
     view: |-
       {
@@ -451,10 +454,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 98317f59-6f71-40c5-84ff-c6e3d5d09cd9
+    taskid: 5a3aaa3a-8f79-426c-8e51-a418bd33ffb8
     type: condition
     task:
-      id: 98317f59-6f71-40c5-84ff-c6e3d5d09cd9
+      id: 5a3aaa3a-8f79-426c-8e51-a418bd33ffb8
       version: -1
       name: Was Checkpoint publish successful?
       description: Filter if Checkpoint publish successful.
@@ -522,12 +525,13 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 49b67dbd-495c-4430-82cc-3c725d812a79
+    taskid: 2a9848c1-845c-42f2-89e0-6f6049b4a706
     type: regular
     task:
-      id: 49b67dbd-495c-4430-82cc-3c725d812a79
+      id: 2a9848c1-845c-42f2-89e0-6f6049b4a706
       version: -1
       name: Fix Error and publish manually
+      description: 'User Manually add resolve'.
       type: regular
       iscommand: false
       brand: ""
@@ -547,10 +551,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 54e50938-3955-43ff-80e1-25eb15ae0828
+    taskid: 067e9493-c861-45b2-8232-53ac584dde3d
     type: regular
     task:
-      id: 54e50938-3955-43ff-80e1-25eb15ae0828
+      id: 067e9493-c861-45b2-8232-53ac584dde3d
       version: -1
       name: Get  Checkpoint install policy status
       description: Get TaskID status for Install policy.
@@ -567,7 +571,7 @@ tasks:
       task_id:
         complex:
           root: CheckPoint
-          accessor: instal-policy.task-id
+          accessor: install-policy.task-id
     separatecontext: false
     view: |-
       {
@@ -611,12 +615,13 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 300d57f8-0208-4861-8238-0d861756e581
+    taskid: bb78e3c9-dfa2-411c-85b7-0ee8fbc3f169
     type: regular
     task:
-      id: 300d57f8-0208-4861-8238-0d861756e581
+      id: bb78e3c9-dfa2-411c-85b7-0ee8fbc3f169
       version: -1
       name: Fix Error and install policy manually
+      description: User Manually add resolve.
       type: regular
       iscommand: false
       brand: ""
@@ -636,10 +641,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: f641f4dd-57c2-4995-8190-9459b5e6f473
+    taskid: e3c29da8-595c-46a8-8f68-2e20f4e65e74
     type: condition
     task:
-      id: f641f4dd-57c2-4995-8190-9459b5e6f473
+      id: e3c29da8-595c-46a8-8f68-2e20f4e65e74
       version: -1
       name: Was Checkpoint Install Policy successful?
       description: Filter if Checkpoint install policy successful.
@@ -658,7 +663,9 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CheckPoint.instal-policy.task-id
+              complex:
+                root: CheckPoint
+                accessor: install-policy.task-id
             iscontext: true
           right:
             value:
@@ -675,10 +682,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 567c84d1-9ad7-4d68-828d-691155864847
+    taskid: 2771e1d3-d1c8-464a-8333-58dbc7819fba
     type: condition
     task:
-      id: 567c84d1-9ad7-4d68-828d-691155864847
+      id: 2771e1d3-d1c8-464a-8333-58dbc7819fba
       version: -1
       name: Filter TaskID
       description: Filter TaskID to validate only new push configuration TaskID.
@@ -697,7 +704,9 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CheckPoint.instal-policy.task-id
+              complex:
+                root: CheckPoint
+                accessor: install-policy.task-id
             iscontext: true
     view: |-
       {
@@ -711,10 +720,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 96dfcce8-2de5-4cb2-86bd-bb1ecc7978bf
+    taskid: 50c937c9-d4d0-4a92-8807-bbab08504154
     type: condition
     task:
-      id: 96dfcce8-2de5-4cb2-86bd-bb1ecc7978bf
+      id: 50c937c9-d4d0-4a92-8807-bbab08504154
       version: -1
       name: Filter TaskID
       description: Filter TaskID to validate only new push configuration TaskID.
@@ -733,7 +742,9 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: ${CheckPoint.publish.task-id}
+              complex:
+                root: CheckPoint
+                accessor: publish.task-id
             iscontext: true
     view: |-
       {
