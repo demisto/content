@@ -45,6 +45,7 @@ class Client(BaseClient):
             new_user = self.user.add_user(data_obj, send_email=data.get("send_email"))
 
         except Exception:
+            pass
             raise Exception("Exception occured", traceback.format_exc())
 
         return new_user
@@ -246,7 +247,7 @@ def test_module(client, args):
         return 'ok', None, None
     else:
         message = res_json.get('result').get('message')
-        return "Test failed because: {}.".format(message), None, None
+        return (f'Test failed because: {message}'), None, None
 
 
 def get_user_command(client, args):
@@ -296,14 +297,17 @@ def get_user_command(client, args):
         generic_iam_context = OutputContext(success=False, iden=user_id, errorCode=errorCode,
                                             errorMessage=errorMessage, details=res_json)
 
-    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(
-        generic_iam_context.command)
+    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
 
     outputs = {
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Smartsheet user ' + str(user_id or email) + ' data:', generic_iam_context.data)
+    readable_output = tableToMarkdown(name='Smartsheet user ' + str(user_id or email) + ' data:',
+                                      t=generic_iam_context.data,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username",
+                                               "email", "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
 
     return (
         readable_output,
@@ -344,13 +348,16 @@ def remove_user_command(client, args):
                                             errorCode=res_json.get('result').get('statusCode'),
                                             errorMessage=errorMessage, details=res_json)
 
-    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(
-        generic_iam_context.command)
+    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
     outputs = {
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Smartsheet user ' + str(user_id) + ' data:', generic_iam_context.data)
+    readable_output = tableToMarkdown(name='Smartsheet user ' + str(user_id) + ' data:',
+                                      t=generic_iam_context.data,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username",
+                                               "email", "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
 
     return (
         readable_output,
@@ -400,14 +407,17 @@ def update_user_command(client, args):
                                             errorCode=res_json.get('result').get('statusCode'),
                                             errorMessage=errorMessage, details=res_json)
 
-    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(
-        generic_iam_context.command)
+    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
 
     outputs = {
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Smartsheet user ' + str(user_id) + ' data:', generic_iam_context.data)
+    readable_output = tableToMarkdown(name='Smartsheet user ' + str(user_id) + ' data:',
+                                      t=generic_iam_context.data,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username",
+                                               "email", "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
 
     return (
         readable_output,
@@ -445,9 +455,8 @@ def create_user_command(client, args):
         user_id = res_json.get('result').get('id', None)
         user_email = res_json.get('result').get('email', None)
         res_json = res_json.get('result')
-        active = res_json.get('status', False)
         generic_iam_context = OutputContext(success=True, iden=user_id, email=user_email, details=res_json,
-                                            active=active)  # active is always Pending in smartsheet while creating user.
+                                            active=False)  # active is always Pending in smartsheet while creating user.
     elif (res_json.get('result').get('statusCode', None) == 403):
         errorMessage = res_json.get('result').get('message', None)
         generic_iam_context = OutputContext(success=False, iden=None, email=parsed_scim.get('email'), errorCode=409,
@@ -458,14 +467,17 @@ def create_user_command(client, args):
                                             errorCode=res_json.get('result').get('statusCode'),
                                             errorMessage=errorMessage, details=res_json)
 
-    generic_iam_context_dt = "{}(val.id == obj.id && val.instanceName == obj.instanceName)".format(
-        generic_iam_context.command)
+    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
 
     outputs = {
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown('Smartsheet user data:', generic_iam_context.data)
+    readable_output = tableToMarkdown(name='Smartsheet user data:',
+                                      t=generic_iam_context.data,
+                                      headers=["brand", "instanceName", "success", "active", "id", "username",
+                                               "email", "errorCode", "errorMessage", "details"],
+                                      removeNull=True)
 
     return (
         readable_output,
@@ -502,19 +514,18 @@ def main():
         client = Client(user=user)
 
         if command in commands:
+            sys.stderr = open(os.devnull, "w")
             human_readable, outputs, raw_response = commands[command](client, demisto.args())
-            if raw_response and raw_response.get('success') is False:
-                sys.stderr = open(os.devnull, "w")
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
     # Log exceptions
     except Exception:
-        demisto.error("Failed to execute {} command. Traceback:{}".format(demisto.command(), traceback.format_exc()))
-        return_error("Failed to execute {} command. Traceback:{}".format(demisto.command(), traceback.format_exc()))
+        demisto.error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
 
     # Log exceptions
     except Exception as e:
-        ("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
+        (f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
