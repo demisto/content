@@ -87,7 +87,7 @@ def extract(file_info, dir_path, password=None):
         else:
             cmd = 'unrar x -p- {} {}'.format(file_path, dir_path)
     else:
-        cmd = '7z x -mm=lzma -p{} -o{} {}'.format(password, dir_path, file_path)
+        cmd = '7z x -p{} -o{} {}'.format(password, dir_path, file_path)
     process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
     # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
