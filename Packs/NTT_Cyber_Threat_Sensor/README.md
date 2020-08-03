@@ -1,6 +1,5 @@
 ## About this pack
-Pack for Palo Alto Networks Coretex XSOAR integration with NTT Ltd. Cyber Threat Sensor.
+This pack adds integration support for NTT Cyber Threat Sensor (CTS) technology. It currently supports the function to fetch Threat Detection Incident Reports from the CTS Cloud manager.
 
 ### Integrations
-#### fetch_incidents
-Fetch incidents including meta data and recommendations from NTT Ltd. Depending of the service, pcap might be included with the incident.
+Fetch incidents including meta data and recommendations from NTT Ltd. Depending of service level associated evidence data (PCAP) may be included with the incident.
