@@ -154,11 +154,6 @@ references:
     run:
       name: Destroy Instances
       command: |
-        if [ -n "${TIME_TO_LIVE}" ]
-        then
-            echo "Skipping - Time to live was set to $TIME_TO_LIVE minutes"
-            exit 0
-        fi
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ]
           then
             echo "Skipping - not running in demisto-sdk nightly"
@@ -171,7 +166,7 @@ references:
             echo "Skipping - instance was not setup"
             exit 0
         fi
-        python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json "$INSTANCE_ROLE"
+        python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
         zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
@@ -373,6 +368,7 @@ jobs:
             - *add_ssh_keys
             - *prepare_environment
             - *secrets
+            - *create_id_set
             - *validate_files_and_yaml
             - run:
                 name: Content Docs Site
