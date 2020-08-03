@@ -503,21 +503,19 @@ def fetch_incidents():
     full_enrich = demisto.params().get('full_enrich')
     last_run = demisto.getLastRun()
     offense_id = last_run['id'] if last_run and 'id' in last_run else 0
-    if last_run and offense_id == 0:
-        start_time = last_run['startTime'] if 'startTime' in last_run else '0'
-        fetch_query = 'start_time>{0}{1}'.format(start_time, ' AND ({0})'.format(query) if query else '')
-    else:
-        fetch_query = 'id>{0} {1}'.format(offense_id, 'AND ({0})'.format(query) if query else '')
-        # qradar returns offenses sorted desc on id and there's no way to change sorting.
-        # if we get `offensesPerCall` offenses it means we (probably) have more than that so we
-        # start looking for the end of the list by doubling the page position until we're empty.
-        # then start binary search back until you find the end of the list and finally return
-        # `offensesPerCall` from the end.
-    demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
-    raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
-    demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
-    if len(raw_offenses) >= OFFENSES_PER_CALL:
+    fetch_query = ''
+    latest_offense_fnd = False
+    while not latest_offense_fnd:
+        fetch_query = 'id>{0} AND id<{1} {2}'.format(offense_id,
+                                                     int(offense_id) + OFFENSES_PER_CALL + 1,
+                                                     'AND ({})'.format(query) if query else '')
+        demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
         raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL - 1), _filter=fetch_query)
+        if raw_offenses or last_run:
+            latest_offense_fnd = True
+        else:  # the first run should increment the search until found
+            offense_id += OFFENSES_PER_CALL
+    demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
     raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
     if full_enrich:
@@ -527,6 +525,7 @@ def fetch_incidents():
     for offense in raw_offenses:
         offense_id = max(offense_id, offense['id'])
         incidents.append(create_incident_from_offense(offense))
+    demisto.debug('QRadarMsg - LastRun was set to {}'.format(offense_id))
     demisto.setLastRun({'id': offense_id})
     return incidents
 
