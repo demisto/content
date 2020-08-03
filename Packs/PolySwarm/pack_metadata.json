@@ -1,16 +1,19 @@
 {
-  "name": "PolySwarm",
-  "description": "Real-time threat intelligence from a crowdsourced network of security experts and antivirus companies.",
-  "support": "partner",
-  "currentVersion": "1.0.0",
-  "author": "PolySwarm",
-  "url": "",
-  "email": "bill.fehr@polyswarm.io",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Data Enrichment & Threat Intelligence"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "PolySwarm",
+    "description": "Real-time threat intelligence from a crowdsourced network of security experts and antivirus companies.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "PolySwarm",
+    "url": "",
+    "email": "bill.fehr@polyswarm.io",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "JavierBotella"
+    ]
 }

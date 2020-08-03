@@ -1,4 +1,6 @@
 ''' IMPORTS '''
+import urllib
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -27,6 +29,7 @@ def get_client():
     proxy_port = params.get('proxyPort')
 
     tc = ThreatConnect(access, secret, default_org, url)
+    tc._proxies = handle_proxy()
     if proxy_ip and proxy_port and len(proxy_ip) > 0 and len(proxy_port) > 0:
         tc.set_proxies(proxy_ip, int(proxy_port))
 
@@ -1530,6 +1533,7 @@ def associate_indicator_request(indicator_type, indicator, group_type, group_id)
     tc = get_client()
     ro = RequestObject()
     ro.set_http_method('POST')
+    indicator = urllib.parse.quote(indicator, safe='')
     ro.set_request_uri('/v2/indicators/{}/{}/groups/{}/{}'.format(indicator_type, indicator, group_type, group_id))
     response = tc.api_request(ro).json()
 

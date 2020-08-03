@@ -3,7 +3,7 @@ version: -1
 fromversion: 4.1.0
 name: Account Enrichment - Generic v2
 description: |-
-  Enrich accounts using one or more integrations.
+  DEPRECATED. Use "Account Enrichment - Generic v2.1" playbook instead. Enrich accounts using one or more integrations.
   Supported integrations:
   - Active Directory
 starttaskid: "0"
@@ -238,4 +238,4 @@ outputs:
   description: The account's manager.
   type: string
 tests:
-  - Account Enrichment - Generic v2 - Test
+  - No tests

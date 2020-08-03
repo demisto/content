@@ -126,7 +126,7 @@ tasks:
       {
         "position": {
           "x": 630,
-          "y": 1510
+          "y": 1680
         }
       }
     note: false
@@ -502,7 +502,7 @@ tasks:
       {
         "position": {
           "x": 350,
-          "y": 1340
+          "y": 1500
         }
       }
     note: false
@@ -510,55 +510,50 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 95885bc3-5a86-4a51-8e22-f6b87e365a5f
-    type: regular
+    taskid: edf547ca-7606-4d2b-8c3c-fc5cb0348c6e
+    type: condition
     task:
-      id: 95885bc3-5a86-4a51-8e22-f6b87e365a5f
+      id: edf547ca-7606-4d2b-8c3c-fc5cb0348c6e
       version: -1
-      name: Dismiss Prisma Cloud alert
-      description: Dismiss the alerts matching the given filter. Must provide either
-        policy IDs or alert IDs.
-      script: RedLock|||redlock-dismiss-alerts
-      type: regular
-      iscommand: true
+      name: Is Prisma Cloud (RedLock) integration enabled?
+      description: Is Prisma Cloud (RedLock) integration enabled?
+      type: condition
+      iscommand: false
       brand: RedLock
     nexttasks:
-      '#none#':
+      '#default#':
       - "9"
-    scriptarguments:
-      alert-id:
-        complex:
-          root: incident
-          accessor: labels
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: id
-      alert-rule-name: {}
-      alert-status: {}
-      cloud-account: {}
-      cloud-region: {}
-      cloud-type: {}
-      dismissal-note:
-        simple: ${incident.labels.id} has been remediated by Demisto.
-      policy-compliance-standard: {}
-      policy-id: {}
-      policy-label: {}
-      policy-name: {}
-      policy-severity: {}
-      policy-type: {}
-      resource-id: {}
-      resource-name: {}
-      resource-type: {}
-      risk-grade: {}
-      time-range-date-from: {}
-      time-range-date-to: {}
-      time-range-unit: {}
-      time-range-value: {}
+      "yes":
+      - "14"
     continueonerror: true
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RedLock
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
     view: |-
       {
         "position": {
@@ -639,6 +634,71 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: cdf5e218-c21c-40e0-8a90-ea03bada73ac
+    type: regular
+    task:
+      id: cdf5e218-c21c-40e0-8a90-ea03bada73ac
+      version: -1
+      name: Dismiss Prisma Cloud alert
+      description: Dismiss the alerts matching the given filter. Must provide either
+        policy IDs or alert IDs.
+      script: RedLock|||redlock-dismiss-alerts
+      type: regular
+      iscommand: true
+      brand: RedLock
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert-id:
+        complex:
+          root: incident
+          accessor: labels
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      alert-rule-name: {}
+      alert-status: {}
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
+      dismissal-note:
+        simple: ${incident.labels.id} has been remediated by Demisto.
+      policy-compliance-standard: {}
+      policy-id: {}
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
+      risk-grade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -655,7 +715,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1575,
+        "height": 1745,
         "width": 1860,
         "x": -850,
         "y": 0

@@ -13,6 +13,6 @@ The playbooks included in this pack help you automate repetitive tasks associate
 As part of this pack, you will also get out-of-the-box US breach notification incident views, and a full layout. All of these are easily customizable to suit the needs of your organization.
 
 
-_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/phishing-investigation---generic-v2)_
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/us---breach-notification)_
 
 ![US-BreachNotification](https://raw.githubusercontent.com/demisto/content/master/Packs/BreachNotification-US/doc_files/US_-_Breach_Notification.png)
