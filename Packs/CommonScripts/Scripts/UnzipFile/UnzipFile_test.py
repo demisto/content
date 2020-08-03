@@ -4,7 +4,7 @@ import os
 import pytest
 
 
-data_test_unzip_no_password = ['testZip.yml', 'ScanSummary.txt', 'item.png', 'Untitled_document.pdf']
+data_test_unzip_no_password = ['testZip.yml', 'ScanSummary.txt', 'item.png']
 
 
 @pytest.mark.parametrize('file_name', data_test_unzip_no_password)
@@ -87,3 +87,41 @@ def test_unzip_with_password(file_name, password):
     # - ensure that the saved file has expected content data
     assert expected_data == actual_file_data,\
         'failed unzipping file: ' + zipped_file_path + ' with password: ' + password
+
+
+def test_unrar_no_password():
+    """
+    Given
+    - valid rar file - no password required
+    - empty folder _dir
+    When
+    - run extract on the rar file and export the internal files to _dir
+    Then
+    - ensure rar file content has been saved at _dir directory with the original filename
+    - ensure that the saved file has expected content
+    """
+    # Given
+    # - valid rar file - no password required
+    file_name = 'Untitled_document.pdf'
+    main_dir = '/'.join(__file__.split('/')[0:-1])
+    expected_file_unzipped = os.path.join(main_dir + '/data_test', file_name)
+    zipped_file_path = expected_file_unzipped + '.rar'
+    # Creation of file object
+    zipped_file_object = {
+        'name': 'testFile',
+        'path': zipped_file_path
+    }
+    # - empty folder _di
+    _dir = mkdtemp()
+    # When
+    # - run extract on that zip file and export the internal files to _dir
+    extract(zipped_file_object, _dir)
+    # Then
+    # - ensure rar file content have been saved at _dir directory with the original filename
+    with open(_dir + '/' + file_name, 'rb') as f:
+        actual_file_data = f.read()
+    with open(expected_file_unzipped, 'rb') as f:
+        expected_data = f.read()
+    shutil.rmtree(_dir)
+    # - ensure that the saved file has expected content data
+    assert expected_data == actual_file_data, 'failed extracting ' + zipped_file_path
