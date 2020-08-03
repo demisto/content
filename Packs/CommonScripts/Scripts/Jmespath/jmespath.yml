@@ -13,6 +13,9 @@ args:
 - name: expression
   required: true
   description: Jmespath expression
+- name: value
+  required: true
+  description: Original input value
 scripttarget: 0
 subtype: python3
 runonce: false
