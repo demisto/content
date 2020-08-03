@@ -2,8 +2,7 @@ id: b79f870c-34fe-4563-8f41-f35d00e8ef94
 version: 1
 fromversion: 5.0.0
 name: Checkpoint - Publish&Install configuration
-description: |
-  Publish the Checkpoint Firewall configuration, also, install policy over all the gateways are available  .
+description: Publish the Checkpoint Firewall configuration, also, install policy over all the gateways are available  .
 starttaskid: "0"
 tasks:
   "0":
@@ -187,10 +186,7 @@ tasks:
       id: 636d15d0-910a-443d-895e-83858ddc17c1
       version: -1
       name: checkpoint-install-policy
-      description: |
-        Install Policy  Changes to Checkpoint gateways.
-
-        ** By default we use "Standard" policy for example and approved flow, but can be changed by organization .
+      description: Install Policy  Changes to Checkpoint gateways. Default is "Standard" policy.
       script: '|||checkpoint-install-policy'
       type: regular
       iscommand: true
@@ -226,8 +222,7 @@ tasks:
       id: d82f1865-8c6b-4b1d-825f-7b61fed6fdd9
       version: -1
       name: checkpoint-show-packages
-      description: |
-        Can be used to pass/fetch  relevant packages to install .
+      description: Can be used to pass/fetch  relevant packages to install.
       script: CheckPoint_FW|||checkpoint-packages-list
       type: regular
       iscommand: true
@@ -259,7 +254,7 @@ tasks:
       id: 85924d20-8d5a-4838-8319-3239cce11769
       version: -1
       name: checkpoint-show-gateways-and-servers
-      description: Show relevant Servers / Instances to Install policy .
+      description: Show relevant Servers / Instances to Install policy.
       script: CheckPoint_FW|||checkpoint-gateways-list
       type: regular
       iscommand: true
@@ -292,7 +287,7 @@ tasks:
       id: 8cefbf82-7177-42af-8702-90580d9864af
       version: -1
       name: checkpoint-logout
-      description: Logout from a given session
+      description: Logout from a given session.
       script: CheckPoint_FW|||checkpoint-logout
       type: regular
       iscommand: true
@@ -462,7 +457,7 @@ tasks:
       id: 98317f59-6f71-40c5-84ff-c6e3d5d09cd9
       version: -1
       name: Was Checkpoint publish successful?
-      description: Filter if Checkpoint publish successful .
+      description: Filter if Checkpoint publish successful.
       type: condition
       iscommand: false
       brand: ""
@@ -503,7 +498,7 @@ tasks:
       id: 10c21eaa-8535-45d6-89cb-c0e9cb04e054
       version: -1
       name: Print Publish Error
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -592,7 +587,7 @@ tasks:
       id: ef546725-301d-4aff-8c3b-558b4da731b6
       version: -1
       name: Print Publish Error
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -647,7 +642,7 @@ tasks:
       id: f641f4dd-57c2-4995-8190-9459b5e6f473
       version: -1
       name: Was Checkpoint Install Policy successful?
-      description: Filter if Checkpoint install policy successful .
+      description: Filter if Checkpoint install policy successful.
       type: condition
       iscommand: false
       brand: ""

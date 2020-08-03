@@ -406,6 +406,5 @@ inputs:
     required for publish changes. done by this SID will be seen by all users only
     after publish is called and finish.
 outputs: []
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
