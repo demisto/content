@@ -2795,11 +2795,6 @@
             "timeout": 60000
         },
         {
-            "integrations": "TruSTAR v2",
-            "playbookID": "TruSTAR v2-Test",
-            "timeout": 500
-        },
-        {
             "integrations": "Ivanti Heat",
             "playbookID": "Ivanti Heat - Test"
         },
