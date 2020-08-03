@@ -1,5 +1,6 @@
 
-This integration lets you import **Palo Alto Networks IoT** alerts and vulnerabilities into Palo Alto Networks XSOAR.
+This integration provides the ability to get a device details from Palo Alto Networks IoT security portal, and import
+**Palo Alto Networks IoT** alerts and vulnerabilties into Cortex XSOAR.
 
 ## Use Cases
 
@@ -96,6 +97,12 @@ Get a list of alerts
 | stime | The starting time of the list of alerts, default: -1 | Optional |
 | offset | The maximum size of the alerts list, default: 1000 | Optional |
 
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| alerts | unknown | a list of alerts from IoT security portal |
+
 ### iot-security-list-vulns
 ***
 Get a list of vulnerabilities
@@ -110,6 +117,12 @@ Get a list of vulnerabilities
 | --- | --- | --- |
 | stime | The starting time of the list of vulnerabilities, default: -1 | Optional |
 | offset | The maximum size of the vulnerabilities list, default: 1000 | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| alerts | unknown | a list of vulnerabilities from IoT security portal |
 
 ### iot-security-resolve-alert
 ***

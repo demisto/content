@@ -22,6 +22,20 @@ _INCIDENTS = [
 
 
 def test_check_servicenow_and_close(monkeypatch):
+    """
+    Scenario: checking opened XSOAR IoT incidents.
+    If there's a ServiceNow ticket created, query its status, then close it accordingly
+
+    Given
+    - An opened incident with a ServiceNow ticket created for this
+
+    When
+    - Closing this incident
+
+    Then
+    - Ensure the ServiceNow query command 'servicenow-get-record' is run
+    - Ensure the close investigation is happening
+    """
     monkeypatch.setattr(iot_check_servicenow, 'get_opened_iot_incidents', lambda: _INCIDENTS)
 
     monkeypatch.setattr(demisto, "executeCommand", lambda command, args: {

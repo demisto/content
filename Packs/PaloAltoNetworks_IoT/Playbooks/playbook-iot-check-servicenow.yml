@@ -83,7 +83,7 @@ tasks:
       assetid: {}
       closeNotes:
         simple: Job finished
-      closeReason:
+      close_reason:
         simple: Other
       code42alerttype: {}
       emailclassification: {}

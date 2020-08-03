@@ -140,15 +140,15 @@ tasks:
       alert_name:
         simple: ${incident.name}
       category:
-        simple: ${PaloAltoNetworksIoT.device.category}
+        simple: ${PaloAltoNetworksIoT.Device.category}
       model:
-        simple: ${PaloAltoNetworksIoT.device.model}
+        simple: ${PaloAltoNetworksIoT.Device.model}
       profile:
-        simple: ${PaloAltoNetworksIoT.device.profile}
+        simple: ${PaloAltoNetworksIoT.Device.profile}
       raw_type:
         simple: ${incident.rawType}
       vendor:
-        simple: ${PaloAltoNetworksIoT.device.vendor}
+        simple: ${PaloAltoNetworksIoT.Device.vendor}
     separatecontext: false
     view: |-
       {
@@ -246,7 +246,7 @@ tasks:
       - "8"
     scriptarguments:
       value:
-        simple: ${PaloAltoNetworksIoT.raci.r_snow.table}
+        simple: ${PaloAltoNetworksIoT.RACI.r_snow.table}
     separatecontext: false
     view: |-
       {
@@ -278,11 +278,11 @@ tasks:
       - "9"
     scriptarguments:
       custom_fields:
-        simple: ${PaloAltoNetworksIoT.raci.r_snow.custom_fields}
+        simple: ${PaloAltoNetworksIoT.RACI.r_snow.custom_fields}
       fields:
-        simple: ${PaloAltoNetworksIoT.raci.r_snow.fields}
+        simple: ${PaloAltoNetworksIoT.RACI.r_snow.fields}
       table_name:
-        simple: ${PaloAltoNetworksIoT.raci.r_snow.table}
+        simple: ${PaloAltoNetworksIoT.RACI.r_snow.table}
     separatecontext: false
     view: |-
       {
@@ -297,7 +297,7 @@ tasks:
     fieldMapping:
     - incidentfield: ServiceNow Table Name
       output:
-        simple: ${PaloAltoNetworksIoT.raci.r_snow.table}
+        simple: ${PaloAltoNetworksIoT.RACI.r_snow.table}
     - incidentfield: ServiceNow Record ID
       output:
         simple: ${ServiceNow.Record.ID}

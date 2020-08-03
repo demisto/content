@@ -1,3 +1,10 @@
+args:
+- default: false
+  description: The alert close reason (either 'Resolved' or 'No Action Needed')
+  isArray: false
+  name: close_reason
+  required: true
+  secret: false
 comment: IoT alert post processing script to resolve the alert in IoT security portal using API
 commonfields:
   id: iot-security-alert-post-processing
