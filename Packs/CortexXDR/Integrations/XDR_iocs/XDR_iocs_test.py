@@ -18,7 +18,6 @@ class TestGetHeaders:
             Given:
              - API key
              - API key ID
-
             Then:
                 - Verify headers created correct.
         """
@@ -41,7 +40,6 @@ class TestGetHeaders:
         """
             Given:
                 Empty params
-
             Then:
                 get_headers will not raise error
         """
@@ -77,10 +75,8 @@ class TestHttpRequest:
         """
             Given:
                 - Status code
-
             When:
                 - http_request returns this status code.
-
             Then:
                 - Verify error/success format.
         """
@@ -98,7 +94,6 @@ class TestGetRequestsKwargs:
         """
             Given:
                 - file to upload
-
             Then:
                 - Verify output format.
         """
@@ -115,7 +110,6 @@ class TestGetRequestsKwargs:
         """
             Given:
                 - simple json
-
             Then:
                 - the json ready to send
         """
@@ -131,7 +125,6 @@ class TestPrepareCommands:
         """
             Given:
                 - get changes command
-
             Then:
                 - Verify url and json format.
         """
@@ -145,7 +138,6 @@ class TestPrepareCommands:
         """
             Given:
                 - enable iocs command
-
             Then:
                 - Verify url and json format.
         """
@@ -157,7 +149,6 @@ class TestPrepareCommands:
         """
             Given:
                 - disable iocs command
-
             Then:
                 - Verify url and json format.
         """
@@ -212,10 +203,8 @@ class TestCreateFile:
         """
             Given:
                 - Sync command
-
             When:
                 - there is no iocs
-
             Then:
                 - Verify sync file data.
         """
@@ -230,10 +219,8 @@ class TestCreateFile:
         """
             Given:
                 - Sync command
-
             When:
                 - iocs type is a specific type.
-
             Then:
                 - Verify sync file data.
         """
@@ -247,10 +234,8 @@ class TestCreateFile:
         """
             Given:
                 - Sync command
-
             When:
                 - iocs as all types
-
             Then:
                 - Verify sync file data.
         """
@@ -271,10 +256,8 @@ class TestCreateFile:
         """
             Given:
                 - Sync command
-
             When:
                 - a part iocs dont have all required data
-
             Then:
                 - Verify sync file data.
         """
@@ -294,10 +277,8 @@ class TestCreateFile:
         """
             Given:
                 - iocs to keep command
-
             When:
                 - there is no iocs
-
             Then:
                 - Verify iocs to keep file data.
         """
@@ -313,10 +294,8 @@ class TestCreateFile:
         """
             Given:
                 - iocs to keep command
-
             When:
                 - iocs type is a specific type.
-
             Then:
                 - Verify iocs to keep file data.
         """
@@ -331,10 +310,8 @@ class TestCreateFile:
         """
             Given:
                 - iocs to keep command
-
             When:
                 - iocs as all types
-
             Then:
                 - Verify iocs to keep file data.
         """
@@ -359,7 +336,6 @@ class TestDemistoIOCToXDR:
         """
             Given:
                 - demisto indicator expiration
-
             Then:
                 - Verify XDR expiration.
         """
@@ -382,7 +358,6 @@ class TestDemistoIOCToXDR:
         """
             Given:
                 - demisto indicator reliability
-
             Then:
                 - Verify XDR reliability.
         """
@@ -401,7 +376,6 @@ class TestDemistoIOCToXDR:
         """
             Given:
                 - demisto indicator type
-
             Then:
                 - Verify XDR type.
         """
@@ -433,7 +407,6 @@ class TestDemistoIOCToXDR:
         """
             Given:
                 - demisto indicator vendors reports.
-
             Then:
                 - Verify XDR vendors format.
         """
@@ -490,7 +463,6 @@ class TestDemistoIOCToXDR:
         """
             Given:
                 - demisto indicator.
-
             Then:
                 - Verify XDR indicator format.
         """
@@ -518,7 +490,6 @@ class TestXDRIOCToDemisto:
         """
             Given:
                 - expiration in XDR format.
-
             Then:
                 - expiration in demisto format.
         """
@@ -596,7 +567,6 @@ class TestXDRIOCToDemisto:
         """
             Given:
                 - IOC in XDR format.
-
             Then:
                 - IOC in demisto format.
         """
@@ -613,7 +583,6 @@ class TestCommands:
             """
                 Given:
                     - enable command
-
                 Then:
                     - Verify enable command is called.
             """
@@ -631,7 +600,6 @@ class TestCommands:
             """
                 Given:
                     - disable command
-
                 Then:
                     - Verify disable command is called.
             """
@@ -680,3 +648,51 @@ class TestCommands:
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
         xdr_ioc_to_timeline(list(map(lambda x: str(x[0].get('RULE_INDICATOR')), TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto)))    # noqa: E501
+
+
+class TestParams:
+    tags_test = [
+        (
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
+             'type': 'IP'},
+            {},
+            'Cortex XDR'
+        ),
+        (
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
+             'type': 'IP'},
+            {'tag': 'tag1'},
+            'tag1'
+        ),
+        (
+            {'value': '11.11.11.11', 'indicator_type': 'IP', 'score': 2},
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'SUSPICIOUS', 'severity': 'INFO',
+             'type': 'IP'},
+            {'feedTags': 'tag2'},
+            'tag2'
+        )
+    ]
+
+    @pytest.mark.parametrize('demisto_ioc, xdr_ioc, param_value, expected', tags_test)
+    def test_feed_tags(self, demisto_ioc, xdr_ioc, param_value, expected, mocker):
+        """
+            Given:
+                - IOC in XDR format.
+
+            Then:
+                - IOC in demisto format.
+        """
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'params', return_value=param_value)
+        mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        outputs = mocker.patch.object(demisto, 'createIndicators')
+        Client.tag = demisto.params().get('feedTags', demisto.params().get('tag', Client.tag))
+        client = Client({'url': 'yana'})
+        xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
+        mocker.patch.object(Client, 'http_request', return_value=xdr_res)
+        get_changes(client)
+        output = outputs.call_args.args[0]
+        assert output[0]['fields']['tags'] == expected
