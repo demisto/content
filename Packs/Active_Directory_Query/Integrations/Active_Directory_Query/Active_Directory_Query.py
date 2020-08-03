@@ -337,8 +337,10 @@ def search_users(default_base_dn, page_size):
     attributes: List[str] = []
     custom_attributes: List[str] = []
 
-    # zero is actually no limitation
-    limit = int(args.get('limit', '0'))
+    # zero is actually no limitation, default is 200
+    limit = int(args.get('limit', '200'))
+    if limit == "0":
+        LOG("Limit set to 0 therefore there is no limitation on number of users")
 
     # default query - list all users
     query = "(&(objectClass=User)(objectCategory=person))"
@@ -1116,5 +1118,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
     main()
