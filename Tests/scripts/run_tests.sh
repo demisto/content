@@ -39,6 +39,13 @@ if [ $code_1 -ne 1 ] ; then
 fi
 
 code_2=$?
+
+if [ $code_1 -eq 0 ] && [ $code_2 -eq 0 ] ; then
+  role="$(echo -e "${INSTANCE_ROLE}" | tr -d '[:space:]')"
+  filepath="./Tests/is_build_passed_${role}.txt"
+  touch "$filepath"
+fi
+
 let "exit_code = $code_1 + $code_2"
 rm $GOOGLE_APPLICATION_CREDENTIALS
 

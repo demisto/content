@@ -1214,5 +1214,5 @@ script:
 tests:
 - pyEWS_Test
 - EWS search-mailbox test
-defaultClassifier: EWS v2
-defaultMapperIn: EWS v2-mapper
+defaultclassifier: EWS v2
+defaultmapperin: EWS v2-mapper

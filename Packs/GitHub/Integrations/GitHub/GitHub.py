@@ -1137,6 +1137,92 @@ def get_download_count():
                    response)
 
 
+def list_owner_repositories(owner_name, repo_type):
+    """ List organization repositories.
+
+    Args:
+        owner_name (str): repositories owner.
+        repo_type (str): repository type, possible values: all, public, private, forks, sources, member, internal.
+
+    Returns:
+        list: organization repositories names.
+    """
+    url_suffix = f"/orgs/{owner_name}/repos"
+    params = {'type': repo_type}
+    repos_info = http_request(method="GET", url_suffix=url_suffix, params=params)
+
+    return [r.get('name') for r in repos_info]
+
+
+def list_repository_workflows(owner_name, repository_name):
+    """ Lists the workflows in a repository.
+
+    Args:
+        owner_name (str): repositories owner.
+        repository_name (str): repository name.
+
+    Returns:
+        list: list of dictionaries of workflow data.
+    """
+    url_suffix = f"/repos/{owner_name}/{repository_name}/actions/workflows"
+    repository_workflows = http_request(method="GET", url_suffix=url_suffix)
+
+    return [w for w in repository_workflows.get('workflows') if w.get('state') == "active"]
+
+
+def get_workflow_usage(owner_name, repository_name, workflow_id):
+    """ Gets the number of billable minutes used by a specific workflow during the current billing cycle.
+
+    Args:
+        owner_name (str): repositories owner.
+        repository_name (str): repository name.
+        workflow_id (str): workflow id.
+
+    Returns:
+        dict: milliseconds usage on ubuntu, macos and windows os.
+    """
+    url_suffix = f"/repos/{owner_name}/{repository_name}/actions/workflows/{workflow_id}/timing"
+    workflow_usage = http_request(method="GET", url_suffix=url_suffix).get('billable', {})
+
+    return workflow_usage
+
+
+def get_github_actions_usage():
+    """ List github actions workflows usage of private repositories.
+
+    """
+    command_args = demisto.args()
+    owner_name = command_args.get('owner', '')
+    usage_result = []
+
+    private_repositories = list_owner_repositories(owner_name=owner_name, repo_type="private")
+
+    for repository_name in private_repositories:
+        repository_workflows = list_repository_workflows(owner_name=owner_name, repository_name=repository_name)
+
+        for workflow in repository_workflows:
+            workflow_id = workflow.get('id', '')
+            workflow_name = workflow.get('name', '')
+            workflow_usage = get_workflow_usage(owner_name=owner_name, repository_name=repository_name,
+                                                workflow_id=workflow_id)
+
+            if workflow_usage:
+                usage_result.append({
+                    'WorkflowName': workflow_name,
+                    'WorkflowID': workflow_id,
+                    'RepositoryName': repository_name,
+                    'WorkflowUsage': workflow_usage,
+                })
+
+    ec = {
+        'GitHub.ActionsUsage': usage_result
+    }
+    human_readable = tableToMarkdown('Github Actions Usage', usage_result,
+                                     headerTransform=string_to_table_header)
+
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=usage_result)
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1196,7 +1282,8 @@ COMMANDS = {
     'GitHub-list-pr-review-comments': list_pr_review_comments_command,
     'GitHub-update-pull-request': update_pull_request_command,
     'GitHub-is-pr-merged': is_pr_merged_command,
-    'GitHub-create-pull-request': create_pull_request_command
+    'GitHub-create-pull-request': create_pull_request_command,
+    'Github-get-github-actions-usage': get_github_actions_usage,
 }
 
 '''EXECUTION'''
