@@ -18,14 +18,22 @@ class CrowdStrikeClient(BaseClient):
         self._headers = {'Authorization': 'bearer ' + self._token}
 
     @staticmethod
-    def _error_handler(error_entry: dict) -> str:
+    def _error_handler(res: requests.Response):
         """
         Converting the errors of the API to a string, in case there are no error, return an empty string
-        :param errors: each error is a dict with the keys code and message
-        :return: errors converted to single str
+        :param res: the request's response
+        :return: None
         """
-        errors = error_entry.get("errors", [])
-        return '\n' + '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
+        err_msg = 'Error in API call [{}] - {}'.format(res.status_code, res.reason)
+        try:
+            # Try to parse json error response
+            error_entry = res.json()
+            errors = error_entry.get("errors", [])
+            err_msg += '\n' + '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
+            raise DemistoException(err_msg)
+        except ValueError:
+            err_msg += '\n{}'.format(res.text)
+            raise DemistoException(err_msg)
 
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
                      files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):

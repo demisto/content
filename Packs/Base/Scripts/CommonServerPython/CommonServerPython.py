@@ -3709,19 +3709,19 @@ if 'requests' in sys.modules:
                 )
                 # Handle error responses gracefully
                 if not self._is_status_code_valid(res, ok_codes):
-                    err_msg = 'Error in API call [{}] - {}' \
-                        .format(res.status_code, res.reason)
-                    try:
-                        # Try to parse json error response
-                        error_entry = res.json()
-                        if error_handler:
-                            err_msg += error_handler(error_entry)
-                        else:
+                    if error_handler:
+                        error_handler(res)
+                    else:
+                        err_msg = 'Error in API call [{}] - {}' \
+                            .format(res.status_code, res.reason)
+                        try:
+                            # Try to parse json error response
+                            error_entry = res.json()
                             err_msg += '\n{}'.format(json.dumps(error_entry))
-                        raise DemistoException(err_msg)
-                    except ValueError:
-                        err_msg += '\n{}'.format(res.text)
-                        raise DemistoException(err_msg)
+                            raise DemistoException(err_msg)
+                        except ValueError:
+                            err_msg += '\n{}'.format(res.text)
+                            raise DemistoException(err_msg)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
