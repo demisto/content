@@ -282,7 +282,7 @@ script:
       type: string
     - contextPath: ArcSightESM.SecurityEvents.baseEventIds
       description: Base event IDs
-      type: Unknown
+      type: string
     - contextPath: ArcSightESM.SecurityEvents.source.address
       description: Event source address
       type: Unknown
