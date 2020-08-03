@@ -108,7 +108,7 @@ def test_use_rest(mocker, use_rest, cmd_name, expected_rest_endpoint):
 
 
 def test_decode_arcsight_output_event_ids():
-    """Unit test
+    """Unit test - When output to the incident context integers, demisto can round them if they are bigger than 2^32
     Given
     - a long eventId, baseEventIds
     When
