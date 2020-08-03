@@ -2636,13 +2636,14 @@ class CommandResults:
             else:
                 outputs = self.outputs  # type: ignore[assignment]
 
-            return_entry = {
-                'Type': EntryType.NOTE,
-                'ContentsFormat': EntryFormat.JSON,
-                'Contents': raw_response,
-                'HumanReadable': human_readable,
-                'EntryContext': outputs
-            }
+        return_entry = {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': raw_response,
+            'HumanReadable': human_readable,
+            'EntryContext': outputs
+        }
+
         return return_entry
 
 
