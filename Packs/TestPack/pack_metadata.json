@@ -1,0 +1,14 @@
+{
+    "name": "TestPack",
+    "description": "test",
+    "support": "internalContribution",
+    "currentVersion": "1.0.0",
+    "author": "admin",
+    "url": "",
+    "email": "pramukh@demisto.com",
+    "created": "2020-08-03T23:24:47Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

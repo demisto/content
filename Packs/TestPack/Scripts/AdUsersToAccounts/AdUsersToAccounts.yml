@@ -1,0 +1,33 @@
+args:
+- description: A username or list of usernames to normalise.
+  isArray: true
+  name: value
+  required: true
+- name: key
+- description: Users to exclude from the results
+  name: excluded_users
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Converts domain and usernames to lower case
+  name: to_lower_case
+  predefined:
+  - "false"
+  - "true"
+comment: Outputs a list of AD suitable for use in context key 'Accounts'.  Splits
+  usernames by backslash ("domain\user" ) and at sign ("user@domain").
+commonfields:
+  id: ad_users_to_accounts
+  version: -1
+dockerimage: demisto/python3:3.8.1.5734
+enabled: true
+name: ad_users_to_accounts
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
