@@ -1,67 +1,22 @@
 {
-	"brands": null,
-	"defaultIncidentType": "Microsoft CAS Alert",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "5.0.0",
-	"id": "575cb861-e842-4e01-8379-1c9f55bd3b38",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": {
-      "Microsoft CAS Alert": {
-        "dontMapEventToLabels": true,
-        "internalMapping": {
-          "Account Name": {
-            "complex": null,
-            "simple": "account.pa"
-          },
-          "Cloud Service": {
-            "complex": null,
-            "simple": "service.label"
-          },
-          "Country": {
-            "complex": null,
-            "simple": "country.label"
-          },
-          "Policy Description": {
-            "complex": null,
-            "simple": "policyRule.label"
-          },
-          "Policy Type": {
-            "complex": null,
-            "simple": "policyRule.policyType"
-          },
-          "Risk Score": {
-            "complex": null,
-            "simple": "threatScore"
-          },
-          "Username": {
-            "complex": null,
-            "simple": "user.label"
-          }
-        }
-      }
+    "defaultIncidentType": "Microsoft CAS Alert",
+    "description": "",
+    "feed": false,
+    "id": "575cb861-e842-4e01-8379-1c9f55bd3b38",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "keyTypeMap": {},
+    "name": "Microsoft CAS classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "sortValues": null,
+    "transformer": {
+        "complex": null,
+        "simple": ""
     },
-	"name": "Microsoft CAS classifier",
-	"nameRaw": "Microsoft CAS classifier",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "5.9.9",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "type": "classification",
+    "unclassifiedCases": null,
+    "version": -1,
+    "fromVersion": "5.0.0"
 }

@@ -1,33 +1,22 @@
 {
-	"brands": null,
-	"defaultIncidentType": "Microsoft CAS Alert",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "575cb861-e842-4e01-8379-1c9f55bd3b38",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": null,
-	"name": "Microsoft CAS classifier",
-	"nameRaw": "Microsoft CAS classifier",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "defaultIncidentType": "Microsoft CAS Alert",
+    "description": "",
+    "feed": false,
+    "id": "575cb861-e842-4e01-8379-1c9f55bd3b38",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "keyTypeMap": {},
+    "name": "Microsoft CAS classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "sortValues": null,
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "unclassifiedCases": null,
+    "version": -1,
+    "fromVersion": "5.0.0"
 }

@@ -1,6 +1,5 @@
 import json
 from typing import Dict, Any
-import dateparser
 import demistomock as demisto
 import requests
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
