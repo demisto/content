@@ -372,25 +372,28 @@ def fetch_incidents(last_run: dict = None):
 
 
 """EXECUTION BLOCK"""
-if demisto.command() == 'test-module':
-    result = test_function()
-elif demisto.command() == 'fetch-incidents':
-    incidents = fetch_incidents(demisto.getLastRun())
-    demisto.incidents(incidents)
-elif demisto.command() == 'aws-access-analyzer-list-analyzers':
-    list_analyzers_command(demisto.args())
-elif demisto.command() == 'aws-access-analyzer-list-analyzed-resource':
-    list_analyzed_resource_command(demisto.args())
-elif demisto.command() == 'aws-access-analyzer-list-findings':
-    data = list_findings_command(demisto.args())
-    ec = {'AWS.AccessAnalyzer.Findings(val.id === obj.id)': data}
-    human_readable = tableToMarkdown("AWS Access Analyzer Findings", data)
-    return_outputs(human_readable, ec)
-elif demisto.command() == 'aws-access-analyzer-get-analyzed-resource':
-    get_analyzed_resource_command(demisto.args())
-elif demisto.command() == 'aws-access-analyzer-get-finding':
-    get_finding_command(demisto.args())
-elif demisto.command() == 'aws-access-analyzer-start-resource-scan':
-    start_resource_scan_command(demisto.args())
-elif demisto.command() == 'aws-access-analyzer-update-findings':
-    update_findings_command(demisto.args())
+try:
+    if demisto.command() == 'test-module':
+        result = test_function()
+    elif demisto.command() == 'fetch-incidents':
+        incidents = fetch_incidents(demisto.getLastRun())
+        demisto.incidents(incidents)
+    elif demisto.command() == 'aws-access-analyzer-list-analyzers':
+        list_analyzers_command(demisto.args())
+    elif demisto.command() == 'aws-access-analyzer-list-analyzed-resource':
+        list_analyzed_resource_command(demisto.args())
+    elif demisto.command() == 'aws-access-analyzer-list-findings':
+        data = list_findings_command(demisto.args())
+        ec = {'AWS.AccessAnalyzer.Findings(val.id === obj.id)': data}
+        human_readable = tableToMarkdown("AWS Access Analyzer Findings", data)
+        return_outputs(human_readable, ec)
+    elif demisto.command() == 'aws-access-analyzer-get-analyzed-resource':
+        get_analyzed_resource_command(demisto.args())
+    elif demisto.command() == 'aws-access-analyzer-get-finding':
+        get_finding_command(demisto.args())
+    elif demisto.command() == 'aws-access-analyzer-start-resource-scan':
+        start_resource_scan_command(demisto.args())
+    elif demisto.command() == 'aws-access-analyzer-update-findings':
+        update_findings_command(demisto.args())
+except Exception as e:
+    return_error(f"Error has occured in AWS Access Analyzer Integration: {str(e)}")
