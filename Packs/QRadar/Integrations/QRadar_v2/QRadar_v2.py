@@ -1,12 +1,17 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 import os
 import json
 import requests
 import traceback
 import urllib
 import re
+import time
+from threading import Thread, Lock
+from Queue import Queue, Empty
+
 from requests.exceptions import HTTPError, ConnectionError
 from copy import deepcopy
 
@@ -26,6 +31,9 @@ if TOKEN:
     AUTH_HEADERS['SEC'] = str(TOKEN)
 OFFENSES_PER_CALL = int(demisto.params().get('offensesPerCall', 50))
 OFFENSES_PER_CALL = 50 if OFFENSES_PER_CALL > 50 else OFFENSES_PER_CALL
+WORKERS_NUM = 8
+
+SYNC_CONTEXT = True
 
 if not TOKEN and not (USERNAME and PASSWORD):
     raise Exception('Either credentials or auth token should be provided.')
@@ -136,6 +144,31 @@ DEVICE_MAP = {
 }
 
 ''' Utility methods '''
+
+
+class AtomicCounter(object):
+    """An atomic, thread-safe counter"""
+
+    def __init__(self, initial=0):
+        """Initialize a new atomic counter to given initial value"""
+        self._value = initial
+        self._lock = Lock()
+
+    def increment(self, num=1):
+        """Atomically increment the counter by num and return the new value"""
+        with self._lock:
+            self._value += num
+            return self._value
+
+    def reset(self, initial=0):
+        """Atomically decrement the counter by num and return the new value"""
+        with self._lock:
+            self._value = initial
+            return self._value
+
+    @property
+    def value(self):
+        return self._value
 
 
 # Filters recursively null values from dictionary
@@ -498,11 +531,54 @@ def test_module():
     return 'ok'
 
 
-def fetch_incidents():
+def offense_enrichment_worker(raw_offenses_queue, enriched_offenses_queue, counter):
+    events_columns = demisto.params().get('events_columns')
+    while True:
+        offense = None
+        try:
+            offense = raw_offenses_queue.get()
+        # Queue here refers to the  module, not a class
+        except Empty:
+            continue
+
+        try:
+            offense_start_time = offense['start_time']
+            query_expression = u'SELECT {} FROM events WHERE INOFFENSE({}) START \'{}\''.format(
+                events_columns, offense['id'], offense_start_time)
+            correlations_query = {
+                u'headers': u'',
+                u'query_expression': query_expression
+            }
+            raw_search = search(correlations_query)
+            search_res_correlations = deepcopy(raw_search)
+            search_res_correlations = filter_dict_non_intersection_key_to_value(
+                replace_keys(search_res_correlations, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
+
+            search_id = search_res_correlations.get('ID')
+            query_status = search_res_correlations.get('Status')
+
+            while not (query_status == 'COMPLETED' or query_status == 'ERROR' or query_status == 'CANCELED'):
+                raw_search = get_search(search_id)
+                search_res_query = deepcopy(raw_search)
+                search_res_query = filter_dict_non_intersection_key_to_value(
+                    replace_keys(search_res_query, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
+                query_status = search_res_query.get('Status')
+                time.sleep(1)
+
+            if query_status == 'COMPLETED':
+                raw_search_results = get_search_results(search_id)
+                offense['events'] = raw_search_results.get('events', [])
+        finally:
+            enriched_offenses_queue.put(offense)
+            counter.increment()
+
+        time.sleep(1)
+
+
+def get_raw_offenses(last_run, offense_id):
     query = demisto.params().get('query')
     full_enrich = demisto.params().get('full_enrich')
-    last_run = demisto.getLastRun()
-    offense_id = last_run['id'] if last_run and 'id' in last_run else 0
+
     if last_run and offense_id == 0:
         start_time = last_run['startTime'] if 'startTime' in last_run else '0'
         fetch_query = 'start_time>{0}{1}'.format(start_time, ' AND ({0})'.format(query) if query else '')
@@ -521,16 +597,100 @@ def fetch_incidents():
         raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos),
                                     _filter=fetch_query)
     raw_offenses = unicode_to_str_recur(raw_offenses)
-    incidents = []
     if full_enrich:
         demisto.debug('QRadarMsg - Enriching  {}'.format(fetch_query))
         enrich_offense_res_with_source_and_destination_address(raw_offenses)
         demisto.debug('QRadarMsg - Enriched  {} successfully'.format(fetch_query))
+
+    return raw_offenses
+
+
+def fetch_incidents_long_running_samples():
+    last_run = 0
+    offense_id = 0
+
+    get_events = demisto.params().get('get_events')
+    if get_events:
+        last_run = get_integration_context(SYNC_CONTEXT)
+        return last_run.get('samples', [])  # type: ignore [attr-defined]
+    else:
+        raw_offenses = get_raw_offenses(last_run, offense_id)
+
+        incidents_batch = []
+        for offense in raw_offenses:
+            incidents_batch.append(create_incident_from_offense(offense))
+
+        return incidents_batch
+
+
+def fetch_incidents_long_running_events(raw_offenses_queue, enriched_offenses_queue, counter):
+    last_run = get_integration_context(SYNC_CONTEXT)
+    offense_id = last_run['id'] if last_run and 'id' in last_run else 0
+
+    raw_offenses = get_raw_offenses(last_run, offense_id)
+
+    if len(raw_offenses) == 0:
+        return
+
     for offense in raw_offenses:
         offense_id = max(offense_id, offense['id'])
-        incidents.append(create_incident_from_offense(offense))
-    demisto.setLastRun({'id': offense_id})
-    return incidents
+        raw_offenses_queue.put(offense)
+
+    incidents_batch = []
+    incidents_batch_for_sample = []
+    while counter.value != len(raw_offenses):
+        while not enriched_offenses_queue.empty():
+            offense = enriched_offenses_queue.get()
+            incidents_batch.append(create_incident_from_offense(offense))
+            if not last_run:
+                incidents_batch_for_sample.append(create_incident_from_offense(offense))
+
+        if len(incidents_batch) > 0:
+            demisto.createIncidents(incidents_batch)
+            incidents_batch = []
+
+        time.sleep(1)
+
+    # Read from enriched_offenses_queue again in case offenses were left
+    while not enriched_offenses_queue.empty():
+        offense = enriched_offenses_queue.get()
+        incidents_batch.append(create_incident_from_offense(offense))
+        if not last_run:
+            incidents_batch_for_sample.append(create_incident_from_offense(offense))
+
+    if len(incidents_batch) > 0:
+        demisto.createIncidents(incidents_batch)
+        incidents_batch = []
+
+    counter.reset()
+
+    context = {'id': offense_id}
+    if not last_run:
+        context['samples'] = incidents_batch_for_sample
+    else:
+        context['samples'] = last_run.get('samples', [])
+
+    set_integration_context(context, SYNC_CONTEXT)
+
+
+def fetch_incidents_long_running_no_events():
+    last_run = get_integration_context(SYNC_CONTEXT)
+    offense_id = last_run['id'] if last_run and 'id' in last_run else 0
+
+    raw_offenses = get_raw_offenses(last_run, offense_id)
+
+    if len(raw_offenses) == 0:
+        return
+
+    incidents_batch = []
+    for offense in raw_offenses:
+        offense_id = max(offense_id, offense['id'])
+        incidents_batch.append(create_incident_from_offense(offense))
+
+    demisto.createIncidents(incidents_batch)
+
+    context = {'id': offense_id}
+    set_integration_context(context, SYNC_CONTEXT)
 
 
 # Finds the last page position for QRadar query that receives a range parameter
@@ -1181,13 +1341,44 @@ def get_indicators_list(indicator_query, limit, page):
     return indicators_values_list, indicators_data_list
 
 
+def fetch_loop_with_events():
+    raw_offenses_queue = Queue()  # type: ignore[var-annotated]
+    enriched_offenses_queue = Queue()  # type: ignore[var-annotated]
+    counter = AtomicCounter()
+
+    workers_count = WORKERS_NUM
+
+    # Start workers
+    for index in range(workers_count):
+        worker = Thread(target=offense_enrichment_worker, args=(raw_offenses_queue, enriched_offenses_queue, counter,))
+        worker.start()
+
+    while True:
+        fetch_incidents_long_running_events(raw_offenses_queue, enriched_offenses_queue, counter)
+        time.sleep(60)
+
+
+def fetch_loop_no_events():
+    while True:
+        fetch_incidents_long_running_no_events()
+        time.sleep(60)
+
+
+def long_running_main():
+    get_events = demisto.params().get('get_events')
+    if get_events:
+        fetch_loop_with_events()
+    else:
+        fetch_loop_no_events()
+
+
 # Command selector
 try:
     LOG('Command being called is {command}'.format(command=demisto.command()))
     if demisto.command() == 'test-module':
         demisto.results(test_module())
     elif demisto.command() == 'fetch-incidents':
-        demisto.incidents(fetch_incidents())
+        demisto.incidents(fetch_incidents_long_running_samples())
     elif demisto.command() in ['qradar-offenses', 'qr-offenses']:
         demisto.results(get_offenses_command())
     elif demisto.command() == 'qradar-offense-by-id':
@@ -1226,6 +1417,8 @@ try:
         demisto.results(get_domains_by_id_command())
     elif demisto.command() == 'qradar-upload-indicators':
         return_outputs(*upload_indicators_command())
+    elif demisto.command() == 'long-running-execution':
+        long_running_main()
 except Exception as e:
     message = e.message if hasattr(e, 'message') else convert_to_str(e)
     error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)

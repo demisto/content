@@ -46,28 +46,6 @@ configuration:
   name: full_enrich
   required: false
   type: 8
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                 Long Running Fetch Incidents
-    Enable Long Running Fetch Incidents
-  name: longRunning
-  type: 8
-  required: false
-- display: Number of worker threads that pull incidents
-  name: workersNum
-  defaultvalue: "8"
-  type: 0
-  required: false
-- display: Pull events as part of offense creation
-  name: get_events
-  defaultvalue: "true"
-  type: 8
-  required: false
-- display: Event columns to return from the events query
-  name: events_columns
-  defaultvalue: '*'
-  type: 0
-  required: false
 description: Fetch offenses as incidents and search QRadar
 display: IBM QRadar
 name: QRadar
@@ -1598,16 +1576,14 @@ script:
     name: qradar-upload-indicators
   feed: false
   isfetch: true
-  longRunning: true
+  longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python2
   type: python
-  isFetchSamples: true
-sourcemoduleid: QRadar
 tests:
 - test_Qradar
-fromversion: 6.0.0
+fromversion: 5.5.0
 defaultclassifier: QRadar
 defaultmapperin: QRadar-mapper

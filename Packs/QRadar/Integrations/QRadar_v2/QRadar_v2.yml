@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: QRadar
+  id: QRadar_v2
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -46,9 +46,23 @@ configuration:
   name: full_enrich
   required: false
   type: 8
+- display: Long running instance
+  name: longRunning
+  type: 8
+  required: false
+- display: Pull events as part of offense creation
+  name: get_events
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Event columns to return from the events query
+  name: events_columns
+  defaultvalue: '*'
+  type: 0
+  required: false
 description: Fetch offenses as incidents and search QRadar
-display: IBM QRadar
-name: QRadar
+display: IBM QRadar V2
+name: QRadar_v2
 script:
   commands:
   - arguments:
@@ -1576,15 +1590,14 @@ script:
     name: qradar-upload-indicators
   feed: false
   isfetch: true
-  longRunning: false
+  longRunning: true
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python2
   type: python
-tests:
-- test_Qradar
-fromversion: 5.5.0
-toversion: 5.9.9
+  isFetchSamples: true
+sourcemoduleid: QRadar_v2
+fromversion: 6.0.0
 defaultclassifier: QRadar
 defaultmapperin: QRadar-mapper
