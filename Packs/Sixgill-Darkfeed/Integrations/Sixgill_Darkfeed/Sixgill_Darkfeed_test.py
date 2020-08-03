@@ -21,7 +21,7 @@ iocs_bundle = [{"id": "bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa",
                      "id": "indicator--7fc19d6d-2d58-45d6-a410-85554b12aea9",
                      "kill_chain_phases": [
                          {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
-                     "labels": ["compromised", "shell", "webshell"], "lang": "en",
+                     "labels": ["compromised"], "lang": "en",
                      "modified": "2020-01-09T07:31:16.708Z",
                      "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
                                              "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
@@ -41,7 +41,7 @@ iocs_bundle = [{"id": "bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa",
                      "id": "indicator--67b2378f-cbdd-4263-b1c4-668014d376f2",
                      "kill_chain_phases": [
                          {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
-                     "labels": ["compromised", "shell", "webshell"], "lang": "ru",
+                     "labels": ["compromised"], "lang": "ru",
                      "modified": "2020-01-09T07:31:16.824Z",
                      "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
                                              "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
@@ -74,7 +74,7 @@ iocs_bundle = [{"id": "bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa",
                      "id": "indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d",
                      "kill_chain_phases": [
                          {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
-                     "labels": ["ip", "lokibot_c2s"], "lang": "en",
+                     "labels": ["ip"], "lang": "en",
                      "modified": "2020-01-09T07:31:16.834Z",
                      "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
                                              "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
@@ -91,7 +91,7 @@ iocs_bundle = [{"id": "bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa",
                      "id": "indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d",
                      "kill_chain_phases": [
                          {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
-                     "labels": ["malware hash", "hash", "md5"], "lang": "en",
+                     "labels": ["malware hash"], "lang": "en",
                      "modified": "2020-01-09T07:31:16.834Z",
                      "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
                                              "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
@@ -123,10 +123,6 @@ iocs_bundle = [{"id": "bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa",
                      "id": "indicator--2ed98497-cef4-468c-9cee-4f05292b5142",
                      "labels": [
                          "anonymization",
-                         "ip",
-                         "proxy",
-                         "Proxy/protocol relays",
-                         "Adversary OPSEC"
                      ],
                      "lang": "en",
                      "modified": "2020-02-09T06:41:41.266Z",
@@ -170,7 +166,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                         [
                                             {'kill_chain_name': 'lockheed-martin-cyber-kill-chain',
                                              'phase_name': 'weaponization'}],
-                                    'labels': ['compromised', 'shell', 'webshell'], 'lang': 'en',
+                                    'labels': ['compromised'], 'lang': 'en',
                                     'modified': '2020-01-09T07:31:16.708Z',
                                     'object_marking_refs': ['marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4',
                                                             'marking-definition--f88d31f6-486f-44da-b317-01333bde0b82'],
@@ -185,7 +181,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                     'sixgill_severity': 70, 'sixgill_source': 'market_magbo', 'spec_version': '2.0',
                                     'type': 'indicator', 'valid_from': '2019-12-07T00:57:04Z'},
                         'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'tags': ['compromised', 'shell', 'webshell'],
+                                   'tags': ['compromised'],
                                    'firstseenbysource': '2020-01-09T07:31:16.708Z',
                                    'description': 'Description: Shell access to this domain is being sold on dark web '
                                                   'markets\nCreated On: 2020-01-09T07:31:16.708Z\nPost '
@@ -218,7 +214,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                   'kill_chain_phases': [
                                                       {'kill_chain_name': 'lockheed-martin-cyber-kill-chain',
                                                        'phase_name': 'weaponization'}],
-                                                  'labels': ['compromised', 'shell', 'webshell'], 'lang': 'ru',
+                                                  'labels': ['compromised'], 'lang': 'ru',
                                                   'modified': '2020-01-09T07:31:16.824Z', 'object_marking_refs':
                                                       [
                                                           'marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4',
@@ -232,7 +228,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                   'sixgill_source': 'market_magbo', 'spec_version': '2.0',
                                                   'type': 'indicator', 'valid_from': '2019-12-06T17:10:04Z'},
                                       'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
-                                                 'tags': ['compromised', 'shell', 'webshell'],
+                                                 'tags': ['compromised'],
                                                  'firstseenbysource': '2020-01-09T07:31:16.824Z',
                                                  'description': 'Description: Shell access to this domain is being '
                                                                 'sold on dark web markets\n'
@@ -334,7 +330,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                                               [{'kill_chain_name':
                                                                                 'lockheed-martin-cyber-kill-chain',
                                                                                 'phase_name': 'weaponization'}],
-                                                                          'labels': ['ip', 'lokibot_c2s'], 'lang': 'en',
+                                                                          'labels': ['ip'], 'lang': 'en',
                                                                           'modified': '2020-01-09T07:31:16.834Z',
                                                                           'object_marking_refs': [
                                                                               'marking-definition--'
@@ -354,7 +350,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                                                           'sixgill_source': 'market_magbo',
                                                                           'spec_version': '2.0', 'type': 'indicator',
                                                                           'valid_from': '2019-12-06T14:37:16Z'},
-                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor', 'tags': ['ip', 'lokibot_c2s'],
+                        'fields': {'name': 'compromised_sites', 'actor': 'some_actor', 'tags': ['ip'],
                                    'firstseenbysource': '2020-01-09T07:31:16.834Z',
                                    'description': 'Description: Shell access to this domain is being sold on '
                                                   'dark web markets\nCreated On: 2020-01-09T07:31:16.834Z\n'
@@ -381,7 +377,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                     'id': 'indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d', 'kill_chain_phases': [{
                                         'kill_chain_name': 'lockheed-martin-cyber-kill-chain',
                                         'phase_name': 'weaponization'}],
-                                    'labels': ['malware hash', 'hash', 'md5'], 'lang': 'en',
+                                    'labels': ['malware hash'], 'lang': 'en',
                                     'modified': '2020-01-09T07:31:16.834Z',
                                     'object_marking_refs': ['marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4',
                                                             'marking-definition--f88d31f6-486f-44da-b317-01333bde0b82'],
@@ -395,7 +391,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                     'sixgill_source': 'market_magbo', 'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2019-12-06T14:37:16Z'},
                         'fields': {'name': 'compromised_sites', 'actor': 'some_actor',
-                                   'tags': ['malware hash', 'hash', 'md5'],
+                                   'tags': ['malware hash'],
                                    'firstseenbysource': '2020-01-09T07:31:16.834Z',
                                    'description': 'Description: Shell access to this domain is being sold on dark '
                                                   'web markets\nCreated On: 2020-01-09T07:31:16.834Z\n'
@@ -434,9 +430,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                           'source_name': 'mitre-attack'}],
                                     'id': 'indicator--2ed98497-cef4'
                                           '-468c-9cee-4f05292b5142',
-                                    'labels': ['anonymization', 'ip', 'proxy',
-                                               'Proxy/protocol relays',
-                                               'Adversary OPSEC'],
+                                    'labels': ['anonymization'],
                                     'lang': 'en',
                                     'modified': '2020-02-09T06:41:41.266Z',
                                     'object_marking_refs': [
@@ -454,7 +448,7 @@ expected_ioc_output = [{'value': '9cd46027d63c36e53f4347d43554336c2ea050d38be3ff
                                     'spec_version': '2.0', 'type': 'indicator',
                                     'valid_from': '2020-01-25T21:08:25Z'},
                         'fields': {'name': 'proxy_ips', 'actor': 'LunarEclipsed',
-                                   'tags': ['anonymization', 'ip', 'proxy', 'Proxy/protocol relays', 'Adversary OPSEC'],
+                                   'tags': ['anonymization'],
                                    'firstseenbysource': '2020-02-09T06:41:41.266Z',
                                    'description': "Description: IP address was listed as a proxy\n"
                                                   "Created On: 2020-02-09T06:41:41.266Z\n"
@@ -608,3 +602,33 @@ def test_get_indicators_command(mocker):
     submitted_indicators = 0
 
     assert output[2] == expected_ioc_output
+
+
+def test_feed_tags(mocker):
+    """
+    Given:
+    - feedTags parameter
+    When:
+    - Executing fetch command on feed
+    Then:
+    - Validate the tags supplied are added to the tags list in addition to the tags that were there before
+    """
+    global bundle_index
+    global submitted_indicators
+
+    mocker.patch.object(demisto, 'params', return_value=init_params())
+    mocker.patch('requests.sessions.Session.send', new=mocked_request)
+
+    from Sixgill_Darkfeed import fetch_indicators_command
+    from sixgill.sixgill_feed_client import SixgillFeedClient
+    from sixgill.sixgill_constants import FeedStream
+
+    client = SixgillFeedClient("client_id",
+                               "client_secret",
+                               "some_channel",
+                               FeedStream.DARKFEED,
+                               demisto, 1000)
+
+    output = fetch_indicators_command(client, tags=['tag1', 'tag2'])
+    assert all(item in output[0]['fields']['tags'] for item in ['tag1', 'tag2'])
+    assert any(item in output[0]['fields']['tags'] for item in ['compromised', 'ip', 'url'])
