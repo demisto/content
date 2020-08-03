@@ -8,20 +8,6 @@ def get_fetch_data():
         return json.loads(f.read())
 
 
-@pytest.mark.parametrize(
-    "arg, expected",
-    [
-        ("3256754321", 3256754321),
-        ("2020-03-20T14:28:23.382748", 1584714503),
-        (2323248648.123, 2323248648)
-    ]
-)
-def test_arg_to_timestamp(arg, expected):
-    from MicrosoftCloudAppSecurity import arg_to_timestamp
-    res = arg_to_timestamp(arg)
-    assert res == expected
-
-
 expected_alerts = {'filters': {'entity.service': {'eq': 111}, 'entity.instance': {'eq': 111}, 'severity': {'eq': 0},
                    'resolutionStatus': {'eq': 0}, 'entity.entity': {'eq': {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2',
                                                                            'saas': 11161, 'inst': 0}}},
@@ -126,24 +112,3 @@ def test_list_users_accounts_command(requests_mock):
                                       {'username': '{ "id": "7e14f6a3-185d-49e3-85e8-40a33d90dc90",'
                                                    ' "saas": 11161, "inst": 0 }'})
     assert users_accounts["ENTITIES_BY_USERNAME_DATA_CONTEXT"] == res.outputs[0]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-DISMISSED_BY_ID_DATA = {
-    "dismissed": 1
-}
-
-RESOLVED_BY_ID_DATA = {
-    "resolved": 1
-}
