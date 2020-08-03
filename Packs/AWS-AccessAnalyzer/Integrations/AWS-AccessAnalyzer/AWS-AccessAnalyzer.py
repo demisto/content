@@ -244,7 +244,6 @@ def list_findings_command(args):
         kwargs['filter'] = filters
 
     response = client.list_findings(**kwargs)
-
     data = json.loads(json.dumps(response['findings'], cls=DatetimeEncoder))
 
     ec = {'AWS.AccessAnalyzer.Findings(val.id === obj.id)': data}
@@ -424,5 +423,6 @@ try:
         start_resource_scan_command(demisto.args())
     elif demisto.command() == 'aws-access-analyzer-update-findings':
         update_findings_command(demisto.args())
+
 except Exception as e:
     return_error(f"Error has occured in AWS Access Analyzer Integration: {str(e)}")
