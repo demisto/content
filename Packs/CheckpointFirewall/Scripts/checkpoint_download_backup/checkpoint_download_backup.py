@@ -31,7 +31,7 @@ try:
 
         content = status_entries[0]
         if content:
-            content = json.dumps(content.get('Contents'))
+            content = json.dumps(content)
 
         for entry in status_entries:
             current_status = str(demisto.get(entry, 'Contents'))

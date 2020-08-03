@@ -1,5 +1,6 @@
-id: ef3a20ce-7965-4faf-8bab-58ef9994007a
-version: 3
+id: Checkpoint - Publish configuration
+version: 1
+fromversion: 5.0.0
 name: Checkpoint - Publish configuration
 description: Publish the Checkpoint Firewall configuration.
 starttaskid: "0"
@@ -14,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -94,6 +96,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -403,3 +406,6 @@ inputs:
     required for publish changes. done by this SID will be seen by all users only
     after publish is called and finish.
 outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

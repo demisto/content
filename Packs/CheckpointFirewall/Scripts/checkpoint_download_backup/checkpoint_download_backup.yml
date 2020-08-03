@@ -7,8 +7,8 @@ args:
   secret: false
 comment: Download CheckPoint policy backup to Demisto war room
 commonfields:
-  id: c7944409-cd37-40c8-acf9-4987a44682a1
-  version: 1
+  id: checkpoint_download_backup
+  version: -1
 enabled: false
 name: checkpoint_download_backup
 script: '-'

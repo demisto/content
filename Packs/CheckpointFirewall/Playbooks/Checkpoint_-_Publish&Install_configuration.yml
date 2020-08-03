@@ -1,5 +1,6 @@
 id: b79f870c-34fe-4563-8f41-f35d00e8ef94
-version: 71
+version: 1
+fromversion: 5.0.0
 name: Checkpoint - Publish&Install configuration
 description: |
   Publish the Checkpoint Firewall configuration, also, install policy over all the gateways are available  .
