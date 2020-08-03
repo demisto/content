@@ -1,5 +1,5 @@
 This is the MicrosoftCloudAppSecurity integration.
-This integration was integrated and tested with version xx of MicrosoftCloudAppSecurity
+This integration was integrated and tested with version 178 of MicrosoftCloudAppSecurity
 ## Configure MicrosoftCloudAppSecurity on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

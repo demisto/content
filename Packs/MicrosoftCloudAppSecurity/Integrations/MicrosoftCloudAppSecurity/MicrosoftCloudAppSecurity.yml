@@ -42,7 +42,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: Date template - 2020-03-20T14:28:23.382748
+- additionalinfo: Date example - "3 days"
   display: First fetch time
   hidden: false
   name: first_fetch
@@ -76,7 +76,7 @@ script:
       description: |-
         Multiple alerts matching the specified filters.
         Alert_id should be like this template - "55af7415f8a0a7a29eef2e1f".
-      isArray: false
+      isArray: true
       name: alert_ids
       required: false
       secret: false
@@ -296,7 +296,7 @@ script:
       description: |-
         Multiple alerts matching the specified filters.
         Alert_id should be like this template - "55af7415f8a0a7a29eef2e1f".
-      isArray: false
+      isArray: true
       name: alert_ids
       required: false
       secret: false

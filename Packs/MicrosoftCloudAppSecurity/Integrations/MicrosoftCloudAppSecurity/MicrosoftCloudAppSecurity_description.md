@@ -10,6 +10,6 @@ And you will get a detailed explanation of how to produce Server URL and User ke
 
 
 ## customer filters
-Note - If you want to filter the call results to the api yourself (consumer filtering) make sure it matches 
+Note - If you want to filter the call results to the api yourself (custom_filter) make sure it matches 
 the filtering format Microsoft Cloud App Security - [HERE](https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters)
 
