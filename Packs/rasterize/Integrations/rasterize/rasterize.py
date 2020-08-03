@@ -119,7 +119,7 @@ def find_zombie_processes():
     Returns:
         ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
     """
-    ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,cmd'],
+    ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,stime,cmd'],
                                      stderr=subprocess.STDOUT, universal_newlines=True)
     lines = ps_out.splitlines()
     pid = str(os.getpid())
@@ -319,8 +319,6 @@ def rasterize_image_command():
         image.write(data)
         output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type='pdf')
         res = fileResult(filename=filename, data=output)
-        res['Type'] = entryTypes['image']
-
         demisto.results(res)
 
 
