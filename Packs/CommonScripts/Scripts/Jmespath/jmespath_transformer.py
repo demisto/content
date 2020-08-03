@@ -17,7 +17,7 @@ def main():
     value = args.get("value")
     expression = args.get("expression")
     result = jmespath_search(expression, value)
-    demisto.results(result)
+    return_results(result)
 
 
 if __name__ in ['__builtin__', 'builtins']:
