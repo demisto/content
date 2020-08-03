@@ -16,7 +16,7 @@
         "simple": ""
     },
     "type": "classification",
-    "unclassifiedCases": null,
+    "unclassifiedCases": {},
     "version": -1,
     "fromVersion": "5.0.0"
 }
