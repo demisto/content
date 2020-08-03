@@ -93,11 +93,11 @@ def extract(file_info, dir_path, password=None):
     stdout, stderr = process.communicate()
     stdout = str(stdout)
     stderr = str(stderr)
-    if stderr:
+    if len(stderr) > 0:
         if 'Incorrect password' in stderr:
             return_error("The .rar file provided requires a password.")
         else:
-            return_error(stderr)
+            return_error(str(stderr))
     if 'Wrong password?' in stdout:
         demisto.debug(stdout)
         return_error("Data Error in encrypted file. Wrong password?")
