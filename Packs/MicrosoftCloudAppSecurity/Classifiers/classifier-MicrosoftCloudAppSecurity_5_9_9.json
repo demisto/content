@@ -2,12 +2,43 @@
 	"id": "575cb861-e842-4e01-8379-1c9f55bd3b38",
 	"version": -1,
 	"defaultIncidentType": "Microsoft CAS Alert",
-
-
+	"brandName": "Microsoft CAS",
+	"mapping": {
+		"Microsoft CAS Alert": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Account Name": {
+					"complex": null,
+					"simple": "account.pa"
+				},
+				"Cloud Service": {
+					"complex": null,
+					"simple": "service.label"
+				},
+				"Country": {
+					"complex": null,
+					"simple": "country.label"
+				},
+				"Policy Description": {
+					"complex": null,
+					"simple": "policyRule.label"
+				},
+				"Policy Type": {
+					"complex": null,
+					"simple": "policyRule.policyType"
+				},
+				"Risk Score": {
+					"complex": null,
+					"simple": "threatScore"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "user.label"
+				}
+			}
+		}
+	},
 	"description": "",
-	"feed": false,
-	"incidentSamples": null,
-	"indicatorSamples": null,
 	"keyTypeMap": {},
 	"name": "Microsoft CAS classifier",
 	"propagationLabels": [
@@ -20,6 +51,5 @@
 	},
 	"type": "classification",
 	"unclassifiedCases": {},
-	"fromVersion": "6.0.0",
-	"toVersion": "6.0.1"
+	"toVersion": "5.9.9"
 }

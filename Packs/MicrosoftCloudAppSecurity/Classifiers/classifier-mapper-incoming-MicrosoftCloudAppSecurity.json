@@ -41,18 +41,5 @@
 			}
 		}
 	},
-	"feed": false,
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"keyTypeMap": {},
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"unclassifiedCases": {},
 	"fromVersion": "6.0.0"
 }
