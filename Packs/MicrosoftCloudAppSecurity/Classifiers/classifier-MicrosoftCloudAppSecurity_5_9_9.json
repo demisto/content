@@ -38,9 +38,7 @@
 			}
 		}
 	},
-	"description": "",
 	"keyTypeMap": {},
-	"name": "Microsoft CAS classifier",
 	"propagationLabels": [
 		"all"
 	],
@@ -49,7 +47,6 @@
 		"complex": null,
 		"simple": ""
 	},
-	"type": "classification",
 	"unclassifiedCases": {},
 	"toVersion": "5.9.9"
 }
