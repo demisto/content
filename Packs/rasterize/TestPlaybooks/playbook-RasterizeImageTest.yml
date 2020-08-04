@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 79db125e-a5ff-4b7d-8a47-a5e34e5552c9
+    taskid: 77fb7cb0-2107-46df-8304-23ab3dbd906e
     type: start
     task:
-      id: 79db125e-a5ff-4b7d-8a47-a5e34e5552c9
+      id: 77fb7cb0-2107-46df-8304-23ab3dbd906e
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 75e2c301-168c-4d48-836a-0efecf762f95
+    taskid: cb5d4074-31f9-41ca-86a7-2b80e4428c1c
     type: regular
     task:
-      id: 75e2c301-168c-4d48-836a-0efecf762f95
+      id: cb5d4074-31f9-41ca-86a7-2b80e4428c1c
       version: -1
       name: Generate File
       scriptName: GenerateImageFileEntry
@@ -60,10 +60,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: c8c2a29a-2a32-4198-8591-6345a45bd59a
+    taskid: 6fcb729b-74c5-4f90-822a-39d510cac8a7
     type: regular
     task:
-      id: c8c2a29a-2a32-4198-8591-6345a45bd59a
+      id: 6fcb729b-74c5-4f90-822a-39d510cac8a7
       version: -1
       name: Clear Context
       scriptName: DeleteContext
@@ -95,10 +95,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 838b234c-4fe3-43a5-8807-597d6096ca6f
+    taskid: 79b62c23-aae6-4e01-84e6-5f32da300ac9
     type: regular
     task:
-      id: 838b234c-4fe3-43a5-8807-597d6096ca6f
+      id: 79b62c23-aae6-4e01-84e6-5f32da300ac9
       version: -1
       name: Rasterize
       script: '|||rasterize-image'
@@ -127,10 +127,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 36c8678c-2384-4929-890b-26e5dc3c9358
+    taskid: 085c5eec-b270-4cab-87f3-1cb7709a2d20
     type: condition
     task:
-      id: 36c8678c-2384-4929-890b-26e5dc3c9358
+      id: 085c5eec-b270-4cab-87f3-1cb7709a2d20
       version: -1
       name: Check file
       type: condition
@@ -149,12 +149,12 @@ tasks:
           left:
             value:
               complex:
-                root: File
+                root: InfoFile
                 filters:
                 - - operator: greaterThan
                     left:
                       value:
-                        simple: File.Size
+                        simple: InfoFile.Size
                       iscontext: true
                     right:
                       value:
@@ -162,7 +162,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: File.Extension
+                        simple: InfoFile.Extension
                       iscontext: true
                     right:
                       value:
@@ -183,10 +183,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: df1cf2dd-9179-416f-864b-36dc1468f2b4
+    taskid: 50de363b-6c3c-4292-83c8-2d578c44cc4f
     type: title
     task:
-      id: df1cf2dd-9179-416f-864b-36dc1468f2b4
+      id: 50de363b-6c3c-4292-83c8-2d578c44cc4f
       version: -1
       name: Succeed
       type: title
@@ -207,10 +207,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 4146c26d-db30-4bb1-8ace-4339613618ad
+    taskid: a3208c0f-c964-40c7-8d01-a858dea9d402
     type: regular
     task:
-      id: 4146c26d-db30-4bb1-8ace-4339613618ad
+      id: a3208c0f-c964-40c7-8d01-a858dea9d402
       version: -1
       name: Not PDF - Print error
       description: Prints an error entry with a given message
@@ -248,3 +248,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
