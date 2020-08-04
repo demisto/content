@@ -1,16 +1,11 @@
 {
-	"brands": null,
 	"defaultIncidentType": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "eb888329-9134-4f7e-818f-11317ac7a2a9",
 	"incidentSamples": null,
 	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
 	"keyTypeMap": {},
-	"locked": false,
 	"logicalVersion": 2,
 	"mapping": {
 		"Microsoft CAS Alert": {
