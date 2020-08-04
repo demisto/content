@@ -197,7 +197,6 @@ script:
       required: true
       description: The name of the policy to create
     - name: description
-      required: true
       description: The description of the policy
     - name: copyFrom
       description: The policy to copy rules from to use as template for new policy
