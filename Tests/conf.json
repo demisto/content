@@ -2934,20 +2934,7 @@
             "playbookID": "checkpoint-testplaybook",
             "timeout": 500,
             "nightly": true
-        },		
-        {
-            "integrations": "CheckpointFirewall",
-            "playbookID": "Checkpoint - Publish&Install configuration",
-            "timeout": 1500,
-			"fromversion": "5.0.0"
-        },
-		{
-            "integrations": "CheckpointFirewall",
-            "playbookID": "Checkpoint - Publish configuration",
-            "timeout": 1500,
-			"fromversion": "5.0.0"
         }
-
     ],
     "skipped_tests": {
         "PCAP File Carving Test": "Merged with PCAP Analysis Test",

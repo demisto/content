@@ -527,7 +527,7 @@ class Client(BaseClient):
                                       headers=self.headers,
                                       json_data={'limit': limit, 'offset': offset})
         response = response.get('packages')
-        return format_list_servers(response, 'list-packages')
+        return format_list_servers(response, 'packages')
 
     def checkpoint_list_gateways_command(self, limit: int, offset: int):
         """
@@ -542,7 +542,7 @@ class Client(BaseClient):
                                       json_data={'limit': limit, 'offset': offset,
                                                  'details-level': 'full'})
         response = response.get('objects')
-        return format_list_servers(response, 'list-gateways')
+        return format_list_servers(response, 'gateways')
 
     def install_policy_command(self, policy_package: str, targets, access: bool):
         """
@@ -1001,7 +1001,7 @@ def format_list_servers(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
             current_object_data['domain-uid'] = domain.get('uid')
             current_object_data['domain-type'] = domain.get('type')
 
-        if endpoint == 'list-gateways':
+        if endpoint == 'gateways':
             current_object_data['version'] = element.get('version')
             current_object_data['network-security-blades'] = element.get('network-security-blades')
             current_object_data['management-blades'] = element.get('management-blades')
