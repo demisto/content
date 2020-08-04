@@ -67,16 +67,28 @@ script:
       description: The rule name
     - name: status
       description: enabled, disabled or scheduled
+      auto: PREDEFINED
+      predefined:
+      - enabled
+      - disabled
+      - scheduled
     - name: ipProtocol
       description: lowercase version of protocol listed in the UI
     - name: action
       description: accept, drop, reject
+      auto: PREDEFINED
+      predefined:
+      - accept
+      - drop
+      - reject
     - name: placeBefore
-      description: first
+      description: The firewall entry to place the rule before (ie first)
     - name: source
       description: the ip sources in csv format
+      isArray: true
     - name: destination
       description: the ip destinations in csv format
+      isArray: true
     description: Creates a rule in a specific policy
   - name: f5-list-rules
     arguments:
@@ -99,11 +111,13 @@ script:
     - name: ipProtocol
       description: one of any described in the UI, but in all lowercase
     - name: placeBefore
-      description: first or...
+      description: The firewall entry to place the rule before (ie first)
     - name: source
       description: csv list of sources
+      isArray: true
     - name: destination
       description: csv list of destinations
+      isArray: true
     description: Modifies an F5 rule in a specific policy
   - name: f5-del-rule
     arguments:
