@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: CheckPointFirewall_v2
+  id: CheckPointFirewall
   version: 2
 configuration:
 - display: Server URL (e.g. example.net or 8.8.8.8)
