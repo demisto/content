@@ -6,7 +6,7 @@ configuration:
 - display: Fetch indicators
   name: feed
   required: false
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
 - display: Indicator Feed
   name: indicator_feeds

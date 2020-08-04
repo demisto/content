@@ -81,6 +81,7 @@ configuration:
   name: feed
   required: false
   type: 8
+  defaultvalue: 'true'
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability

@@ -7,7 +7,7 @@ configuration:
   name: feed
   required: false
   type: 8
-  defaultvalue: true
+  defaultvalue: 'true'
 - display: Authorization Code
   hidden: false
   name: auth_code

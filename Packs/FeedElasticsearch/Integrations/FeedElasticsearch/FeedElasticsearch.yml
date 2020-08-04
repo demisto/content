@@ -37,6 +37,7 @@ configuration:
   type: 15
 - display: Fetch indicators
   name: feed
+  defaultvalue: 'true'
   required: false
   type: 8
 - additionalinfo: Determine how far to look back for fetched indicators (<number>
