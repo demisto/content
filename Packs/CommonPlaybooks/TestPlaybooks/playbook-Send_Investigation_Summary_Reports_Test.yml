@@ -340,7 +340,7 @@ tasks:
       id: 821bfa0a-952b-4066-81fa-34348543fad1
       iscommand: false
       name: Get Incident
-      script: SearchIncidents
+      script: SearchIncidentsV2
       type: regular
       version: -1
     taskid: 821bfa0a-952b-4066-81fa-34348543fad1

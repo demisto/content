@@ -1046,7 +1046,7 @@ script:
       description: The domain name.
       type: String
   dockerimage45: demisto/python3:3.7.2.214
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.8715
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -19,6 +19,14 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use HTTPS connections
+  name: use_https
+  type: 8
+  required: false
 script:
   script: |-
     var sendRequest = function(url, json) {
@@ -28,6 +36,7 @@ script:
                     Method: 'GET',
                 },
                 false,
+                params.insecure,
                 params.proxy
             );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -36,7 +45,7 @@ script:
         return json && res.Body ? JSON.parse(res.Body) : res.Body;
     }
 
-    var base = 'http://ipinfo.io/';
+    var base = params.use_https ? 'https://ipinfo.io/' : 'http://ipinfo.io/';
     var token = params.token ? '?token=' + params.token : '';
     var jsonSuffix = '/json' + token;
     switch (command) {

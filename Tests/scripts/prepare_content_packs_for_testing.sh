@@ -11,7 +11,7 @@ ID_SET=$CIRCLE_ARTIFACTS/id_set.json
 EXTRACT_FOLDER=$(mktemp -d)
 
 if [[ -z "$GCS_MARKET_KEY" ]]; then
-    echo "$GCS_MARKET_KEY not set aborting!"
+    echo "GCS_MARKET_KEY not set aborting!"
     exit 1
 fi
 
@@ -36,7 +36,7 @@ echo "Finished copying successfully."
 echo "Updating modified content packs in the bucket ..."
 
 if [ ! -n "${NIGHTLY}" ]; then
-  CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
+    CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
     echo "Could not find file $CONTENT_PACKS_TO_INSTALL_FILE."
   else

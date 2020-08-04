@@ -25,7 +25,7 @@ configuration:
   type: 8
 description: Trend Micro Apex central automation to manage agents and User-Defined
   Suspicious Objects
-display: Trend Micro Apex
+display: Trend Micro Apex (Beta)
 name: Trend Micro Apex
 script:
   commands:

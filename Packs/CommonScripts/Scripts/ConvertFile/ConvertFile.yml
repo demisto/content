@@ -46,5 +46,5 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage45: demisto/office-utils:1.0.0.2553
-dockerimage: demisto/office-utils:2.0.0.5206
+dockerimage: demisto/office-utils:2.0.0.5456
 runas: DBotWeakRole

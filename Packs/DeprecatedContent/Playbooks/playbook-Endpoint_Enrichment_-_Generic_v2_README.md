@@ -1,4 +1,4 @@
-Enriches an endpoint by hostname using one or more integrations.
+DEPRECATED. Use "Endpoint Enrichment - Generic v2.1" playbook instead. Enriches an endpoint by hostname using one or more integrations.
 
 Currently, the following integrations are supported:
 - Active Directory

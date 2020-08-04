@@ -1,24 +1,14 @@
 id: virusTotalPrivateAPI-test-playbook
 version: -1
-contentitemfields:
-  propagationLabels: []
-name: virusTotalPrivateAPI-test-playbook
-description: |
-  Test playbook for vt.
-
-  vt has a quota of requests per minute that we exceed in the test playbook.
-
-  Sleep for 60 seconds.
-
-  https://support.virustotal.com/hc/en-us/articles/115002118525-The-4-requests-minute-limitation-of-the-Public-API-is-too-low-for-me-how-can-I-have-access-to-a-higher-quota-
+name: playbook-virusTotalPrivateAPI-test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1f597d5e-14dd-421c-885d-be8374d05197
+    taskid: bf6ced84-68ce-44a0-8537-cc4d0b0be2fb
     type: start
     task:
-      id: 1f597d5e-14dd-421c-885d-be8374d05197
+      id: bf6ced84-68ce-44a0-8537-cc4d0b0be2fb
       version: -1
       name: ""
       iscommand: false
@@ -30,1466 +20,274 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 6a1ce131-f01c-40be-89f8-8be20c4d1bac
+    taskid: d37c3fc5-451f-4d41-8a7f-40e1bc9f1c85
     type: regular
     task:
-      id: 6a1ce131-f01c-40be-89f8-8be20c4d1bac
+      id: d37c3fc5-451f-4d41-8a7f-40e1bc9f1c85
       version: -1
       name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
+      script: DeleteContext
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "51"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
-      key: {}
-      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 61ee39ff-e1fc-48db-88d7-3ac400c1d386
+    taskid: 285a30c1-336a-4abf-8296-7df72a9c0569
     type: regular
     task:
-      id: 61ee39ff-e1fc-48db-88d7-3ac400c1d386
+      id: 285a30c1-336a-4abf-8296-7df72a9c0569
       version: -1
-      name: ip
-      description: Check IP Reputation
-      script: VirusTotal|||ip
+      name: vt-private-check-file-behaviour
+      script: '|||vt-private-check-file-behaviour'
       type: regular
       iscommand: true
-      brand: VirusTotal
+      brand: ""
     nexttasks:
       '#none#':
-      - "60"
+      - "4"
     scriptarguments:
       fullResponse: {}
-      ip:
-        simple: 8.8.8.8
-      long: {}
-      retries: {}
-      sampleSize: {}
+      resource:
+        simple: 10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e
       threshold: {}
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: dda06e98-7a05-4ca6-8eec-5d350c914328
-    type: condition
-    task:
-      id: dda06e98-7a05-4ca6-8eec-5d350c914328
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "83"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Indicator
-            iscontext: true
-          right:
-            value:
-              simple: 8.8.8.8
-      - - operator: isEqualString
-          left:
-            value:
-              simple: IP.Geo.Country
-            iscontext: true
-          right:
-            value:
-              simple: US
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 87e630c9-6b9d-42fd-8e2f-b039b488ba7f
-    type: regular
-    task:
-      id: 87e630c9-6b9d-42fd-8e2f-b039b488ba7f
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: b88e2ad7-2f07-49ce-8852-7528372edd94
-    type: regular
-    task:
-      id: b88e2ad7-2f07-49ce-8852-7528372edd94
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      expectedValue:
-        simple: demisto.com
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 3b421a3e-115e-4f8f-8b4f-3a81b8dba05a
-    type: regular
-    task:
-      id: 3b421a3e-115e-4f8f-8b4f-3a81b8dba05a
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3345
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: fcd400cb-8761-4710-8cad-fa3ba08f41a0
-    type: regular
-    task:
-      id: fcd400cb-8761-4710-8cad-fa3ba08f41a0
-      version: -1
-      name: domain
-      description: Check domain reputation
-      script: VirusTotal|||domain
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "62"
-    scriptarguments:
-      domain:
-        simple: demisto.com
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: b0352888-0032-437f-8d6c-1cc4af010072
-    type: regular
-    task:
-      id: b0352888-0032-437f-8d6c-1cc4af010072
-      version: -1
-      name: file
-      description: Check file reputation of the given hash
-      script: VirusTotal|||file
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "65"
-    scriptarguments:
-      file:
-        simple: 7657fcb7d772448a6d8504e4b20168b8
-      long: {}
-      retries: {}
-      threshold: {}
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 06320852-20fe-4436-872c-c066ff1c61ac
-    type: condition
-    task:
-      id: 06320852-20fe-4436-872c-c066ff1c61ac
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File.MD5
-            iscontext: true
-          right:
-            value:
-              simple: 7657fcb7d772448a6d8504e4b20168b8
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: File.DetectionEngines
-            iscontext: true
-          right:
-            value:
-              simple: "70"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File.PositiveDetections
-            iscontext: true
-          right:
-            value:
-              simple: "67"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 8743c4f1-6ddb-47df-8534-7b8d7c08f579
-    type: regular
-    task:
-      id: 8743c4f1-6ddb-47df-8534-7b8d7c08f579
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 4045
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 4c5484d6-23dc-4398-8404-b7e6defbfcee
-    type: regular
-    task:
-      id: 4c5484d6-23dc-4398-8404-b7e6defbfcee
-      version: -1
-      name: url long demisto.com
-      description: Check URL Reputation
-      script: VirusTotal|||url
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "79"
-    scriptarguments:
-      long:
-        simple: "true"
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      url:
-        simple: www.demisto.com
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 8420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: 63183733-90cf-43b7-87b8-c181c8975d2f
-    type: regular
-    task:
-      id: 63183733-90cf-43b7-87b8-c181c8975d2f
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      expectedValue:
-        simple: www.demisto.com
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 8770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 1c8740dc-9b6f-482f-864b-7dbc643a29ca
-    type: regular
-    task:
-      id: 1c8740dc-9b6f-482f-864b-7dbc643a29ca
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "42"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 8945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 0b3594be-0c2f-48a4-8aab-f88f14050896
-    type: regular
-    task:
-      id: 0b3594be-0c2f-48a4-8aab-f88f14050896
-      version: -1
-      name: file (second hash)
-      description: Check file reputation of the given hash
-      script: VirusTotal|||file
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "68"
-    scriptarguments:
-      file:
-        simple: d41d8cd98f00b204e9800998ecf8427e
-      long: {}
-      retries: {}
-      threshold: {}
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 4920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "21":
-    id: "21"
-    taskid: 4216df8c-e738-43d0-8ae1-c11fb5dcf43c
-    type: condition
-    task:
-      id: 4216df8c-e738-43d0-8ae1-c11fb5dcf43c
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "22"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: File
-                accessor: MD5
-            iscontext: true
-          right:
-            value:
-              simple: d41d8cd98f00b204e9800998ecf8427e
-      - - operator: isExists
-          left:
-            value:
-              simple: File.VirusTotal.vtLink
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 9cf456f0-1e33-42a3-881a-11c6dbbe3a73
-    type: regular
-    task:
-      id: 9cf456f0-1e33-42a3-881a-11c6dbbe3a73
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 5445
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "23":
-    id: "23"
-    taskid: 8f50a887-bede-4f89-8152-ac3d853bf840
-    type: regular
-    task:
-      id: 8f50a887-bede-4f89-8152-ac3d853bf840
-      version: -1
-      name: file long (second hash)
-      description: Check file reputation of the given hash
-      script: VirusTotal|||file
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "72"
-    scriptarguments:
-      file:
-        simple: d41d8cd98f00b204e9800998ecf8427e
-      long:
-        simple: "true"
-      retries: {}
-      threshold: {}
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 5620
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "24":
-    id: "24"
-    taskid: 801c291c-7ac3-4896-87ed-bafaf8a0d0a5
-    type: regular
-    task:
-      id: 801c291c-7ac3-4896-87ed-bafaf8a0d0a5
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 6145
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "25":
-    id: "25"
-    taskid: f8c64c21-9f9f-4ac1-8e0b-55e033546005
-    type: condition
-    task:
-      id: f8c64c21-9f9f-4ac1-8e0b-55e033546005
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: File
-                accessor: MD5
-            iscontext: true
-          right:
-            value:
-              simple: d41d8cd98f00b204e9800998ecf8427e
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "27":
-    id: "27"
-    taskid: 1f025a3b-7772-4d09-8c37-ec55cbf93d23
-    type: regular
-    task:
-      id: 1f025a3b-7772-4d09-8c37-ec55cbf93d23
-      version: -1
-      name: file long
-      description: Check file reputation of the given hash
-      script: VirusTotal|||file
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "66"
-    scriptarguments:
-      file:
-        simple: 7657fcb7d772448a6d8504e4b20168b8
-      long:
-        simple: "true"
-      retries: {}
-      threshold: {}
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 4220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "28":
-    id: "28"
-    taskid: b0a221d1-e209-48f3-823c-53998867a721
-    type: condition
-    task:
-      id: b0a221d1-e209-48f3-823c-53998867a721
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "29"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: File
-                accessor: MD5
-            iscontext: true
-          right:
-            value:
-              simple: 7657fcb7d772448a6d8504e4b20168b8
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "29":
-    id: "29"
-    taskid: fd4a9d60-32ae-488c-8863-fa9a9bf7d127
-    type: regular
-    task:
-      id: fd4a9d60-32ae-488c-8863-fa9a9bf7d127
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 4745
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "30":
-    id: "30"
-    taskid: 45bb49ae-14e0-4f54-8146-fe9d5f116d95
-    type: regular
-    task:
-      id: 45bb49ae-14e0-4f54-8146-fe9d5f116d95
-      version: -1
-      name: url coffedoesgood.com
-      description: Check URL Reputation
-      script: VirusTotal|||url
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "73"
-    scriptarguments:
-      long: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold:
-        simple: "0"
-      url:
-        simple: http://coffeedoesgood.com
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 6320
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "31":
-    id: "31"
-    taskid: d267dcba-6ffb-46a6-8e6e-5a5618c55b81
-    type: regular
-    task:
-      id: d267dcba-6ffb-46a6-8e6e-5a5618c55b81
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      expectedValue:
-        simple: http://coffeedoesgood.com
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 6670
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "32":
-    id: "32"
-    taskid: dbed8bc3-e0bc-4785-878c-184ee7cbbee9
-    type: regular
-    task:
-      id: dbed8bc3-e0bc-4785-878c-184ee7cbbee9
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 6845
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "33":
-    id: "33"
-    taskid: f1c4b815-cee1-4403-8a33-d86e1593abe7
-    type: regular
-    task:
-      id: f1c4b815-cee1-4403-8a33-d86e1593abe7
-      version: -1
-      name: url long coffedoesgood.com
-      description: Check URL Reputation
-      script: VirusTotal|||url
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "75"
-    scriptarguments:
-      long:
-        simple: "true"
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold:
-        simple: "0"
-      url:
-        simple: http://coffeedoesgood.com
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 7020
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "34":
-    id: "34"
-    taskid: 3ba5ea61-408d-4ee0-8bfc-5902db8ecf9d
-    type: condition
-    task:
-      id: 3ba5ea61-408d-4ee0-8bfc-5902db8ecf9d
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "35"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Indicator
-            iscontext: true
-          right:
-            value:
-              simple: http://coffeedoesgood.com
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: URL.DetectionEngines
-            iscontext: true
-          right:
-            value:
-              simple: "70"
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: URL.PositiveDetections
-            iscontext: true
-          right:
-            value:
-              simple: "4"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 7370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "35":
-    id: "35"
-    taskid: 901a82a5-e2b3-4499-87d5-62811425ecb1
-    type: regular
-    task:
-      id: 901a82a5-e2b3-4499-87d5-62811425ecb1
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "36"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 7545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "36":
-    id: "36"
-    taskid: e654760b-59da-465f-84ac-6ea5070b02db
-    type: regular
-    task:
-      id: e654760b-59da-465f-84ac-6ea5070b02db
-      version: -1
-      name: url demisto.com
-      description: Check URL Reputation
-      script: VirusTotal|||url
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "77"
-    scriptarguments:
-      long: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      url:
-        simple: www.demisto.com
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 7720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "37":
-    id: "37"
-    taskid: 14fdd394-3edb-4f67-81f4-3a62b9cfdf13
-    type: regular
-    task:
-      id: 14fdd394-3edb-4f67-81f4-3a62b9cfdf13
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      expectedValue:
-        simple: www.demisto.com
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 8070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "38":
-    id: "38"
-    taskid: 3219a3bf-6368-4369-85c3-f607b8acecdf
-    type: regular
-    task:
-      id: 3219a3bf-6368-4369-85c3-f607b8acecdf
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 8245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "42":
-    id: "42"
-    taskid: 32428798-24da-4910-8c98-83a9b13aae59
-    type: regular
-    task:
-      id: 32428798-24da-4910-8c98-83a9b13aae59
-      version: -1
-      name: domain
-      description: Check domain reputation
-      script: VirusTotal|||domain
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "81"
-    scriptarguments:
-      domain:
-        simple: demisto.com
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold:
-        simple: "0"
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "43":
-    id: "43"
-    taskid: ed80388f-7a1f-48ec-8643-cb26c3d014f1
-    type: regular
-    task:
-      id: ed80388f-7a1f-48ec-8643-cb26c3d014f1
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "44"
-    scriptarguments:
-      expectedValue:
-        simple: demisto.com
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 9470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "44":
-    id: "44"
-    taskid: a4532219-487e-4e40-81f5-0bb6a8eca900
-    type: regular
-    task:
-      id: a4532219-487e-4e40-81f5-0bb6a8eca900
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "93"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "51":
-    id: "51"
-    taskid: 360b79cd-f54f-46ab-8e9c-5c9c2b64e5d7
-    type: regular
-    task:
-      id: 360b79cd-f54f-46ab-8e9c-5c9c2b64e5d7
-      version: -1
-      name: Set
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "52"
-    scriptarguments:
-      append: {}
-      key:
-        simple: File.SHA1
-      value:
-        simple: 3395856ce81f2b7382dee72602f798b642f14140
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
           "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "52":
-    id: "52"
-    taskid: 3a4527d8-aa25-4b2a-8162-4677787877c7
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2a2965f8-8ebf-48f6-8b63-5bb4a779797d
     type: regular
     task:
-      id: 3a4527d8-aa25-4b2a-8162-4677787877c7
+      id: 2a2965f8-8ebf-48f6-8b63-5bb4a779797d
       version: -1
-      name: Set2
-      description: Sets a value into the context with the given context key
-      scriptName: Set
+      name: vt-private-get-domain-report
+      script: '|||vt-private-get-domain-report'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "53"
+      - "5"
     scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: File.SHA1
-      value:
-        simple: cf8bd9dfddff007f75adf4c2be48005cea317c62
+      domain:
+        simple: google.com
+      fullResponse: {}
+      threshold: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "53":
-    id: "53"
-    taskid: 6309d461-4f38-49f2-8dd8-27d7ba292705
-    type: regular
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d7e33d9a-4b0d-4924-86a7-9de1a47200cf
+    type: condition
     task:
-      id: 6309d461-4f38-49f2-8dd8-27d7ba292705
+      id: d7e33d9a-4b0d-4924-86a7-9de1a47200cf
       version: -1
-      name: File (1 call)
-      description: Check file reputation of the given hash
-      script: VirusTotal|||file
-      type: regular
-      iscommand: true
-      brand: VirusTotal
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
-      '#none#':
-      - "58"
-    scriptarguments:
-      file:
-        complex:
-          root: File
-          accessor: SHA1
-      long: {}
-      retries: {}
-      threshold:
-        simple: "1"
-      wait: {}
-    continueonerror: true
+      "yes":
+      - "6"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.VirusTotal.CommunicatingHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.VirusTotal.Whois
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.VirusTotal.Subdomains
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.VirusTotal.Resolutions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.VirusTotal.Categories
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "54":
-    id: "54"
-    taskid: 7abb2a56-ec52-44a2-8e1e-1fdd07e840b3
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 18bdc683-43bf-41b1-84fe-d0d3344e69db
     type: regular
     task:
-      id: 7abb2a56-ec52-44a2-8e1e-1fdd07e840b3
+      id: 18bdc683-43bf-41b1-84fe-d0d3344e69db
       version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
+      name: vt-private-get-file-report
+      script: '|||vt-private-get-file-report'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "85"
+      - "7"
     scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+      allInfo: {}
+      resource:
+        simple: 10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e
+      shortFormat: {}
+      threshold: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1420
+          "x": 50,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "56":
-    id: "56"
-    taskid: 789cd08f-6f9f-4933-849e-8ef0c0b8f3a8
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: f29462be-55fb-4611-8f4f-a58ca8a78089
     type: condition
     task:
-      id: 789cd08f-6f9f-4933-849e-8ef0c0b8f3a8
+      id: f29462be-55fb-4611-8f4f-a58ca8a78089
       version: -1
-      name: Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "57"
-    scriptarguments:
-      value:
-        complex:
-          root: File
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.MD5
-                iscontext: true
-              right:
-                value:
-                  simple: 44d88612fea8a8f36de82e1278abb02f
+      - "8"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.VirusTotal.Scans
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: VirusTotal.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: VirusTotal.Status
+            iscontext: true
     view: |-
       {
         "position": {
@@ -1500,36 +298,32 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "57":
-    id: "57"
-    taskid: 895d1322-072c-481e-80de-b84462ecc732
-    type: condition
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 35f23dd8-d63b-470c-8d51-692e05fb2b18
+    type: regular
     task:
-      id: 895d1322-072c-481e-80de-b84462ecc732
+      id: 35f23dd8-d63b-470c-8d51-692e05fb2b18
       version: -1
-      name: Exists2
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
-      type: condition
-      iscommand: false
+      name: vt-private-get-url-report
+      script: '|||vt-private-get-url-report'
+      type: regular
+      iscommand: true
       brand: ""
     nexttasks:
-      "yes":
-      - "54"
+      '#none#':
+      - "9"
     scriptarguments:
-      value:
-        complex:
-          root: File
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.MD5
-                iscontext: true
-              right:
-                value:
-                  simple: 69630e4574ec6798239b091cda43dca0
+      allInfo: {}
+      fullResponse: {}
+      resource:
+        simple: www.demisto.com
+      retries: {}
+      retry_time: {}
+      shortFormat: {}
+      threshold: {}
     separatecontext: false
     view: |-
       {
@@ -1541,227 +335,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "58":
-    id: "58"
-    taskid: 36b89417-b71d-4ab6-8411-c7cbdb2fbe7a
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: b3e6bb66-0a59-4a5f-8bc2-855569176d2f
     type: condition
     task:
-      id: 36b89417-b71d-4ab6-8411-c7cbdb2fbe7a
+      id: b3e6bb66-0a59-4a5f-8bc2-855569176d2f
       version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "56"
-      "yes":
-      - "59"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "59":
-    id: "59"
-    taskid: e1a2322a-3a7f-42dc-80de-5a5fe7f09c0d
-    type: condition
-    task:
-      id: e1a2322a-3a7f-42dc-80de-5a5fe7f09c0d
-      version: -1
-      name: Check if error is API-RATE
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "54"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-          right:
-            value:
-              simple: No content received. Possible API rate limit reached.
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "60":
-    id: "60"
-    taskid: b8db7d8d-ebbf-4a33-8fe8-0a3c83ebdddc
-    type: condition
-    task:
-      id: b8db7d8d-ebbf-4a33-8fe8-0a3c83ebdddc
-      version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "61"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "61":
-    id: "61"
-    taskid: 8d4ec8ee-e8b6-4962-85b5-556e5d0c6b2f
-    type: condition
-    task:
-      id: 8d4ec8ee-e8b6-4962-85b5-556e5d0c6b2f
-      version: -1
-      name: Check if error is API-RATE
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "83"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-          right:
-            value:
-              simple: No content received. Possible API rate limit reached.
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "62":
-    id: "62"
-    taskid: 9243c60d-3f98-4fb5-8854-2adc0ba8dccd
-    type: condition
-    task:
-      id: 9243c60d-3f98-4fb5-8854-2adc0ba8dccd
-      version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "63"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2995
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "63":
-    id: "63"
-    taskid: f9487e11-6dda-454c-82cb-23d5d3674b80
-    type: condition
-    task:
-      id: f9487e11-6dda-454c-82cb-23d5d3674b80
-      version: -1
-      name: Check if error is API-RATE
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-          right:
-            value:
-              simple: No content received. Possible API rate limit reached.
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 3170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "64":
-    id: "64"
-    taskid: d14a6fab-0c9f-4f00-8624-7293457e970a
-    type: condition
-    task:
-      id: d14a6fab-0c9f-4f00-8624-7293457e970a
-      version: -1
-      name: Check if error is API-RATE
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -1772,1074 +355,336 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: ${Error}
+              simple: URL.Data
             iscontext: true
-          right:
+      - - operator: isNotEmpty
+          left:
             value:
-              simple: No content received. Possible API rate limit reached.
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.VirusTotal.Scans
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3870
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "65":
-    id: "65"
-    taskid: dfff9cfa-e32b-4719-8233-d085bf5c9e1e
-    type: condition
-    task:
-      id: dfff9cfa-e32b-4719-8233-d085bf5c9e1e
-      version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "9"
-      "yes":
-      - "64"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3695
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "66":
-    id: "66"
-    taskid: 4d23c3b7-93af-4bc4-8c86-96d4dd66e43b
-    type: condition
-    task:
-      id: 4d23c3b7-93af-4bc4-8c86-96d4dd66e43b
-      version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "28"
-      "yes":
-      - "67"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 4395
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "67":
-    id: "67"
-    taskid: 7f35aa8d-bc23-42a6-8a1f-c97b2c1713bf
-    type: condition
-    task:
-      id: 7f35aa8d-bc23-42a6-8a1f-c97b2c1713bf
-      version: -1
-      name: Check if error is API-RATE
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "29"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-          right:
-            value:
-              simple: No content received. Possible API rate limit reached.
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 4570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "68":
-    id: "68"
-    taskid: 74b5a900-eeb8-4ec5-8858-e0bad1e16bf6
-    type: condition
-    task:
-      id: 74b5a900-eeb8-4ec5-8858-e0bad1e16bf6
-      version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "21"
-      "yes":
-      - "69"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 5095
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "69":
-    id: "69"
-    taskid: 7934d59f-4a16-46d7-81e5-66f9b57d157c
-    type: condition
-    task:
-      id: 7934d59f-4a16-46d7-81e5-66f9b57d157c
-      version: -1
-      name: Check if error is API-RATE
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "22"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-          right:
-            value:
-              simple: No content received. Possible API rate limit reached.
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 5270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "71":
-    id: "71"
-    taskid: 96d185f3-9e6b-42e4-83fe-7d496e828aaf
-    type: condition
-    task:
-      id: 96d185f3-9e6b-42e4-83fe-7d496e828aaf
-      version: -1
-      name: Check if error is API-RATE
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-          right:
-            value:
-              simple: No content received. Possible API rate limit reached.
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 5970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "72":
-    id: "72"
-    taskid: cebed2f6-23ee-4242-8e03-4942eab550e1
-    type: condition
-    task:
-      id: cebed2f6-23ee-4242-8e03-4942eab550e1
-      version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "25"
-      "yes":
-      - "71"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 5795
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "73":
-    id: "73"
-    taskid: ab2a8318-75e5-4c58-88b1-cdbe6d1e77a7
-    type: condition
-    task:
-      id: ab2a8318-75e5-4c58-88b1-cdbe6d1e77a7
-      version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "31"
-      "yes":
-      - "74"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 6495
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "74":
-    id: "74"
-    taskid: 4c4a1502-6798-4d87-87ed-9a7e33919475
-    type: condition
-    task:
-      id: 4c4a1502-6798-4d87-87ed-9a7e33919475
-      version: -1
-      name: Check if error is API-RATE
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "32"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-          right:
-            value:
-              simple: No content received. Possible API rate limit reached.
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 6670
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "75":
-    id: "75"
-    taskid: 4580ac87-7da9-4c4a-8b57-86347844497c
-    type: condition
-    task:
-      id: 4580ac87-7da9-4c4a-8b57-86347844497c
-      version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "34"
-      "yes":
-      - "76"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 7195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "76":
-    id: "76"
-    taskid: 135ab473-9f1e-4d87-8543-250491d297e7
-    type: condition
-    task:
-      id: 135ab473-9f1e-4d87-8543-250491d297e7
-      version: -1
-      name: Check if error is API-RATE
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "35"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-          right:
-            value:
-              simple: No content received. Possible API rate limit reached.
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 7370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "77":
-    id: "77"
-    taskid: e1fc2115-2013-4c7a-8366-57273f6abd13
-    type: condition
-    task:
-      id: e1fc2115-2013-4c7a-8366-57273f6abd13
-      version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "37"
-      "yes":
-      - "78"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 7895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "78":
-    id: "78"
-    taskid: b9b521f8-7ce7-41e5-85eb-556c2c2a7b18
-    type: condition
-    task:
-      id: b9b521f8-7ce7-41e5-85eb-556c2c2a7b18
-      version: -1
-      name: Check if error is API-RATE
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "38"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-          right:
-            value:
-              simple: No content received. Possible API rate limit reached.
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 8070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "79":
-    id: "79"
-    taskid: 3750f136-e919-4410-8a3e-5c4254bb24de
-    type: condition
-    task:
-      id: 3750f136-e919-4410-8a3e-5c4254bb24de
-      version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "15"
-      "yes":
-      - "80"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 8595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "80":
-    id: "80"
-    taskid: 5cd872eb-5514-49a5-8896-9c98d0d00da9
-    type: condition
-    task:
-      id: 5cd872eb-5514-49a5-8896-9c98d0d00da9
-      version: -1
-      name: Check if error is API-RATE
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-          right:
-            value:
-              simple: No content received. Possible API rate limit reached.
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 8770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "81":
-    id: "81"
-    taskid: e2996063-c008-4083-8525-7f8a8449bab0
-    type: condition
-    task:
-      id: e2996063-c008-4083-8525-7f8a8449bab0
-      version: -1
-      name: Check for error
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "43"
-      "yes":
-      - "82"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "82":
-    id: "82"
-    taskid: d7d3b79f-4da1-467a-833f-4a988cd37cbf
-    type: condition
-    task:
-      id: d7d3b79f-4da1-467a-833f-4a988cd37cbf
-      version: -1
-      name: Check if error is API-RATE
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "44"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Error}
-            iscontext: true
-          right:
-            value:
-              simple: No content received. Possible API rate limit reached.
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 9470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "83":
-    id: "83"
-    taskid: e88285e1-e199-4ec4-8ae2-025f742924d5
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: b1fbbfb6-f89a-4410-86c1-62e2af4108da
     type: regular
     task:
-      id: e88285e1-e199-4ec4-8ae2-025f742924d5
+      id: b1fbbfb6-f89a-4410-86c1-62e2af4108da
       version: -1
-      name: ip
-      description: Check IP Reputation
-      script: VirusTotal|||ip
+      name: vt-private-get-ip-report
+      script: '|||vt-private-get-ip-report'
       type: regular
       iscommand: true
-      brand: VirusTotal
+      brand: ""
     nexttasks:
       '#none#':
-      - "84"
+      - "11"
     scriptarguments:
       fullResponse: {}
       ip:
         simple: 8.8.8.8
-      long: {}
-      retries: {}
-      sampleSize: {}
       threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "84":
-    id: "84"
-    taskid: 8b13a40d-b5ed-4655-8d1d-9d7609254efb
-    type: condition
-    task:
-      id: 8b13a40d-b5ed-4655-8d1d-9d7609254efb
-      version: -1
-      name: Verify no duplicates
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: IP
-                filters:
-                - - operator: hasLength
-                    left:
-                      value:
-                        simple: IP.Address
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "1"
-                accessor: Address
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "85":
-    id: "85"
-    taskid: 088065a8-fe72-4a9d-8c12-d500bd0f9db5
-    type: regular
-    task:
-      id: 088065a8-fe72-4a9d-8c12-d500bd0f9db5
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      seconds:
-        simple: "61"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
+          "x": 50,
           "y": 1595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "86":
-    id: "86"
-    taskid: 43e8424e-6a56-49db-844d-c12ce401ed47
-    type: regular
-    task:
-      id: 43e8424e-6a56-49db-844d-c12ce401ed47
-      version: -1
-      name: ip_with_CSV
-      description: Check IP Reputation
-      script: VirusTotal|||ip
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "87"
-    scriptarguments:
-      fullResponse: {}
-      ip:
-        simple: 103.225.52.112,8.8.8.8
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9930
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "87":
-    id: "87"
-    taskid: 38a95076-e8ba-43b8-89d5-4c6fd9fa88e5
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 671d98fc-1e83-4711-8f7c-2c0133d16e95
     type: condition
     task:
-      id: 38a95076-e8ba-43b8-89d5-4c6fd9fa88e5
+      id: 671d98fc-1e83-4711-8f7c-2c0133d16e95
       version: -1
-      name: verify_ip_csv
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "88"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               simple: IP.Address
             iscontext: true
-          right:
-            value:
-              simple: 8.8.8.8
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
-              simple: IP.Address
+              simple: IP.ASN
             iscontext: true
-          right:
+      - - operator: isNotEmpty
+          left:
             value:
-              simple: 103.225.52.112
+              simple: IP.Geo.Country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.DownloadedHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.UnAVDetectedDownloadedHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.DetectedURLs
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.CommunicatingHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.UnAVDetectedCommunicatingHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.Resolutions.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.ReferrerHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.UnAVDetectedReferrerHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.Resolutions.last_resolved
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 10080
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "88":
-    id: "88"
-    taskid: 6b941e4d-528a-4dc7-8e6c-e4404b6a3ee9
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 7b9dcf89-a09c-44bf-8377-43a01c164903
     type: regular
     task:
-      id: 6b941e4d-528a-4dc7-8e6c-e4404b6a3ee9
+      id: 7b9dcf89-a09c-44bf-8377-43a01c164903
       version: -1
-      name: url_with_csv
-      description: Checks the reputation of a URL.
-      script: VirusTotal|||url
+      name: vt-private-search-file
+      script: '|||vt-private-search-file'
       type: regular
       iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "89"
-    scriptarguments:
-      long: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      url:
-        simple: https://demisto.com,https://mail.google.com/mail/u/0/?pli=1#inbox
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 10240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "89":
-    id: "89"
-    taskid: da12b530-fedd-4e4c-8e53-2b772e38fcce
-    type: condition
-    task:
-      id: da12b530-fedd-4e4c-8e53-2b772e38fcce
-      version: -1
-      name: verify_url_csv
-      type: condition
-      iscommand: false
       brand: ""
     nexttasks:
-      "yes":
-      - "94"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: URL.Data
-            iscontext: true
-          right:
-            value:
-              simple: https://demisto.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: URL.Data
-            iscontext: true
-          right:
-            value:
-              simple: https://mail.google.com/mail/u/0/?pli=1#inbox
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 10400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "90":
-    id: "90"
-    taskid: e3e254b4-37df-4591-8496-bc5c59823013
-    type: regular
-    task:
-      id: e3e254b4-37df-4591-8496-bc5c59823013
-      version: -1
-      name: domain_with_csv
-      description: Checks the reputation of a domain.
-      script: VirusTotal|||domain
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
       '#none#':
-      - "91"
+      - "13"
     scriptarguments:
-      domain:
-        simple: demisto.com,google.com
       fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
+      query:
+        simple: type:peexe size:90kb+ positives:5+ behaviour:'taskkill'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 10700
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "91":
-    id: "91"
-    taskid: 89b0c626-b625-405f-823c-6d84a6fb5a35
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 88b479e1-ffeb-403c-8cca-c76be347c35c
     type: condition
     task:
-      id: 89b0c626-b625-405f-823c-6d84a6fb5a35
+      id: 88b479e1-ffeb-403c-8cca-c76be347c35c
       version: -1
-      name: verify_domain_csv
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "92"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
-              simple: Domain.Name
+              simple: VirusTotal.SearchFile.SearchResult
             iscontext: true
-          right:
-            value:
-              simple: demisto.com
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
-              simple: Domain.Name
+              simple: VirusTotal.SearchFile.Query
             iscontext: true
-          right:
-            value:
-              simple: google.com
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 10880
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "92":
-    id: "92"
-    taskid: 0b7563e4-f02b-4bee-8799-a288bfa939f9
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: e850846e-3f40-4a65-8bcb-9f7d1929113f
     type: regular
     task:
-      id: 0b7563e4-f02b-4bee-8799-a288bfa939f9
+      id: e850846e-3f40-4a65-8bcb-9f7d1929113f
       version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
+      name: vt-private-hash-communication
+      script: '|||vt-private-hash-communication'
       type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 11065
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "93":
-    id: "93"
-    taskid: 166d222d-fee7-43c8-8124-39cb041c77cf
-    type: regular
-    task:
-      id: 166d222d-fee7-43c8-8124-39cb041c77cf
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "86"
+      - "17"
     scriptarguments:
-      seconds:
-        simple: "61"
+      fullResponse: {}
+      hash:
+        simple: 10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 9790
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "94":
-    id: "94"
-    taskid: 97b8e28f-46b0-4efd-8b34-17aca844a665
-    type: regular
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: e4a2a001-19b1-4964-8abf-be90f7522245
+    type: title
     task:
-      id: 97b8e28f-46b0-4efd-8b34-17aca844a665
+      id: e4a2a001-19b1-4964-8abf-be90f7522245
       version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
+      name: Test Done
+      type: title
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "90"
-    scriptarguments:
-      seconds:
-        simple: "61"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 10550
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 11110,
-        "width": 810,
+        "height": 2485,
+        "width": 380,
         "x": 50,
         "y": 50
       }

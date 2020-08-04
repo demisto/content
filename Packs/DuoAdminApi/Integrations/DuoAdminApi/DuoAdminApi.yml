@@ -25,7 +25,7 @@ configuration:
   type: 8
 description: |-
   DUO for admins.
-  Must have access to the admin api in order to use this
+  Must have access to the admin api in order to use this.
 display: DUO Admin
 name: DUO Admin
 script:
@@ -232,7 +232,7 @@ script:
     description: Associates a device to a user
     execution: false
     name: duoadmin-associate-device-to-user
-  dockerimage: demisto/duoadmin:1.0.0.147
+  dockerimage: demisto/duoadmin:1.0.0.8854
   isfetch: false
   longRunning: false
   longRunningPort: false

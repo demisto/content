@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bceb8372-36f8-473d-8bd5-d850d9e1da5b
+    taskid: b71b221d-c057-448d-8166-dbdda28e1923
     type: start
     task:
-      id: bceb8372-36f8-473d-8bd5-d850d9e1da5b
+      id: b71b221d-c057-448d-8166-dbdda28e1923
       version: -1
       name: ""
       iscommand: false
@@ -28,12 +28,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 8735f586-8871-4f39-8ff5-a1d766fa8b6c
+    taskid: 57b76811-53f9-40f1-84db-34073d8decdc
     type: regular
     task:
-      id: 8735f586-8871-4f39-8ff5-a1d766fa8b6c
+      id: 57b76811-53f9-40f1-84db-34073d8decdc
       version: -1
       name: nmap-scan
       description: Scan targets with the given parameters
@@ -60,12 +62,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 863dd4f6-35d6-4ef6-8986-86520b0ddc2e
+    taskid: 2c9015ee-deb7-4008-8ad4-d36df37aa554
     type: condition
     task:
-      id: 863dd4f6-35d6-4ef6-8986-86520b0ddc2e
+      id: 2c9015ee-deb7-4008-8ad4-d36df37aa554
       version: -1
       name: Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -93,40 +97,38 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 535a46d7-43ac-44c3-8f7d-23e137e4c453
-    type: regular
+    taskid: 63bf6238-d1c2-4a43-81b6-cc13014a8d75
+    type: title
     task:
-      id: 535a46d7-43ac-44c3-8f7d-23e137e4c453
+      id: 63bf6238-d1c2-4a43-81b6-cc13014a8d75
       version: -1
-      name: Close investigation
-      scriptName: CloseInvestigation
-      type: regular
+      name: Done
+      type: title
       iscommand: false
       brand: ""
-    scriptarguments:
-      notes:
-        simple: Found the service
-      reason:
-        simple: All good
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 170,
-          "y": 765
+          "y": 770
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 18e87031-813b-48e3-8add-5025d348fae0
+    taskid: c84fe071-c5e8-4177-874c-fbd94d2b2c8c
     type: regular
     task:
-      id: 18e87031-813b-48e3-8add-5025d348fae0
+      id: c84fe071-c5e8-4177-874c-fbd94d2b2c8c
       version: -1
       name: Oops, problem
       scriptName: Print
@@ -147,12 +149,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 45144983-0008-465e-8f48-6764e4f6d0c0
+    taskid: 8cad128d-8595-4434-8691-3cf64fde55ee
     type: regular
     task:
-      id: 45144983-0008-465e-8f48-6764e4f6d0c0
+      id: 8cad128d-8595-4434-8691-3cf64fde55ee
       version: -1
       name: nmap-scan
       description: Scan targets with the given parameters
@@ -179,12 +183,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 2a5d4701-319b-446c-8282-a5df519f46a4
+    taskid: 1b55deeb-0356-43ca-8dc9-803c125d8269
     type: condition
     task:
-      id: 2a5d4701-319b-446c-8282-a5df519f46a4
+      id: 1b55deeb-0356-43ca-8dc9-803c125d8269
       version: -1
       name: check Hostname
       description: Check whether the values provided in arguments are equal. If either
@@ -230,6 +236,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -238,7 +246,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 810,
+        "height": 785,
         "width": 1180,
         "x": 170,
         "y": 50

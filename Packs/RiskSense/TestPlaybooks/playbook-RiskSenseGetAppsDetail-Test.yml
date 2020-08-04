@@ -1,7 +1,6 @@
 id: RiskSense Get Apps Detail - Test
 version: -1
 name: RiskSense Get Apps Detail - Test
-fromversion: 5.0.0
 description: This playbook uses the RiskSense integration and tests the various scenarios
   of the "risksense-get-apps-detail" command.
 starttaskid: "0"
@@ -11,12 +10,12 @@ tasks:
     taskid: 75a1fadc-305a-4e2e-863f-e3da8abfdeed
     type: start
     task:
-      description: ""
       id: 75a1fadc-305a-4e2e-863f-e3da8abfdeed
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -106,7 +105,7 @@ tasks:
       name: Is context data  exists?
       description: Look up the application details.The application details can be
         searched based on input parameters like fieldname (name, network etc), operator
-        (EXACT, IN, LIKE), page, size, sort by and sort order.
+        (EXACT, IN, LIKE), page, size, sort by and sort direction.
       type: condition
       iscommand: false
       brand: ""
@@ -355,13 +354,13 @@ tasks:
     taskid: 7827325c-f247-4043-833e-1ef7fe90b865
     type: title
     task:
-      description: ""
       id: 7827325c-f247-4043-833e-1ef7fe90b865
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -421,3 +420,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

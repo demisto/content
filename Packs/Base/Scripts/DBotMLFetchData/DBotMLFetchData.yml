@@ -1,0 +1,14 @@
+comment: Collect telemetry data from the environment
+commonfields:
+  id: DBotMLFetchData
+  version: -1
+enabled: false
+name: DBotMLFetchData
+script: '-'
+subtype: python3
+system: false
+tags:
+  - ml
+timeout: '0'
+type: python
+deprecated: true

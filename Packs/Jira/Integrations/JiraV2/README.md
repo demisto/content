@@ -350,11 +350,11 @@ Modifies an issue in JIRA.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issueId | The ID of the issue to edit. | Required | 
-| issueJson | The issue object (in JSON format). | Optional | 
+| issueJson | The issue object (in JSON format). e.g, {"fields":{"customfield_10037": "field_value"}} | Optional | 
 | summary | The summary of the issue. | Optional | 
 | description | The description of the issue. | Optional | 
 | labels |  A CSV list of labels.  | Optional | 
-| priority |  A priorty name, for example "High" or "Medium".  | Optional | 
+| priority |  A priority name, for example "High" or "Medium".  | Optional | 
 | dueDate | The due date for the issue (in the format 2018-03-11). | Optional | 
 | assignee | The name of the assignee. | Optional | 
 | status | The name of the status. | Optional | 
