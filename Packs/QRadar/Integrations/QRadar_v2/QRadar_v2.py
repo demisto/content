@@ -709,7 +709,7 @@ def fetch_incidents_long_running_events(raw_offenses_queue, enriched_offenses_qu
 
     if len(incidents_batch) > 0:
         demisto.createIncidents(incidents_batch)
-        incidents_batch = []
+        incidents_batch.clear()
 
     counter.reset()
 
