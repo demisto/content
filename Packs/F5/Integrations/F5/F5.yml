@@ -63,6 +63,7 @@ script:
         If a rule-list is specified then only the schedule and status properties effect
         the rule.
     - name: name
+      required: true
       description: The rule name
     - name: status
       description: enabled, disabled or scheduled
@@ -74,6 +75,7 @@ script:
     - name: ipProtocol
       description: lowercase version of protocol listed in the UI
     - name: action
+      required: true
       description: accept, drop, reject
       auto: PREDEFINED
       predefined:
@@ -81,13 +83,14 @@ script:
       - drop
       - reject
     - name: placeBefore
+      required: true
       description: The firewall entry to place the rule before (ie first)
     - name: source
+      isArray: true
       description: the ip sources in csv format
-      isArray: true
     - name: destination
-      description: the ip destinations in csv format
       isArray: true
+      description: the ip destinations in csv format
     description: Creates a rule in a specific policy
   - name: f5-list-rules
     arguments:
