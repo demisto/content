@@ -2,21 +2,22 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import os
 import json
-import requests
-import traceback
-import urllib
+import os
 import re
 import time
-from threading import Thread, Lock
-from Queue import Queue, Empty
-
-from requests.exceptions import HTTPError, ConnectionError
+import urllib3
+import traceback
+from urllib import parse
 from copy import deepcopy
+from queue import Queue, Empty
+from threading import Thread, Lock
+
+import requests
+from requests.exceptions import HTTPError, ConnectionError
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params().get('server')[:-1] if str(demisto.params().get('server')).endswith('/') \
@@ -171,10 +172,12 @@ class AtomicCounter(object):
         return self._value
 
 
-# Filters recursively null values from dictionary
 def filter_dict_null(d):
+    """
+    Filters recursively null values from dictionary
+    """
     if isinstance(d, dict):
-        return dict((k, filter_dict_null(v)) for k, v in d.items() if filter_dict_null(v) is not None)
+        return dict((k, filter_dict_null(v)) for k, v in list(d.items()) if filter_dict_null(v) is not None)
     elif isinstance(d, list):
         if len(d) > 0:
             return list(map(filter_dict_null, d))
@@ -182,60 +185,59 @@ def filter_dict_null(d):
     return d
 
 
-# Converts unicode elements of obj (incl. dictionary and list) to string recursively
-def unicode_to_str_recur(obj):
-    if isinstance(obj, dict):
-        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.iteritems()}
-    elif isinstance(obj, list):
-        obj = map(unicode_to_str_recur, obj)
-    elif isinstance(obj, unicode):
-        obj = obj.encode('utf-8')
-    return obj
-
-
-# Converts to an str
 def convert_to_str(obj):
-    if isinstance(obj, unicode):
-        return obj.encode('utf-8')
+    """
+    Converts to an str
+    """
     try:
         return str(obj)
     except ValueError:
         return obj
 
 
-# Filters recursively from dictionary (d1) all keys that do not appear in d2
 def filter_dict_non_intersection_key_to_value(d1, d2):
+    """
+    Filters recursively from dictionary (d1) all keys that do not appear in d2
+    """
     if isinstance(d1, list):
-        return map(lambda x: filter_dict_non_intersection_key_to_value(x, d2), d1)
+        return [filter_dict_non_intersection_key_to_value(x, d2) for x in d1]
     elif isinstance(d1, dict) and isinstance(d2, dict):
-        d2values = d2.values()
-        return dict((k, v) for k, v in d1.items() if k in d2values)
+        d2values = list(d2.values())
+        return dict((k, v) for k, v in list(d1.items()) if k in d2values)
     return d1
 
 
-# Change the keys of a dictionary according to a conversion map
-# trans_map - { 'OldKey': 'NewKey', ...}
 def replace_keys(src, trans_map):
-    def replace(key, trans_map):
-        if key in trans_map:
-            return trans_map[key]
+    """
+    Change the keys of a dictionary according to a conversion map
+    trans_map - { 'OldKey': 'NewKey', ...}
+    """
+    def replace(key, trans_map_):
+        if key in trans_map_:
+            return trans_map_[key]
         return key
 
     if trans_map:
         if isinstance(src, list):
-            return map(lambda x: replace_keys(x, trans_map), src)
+            return [replace_keys(x, trans_map) for x in src]
         else:
-            src = {replace(k, trans_map): v for k, v in src.iteritems()}
+            src = {replace(k, trans_map): v for k, v in src.items()}
     return src
 
 
-# Transforms flat dictionary to comma separated values
 def dict_values_to_comma_separated_string(dic):
-    return ','.join(convert_to_str(v) for v in dic.itervalues())
+    """
+    Transforms flat dictionary to comma separated values
+    """
+    return ','.join(convert_to_str(v) for v in dic.values())
 
 
-# Sends request to the server using the given method, url, headers and params
-def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
+def send_request(method, url, headers=None, params=None, data=None):
+    """
+    Sends request to the server using the given method, url, headers and params
+    """
+    if not headers:
+        headers = AUTH_HEADERS
     res = None
     try:
         try:
@@ -249,7 +251,7 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
     except HTTPError:
         if res is not None:
             try:
-                err_json = unicode_to_str_recur(res.json())
+                err_json = res.json()
             except ValueError:
                 raise Exception('Error code {err}\nContent: {cnt}'.format(err=res.status_code, cnt=res.content))
 
@@ -270,7 +272,7 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
     except ValueError:
         LOG('Got unexpected response from QRadar. Raw response: {}'.format(res.text))
         raise DemistoException('Got unexpected response from QRadar')
-    return unicode_to_str_recur(json_body)
+    return json_body
 
 
 def send_request_no_error_handling(headers, method, params, url, data):
@@ -289,8 +291,10 @@ def send_request_no_error_handling(headers, method, params, url, data):
     return res
 
 
-# Generic function that receives a result json, and turns it into an entryObject
 def get_entry_for_object(title, obj, contents, headers=None, context_key=None, human_readable=None):
+    """
+    Generic function that receives a result json, and turns it into an entryObject
+    """
     if len(obj) == 0:
         return {
             'Type': entryTypes['note'],
@@ -315,15 +319,19 @@ def get_entry_for_object(title, obj, contents, headers=None, context_key=None, h
     }
 
 
-# Converts epoch (miliseconds) to ISO string
 def epoch_to_ISO(ms_passed_since_epoch):
+    """
+    Converts epoch (miliseconds) to ISO string
+    """
     if ms_passed_since_epoch >= 0:
         return datetime.utcfromtimestamp(ms_passed_since_epoch / 1000.0).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     return ms_passed_since_epoch
 
 
-# Converts closing reason name to id
 def convert_closing_reason_name_to_id(closing_name, closing_reasons=None):
+    """
+    Converts closing reason name to id
+    """
     if not closing_reasons:
         closing_reasons = get_closing_reasons(include_deleted=True, include_reserved=True)
     for closing_reason in closing_reasons:
@@ -332,8 +340,10 @@ def convert_closing_reason_name_to_id(closing_name, closing_reasons=None):
     return closing_name
 
 
-# Converts closing reason id to name
 def convert_closing_reason_id_to_name(closing_id, closing_reasons=None):
+    """
+    Converts closing reason id to name
+    """
     if not closing_reasons:
         closing_reasons = get_closing_reasons(include_deleted=True, include_reserved=True)
     for closing_reason in closing_reasons:
@@ -342,8 +352,10 @@ def convert_closing_reason_id_to_name(closing_id, closing_reasons=None):
     return closing_id
 
 
-# Converts offense type id to name
 def convert_offense_type_id_to_name(offense_type_id, offense_types=None):
+    """
+    Converts offense type id to name
+    """
     if not offense_types:
         offense_types = get_offense_types()
     if offense_types:
@@ -356,8 +368,10 @@ def convert_offense_type_id_to_name(offense_type_id, offense_types=None):
 ''' Request/Response methods '''
 
 
-# Returns the result of an offenses request
 def get_offenses(_range, _filter='', _fields=''):
+    """
+    Returns the result of an offenses request
+    """
     full_url = '{0}/api/siem/offenses'.format(SERVER)
     params = {'filter': _filter} if _filter else {}
     headers = dict(AUTH_HEADERS)
@@ -368,8 +382,10 @@ def get_offenses(_range, _filter='', _fields=''):
     return send_request('GET', full_url, headers, params)
 
 
-# Returns the result of a single offense request
 def get_offense_by_id(offense_id, _filter='', _fields=''):
+    """
+    Returns the result of a single offense request
+    """
     full_url = '{0}/api/siem/offenses/{1}'.format(SERVER, offense_id)
     params = {"filter": _filter} if _filter else {}
     headers = dict(AUTH_HEADERS)
@@ -378,20 +394,26 @@ def get_offense_by_id(offense_id, _filter='', _fields=''):
     return send_request('GET', full_url, headers, params)
 
 
-# Updates a single offense and returns the updated offense
 def update_offense(offense_id):
+    """
+    Updates a single offense and returns the updated offense
+    """
     url = '{0}/api/siem/offenses/{1}'.format(SERVER, offense_id)
     return send_request('POST', url, params=demisto.args())
 
 
-# Posts a search in QRadar and returns the search object
 def search(args):
+    """
+    Updates a single offense and returns the updated offense
+    """
     url = '{0}/api/ariel/searches'.format(SERVER)
     return send_request('POST', url, AUTH_HEADERS, params=args)
 
 
-# Returns a search object (doesn't contain reuslt)
 def get_search(search_id):
+    """
+    Returns a search object (doesn't contain result)
+    """
     url = '{0}/api/ariel/searches/{1}'.format(SERVER, convert_to_str(search_id))
     return send_request('GET', url, AUTH_HEADERS)
 
@@ -462,7 +484,7 @@ def create_note(offense_id, note_text, fields):
 
 # Returns the result of a reference request
 def get_ref_set(ref_name, _range='', _filter='', _fields=''):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, parse.quote(convert_to_str(ref_name), safe=''))
     params = {'filter': _filter} if _filter else {}
     headers = dict(AUTH_HEADERS)
     if _fields:
@@ -483,12 +505,12 @@ def create_reference_set(ref_name, element_type, timeout_type, time_to_live):
 
 
 def delete_reference_set(ref_name):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, parse.quote(convert_to_str(ref_name), safe=''))
     return send_request('DELETE', url)
 
 
 def update_reference_set_value(ref_name, value, source=None):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, parse.quote(convert_to_str(ref_name), safe=''))
     params = {'name': ref_name, 'value': value}
     if source:
         params['source'] = source
@@ -496,8 +518,8 @@ def update_reference_set_value(ref_name, value, source=None):
 
 
 def delete_reference_set_value(ref_name, value):
-    url = '{0}/api/reference_data/sets/{1}/{2}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''),
-                                                       urllib.quote(convert_to_str(value), safe=''))
+    url = '{0}/api/reference_data/sets/{1}/{2}'.format(SERVER, parse.quote(convert_to_str(ref_name), safe=''),
+                                                       parse.quote(convert_to_str(value), safe=''))
     params = {'name': ref_name, 'value': value}
     return send_request('DELETE', url, params=params)
 
@@ -534,7 +556,6 @@ def test_module():
 def offense_enrichment_worker(raw_offenses_queue, enriched_offenses_queue, counter):
     events_columns = demisto.params().get('events_columns')
     while True:
-        offense = None
         try:
             offense = raw_offenses_queue.get()
         # Queue here refers to the  module, not a class
@@ -543,11 +564,11 @@ def offense_enrichment_worker(raw_offenses_queue, enriched_offenses_queue, count
 
         try:
             offense_start_time = offense['start_time']
-            query_expression = u'SELECT {} FROM events WHERE INOFFENSE({}) START \'{}\''.format(
+            query_expression = 'SELECT {} FROM events WHERE INOFFENSE({}) START \'{}\''.format(
                 events_columns, offense['id'], offense_start_time)
             correlations_query = {
-                u'headers': u'',
-                u'query_expression': query_expression
+                'headers': '',
+                'query_expression': query_expression
             }
             raw_search = search(correlations_query)
             search_res_correlations = deepcopy(raw_search)
@@ -575,29 +596,58 @@ def offense_enrichment_worker(raw_offenses_queue, enriched_offenses_queue, count
         time.sleep(1)
 
 
-def get_raw_offenses(last_run, offense_id):
-    query = demisto.params().get('query')
+def fetch_raw_offenses(offense_id):
+    """
+    Use filter frames based on id ranges: "id>offense_id AND id<(offense_id+incidents_per_fetch)"
+
+    If couldn’t fetch offense:
+        Fetch last fetchable offense, and set it as the upper limit
+        is limit greater than last fetched offense id?
+             yes - fetch with increments until manage to fetch (or until limit is reached - dead condition)
+             no  - finish fetch-incidents
+    """
+    user_query = demisto.params().get('query')
     full_enrich = demisto.params().get('full_enrich')
 
-    if last_run and offense_id == 0:
-        start_time = last_run['startTime'] if 'startTime' in last_run else '0'
-        fetch_query = 'start_time>{0}{1}'.format(start_time, ' AND ({0})'.format(query) if query else '')
-    else:
-        fetch_query = 'id>{0} {1}'.format(offense_id, 'AND ({0})'.format(query) if query else '')
-        # qradar returns offenses sorted desc on id and there's no way to change sorting.
-        # if we get `offensesPerCall` offenses it means we (probably) have more than that so we
-        # start looking for the end of the list by doubling the page position until we're empty.
-        # then start binary search back until you find the end of the list and finally return
-        # `offensesPerCall` from the end.
-    demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
-    raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
+    # try to adjust start_offense_id to user_query start offense id
+    try:
+        if 'id>' in user_query:
+            user_offense_id = int(user_query.split('id>')[1].split(' ')[0])
+            if user_offense_id > offense_id:
+                offense_id = user_offense_id
+    except Exception:
+        pass
+
+    # fetch offenses
+    raw_offenses = []
+    fetch_query = ''
+    lim_id = None
+    latest_offense_fnd = True
+    while not latest_offense_fnd:
+        start_offense_id = offense_id
+        end_offense_id = int(offense_id) + OFFENSES_PER_CALL + 1
+        fetch_query = 'id>{0} AND id<{1} {2}'.format(start_offense_id,
+                                                     end_offense_id,
+                                                     'AND ({})'.format(user_query) if user_query else '')
+        demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
+        raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL - 1), _filter=fetch_query)
+        if raw_offenses:
+            latest_offense_fnd = True
+        else:
+            if not lim_id:
+                # set fetch upper limit
+                lim_offense = get_offenses(_range='0-0')
+                if not lim_offense:
+                    raise Exception(
+                        "No offenses could be fetched, please make sure there are offenses available for this user.")
+                lim_id = lim_offense[0]['id']  # if there's no id, raise exception
+            if lim_id >= end_offense_id:  # increment the search until we reach limit
+                offense_id += OFFENSES_PER_CALL
+            else:
+                latest_offense_fnd = True
     demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
-    if len(raw_offenses) >= OFFENSES_PER_CALL:
-        last_offense_pos = find_last_page_pos(fetch_query)
-        raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos),
-                                    _filter=fetch_query)
-    raw_offenses = unicode_to_str_recur(raw_offenses)
-    if full_enrich:
+
+    if full_enrich and raw_offenses:
         demisto.debug('QRadarMsg - Enriching  {}'.format(fetch_query))
         enrich_offense_res_with_source_and_destination_address(raw_offenses)
         demisto.debug('QRadarMsg - Enriched  {} successfully'.format(fetch_query))
@@ -606,7 +656,6 @@ def get_raw_offenses(last_run, offense_id):
 
 
 def fetch_incidents_long_running_samples():
-    last_run = 0
     offense_id = 0
 
     get_events = demisto.params().get('get_events')
@@ -614,7 +663,7 @@ def fetch_incidents_long_running_samples():
         last_run = get_integration_context(SYNC_CONTEXT)
         return last_run.get('samples', [])  # type: ignore [attr-defined]
     else:
-        raw_offenses = get_raw_offenses(last_run, offense_id)
+        raw_offenses = fetch_raw_offenses(offense_id)
 
         incidents_batch = []
         for offense in raw_offenses:
@@ -627,7 +676,7 @@ def fetch_incidents_long_running_events(raw_offenses_queue, enriched_offenses_qu
     last_run = get_integration_context(SYNC_CONTEXT)
     offense_id = last_run['id'] if last_run and 'id' in last_run else 0
 
-    raw_offenses = get_raw_offenses(last_run, offense_id)
+    raw_offenses = fetch_raw_offenses(offense_id)
 
     if len(raw_offenses) == 0:
         return
@@ -677,7 +726,7 @@ def fetch_incidents_long_running_no_events():
     last_run = get_integration_context(SYNC_CONTEXT)
     offense_id = last_run['id'] if last_run and 'id' in last_run else 0
 
-    raw_offenses = get_raw_offenses(last_run, offense_id)
+    raw_offenses = fetch_raw_offenses(offense_id)
 
     if len(raw_offenses) == 0:
         return
@@ -717,10 +766,12 @@ def find_last_page_pos(fetch_query):
     return low
 
 
-# Creates incidents from offense
 def create_incident_from_offense(offense):
+    """
+    Creates incidents from offense
+    """
     occured = epoch_to_ISO(offense['start_time'])
-    keys = offense.keys()
+    keys = list(offense.keys())
     labels = []
     for i in range(len(keys)):
         labels.append({'type': keys[i], 'value': convert_to_str(offense[keys[i]])})
@@ -751,8 +802,13 @@ def get_offenses_command():
     return get_entry_for_object('QRadar offenses', offenses, raw_offenses, headers, 'QRadar.Offense(val.ID === obj.ID)')
 
 
-# Enriches the values of a given offense result (full_enrichment adds more enrichment options)
 def enrich_offense_result(response, full_enrichment=False):
+    """
+    Enriches the values of a given offense result (full_enrichment adds more enrichment options)
+    :param response:
+    :param full_enrichment:
+    :return:
+    """
     enrich_offense_res_with_source_and_destination_address(response)
     if isinstance(response, list):
         type_dict = get_offense_types()
@@ -915,11 +971,11 @@ def get_search_command():
 def get_search_results_command():
     search_id = demisto.args().get('search_id')
     raw_search_results = get_search_results(search_id, demisto.args().get('range'))
-    result_key = raw_search_results.keys()[0]
+    result_key = list(raw_search_results.keys())[0]
     title = 'QRadar Search Results from {}'.format(convert_to_str(result_key))
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
-    context_obj = unicode_to_str_recur(raw_search_results[result_key])
+    context_obj = raw_search_results[result_key]
     return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key)
 
 
@@ -947,9 +1003,9 @@ def get_entry_for_assets(title, obj, contents, human_readable_obj, headers=None)
     if headers:
         if isinstance(headers, str):
             headers = headers.split(',')
-        headers = list(filter(lambda x: x in headers, list_entry) for list_entry in human_readable_obj)
+        headers = list([x for x in list_entry if x in headers] for list_entry in human_readable_obj)
     human_readable_md = ''
-    for k, h_obj in human_readable_obj.iteritems():
+    for k, h_obj in human_readable_obj.items():
         human_readable_md = human_readable_md + tableToMarkdown(k, h_obj, headers)
     return {
         'Type': entryTypes['note'],
@@ -985,7 +1041,7 @@ def transform_single_asset_to_hr(asset):
     Prepares asset for human readable
     """
     hr_asset = []
-    for k, v in asset.iteritems():
+    for k, v in asset.items():
         if isinstance(v, dict):
             hr_item = v
             hr_item['Property Name'] = k
@@ -1245,7 +1301,7 @@ def upload_indicators_list_request(reference_name, indicators_list):
         Returns:
             dict: Reference set object
     """
-    url = '{0}/api/reference_data/sets/bulk_load/{1}'.format(SERVER, urllib.quote(reference_name, safe=''))
+    url = '{0}/api/reference_data/sets/bulk_load/{1}'.format(SERVER, parse.quote(reference_name, safe=''))
     params = {'name': reference_name}
     return send_request('POST', url, params=params, data=json.dumps(indicators_list))
 
@@ -1281,7 +1337,7 @@ def upload_indicators_command():
             return "No indicators found, Reference set {0} didn't change".format(reference_name), {}, {}
         else:
             raw_response = upload_indicators_list_request(reference_name, indicators_values_list)
-            ref_set_data = unicode_to_str_recur(get_ref_set(reference_name))
+            ref_set_data = get_ref_set(reference_name)
             ref = replace_keys(ref_set_data, REFERENCE_NAMES_MAP)
             enrich_reference_set_result(ref)
             indicator_headers = ['Value', 'Type']

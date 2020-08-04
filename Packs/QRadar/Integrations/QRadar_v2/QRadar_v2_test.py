@@ -282,7 +282,7 @@ def test_upload_indicators_command_no_indicators_found(mocker):
 """ CONSTANTS """
 REQUEST_HEADERS = {'Content-Type': 'application/json', 'SEC': 'token'}
 NON_URL_SAFE_MSG = 'non-safe/;/?:@=&"<>#%{}|\\^~[] `'
-NON_URL_SAFE_MSG_URL_ENCODED = 'non-safe%2F%3B%2F%3F%3A%40%3D%26%22%3C%3E%23%25%7B%7D%7C%5C%5E%7E%5B%5D%20%60'
+NON_URL_SAFE_MSG_URL_ENCODED = 'non-safe%2F%3B%2F%3F%3A%40%3D%26%22%3C%3E%23%25%7B%7D%7C%5C%5E~%5B%5D%20%60'
 
 """ API RAW RESULTS """
 

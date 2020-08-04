@@ -1594,7 +1594,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  dockerimage: demisto/python3:3.7.3.221
+  subtype: python3
   type: python
   isFetchSamples: true
 sourcemoduleid: QRadar_v2
