@@ -89,6 +89,7 @@ DEFAULT_RECORD_FIELDS = {
     'sys_created_on': 'CreatedAt'
 }
 
+
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
 
@@ -137,6 +138,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
+
 
 def get_server_url(server_url: str) -> str:
     url = server_url
@@ -623,7 +625,8 @@ class Client(BaseClient):
 
         return self.send_request(path, 'GET', params=query_params)
 
-    def update(self, table_name: str, record_id: str, fields: dict = {}, custom_fields: dict = {}) -> dict:
+    def update(self, table_name: str, record_id: str, fields: dict = {}, custom_fields: dict = {},
+               input_display_value: bool = False) -> dict:
         """Updates a ticket or a record by sending a PATCH request.
 
         Args:
@@ -631,14 +634,16 @@ class Client(BaseClient):
             record_id: record id
             fields: fields to update
             custom_fields: custom_fields to update
-
+            input_display_value: whether to set field values using the display value or the actual value.
         Returns:
             Response from API.
         """
         body = generate_body(fields, custom_fields)
-        return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', body=body)
+        query_params = {'sysparm_input_display_value': input_display_value}
+        return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', params=query_params, body=body)
 
-    def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {}) -> dict:
+    def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {},
+               input_display_value: bool = False) -> dict:
         """Creates a ticket or a record by sending a POST request.
 
         Args:
@@ -646,12 +651,14 @@ class Client(BaseClient):
         record_id: record id
         fields: fields to update
         custom_fields: custom_fields to update
+        input_display_value: whether to set field values using the display value or the actual value.
 
         Returns:
             Response from API.
         """
         body = generate_body(fields, custom_fields)
-        return self.send_request(f'table/{table_name}', 'POST', body=body)
+        query_params = {'sysparm_input_display_value': input_display_value}
+        return self.send_request(f'table/{table_name}', 'POST', params=query_params, body=body)
 
     def delete(self, table_name: str, record_id: str) -> dict:
         """Deletes a ticket or a record by sending a DELETE request.
@@ -874,11 +881,11 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     ticket_id = str(args.get('id', ''))
     additional_fields = split_fields(str(args.get('additional_fields', '')))
     additional_fields_keys = list(additional_fields.keys())
-
     fields = get_ticket_fields(args, ticket_type=ticket_type)
     fields.update(additional_fields)
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
-    result = client.update(ticket_type, ticket_id, fields, custom_fields)
+    result = client.update(ticket_type, ticket_id, fields, custom_fields, input_display_value)
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
@@ -906,6 +913,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     additional_fields = split_fields(str(args.get('additional_fields', '')))
     additional_fields_keys = list(additional_fields.keys())
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     if template:
         template = client.get_template(template)
@@ -913,7 +921,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     if additional_fields:
         fields.update(additional_fields)
 
-    result = client.create(ticket_type, fields, custom_fields)
+    result = client.create(ticket_type, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
@@ -1250,6 +1258,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     table_name = str(args.get('table_name', ''))
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     fields = {}
     if fields_str:
@@ -1258,7 +1267,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     if custom_fields_str:
         custom_fields = split_fields(custom_fields_str)
 
-    result = client.create(table_name, fields, custom_fields)
+    result = client.create(table_name, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
         return 'Could not create record.', {}, {}, True
@@ -1286,6 +1295,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     record_id = str(args.get('id', ''))
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     fields = {}
     if fields_str:
@@ -1294,7 +1304,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     if custom_fields_str:
         custom_fields = split_fields(custom_fields_str)
 
-    result = client.update(table_name, record_id, fields, custom_fields)
+    result = client.update(table_name, record_id, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
         return 'Could not retrieve record.', {}, {}, True
@@ -2026,19 +2036,14 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
         A ``Dict[str, Any]`` object with keys as field names and description as values
     :rtype: ``Dict[str, Any]``
     """
-    all_mappings = GetMappingFieldsResponse()
-    incident_fields = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
 
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
     demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
-    ticket = incident_fields.get('result')[0]
-    for field in ticket:
+    for field in SNOW_ARGS:
         incident_type_scheme.add_field(field)
 
-    all_mappings.add_scheme_type(incident_type_scheme)
-
-    return all_mappings
+    return GetMappingFieldsResponse(incident_type_scheme)
 
 
 def main():

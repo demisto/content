@@ -125,6 +125,8 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
                 elif key in TIMESTAMP_FIELDS:
                     key = key.replace('Time', 'Date').replace('stamp', '')
                     d[key] = parse_timestamp_to_datestring(value)
+                elif key in ['eventId', 'baseEventIds']:
+                    d[key] = str(value)
     return d
 
 

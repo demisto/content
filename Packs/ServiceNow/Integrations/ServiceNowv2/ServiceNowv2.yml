@@ -705,6 +705,19 @@ script:
       name: additional_fields
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Flag that indicates whether to set field values using the display
+        value or the actual value. true will treat input value as the dispaly value.
+        false treats input values as actual values. Default is false.
+      isArray: false
+      name: input_display_value
+      predefined:
+        - 'false'
+        - 'true'
+      required: false
+      secret: false
     deprecated: false
     description: Creates new ServiceNow ticket.
     execution: false
@@ -1249,6 +1262,19 @@ script:
       name: additional_fields
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Flag that indicates whether to set field values using the display
+        value or the actual value. true will treat input value as the dispaly value.
+        false treats input values as actual values. Default is false.
+      isArray: false
+      name: input_display_value
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified ticket.
     execution: false
@@ -1638,6 +1664,19 @@ script:
       name: custom_fields
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Flag that indicates whether to set field values using the display
+        value or the actual value. true will treat input value as the dispaly value.
+        false treats input values as actual values. Default is false.
+      isArray: false
+      name: input_display_value
+      predefined:
+        - 'false'
+        - 'true'
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new record in the specified ServiceNow table.
     execution: false
@@ -1685,6 +1724,19 @@ script:
         record, in the format: fieldname1=value;fieldname2=value;...'
       isArray: false
       name: custom_fields
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Flag that indicates whether to set field values using the display
+        value or the actual value. true will treat input value as the dispaly value.
+        false treats input values as actual values. Default is false.
+      isArray: false
+      name: input_display_value
+      predefined:
+      - 'false'
+      - 'true'
       required: false
       secret: false
     deprecated: false

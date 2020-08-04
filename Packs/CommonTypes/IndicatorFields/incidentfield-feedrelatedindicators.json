@@ -48,8 +48,8 @@
 	"caseInsensitive": true,
 	"columns": [
 		{
-			"key": "Value",
-			"displayName": "value",
+			"key": "value",
+			"displayName": "Value",
 			"type": "shortText",
 			"required": false,
 			"script": "",
@@ -60,8 +60,8 @@
 			"selectValues": null
 		},
 		{
-			"key": "Type",
-			"displayName": "type",
+			"key": "type",
+			"displayName": "Type",
 			"type": "shortText",
 			"required": false,
 			"script": "",
@@ -72,8 +72,8 @@
 			"selectValues": null
 		},
 		{
-			"key": "Description",
-			"displayName": "description",
+			"key": "description",
+			"displayName": "Description",
 			"type": "shortText",
 			"required": false,
 			"script": "",
