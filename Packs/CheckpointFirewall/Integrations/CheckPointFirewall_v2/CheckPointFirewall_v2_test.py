@@ -1,4 +1,4 @@
-from CheckPoint_FW import format_list_objects, format_add_object, \
+from CheckPointFirewall_v2 import format_list_objects, format_add_object, \
     format_update_object, format_delete_object
 
 MOCK_IP = '8.8.8.8'
