@@ -6,7 +6,6 @@
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"keyTypeMap": {},
-	"logicalVersion": 2,
 	"mapping": {
 		"Microsoft CAS Alert": {
 			"dontMapEventToLabels": true,
@@ -43,21 +42,16 @@
 		}
 	},
 	"name": "Microsoft CAS",
-	"nameRaw": "Microsoft CAS",
-	"packID": "",
 	"propagationLabels": [
 		"all"
 	],
 	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
 	"transformer": {
 		"complex": null,
 		"simple": ""
 	},
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
+	"unclassifiedCases": {},
 	"version": -1,
 	"fromVersion": "6.0.0"
 }
