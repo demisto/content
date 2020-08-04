@@ -407,7 +407,7 @@ def main():
     reputation = params.get('feedReputation', 'None')
     proxies = handle_proxy()
     verify_certificate = not params.get('insecure', False)
-    tags = params.get("feedTags", [])
+    tags = argToList(params.get('feedTags', []))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
