@@ -180,6 +180,7 @@ def list_analyzed_resource_command(args):
     human_readable = tableToMarkdown("AWS Access Analyzer Resource", data)
     return_outputs(human_readable, ec)
 
+
 def get_findings_command(args):
     client = aws_session(
         region=args.get('region'),
@@ -217,6 +218,7 @@ def get_findings_command(args):
     data = json.loads(json.dumps(response, cls=DatetimeEncoder))
 
     return [data] if isinstance(data, dict) else data
+
 
 def list_findings_command(args):
     client = aws_session(
