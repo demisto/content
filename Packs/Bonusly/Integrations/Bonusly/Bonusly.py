@@ -33,8 +33,7 @@ class Client(BaseClient):
 
     def bonusly_test(self):
         suffix = 'bonuses'
-        self._http_request('GET', suffix)
-        return 'ok'
+        return self._http_request('GET', suffix)
 
     def bonusly_list_bonuses_http_request(self, url_params) -> dict:
         """
