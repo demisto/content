@@ -2941,7 +2941,7 @@
         {
             "playbookID": "FailedInstances - Test",
             "integrations": "Carbon Black Enterprise EDR",
-            "fromversion": "4.0.0"
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
