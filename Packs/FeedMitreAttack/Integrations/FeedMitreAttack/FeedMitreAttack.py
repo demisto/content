@@ -41,7 +41,7 @@ requests.packages.urllib3.disable_warnings()
 
 class Client:
 
-    def __init__(self, url, proxies, verify, include_apt, reputation, tags: list = []):
+    def __init__(self, url, proxies, verify, include_apt, reputation, tags: list = None):
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
@@ -208,7 +208,7 @@ class Client:
                                 "score": self.reputation,
                                 "type": "MITRE ATT&CK",
                                 "rawJSON": mitre_item_json,
-                                "fields": {"tags": Client.tags}
+                                "fields": {"tags": self.tags}
                             })
                             indicator_values_list.add(value)
                             counter += 1
@@ -226,7 +226,7 @@ class Client:
                                         "score": self.reputation,
                                         "type": "MITRE ATT&CK",
                                         "rawJSON": mitre_item_json,
-                                        "fields": {"tags": Client.tags}
+                                        "fields": {"tags": self.tags}
                                     })
                                     external_refs.add(x)
 
