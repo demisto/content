@@ -1,5 +1,16 @@
 ## [Unreleased]
-
+  - Added the following real-time response API commands:
+    - ***cs-falcon-run-get-command***
+    - ***cs-falcon-status-get-command***
+    - ***cs-falcon-status-command***
+    - ***cs-falcon-get-extracted-file***
+    - ***cs-falcon-list-host-files***
+    - ***cs-falcon-refresh-session***
+    
+  - Added the *target* argument to the ***cs-falcon-run-command*** command to support single and batch operations.
+  - Fixed entry context keys.
+  - Fixed an issue in the ***cs-falcon-get-script*** command where returned script entries replaced the entry identifying with *ID* in the *CrowdStrike.Script* path. This breaks backward compatibility.
+  - Fixed an issue in the ***cs-falcon-list-scripts*** command where returned script entries replaced the entry identifying with *ID*s in the *CrowdStrike.Script* path. This breaks backward compatibility.
 
 ## [20.5.0] - 2020-05-12
 -

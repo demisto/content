@@ -1,0 +1,704 @@
+id: PCAP File Carving
+version: -1
+name: PCAP File Carving
+description: This playbook is used to carve (extract) files from within PCAP files
+  and perform enrichment and detonation of the extracted files. Supported PCAP file
+  types are pcap, cap, pcapng. The playbook can handle one PCAP file per incident.
+  Additional inputs allow the user to provide the WPA password for decrypting 802.11
+  (wireless) traffic and adding an RSA certificate to decrypt SSL traffic. Additional
+  options enable you to filter the files to extract according to the file extension
+  or the actual file  type (MIME), and limit the amount of files to extract. Another
+  feature enables you to specify a filter to create a new smaller PCAP file. To display
+  the results within the relevant incident fields, the playbook needs to run in a
+  PCAP Analysis incident type. For handling of PCAP files larger than 30 MB, refer
+  to the PcapMinerV2 documentation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d34edaf4-9576-4e34-8570-778feb4741d3
+    type: start
+    task:
+      id: d34edaf4-9576-4e34-8570-778feb4741d3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f9e8cf57-36d2-4687-8180-0423479209d4
+    type: condition
+    task:
+      id: f9e8cf57-36d2-4687-8180-0423479209d4
+      version: -1
+      name: Is there a PCAP file?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "100"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.PcapFileEntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 86e513d1-6b86-4765-8758-46318c454083
+    type: title
+    task:
+      id: 86e513d1-6b86-4765-8758-46318c454083
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "99":
+    id: "99"
+    taskid: 8f89c37b-d5fc-4a9f-816e-aff8e799537d
+    type: regular
+    task:
+      id: 8f89c37b-d5fc-4a9f-816e-aff8e799537d
+      version: -1
+      name: Create new PCAP file with filter
+      description: |-
+        PcapMIner V2 allows you to parse PCAP files by displaying all of the relevant data within ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted, traffic and more.
+        This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine larger files you can either:
+        a) Use the `pcap_filter` parameter to filter your PCAP file and thus make is smaller.
+        b) Copy the automation and change the `default timeout` parameter to match your needs.
+      scriptName: PcapMinerV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      convs_to_display: {}
+      custom_regex: {}
+      entry_id:
+        simple: ${inputs.PcapFileEntryID}
+      extract_ips:
+        simple: "True"
+      extract_strings: {}
+      filtered_file_name:
+        simple: filtered.pcap
+      pcap_filter:
+        simple: ${inputs.PcapFilter}
+      protocol_output: {}
+      rsa_decrypt_key_entry_id:
+        simple: ${inputs.RsaDecryptKeyEntryID}
+      wpa_password:
+        simple: ${inputs.WpaPassword}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "100":
+    id: "100"
+    taskid: 5e3ed6c6-aab5-4184-8532-ee3e01440dca
+    type: condition
+    task:
+      id: 5e3ed6c6-aab5-4184-8532-ee3e01440dca
+      version: -1
+      name: Is there a PCAP filter?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "101"
+      "yes":
+      - "99"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.PcapFilter
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "101":
+    id: "101"
+    taskid: 04110f5e-a4db-43b3-810c-7f734450d979
+    type: regular
+    task:
+      id: 04110f5e-a4db-43b3-810c-7f734450d979
+      version: -1
+      name: Carve files from unfiltered PCAP
+      description: This automation extracts all possible files from a PCAP file.
+      scriptName: PcapFileExtractor
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      entry_id:
+        simple: ${inputs.PcapFileEntryID}
+      extensions:
+        simple: ${inputs.FileExtensionFilter}
+      extensions_inclusive_or_exclusive: {}
+      inclusive_or_exclusive:
+        simple: ${inputs.FileTypeFilter}
+      limit:
+        simple: ${inputs.ExtractedFilesLimit}
+      rsa_decrypt_key_entry_id:
+        simple: ${inputs.RsaDecryptKeyEntryID}
+      types:
+        simple: ${inputs.FileTypeFilter}
+      types_inclusive_or_exclusive: {}
+      wpa_password:
+        simple: ${inputs.WpaPassword}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "102":
+    id: "102"
+    taskid: f27c665e-4094-4374-830d-2b711b336baa
+    type: regular
+    task:
+      id: f27c665e-4094-4374-830d-2b711b336baa
+      version: -1
+      name: Carve files from filtered PCAP
+      description: This automation extracts all possible files from a PCAP file.
+      scriptName: PcapFileExtractor
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: filtered.pcap
+          accessor: EntryID
+      extensions:
+        simple: ${inputs.FileExtensionFilter}
+      extensions_inclusive_or_exclusive: {}
+      inclusive_or_exclusive:
+        simple: ${inputs.FileTypeFilter}
+      limit:
+        simple: ${inputs.ExtractedFilesLimit}
+      rsa_decrypt_key_entry_id:
+        simple: ${inputs.RsaDecryptKeyEntryID}
+      types:
+        simple: ${inputs.FileTypeFilter}
+      types_inclusive_or_exclusive: {}
+      wpa_password:
+        simple: ${inputs.WpaPassword}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "104":
+    id: "104"
+    taskid: 5d9d20d5-9013-4609-8890-7f649f0bebc9
+    type: playbook
+    task:
+      id: 5d9d20d5-9013-4609-8890-7f649f0bebc9
+      version: -1
+      name: Detonate File - Generic
+      description: Detonate file through active integrations that support file detonation
+      playbookName: Detonate File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: File.SHA256
+                iscontext: true
+              right:
+                value:
+                  simple: Sha256ToCheck
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
+          accessor: EntryID
+      File:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.SHA256
+                iscontext: true
+              right:
+                value:
+                  simple: Sha256ToCheck
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "105":
+    id: "105"
+    taskid: f313e02b-5f5c-46a6-84ff-5ffcc2f86839
+    type: condition
+    task:
+      id: f313e02b-5f5c-46a6-84ff-5ffcc2f86839
+      version: -1
+      name: Are there files that don't have a good DBot score?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "107"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "106":
+    id: "106"
+    taskid: 767cea00-0774-4f69-8163-a3d91489dd8c
+    type: regular
+    task:
+      id: 767cea00-0774-4f69-8163-a3d91489dd8c
+      version: -1
+      name: Enrich extracted files
+      description: Get a quick indicator of the risk associated with a file.
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      file:
+        complex:
+          root: PcapExtractedFiles
+          accessor: FileSHA256
+          transformers:
+          - operator: uniq
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "107":
+    id: "107"
+    taskid: 2517ebdf-87bc-461c-8321-88df32da7768
+    type: regular
+    task:
+      id: 2517ebdf-87bc-461c-8321-88df32da7768
+      version: -1
+      name: Set SHA256 to check
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Sha256ToCheck
+      stringify: {}
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          - - operator: inList
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: PcapExtractedFiles.FileSHA256
+                iscontext: true
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "108":
+    id: "108"
+    taskid: 71e12c67-92b4-444c-83a1-1648bb1eac34
+    type: condition
+    task:
+      id: 71e12c67-92b4-444c-83a1-1648bb1eac34
+      version: -1
+      name: Auto detonate files?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "105"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoDetonateFiles
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1765,
+        "width": 1260,
+        "x": 440,
+        "y": -220
+      }
+    }
+  }
+inputs:
+- key: RsaDecryptKeyEntryID
+  value:
+    complex:
+      root: File
+      filters:
+      - - operator: inList
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+          right:
+            value:
+              simple: incident.pcapencryptionkey.name
+            iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: key
+      accessor: EntryID
+  required: false
+  description: This input specifies the file entry id for the RSA decrypt key if the
+    user provided the key in the incident.
+  playbookInputQuery:
+- key: PcapFileEntryID
+  value:
+    complex:
+      root: File
+      filters:
+      - - operator: inList
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+          right:
+            value:
+              simple: incident.pcapfile.name
+            iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: pcap
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: cap
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: pcapng
+      accessor: EntryID
+  required: false
+  description: This input specifies the file entry id for the PCAP file if the user
+    provided the file in the incident. One PCAP file can run per incident.
+  playbookInputQuery:
+- key: WpaPassword
+  value: {}
+  required: false
+  description: This input value is used to provide a WPA (Wi-Fi Protected Access)
+    password to decrypt encrypted 802.11 Wi-FI traffic.
+  playbookInputQuery:
+- key: PcapFilter
+  value: {}
+  required: false
+  description: |-
+    This input specifies a search filter to be used on the PCAP file. Filters can be used to search only for a specific IP, protocols and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html
+    For this playbook, using a PCAP filter will generate a new smaller PCAP file based on the provided filter therefor thus reducing the extraction of non relevant files.
+  playbookInputQuery:
+- key: ExtractedFilesLimit
+  value:
+    simple: "5"
+  required: false
+  description: This input limits the number of files to be extracted from the PCAP
+    file. Default value is 5.
+  playbookInputQuery:
+- key: FileExtensionFilter
+  value: {}
+  required: false
+  description: |-
+    This input is used to select which file extensions to include or exclude from the PCAP file. Extensions must be comma separated, for example, png,gif,exe.
+    This setting cannot be used with the FileTypeFilter.
+  playbookInputQuery:
+- key: FileTypeFilter
+  value: {}
+  required: false
+  description: |-
+    This input is used to select which file type (MIME type) to include or exclude from the PCAP file. Extensions must be comma separated, for example, image/jpeg,application/x-javascript
+    This setting cannot be used with the FileExtensionFilter.
+  playbookInputQuery:
+- key: FilterType
+  value:
+    simple: inclusive
+  required: false
+  description: |-
+    This input is combined with the FileExtensionFilter input or the FileTypeFilter input. It specifies if the type/extensions list is inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".
+    Default value is 'inclusive'
+  playbookInputQuery:
+- key: AutoDetonateFiles
+  value:
+    simple: "True"
+  required: false
+  description: This input specifies whether to detonate files extracted from the PCAP.
+    The default value is True, any other value will be considered as false.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore
+  description: The DBotScore object.
+  type: string
+- contextPath: File
+  description: The file object
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: string
+fromversion: 5.0.0
+tests:
+- PCAP File Carving Test

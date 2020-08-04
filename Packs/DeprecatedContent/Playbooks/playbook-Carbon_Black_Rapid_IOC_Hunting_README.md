@@ -1,4 +1,4 @@
-Hunts for malicious indicators using Carbon Black.
+DEPRECATED. Use "Search Endpoints By Hash - Carbon Black Response V2" playbook instead. Hunts for malicious indicators using Carbon Black.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
