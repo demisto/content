@@ -512,16 +512,12 @@ def fetch_incidents():
                 offense_id = user_offense_id
     except Exception:
         pass
-    # set fetch upper limit
-    lim_offense = get_offenses(_range='0-0')
-    if not lim_offense:
-        raise Exception("No offenses could be fetched, please make sure there are offenses available for this user.")
-    lim_id = lim_offense[0]['id']  # if there's no id, raise exception
 
     # fetch offenses
     raw_offenses = []
     fetch_query = ''
-    latest_offense_fnd = offense_id == lim_id
+    lim_id = None
+    latest_offense_fnd = True
     while not latest_offense_fnd:
         start_offense_id = offense_id
         end_offense_id = int(offense_id) + OFFENSES_PER_CALL + 1
@@ -533,6 +529,13 @@ def fetch_incidents():
         if raw_offenses:
             latest_offense_fnd = True
         else:
+            if not lim_id:
+                # set fetch upper limit
+                lim_offense = get_offenses(_range='0-0')
+                if not lim_offense:
+                    raise Exception(
+                        "No offenses could be fetched, please make sure there are offenses available for this user.")
+                lim_id = lim_offense[0]['id']  # if there's no id, raise exception
             if lim_id >= end_offense_id:  # increment the search until we reach limit
                 offense_id += OFFENSES_PER_CALL
             else:
