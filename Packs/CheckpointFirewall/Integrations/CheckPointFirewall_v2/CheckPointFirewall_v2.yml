@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: IT Services
 commonfields:
   id: CheckPointFirewall
   version: -1
@@ -146,7 +146,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Add new host
@@ -241,7 +241,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: update host changes
@@ -296,7 +296,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: delete host
@@ -400,7 +400,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: add a group
@@ -475,7 +475,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: update group object
@@ -521,7 +521,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: delete a group object
@@ -613,7 +613,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Add address range object
@@ -715,7 +715,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Update an address range object
@@ -770,7 +770,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Delete a given address range
@@ -881,7 +881,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Add a threat indicator
@@ -1013,7 +1013,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: delete threat indicator
@@ -1088,7 +1088,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Create new access rule
@@ -1184,7 +1184,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Edit existing access rule using object name or uid.
@@ -1247,14 +1247,14 @@ script:
       description: Layer that the rule belongs to identified by the name or UID.
       isArray: false
       name: layer
-      required: false
+      required: true
       secret: false
     - default: false
       defaultValue: None
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Delete access rule
@@ -1328,7 +1328,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Add application site
@@ -1418,7 +1418,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: "Edit existing application using object name or uid. \nIt's impossible\
@@ -1466,7 +1466,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Delete existing application site object using object name or uid.
@@ -1482,19 +1482,16 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: publish changes
     execution: false
     name: checkpoint-publish
-<<<<<<< HEAD:Packs/CheckpointFirewall/Integrations/CheckPointFirewall_v2/CheckPointFirewall_v2.yml
     outputs:
     - contextPath: CheckPoint.Publish.task-id
       description: Task id of the publish command.
       type: String
-=======
->>>>>>> parent of 86f4828e0... * move CheckPoint_FW pack to CheckPointFirewall pack:Packs/CheckPoint_FW/Integrations/CheckPoint_FW/CheckPoint_FW.yml
   - arguments:
     - default: false
       description: The name of the Policy Package to be installed.
@@ -1521,18 +1518,14 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Intsalling policy
     execution: false
     name: checkpoint-install-policy
     outputs:
-<<<<<<< HEAD:Packs/CheckpointFirewall/Integrations/CheckPointFirewall_v2/CheckPointFirewall_v2.yml
     - contextPath: CheckPoint.InstallPolicy.task-id
-=======
-    - contextPath: CheckPoint.instal-policy.task-id
->>>>>>> parent of 86f4828e0... * move CheckPoint_FW pack to CheckPointFirewall pack:Packs/CheckPoint_FW/Integrations/CheckPoint_FW/CheckPoint_FW.yml
       description: Operation task ID.
       type: String
   - arguments:
@@ -1547,7 +1540,7 @@ script:
       description: Execute command with a specific session ID
       isArray: false
       name: session_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Verifies the policy of the selected package.
