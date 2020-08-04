@@ -1,0 +1,25 @@
+{
+	"id": "575cb861-e842-4e01-8379-1c9f55bd3b38",
+	"version": -1,
+	"defaultIncidentType": "Microsoft CAS Alert",
+
+
+	"description": "",
+	"feed": false,
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"keyTypeMap": {},
+	"name": "Microsoft CAS classifier",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "classification",
+	"unclassifiedCases": {},
+	"fromVersion": "6.0.0",
+	"toVersion": "6.0.1"
+}

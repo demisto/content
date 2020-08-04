@@ -1,9 +1,8 @@
 {
-	"close": null,
+	"close": {},
 	"description": "",
-	"details": null,
+	"details": {},
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -514,23 +513,15 @@
 			}
 		]
 	},
-	"edit": null,
-	"fromServerVersion": "",
+	"edit": {},
+	"fromVersion": "6.0.0",
 	"group": "incident",
 	"id": "084a304a-d3ef-4ba1-84bd-a1b428795dae",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
+	"indicatorsDetails": {},
+	"indicatorsQuickView": {},
+	"mobile": {},
 	"name": "MicrosoftCloudAppSecurity",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"sortValues": null,
+	"quickView": {},
 	"system": false,
-	"toServerVersion": "",
 	"version": -1
 }
