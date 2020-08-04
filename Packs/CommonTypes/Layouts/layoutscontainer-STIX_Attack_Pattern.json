@@ -1,6 +1,6 @@
 {
-	"name": "Tool",
-	"id": "Tool",
+	"name": "STIX Attack Pattern",
+	"id": "STIX Attack Pattern",
 	"group": "indicator",
 	"description": "",
 	"indicatorsDetails": {
@@ -102,34 +102,14 @@
 							},
 							{
 								"dropEffect": "move",
-								"endCol": 2,
+								"endCol": 4,
 								"fieldId": "stixid",
 								"height": 22,
 								"id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
-								"index": 2,
+								"index": 0,
 								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
 								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "stixtooltypes",
-								"height": 22,
-								"id": "46140a10-d187-11ea-bbc9-9f0eaa3e1876",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "stixaliases",
-								"height": 22,
-								"id": "9856d8f0-ccca-11ea-a049-6b4b59f3b34f",
-								"index": 4,
-								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-								"sectionItemType": "field",
-								"startCol": 0
+								"startCol": 2
 							},
 							{
 								"dropEffect": "move",
@@ -137,17 +117,19 @@
 								"fieldId": "stixkillchainphases",
 								"height": 22,
 								"id": "4d7ab920-d187-11ea-bbc9-9f0eaa3e1876",
-								"index": 0,
+								"index": 1,
 								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
 								"sectionItemType": "field",
 								"startCol": 2
 							},
 							{
+								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "stixtoolversion",
+								"fieldId": "stixaliases",
 								"height": 22,
-								"id": "8a5d1e50-d187-11ea-bbc9-9f0eaa3e1876",
-								"index": 5,
+								"id": "9856d8f0-ccca-11ea-a049-6b4b59f3b34f",
+								"index": 2,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
 								"sectionItemType": "field",
 								"startCol": 2
 							}
@@ -156,7 +138,7 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Tool Details",
+						"name": "Attack Pattern Details",
 						"static": false,
 						"w": 2,
 						"x": 0,
@@ -329,11 +311,11 @@
 						"items": [
 							{
 								"dropEffect": "move",
-								"endCol": 2,
+								"endCol": 4,
 								"fieldId": "stixdescription",
-								"height": 44,
+								"height": 106,
 								"id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
-								"index": 1,
+								"index": 0,
 								"listId": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -343,7 +325,7 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Tool Description",
+						"name": "Attack Pattern Description",
 						"static": false,
 						"w": 2,
 						"x": 0,
@@ -518,11 +500,13 @@
 								"startCol": 0
 							},
 							{
+								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "stixtooltypes",
+								"fieldId": "stixkillchainphases",
 								"height": 22,
-								"id": "da5364f0-d187-11ea-bbc9-9f0eaa3e1876",
+								"id": "e13812c0-d187-11ea-bbc9-9f0eaa3e1876",
 								"index": 3,
+								"listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -534,31 +518,13 @@
 								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "stixkillchainphases",
-								"height": 22,
-								"id": "e13812c0-d187-11ea-bbc9-9f0eaa3e1876",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "stixtoolversion",
-								"height": 22,
-								"id": "e2f48fd0-d187-11ea-bbc9-9f0eaa3e1876",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Tool Details",
+						"name": "Attack Pattern Details",
 						"static": false,
 						"w": 1,
 						"x": 0,
@@ -585,7 +551,7 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Tool Description",
+						"name": "Attack Pattern Description",
 						"static": false,
 						"w": 1,
 						"x": 0,

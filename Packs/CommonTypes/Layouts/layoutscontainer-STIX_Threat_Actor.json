@@ -1,6 +1,6 @@
 {
-	"name": "Attack Pattern",
-	"id": "Attack Pattern",
+	"name": "STIX Threat Actor",
+	"id": "STIX Threat Actor",
 	"group": "indicator",
 	"description": "",
 	"indicatorsDetails": {
@@ -101,44 +101,102 @@
 								"startCol": 0
 							},
 							{
-								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "stixid",
 								"height": 22,
 								"id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
 								"index": 2,
-								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "stixkillchainphases",
+								"fieldId": "stixthreatactortypes",
 								"height": 22,
-								"id": "4d7ab920-d187-11ea-bbc9-9f0eaa3e1876",
+								"id": "a043da60-d17d-11ea-b39d-69849bf59ed7",
 								"index": 3,
 								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
-								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "stixaliases",
 								"height": 22,
 								"id": "9856d8f0-ccca-11ea-a049-6b4b59f3b34f",
 								"index": 4,
-								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "stixroles",
+								"height": 22,
+								"id": "a5efba10-d17d-11ea-b39d-69849bf59ed7",
+								"index": 0,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "stixgoals",
+								"height": 22,
+								"id": "ac371670-d17d-11ea-b39d-69849bf59ed7",
+								"index": 1,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "stixsophistication",
+								"height": 22,
+								"id": "ae5a6ba0-d17d-11ea-b39d-69849bf59ed7",
+								"index": 2,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "stixresourcelevel",
+								"height": 22,
+								"id": "ba64d930-d17d-11ea-b39d-69849bf59ed7",
+								"index": 3,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "stixprimarymotivation",
+								"height": 22,
+								"id": "ddb475d0-d17d-11ea-b39d-69849bf59ed7",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "stixsecondarymotivations",
+								"height": 22,
+								"id": "e0bab0f0-d17d-11ea-b39d-69849bf59ed7",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 2
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Attack Pattern Details",
+						"name": "Threat Actor Details",
 						"static": false,
 						"w": 2,
 						"x": 0,
@@ -311,11 +369,11 @@
 						"items": [
 							{
 								"dropEffect": "move",
-								"endCol": 2,
+								"endCol": 4,
 								"fieldId": "stixdescription",
-								"height": 44,
+								"height": 106,
 								"id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
-								"index": 1,
+								"index": 0,
 								"listId": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -325,7 +383,7 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Attack Pattern Description",
+						"name": "Threat Actor Description",
 						"static": false,
 						"w": 2,
 						"x": 0,
@@ -453,7 +511,7 @@
 						"type": "relatedIncidents",
 						"w": 1,
 						"x": 0,
-						"y": 7
+						"y": 8
 					},
 					{
 						"h": 2,
@@ -464,11 +522,11 @@
 						"type": "comments",
 						"w": 1,
 						"x": 0,
-						"y": 9
+						"y": 10
 					},
 					{
 						"displayType": "ROW",
-						"h": 3,
+						"h": 4,
 						"hideName": false,
 						"i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
 						"items": [
@@ -500,13 +558,11 @@
 								"startCol": 0
 							},
 							{
-								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "stixkillchainphases",
+								"fieldId": "stixthreatactortypes",
 								"height": 22,
-								"id": "e13812c0-d187-11ea-bbc9-9f0eaa3e1876",
+								"id": "25c43cc0-d183-11ea-b1ee-39abdac77dba",
 								"index": 3,
-								"listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -518,13 +574,69 @@
 								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "stixroles",
+								"height": 22,
+								"id": "2cf97b90-d183-11ea-b1ee-39abdac77dba",
+								"index": 5,
+								"listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixgoals",
+								"height": 22,
+								"id": "2e79b2f0-d183-11ea-b1ee-39abdac77dba",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixsophistication",
+								"height": 22,
+								"id": "331d2350-d183-11ea-b1ee-39abdac77dba",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixresourcelevel",
+								"height": 22,
+								"id": "3a519ed0-d183-11ea-b1ee-39abdac77dba",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixprimarymotivation",
+								"height": 22,
+								"id": "342b5f00-d183-11ea-b1ee-39abdac77dba",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixsecondarymotivations",
+								"height": 22,
+								"id": "35299520-d183-11ea-b1ee-39abdac77dba",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Attack Pattern Details",
+						"name": "Threat Actor Details",
 						"static": false,
 						"w": 1,
 						"x": 0,
@@ -551,11 +663,11 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Attack Pattern Description",
+						"name": "Threat Actor Description",
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 5
+						"y": 6
 					}
 				],
 				"type": "custom"

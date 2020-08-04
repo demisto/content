@@ -1,6 +1,6 @@
 {
-	"name": "Report",
-	"id": "Report",
+	"name": "STIX Report",
+	"id": "STIX Report",
 	"group": "indicator",
 	"description": "",
 	"indicatorsDetails": {
@@ -102,23 +102,25 @@
 							},
 							{
 								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "stixid",
-								"height": 22,
-								"id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
-								"index": 2,
-								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
+								"endCol": 4,
 								"fieldId": "published",
 								"height": 22,
 								"id": "9f819ad0-d188-11ea-a049-6b4b59f3b34f",
-								"index": 3,
+								"index": 0,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
 								"sectionItemType": "field",
-								"startCol": 0
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "stixid",
+								"height": 22,
+								"id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
+								"index": 1,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 2
 							}
 						],
 						"maxW": 3,
@@ -298,11 +300,11 @@
 						"items": [
 							{
 								"dropEffect": "move",
-								"endCol": 2,
+								"endCol": 4,
 								"fieldId": "stixdescription",
-								"height": 44,
+								"height": 106,
 								"id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
-								"index": 1,
+								"index": 0,
 								"listId": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
 								"sectionItemType": "field",
 								"startCol": 0
