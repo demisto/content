@@ -108,4 +108,4 @@ runonce: false
 runas: DBotWeakRole
 fromversion: 4.0.0
 tests:
-- No tests (auto formatted)
+- FailedInstances - Test
