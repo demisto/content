@@ -499,26 +499,50 @@ def test_module():
 
 
 def fetch_incidents():
-    query = demisto.params().get('query')
+    user_query = demisto.params().get('query')
     full_enrich = demisto.params().get('full_enrich')
     last_run = demisto.getLastRun()
+
     offense_id = last_run['id'] if last_run and 'id' in last_run else 0
+    # adjust start_offense_id to user_query start offense id
+    try:
+        if 'id>' in user_query:
+            user_offense_id = int(user_query.split('id>')[1].split(' ')[0])
+            if user_offense_id > offense_id:
+                offense_id = user_offense_id
+    except Exception:
+        pass
+    # set fetch upper limit
+    lim_offense = get_offenses(_range='0-0')
+    if not lim_offense:
+        raise Exception("No offenses could be fetched, please make sure there are offenses available for this user.")
+    lim_id = lim_offense[0]['id']  # if there's no id, raise exception
+
+    # fetch offenses
+    raw_offenses = []
     fetch_query = ''
-    latest_offense_fnd = False
+    latest_offense_fnd = offense_id == lim_id
     while not latest_offense_fnd:
-        fetch_query = 'id>{0} AND id<{1} {2}'.format(offense_id,
-                                                     int(offense_id) + OFFENSES_PER_CALL + 1,
-                                                     'AND ({})'.format(query) if query else '')
+        start_offense_id = offense_id
+        end_offense_id = int(offense_id) + OFFENSES_PER_CALL + 1
+        fetch_query = 'id>{0} AND id<{1} {2}'.format(start_offense_id,
+                                                     end_offense_id,
+                                                     'AND ({})'.format(user_query) if user_query else '')
         demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
         raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL - 1), _filter=fetch_query)
-        if raw_offenses or last_run:
+        if raw_offenses:
             latest_offense_fnd = True
-        else:  # the first run should increment the search until found
-            offense_id += OFFENSES_PER_CALL
+        else:
+            if lim_id >= end_offense_id:  # increment the search until we reach limit
+                offense_id += OFFENSES_PER_CALL
+            else:
+                latest_offense_fnd = True
     demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
+
+    # set incident
     raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
-    if full_enrich:
+    if full_enrich and raw_offenses:
         demisto.debug('QRadarMsg - Enriching  {}'.format(fetch_query))
         enrich_offense_res_with_source_and_destination_address(raw_offenses)
         demisto.debug('QRadarMsg - Enriched  {} successfully'.format(fetch_query))
