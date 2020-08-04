@@ -94,7 +94,13 @@ tasks:
       comments:
         simple: test
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
     note: false
     timertriggers: []
   '4':
@@ -112,13 +118,19 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '12'
+      - "6"
     scriptarguments:
       alarm-id:
         simple: '1'
       include-raw-log: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
     note: false
     timertriggers: []
   '6':
@@ -139,8 +151,9 @@ tasks:
       - '14'
     scriptarguments:
       all-users:
-        simple: 'true'
-      count: {}
+        simple: "true"
+      count:
+        simple: "10"
       end-date:
         simple: '2020-06-01'
       start-date:
@@ -148,7 +161,13 @@ tasks:
       status:
         simple: New
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
     note: false
     timertriggers: []
   '7':
@@ -174,7 +193,13 @@ tasks:
       status:
         simple: New
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
     note: false
     timertriggers: []
   '8':
@@ -200,7 +225,13 @@ tasks:
       status:
         simple: Closed
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
     note: false
     timertriggers: []
   '9':
@@ -216,7 +247,13 @@ tasks:
       brand: ''
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2995\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
     note: false
     timertriggers: []
   '10':
@@ -250,8 +287,14 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '1'
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
     note: false
     timertriggers: []
   '11':
@@ -281,44 +324,21 @@ tasks:
           right:
             value:
               simple: test
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
     note: false
     timertriggers: []
-  '12':
-    id: '12'
-    taskid: 6daf4a92-c30b-47f5-82e4-2aabdff6ca65
-    type: condition
-    task:
-      id: 6daf4a92-c30b-47f5-82e4-2aabdff6ca65
-      version: -1
-      name: Verify output
-      type: condition
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      yes:
-      - '6'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: LogRhythm.Alarm.Event.ClassificationName
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: LogRhythm.Alarm.Event.ImpactedHostName
-            iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
-    note: false
-    timertriggers: []
-  '14':
-    id: '14'
-    taskid: 8efb5f5c-ebbf-4d95-8053-6da40d7c910a
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: ed4526dc-d521-466a-82e8-6cf1d7a2aef1
     type: condition
     task:
       id: 8efb5f5c-ebbf-4d95-8053-6da40d7c910a
@@ -342,8 +362,14 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '1'
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
     note: false
     timertriggers: []
   '15':
@@ -373,7 +399,13 @@ tasks:
           right:
             value:
               simple: New
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
     note: false
     timertriggers: []
   '16':
@@ -403,7 +435,13 @@ tasks:
           right:
             value:
               simple: Closed
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -436,7 +474,13 @@ tasks:
       time_frame:
         simple: Custom
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2470\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -461,7 +505,13 @@ tasks:
       entity-id:
         simple: '1'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2645\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -491,14 +541,31 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '1'
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2820\n  }\n}"
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 3010,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2835,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
 fromversion: 5.0.0
