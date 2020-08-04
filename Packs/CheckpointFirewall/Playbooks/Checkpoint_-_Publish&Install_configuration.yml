@@ -63,7 +63,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: CheckPoint_FW
+                        simple: CheckPointFirewall_v2
                 - - operator: isEqualString
                     left:
                       value:
@@ -225,10 +225,10 @@ tasks:
       version: -1
       name: checkpoint-show-packages
       description: Can be used to pass/fetch  relevant packages to install.
-      script: CheckPoint_FW|||checkpoint-packages-list
+      script: CheckPointFirewall_v2|||checkpoint-packages-list
       type: regular
       iscommand: true
-      brand: CheckPoint_FW
+      brand: CheckPointFirewall_v2
     nexttasks:
       '#none#':
       - "6"
@@ -257,10 +257,10 @@ tasks:
       version: -1
       name: checkpoint-show-gateways-and-servers
       description: Show relevant Servers / Instances to Install policy.
-      script: CheckPoint_FW|||checkpoint-gateways-list
+      script: CheckPointFirewall_v2|||checkpoint-gateways-list
       type: regular
       iscommand: true
-      brand: CheckPoint_FW
+      brand: CheckPointFirewall_v2
     nexttasks:
       '#none#':
       - "5"
@@ -290,10 +290,10 @@ tasks:
       version: -1
       name: checkpoint-logout
       description: Logout from a given session.
-      script: CheckPoint_FW|||checkpoint-logout
+      script: CheckPointFirewall_v2|||checkpoint-logout
       type: regular
       iscommand: true
-      brand: CheckPoint_FW
+      brand: CheckPointFirewall_v2
     nexttasks:
       '#none#':
       - "3"

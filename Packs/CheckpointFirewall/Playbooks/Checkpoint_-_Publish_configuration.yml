@@ -63,7 +63,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: CheckPoint_FW
+                        simple: CheckPointFirewall_v2
                 - - operator: isEqualString
                     left:
                       value:
@@ -145,10 +145,10 @@ tasks:
       version: -1
       name: checkpoint-logout
       description: Logout from a given session.
-      script: CheckPoint_FW|||checkpoint-logout
+      script: CheckPointFirewall_v2|||checkpoint-logout
       type: regular
       iscommand: true
-      brand: CheckPoint_FW
+      brand: CheckPointFirewall_v2
     nexttasks:
       '#none#':
       - "3"
