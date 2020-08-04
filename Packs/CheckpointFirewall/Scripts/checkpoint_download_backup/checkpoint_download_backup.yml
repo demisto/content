@@ -1,0 +1,18 @@
+args:
+- default: false
+  description: RemoteAccess instance of the checkpoint firewall appliances to back up
+  isArray: false
+  name: devices
+  required: true
+  secret: false
+comment: Download CheckPoint policy backup to Demisto war room
+commonfields:
+  id: checkpoint_download_backup
+  version: -1
+enabled: false
+name: checkpoint_download_backup
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
