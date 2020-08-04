@@ -45,7 +45,6 @@ class Client(BaseClient):
             new_user = self.user.add_user(data_obj, send_email=data.get("send_email"))
 
         except Exception:
-            pass
             raise Exception("Exception occured", traceback.format_exc())
 
         return new_user
