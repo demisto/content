@@ -2931,6 +2931,12 @@
         },
         {
             "integrations": "CheckpointFirewall",
+            "playbookID": "checkpoint-testplaybook",
+            "timeout": 500,
+            "nightly": true
+        },		
+        {
+            "integrations": "CheckpointFirewall",
             "playbookID": "Checkpoint - Publish&Install configuration",
             "timeout": 1500,
 			"fromversion": "5.0.0"
