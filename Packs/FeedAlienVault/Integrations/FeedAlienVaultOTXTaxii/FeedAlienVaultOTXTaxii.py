@@ -19,7 +19,7 @@ from typing import Dict, List
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-SOURCE_NAME = "Alien Vault OTX TAXII"
+SOURCE_NAME = "Alien Vault OTX TAXIII"
 
 
 # disable insecure warnings
@@ -674,5 +674,5 @@ def main():
         raise Exception(f'Error in {SOURCE_NAME} Integration [{e}]')
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == '__builtin__' or __name__ == 'builtins' or __name__ == "__main__":
     main()
