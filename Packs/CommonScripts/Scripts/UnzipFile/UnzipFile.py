@@ -88,7 +88,7 @@ def extract(file_info, dir_path, password=None):
     excluded_dirs = [d for d in os.listdir('.') if isdir(d)]
     # extracting the zip file
     """
-    We check the python version to ensure the docker image contains the necessary packages. 4.5+ 
+    We check the python version to ensure the docker image contains the necessary packages. 4.5+
     use the new docker image.
     """
     if '.rar' in file_name and sys.version_info > (3, 0):
