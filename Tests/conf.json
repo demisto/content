@@ -55,6 +55,10 @@
             "playbookID": "FeedMicrosoftIntune_Test",
             "fromversion": "5.5.0"
         },
+	{
+	    "integrations": "Druva Ransomware Response",
+	    "playbookID": "Druva-Test"
+	},
         {
             "integrations": "Smokescreen IllusionBLACK",
             "playbookID": "Smokescreen IllusionBLACK-Test",
@@ -2898,7 +2902,7 @@
             "integrations": "Sixgill_Darkfeed",
             "playbookID": "Sixgill-Darkfeed_Test",
             "fromversion": "5.5.0"
-        },        
+        },
         {
             "playbookID": "hashIncidentFields-test",
             "fromversion": "4.5.0",
@@ -3061,6 +3065,7 @@
         "PolySwarm": "contribution",
         "Blueliv ThreatContext": "contribution",
         "Silverfort": "contribution",
+        "Druva Ransomware Response": "contribution",
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
