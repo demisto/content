@@ -1,10 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-<<<<<<< HEAD:Packs/CheckpointFirewall/Integrations/CheckPointFirewall_v2/CheckPointFirewall_v2.yml
   id: CheckPointFirewall
-=======
-  id: CheckPoint_FW
->>>>>>> parent of 86f4828e0... * move CheckPoint_FW pack to CheckPointFirewall pack:Packs/CheckPoint_FW/Integrations/CheckPoint_FW/CheckPoint_FW.yml
   version: -1
 configuration:
 - display: Server URL (e.g. example.net or 8.8.8.8)

@@ -234,6 +234,7 @@ tasks:
       id: 30f3ba42-b751-415a-80ba-d44620b5b586
       version: -1
       name: Checkpoint show packages
+      description: ""
       script: '|||checkpoint-packages-list'
       type: regular
       iscommand: true
@@ -265,6 +266,7 @@ tasks:
       id: ebb5883f-f448-4399-87f6-c247946dd5a6
       version: -1
       name: Checkpoint show gateways and servers command
+      description: ""
       script: '|||checkpoint-gateways-list'
       type: regular
       iscommand: true
