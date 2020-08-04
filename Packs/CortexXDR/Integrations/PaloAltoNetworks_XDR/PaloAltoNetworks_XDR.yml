@@ -31,6 +31,19 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Fetch incident alerts and artifacts
+  hidden: false
+  name: extra_data
+  defaultvalue: true
+  required: false
+  type: 8
+- additionalinfo: If selected, for every incident fetched from Cortex XDR to XOSAR
+    - the incident owners will be synced. Note this only applies in a single direction.
+  display: Sync Incident Owners
+  hidden: false
+  name: sync_owners
+  required: false
+  type: 8
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time

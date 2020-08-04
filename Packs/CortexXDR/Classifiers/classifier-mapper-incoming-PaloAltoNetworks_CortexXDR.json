@@ -113,6 +113,10 @@
 					},
 					"simple": ""
 				},
+				"owner": {
+					"complex": null,
+					"simple": "owner"
+				},
 				"severity": {
 					"complex": {
 						"accessor": "",

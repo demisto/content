@@ -1660,7 +1660,7 @@ def endpoint_scan_command(client, args):
     )
 
 
-def sort_all_lists_incident_fields(incident_data):
+def sort_all_list_incident_fields(incident_data):
     """Sorting all lists fields in an incident - without this, elements may shift which results in false
     identification of changed fields"""
     if incident_data.get('hosts', []):
@@ -1699,6 +1699,50 @@ def reformat_sublist_fields(sublist):
         drop_field_underscore(section)
 
 
+def sync_incoming_incident_owners(incident_data):
+    if incident_data.get('assigned_user_mail') and demisto.params().get('sync_owners'):
+        user_info = demisto.findUser(email=incident_data.get('assigned_user_mail'))
+        if user_info:
+            demisto.debug(f"Syncing incident owners: XDR incident {incident_data.get('incident_id')}, "
+                          f"owner {user_info.get('username')}")
+            incident_data['owner'] = user_info.get('username')
+
+        else:
+            demisto.debug(f"The user assigned to XDR incident {incident_data.get('incident_id')} "
+                          f"is not registered on XSOAR")
+
+
+def handle_incoming_user_unassignment(incident_data):
+    incident_data['assigned_user_mail'] = ''
+    incident_data['assigned_user_pretty_name'] = ''
+    if demisto.params().get('sync_owners'):
+        demisto.debug(f'Unassigning owner from XDR incident {incident_data.get("incident_id")}')
+        incident_data['owner'] = ''
+
+
+def handle_incoming_closing_incident(incident_data):
+    closing_entry = {}  # type: Dict
+    if incident_data.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug(f"Closing XDR issue {incident_data.get('incident_id')}")
+        closing_entry = {
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
+                'closeNotes': incident_data.get('resolve_comment')
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }
+        incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
+        incident_data['closeNotes'] = incident_data.get('resolve_comment')
+
+        if incident_data.get('status') == 'resolved_known_issue':
+            closing_entry['Contents']['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
+            incident_data['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
+
+    return closing_entry
+
+
 def get_mapping_fields_command():
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=XDR_INCIDENT_TYPE_NAME)
     for field in XDR_INCIDENT_FIELDS:
@@ -1718,36 +1762,23 @@ def get_remote_data_command(client, args):
                   f"modified time: {int(incident_data.get('modification_time'))}\n"
                   f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
 
-    sort_all_lists_incident_fields(incident_data)
-
-    # handle unasignment:
-    if incident_data.get('assigned_user_mail') is None:
-        incident_data['assigned_user_mail'] = ''
-        incident_data['assigned_user_pretty_name'] = ''
-
-    # handle closed issue in XDR
-    closing_entry = {}  # type: Dict
-    if incident_data.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
-        demisto.debug(f"Closing XDR issue {remote_args.remote_incident_id}")
-        closing_entry = {
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': incident_data.get('resolve_comment')
-            },
-            'ContentsFormat': EntryFormat.JSON
-        }
-        incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
-        incident_data['closeNotes'] = incident_data.get('resolve_comment')
-
-        if incident_data.get('status') == 'resolved_known_issue':
-            closing_entry['Contents']['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
-            incident_data['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
-
     if arg_to_timestamp(current_modified_time, 'modification_time') > \
             arg_to_timestamp(remote_args.last_update, 'last_update'):
         demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
+
+        sort_all_list_incident_fields(incident_data)
+
+        # handle unasignment
+        if incident_data.get('assigned_user_mail') is None:
+            handle_incoming_user_unassignment(incident_data)
+
+        else:
+            # handle owner sync
+            sync_incoming_incident_owners(incident_data)
+
+        # handle closed issue in XDR
+        closing_entry = handle_incoming_closing_incident(incident_data)
+
         return GetRemoteDataResponse(
             mirrored_object=incident_data,
             entries=[closing_entry] if closing_entry else []
@@ -1758,10 +1789,18 @@ def get_remote_data_command(client, args):
         return {}
 
 
-def get_update_args(delta, inc_status):
-    """Change the updated field names to fit the update command"""
-    update_args = delta
+def handle_outgoing_incident_owner_sync(update_args):
+    if 'owner' in update_args and demisto.params().get('sync_owners'):
+        if update_args.get('owner'):
+            user_info = demisto.findUser(username=update_args.get('owner'))
+            if user_info:
+                update_args['assigned_user_mail'] = user_info.get('email')
+        else:
+            # handle synced unassignment
+            update_args['assigned_user_mail'] = None
 
+
+def handle_user_unassignment(update_args):
     if ('assigned_user_mail' in update_args and update_args.get('assigned_user_mail') in ['None', 'null', '', None]) \
             or ('assigned_user_pretty_name' in update_args
                 and update_args.get('assigned_user_pretty_name') in ['None', 'null', '', None]):
@@ -1769,12 +1808,20 @@ def get_update_args(delta, inc_status):
         update_args['assigned_user_mail'] = None
         update_args['assigned_user_pretty_name'] = None
 
-    # handle close issue in XSOAR
+
+def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
         demisto.debug("Closing Remote XDR incident")
-        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(delta.get('closeReason'))
-        update_args['resolve_comment'] = delta.get('closeNotes')
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason'))
+        update_args['resolve_comment'] = update_args.get('closeNotes')
 
+
+def get_update_args(delta, inc_status):
+    """Change the updated field names to fit the update command"""
+    update_args = delta
+    handle_outgoing_incident_owner_sync(update_args)
+    handle_user_unassignment(update_args)
+    handle_outgoing_issue_closure(update_args, inc_status)
     return update_args
 
 
@@ -1810,10 +1857,14 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None):
 
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
-        incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                 "alerts_limit": 1000})[2].get('incident')
 
-        sort_all_lists_incident_fields(incident_data)
+        if demisto.params().get('extra_data'):
+            incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
+                                                                     "alerts_limit": 1000})[2].get('incident')
+        else:
+            incident_data = raw_incident
+
+        sort_all_list_incident_fields(incident_data)
 
         description = raw_incident.get('description')
         occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
@@ -1822,6 +1873,9 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None):
             'occurred': occurred,
             'rawJSON': json.dumps(incident_data),
         }
+
+        if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
+            incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
 
         # Update last run and add incident if the incident is newer than last fetch
         if raw_incident['creation_time'] > last_fetch:
