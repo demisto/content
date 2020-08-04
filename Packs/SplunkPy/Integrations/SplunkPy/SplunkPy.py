@@ -873,7 +873,7 @@ def main():
     connection_args = {
         'host': demisto.params()['host'],
         'port': demisto.params()['port'],
-        'app': demisto.params().get('app'),
+        'app': demisto.params().get('app', '-'),
         'username': demisto.params()['authentication']['identifier'],
         'password': demisto.params()['authentication']['password'],
         'verify': VERIFY_CERTIFICATE
