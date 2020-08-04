@@ -588,7 +588,8 @@ class Client(BaseClient):
 
         return self.send_request(path, 'GET', params=query_params)
 
-    def update(self, table_name: str, record_id: str, fields: dict = {}, custom_fields: dict = {}) -> dict:
+    def update(self, table_name: str, record_id: str, fields: dict = {}, custom_fields: dict = {},
+               input_display_value: bool = False) -> dict:
         """Updates a ticket or a record by sending a PATCH request.
 
         Args:
@@ -596,14 +597,16 @@ class Client(BaseClient):
             record_id: record id
             fields: fields to update
             custom_fields: custom_fields to update
-
+            input_display_value: whether to set field values using the display value or the actual value.
         Returns:
             Response from API.
         """
         body = generate_body(fields, custom_fields)
-        return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', body=body)
+        query_params = {'sysparm_input_display_value': input_display_value}
+        return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', params=query_params, body=body)
 
-    def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {}) -> dict:
+    def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {},
+               input_display_value: bool = False) -> dict:
         """Creates a ticket or a record by sending a POST request.
 
         Args:
@@ -611,12 +614,14 @@ class Client(BaseClient):
         record_id: record id
         fields: fields to update
         custom_fields: custom_fields to update
+        input_display_value: whether to set field values using the display value or the actual value.
 
         Returns:
             Response from API.
         """
         body = generate_body(fields, custom_fields)
-        return self.send_request(f'table/{table_name}', 'POST', body=body)
+        query_params = {'sysparm_input_display_value': input_display_value}
+        return self.send_request(f'table/{table_name}', 'POST', params=query_params, body=body)
 
     def delete(self, table_name: str, record_id: str) -> dict:
         """Deletes a ticket or a record by sending a DELETE request.
@@ -839,11 +844,11 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     ticket_id = str(args.get('id', ''))
     additional_fields = split_fields(str(args.get('additional_fields', '')))
     additional_fields_keys = list(additional_fields.keys())
-
     fields = get_ticket_fields(args, ticket_type=ticket_type)
     fields.update(additional_fields)
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
-    result = client.update(ticket_type, ticket_id, fields, custom_fields)
+    result = client.update(ticket_type, ticket_id, fields, custom_fields, input_display_value)
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
@@ -871,6 +876,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     additional_fields = split_fields(str(args.get('additional_fields', '')))
     additional_fields_keys = list(additional_fields.keys())
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     if template:
         template = client.get_template(template)
@@ -878,7 +884,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     if additional_fields:
         fields.update(additional_fields)
 
-    result = client.create(ticket_type, fields, custom_fields)
+    result = client.create(ticket_type, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
@@ -1215,6 +1221,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     table_name = str(args.get('table_name', ''))
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     fields = {}
     if fields_str:
@@ -1223,7 +1230,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     if custom_fields_str:
         custom_fields = split_fields(custom_fields_str)
 
-    result = client.create(table_name, fields, custom_fields)
+    result = client.create(table_name, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
         return 'Could not create record.', {}, {}, True
@@ -1251,6 +1258,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     record_id = str(args.get('id', ''))
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
+    input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     fields = {}
     if fields_str:
@@ -1259,7 +1267,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     if custom_fields_str:
         custom_fields = split_fields(custom_fields_str)
 
-    result = client.update(table_name, record_id, fields, custom_fields)
+    result = client.update(table_name, record_id, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
         return 'Could not retrieve record.', {}, {}, True
