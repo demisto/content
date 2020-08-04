@@ -85,15 +85,13 @@ class MsGraphClient:
             list: list of all pages
         """
         responses = [response]
-        i = page_count
-        while i != 1:
+        for i in range(page_count - 1):
             next_link = response.get('@odata.nextLink')
             if next_link:
                 response = self.ms_client.http_request('GET', full_url=next_link, url_suffix=None)
                 responses.append(response)
             else:
                 return responses
-            i -= 1
         return responses
 
     def list_mails(self, user_id: str, folder_id: str = '', search: str = None, odata: str = None) -> Union[dict, list]:
