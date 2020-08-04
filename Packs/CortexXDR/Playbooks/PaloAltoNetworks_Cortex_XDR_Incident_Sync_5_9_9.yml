@@ -1,7 +1,7 @@
 id: Cortex XDR Incident Sync
 version: -1
 name: Cortex XDR Incident Sync
-fromversion: 6.0.0
+fromversion: 5.0.0
 description: Compares incidents in Palo Alto Networks Cortex XDR and Demisto, and
   updates the incidents appropriately. When an incident is updated in Demisto, the XDRSyncScript
   will update the incident in XDR. When an incident is updated in XDR, the XDRSyncScript
@@ -230,6 +230,6 @@ view: |-
   }
 inputs: []
 outputs: []
-hidden: true
+toversion: 5.9.9
 tests:
   - No test
