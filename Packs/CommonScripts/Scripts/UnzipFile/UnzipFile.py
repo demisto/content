@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import os
+import sys
 from os.path import isdir
 from os.path import isfile
 from subprocess import Popen, PIPE
@@ -22,7 +23,11 @@ def get_zip_path(args):
         for entry in entries:
             fn = demisto.get(entry, 'File')
 
-            is_text = type(fn) is str
+            if sys.version_info > (3, 0):
+                is_text = type(fn) is str
+            else:
+                is_text = type(fn) in [unicode, str]
+
             is_correct_file = args.get('fileName', '').lower() == fn.lower()
             is_zip = fn.lower().endswith('.zip')
 
@@ -81,7 +86,7 @@ def extract(file_info, dir_path, password=None):
     excluded_files = [f for f in os.listdir('.') if isfile(f)]
     excluded_dirs = [d for d in os.listdir('.') if isdir(d)]
     # extracting the zip file
-    if '.rar' in file_name:
+    if '.rar' in file_name and sys.version_info > (3, 0):
         if password:
             cmd = 'unrar x -p {} {} {}'.format(password, file_path, dir_path)
         else:
