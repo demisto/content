@@ -1,9 +1,11 @@
 Product Name: CheckPoint Firewall Product Type: Network Security Product Version: R80.30
 
-Integration Overview Manage CheckPoint Firewall. Read information and to send commands to the Check Point Firewall server. This integration was integrated and tested with version R80.30 of CheckPoint SmartConsole.
+Integration Overview Manage CheckPoint Firewall. Read information and to send commands to the Check Point Firewall server. 
+This integration was integrated and tested with version R80.30 of CheckPoint SmartConsole.
 
 Use Cases
 
+login and logout
 Manage hosts
 Manage Groups
 Manage roles

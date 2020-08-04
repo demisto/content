@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: CheckPoint_FW
+  id: CheckPointFirewall_v2
   version: 2
 configuration:
 - display: Server URL (e.g. example.net or 8.8.8.8)
@@ -27,8 +27,8 @@ configuration:
   required: false
   type: 8
 description: Read information and to send commands to the Check Point Firewall server.
-display: CheckPoint Firewall v2
-name: CheckPoint_FW
+display: CheckPointFirewall_v2
+name: CheckPointFirewall
 script:
   commands:
   - arguments:
