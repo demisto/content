@@ -1,0 +1,781 @@
+id: Checkpoint - Publish&Install configuration
+version: -1
+fromversion: 5.0.0
+name: Checkpoint - Publish&Install configuration
+description: Publish the Checkpoint Firewall configuration and install policy over all the gateways that are available
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 354c2814-999f-4177-8206-adb0b43e98e1
+    type: start
+    task:
+      id: 354c2814-999f-4177-8206-adb0b43e98e1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": -560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 5b3ebf47-ba2e-4440-8eb7-7dd65958f474
+    type: condition
+    task:
+      id: 5b3ebf47-ba2e-4440-8eb7-7dd65958f474
+      version: -1
+      name: Is Checkpoint FW enabled?
+      description: Verify that there is a valid instance of Checkpoint Firewall enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CheckPointFirewall_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": -430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 5aaffaa5-cc8b-4af1-88c5-3088044cd7b6
+    type: title
+    task:
+      id: 5aaffaa5-cc8b-4af1-88c5-3088044cd7b6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 3310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 185315e8-38e8-4e3b-87e0-6a0f713b9467
+    type: regular
+    task:
+      id: 185315e8-38e8-4e3b-87e0-6a0f713b9467
+      version: -1
+      name: checkpoint-publish
+      description: Publish Changes to Checkpoint Firewall.
+      script: '|||checkpoint-publish'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      session_id:
+        simple: ${inputs.sid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 2e6990cc-eb8f-4903-8e84-b9ac632aea6d
+    type: condition
+    task:
+      id: 2e6990cc-eb8f-4903-8e84-b9ac632aea6d
+      version: -1
+      name: There is Policy To install ?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: CheckPoint
+                accessor: list-gateways.type
+            iscontext: true
+          right:
+            value:
+              simple: gateway
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: a958142c-d8ed-4d3f-8e26-3a04adb263e8
+    type: regular
+    task:
+      id: a958142c-d8ed-4d3f-8e26-3a04adb263e8
+      version: -1
+      name: checkpoint-install-policy
+      description: Install Policy  Changes to Checkpoint gateways. Default is "Standard".
+      script: '|||checkpoint-install-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      access: {}
+      policy_package:
+        simple: Standard
+      session_id:
+        simple: ${inputs.sid}
+      targets:
+        complex:
+          root: CheckPoint
+          accessor: gateways.type
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: d82f1865-8c6b-4b1d-825f-7b61fed6fdd9
+    type: regular
+    task:
+      id: d82f1865-8c6b-4b1d-825f-7b61fed6fdd9
+      version: -1
+      name: checkpoint-show-packages
+      description: Can be used to pass/fetch  relevant packages to install.
+      script: CheckPointFirewall_v2|||checkpoint-packages-list
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      limit: {}
+      offset: {}
+      session_id:
+        simple: ${inputs.sid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 9b711228-0af3-42a7-8498-d913e684ea50
+    type: regular
+    task:
+      id: 9b711228-0af3-42a7-8498-d913e684ea50
+      version: -1
+      name: checkpoint-show-gateways-and-servers
+      description: Show relevant Servers / Instances to Install policy.
+      script: CheckPointFirewall_v2|||checkpoint-gateways-list
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      limit: {}
+      offset: {}
+      session_id:
+        simple: ${inputs.sid}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 8cefbf82-7177-42af-8702-90580d9864af
+    type: regular
+    task:
+      id: 8cefbf82-7177-42af-8702-90580d9864af
+      version: -1
+      name: checkpoint-logout
+      description: Logout from a given session.
+      script: CheckPointFirewall_v2|||checkpoint-logout
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      session_id:
+        simple: ${inputs.sid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 3150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 2705deb8-8756-4cf0-8aa7-d1c2de97bc3f
+    type: playbook
+    task:
+      id: 2705deb8-8756-4cf0-8aa7-d1c2de97bc3f
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: CheckPoint
+          accessor: install-policy.task-id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: checkpoint-show-task
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CheckPoint.show-task(val.progress-percentage != '100').task-id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -970,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 1047dcfa-2dc4-440c-8de3-6cb8d780a97b
+    type: playbook
+    task:
+      id: 1047dcfa-2dc4-440c-8de3-6cb8d780a97b
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${CheckPoint.publish.task-id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: checkpoint-show-task
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CheckPoint.show-task(val.progress-percentage != '100').task-id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 319909f6-6520-48ab-8e04-2dd4f957dc9c
+    type: regular
+    task:
+      id: 319909f6-6520-48ab-8e04-2dd4f957dc9c
+      version: -1
+      name: Get  Checkpoint publish status
+      description: Get TaskID status for Publish.
+      script: '|||checkpoint-show-task'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      session_id:
+        simple: ${inputs.sid}
+      task_id:
+        complex:
+          root: CheckPoint
+          accessor: publish.task-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 5a3aaa3a-8f79-426c-8e51-a418bd33ffb8
+    type: condition
+    task:
+      id: 5a3aaa3a-8f79-426c-8e51-a418bd33ffb8
+      version: -1
+      name: Was Checkpoint publish successful?
+      description: Filter if Checkpoint publish successful.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CheckPoint
+                accessor: show-task.status
+            iscontext: true
+          right:
+            value:
+              simple: succeeded
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 10c21eaa-8535-45d6-89cb-c0e9cb04e054
+    type: regular
+    task:
+      id: 10c21eaa-8535-45d6-89cb-c0e9cb04e054
+      version: -1
+      name: Print Publish Error
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      message:
+        simple: Checkpoint Publish Failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 2a9848c1-845c-42f2-89e0-6f6049b4a706
+    type: regular
+    task:
+      id: 2a9848c1-845c-42f2-89e0-6f6049b4a706
+      version: -1
+      name: Fix Error and publish manually
+      description: User Manually add resolve.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 067e9493-c861-45b2-8232-53ac584dde3d
+    type: regular
+    task:
+      id: 067e9493-c861-45b2-8232-53ac584dde3d
+      version: -1
+      name: Get  Checkpoint install policy status
+      description: Get TaskID status for Install policy.
+      script: '|||checkpoint-show-task'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      session_id:
+        simple: ${inputs.sid}
+      task_id:
+        complex:
+          root: CheckPoint
+          accessor: install-policy.task-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -970,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: ef546725-301d-4aff-8c3b-558b4da731b6
+    type: regular
+    task:
+      id: ef546725-301d-4aff-8c3b-558b4da731b6
+      version: -1
+      name: Print Publish Error
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      message:
+        simple: Checkpoint Install Policy Failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: bb78e3c9-dfa2-411c-85b7-0ee8fbc3f169
+    type: regular
+    task:
+      id: bb78e3c9-dfa2-411c-85b7-0ee8fbc3f169
+      version: -1
+      name: Fix Error and install policy manually
+      description: User Manually add resolve.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: e3c29da8-595c-46a8-8f68-2e20f4e65e74
+    type: condition
+    task:
+      id: e3c29da8-595c-46a8-8f68-2e20f4e65e74
+      version: -1
+      name: Was Checkpoint Install Policy successful?
+      description: Filter if Checkpoint install policy successful.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CheckPoint
+                accessor: install-policy.task-id
+            iscontext: true
+          right:
+            value:
+              simple: succeeded
+    view: |-
+      {
+        "position": {
+          "x": -970,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 2771e1d3-d1c8-464a-8333-58dbc7819fba
+    type: condition
+    task:
+      id: 2771e1d3-d1c8-464a-8333-58dbc7819fba
+      version: -1
+      name: Filter TaskID
+      description: Filter TaskID to validate only new push configuration TaskID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CheckPoint
+                accessor: install-policy.task-id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 50c937c9-d4d0-4a92-8807-bbab08504154
+    type: condition
+    task:
+      id: 50c937c9-d4d0-4a92-8807-bbab08504154
+      version: -1
+      name: Filter TaskID
+      description: Filter TaskID to validate only new push configuration TaskID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CheckPoint
+                accessor: publish.task-id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_7_yes": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3935,
+        "width": 1610,
+        "x": -970,
+        "y": -560
+      }
+    }
+  }
+inputs:
+- key: sid
+  value: {}
+  required: true
+  description: SID - Session unique identifier as it returned by the login request
+    required for publish changes. done by this SID will be seen by all users only
+    after publish is called and finish.
+outputs: []
