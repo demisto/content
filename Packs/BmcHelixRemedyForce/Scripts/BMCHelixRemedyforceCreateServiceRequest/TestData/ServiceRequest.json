@@ -1,0 +1,34 @@
+{
+    "args": {
+        "client_user_name": "client_user_name",
+        "client_id": "client_id",
+        "category": "category",
+        "category_id": "category_id",
+        "queue_id": "queue_id",
+        "queue": "queue",
+        "staff_user_name": "staff_user_name",
+        "staff_id": "staff_id",
+        "status": "status",
+        "status_id": "status_id",
+        "urgency": "urgency",
+        "urgency_id":"urgency_id",
+        "service_request_definition": "service_request_definition",
+        "service_request_definition_id": "service_request_definition_id",
+        "service_request_definition_params": "service_request_definition_params",
+        "impact": "impact",
+        "impact_id": "impact_id",
+        "account": "account",
+        "account_id": "account_id"
+    },
+    "expected_args": {
+        "client_id": "client_id",
+        "category_id": "category_id",
+        "queue_id": "queue_id",
+        "staff_id": "staff_id",
+        "status_id": "status_id",
+        "urgency_id": "urgency_id",
+        "service_request_definition_params": "service_request_definition_params",
+        "service_request_definition_id": "service_request_definition_id",
+        "additional_fields": "impact_id=impact_id;account_id=account_id"
+    }
+}

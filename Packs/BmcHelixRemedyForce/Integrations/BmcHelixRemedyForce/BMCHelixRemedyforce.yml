@@ -1,0 +1,984 @@
+category: Utilities
+commonfields:
+  id: BMCHelixRemedyforce
+  version: -1
+configuration:
+- display: BMC Remedyforce URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  hidden: false
+  name: username
+  required: true
+  type: 0
+- display: Password
+  hidden: false
+  name: password
+  required: true
+  type: 4
+- additionalinfo: Incidents will be fetched based on selected type.
+  defaultvalue: Service Request
+  display: Type
+  name: type
+  options:
+  - Incident
+  - Service Request
+  required: false
+  type: 15
+- additionalinfo: Incidents will be fetched having this category.
+  display: Category
+  name: category
+  required: false
+  type: 0
+- additionalinfo: Incidents will be fetched having this impact.
+  display: Impact
+  name: impact
+  required: false
+  type: 0
+- additionalinfo: Incidents will be fetched having this urgency.
+  display: Urgency
+  name: urgency
+  required: false
+  type: 0
+- additionalinfo: Incidents will be fetched having this status.
+  display: Status
+  name: status
+  required: false
+  type: 0
+- additionalinfo: Incidents will be fetched having this queue.
+  display: Queue
+  name: queue
+  required: false
+  type: 0
+- additionalinfo: Maximum numbers of ServiceRequests or Incidents to retrieve per
+    fetch.
+  defaultvalue: '10'
+  display: Max Incidents
+  name: max_incidents
+  required: false
+  type: 0
+- additionalinfo: Notes of fetched incident or service request will be fetched and
+    displayed in the "BMC Helix Remedyforce" tab if custom incident type "Bmc Remedyforce"
+    is chosen.
+  display: Fetch Note(s)
+  name: fetch_note
+  required: false
+  type: 8
+- additionalinfo: Incidents will be fetched based on the query. Name and LastModifiedDate
+    fields are mandatory to be present inside the select clause of the query. Multiple
+    'where' clauses are not supported.
+  display: Query (If provided other filtering parameters will be ignored) e.g. select
+    Name, LastModifiedDate from BMCServiceDesk__Incident__c where BMCServiceDesk__Impact_Id__c
+    = 'High'
+  name: query
+  required: false
+  type: 12
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Specify the time interval in seconds. All the RemedyForce API calls
+    would timeout if the response is not returned within the configured time interval.
+  defaultvalue: '60'
+  display: HTTP(S) Request Timeout (in seconds)
+  hidden: false
+  name: request_timeout
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: BMC Helix Remedyforce integration allows customers to create/update service
+  requests and incidents. It also allows to update status, resolve service requests
+  and incidents with customer notes. This integration exposes standard ticketing capabilities
+  that can be utilized as part of automation & orchestration.
+display: BMC Helix Remedyforce
+name: BMCHelixRemedyforce
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: service_request_definition_name is the name of the service request
+        definition whose details the user wants to get. If any value is not specified,
+        it gets details of all service request definitions.
+      isArray: false
+      name: service_request_definition_name
+      required: false
+      secret: false
+    deprecated: false
+    description: This command gets details of service request definitions with the
+      help of service request definition name.
+    execution: false
+    name: bmc-remedy-service-request-definition-get
+    outputs:
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.Id
+      description: Service Request Definition Id.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.CategoryId
+      description: Category Id of the Service Request Definition.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.IsProblem
+      description: Indicates if it is a problem or not.
+      type: Boolean
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.LastModifiedDate
+      description: Last modified date.
+      type: Date
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.CreatedDate
+      description: Created Date.
+      type: Date
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.Questions.Id
+      description: Id of question attached with Service Request Definition.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.Questions.IsRequired
+      description: Indicates if a question is required or not.
+      type: Boolean
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.Questions.Type
+      description: Type of the question.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.Questions.Text
+      description: Name of the question.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.Conditions.SRDId
+      description: Service Request Definition Id of condition.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.Conditions.Value
+      description: Value of the condition.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.Conditions.Operator
+      description: Operator of the condition.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.Conditions.DependentQuestionId
+      description: Question Id of dependent question which is associated with the
+        condition.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.Conditions.Id
+      description: Id of the condition.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.Conditions.QuestionId
+      description: Associate question Id for the condition.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.requestFor
+      description: Request for field value.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.requestedBy
+      description: Requested by field value.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.title
+      description: Title field value for Service Request Definition.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.description
+      description: Description field value for Service Request Definition.
+      type: String
+  - arguments:
+    - default: false
+      description: The unique incident or service request number that needs to be
+        updated with a note.
+      isArray: false
+      name: request_number
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Description of incident or service request while creating the note.
+        Default value of summary is 'Client Note'.
+      isArray: false
+      name: summary
+      required: false
+      secret: false
+    - default: false
+      description: Detailed note for incident or service request.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: This command creates notes for incidents and service requests.
+    execution: false
+    name: bmc-remedy-note-create
+    outputs:
+    - contextPath: BmcRemedyforce.Note.Id
+      description: Id of the created note.
+      type: String
+    - contextPath: BmcRemedyforce.Note.WorkInfoType
+      description: Work Information of note.
+      type: String
+    - contextPath: BmcRemedyforce.Note.ViewAccess
+      description: View Access Information of note.
+      type: String
+    - contextPath: BmcRemedyforce.Note.Summary
+      description: The description of the note.
+      type: String
+    - contextPath: BmcRemedyforce.Note.Submitter
+      description: User who added note.
+      type: String
+    - contextPath: BmcRemedyforce.Note.srId
+      description: Id of the Service Request/Incident on which we have added note.
+      type: String
+    - contextPath: BmcRemedyforce.Note.Notes
+      description: Note for Service Request/Incident.
+      type: String
+    - contextPath: BmcRemedyforce.Note.ModifiedDate
+      description: Last modified date for note.
+      type: Date
+    - contextPath: BmcRemedyforce.Note.CreatedDate
+      description: Created date of note.
+      type: Date
+  - arguments:
+    - default: false
+      description: The unique number of the service request for which details needs
+        to be updated.
+      isArray: false
+      name: service_request_number
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        category_id is the unique Id of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes.
+        Users can get the category Id from the category name using 'bmc-remedy-category-details-get' command.
+      isArray: false
+      name: category_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        queue_id is the unique Id of the owner.
+        Users can get the queue Id from the owner name using 'bmc-remedy-queue-details-get' command.
+      isArray: false
+      name: queue_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        staff_id is the unique Id of the staff to whom the user wants to assign the record.
+        Users can get the staff Id from the staff details using 'bmc-remedy-user-details-get' command.
+      isArray: false
+      name: staff_id
+      required: false
+      secret: false
+    - default: false
+      description: "status_id is the unique Id of the status that is used to display\
+        \ the progress of the service request through its stages of opening to closure.\
+        \ \nUsers can get the status Id from the status name using 'bmc-remedy-status-details-get'\
+        \ command."
+      isArray: false
+      name: status_id
+      required: false
+      secret: false
+    - default: false
+      description: "urgency_id is the unique Id of the urgency which is used to determine\
+        \ the priority of the service request. \nUsers can get the urgency Id from\
+        \ the urgency name using 'bmc-remedy-urgency-details-get' command."
+      isArray: false
+      name: urgency_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        client_id is the unique Id of the client. It helps to select a client for a particular service request.
+        Users can get the client Id from the email using 'bmc-remedy-user-details-get' command.
+      isArray: false
+      name: client_id
+      required: false
+      secret: false
+    - default: false
+      description: "The fields which are not present in the current argument list\
+        \ can be added here in the format \"fieldname1=value;fieldname2=value\". \n\
+        Possible fields: impact_id, account_id or any other custom field."
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: This command updates the details of a service request for a given
+      service request number.
+    execution: false
+    name: bmc-remedy-service-request-update
+    outputs:
+    - contextPath: BmcRemedyforce.ServiceRequest.Number
+      description: Service request number.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Id
+      description: Service request Id.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.LastUpdatedDate
+      description: Last updated date & time of a service request.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        The unique Id of the service request definition.
+        Users can get the service request definition Id from service request definition name using 'bmc-remedy-service-request-definition-get' command.
+      isArray: false
+      name: service_request_definition_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Each service request definition expects specific parameters to be supplied. Specify the parameters as a delimiter (;) separated string.
+        Example: "param1=value1; param2=value2".
+      isArray: false
+      name: service_request_definition_params
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        client_id is the unique Id of the client. It helps to select a client for a particular service request.
+        Users can get the client Id from the email using 'bmc-remedy-user-details-get' command.
+      isArray: false
+      name: client_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        category_id is the unique Id of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes.
+        Users can get the category Id from the category name using 'bmc-remedy-category-details-get' command.
+      isArray: false
+      name: category_id
+      required: false
+      secret: false
+    - default: false
+      description: "queue_id is the unique Id of the owner. \nUsers can get the queue\
+        \ Id from the owner name using 'bmc-remedy-queue-details-get' command."
+      isArray: false
+      name: queue_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        staff_id is the unique Id of the staff to whom the user wants to assign the record.
+        Users can get the staff Id from the staff details using 'bmc-remedy-user-details-get' command.
+      isArray: false
+      name: staff_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        urgency_id is the unique Id of the urgency which is used to determine the priority of the service request.
+        Users can get the urgency Id from the urgency name using 'bmc-remedy-urgency-details-get' command.
+      isArray: false
+      name: urgency_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        status_id is the unique Id of the status that is used to display the progress of the service request through its stages of opening to closure.
+        Users can get the status Id from the status name using 'bmc-remedy-status-details-get' command.
+      isArray: false
+      name: status_id
+      required: false
+      secret: false
+    - default: false
+      description: "The fields which are not present in the current argument list\
+        \ can be added here in the format \"fieldname1=value;fieldname2=value\". \n\
+        Possible fields: impact_id, account_id or any other custom field."
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: This command allows the user to create a new service request. A service
+      request is the request record that is generated from the service request definition
+      to manage and track the execution.
+    execution: false
+    name: bmc-remedy-service-request-create
+    outputs:
+    - contextPath: BmcRemedyforce.ServiceRequest.Number
+      description: Service request number.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Id
+      description: Service request Id.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.CreatedDate
+      description: Creation date & time of service request.
+      type: String
+  - arguments:
+    - default: false
+      description: template_name is the name of the template whose details the user
+        wants to get. If any value is not specified, it gets details of all the available
+        templates.
+      isArray: false
+      name: template_name
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get template details for Incidents. Templates
+      enable users to prepopulate commonly used fields in a form.
+    execution: false
+    name: bmc-remedy-template-details-get
+    outputs:
+    - contextPath: BmcRemedyforce.Template.Id
+      description: Template Id.
+      type: String
+    - contextPath: BmcRemedyforce.Template.Name
+      description: Template name.
+      type: String
+    - contextPath: BmcRemedyforce.Template.Description
+      description: Template description.
+      type: String
+    - contextPath: BmcRemedyforce.Template.Recurring
+      description: Recurrence of template.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: impact_name is the name of the impact whose details the user wants
+        to get. If any value is not specified, it gets details of all the available
+        impacts.
+      isArray: false
+      name: impact_name
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get impact details for incidents and service
+      requests. Impact helps to calculate priority of the incident or service request.
+    execution: false
+    name: bmc-remedy-impact-details-get
+    outputs:
+    - contextPath: BmcRemedyforce.Impact.Id
+      description: Impact Id.
+      type: String
+    - contextPath: BmcRemedyforce.Impact.Name
+      description: Impact Name.
+      type: String
+  - arguments:
+    - default: false
+      description: service_offering_name is the name of service offering whose details
+        the user wants to get. If any value is not specified, it gets details of all
+        the available service offerings.
+      isArray: false
+      name: service_offering_name
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get service offering details for incidents.
+      Users can link a service offering of the associated service.
+    execution: false
+    name: bmc-remedy-service-offering-details-get
+    outputs:
+    - contextPath: BmcRemedyforce.ServiceOffering.Id
+      description: Service offering Id.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceOffering.Name
+      description: Service offering name.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        client_id is the unique Id of the client. It helps to select a client for a particular Incident.
+        Users can get the client Id from the email using 'bmc-remedy-user-details-get' command.
+      isArray: false
+      name: client_id
+      required: true
+      secret: false
+    - default: false
+      description: This field represents the description of the incident that the
+        user wants to create.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: opened_date is the date and time at which the incident was created.
+        Use the yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ formats
+        to specify dateTime fields.
+      isArray: false
+      name: opened_date
+      required: false
+      secret: false
+    - default: false
+      description: due_date is the date and time at which the incident should be completed.
+        Use the yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ formats
+        to specify dateTime fields.
+      isArray: false
+      name: due_date
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        queue_id is the unique Id of the owner.
+        Users can get the queue Id from the owner name using 'bmc-remedy-queue-details-get' command.
+      isArray: false
+      name: queue_id
+      required: false
+      secret: false
+    - default: false
+      description: "template_id is the unique Id of the template. Templates enable\
+        \ users to pre-populate commonly used fields in a form. \nUsers can get the\
+        \ template Id from the template name using 'bmc-remedy-template-details-get'\
+        \ command."
+      isArray: false
+      name: template_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        category_id is the unique Id of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes.
+        Users can get the category Id from the category name using 'bmc-remedy-category-details-get' command.
+      isArray: false
+      name: category_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        urgency_id is the unique Id of the urgency which is used to determine the priority of the incident.
+        Users can get the urgency Id from the urgency name using 'bmc-remedy-urgency-details-get' command.
+      isArray: false
+      name: urgency_id
+      required: false
+      secret: false
+    - default: false
+      description: status_id is the unique Id of the status that is used to display
+        the progress of the incident through its stages of opening to closure. Users
+        can get the status Id from the status name using 'bmc-remedy-status-details-get'
+        command.
+      isArray: false
+      name: status_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        staff_id is the unique Id of the staff to whom the user wants to assign the record.
+        Users can get the staff Id from the staff details using 'bmc-remedy-user-details-get' command.
+      isArray: false
+      name: staff_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".
+        Possible fields: broadcast_id, service_id,impact_id, service_offering_id, asset_id, outage_start, outage_end, account_id or any other custom field.
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: This command allows the user to create a new incident.
+    execution: false
+    name: bmc-remedy-incident-create
+    outputs:
+    - contextPath: BmcRemedyforce.Incident.Id
+      description: Incident Id.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Number
+      description: Incident number.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.CreatedDate
+      description: Creation date & time of Incident.
+      type: String
+  - arguments:
+    - default: false
+      description: The unique number of the incident whose details need to be updated.
+      isArray: false
+      name: incident_number
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        category_id is the unique Id of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes.
+        Users can get the category Id from the category name using 'bmc-remedy-category-details-get' command.
+      isArray: false
+      name: category_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        queue_id is the unique Id of the owner.
+        Users can get the queue Id from the owner name using 'bmc-remedy-queue-details-get' command.
+      isArray: false
+      name: queue_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        staff_id is the unique Id of the staff to whom the user wants to assign the record.
+        Users can get the staff Id from the staff details using 'bmc-remedy-user-details-get' command.
+      isArray: false
+      name: staff_id
+      required: false
+      secret: false
+    - default: false
+      description: "status_id is the unique Id of the status that is used to display\
+        \ the progress of the incident through its stages of opening to closure. \n\
+        Users can get the status Id from the status name using 'bmc-remedy-status-details-get'\
+        \ command."
+      isArray: false
+      name: status_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        urgency_id is the unique Id of the urgency which is used to determine the priority of the incident.
+        Users can get the urgency Id from the urgency name using 'bmc-remedy-urgency-details-get' command.
+      isArray: false
+      name: urgency_id
+      required: false
+      secret: false
+    - default: false
+      description: due_date is the date and time until which the incident should be
+        completed. Use the yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ
+        formats to specify dateTime fields.
+      isArray: false
+      name: due_date
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        client_id is the unique Id of the client. It helps to select the client for a particular incident.
+        Users can get the client Id from the email using 'bmc-remedy-user-details-get' command.
+      isArray: false
+      name: client_id
+      required: false
+      secret: false
+    - default: false
+      description: "The fields which are not present in the current argument list\
+        \ can be added here in the format \"fieldname1=value;fieldname2=value\". \n\
+        Possible fields: broadcast_id, service_id,impact_id, service_offering_id,\
+        \ asset_id, outage_start, outage_end, account_id or any other custom field."
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: This command updates the details of an incident for a given incident
+      number.
+    execution: false
+    name: bmc-remedy-incident-update
+    outputs:
+    - contextPath: BmcRemedyforce.Incident.Id
+      description: Incident Id.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Number
+      description: Incident number.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.LastUpdatedDate
+      description: Last updated date & time of Incident.
+      type: String
+  - arguments:
+    - default: false
+      description: asset_name is the name of the asset for which the command will
+        find the metadata.
+      isArray: false
+      name: asset_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: All Classes
+      description: Assets belonging to the selected instance_type will be populated.
+      isArray: false
+      name: instance_type
+      predefined:
+      - All Classes
+      - Asset Classes
+      - CI Classes
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get asset or configuration item details for
+      incidents.
+    execution: false
+    name: bmc-remedy-asset-details-get
+    outputs:
+    - contextPath: BmcRemedyforce.Asset.Id
+      description: Asset Id.
+      type: String
+    - contextPath: BmcRemedyforce.Asset.Name
+      description: Asset name.
+      type: String
+    - contextPath: BmcRemedyforce.Asset.Description
+      description: Asset description.
+      type: String
+    - contextPath: BmcRemedyforce.Asset.Class_Name
+      description: Asset under BMC class type.
+      type: String
+    - contextPath: BmcRemedyforce.Asset.Asset_Number
+      description: Asset number.
+      type: String
+    - contextPath: BmcRemedyforce.Asset.Instance_Type
+      description: Assets belonging to selected class.
+      type: String
+  - arguments:
+    - default: false
+      description: account_name is the account name of the account whose details the
+        user wants to get. If any value is not specified, it gets details of all the
+        available accounts.
+      isArray: false
+      name: account_name
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get account details for incidents and service
+      requests.
+    execution: false
+    name: bmc-remedy-account-details-get
+    outputs:
+    - contextPath: BmcRemedyforce.Account.Id
+      description: Account Id.
+      type: String
+    - contextPath: BmcRemedyforce.Account.Name
+      description: Account name.
+      type: String
+  - arguments:
+    - default: false
+      description: status_name is the status name whose details the user wants to
+        get.
+      isArray: false
+      name: status_name
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get status details for incidents and service
+      requests. Status is used to display the progress of the service request through
+      its stages of opening to closure.
+    execution: false
+    name: bmc-remedy-status-details-get
+    outputs:
+    - contextPath: BmcRemedyforce.Status.Id
+      description: Status Id.
+      type: String
+    - contextPath: BmcRemedyforce.Status.Name
+      description: Status name.
+      type: String
+  - arguments:
+    - default: false
+      description: urgency_name is the name of the urgency whose details the user
+        wants to get.
+      isArray: false
+      name: urgency_name
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get urgency details for incidents and service
+      requests. Urgency is used to determine the priority of the incident or service
+      request.
+    execution: false
+    name: bmc-remedy-urgency-details-get
+    outputs:
+    - contextPath: BmcRemedyforce.Urgency.Id
+      description: Urgency Id.
+      type: String
+    - contextPath: BmcRemedyforce.Urgency.Name
+      description: Urgency name.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: All
+      description: type is the category type whose details the user wants to get.
+      isArray: false
+      name: type
+      predefined:
+      - All
+      - Service Request
+      - Incident
+      required: false
+      secret: false
+    - default: false
+      description: category_name is the category name whose details the user wants
+        to get.
+      isArray: false
+      name: category_name
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get category details for incidents and service
+      requests. Categories allow users to classify the incident or service request
+      using standard classifications to track the reporting purposes.
+    execution: false
+    name: bmc-remedy-category-details-get
+    outputs:
+    - contextPath: BmcRemedyforce.Category.Id
+      description: Category Id.
+      type: String
+    - contextPath: BmcRemedyforce.Category.Name
+      description: Category name.
+      type: String
+    - contextPath: BmcRemedyforce.Category.ChildrenCount
+      description: Number of children of the category.
+      type: String
+  - arguments:
+    - default: false
+      description: queue_name is the name of the queue as the owner whose details
+        the user wants to get.
+      isArray: false
+      name: queue_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: type will allow the user to filter with its possible values as
+        incident or service request and get details accordingly.
+      isArray: false
+      name: type
+      predefined:
+      - Incident/Service Request
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get queue details for incidents and service
+      requests. It accepts queue name and type as arguments.
+    execution: false
+    name: bmc-remedy-queue-details-get
+    outputs:
+    - contextPath: BmcRemedyforce.Queue.Id
+      description: Queue Id.
+      type: String
+    - contextPath: BmcRemedyforce.Queue.Name
+      description: Queue name.
+      type: String
+    - contextPath: BmcRemedyforce.Queue.Email
+      description: Queue email.
+      type: String
+  - arguments:
+    - default: false
+      description: username is the name of the user whose details the user wants to
+        get.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: account_name is the account name of the user whose details the
+        user wants to get.
+      isArray: false
+      name: account_name
+      required: false
+      secret: false
+    - default: false
+      description: email is the email address of the user whose details the user wants
+        to get.
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: queue_name is the group/queue name for which user wants to get
+        user details.
+      isArray: false
+      name: queue_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: is_staff will allow the user to filter with its possible values
+        true or false and get details of users accordingly.
+      isArray: false
+      name: is_staff
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get user details for incidents and service
+      requests. It accepts username, account name, email, queue name, and is_staff
+      as arguments.
+    execution: false
+    name: bmc-remedy-user-details-get
+    outputs:
+    - contextPath: BmcRemedyforce.User.Id
+      description: User Id which uniquely identifies the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.Name
+      description: Full name of the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.FirstName
+      description: First name of the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.LastName
+      description: Last name of the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.Username
+      description: Username of the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.Email
+      description: Email of the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.Phone
+      description: Phone number of the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.Account
+      description: Account name of the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.CompanyName
+      description: Company name of the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.Division
+      description: Divsion of the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.Department
+      description: Department name of the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.Title
+      description: Title of the user.
+      type: String
+    - contextPath: BmcRemedyforce.User.IsStaff
+      description: Shows whether the user belongs to the staff or not.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: broadcast_name is the name of the broadcast whose details the user
+        wants to get.
+      isArray: false
+      name: broadcast_name
+      required: false
+      secret: false
+    - default: false
+      description: category_name is the name of the category whose details the user
+        wants to get.
+      isArray: false
+      name: category_name
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get broadcast details for incidents. Broadcast
+      enables users to send messages to the entire organization, selected groups within
+      the organization and to external customers.
+    execution: false
+    name: bmc-remedy-broadcast-details-get
+    outputs:
+    - contextPath: BmcRemedyforce.Broadcast.Id
+      description: Broadcast Id.
+      type: String
+    - contextPath: BmcRemedyforce.Broadcast.Name
+      description: Broadcast name.
+      type: String
+    - contextPath: BmcRemedyforce.Broadcast.Description
+      description: Broadcast description.
+      type: String
+    - contextPath: BmcRemedyforce.Broadcast.Category
+      description: Broadcast category.
+      type: String
+    - contextPath: BmcRemedyforce.Broadcast.Status
+      description: Broadcast status.
+      type: String
+    - contextPath: BmcRemedyforce.Broadcast.Priority
+      description: Broadcast priority.
+      type: String
+    - contextPath: BmcRemedyforce.Broadcast.Urgency
+      description: Broadcast urgency.
+      type: String
+    - contextPath: BmcRemedyforce.Broadcast.Impact
+      description: Broadcast impact.
+      type: String
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- BMCHelixRemedyforce-Test
+fromversion: 5.0.0

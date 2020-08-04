@@ -1,0 +1,30 @@
+{
+    "totalSize": 2,
+    "done": true,
+    "records": [
+        {
+            "attributes": {
+                "type": "ContentDocumentLink",
+                "url": "SOME_URL"
+            },
+            "Id": "ID",
+            "ContentDocumentId": "CONTENT_ID",
+            "ContentDocument": {
+                "attributes": {
+                    "type": "ContentDocument",
+                    "url": "SOME_URL"
+                },
+                "Title": "test_doc",
+                "Description": null,
+                "CreatedDate": "2020-07-28T07:13:11.000+0000",
+                "CreatedBy": {
+                    "attributes": {
+                        "type": "User",
+                        "url": "SOME_URL"
+                    },
+                    "Name": "TEST USER"
+                }
+            }
+        }
+    ]
+}

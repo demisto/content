@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+              "integrations": "BMCHelixRemedyforce",
+              "playbookID": "BMCHelixRemedyforce-Test",
+              "fromversion": "5.0.0"
+        },
+        {
             "integrations": "AWS - Security Hub",
             "playbookID": "AWS-securityhub Test"
         },

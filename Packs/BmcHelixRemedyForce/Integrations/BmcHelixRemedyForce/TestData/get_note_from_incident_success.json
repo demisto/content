@@ -1,0 +1,24 @@
+{
+    "totalSize": 6,
+    "done": true,
+    "records": [
+        {
+            "attributes": {
+                "type": "BMCServiceDesk__IncidentHistory__c",
+                "url": "/services/data/v48.0/sobjects/BMCServiceDesk__IncidentHistory__c/a2N2w000000Y2ehEAC"
+            },
+            "BMCServiceDesk__note__c": "note_c",
+            "CreatedBy": {
+                "attributes": {
+                    "type": "User",
+                    "url": "/services/data/v48.0/sobjects/User/0052w000004Z9vJAAS"
+                },
+                "Name": "sample_name"
+            },
+            "CreatedDate": "2020-07-28T10:44:33.000+0000",
+            "Name": "123_0",
+            "BMCServiceDesk__actionId__c": "action_id",
+            "BMCServiceDesk__description__c": "desc"
+        }
+    ]
+}
