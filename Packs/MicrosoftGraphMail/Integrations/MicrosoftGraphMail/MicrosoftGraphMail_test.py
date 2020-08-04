@@ -103,13 +103,35 @@ def test_pages_puller(mocker, client):
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_list_mails_command(mocker, client):
+    """Unit test
+    Given
+    - list_mails command
+    - different number of mails that are returned in the response
+    When
+    - mock the client.list_mails function
+    Then
+    - run the list_mails_command using the Client
+    Validate that the human readable output, indicating the number of returned mails is correct
+    """
     args = {'user_id': 'test id'}
+
+    # call list mails with two emails
     with open('test_data/mails') as mail_json:
         mail = json.load(mail_json)
         mocker.patch.object(client, 'list_mails', return_value=mail)
-        output = list_mails_command(client, args)
-        print(demisto.results()[0])
-        assert '### Total of 2 of mails received' in output[0]
+        mocker.patch.object(demisto, 'results')
+        list_mails_command(client, args)
+        hr = demisto.results.call_args[0][0].get('HumanReadable')
+        assert '### Total of 2 mails received' in hr
+
+    # call list mails with no emails
+    with open('test_data/no_mails') as mail_json:
+        mail = json.load(mail_json)
+        mocker.patch.object(client, 'list_mails', return_value=mail)
+        mocker.patch.object(demisto, 'results')
+        list_mails_command(client, args)
+        hr = demisto.results.call_args[0][0].get('HumanReadable')
+        assert '### No mails were found' in hr
 
 
 @pytest.fixture()

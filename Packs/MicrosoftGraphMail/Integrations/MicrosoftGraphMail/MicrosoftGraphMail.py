@@ -1109,7 +1109,7 @@ def list_mails_command(client: MsGraphClient, args):
 
         # human_readable builder
         human_readable = tableToMarkdown(
-            f'### Total of {len(mail_context)} of mails received',
+            f'### Total of {len(mail_context)} mails received',
             mail_context,
             headers=['Subject', 'From', 'SendTime']
         )
