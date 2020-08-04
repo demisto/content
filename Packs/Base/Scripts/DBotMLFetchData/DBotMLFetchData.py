@@ -265,7 +265,8 @@ def get_html_features(soup):
     global HTML_TAGS
     html_counter = Counter([tag.name for tag in soup.find_all()])
     for t in HTML_TAGS:
-        html_counter[t] = 0 if t not in html_counter else html_counter[t]
+        if t in html_counter:
+            html_counter[t] = html_counter[t]
     html_counter = {k: v for k, v in html_counter.items() if k in HTML_TAGS}
     return html_counter
 

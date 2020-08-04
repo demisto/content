@@ -77,6 +77,14 @@ def test_get_characters_features(mocker):
     assert all(lexical_features[c] == charchters_dict[c] for c in charchters_dict)
 
 
+def test_get_html_features():
+    email_html = '<a href="{}">Link</a>'.format('link')
+    soup = BeautifulSoup(email_html, "html.parser")
+    res = get_html_features(soup)
+    assert res['a'] == 1
+    assert 'body' not in res
+
+
 # disable-secrets-detection-start
 def test_get_url_features(mocker):
     email_body = 'https://www.a.com https://www.b.com http://www.c.com/vcvc/vcvc/vc/b'   # disable-secrets-detection
