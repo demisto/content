@@ -1,0 +1,14 @@
+{
+    "name": "Bonusly",
+    "description": "Integration with Bonusly with a demo playbook that shows you how to\n- Get your status\n- Give points through Data Collection\n- Give points through automation\n\nIntegration supports extra functions (e.g. redeeming points) not shown in the demo playbook.",
+    "support": "internalContribution",
+    "currentVersion": "1.0.0",
+    "author": "Admin",
+    "url": "",
+    "email": "andy_house90@hotmail.com",
+    "created": "2020-08-04T12:02:37Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

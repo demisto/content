@@ -1,0 +1,90 @@
+category: Utilities
+commonfields:
+  id: 'Bonusly '
+  version: -1
+configuration:
+- display: API Key of the User
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Bonusly is an engaging recognition and rewards platform that enriches
+  your company culture.
+display: 'Bonusly '
+name: 'Bonusly '
+script:
+  commands:
+  - arguments: []
+    description: Fetch details of this account
+    name: bonusly-aboutme
+    outputs:
+    - contextPath: bonusly.aboutme.id
+      description: Your ID
+      type: string
+    - contextPath: bonusly.aboutme.username
+      description: Your Bonusly Username
+      type: string
+    - contextPath: bonusly.aboutme.giving_balance
+      description: Current Points Balance
+      type: number
+  - arguments:
+    - description: How many points to assign (positive integer)
+      name: Points
+      required: true
+    - description: Name of user (firstname.secondname)
+      name: Recipient
+      required: true
+    - description: Reason for the bonus
+      name: Reason
+      required: true
+    - description: Mandatory depending on your org, identifying why the user might
+        receive  (e.g. Execution, Inclusion, Disruption, Collaboration)
+      name: Keyword
+    description: Send a bonus of points to a colleague
+    name: bonusly-create-bonus
+    outputs:
+    - contextPath: bonusly.createBonus.reason
+    - contextPath: bonusly.createBonus.created_at
+  - arguments: []
+    description: List all available rewards (GiftCards, Donations, CashOuts)
+    name: bonusly-list-rewards
+    outputs:
+    - contextPath: bonusly.listRewards
+  - arguments:
+    - description: Unique ID which identifies both the redemption recipient and the
+        demoniation
+      name: reward_denomination_id
+      required: true
+    description: Use your accumulated Points (GiftCards, Donations, CashOuts)
+    name: bonusly-redeem-points
+    outputs:
+    - contextPath: bonusly.redeemPoints.redemption.reward_details.name
+  - arguments:
+    - default: true
+      defaultValue: "1"
+      description: How many back
+      name: limit
+      required: true
+    description: List your previous redemptions. Useful for repeat actions.
+    name: bonusly-past-redemptions
+    outputs:
+    - contextPath: bonusly.pastRedemptions.reward_details.id
+  - arguments:
+    - description: email of user
+      name: email
+      required: true
+    name: bonusly-find-user-by-email
+    outputs:
+    - contextPath: bonusly.foundUser.username
+  dockerimage: demisto/python:2.7.16.286
+  runonce: false
+  script: ''
+  subtype: python2
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

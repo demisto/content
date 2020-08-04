@@ -1,0 +1,564 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 3b419385-93a3-42a6-8c52-c2c8b2fded56
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: Bonusly
+inputs:
+- description: ""
+  key: points
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "10"
+name: Bonusly
+outputs:
+- contextPath: points.giving_balance
+  description: Current Points Balance
+  type: number
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 99560d99-4bb9-4475-85ef-5aecb1df0acb
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 99560d99-4bb9-4475-85ef-5aecb1df0acb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": -605
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Keyword:
+        simple: ${Complete Information.Answers.2}
+      Points:
+        simple: ${Complete Information.Answers.1}
+      Reason:
+        simple: ${Complete Information.Answers.3}
+      Recipient:
+        simple: ${Complete Information.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: 'Bonusly '
+      description: Send a bonus of points to a colleague
+      id: 6f6e9650-27cc-4ae5-8c29-8d1d2a9de4a0
+      iscommand: true
+      name: bonusly-create-bonus
+      script: Bonusly |||bonusly-create-bonus
+      type: regular
+      version: -1
+    taskid: 6f6e9650-27cc-4ae5-8c29-8d1d2a9de4a0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 815
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: points=.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: 'Bonusly '
+      description: Fetch details of this account
+      id: 6f823ede-1d2c-4ff6-82df-1ca5f6b0fb56
+      iscommand: true
+      name: Get My bonusly Points
+      script: Bonusly |||bonusly-aboutme
+      type: regular
+      version: -1
+    taskid: 6f823ede-1d2c-4ff6-82df-1ca5f6b0fb56
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": -470
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: bonusly.aboutme.giving_balance
+          operator: greaterThan
+          right:
+            value:
+              simple: "10"
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9ff35c32-391e-41dd-8a93-48f9bc1b9e87
+      iscommand: false
+      name: More than 10 points?
+      type: condition
+      version: -1
+    taskid: 9ff35c32-391e-41dd-8a93-48f9bc1b9e87
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": -310
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: bonuslyRecipients
+      stringify: {}
+      value:
+        simple: user1,user2,user3
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: 5598aff6-5e86-47c8-89f7-a03b82f17962
+      iscommand: false
+      name: Set local Context Key as recipient username list
+      script: Set
+      type: regular
+      version: -1
+    taskid: 5598aff6-5e86-47c8-89f7-a03b82f17962
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 300
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: bonuslyRecipient
+      stringify: {}
+      value:
+        complex:
+          root: bonuslyRecipients
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: split
+          - operator: 6f6bc3c5-83df-4ae5-8402-9eae23aff5b1
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets a value into the context with the given context key
+      id: 47db341f-7b50-4aa6-8106-5f946213c60a
+      iscommand: false
+      name: Pick random recipient
+      script: Set
+      type: regular
+      version: -1
+    taskid: 47db341f-7b50-4aa6-8106-5f946213c60a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 465
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0fa0ee72-c806-4458-894b-ed832d992164
+      iscommand: false
+      name: 'Automated '
+      type: title
+      version: -1
+      description: ''
+    taskid: 0fa0ee72-c806-4458-894b-ed832d992164
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 115
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 89d7db14-63f6-40d3-8895-5a5d83f5a100
+      iscommand: false
+      name: Manually pick recipient
+      type: title
+      version: -1
+      description: ''
+    taskid: 89d7db14-63f6-40d3-8895-5a5d83f5a100
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 120
+        }
+      }
+  "16":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Username
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Username of recipient e.g. "user.1"
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: How many points?
+        options: []
+        optionsarg:
+        - simple: "10"
+        - simple: "25"
+        - simple: "50"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: How many points
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Hashtag
+        options: []
+        optionsarg:
+        - simple: disruption
+        - simple: integrity
+        - simple: inclusion
+        - simple: collaboration
+        - simple: execution
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: hashtag
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: Reason
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Reason
+        type: shortText
+      sender: Your SOC team
+      title: Complete Information
+      totalanswers: 0
+    formDisplay:
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    id: "16"
+    ignoreworker: false
+    message:
+      bcc:
+      body: {}
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8536cb82-4b56-4a9d-8f37-40a35a32cf73
+      iscommand: false
+      name: Questions
+      type: collection
+      version: -1
+    taskid: 8536cb82-4b56-4a9d-8f37-40a35a32cf73
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 300
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e6956264-c60e-4012-8131-d177ed84fc1d
+      iscommand: false
+      name: Not enough points to give
+      type: title
+      version: -1
+      description: ''
+    taskid: e6956264-c60e-4012-8131-d177ed84fc1d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": -90
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Keyword:
+        simple: Execution
+      Points:
+        simple: "10"
+      Reason:
+        simple: <3 from DBot (# ${RandomString} )
+      Recipient:
+        simple: ${bonuslyRecipient}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: 'Bonusly '
+      description: Send a bonus of points to a colleague
+      id: bdd03d2e-727b-4441-8fb7-fbfab0acce60
+      iscommand: true
+      name: bonusly-create-bonus
+      script: Bonusly |||bonusly-create-bonus
+      type: regular
+      version: -1
+    taskid: bdd03d2e-727b-4441-8fb7-fbfab0acce60
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 815
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      Automated:
+      - "14"
+      Manual:
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f3f1e531-b0f6-4cb2-8a3b-5fb74060fe07
+      iscommand: false
+      name: Automated or Manual Bonusly?
+      type: condition
+      version: -1
+    taskid: f3f1e531-b0f6-4cb2-8a3b-5fb74060fe07
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": -90
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "3"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Generates random string
+      id: feb17ec6-9e65-4e62-8ffb-f7264cd15ff3
+      iscommand: false
+      name: Random String
+      script: GenerateRandomString
+      type: regular
+      version: -1
+    taskid: feb17ec6-9e65-4e62-8ffb-f7264cd15ff3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 630
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "8_20_yes": 0.71
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1515,
+        "width": 1170,
+        "x": 660,
+        "y": -605
+      }
+    }
+  }
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
