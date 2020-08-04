@@ -1,5 +1,6 @@
 id: Checkpoint - Publish&Install configuration
-version: 73
+version: -1
+fromversion: 5.0.0
 name: Checkpoint - Publish&Install configuration
 description: Publish the Checkpoint Firewall configuration, also, install policy over all the gateways are available.
 starttaskid: "0"
