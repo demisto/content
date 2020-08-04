@@ -18,6 +18,8 @@
         "paloaltonetworks",
         "zingbox"
     ],
-    "useCases": [],
+    "useCases": [
+        "Incident response for Palo Alto Networks IoT Security"
+    ],
     "keywords": []
 }

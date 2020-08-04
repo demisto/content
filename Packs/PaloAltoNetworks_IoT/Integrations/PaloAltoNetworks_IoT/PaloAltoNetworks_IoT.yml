@@ -34,25 +34,25 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-  additionalinfo: First fetch time in the ISO format - YYYY-MM-DDTHH:mm:ssZ or -1 if fetching from the beginning
+  additionalinfo: "The format: <number> <time unit>. e.g., 12 hours, 7 days, 2 seconds etc."
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
-  additionalinfo: Internally the max page size is 100
+  additionalinfo: Maximal number of events is 100
 - display: Fetch IoT Alerts
   name: fetch_alerts
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: Fetches incidents will skip the IoT alerts from IoT Security Portal if this checkbox is unchecked
+  additionalinfo: Fetch incidents will skip IoT alerts from IoT Security Portal if this checkbox is unchecked
 - display: Fetch IoT Vulnerabilities
   name: fetch_vulns
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: Fetches incidents will skip the IoT vulnerabilities from IoT Security Portal if this checkbox is unchecked
+  additionalinfo: Fetch incidents will skip IoT vulnerabilities from IoT Security Portal if this checkbox is unchecked
 - display: The timeout for querying APIs
   name: api_timeout
   defaultvalue: "60"
