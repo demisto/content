@@ -1,4 +1,4 @@
-Allows mirroring of XSOAR incidents between different XSOAR instances/tenants.
+Allows mirroring of XSOAR incidents between different Cortex XSOAR tenants.
 
 This integration was integrated and tested with version 6.0 of XSOAR
 
@@ -7,14 +7,15 @@ This integration was integrated and tested with version 6.0 of XSOAR
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for XSOAR Mirroring.
 3. Click **Add instance** to create and configure a new integration instance.
-4. Go to the secondary XSOAR instance and install the XSOAR Mirroring Client pack, this will help you filter the mirrored incidents. 
-It contains a new incident type, called Ping, and thus will allow you to use the following query in your search `-status:closed and type:Ping and -frompong:true`
+4. Go to the tenant to which you want to mirror the content and install the XSOAR Mirroring Client pack. This is where you can define which content you want to ingest from the Cortex XSOAR tenant. 
+
+The mirroring instance in the first tenant contains a new incident type, called Ping. You can use the following query to ingest those incidents into the XSOAR mirroring client tenant `-status:closed and type:Ping and -frompong:true`
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | incidentType | Incident type | False |
-| url | XSOAR server URL | True |
-| apikey | API Key | True |
+| url | URL of the XSOAR tenant from which you are ingesting the Ping incidents. You should add the full server address, for example, https://cortexXSOARMainAccount:8443/acc_MyTenant#/ | True |
+| apikey | The API key to access the server. The key must be provided by the server to which you are connecting. | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | isFetch | Fetch incidents | False |
@@ -24,11 +25,11 @@ It contains a new incident type, called Ping, and thus will allow you to use the
 | categories | Entry Categories | False |
 | tags | Entry tags | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to ensure that you can communicate with the Cortex XSOAR tenant.
 
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### xsoar-search-incidents
 ***
@@ -43,7 +44,7 @@ Search remote XSOAR for incidents
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Which incidents to retrieve | Optional | 
-| start_time | from when to search | Optional | 
+| start_time | From when to search | Optional | 
 | max_results | How many incidents to bring | Optional | 
 | columns | Which columns to display | Optional | 
 
@@ -76,7 +77,7 @@ Retrieve incident and entries from remote XSOAR
 | id | The remote incident id | Required | 
 | from_date | Retrieve entries that were created after last_update | Optional | 
 | categories | Retrieve only the entries of these categories | Optional | 
-| tags | Retrieve only the entries tagged with these tags | Optional | 
+| tags | Only entries with these tags are retrieved from the XSOAR server. If no tags are listed, no entries are retrieved. | Optional | 
 | max_results | Max number of entries to retrieve | Optional | 
 
 
