@@ -1907,6 +1907,43 @@ def refresh_session_command():
     return create_entry_object(contents=response, hr=f'CrowdStrike Session Refreshed: {session_id}')
 
 
+def list_detection_summaries_command():
+    fetch_query = demisto.params().get('fetch_query')
+
+    if fetch_query:
+        fetch_query = "{query}".format(query=fetch_query)
+        detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
+    else:
+        detections_ids = demisto.get(get_fetch_detections(), 'resources')
+    incidents = []  # type:List
+
+    if detections_ids:
+
+        raw_res = get_detections_entities(detections_ids)
+
+        if "resources" in raw_res:
+            for detection in demisto.get(raw_res, "resources"):
+                incident = detection_to_incident(detection)
+                incident_date = incident['occurred']
+
+                incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
+
+                # make sure that the two timestamps are in the same length
+                if len(str(incident_date_timestamp)) != len(str(last_fetch_timestamp)):
+                    incident_date_timestamp, last_fetch_timestamp = timestamp_length_equalization(
+                        incident_date_timestamp, last_fetch_timestamp)
+
+                # Update last run and add incident if the incident is newer than last fetch
+                if incident_date_timestamp > last_fetch_timestamp:
+                    last_fetch = incident_date
+                    last_fetch_timestamp = incident_date_timestamp
+                    last_detection_id = json.loads(incident['rawJSON']).get('detection_id')
+
+                incidents.append(incident)
+
+        demisto.setLastRun({'first_behavior_time': last_fetch, 'last_detection_id': last_detection_id})
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1965,6 +2002,10 @@ def main():
             demisto.results(list_host_files_command())
         elif demisto.command() == 'cs-falcon-refresh-session':
             demisto.results(refresh_session_command())
+        elif demisto.command() == 'cs-falcon-list-detection-summaries':
+            demisto.results(list_detection_summaries_command())
+        elif demisto.command() == 'cs-falcon-list-incident-summaries':
+            demisto.results(list_incident_summaries_command())
         # Log exceptions
     except Exception as e:
         return_error(str(e))
