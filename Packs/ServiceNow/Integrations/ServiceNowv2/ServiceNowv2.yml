@@ -47,13 +47,13 @@ configuration:
   name: timestamp_field
   required: false
   type: 0
-- display: ServiceNow ticket column to be set as the incident name, default is the
+- defaultvalue: number
+  display: ServiceNow ticket column to be set as the incident name, default is the
     incident number
   hidden: false
   name: incident_name
   required: false
   type: 0
-  defaultvalue: number
 - display: Incident type
   name: incidentType
   required: false
@@ -72,7 +72,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
+description: Use The ServiceNow IT Service Management (ITSM) solution to modernize
+  the way you manage and deliver services to your users.
 display: ServiceNow v2
 name: ServiceNow v2
 script:
@@ -704,6 +705,19 @@ script:
       name: additional_fields
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Flag that indicates whether to set field values using the display
+        value or the actual value. true will treat input value as the dispaly value.
+        false treats input values as actual values. Default is false.
+      isArray: false
+      name: input_display_value
+      predefined:
+        - 'false'
+        - 'true'
+      required: false
+      secret: false
     deprecated: false
     description: Creates new ServiceNow ticket.
     execution: false
@@ -1248,6 +1262,19 @@ script:
       name: additional_fields
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Flag that indicates whether to set field values using the display
+        value or the actual value. true will treat input value as the dispaly value.
+        false treats input values as actual values. Default is false.
+      isArray: false
+      name: input_display_value
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified ticket.
     execution: false
@@ -1637,6 +1664,19 @@ script:
       name: custom_fields
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Flag that indicates whether to set field values using the display
+        value or the actual value. true will treat input value as the dispaly value.
+        false treats input values as actual values. Default is false.
+      isArray: false
+      name: input_display_value
+      predefined:
+        - 'false'
+        - 'true'
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new record in the specified ServiceNow table.
     execution: false
@@ -1684,6 +1724,19 @@ script:
         record, in the format: fieldname1=value;fieldname2=value;...'
       isArray: false
       name: custom_fields
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Flag that indicates whether to set field values using the display
+        value or the actual value. true will treat input value as the dispaly value.
+        false treats input values as actual values. Default is false.
+      isArray: false
+      name: input_display_value
+      predefined:
+      - 'false'
+      - 'true'
       required: false
       secret: false
     deprecated: false

@@ -3733,12 +3733,12 @@ class GetRemoteDateArgs:
 
 class UpdateRemoteSystemArgs:
     def __init__(self, args):
-        self.data: dict = args.get('data')  # type: ignore
+        self.data = args.get('data')  # type: ignore
         self.entries = args.get('entries')
         self.incident_changed = args.get('incidentChanged')
         self.remote_incident_id = args.get('remoteId')
         self.inc_status = args.get('status')
-        self.delta: dict = args.get('delta')
+        self.delta = args.get('delta')
 
 
 class GetRemoteDataResponse:
@@ -3748,7 +3748,7 @@ class GetRemoteDataResponse:
 
     def extract_for_local(self):
         if self.mirrored_object:
-            demisto.info(f'Updating object {self.mirrored_object["id"]}')
+            demisto.info('Updating object {}'.format(self.mirrored_object["id"]))
             return [self.mirrored_object] + self.entries
 
 
