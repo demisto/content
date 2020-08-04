@@ -202,6 +202,7 @@ class NitroESM(object):
         query = json.dumps(q)
 
         res = self.cmdquery(cmd, query)
+        demisto.log("the res of cmdquery is " + str(res))
         return res['resultID']
 
     @logger
@@ -447,7 +448,6 @@ class NitroESM(object):
 
         cmd = 'userGetUserList'
         query = json.dumps({"authPW": {"value": self.passwd}})
-
         return self.cmdquery(cmd, query)
 
     @logger
@@ -469,8 +469,11 @@ class NitroESM(object):
         if user_name is None or user_name.lower() == 'me':
             user_name = self.user
         res = self.get_users()
+        demisto.debug("res in s " + str(res))
         matches = [user['id']['value'] for user in res if user['username'] == user_name]
+        demisto.debug("matches is " + str(matches))
         self_matches = [user['id']['value'] for user in res if user['username'] == self.user]
+        demisto.debug("self_matches is " + str(self_matches))
 
         # the login user must appear in the user list
         return matches[0] if matches else self_matches[0]
@@ -640,12 +643,12 @@ def cases_to_entry(esm, title, cases):
     headers = ['ID', 'Summary', 'Status', 'Severity', 'OpenTime']
     fixed_cases = []
     context_cases = []
-
     for case in cases:
+        demisto.debug("case is " + str(case))
         fixed_case = {
             'ID': case['id']['value'],
             'Summary': case['summary'],
-            'Status': esm.case_status_id_to_name(case['statusId']['value']),
+            'Status': esm.case_status_id_to_name(case['statusId']['value'] if type(case['statusId']) is dict else case['statusId']),
             'OpenTime': case['openTime'],
             'Severity': case['severity']
         }
