@@ -1,0 +1,237 @@
+id: FailedInstances - Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: FailedInstances - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9d9678cb-420c-4dcc-8449-437657a1e428
+    type: start
+    task:
+      id: 9d9678cb-420c-4dcc-8449-437657a1e428
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e02aeeda-2444-430f-8a7c-993cfe78f945
+    type: regular
+    task:
+      id: e02aeeda-2444-430f-8a7c-993cfe78f945
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 46d3b162-e0e4-48be-8641-bf8e2d056823
+    type: regular
+    task:
+      id: 46d3b162-e0e4-48be-8641-bf8e2d056823
+      version: -1
+      name: Check for Failed Instances
+      description: Executes test for all integration instances available and returns
+        a detailed table about failed integration instances
+      scriptName: FailedInstances_copy
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7b44dafc-e8f6-4536-8510-72270814e314
+    type: condition
+    task:
+      id: 7b44dafc-e8f6-4536-8510-72270814e314
+      version: -1
+      name: Check good instance
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FailedInstances.brand
+            iscontext: true
+          right:
+            value:
+              simple: Carbon Black Enterprise EDR
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FailedInstances.information
+            iscontext: true
+          right:
+            value:
+              simple: succeed
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FailedInstances.status
+            iscontext: true
+          right:
+            value:
+              simple: good
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ebcbb903-e2b8-454d-8e39-8323b0d31e3e
+    type: title
+    task:
+      id: ebcbb903-e2b8-454d-8e39-8323b0d31e3e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: aab31f3e-8ea4-4d46-88c7-cd3e762f1a0b
+    type: condition
+    task:
+      id: aab31f3e-8ea4-4d46-88c7-cd3e762f1a0b
+      version: -1
+      name: Check failed instance
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FailedInstances.brand
+            iscontext: true
+          right:
+            value:
+              simple: activedir
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FailedInstances.status
+            iscontext: true
+          right:
+            value:
+              simple: failed
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 885,
+        "width": 910,
+        "x": 200,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

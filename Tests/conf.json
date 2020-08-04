@@ -2937,6 +2937,11 @@
         {
             "integrations": "Imperva WAF",
             "playbookID": "Imperva WAF - Test"
+        },
+        {
+            "playbookID": "FailedInstances - Test",
+            "integrations": "Carbon Black Enterprise EDR",
+            "fromversion": "4.0.0"
         }
     ],
     "skipped_tests": {
