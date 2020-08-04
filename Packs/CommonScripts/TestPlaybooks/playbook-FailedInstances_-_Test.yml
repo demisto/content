@@ -200,7 +200,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: activedir
+              simple: fcm
       - - operator: isEqualString
           left:
             value:
