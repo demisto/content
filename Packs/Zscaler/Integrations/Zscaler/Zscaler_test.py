@@ -2,6 +2,8 @@ import demistomock as demisto
 import CommonServerPython
 import pytest
 import json
+import requests_mock
+
 
 class ResponseMock:
     def __init__(self, response):
