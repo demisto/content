@@ -1,11 +1,46 @@
 {
 	"defaultIncidentType": "",
-	"description": "",
+	"description": "Maps incoming Microsoft CAS fields",
 	"feed": false,
-	"id": "eb888329-9134-4f7e-818f-11317ac7a2a9",
+	"id": "MicrosoftCloudAppSecurity-mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"keyTypeMap": {},
+	"mapping": {
+		"Microsoft CAS Alert": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Account Name": {
+					"complex": null,
+					"simple": "account.pa"
+				},
+				"Cloud Service": {
+					"complex": null,
+					"simple": "service.label"
+				},
+				"Country": {
+					"complex": null,
+					"simple": "country.label"
+				},
+				"Policy Description": {
+					"complex": null,
+					"simple": "policyRule.label"
+				},
+				"Policy Type": {
+					"complex": null,
+					"simple": "policyRule.policyType"
+				},
+				"Risk Score": {
+					"complex": null,
+					"simple": "threatScore"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "user.label"
+				}
+			}
+		}
+	},
 	"name": "Microsoft CAS",
 	"propagationLabels": [
 		"all"
