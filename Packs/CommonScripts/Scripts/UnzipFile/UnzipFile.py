@@ -23,7 +23,7 @@ def get_zip_path(args):
         for entry in entries:
             fn = demisto.get(entry, 'File')
 
-            # We check the python version to prevent encoding issues.
+            # We check the python version to prevent encoding issues. Effects Demisto 4.5+
             if sys.version_info > (3, 0):
                 is_text = type(fn) is str
             else:
@@ -87,7 +87,10 @@ def extract(file_info, dir_path, password=None):
     excluded_files = [f for f in os.listdir('.') if isfile(f)]
     excluded_dirs = [d for d in os.listdir('.') if isdir(d)]
     # extracting the zip file
-    # We check the python version to ensure the docker image contains the necessary packages
+    """
+    We check the python version to ensure the docker image contains the necessary packages. 4.5+ 
+    use the new docker image.
+    """
     if '.rar' in file_name and sys.version_info > (3, 0):
         if password:
             cmd = 'unrar x -p {} {} {}'.format(password, file_path, dir_path)
