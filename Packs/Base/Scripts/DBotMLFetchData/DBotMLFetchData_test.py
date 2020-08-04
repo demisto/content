@@ -260,12 +260,12 @@ def test_headers_features_5():
         {'headername': 'Content-type', 'headervalue': 'text/plain;'},
     ]
     res = get_headers_features(headers)
-    assert res['content-type::text/plain'] == 1
+    assert res['content-type'] == 'text/plain'
     headers_2 = [
         {'headername': 'content-type', 'headervalue': 'text/plain;'},
     ]
     res_2 = get_headers_features(headers_2)
-    assert res_2['content-type::text/plain'] == 1
+    assert res_2['content-type'] == 'text/plain'
 
 
 def test_headers_features_6():

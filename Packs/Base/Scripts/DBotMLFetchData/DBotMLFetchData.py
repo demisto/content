@@ -463,7 +463,7 @@ def get_headers_features(email_headers):
     res['unsubscribe_headers'] = res_unsubscribe
     for k, v in addresses_res.items():
         res[k] = v  # type: ignore
-    res['content-type::{}'.format(content_type_value)] = 1
+    res['content-type'] = content_type_value
     return res
 
 
