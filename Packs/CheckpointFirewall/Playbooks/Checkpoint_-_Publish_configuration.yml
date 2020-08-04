@@ -1,4 +1,4 @@
-id: ef3a20ce-7965-4faf-8bab-58ef9994007a
+id: Checkpoint - Publish configuration
 version: 8
 name: Checkpoint - Publish configuration
 description: Publish the Checkpoint Firewall configuration.
@@ -331,7 +331,7 @@ tasks:
       id: dcfa9a18-2748-4e6d-81f7-5e946c0e325c
       version: -1
       name: Fix Error and publish manually
-      description: 'User Manually add resolve'.
+      description: User Manually add resolve.
       type: regular
       iscommand: false
       brand: ""

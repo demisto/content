@@ -1,4 +1,4 @@
-id: b79f870c-34fe-4563-8f41-f35d00e8ef94
+id: Checkpoint - Publish&Install configuration
 version: 73
 name: Checkpoint - Publish&Install configuration
 description: Publish the Checkpoint Firewall configuration, also, install policy over all the gateways are available.
@@ -531,7 +531,7 @@ tasks:
       id: 2a9848c1-845c-42f2-89e0-6f6049b4a706
       version: -1
       name: Fix Error and publish manually
-      description: 'User Manually add resolve'.
+      description: User Manually add resolve.
       type: regular
       iscommand: false
       brand: ""
