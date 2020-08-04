@@ -1,4 +1,4 @@
-Publish the Checkpoint Firewall configuration and install policy over all the gateways are available.
+Publish the Checkpoint Firewall configuration and install policy over all the gateways that are available.
 Please note that only CheckPoint admin users can run this playbook.
 
 

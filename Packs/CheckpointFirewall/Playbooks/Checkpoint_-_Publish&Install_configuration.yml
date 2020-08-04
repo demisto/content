@@ -2,7 +2,7 @@ id: Checkpoint - Publish&Install configuration
 version: -1
 fromversion: 5.0.0
 name: Checkpoint - Publish&Install configuration
-description: Publish the Checkpoint Firewall configuration, also, install policy over all the gateways are available.
+description: Publish the Checkpoint Firewall configuration and install policy over all the gateways that are available
 starttaskid: "0"
 tasks:
   "0":
@@ -36,7 +36,7 @@ tasks:
     task:
       id: 5b3ebf47-ba2e-4440-8eb7-7dd65958f474
       version: -1
-      name: Is Checkpoint FW Enable ?
+      name: Is Checkpoint FW enabled?
       description: Verify that there is a valid instance of Checkpoint Firewall enabled.
       type: condition
       iscommand: false
