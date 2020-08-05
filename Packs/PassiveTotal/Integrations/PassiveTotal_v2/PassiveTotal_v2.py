@@ -126,10 +126,10 @@ class Client(BaseClient):
                 407: MESSAGES['PROXY_ERROR']
             }
             if status_code in status_code_message_map:
-                LOG('Response code: {}. Reason: {}'.format(status_code, status_code_message_map[status_code]))
+                demisto.info('Response code: {}. Reason: {}'.format(status_code, status_code_message_map[status_code]))
                 raise ValueError(status_code_message_map[status_code])
             elif status_code >= 500:
-                LOG('Response code: {}. Reason: {}'.format(status_code, MESSAGES['INTERNAL_SERVER_ERROR']))
+                demisto.info('Response code: {}. Reason: {}'.format(status_code, MESSAGES['INTERNAL_SERVER_ERROR']))
                 raise ValueError(MESSAGES['INTERNAL_SERVER_ERROR'])
             else:
                 resp.raise_for_status()
@@ -836,7 +836,7 @@ def main() -> None:
     }
 
     command = demisto.command()
-    LOG(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
     try:
         # Retrieve XSOAR params
         base_url = demisto.params().get('url')

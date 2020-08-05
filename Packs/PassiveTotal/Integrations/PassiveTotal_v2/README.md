@@ -1,5 +1,5 @@
 Analyze and understand threat infrastructure from a variety of sources-passive DNS, active DNS, WHOIS, SSL certificates and more-without devoting resources to time-intensive manual threat research and analysis.
-This integration was integrated and tested with version xx of PassiveTotal v2
+This integration was integrated and tested with enterprise version of PassiveTotal v2
 ## Configure PassiveTotal v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,7 +9,7 @@ This integration was integrated and tested with version xx of PassiveTotal v2
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | API URL | True |
-| username | Username/API Key | True |
+| username | Username | True |
 | secret | API Secret | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |

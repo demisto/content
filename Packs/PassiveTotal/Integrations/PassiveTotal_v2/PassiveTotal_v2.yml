@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username/API Key
+- display: Username
   name: username
   required: true
   type: 0
@@ -25,7 +25,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: All the PassiveTotal API calls would timeout if the response is
-    not returned within the configured time interval. It is set 20 by default if blank.
+    not returned within the configured time interval. Default is 20.
   defaultvalue: '20'
   display: HTTP(S) Request Timeout (in seconds)
   hidden: false

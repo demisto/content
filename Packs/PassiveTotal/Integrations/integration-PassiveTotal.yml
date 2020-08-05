@@ -773,3 +773,4 @@ script:
 tests:
 - no test
 fromversion: 4.1.0
+deprecated: true
