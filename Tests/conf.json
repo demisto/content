@@ -2940,7 +2940,8 @@
         },
         {
             "playbookID": "FailedInstances - Test",
-            "integrations": "Whois"
+            "integrations": "Whois",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {

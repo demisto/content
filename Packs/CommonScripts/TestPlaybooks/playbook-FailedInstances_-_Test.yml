@@ -252,14 +252,6 @@ tasks:
           right:
             value:
               simple: "4"
-        - operator: isEqualString
-          left:
-            value:
-              simple: FailedInstances.totalCount
-            iscontext: true
-          right:
-            value:
-              simple: "3"
     view: |-
       {
         "position": {
