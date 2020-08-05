@@ -1,0 +1,15 @@
+commonfields:
+  id: PyHashTest
+  version: -1
+enabled: true
+name: PyHashTest
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

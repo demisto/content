@@ -1,0 +1,14 @@
+{
+    "name": "Guy_STest",
+    "description": "A test pack to do some testing",
+    "support": "internalContribution",
+    "currentVersion": "1.0.0",
+    "author": "Admin Dude",
+    "url": "",
+    "email": "glichtman@paloaltonetworks.com",
+    "created": "2020-08-05T10:11:12Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
