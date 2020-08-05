@@ -84,6 +84,7 @@ references:
       when: always
       command: |
         echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+        echo 'export TESTS_LOGS="${CIRCLE_ARTIFACTS}"/run_tests.log'
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
@@ -106,6 +107,7 @@ references:
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
         sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+        touch $TESTS_LOGS
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/lastest_server_build_scripts/*
         if [ ! -e "venv" ]; then
@@ -582,13 +584,7 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-
-                    else
-                      echo "Not AMI run, can't run on this version"
-                  fi
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOGS
             - *destroy_instances
             - *store_artifacts
   Server 4_5:
@@ -642,13 +638,7 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-
-                    else
-                      echo "Not AMI run, can't run on this version"
-                  fi
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOGS
             - *destroy_instances
             - *store_artifacts
   Server 5_0:
@@ -703,13 +693,7 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
-                    else
-                      echo "Not AMI run, can't run on this version"
-                  fi
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOGS
 
             - *destroy_instances
             - *store_artifacts
@@ -764,16 +748,10 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                      export RETVAL=$?
-                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                      exit $RETVAL
-
-                  else
-                      echo "Not AMI run, can't run on this version"
-                  fi
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOGS
+                  export RETVAL=$?
+                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                  exit $RETVAL
             - *destroy_instances
             - *store_artifacts
   Server 6_0:
@@ -832,7 +810,7 @@ jobs:
                     echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
                   fi
                   source $BASH_ENV
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOGS
                   export RETVAL=$?
                   cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                   exit $RETVAL
