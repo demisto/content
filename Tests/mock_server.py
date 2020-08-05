@@ -191,9 +191,9 @@ class MITMProxy:
         self.empty_files = []
         self.rerecorded_tests = []
 
-        self.logs_file = open(os.getenv('TESTS_LOGS'), 'a') if os.getenv('TESTS_LOGS') else open(
-            '/home/circleci/project/artifacts/run_tests.log', 'a')
-        self.print_to_log = lambda *objects: print(*objects, file=self.logs_file)
+        self.logs_file = open(os.getenv('TESTS_LOG_PATH'), 'a') if os.getenv('TESTS_LOG_PATH') else open(
+            f'/home/circleci/project/artifacts/{self.public_ip}.log', 'a')
+        self.print_to_log = lambda *objects: print(*objects, file=self.logs_file, flush=True)
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
