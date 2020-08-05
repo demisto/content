@@ -1,4 +1,4 @@
-''' IMPORTS '''
+# IMPORTS
 
 from CommonServerPython import *
 import smartsheet
@@ -150,9 +150,7 @@ class OutputContext:
         self.brand = demisto.callingContext['context']['IntegrationBrand']
         self.command = demisto.command().replace('-', '_').title().replace('_', '')
         self.success = success
-        if not active:
-            self.active = active
-        elif active == "ACTIVE" or active == "PENDING":
+        if active == "ACTIVE" or active == "PENDING":
             self.active = True
         else:
             self.active = False
@@ -284,6 +282,7 @@ def get_user_command(client, args):
     elif res_json.get('id', None) is not None:
         id = res_json.get('id')
         email = res_json.get('email')
+        # Defaulting the active status to false for this use case when there is no "active" status sent by Smartsheet.
         active = res_json.get('status', False)
         generic_iam_context = OutputContext(success=True, iden=id, email=email, details=res_json,
                                             active=active)
@@ -395,10 +394,10 @@ def update_user_command(client, args):
     res_json = json.loads(str(res))
 
     if (res_json.get('resultCode', None) == 0):
-        email_id = res_json.get('result').get('email', '')
-        res_json = res_json.get('result')
-        active = res_json.get('status', False)
-        generic_iam_context = OutputContext(success=True, iden=user_id, email=email_id, details=res_json,
+        result = res_json.get('result')
+        email_id = result.get('email', '')
+        active = res_json.get('status', 'ACTIVE')
+        generic_iam_context = OutputContext(success=True, iden=user_id, email=email_id, details=result,
                                             active=active)
     else:
         errorMessage = res_json.get('result').get('message', None)
@@ -451,11 +450,14 @@ def create_user_command(client, args):
     res_json = json.loads(str(res))
 
     if (res_json.get('resultCode', None) == 0):
-        user_id = res_json.get('result').get('id', None)
-        user_email = res_json.get('result').get('email', None)
-        res_json = res_json.get('result')
-        generic_iam_context = OutputContext(success=True, iden=user_id, email=user_email, details=res_json,
-                                            active=False)  # active is always Pending in smartsheet while creating user.
+        result = res_json.get('result')
+        user_id = result.get('id', None)
+        user_email = result.get('email', None)
+        # Defaulting the active status to true for this use case when the API call is success. Smartsheet sends a
+        # blank value for active
+        active = result.get('status', 'ACTIVE')
+        generic_iam_context = OutputContext(success=True, iden=user_id, email=user_email, details=result,
+                                            active=active)
     elif (res_json.get('result').get('statusCode', None) == 403):
         errorMessage = res_json.get('result').get('message', None)
         generic_iam_context = OutputContext(success=False, iden=None, email=parsed_scim.get('email'), errorCode=409,
@@ -521,10 +523,6 @@ def main():
     except Exception:
         demisto.error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
         return_error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
-
-    # Log exceptions
-    except Exception as e:
-        (f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
