@@ -3,6 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import json
 import traceback
+
 import requests
 
 # Disable insecure warnings
@@ -34,7 +35,6 @@ class Client(BaseClient):
         self.headers['Authorization'] = 'Bearer ' + self.token
 
     def http_request(self, method, url_suffix, params=None, data=None, headers=None):
-
         if not headers:
             headers = self.headers
         full_url = self.base_url + url_suffix
@@ -58,6 +58,7 @@ class Client(BaseClient):
             user_term = "\"" + user_term + "\""
             uri = f'scim/v2/organizations/{encode_string_results(self.org)}/' \
                   f'Users?filter={encode_string_results(input_type)} eq {encode_string_results(user_term)}'
+
         return self.http_request(
             method='GET',
             url_suffix=uri,
@@ -80,7 +81,6 @@ class Client(BaseClient):
         )
 
     def disable_user(self, data):
-
         uri = f'scim/v2/organizations/{encode_string_results(self.org)}/Users/{encode_string_results(data)}'
         return self.http_request(
             method='DELETE',
@@ -88,34 +88,19 @@ class Client(BaseClient):
         )
 
     # Builds a new user github_user dict with pre-defined keys and custom mapping (for user)
-    def build_github_create_user(self, args, scim):
-        extension_schema = scim.get(SCIM_EXTENSION_SCHEMA)
-
-        github_user = scim
-
-        custom_mapping = None
-        if args.get('customMapping'):
-            custom_mapping = json.loads(args.get('customMapping'))
-        elif CUSTOM_MAPPING_CREATE:
-            custom_mapping = json.loads(CUSTOM_MAPPING_CREATE)
-
-        if custom_mapping and extension_schema:
-            for key, value in custom_mapping.items():
-                # key is the attribute name in input scim. value is the attribute name of app profile
-                user_extension_data = extension_schema.get(key)
-                if user_extension_data:
-                    github_user[value] = user_extension_data
-
-        return github_user
-
-    # Builds a new user github profile dict with pre-defined keys and custom mapping (for user)
-    def build_github_update_user(self, args, github_user, scim):
+    def build_github_user(self, args, github_user, scim, fn):
         extension_schema = scim.get(SCIM_EXTENSION_SCHEMA)
         custom_mapping = None
+
+        if fn == 'create':
+            custom_mapping_fromparams = CUSTOM_MAPPING_CREATE
+        else:
+            custom_mapping_fromparams = CUSTOM_MAPPING_UPDATE
+
         if args.get('customMapping'):
             custom_mapping = json.loads(args.get('customMapping'))
-        elif CUSTOM_MAPPING_UPDATE:
-            custom_mapping = json.loads(CUSTOM_MAPPING_UPDATE)
+        elif custom_mapping_fromparams:
+            custom_mapping = json.loads(custom_mapping_fromparams)
 
         if custom_mapping and extension_schema:
             for key, value in custom_mapping.items():
@@ -171,13 +156,6 @@ def verify_and_load_scim_data(scim):
 
 
 def map_scim(scim):
-    try:
-        scim = json.loads(scim)
-    except Exception:
-        pass
-    if type(scim) != dict:
-        raise Exception('Provided client data is not JSON compatible')
-
     mapping = {
         "userName": "userName",
         "email": "emails(val.primary && val.primary==true).value",
@@ -186,7 +164,6 @@ def map_scim(scim):
         "active": "active",
         "id": "id",
     }
-
     parsed_scim = dict()
     for k, v in mapping.items():
         try:
@@ -201,48 +178,47 @@ def map_scim(scim):
 
 
 def map_changes_to_existing_user(existing_user, new_json):
-    # if existing_user is not None:
-    for k, v in new_json.items():
-        if type(v) == list:
+    for key, value in new_json.items():
+        if type(value) == list:
             # handle in specific way
             # as of now only emails needs to be handled
-            if k == 'emails':
-                existing_email_list = existing_user.get(k)
+            if key == 'emails':
+                existing_email_list = existing_user.get(key)
 
                 # update
-                for i in v:
-                    for j in existing_email_list:
-                        if j.get('type') == i.get('type'):
-                            if j.get('value') != i.get('value'):
-                                j['value'] = i.get('value')
-                            if i.get('primary', None) is not None:
-                                j['primary'] = i.get('primary')
+                for new_json_item in value:
+                    for existing_json_item in existing_email_list:
+                        if existing_json_item.get('type') == new_json_item.get('type'):
+                            if existing_json_item.get('value') != new_json_item.get('value'):
+                                existing_json_item['value'] = new_json_item.get('value')
+                            if new_json_item.get('primary', None) is not None:
+                                existing_json_item['primary'] = new_json_item.get('primary')
                             else:
-                                if j.get('primary', None) is not None:
-                                    j['primary'] = j.get('primary')
+                                if existing_json_item.get('primary', None) is not None:
+                                    existing_json_item['primary'] = existing_json_item.get('primary')
                             break
 
                 # add
                 new_email_list = []
-                for i in v:
+                for new_json_item in value:  # i
                     exist = False
-                    for j in existing_email_list:
-                        if i.get('type') == j.get('type', ''):
+                    for existing_json_item in existing_email_list:  # j
+                        if new_json_item.get('type') == existing_json_item.get('type', ''):
                             exist = True
                             break
                     if not exist:
-                        new_email = {'type': i.get('type'),
-                                     'value': i.get('value')}
-                        if i.get('primary', None) is not None:
-                            new_email.update({'primary': i.get('primary')})
+                        new_email = {'type': new_json_item.get('type'),
+                                     'value': new_json_item.get('value')}
+                        if new_json_item.get('primary', None) is not None:
+                            new_email.update({'primary': new_json_item.get('primary')})
                         new_email_list.append(new_email)
                 existing_email_list.extend(new_email_list)
 
-        elif type(v) == dict:
-            if k != SCIM_EXTENSION_SCHEMA:
-                map_changes_to_existing_user(existing_user.get(k), v)
+        elif type(value) == dict:
+            if key != SCIM_EXTENSION_SCHEMA:
+                map_changes_to_existing_user(existing_user.get(key), value)
         else:
-            existing_user[k] = v
+            existing_user[key] = value
 
 
 ''' COMMAND FUNCTIONS '''
@@ -265,12 +241,19 @@ def test_module(client, args):
     else:
         raise Exception"""
 
-    uri = ""
+    uri = f'scim/v2/organizations/{encode_string_results(client.org)}/Users/1234'
     res = client.http_request(method='GET', url_suffix=uri)
-    if res.status_code == 200:
-        return 'ok', None, None
+    res_text = res.text
+    if res.status_code == 404 and 'documentation_url' in res_text:
+        errortext = "URL or Organization Name " + str(client.org) + " Not Found."
+        raise Exception(str(res.status_code) + " " + str(errortext))
     else:
-        raise Exception(f"{res.status_code} - {res.text}")
+        uri = ""
+        res = client.http_request(method='GET', url_suffix=uri)
+        if res.status_code == 200:
+            return 'ok', None, None
+        else:
+            raise Exception(f"{res.status_code} - {res.text}")
 
 
 def get_user_command(client, args):
@@ -382,8 +365,8 @@ def create_user_command(client, args):
 
     scim = verify_and_load_scim_data(args.get('scim'))
     parsed_scim = map_scim(scim)
-
-    github_user = client.build_github_create_user(args, scim)
+    github_user = scim
+    github_user = client.build_github_user(args, github_user, scim, 'create')
 
     # Removing Elements from github_user dictionary which was not sent as part of scim
     github_user = {key: value for key, value in github_user.items() if value is not None}
@@ -454,7 +437,7 @@ def update_user_command(client, args):
         map_changes_to_existing_user(existing_user, new_scim)
 
         # custom mapping
-        github_user = client.build_github_update_user(args, existing_user, new_scim)
+        github_user = client.build_github_user(args, existing_user, new_scim, 'update')
         # Removing Elements from github_user dictionary which was not sent as part of scim
         github_user = {key: value for key, value in github_user.items() if value is not None}
         res_update = client.update_user(user_term=user_id, data=github_user)
@@ -527,7 +510,7 @@ def disable_user_command(client, args):
         generic_iam_context = OutputContext(active=False, success=True, iden=user_id)
 
     elif res.status_code == 404:
-        generic_iam_context = OutputContext(success=False, iden=user_id, errorCode=404,
+        generic_iam_context = OutputContext(success=False, iden=user_id, errorCode=res.status_code,
                                             errorMessage=USER_NOT_FOUND, details=res.json())
     else:
         generic_iam_context = OutputContext(success=False, iden=user_id, errorCode=res.status_code,
