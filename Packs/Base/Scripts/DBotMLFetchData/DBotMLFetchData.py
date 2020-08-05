@@ -588,7 +588,8 @@ def extract_features_from_all_incidents(incidents_df):
             exceptions_log.append(traceback.format_exc())
         finally:
             signal.alarm(0)
-    return X, exceptions_log, exception_indices, timeout_indices, durations
+    n_fetched_incidents = len(incidents_df) - len(exception_indices) - len(timeout_indices)
+    return X, n_fetched_incidents, exceptions_log, exception_indices, timeout_indices, durations
 
 
 def extract_data_from_incidents(incidents):
@@ -609,11 +610,13 @@ def extract_data_from_incidents(incidents):
                   'rank': '#{}'.format(i + 1),
                   'values': incidents_df[label].tolist()})
     load_external_resources()
-    X, exceptions_log, exception_indices, timeout_indices, durations = extract_features_from_all_incidents(incidents_df)
+    X, n_fetched_incidents, exceptions_log, exception_indices, timeout_indices, durations\
+        = extract_features_from_all_incidents(incidents_df)
     indices_to_drop = exception_indices.union(timeout_indices)
     for label_dict in y:
         label_dict['values'] = [l for i, l in enumerate(label_dict['values']) if i not in indices_to_drop]
     return {'X': X,
+            'n_fetched_incidents': n_fetched_incidents,
             'y': y,
             'log':
                 {'exceptions': exceptions_log,
@@ -652,7 +655,8 @@ def get_args_based_on_last_execution():
 def update_last_execution_time():
     execution_datetime_str = datetime.strftime(datetime.now(), DATETIME_FORMAT)
     res = demisto.executeCommand("createList", {"listName": LAST_EXECUTION_LIST_NAME, "listData": execution_datetime_str})
-    demisto.results(res)
+    if is_error(res):
+        demisto.results(res)
 
 
 def main():
@@ -662,20 +666,26 @@ def main():
         incidents_query_args['query'] = '({}) and ({}) and (status:Closed)'.format(incidents_query_args['query'], args['query'])
     elif 'query' in args:
         incidents_query_args['query'] = '({}) and (status:Closed)'.format(args['query'])
+    elif 'query' in incidents_query_args:
+        incidents_query_args['query'] = '({}) and (status:Closed)'.format(incidents_query_args['query'])
+    else:
+        incidents_query_args['query'] = '(status:Closed)'
     if 'limit' in args:
         incidents_query_args['limit'] = args['limit']
-    demisto.results(str(incidents_query_args))
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', incidents_query_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents = json.loads(incidents_query_res[-1]['Contents'])
-    demisto.results(str(len(incidents)))
-    data = extract_data_from_incidents(incidents)
-    encoded_data = json.dumps(data).encode('utf-8', errors='ignore')
-    compressed_data = zlib.compress(encoded_data, 4)
-    compressed_hr_data = b64encode(compressed_data).decode('utf-8')
-    res = {'PayloadVersion': FETCH_DATA_VERSION, 'PayloadData': compressed_hr_data}
-    return_json_entry(res)
+    if len(incidents) == 0:
+        demisto.results('No results were found')
+    else:
+        data = extract_data_from_incidents(incidents)
+        encoded_data = json.dumps(data).encode('utf-8', errors='ignore')
+        compressed_data = zlib.compress(encoded_data, 4)
+        compressed_hr_data = b64encode(compressed_data).decode('utf-8')
+        res = {'PayloadVersion': FETCH_DATA_VERSION, 'PayloadData': compressed_hr_data,
+               'Execution Time': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}
+        return_json_entry(res)
     update_last_execution_time()
 
 
