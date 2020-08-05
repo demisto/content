@@ -181,6 +181,8 @@ class EventStream:
                                         event_creation_time /= 1000
                                     event_creation_time_dt = datetime.fromtimestamp(event_creation_time)
                                     if event_creation_time_dt < first_fetch_time:
+                                        demisto.debug(f'Event with offset {event_metadata.get("offset")} '
+                                                      f'and creation time {event_creation_time} was skipped.')
                                         continue
                                     yield streaming_event
                                 except json.decoder.JSONDecodeError:
