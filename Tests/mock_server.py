@@ -191,8 +191,10 @@ class MITMProxy:
         self.empty_files = []
         self.rerecorded_tests = []
 
-        self.logs_file = open(os.getenv('TESTS_LOG_PATH'), 'a') if os.getenv('TESTS_LOG_PATH') else open(
-            f'/home/circleci/project/artifacts/{self.public_ip}.log', 'a')
+        if os.getenv('TESTS_LOG_PATH'):
+            self.logs_file = open(os.getenv('TESTS_LOG_PATH'), 'a')
+        else:
+            self.logs_file = open(f'/home/circleci/project/artifacts/{self.public_ip}.log', 'a')
         self.print_to_log = lambda *objects: print(*objects, file=self.logs_file, flush=True)
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
@@ -278,7 +280,7 @@ class MITMProxy:
             prints_manager.add_print_job(err_msg, print_error, thread_index)
             return
         problem_keys = json.loads(self.ami.check_output(['cat', problem_keys_filepath]))
-        prints_manager.add_print_job(	
+        prints_manager.add_print_job(
             f'Test "{playbook_id}" problem_keys: \n{json.dumps(problem_keys, indent=4)}',
             self.print_to_log,
             thread_index
@@ -310,7 +312,7 @@ class MITMProxy:
             prints_manager.add_print_job('Let\'s try and clean the mockfile from timestamp data!', print, thread_index)
             try:
                 clean_cmd_output = check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
-                prints_manager.add_print_job(	
+                prints_manager.add_print_job(
                     f'clean_cmd_output.decode()={clean_cmd_output.decode()}',
                     self.print_to_log,
                     thread_index
