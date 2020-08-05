@@ -2279,8 +2279,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get remote data from a remote incident. Please note that this method
-      will not update the current incident, it's here for debugging purposes.
+    description: Get remote data from a remote incident. This method
+      does not update the current incident, and should be used for debugging purposes.
     execution: false
     name: get-remote-data
   dockerimage: demisto/python3:3.8.3.9324
