@@ -622,7 +622,7 @@ def fetch_raw_offenses(offense_id):
     raw_offenses = []
     fetch_query = ''
     lim_id = None
-    latest_offense_fnd = True
+    latest_offense_fnd = False
     while not latest_offense_fnd:
         start_offense_id = offense_id
         end_offense_id = int(offense_id) + OFFENSES_PER_CALL + 1

@@ -1589,7 +1589,7 @@ script:
     execution: false
     name: qradar-upload-indicators
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: true
   longRunningPort: false
   runonce: false
