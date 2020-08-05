@@ -7,7 +7,7 @@
 		"tabs": [
 			{
 				"id": "summary",
-				"name": "Legacy Summary",
+				"name": "Summary",
 				"type": "summary"
 			},
 			{
@@ -681,7 +681,7 @@
 		]
 	},
 	"edit": null,
-	"fromServerVersion": "",
+	"fromVersion": "6.0.0",
 	"group": "incident",
 	"id": "ServiceNow Ticket",
 	"indicatorsDetails": null,
@@ -697,6 +697,5 @@
 	"quickView": null,
 	"sortValues": null,
 	"system": false,
-	"toServerVersion": "",
 	"version": -1
 }

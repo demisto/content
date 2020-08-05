@@ -1,10 +1,10 @@
 {
 	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
+	"defaultIncidentType": "ServiceNowTicket",
+	"description": "Maps incoming ServiceNow incidents fields.",
 	"feed": false,
 	"fromVersion": "6.0.0",
-	"id": "Mapper-Incoming-ServiceNow",
+	"id": "ServiceNow-incoming-mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -809,8 +809,7 @@
 			}
 		}
 	},
-	"name": "Mapper-Incoming-ServiceNow",
-	"nameRaw": "Mapper-Incoming-ServiceNow",
+	"name": "ServiceNow - Incoming Mapper",
 	"packID": "",
 	"propagationLabels": [
 		"all"
@@ -818,7 +817,6 @@
 	"sortValues": null,
 	"sourceClassifierId": "",
 	"system": false,
-	"toServerVersion": "",
 	"transformer": {
 		"complex": null,
 		"simple": ""

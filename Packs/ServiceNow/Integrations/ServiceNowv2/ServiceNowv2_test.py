@@ -446,7 +446,8 @@ def test_sysparm_input_display_value(mocker, requests_mock):
 def test_get_mapping_fields():
     """
     Given:
-        -  nothing
+        -  ServiceNow client
+        -  ServiceNow mapping fields
     When
         - running get_mapping_fields_command
     Then
@@ -456,6 +457,5 @@ def test_get_mapping_fields():
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
-    expected_mapping = EXPECTED_MAPPING
     res = get_mapping_fields_command(client)
-    assert expected_mapping in res.extract_mapping()
+    assert EXPECTED_MAPPING in res.extract_mapping()

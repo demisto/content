@@ -1,10 +1,10 @@
 {
 	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
+	"defaultIncidentType": "ServiceNowTicket",
+	"description": "Maps outgoing ServiceNow incident Fields.",
 	"feed": false,
 	"fromVersion": "6.0.0",
-	"id": "Mapper-Outgoing-ServiceNow",
+	"id": "ServiceNow-outgoing-mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -299,8 +299,7 @@
 			}
 		}
 	},
-	"name": "Mapper-Outgoing-ServiceNow",
-	"nameRaw": "Mapper-Outgoing-ServiceNow",
+	"name": "ServiceNow - Outgoing Mapper",
 	"packID": "",
 	"propagationLabels": [
 		"all"
@@ -308,7 +307,6 @@
 	"sortValues": null,
 	"sourceClassifierId": "",
 	"system": false,
-	"toServerVersion": "",
 	"transformer": {
 		"complex": null,
 		"simple": ""
