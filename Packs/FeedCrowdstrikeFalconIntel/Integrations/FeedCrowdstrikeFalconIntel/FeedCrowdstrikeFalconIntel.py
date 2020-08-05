@@ -61,10 +61,10 @@ class Client(BaseClient):
         for actor in response['resources']:
             if actor:
                 indicator = {
-                    "type": 'Actor',
+                    "type": "Threat Actor",
                     "value": actor.get('name'),
                     "rawJSON": {
-                        'type': 'Actor',
+                        'type': 'Threat Actor',
                         'value': actor.get('name'),
                         'service': 'List Actors Feed'
                     },
