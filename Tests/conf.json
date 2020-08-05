@@ -56,6 +56,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Druva Ransomware Response",
+            "playbookID": "Druva-Test"
+        },
+        {
             "integrations": "Smokescreen IllusionBLACK",
             "playbookID": "Smokescreen IllusionBLACK-Test",
             "fromversion": "5.0.0"
@@ -2554,11 +2558,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Sixgill",
-            "playbookID": "Sixgill-Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
             "fromversion": "5.5.0"
@@ -2833,6 +2832,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "CyberTotal",
+            "playbookID": "CyberTotal_TestPlaybook",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Azure AD Connect Health Feed",
             "playbookID": "FeedAzureADConnectHealth_Test",
             "fromversion": "5.5.0"
@@ -2895,6 +2899,11 @@
             "timeout": 1500
         },
         {
+            "integrations": "Sixgill_Darkfeed",
+            "playbookID": "Sixgill-Darkfeed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "hashIncidentFields-test",
             "fromversion": "4.5.0",
             "timeout": 60000
@@ -2924,6 +2933,10 @@
         {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Imperva WAF",
+            "playbookID": "Imperva WAF - Test"
         }
     ],
     "skipped_tests": {
@@ -2934,7 +2947,6 @@
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
-        "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "SentinelOne V2 - test": "Issue 24933",
         "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
@@ -3001,7 +3013,8 @@
         "TAXII_Feed_Test": "Issue 22423",
         "Recorded Future Test": "Issue 26741",
         "CirclIntegrationTest": "Issue 25600",
-        "Luminate-TestPlaybook": "Issue 27016"
+        "Luminate-TestPlaybook": "Issue 27016",
+        "AutoFocus V2 test": "Issue 26464"
     },
     "skipped_integrations": {
         
@@ -3053,6 +3066,7 @@
         "PolySwarm": "contribution",
         "Blueliv ThreatContext": "contribution",
         "Silverfort": "contribution",
+        "Druva Ransomware Response": "contribution",
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
