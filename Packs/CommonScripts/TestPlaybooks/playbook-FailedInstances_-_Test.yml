@@ -122,7 +122,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Carbon Black Enterprise EDR
+              simple: Whois
       - - operator: isEqualString
           left:
             value:
@@ -182,7 +182,7 @@ tasks:
     task:
       id: de46beb9-6fcc-4047-8266-88ef793abee3
       version: -1
-      name: Check failed instance
+      name: Check another success instance
       type: condition
       iscommand: false
       brand: ""
@@ -200,7 +200,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: fcm
+              simple: d2
       - - operator: isEqualString
           left:
             value:
@@ -208,7 +208,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: failure
+              simple: success
     view: |-
       {
         "position": {
