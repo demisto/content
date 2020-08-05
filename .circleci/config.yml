@@ -84,7 +84,7 @@ references:
       when: always
       command: |
         echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-        echo 'export TESTS_LOGS="${CIRCLE_ARTIFACTS}"/run_tests.log'
+        echo 'export TESTS_LOGS="${CIRCLE_ARTIFACTS}/run_tests.log"' >> $BASH_ENV
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
