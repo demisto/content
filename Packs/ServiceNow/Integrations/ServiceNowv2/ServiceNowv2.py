@@ -91,31 +91,24 @@ DEFAULT_RECORD_FIELDS = {
 
 
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
-    """Converts an XSOAR argument to a timestamp (seconds from epoch)
-
+    """
+    Converts an XSOAR argument to a timestamp (seconds from epoch).
     This function is used to quickly validate an argument provided to XSOAR
     via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
     since epoch). It will throw a ValueError if the input is invalid.
     If the input is None, it will throw a ValueError if required is ``True``,
     or ``None`` if required is ``False.
 
-    :type arg: ``Any``
-    :param arg: argument to convert
+    Args:
+        arg:
+        arg_name: argument to convert.
+        required: throws exception if ``True`` and argument provided is None
 
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
+    Returns:
         returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
         returns ``None`` if arg is ``None`` and required is set to ``False``
         otherwise throws an Exception
-    :rtype: ``Optional[int]``
     """
-
     if arg is None:
         if required is True:
             raise ValueError(f'Missing "{arg_name}"')
@@ -1982,14 +1975,17 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> Union[List[
 
 def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     """
-    update-remote-system command: pushes local changes to the remote system
-    :param client: XSOAR Client to use.
-    :param args:
-        args['data']: the data to send to the remote system
-        args['entries']: the entries to send to the remote system
-        args['incident_changed']: boolean telling us if the local incident indeed changed or not
-        args['remote_incident_id']: the remote incident id
-    :return: The remote incident id - ticket_id
+    This command pushes local changes to the remote system.
+    Args:
+        client:  XSOAR Client to use.
+        args:
+            args['data']: the data to send to the remote system
+            args['entries']: the entries to send to the remote system
+            args['incident_changed']: boolean telling us if the local incident indeed changed or not
+            args['remote_incident_id']: the remote incident id
+
+    Returns: The remote incident id - ticket_id
+
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
@@ -2001,16 +1997,16 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
 
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
-        result = client.update(ticket_type, ticket_id, fields, {})
+        result = client.update(ticket_type, ticket_id, fields)
 
-        demisto.info(f'Ticket Update result {result}\n')
+        demisto.info(f'Ticket Update result {result}')
 
     entries = parsed_args.entries
-    if len(entries) > 0:
+    if entries:
         demisto.debug(f'New entries {entries}\n')
 
         for entry in entries:
-            demisto.info(f'Sending entry ' + entry.get('id') + ', type: ' + str(entry.get('type')))
+            demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
             # Mirroring files as entries
             if entry.get('type') == 3:
                 path_res = demisto.getFilePath(entry.get('id'))
@@ -2025,16 +2021,13 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
 
 def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
-    """get-mapping-fields command: Returns the list of fields for an incident type
-    :type client: ``Client``
-    :param Client: XSOAR client to use
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['type']`` incident type to retrieve fields for
-    :return:
-        A ``Dict[str, Any]`` object with keys as field names and description as values
-    :rtype: ``Dict[str, Any]``
+    """
+    Returns the list of fields for an incident type.
+    Args:
+        client: XSOAR client to use
+
+    Returns: Dictionary with keys as field names
+
     """
 
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
@@ -2064,7 +2057,7 @@ def main():
         sc_api = f'/api/sn_sc/{version}/'
     else:
         api = '/api/now/'
-        sc_api = f'/api/sn_sc/'
+        sc_api = '/api/sn_sc/'
     server_url = params.get('url')
     sc_server_url = f'{get_server_url(server_url)}{sc_api}'
     server_url = f'{get_server_url(server_url)}{api}'
@@ -2074,7 +2067,7 @@ def main():
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
     ticket_type = params.get('ticket_type', 'incident')
-    incident_name = params.get('incident_name', 'number')
+    incident_name = params.get('incident_name', 'number') or 'number'
     get_attachments = params.get('get_attachments', False)
 
     raise_exception = False
