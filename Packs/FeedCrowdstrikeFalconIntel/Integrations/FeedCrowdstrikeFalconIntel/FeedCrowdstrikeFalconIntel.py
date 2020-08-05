@@ -120,7 +120,12 @@ class Client(BaseClient):
             list. A list of JSON objects representing indicators fetched from a feed.
         """
         actors_filter = self.build_actors_filter(target_countries, target_industries, custom_filter)
-        params = self.get_last_modified_time()
+
+        # for get_indicator_command only
+        params = {}
+        if not limit:
+            params = self.get_last_modified_time()
+
         suffix_url_to_filter_by = self.build_url_suffix(params, actors_filter)
         response = self.check_quota_status(suffix_url_to_filter_by)
         parsed_indicators = self.create_indicators_from_response(response, feed_tags)  # list of dict of indicators
@@ -138,18 +143,15 @@ class Client(BaseClient):
         demisto.setIntegrationContext(integration_context_to_set)
 
     def get_last_modified_time(self):
-        # demisto.setIntegrationContext(None)
         integration_context = demisto.getIntegrationContext()
         if not integration_context:
             params = {}
             self.set_last_modified_time()
-            demisto.setIntegrationContext(None)
         else:
             last_modified_time = demisto.getIntegrationContext()
             relevant_time = int(last_modified_time['last_modified_time'])
             params = f"last_modified_date%3A%3E{relevant_time}"
             self.set_last_modified_time()
-            demisto.setIntegrationContext(None)
         return params
 
 
@@ -187,8 +189,10 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple
     limit = int(args.get('limit', 150))
     target_countries = args.get('target_countries') if args.get('target_countries') \
         else demisto.params().get('target_countries')
-    target_industries = args.get('target_industries')
-    custom_filter = args.get('custom_filter')
+    target_industries = args.get('target_industries') if args.get('target_industries') \
+        else demisto.params().get('target_industries')
+    custom_filter = args.get('custom_filter') if args.get('custom_filter') \
+        else demisto.params().get('custom_filter')
 
     indicators = fetch_indicators_command(client, feed_tags, limit, offset, target_countries, target_industries,
                                           custom_filter)
