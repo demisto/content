@@ -1917,6 +1917,11 @@
             "playbookID": "Active Directory Query V2 configuration with port"
         },
         {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja",
+            "playbookID": "Active Directory - ad-get-user limit check"
+        },
+        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
