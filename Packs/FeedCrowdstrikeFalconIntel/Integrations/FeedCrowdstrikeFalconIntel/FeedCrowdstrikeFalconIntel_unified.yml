@@ -163,147 +163,274 @@ script:
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: "# IMPORTS\nfrom datetime import datetime\nimport requests\nfrom typing\
-    \ import List, Tuple, Dict\n\n# Disable insecure warnings\nrequests.packages.urllib3.disable_warnings()\n\
-    \n\nclass Client(BaseClient):\n\n    def __init__(self, params):\n        self._client_id\
-    \ = params.get('client_id')\n        self._client_secret = params.get('client_secret')\n\
-    \        super().__init__(base_url=\"https://api.crowdstrike.com/\", verify=not\
-    \ params.get('insecure', False),\n                         ok_codes=tuple(), proxy=params.get('proxy',\
-    \ False))\n        self._token = self._generate_token()\n        self._headers\
-    \ = {'Authorization': 'Bearer ' + self._token}\n\n    @staticmethod\n    def _error_handler(error_entry:\
-    \ dict) -> str:\n        errors = error_entry.get(\"errors\", [])\n        return\
-    \ '\\n' + '\\n'.join(f\"{error['code']}: {error['message']}\" for error in errors)\n\
-    \n    def http_request(self, method, url_suffix, full_url=None, headers=None,\
-    \ json_data=None, params=None, data=None,\n                     files=None, timeout=10,\
-    \ ok_codes=None, return_empty_response=False, auth=None):\n\n        return super()._http_request(method=method,\
-    \ url_suffix=url_suffix, full_url=full_url, headers=headers,\n               \
-    \                      json_data=json_data, params=params, data=data, files=files,\
-    \ timeout=timeout,\n                                     ok_codes=ok_codes, return_empty_response=return_empty_response,\
-    \ auth=auth)\n\n    def _generate_token(self) -> str:\n        \"\"\"Generate\
-    \ an Access token using the user name and password\n        :return: valid token\n\
-    \        \"\"\"\n        body = {\n            'client_id': self._client_id,\n\
-    \            'client_secret': self._client_secret\n        }\n        token_res\
-    \ = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id,\
-    \ self._client_secret))\n        return token_res.get('access_token')\n\n    def\
-    \ check_quota_status(self, suffix_url_to_filter_by) -> dict:\n        return self.http_request('GET',\
-    \ suffix_url_to_filter_by)\n\n    def create_indicators_from_response(self, response,\
-    \ feed_tags: list) -> list:\n        \"\"\"\n        Creates a list of indicators\
-    \ from a given response\n        Args:\n            response: List of dict that\
-    \ represent the response from the api\n            feed_tags: The indicator tags\n\
-    \        Returns:\n            List of indicators with the correct indicator type.\n\
-    \        \"\"\"\n        parsed_indicators = []  # type:List\n        indicator\
-    \ = {}\n        for actor in response['resources']:\n            if actor:\n \
-    \               indicator = {\n                    \"type\": 'Actor',\n      \
-    \              \"value\": actor.get('name'),\n                    \"rawJSON\"\
-    : {\n                        'type': 'Actor',\n                        'value':\
-    \ actor.get('name'),\n                        'service': 'List Actors Feed'\n\
-    \                    },\n                    'fields': {'tags': feed_tags, 'actor':\
-    \ actor.get('name'), 'region': actor.get('region'),\n                        \
-    \       'actor_capability': actor.get('capability'), 'geo_country': actor.get('origins'),\n\
-    \                               'description': actor.get('short_description'),\
-    \ 'alias': actor.get('known_as'),\n                               'creation_date':\
-    \ actor.get('created_date'), 'actor_motivation': actor.get('motivations'),\n \
-    \                              'updated_date': actor.get('last_modified_date'),\n\
-    \                               'actor_target_country': actor.get('target_countries'),\n\
-    \                               'actor_target_industry': actor.get('target_industries')}\n\
-    \                }\n                indicator['rawJSON'].update(actor)\n     \
-    \       parsed_indicators.append(indicator)\n\n        return parsed_indicators\n\
-    \n    def build_actors_filter(self, target_countries, target_industries, custom_filter):\n\
-    \        actors_filter = ''\n        if custom_filter:\n            actors_filter\
-    \ = custom_filter\n            return actors_filter\n\n        if target_countries:\n\
-    \            target_countries = target_countries.split(',')\n            target_countries\
-    \ = [country.replace(' ', '%20') for country in target_countries if len(country)\
-    \ > 1]\n            for country in target_countries:\n                actors_filter\
-    \ += f'target_countries%3A\"{country}\"%2B'\n\n        if target_industries:\n\
-    \            target_industries = target_industries.split(',')\n            target_industries\
-    \ = [industry.replace(' ', '%20') for industry in target_industries if len(industry)\
-    \ > 1]\n            for industry in target_industries:\n                actors_filter\
-    \ += f'target_industries%3A\"{industry}\"%2B'\n\n        if actors_filter:\n \
-    \           actors_filter = '?filter=' + actors_filter[:-3]\n        return actors_filter\n\
-    \    \n    def build_url_suffix(self, params, actors_filter):\n        url_suffix\
-    \ = \"/intel/combined/actors/v1\"\n        if actors_filter:\n            url_suffix\
-    \ = url_suffix + actors_filter\n            if params:\n                url_suffix\
-    \ = url_suffix + '%2B' + params\n        elif params:\n            url_suffix\
-    \ = url_suffix + '?filter=' + params\n        return url_suffix\n            \n\
-    \    def build_iterator(self, feed_tags: List, limit=None, offset=None, target_countries=None,\
-    \ target_industries=None,\n                       custom_filter=None):\n     \
-    \   \"\"\"Builds a list of indicators.\n        Returns:\n            list. A\
-    \ list of JSON objects representing indicators fetched from a feed.\n        \"\
-    \"\"\n        actors_filter = self.build_actors_filter(target_countries, target_industries,\
-    \ custom_filter)\n        params = self.get_last_modified_time()\n        suffix_url_to_filter_by\
-    \ = self.build_url_suffix(params, actors_filter)\n        response = self.check_quota_status(suffix_url_to_filter_by)\n\
-    \        parsed_indicators = self.create_indicators_from_response(response, feed_tags)\
-    \  # list of dict of indicators\n\n        # for get_indicator_command only\n\
-    \        if limit:\n            parsed_indicators = parsed_indicators[int(offset):\
-    \ int(offset) + int(limit)]\n        return parsed_indicators\n\n    def set_last_modified_time(self):\n\
-    \        current_time = datetime.now()\n        current_timestamp = datetime.timestamp(current_time)\n\
-    \        timestamp = str(int(current_timestamp))\n        integration_context_to_set\
-    \ = {'last_modified_time': timestamp}\n        demisto.setIntegrationContext(integration_context_to_set)\n\
-    \n    def get_last_modified_time(self):\n        # demisto.setIntegrationContext(None)\n\
-    \        integration_context = demisto.getIntegrationContext()\n        if not\
-    \ integration_context:\n            params = {}\n            self.set_last_modified_time()\n\
-    \            # demisto.setIntegrationContext(None)\n        else:\n          \
-    \  last_modified_time = demisto.getIntegrationContext()\n            relevant_time\
-    \ = int(last_modified_time['last_modified_time'])\n            params = f\"last_modified_date%3A%3E{relevant_time}\"\
-    \n            self.set_last_modified_time()\n            # demisto.setIntegrationContext(None)\n\
-    \        return params\n\n\ndef module_test_command(client: Client, args: dict,\
-    \ feed_tags: list):\n    \"\"\"\n    Returning 'ok' indicates that the integration\
-    \ works like it is supposed to. Connection to the service is successful.\n\n \
-    \   Args:\n        client(Client): CrowdStrike Feed client\n        args(Dict):\
-    \ The instance parameters\n        feed_tags: The indicator tags\n\n    Returns:\n\
-    \        'ok' if test passed, anything else will fail the test.\n    \"\"\"\n\
-    \    try:\n        client.build_iterator(argToList(demisto.params().get('feedTags')),\
-    \ 1, 0)\n    except Exception:\n        raise Exception(\"Could not fetch CrowdStrike\
-    \ Feed\\n\"\n                        \"\\nCheck your API key and your connection\
-    \ to CrowdStrike.\")\n    return 'ok', {}, {}\n\n\ndef get_indicators_command(client:\
-    \ Client, args: dict, feed_tags: list) -> Tuple[str, dict, list]:\n    \"\"\"\
-    Initiate a single fetch-indicators\n\n    Args:\n        client(Client): The CrowdStrike\
-    \ Client.\n        args(dict): Command arguments.\n        feed_tags: The indicator\
-    \ tags\n    Returns:\n        str, dict, list. the markdown table, context JSON\
-    \ and list of indicators\n    \"\"\"\n    offset = int(args.get('offset', 0))\n\
-    \    limit = int(args.get('limit', 150))\n    target_countries = args.get('target_countries')\
-    \ if args.get('target_countries') \\\n        else demisto.params().get('target_countries')\n\
-    \    target_industries = args.get('target_industries')\n    custom_filter = args.get('custom_filter')\n\
-    \n    indicators = fetch_indicators_command(client, feed_tags, limit, offset,\
-    \ target_countries, target_industries,\n                                     \
-    \     custom_filter)\n\n    hr_indicators = []\n    for indicator in indicators:\n\
-    \        hr_indicators.append({\n            'Value': indicator.get('value'),\n\
-    \            'Type': indicator.get('type'),\n            'rawJSON': indicator.get('rawJSON'),\n\
-    \            'fields': indicator.get('fields'),\n        })\n\n    human_readable\
-    \ = tableToMarkdown(\"Indicators from CrowdStrike:\", hr_indicators,\n       \
-    \                              headers=['Value', 'Type', 'rawJSON', 'fields'],\
-    \ removeNull=True)\n\n    if args.get('limit'):\n        human_readable = human_readable\n\
-    \    return human_readable, {}, indicators\n\n\ndef fetch_indicators_command(client:\
-    \ Client, feed_tags: List, limit=None, offset=None, target_countries=None,\n \
-    \                            target_industries=None, custom_filter=None) -> list:\n\
-    \    \"\"\"Fetch-indicators command from CrowdStrike Feeds\n\n    Args:\n    \
-    \    client(Client): CrowdStrike Feed client.\n        feed_tags: The indicator\
-    \ tags\n        limit: limit the amount of indicators fetched.\n        offset:\
-    \ the index of the first index to fetch.\n        target_industries: the actor's\
-    \ target_industries.\n        target_countries: the actor's target_countries.\n\
-    \        custom_filter: user actor's filter.\n    Returns:\n        list. List\
-    \ of indicators.\n    \"\"\"\n    indicators = client.build_iterator(feed_tags,\
-    \ limit, offset, target_countries, target_industries, custom_filter)\n\n    return\
-    \ indicators\n\n\ndef main():\n    params = demisto.params()\n    feed_tags =\
-    \ argToList(params.get('feedTags'))\n    target_countries = params.get('target_countries')\n\
-    \    target_industries = params.get('target_industries')\n    custom_filter =\
-    \ params.get('custom_filter')\n    client = Client(params)\n\n    command = demisto.command()\n\
-    \    demisto.info(f'Command being called is {command}')\n    # Switch case\n \
-    \   commands = {\n        'test-module': module_test_command,\n        'crowdstrike-falcon-intel-get-indicators':\
-    \ get_indicators_command\n    }\n    try:\n        if demisto.command() == 'fetch-indicators':\n\
-    \            indicators = fetch_indicators_command(client, feed_tags, target_countries=target_countries,\n\
-    \                                                  target_industries=target_industries,\
-    \ custom_filter=custom_filter)\n            # we submit the indicators in batches\n\
-    \            for b in batch(indicators, batch_size=2000):\n                demisto.createIndicators(b)\n\
-    \        else:\n            readable_output, outputs, raw_response = commands[command](client,\
-    \ demisto.args(),\n                                                          \
-    \             feed_tags)  # type: ignore\n            return_outputs(readable_output,\
-    \ outputs, raw_response)\n    except Exception as e:\n        raise Exception(f'Error\
-    \ in CrowdStrike falcon intel Integration [{e}]')\n\n\nif __name__ == '__builtin__'\
-    \ or __name__ == 'builtins':\n    main()"
+  script: |-
+    # IMPORTS
+    from datetime import datetime
+    import requests
+    from typing import List, Tuple, Dict
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+
+    class Client(BaseClient):
+
+        def __init__(self, params):
+            self._client_id = params.get('client_id')
+            self._client_secret = params.get('client_secret')
+            super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
+                             ok_codes=tuple(), proxy=params.get('proxy', False))
+            self._token = self._generate_token()
+            self._headers = {'Authorization': 'Bearer ' + self._token}
+
+        @staticmethod
+        def _error_handler(error_entry: dict) -> str:
+            errors = error_entry.get("errors", [])
+            return '\n' + '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
+
+        def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
+                         files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
+
+            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                         json_data=json_data, params=params, data=data, files=files, timeout=timeout,
+                                         ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
+
+        def _generate_token(self) -> str:
+            """Generate an Access token using the user name and password
+            :return: valid token
+            """
+            body = {
+                'client_id': self._client_id,
+                'client_secret': self._client_secret
+            }
+            token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
+            return token_res.get('access_token')
+
+        def check_quota_status(self, suffix_url_to_filter_by) -> dict:
+            return self.http_request('GET', suffix_url_to_filter_by)
+
+        def create_indicators_from_response(self, response, feed_tags: list) -> list:
+            """
+            Creates a list of indicators from a given response
+            Args:
+                response: List of dict that represent the response from the api
+                feed_tags: The indicator tags
+            Returns:
+                List of indicators with the correct indicator type.
+            """
+            parsed_indicators = []  # type:List
+            indicator = {}
+            for actor in response['resources']:
+                if actor:
+                    indicator = {
+                        "type": 'Actor',
+                        "value": actor.get('name'),
+                        "rawJSON": {
+                            'type': 'Actor',
+                            'value': actor.get('name'),
+                            'service': 'List Actors Feed'
+                        },
+                        'fields': {'tags': feed_tags, 'actor': actor.get('name'), 'region': actor.get('region'),
+                                   'actor_capability': actor.get('capability'), 'geo_country': actor.get('origins'),
+                                   'description': actor.get('short_description'), 'alias': actor.get('known_as'),
+                                   'creation_date': actor.get('created_date'), 'actor_motivation': actor.get('motivations'),
+                                   'updated_date': actor.get('last_modified_date'),
+                                   'actor_target_country': actor.get('target_countries'),
+                                   'actor_target_industry': actor.get('target_industries')}
+                    }
+                    indicator['rawJSON'].update(actor)
+                parsed_indicators.append(indicator)
+
+            return parsed_indicators
+
+        def build_actors_filter(self, target_countries, target_industries, custom_filter):
+            actors_filter = ''
+            if custom_filter:
+                actors_filter = custom_filter
+                return actors_filter
+
+            if target_countries:
+                target_countries = target_countries.split(',')
+                target_countries = [country.replace(' ', '%20') for country in target_countries if len(country) > 1]
+                for country in target_countries:
+                    actors_filter += f'target_countries%3A"{country}"%2B'
+
+            if target_industries:
+                target_industries = target_industries.split(',')
+                target_industries = [industry.replace(' ', '%20') for industry in target_industries if len(industry) > 1]
+                for industry in target_industries:
+                    actors_filter += f'target_industries%3A"{industry}"%2B'
+
+            if actors_filter:
+                actors_filter = '?filter=' + actors_filter[:-3]
+            return actors_filter
+
+        def build_url_suffix(self, params, actors_filter):
+            url_suffix = "/intel/combined/actors/v1"
+            if actors_filter:
+                url_suffix = url_suffix + actors_filter
+                if params:
+                    url_suffix = url_suffix + '%2B' + params
+            elif params:
+                url_suffix = url_suffix + '?filter=' + params
+            return url_suffix
+
+        def build_iterator(self, feed_tags: List, limit=None, offset=None, target_countries=None, target_industries=None,
+                           custom_filter=None):
+            """Builds a list of indicators.
+            Returns:
+                list. A list of JSON objects representing indicators fetched from a feed.
+            """
+            actors_filter = self.build_actors_filter(target_countries, target_industries, custom_filter)
+
+            # for fetch_indicator_command only
+            params = {}
+            if not limit:
+                params = self.get_last_modified_time()
+
+            suffix_url_to_filter_by = self.build_url_suffix(params, actors_filter)
+            response = self.check_quota_status(suffix_url_to_filter_by)
+            parsed_indicators = self.create_indicators_from_response(response, feed_tags)  # list of dict of indicators
+
+            # for get_indicator_command only
+            if limit:
+                parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
+            return parsed_indicators
+
+        def set_last_modified_time(self):
+            current_time = datetime.now()
+            current_timestamp = datetime.timestamp(current_time)
+            timestamp = str(int(current_timestamp))
+            integration_context_to_set = {'last_modified_time': timestamp}
+            demisto.setIntegrationContext(integration_context_to_set)
+
+        def get_last_modified_time(self):
+            integration_context = demisto.getIntegrationContext()
+            if not integration_context:
+                params = {}
+                self.set_last_modified_time()
+            else:
+                last_modified_time = demisto.getIntegrationContext()
+                relevant_time = int(last_modified_time['last_modified_time'])
+                params = f"last_modified_date%3A%3E{relevant_time}"
+                self.set_last_modified_time()
+            return params
+
+
+    def module_test_command(client: Client, args: dict, feed_tags: list):
+        """
+        Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+
+        Args:
+            client(Client): CrowdStrike Feed client
+            args(Dict): The instance parameters
+            feed_tags: The indicator tags
+
+        Returns:
+            'ok' if test passed, anything else will fail the test.
+        """
+        try:
+            client.build_iterator(argToList(demisto.params().get('feedTags')), 1, 0)
+        except Exception:
+            raise Exception("Could not fetch CrowdStrike Feed\n"
+                            "\nCheck your API key and your connection to CrowdStrike.")
+        return 'ok', {}, {}
+
+
+    def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple[str, dict, list]:
+        """Initiate a single fetch-indicators
+
+        Args:
+            client(Client): The CrowdStrike Client.
+            args(dict): Command arguments.
+            feed_tags: The indicator tags
+        Returns:
+            str, dict, list. the markdown table, context JSON and list of indicators
+        """
+        offset = int(args.get('offset', 0))
+        limit = int(args.get('limit', 150))
+        target_countries = args.get('target_countries') if args.get('target_countries') \
+            else demisto.params().get('target_countries')
+        target_industries = args.get('target_industries') if args.get('target_industries') \
+            else demisto.params().get('target_industries')
+        custom_filter = args.get('custom_filter') if args.get('custom_filter') \
+            else demisto.params().get('custom_filter')
+
+        indicators = fetch_indicators_command(client, feed_tags, limit, offset, target_countries, target_industries,
+                                              custom_filter)
+
+        hr_indicators = []
+        for indicator in indicators:
+            hr_indicators.append({
+                'Value': indicator.get('value'),
+                'Type': indicator.get('type'),
+                'rawJSON': indicator.get('rawJSON'),
+                'fields': indicator.get('fields'),
+            })
+
+        human_readable = tableToMarkdown("Indicators from CrowdStrike:", hr_indicators,
+                                         headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
+
+        if args.get('limit'):
+            human_readable = human_readable
+        return human_readable, {}, indicators
+
+
+    def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset=None, target_countries=None,
+                                 target_industries=None, custom_filter=None) -> list:
+        """Fetch-indicators command from CrowdStrike Feeds
+
+        Args:
+            client(Client): CrowdStrike Feed client.
+            feed_tags: The indicator tags
+            limit: limit the amount of indicators fetched.
+            offset: the index of the first index to fetch.
+            target_industries: the actor's target_industries.
+            target_countries: the actor's target_countries.
+            custom_filter: user actor's filter.
+        Returns:
+            list. List of indicators.
+        """
+        indicators = client.build_iterator(feed_tags, limit, offset, target_countries, target_industries, custom_filter)
+
+        return indicators
+
+
+    def main():
+        params = demisto.params()
+        feed_tags = argToList(params.get('feedTags'))
+        target_countries = params.get('target_countries')
+        target_industries = params.get('target_industries')
+        custom_filter = params.get('custom_filter')
+        client = Client(params)
+
+        command = demisto.command()
+        demisto.info(f'Command being called is {command}')
+        # Switch case
+        commands = {
+            'test-module': module_test_command,
+            'crowdstrike-falcon-intel-get-indicators': get_indicators_command
+        }
+        try:
+            if demisto.command() == 'fetch-indicators':
+                indicators = fetch_indicators_command(client, feed_tags, target_countries=target_countries,
+                                                      target_industries=target_industries, custom_filter=custom_filter)
+                # we submit the indicators in batches
+                for b in batch(indicators, batch_size=2000):
+                    demisto.createIndicators(b)
+            else:
+                readable_output, outputs, raw_response = commands[command](client, demisto.args(),
+                                                                           feed_tags)  # type: ignore
+                return_outputs(readable_output, outputs, raw_response)
+        except Exception as e:
+            raise Exception(f'Error in CrowdStrike falcon intel Integration [{e}]')
+
+
+    if __name__ == '__builtin__' or __name__ == 'builtins':
+        main()
   subtype: python3
   type: python
-image: data:image/png;base64,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
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAYJSURBVHgB7ZpdThxHEMdrFmQpUaSsn53AEFmKlJdg5QDedQ4AzgUAHyCAcwAWH8CGvMcsFwjrC8Am7zHLBcw68XPYJ8uK2O38q7t6umd29su2hEH1k4Yderqrq6uqq2sWiBRFURRFURRFURRFURRFURRFURRFURRFURRFuSoMpTVSbhSVYoOhhQOaAQRFauirGj6r9IGwDEN3lvmiKyToYdeV0jUmKTZgQUdEg15Cf2+MG4h+m/jZwG3s2DZEbiTU7SJQ8CzZKRma9YlkwaHmGW5rUT88N03osev6LF7IXD2MX8L4Xr49uR21neMjlSXeRstRQXasyzbGdSasq0vUhz3muccJjSVZkj5p4QF0My3sKZ6v57Kll2XXuQGbNTF+zbX16wm9aaMNdkm2fD+Mhz3M+cjZ6XXOp5WSPlhIUhu3k92kZo/yRmBqaD+dEPW+T9XJss49oWEHpNCjAWediur70o5xl8tu7NerlOkwWA/yvHHZcM7pE3RZk7G1EetKYao1+jA4CNcl2KbCBZt3LgdZZZtmZMjBziDJQ1yrbNyis2DU9WhS7ouIGiAozKFI2I13p7Shf1Inu2MsVe8QWbA3aNvJsvK9jGWXDagZqb0qclejOVbkphbaBoc0BOthr/1oVXsu4AbRWLPtdkOy4fSyxu2E8SaSbfZ9e8napT/5QJvyOJtflGBjuiK7GKyRPtk8eSllojllQYm621nmhO+D4pWVqOcW2v1Cm+i3F6e7wOWZpJv7nB18q+yY1C8CBq1Hz85CCktWIJd3c5usA20a24qcyojhzFqQ96ZdsjbfBn0WYUTyWQC6VTo8s/R8hudoG3BafRgZt+30W6gFqaYTyS2dD7K6+JihtuB0nEnZGA4cSy4okeYbxQ4lRRYXGOmyc5SPCHOOBW0FoRl/xGPLncvMHblzMWlIA4xVgeH6aTTzYUFWm0LUS7/khddBjhDWpUtZZhg0KDOieUETMWfhvs9neMvtxgw4P2lKGp/BOdEMWLfUBH58a8KxUYT7jrCrPcZ2wjXMiBRNq3wuRU7uuohmo3JK9unzMqXpqFIoOnohlc11o5nvxwPkaPDB5Ps1KXM6n2e2Zxv3EmhJdE5W9mgMxqmThpa5C2Oz+2fbkoKb+MUXM+hnZnq7iFiM5mlJyp8Gn0o4Kx0YulvWh21xEl1DlBVZDIxjNuFQRMWt11DqnjsP2IC8ULPL1SeM8lReJZZ4h8uZvWSG6qV+PUo5nFbW0I+rPY7MC2nnwg5p+M49yKwXihEbwS74TOFcrew7fb1sS3tESmPHJm7uy3ohxWM3d5eI3r2EfinkPsbzHyhkkffawZDxTfTLDDL6D/BDCkzOJP9tDdvVnsE/+ktsmqPUwVJo/eQc+u65baIvOLIfkY2sBE4efI/PX3CM82vFK97hbgHmLxgqHZZqixTZEVxEmWOidZ7nCWXRymlmHgaeO6ZgjHPJGl5OKxJ6yllGsk47WkGTRmIG7rJzVN3cRgpD85ubl9dn/nVXFjSn9B6IXB+AKewGRzWmHQ0f+A3AtuEAzFEL6/FXnsp4xZIHLnUaGP0tdvGtQ9fGu9Hu5t+h8J/iAOOUSZ5Eu8fI5YPmEYXUgwBpVtHOmQG7xTrfFMad8HzxbpSz+cI9jyvhWAcqnr9mxMX6Pg7FSU6P+DoXY9MIuTRmPnLvrpnOP/O68/2S0nHiA78BvsTH8wnrGdJlaEtTqbb2ZXvTpccKJvwcC36LtGGekjufuP1XNkT4ssGeoamI6OTb+RWJK89/WmEO++pQwzPsoAob42xUZSoFTzWWK+0YT71isRf1j+Fx3bKCx/XvSwaZ65bpMWp9kR6WUEXndPD6+SzVdV8O5ftENqtFU3doTKofZbOJYJJ1nLGvXFW4gPu7OMu+K7SXnb/KtcF977zA74eD4OhvE2k/CE5ukHKNiRw6CJVzyu1cSb/8GH94UD4B8o5e2HFpO112r0wNUq6eqYqsSUjhtOMqbn4n44qvvIBRrjFu9y4eu53dIOUG4r7L5kJMz+EbzXX/TwhFURRFURRFURRFURRFURTlo/E/v7CpmP/G2R4AAAAASUVORK5CYII=
 tests:
 - No tests
 fromversion: 5.5.0

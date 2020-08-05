@@ -121,7 +121,7 @@ class Client(BaseClient):
         """
         actors_filter = self.build_actors_filter(target_countries, target_industries, custom_filter)
 
-        # for get_indicator_command only
+        # for fetch_indicator_command only
         params = {}
         if not limit:
             params = self.get_last_modified_time()
