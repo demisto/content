@@ -3,14 +3,10 @@ set -e
 
 echo "CIRCLE_BRANCH: $CIRCLE_BRANCH CHECK_BACKWARD: $CHECK_BACKWARD CI: $CI DEMISTO_README_VALIDATION: $DEMISTO_README_VALIDATION"
 
-if [[ $CIRCLE_BRANCH = master ]];
+if [ "${CHECK_BACKWARD}" = "true" ] ;
   then
-    demisto-sdk validate -a --prev-ver new_freeze_4_1
-
-elif [ "${CHECK_BACKWARD}" = "true" ] ;
-  then
-     demisto-sdk validate -g --post-commit --prev-ver new_freeze_4_1
+     demisto-sdk validate -g --post-commit --prev-ver origin/new_freeze_4_1
 
   else
-     demisto-sdk validate -g --post-commit --no-backward-comp --prev-ver new_freeze_4_1
+     demisto-sdk validate -g --post-commit --no-backward-comp --prev-ver origin/new_freeze_4_1
 fi
