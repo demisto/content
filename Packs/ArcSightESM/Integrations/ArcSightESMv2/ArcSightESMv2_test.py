@@ -2,7 +2,6 @@ import demistomock as demisto
 import pytest
 import requests_mock
 
-
 PARAMS = {
     'server': 'https://server',
     'credentials': {},
@@ -106,3 +105,43 @@ def test_use_rest(mocker, use_rest, cmd_name, expected_rest_endpoint):
         arcsight_cmd()
         last_request = m.last_request
         assert last_request.url == expected_rest_endpoint
+
+
+def test_decode_arcsight_output_event_ids():
+    """Unit test - When output to the incident context integers, demisto can round them if they are bigger than 2^32
+    Given
+    - a long eventId, baseEventIds
+    When
+    - running decode_arcsight_output
+    Then
+    - run the command on the input
+    Validate that the eventId, baseEventIds values were casted to string
+    """
+    import ArcSightESMv2
+    raw = {'eventId': 2305843016676439806, 'baseEventIds': 2305843016676439600}
+    expected = {'eventId': '2305843016676439806', 'baseEventIds': '2305843016676439600'}
+    d = ArcSightESMv2.decode_arcsight_output(raw)
+    assert isinstance(d.get('eventId'), str)
+    assert isinstance(d.get('baseEventIds'), str)
+    assert d == expected
+
+
+def test_filtered():
+    import ArcSightESMv2
+    entries = [
+        {'userAccount': 'abba', 'internalAddress': '127.0.0.2', 'externalLocation': 'Russia',
+         'externalAddress': '1.2.3.4'},
+        {'userAccount': 'abba', 'internalAddress': '127.0.0.1', 'externalLocation': 'USA',
+         'externalAddress': '1.2.3.4'},
+        {'userAccount': 'abba', 'internalAddress': '127.0.0.1', 'externalLocation': 'ISS',
+         'externalAddress': '1.2.3.4'}
+    ]
+    entry_filter = 'userAccount:abba,internalAddress:127.0.0.1'
+    expected_output = [
+        {'userAccount': 'abba', 'internalAddress': '127.0.0.1', 'externalLocation': 'USA',
+         'externalAddress': '1.2.3.4'},
+        {'userAccount': 'abba', 'internalAddress': '127.0.0.1', 'externalLocation': 'ISS',
+         'externalAddress': '1.2.3.4'}
+    ]
+    filtered_entries = ArcSightESMv2.filter_entries(entries, entry_filter)
+    assert filtered_entries == expected_output

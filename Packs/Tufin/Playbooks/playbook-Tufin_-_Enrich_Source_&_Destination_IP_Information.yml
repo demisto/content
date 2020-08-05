@@ -1,0 +1,613 @@
+id: Tufin - Enrich Source & Destination IP Information
+version: -1
+name: Tufin - Enrich Source & Destination IP Information
+description: Enrich source and destination IP information using SecureTrack.  Returns
+  information such as the associated zones, network objects and policies for the addresses,
+  if the addresses are network devices, and a topology map from source to destination.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 488e2ab3-8daf-4c60-848a-1cb001b23d15
+    type: start
+    task:
+      id: 488e2ab3-8daf-4c60-848a-1cb001b23d15
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c86f2407-b990-490d-887d-96b225eeba37
+    type: regular
+    task:
+      id: c86f2407-b990-490d-887d-96b225eeba37
+      version: -1
+      name: Source IP - Get Zone
+      description: Match the IP address to the assigned Tufin Zone
+      script: '|||tufin-get-zone-for-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.SourceIP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1b9d5a70-4788-4faa-8a90-853ad7903b37
+    type: regular
+    task:
+      id: 1b9d5a70-4788-4faa-8a90-853ad7903b37
+      version: -1
+      name: Search Topology
+      description: Search the Tufin Topology Map
+      script: '|||tufin-search-topology'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      destination:
+        simple: ${inputs.DestinationIP}
+      service: {}
+      source:
+        simple: ${inputs.SourceIP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 166496f6-ee86-4bab-80ab-e0eadf6e5f76
+    type: regular
+    task:
+      id: 166496f6-ee86-4bab-80ab-e0eadf6e5f76
+      version: -1
+      name: Search Topology Image
+      description: Search the Tufin Topology Map, returning an image
+      script: '|||tufin-search-topology-image'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "7"
+    scriptarguments:
+      destination:
+        simple: ${inputs.DestinationIP}
+      service: {}
+      source:
+        simple: ${inputs.SourceIP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 468b57b5-55c2-4ee4-8aed-e0cc846abc09
+    type: regular
+    task:
+      id: 468b57b5-55c2-4ee4-8aed-e0cc846abc09
+      version: -1
+      name: Source IP - Resolve Network Objects
+      description: Resolve IP address to Network Object
+      script: '|||tufin-object-resolve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.SourceIP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d1cf524a-57fe-4ee8-8c53-b6a5b429d87a
+    type: regular
+    task:
+      id: d1cf524a-57fe-4ee8-8c53-b6a5b429d87a
+      version: -1
+      name: Source IP - Search Policies
+      description: Search the policies of all devices managed by Tufin
+      script: '|||tufin-policy-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      search:
+        complex:
+          root: inputs.SourceIP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 09c9e4ee-bb2f-4aa3-8d6d-a724ba1e43a7
+    type: regular
+    task:
+      id: 09c9e4ee-bb2f-4aa3-8d6d-a724ba1e43a7
+      version: -1
+      name: Source IP - Search Network Devices
+      description: Search SecureTrack devices
+      script: '|||tufin-search-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.SourceIP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: FirstArrayElement
+      model: {}
+      name: {}
+      vendor: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 2a956f85-6c2e-41f2-8ac9-c258210ee260
+    type: regular
+    task:
+      id: 2a956f85-6c2e-41f2-8ac9-c258210ee260
+      version: -1
+      name: Destination IP - Get Zone
+      description: Match the IP address to the assigned Tufin Zone
+      script: '|||tufin-get-zone-for-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.DestinationIP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 650f0910-9c74-4b7a-84d7-5df2cddaf178
+    type: regular
+    task:
+      id: 650f0910-9c74-4b7a-84d7-5df2cddaf178
+      version: -1
+      name: Destination IP - Search Policies
+      description: Search the policies of all devices managed by Tufin
+      script: '|||tufin-policy-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      search:
+        complex:
+          root: inputs.DestinationIP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: e923bd34-2413-4628-87c8-fa21048a0f5e
+    type: regular
+    task:
+      id: e923bd34-2413-4628-87c8-fa21048a0f5e
+      version: -1
+      name: Destination IP - Search Network Devices
+      description: Search SecureTrack devices
+      script: '|||tufin-search-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.DestinationIP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: FirstArrayElement
+      model: {}
+      name: {}
+      vendor: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 969f8368-7bc2-424c-8957-4767d13c639e
+    type: title
+    task:
+      id: 969f8368-7bc2-424c-8957-4767d13c639e
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6f19fbbf-65da-4da6-83d7-f08d8ae3f0c8
+    type: condition
+    task:
+      id: 6f19fbbf-65da-4da6-83d7-f08d8ae3f0c8
+      version: -1
+      name: Is Tufin Integration Available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Tufin
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Tufin
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 9e579995-30aa-4702-8769-9f2461f13266
+    type: regular
+    task:
+      id: 9e579995-30aa-4702-8769-9f2461f13266
+      version: -1
+      name: Destination IP - Resolve Network Objects
+      description: Resolve IP address to Network Object
+      script: '|||tufin-object-resolve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.DestinationIP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: a1b231c6-4f78-4f8e-895e-c823cd008666
+    type: condition
+    task:
+      id: a1b231c6-4f78-4f8e-895e-c823cd008666
+      version: -1
+      name: Do Source and Destination IP Addresses Exist?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.SourceIP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.DestinationIP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_10_#default#": 0.31,
+      "13_10_#default#": 0.34
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1775,
+        "width": 1230,
+        "x": 200,
+        "y": -360
+      }
+    }
+  }
+inputs:
+- key: SourceIP
+  value: {}
+  required: true
+  description: 'Source IP address, including subnet mask (ex: 192.168.1.1/32)'
+  playbookInputQuery:
+- key: DestinationIP
+  value: {}
+  required: true
+  description: 'Destination IP address, including subnet mask (ex: 192.168.1.1/32)'
+  playbookInputQuery:
+outputs:
+- contextPath: Tufin.Zone.ID
+  description: Tufin Zone ID
+- contextPath: Tufin.Zone.Name
+  description: Tufin Zone Name
+- contextPath: Tufin.Topology.TrafficAllowed
+  description: Traffic Permitted
+- contextPath: Tufin.Topology.TrafficDevices
+  description: List of devices in path
+- contextPath: Tufin.ObjectResolve.NumberOfObjects
+  description: Number of objects that resolve to given IP address.
+- contextPath: Tufin.Policysearch.NumberRulesFound
+  description: Number of rules found via search
+- contextPath: Tufin.Device.ID
+  description: Device ID
+- contextPath: Tufin.Device.Name
+  description: Device name
+- contextPath: Tufin.Device.Vendor
+  description: Device vendor
+- contextPath: Tufin.Device.Model
+  description: Device model
+- contextPath: Tufin.Device.IP
+  description: Device IP
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,26 @@
+commonfields:
+  id: SearchIndicators
+  version: -1
+name: SearchIndicators
+script: ''
+type: python
+tags: []
+comment: Search for Indicators
+enabled: true
+args:
+- name: query
+  required: true
+  default: true
+  description: Indicator Query
+- name: size
+  description: Number of indicators to return
+  defaultValue: "50"
+outputs:
+- contextPath: FoundIndicators
+  description: Indicators Found
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.3.9324
+runas: DBotWeakRole
+fromversion: 5.5.0
