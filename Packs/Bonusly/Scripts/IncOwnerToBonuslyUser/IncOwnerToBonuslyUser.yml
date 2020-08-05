@@ -12,7 +12,7 @@ args:
   name: owner
   required: true
   secret: false
-comment: 'This script gets the email address of the incident owner and then returns the incident owner\'s username in Bonusly. '
+comment: This script gets the email address of the incident owner and then returns the incident owner username in Bonusly.
 commonfields:
   id: IncOwnerToBonuslyUser
   version: -1
