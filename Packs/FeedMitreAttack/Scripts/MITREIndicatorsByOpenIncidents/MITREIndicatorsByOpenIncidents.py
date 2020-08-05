@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-res = demisto.searchIndicators(query = 'type:\"MITRE ATT&CK\" and investigationsCount:>0')
+res = demisto.searchIndicators(query='type:"MITRE ATT&CK" and investigationsCount:>0')
 
 
 indicators = []
@@ -17,4 +17,3 @@ for ind in res['iocs']:
 temp = tableToMarkdown('MITRE ATT&CK techniques by open Incidents', indicators,
                        headers=['Value', 'Name', 'Phase Name', 'Description'])
 return_outputs(temp)
-
