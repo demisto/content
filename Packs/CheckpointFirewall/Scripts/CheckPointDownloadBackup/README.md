@@ -1,4 +1,4 @@
-Download CheckPoint policy backup to Demisto war room
+Downloads the Check Point policy backup to the Cortex XSOAR War Room.
 
 ## Script Data
 ---
