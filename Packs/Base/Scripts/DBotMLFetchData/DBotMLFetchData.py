@@ -101,8 +101,8 @@ LABEL_FIELDS_BLACKLIST = set(['CustomFields', 'ShardID', 'account', 'activated',
 LABEL_VALUES_KEYWORDS = ['spam', 'malicious', 'legit', 'false', 'positive', 'phishing', 'fraud', 'internal', 'test',
                          'fp', 'tp', 'resolve', 'credentials', 'spear', 'malware', 'whaling', 'catphishing',
                          'catfishing', 'social', 'sextortion', 'blackmail', 'spyware', 'adware']
-LABEL_FIELD_KEYWORDS = ['classifi', 'type', 'resolution', 'reason', 'category', 'disposition', 'severity', 'malicious',
-                        'tag', 'close']
+LABEL_FIELD_KEYWORDS = ['classifi', 'type', 'resolution', 'reason', 'categor', 'disposition', 'severity', 'malicious',
+                        'tag', 'close', 'phish', 'phishing']
 
 '''
 Define html tags to count
@@ -139,12 +139,12 @@ SHORTENED_DOMAINS = set(
 
 def find_label_fields_candidates(incidents_df):
     candidates = [col for col in list(incidents_df) if
-                  sum(isinstance(x, str) for x in incidents_df[col]) > 0.3 * len(incidents_df)]
+                  sum(isinstance(x, str) or isinstance(x, bool) for x in incidents_df[col]) > 0.3 * len(incidents_df)]
     candidates = [col for col in candidates if col not in LABEL_FIELDS_BLACKLIST]
 
     candidate_to_values = {col: incidents_df[col].unique() for col in candidates}
     candidate_to_values = {col: values for col, values in candidate_to_values.items() if
-                           sum(not isinstance(v, str) for v in values) <= 1}
+                           sum(not (isinstance(v, str) or isinstance(v, bool)) for v in values) <= 1}
 
     # filter columns by unique values count
     candidate_to_values = {col: values for col, values in candidate_to_values.items() if 0 < len(values) < 15}

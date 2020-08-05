@@ -16,6 +16,14 @@ def test_find_label_fields_candidates():
     assert res[0] == 'phishing_correct_field'
     assert res[1] == 'slightly-related-field'
 
+    d = {'phishing_correct_field': [float('nan')] * 20 + [False] * 10 + [True] * 10,
+         'non-related-field': [float('nan')] * 20 + ['cat'] * 10 + ['dog'] * 10
+         }
+    df = pd.DataFrame(data=d)
+    res = find_label_fields_candidates(df)
+    assert res[0] == 'phishing_correct_field'
+    assert res[1] == 'non-related-field'
+
 
 def test_get_ml_features(mocker):
     dummy_word_to_vec = {'hello': [1.0, 0], 'world': [2.0, -1.0]}
