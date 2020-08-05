@@ -624,6 +624,38 @@ script:
       type: String
   - arguments:
     - default: false
+      defaultValue: '50'
+      description: The level of certainty that an observable is of the reported indicator
+        type. Default is 50.
+      isArray: false
+      name: confidence
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: private
+      description: Denotes whether the indicator data is public or private to the
+        organization. Default is "private".
+      isArray: false
+      name: classification
+      predefined:
+        - private
+        - public
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: private
+      description: When set to true, domain observables included in the file which do not
+        resolve will be accepted as valid in ThreatStream and imported.
+      isArray: false
+      name: allow_unresolved
+      predefined:
+        - yes
+        - no
+      required: false
+      secret: false
+    - default: false
       description: Entry id of uploaded file to war room containing a json with "objects" array and "meta" map object.
       isArray: false
       name: file_id

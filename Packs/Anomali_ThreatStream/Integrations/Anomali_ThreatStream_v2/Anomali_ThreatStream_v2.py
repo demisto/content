@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+from tempfile import mkdtemp
 from requests.exceptions import MissingSchema, ConnectionError
 
 # Disable insecure warnings
@@ -627,7 +628,7 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
         return_outputs("The data was not imported. Check if valid arguments were passed", None)
 
 
-def import_ioc_without_approval(file_id):
+def import_ioc_without_approval(file_id, classification="private", confidence=None, allow_unresolved=None):
     """
         Imports indicators data to ThreatStream.
         file_id of uploaded file to war room or URL.
@@ -638,11 +639,22 @@ def import_ioc_without_approval(file_id):
     except Exception:
         return_error(F"Entry {file_id} does not contain a file.")
 
+    if allow_unresolved:
+        allow_unresolved = allow_unresolved == 'yes'
     uploaded_file = open(file_info['path'], 'rb')
-    files = {'file': (file_info['name'], uploaded_file)}
-    params = build_params()
+    tmp_dir = mkdtemp()
+    with open(os.path.join(tmp_dir, file_info['name']), 'w') as f:
+        enriched_upload_json = json.load(uploaded_file)
+        enriched_upload_json['meta'] = assign_params(
+            classification=classification,
+            confidence=confidence,
+            allow_unresolved=allow_unresolved,
+        )
+        json.dump(enriched_upload_json, f)
+        files = {'file': (file_info['name'], uploaded_file)}
+        params = build_params()
 
-    res = http_request("POST", "v1/intelligence/import/", params=params, files=files)
+        res = http_request("POST", "v1/intelligence/import/", params=params, files=files)
     # closing the opened file if exist
     if uploaded_file:
         uploaded_file.close()
@@ -653,6 +665,7 @@ def import_ioc_without_approval(file_id):
         return_outputs(F"The data was imported successfully. The ID of imported job is: {imported_id}", ec, res)
     else:
         return_outputs("The data was not imported. Check if valid arguments were passed", None)
+
 
 def get_model_list(model, limit="50"):
     """
