@@ -55,7 +55,7 @@ configuration:
   required: false
   type: 0
 description: 'Use the Generic SQL integration to run SQL queries on the following
-  databases: MYSQL, PostgreSQL,Microsoft SQL Server, and Oracle.'
+  databases: MySQL, PostgreSQL, Microsoft SQL Server, and Oracle.'
 display: Generic SQL
 name: Generic SQL
 script:
