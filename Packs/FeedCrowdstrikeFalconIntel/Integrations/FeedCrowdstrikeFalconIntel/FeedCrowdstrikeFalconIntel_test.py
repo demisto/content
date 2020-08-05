@@ -13,6 +13,5 @@ from FeedCrowdstrikeFalconIntel import Client
     ]
 )
 def test_build_url_suffix(params, actors_filter, expected):
-    # from FeedCrowdstrikeFalconIntel import build_url_suffix
     res = Client.build_url_suffix(Client, params, actors_filter)
     assert res == expected
