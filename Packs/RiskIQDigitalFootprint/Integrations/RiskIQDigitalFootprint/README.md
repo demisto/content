@@ -1,5 +1,5 @@
 RiskIQ Digital Footprint integration enables your security team to manage assets outside your firewall, by bringing its details, providing you to add or update assets and analyze your digital footprint from the view of the global adversary with the help of various commands that summarise the activities performed on your assets.
-This integration was integrated and tested with version xx of RiskIQDigitalFootprint
+This integration was integrated and tested with enterprise version of RiskIQDigitalFootprint.
 ## Configure RiskIQDigitalFootprint on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

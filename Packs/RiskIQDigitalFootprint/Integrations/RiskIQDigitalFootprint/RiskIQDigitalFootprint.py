@@ -140,7 +140,7 @@ class Client(BaseClient):
 
     def populate_error_message_according_to_status_code(self, resp, status_code):
         if status_code == 407:
-            LOG('Response code: {}. {}'.format(status_code, MESSAGES['PROXY_ERROR']))
+            demisto.info('Response code: {}. {}'.format(status_code, MESSAGES['PROXY_ERROR']))
             raise ValueError(MESSAGES['PROXY_ERROR'])
 
         error_message = ''
@@ -155,10 +155,10 @@ class Client(BaseClient):
             404: '{} {}'.format(MESSAGES['PAGE_NOT_FOUND_ERROR'], error_message),
         }
         if status_code in status_code_message_map:
-            LOG('Response code: {}. {}'.format(status_code, status_code_message_map[status_code]))
+            demisto.info('Response code: {}. {}'.format(status_code, status_code_message_map[status_code]))
             raise ValueError(status_code_message_map[status_code])
         elif status_code >= 500:
-            LOG('Response code: {}. {} {} '.
+            demisto.info('Response code: {}. {} {} '.
                 format(status_code, MESSAGES['INTERNAL_SERVER_ERROR'], error_message))
             raise ValueError(MESSAGES['INTERNAL_SERVER_ERROR'])
         else:
@@ -2024,7 +2024,7 @@ def check_task_status(client: Client, resp: Dict[str, Any]) -> Dict[str, Any]:
         if task_resp.get('state', '') in COMPLETE_TASK_STATES:
             break
         else:
-            LOG('Fetching the task status. Retry number: {0}'.format(retries))
+            demisto.debug('Fetching the task status. Retry number: {0}'.format(retries))
             wait = retries * 30
             time.sleep(wait)
             retries += 1
@@ -2413,7 +2413,7 @@ def main() -> None:
         'df-get-asset': get_asset_command,
     }
 
-    LOG(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {demisto.command()}')
     try:
         # Retrieve XSOAR params
         url = demisto.params().get('url')
