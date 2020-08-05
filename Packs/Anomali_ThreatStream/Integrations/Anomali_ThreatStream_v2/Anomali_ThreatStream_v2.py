@@ -614,7 +614,7 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
             params = build_params(datatext=import_value)
 
     # in case import_type is not file-id, http_requests will receive None as files
-    res = http_request("GET", "v1/intelligence/import/", params=params, data=data, files=files)
+    res = http_request("POST", "v1/intelligence/import/", params=params, data=data, files=files)
     # closing the opened file if exist
     if uploaded_file:
         uploaded_file.close()
