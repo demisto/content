@@ -281,13 +281,12 @@ def get_user_command(client, args):
     if user_id:
         user_term = user_id
         input_type = 'id'
+    elif email:
+        user_term = email
+        input_type = 'emails'
     else:
-        if email:
-            user_term = email
-            input_type = 'emails'
-        else:
-            user_term = username
-            input_type = 'userName'
+        user_term = username
+        input_type = 'userName'
 
     res = client.get_user(input_type, user_term)
     res_json = res.json()
