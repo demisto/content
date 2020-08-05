@@ -222,9 +222,9 @@ references:
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a --prev-ver 'new_freeze_4_1' -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -a --prev-ver 'origin/new_freeze_4_1' -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         else
-          demisto-sdk lint -p 8 -g --prev-ver 'new_freeze_4_1' -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -g --prev-ver 'origin/new_freeze_4_1' -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         fi
 
   create_id_set: &create_id_set
