@@ -184,8 +184,8 @@ tasks:
     task:
       id: 5b2ba623-f2be-4473-819a-2666eef274bf
       version: -1
-      name: Convert the incident owner's email address to the Bonusly username
-      description: 'Returns the Bonusly username that corresponds to the incident owner's email address. '
+      name: Convert the incident owner email address to the Bonusly username
+      description: 'Returns the Bonusly username that corresponds to the incident owner email address. '
       scriptName: IncOwnerToBonuslyUser
       type: regular
       iscommand: false
