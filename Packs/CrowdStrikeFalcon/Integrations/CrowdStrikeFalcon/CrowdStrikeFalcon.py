@@ -877,16 +877,16 @@ def get_fetch_incidents(last_created_timestamp=None, filter_arg=None):
     return response
 
 
-def get_incidents_entities(detections_ids):
-    ids_json = {'ids': detections_ids}
-    if detections_ids:
+def get_incidents_entities(incidents_ids):
+    ids_json = {'ids': incidents_ids}
+    if incidents_ids:
         response = http_request(
             'POST',
             '/incidents/entities/incidents/GET/v1',
             data=json.dumps(ids_json)
         )
         return response
-    return detections_ids
+    return incidents_ids
 
 
 def create_ioc():
