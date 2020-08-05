@@ -36,10 +36,10 @@ script: |
           }
 
           if (res[0].Type === entryTypes.error) {
-              failedInstances.push({instance: m, brand: all[m].brand, category: all[m].category, information: res[0].Contents, status: 'failed' });
+              failedInstances.push({instance: m, brand: all[m].brand, category: all[m].category, information: res[0].Contents, status: 'failure' });
           }
           else {
-              instances.push({instance: m, brand: all[m].brand, category: all[m].category, information: 'succeed', status: 'good' });
+              instances.push({instance: m, brand: all[m].brand, category: all[m].category, information: 'succeed', status: 'success' });
           }
 
       }
@@ -47,15 +47,15 @@ script: |
 
   var allInstances = failedInstances.concat(instances);
   var hr;
-  var active = countSuccess.toString();
+  var success = countSuccess.toString();
   var failed = countFailed.toString();
   var total = (countSuccess + countFailed).toString();
 
   if (failedInstances.length === 0) {
       hr = '### All active instances are available! ✅';
   } else {
-      hr = 'Total instances: ' + total +'\n';
-      hr += 'Active Instances: ' + active +'\n';
+      hr = 'Total enabled instances: ' + total +'\n';
+      hr += 'Successed Instances: ' + success +'\n';
       hr += 'Failed Instances: ' + failed +'\n';
       hr += tableToMarkdown('Failed Instances:', failedInstances, ['instance', 'brand', 'category', 'information']);
   }
@@ -69,7 +69,7 @@ script: |
           'FailedInstances': allInstances,
           'FailedInstances.failedCount': failed,
           'FailedInstances.totalCount': total,
-          'FailedInstances.goodCount': active
+          'FailedInstances.goodCount': success
         }
   };
 type: javascript
@@ -94,14 +94,14 @@ outputs:
   description: Status of the instance.
   type: string
 - contextPath: FailedInstances.failedCount
-  description: Number of failed instnaces.
-  type: number
+  description: The number of failed instnaces.
+  type: string
 - contextPath: FailedInstances.goodCount
-  description: Number of working instances.
-  type: number
+  description: The number of working instances.
+  type: string
 - contextPath: FailedInstances.totalCount
-  description: Number of total instances.
-  type: number
+  description: The number of total enabled instances.
+  type: string
 scripttarget: 0
 timeout: 10.8µs
 runonce: false

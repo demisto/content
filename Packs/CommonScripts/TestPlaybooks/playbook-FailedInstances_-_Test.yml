@@ -1,6 +1,5 @@
 id: FailedInstances - Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: FailedInstances - Test
 starttaskid: "0"
 tasks:
@@ -68,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 46d3b162-e0e4-48be-8641-bf8e2d056823
+    taskid: 0a4ccb93-1732-4c4f-89d5-95c475d2e12d
     type: regular
     task:
-      id: 46d3b162-e0e4-48be-8641-bf8e2d056823
+      id: 0a4ccb93-1732-4c4f-89d5-95c475d2e12d
       version: -1
       name: Check for Failed Instances
       description: Executes test for all integration instances available and returns
@@ -84,6 +83,7 @@ tasks:
       '#none#':
       - "3"
       - "5"
+      - "6"
     separatecontext: false
     view: |-
       {
@@ -99,10 +99,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 7b44dafc-e8f6-4536-8510-72270814e314
+    taskid: 4c7da8c8-b793-4c6b-8433-5acd5c98a235
     type: condition
     task:
-      id: 7b44dafc-e8f6-4536-8510-72270814e314
+      id: 4c7da8c8-b793-4c6b-8433-5acd5c98a235
       version: -1
       name: Check good instance
       type: condition
@@ -138,11 +138,11 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: good
+              simple: success
     view: |-
       {
         "position": {
-          "x": 730,
+          "x": 920,
           "y": 590
         }
       }
@@ -177,10 +177,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: aab31f3e-8ea4-4d46-88c7-cd3e762f1a0b
+    taskid: de46beb9-6fcc-4047-8266-88ef793abee3
     type: condition
     task:
-      id: aab31f3e-8ea4-4d46-88c7-cd3e762f1a0b
+      id: de46beb9-6fcc-4047-8266-88ef793abee3
       version: -1
       name: Check failed instance
       type: condition
@@ -208,11 +208,54 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: failed
+              simple: failure
     view: |-
       {
         "position": {
-          "x": 200,
+          "x": -10,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: dd0001a8-7620-4787-8061-8b6018802851
+    type: condition
+    task:
+      id: dd0001a8-7620-4787-8061-8b6018802851
+      version: -1
+      name: Check Total count
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FailedInstances.totalCount
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FailedInstances.totalCount
+            iscontext: true
+          right:
+            value:
+              simple: "4"
+    view: |-
+      {
+        "position": {
+          "x": 450,
           "y": 590
         }
       }
@@ -227,8 +270,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 885,
-        "width": 910,
-        "x": 200,
+        "width": 1310,
+        "x": -10,
         "y": 50
       }
     }
