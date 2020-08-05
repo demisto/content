@@ -289,10 +289,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
-=======
-id: Bonusly - AutoGratitude
+fid: Bonusly - AutoGratitude
 version: -1
 name: Bonusly - AutoGratitude
 description: "AutoGratitude is a playbook used to show gratitude to security\
@@ -583,4 +580,3 @@ inputs:
 outputs: []
 tests:
 - No tests
-fromversion: 5.0.0
