@@ -1,0 +1,30 @@
+{
+	"autorun": false,
+	"closureScript": "",
+	"color": "#03b0ff",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Space X Mission",
+	"itemVersion": "",
+	"layout": "7e8218f7-64fb-4f49-89b5-d69945f4e1e7",
+	"locked": false,
+	"name": "Space X Mission",
+	"packID": "affbee60-6879-4f47-8002-5b8820cc33bc",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}
