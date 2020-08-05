@@ -60,7 +60,7 @@ MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 500
 MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
-IMG_FORMATS = ['.jpeg', '.gif', '.bmp', '.png' '.jfif', '.tiff', '.eps', '.indd', '.jpg']
+IMG_FORMATS = ['.jpeg', '.gif', '.bmp', '.png', '.jfif', '.tiff', '.eps', '.indd', '.jpg']
 
 RECEIVED_SERVER_REGEX = r'(?<=from )[a-zA-Z0-9_.+-]+'
 ENVELOP_FROM_REGEX = r'(?<=envelope-from )<?[a-zA-Z0-9@_\.\+\-]+>?'
