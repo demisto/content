@@ -284,6 +284,7 @@ def set_file_reputation(hash, trust_level, filename, comment):
             return create_error_entry('file argument must be sha1(40 charecters) or sha256(64 charecters) or md5(32 charecters)')
 
         hash_param = {}
+
         hash_param[hash_type_key] = hash
 
         try:

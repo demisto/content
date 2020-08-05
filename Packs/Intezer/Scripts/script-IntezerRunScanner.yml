@@ -33,7 +33,7 @@ args:
 - name: api_key
   required: true
   secret: true
-  description: 'The Intezer API key '
+  description: 'The Intezer API key'
 - name: endpoint_analysis_id
   required: true
   description: The endpoint analysis id
