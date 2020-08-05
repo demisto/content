@@ -2,18 +2,18 @@ id: PCAP Parsing And Indicator Enrichment
 version: -1
 fromversion: 5.0.0
 name: PCAP Parsing And Indicator Enrichment
-description: This playbook is used to parse and extract indicators within PCAP files and
-  perform enrichment on the detected indicators. Supported file types are pcap, cap,
-  pcapng. The playbook can handle one PCAP file per incident. The user inputs which
-  indicator types are to be enriched including, email, URLs, IP addresses.
-  The user can specify in the inputs which indicators are internal or that will be
-  treated as internal (not enriched). The user can also specify a specific regex pattern
-  to search for. Another option is to specify the protocol types to be printed to
-  context for data extraction. Additional inputs allow the user to provide the WPA
-  password for decrypting 802.11 (wireless) traffic and add an RSA certificate
-  to decrypt SSL traffic. To display the results within the relevant incident fields,
-  the playbook needs to run in a PCAP Analysis incident type. For handling of PCAP
-  files larger than 30 MB, refer to the PcapMinerV2 documentation.
+description: This playbook is used to parse and extract indicators within PCAP files
+  and perform enrichment on the detected indicators. Supported file types are pcap,
+  cap, pcapng. The playbook can handle one PCAP file per incident. The user inputs
+  which indicator types are to be enriched including, email, URLs, IP addresses. The
+  user can specify in the inputs which indicators are internal or that will be treated
+  as internal (not enriched). The user can also specify a specific regex pattern to
+  search for. Another option is to specify the protocol types to be printed to context
+  for data extraction. Additional inputs allow the user to provide the WPA password
+  for decrypting 802.11 (wireless) traffic and add an RSA certificate to decrypt SSL
+  traffic. To display the results within the relevant incident fields, the playbook
+  needs to run in a PCAP Analysis incident type. For handling of PCAP files larger
+  than 30 MB, refer to the PcapMinerV2 documentation.
 starttaskid: "0"
 tasks:
   "0":
@@ -128,8 +128,8 @@ tasks:
       id: f72b29e3-c2ec-45c1-86c5-2e51f2bc76be
       version: -1
       name: PCAP Miner execution
-      description: PcapMiner V2 parses pcap files by displaying all of
-        the relevant data within the file, including ip addresses, ports, flows, specific protocol
+      description: PcapMiner V2 parses pcap files by displaying all of the relevant
+        data within the file, including ip addresses, ports, flows, specific protocol
         breakdown, searching by regex, decrypting encrypted traffic, and more.
       scriptName: PcapMinerV2
       type: regular
@@ -1018,7 +1018,7 @@ tasks:
     task:
       id: a637ac4b-4ea6-4129-89e4-d133f4d175d2
       version: -1
-      name: Enrich Domains
+      name: Enrich Emails
       description: Checks the reputation of an email address.
       script: '|||email'
       type: regular
@@ -1210,15 +1210,14 @@ tasks:
     quietmode: 0
   "63":
     id: "63"
-    taskid: 8c8a26cc-0494-4999-8c8f-742a28b0703a
+    taskid: dbe5e08f-9b77-46aa-8f20-1cdf737d290c
     type: regular
     task:
-      id: 8c8a26cc-0494-4999-8c8f-742a28b0703a
+      id: dbe5e08f-9b77-46aa-8f20-1cdf737d290c
       version: -1
       name: Determine whether the URLs are internal or external
-      description: Checks if the supplied hostnames match either the organization's
-        internal naming convention or the domain suffix.
-      scriptName: IsInternalHostName
+      description: Checks if the supplied URLs are in the specified domains.
+      scriptName: IsUrlPartOfDomain
       type: regular
       iscommand: false
       brand: ""
@@ -1226,35 +1225,13 @@ tasks:
       '#none#':
       - "64"
     scriptarguments:
-      domainName:
+      domains:
         complex:
           root: inputs.InternalUrlName
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: '|'
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: (
-              suffix:
-                value:
-                  simple: )
-      hostName:
+      urls:
         complex:
           root: PCAPResults
           accessor: URL
-          transformers:
-          - operator: uniq
-      internalRegex: {}
     separatecontext: false
     view: |-
       {
@@ -1270,10 +1247,10 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: 5e3905f1-c8b9-4483-8564-7330d761ee11
+    taskid: de2143d9-5c9a-4a53-832e-6056d808b9ef
     type: regular
     task:
-      id: 5e3905f1-c8b9-4483-8564-7330d761ee11
+      id: de2143d9-5c9a-4a53-832e-6056d808b9ef
       version: -1
       name: Set internal URLs
       description: Checks if the specified value exists in context. If the value exists,
@@ -1293,17 +1270,17 @@ tasks:
       stringify: {}
       value:
         complex:
-          root: Endpoint
+          root: IsUrlPartOfDomain
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Endpoint.IsInternal
+                  simple: IsUrlPartOfDomain.IsInternal
                 iscontext: true
               right:
                 value:
                   simple: "true"
-          accessor: Hostname
+          accessor: URL
           transformers:
           - operator: uniq
     separatecontext: false
@@ -1321,10 +1298,10 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: 90278a9b-ead2-47f3-8b05-09e329efe266
+    taskid: b22d38bf-0ef7-4ba4-89e5-b6a56c695e5b
     type: regular
     task:
-      id: 90278a9b-ead2-47f3-8b05-09e329efe266
+      id: b22d38bf-0ef7-4ba4-89e5-b6a56c695e5b
       version: -1
       name: Set external URLs
       description: Checks if the specified value exists in context. If the value exists,
@@ -1344,17 +1321,17 @@ tasks:
       stringify: {}
       value:
         complex:
-          root: Endpoint
+          root: IsUrlPartOfDomain
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Endpoint.IsInternal
+                  simple: IsUrlPartOfDomain.IsInternal
                 iscontext: true
               right:
                 value:
                   simple: "false"
-          accessor: Hostname
+          accessor: URL
           transformers:
           - operator: uniq
     separatecontext: false
@@ -1522,7 +1499,7 @@ tasks:
     task:
       id: 332ef2c6-3f69-4162-84a8-dd9352382e6c
       version: -1
-      name: Set detected domains as external
+      name: Set detected URLs as external
       description: Checks if the specified value exists in context. If the value exists,
         it will be set in context.
       scriptName: SetAndHandleEmpty
@@ -1730,7 +1707,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: InternalIPAddresses
+        simple: ExternalIPAddresses
       stringify: {}
       value:
         complex:
@@ -2130,8 +2107,8 @@ inputs:
   value: {}
   required: false
   description: This input value is used to provide a python regular expression to
-    search in the the packet body. An example can be \w{10} for expressions that
-    have 10 letter words.
+    search in the the packet body. An example can be \w{10} for expressions that have
+    10 letter words.
   playbookInputQuery:
 - key: WpaPassword
   value: {}
@@ -2143,18 +2120,17 @@ inputs:
   value: {}
   required: false
   description: "This input checks which indicator types that will be extracted from\
-    \ the PCAP will be enriched. Values can be\nip\nemail\nurl\ndomain\nTo provide\
-    \ more than one indicator type use comma separation such as \nip,url,email\n\
-    \n"
+    \ the PCAP will be enriched. Values can be\nip\nemail\nurl\nTo provide more than\
+    \ one indicator type use comma separation such as \nip,url,email\n\n"
   playbookInputQuery:
 - key: InternalUrlName
   value: {}
   required: false
   description: The organization's internal URL name. This is provided for the script
-    IsInternalHostName that checks if the detected URLs are internal or external
-    if the hosts contain the internal domains suffix. For example demisto.com. If
-    there is more than one domain, use comma separation such as demisto.com,paloaltonetworks.com
-  playbookInputQuery:
+    IsInternalHostName that checks if the detected URLs are internal or external if
+    the hosts contain the internal domains suffix. For example demisto.com. If there
+    is more than one domain, use comma separation such as demisto.com,paloaltonetworks.com.
+    Another example value can be localhost.
 - key: InternalEmailDomainName
   value: {}
   required: false
@@ -2271,4 +2247,4 @@ outputs:
   description: A list of destination UDP ports that were found in the PCAP.
   type: String
 tests:
-- No tests (auto formatted)
+- PCAP Parsing And Indicator Enrichment Test
