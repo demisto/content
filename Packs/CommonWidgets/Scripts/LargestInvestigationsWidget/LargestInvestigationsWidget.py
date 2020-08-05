@@ -1,6 +1,7 @@
 import traceback
 from typing import List
 from operator import itemgetter
+from datetime import datetime
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -30,9 +31,15 @@ def parse_investigations_to_table(investigations):
                 "AmountOfEntries": investigations[investigation].get('keyN')
             })
 
-    widget_table['data'] = sorted(data, key=itemgetter('Size'), reverse=True)
+    widget_table['data'] = sorted(data, key=itemgetter('Size'), reverse=True)  # type: ignore
 
     return widget_table
+
+
+def get_current_month_db():
+    current_month = datetime.now().strftime('%m')
+    current_year = datetime.now().strftime('%Y')
+    return current_month + current_year
 
 
 def main():
