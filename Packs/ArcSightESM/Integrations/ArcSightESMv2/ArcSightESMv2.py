@@ -770,7 +770,7 @@ def get_entries_command():
         }
         human_readable = tableToMarkdown(name='Active List entries: {}'.format(resource_id), t=filtered_entries,
                                          removeNull=True)
-        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=entries)
 
     else:
         demisto.results('Active List has no entries')
