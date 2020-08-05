@@ -1941,7 +1941,7 @@ script:
     - contextPath: CDL.Logging.URL.TechnologyOfApp
       description: The networking technology used by the identified application.
       type: String
-  dockerimage: demisto/python_pancloud_v2:1.0.0.10071
+  dockerimage: demisto/python_pancloud_v2:1.0.0.10260
   feed: false
   isfetch: true
   longRunning: false
