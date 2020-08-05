@@ -48,7 +48,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: number
-  display: ServiceNow ticket column to be set as the incident name, default is the
+  display: ServiceNow ticket column to be set as the incident name. Default is the
     incident number
   hidden: false
   name: incident_name
@@ -137,43 +137,43 @@ script:
     name: servicenow-get-ticket
     outputs:
     - contextPath: ServiceNow.Ticket.ID
-      description: ServiceNow ticket ID.
+      description: Ticket ID.
       type: string
     - contextPath: ServiceNow.Ticket.OpenedBy
-      description: ServiceNow ticket opener ID.
+      description: Ticket opener ID.
       type: string
     - contextPath: ServiceNow.Ticket.CreatedOn
-      description: ServiceNow ticket creation date.
+      description: Ticket creation date.
       type: date
     - contextPath: ServiceNow.Ticket.Assignee
-      description: ServiceNow ticket assignee ID.
+      description: Ticket assignee ID.
       type: string
     - contextPath: ServiceNow.Ticket.State
-      description: ServiceNow ticket state.
+      description: Ticket state.
       type: string
     - contextPath: ServiceNow.Ticket.Summary
-      description: ServiceNow ticket short summary.
+      description: Ticket short summary.
       type: string
     - contextPath: ServiceNow.Ticket.Number
-      description: ServiceNow ticket number.
+      description: Ticket number.
       type: string
     - contextPath: ServiceNow.Ticket.Active
-      description: ServiceNow ticket active.
+      description: Ticket active.
       type: boolean
     - contextPath: ServiceNow.Ticket.AdditionalComments
-      description: ServiceNow ticket comments.
+      description: Ticket comments.
       type: string
     - contextPath: ServiceNow.Ticket.Priority
-      description: ServiceNow ticket priority.
+      description: Ticket priority.
       type: string
     - contextPath: ServiceNow.Ticket.OpenedAt
-      description: ServiceNow ticket opening time.
+      description: Ticket opening time.
       type: date
     - contextPath: ServiceNow.Ticket.ResolvedBy
-      description: ServiceNow ticket resolver ID.
+      description: Ticket resolver ID.
       type: string
     - contextPath: ServiceNow.Ticket.CloseCode
-      description: ServiceNow ticket close code.
+      description: Ticket close code.
       type: string
     - contextPath: File.Info
       description: Attachment file info.
@@ -185,10 +185,10 @@ script:
       description: Attachment file size.
       type: number
     - contextPath: File.SHA1
-      description: Attachment file SHA1 hash.
+      description: Attachment SHA1 hash.
       type: string
     - contextPath: File.SHA256
-      description: Attachment file SHA256 hash.
+      description: Attachment SHA256 hash.
       type: string
     - contextPath: File.EntryID
       description: Attachment file entry ID.
@@ -197,7 +197,7 @@ script:
       description: Attachment file type.
       type: string
     - contextPath: File.MD5
-      description: Attachment file MD5 hash.
+      description: Attachment MD5 hash.
       type: string
   - arguments:
     - default: false
@@ -225,7 +225,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Ticket urgency. You can either select from the predefined options
-        or enter another value, for example: "Urgent" or "5".'
+        or enter another value. For example, "Urgent" or "5".'
       isArray: false
       name: urgency
       predefined:
@@ -237,7 +237,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Ticket severity. You can either select from the predefined options
-        or enter another value, for example: "Urgent" or "5".'
+        or enter another value. For example, "Urgent" or "5".'
       isArray: false
       name: severity
       predefined:
@@ -650,7 +650,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Template name to use as a base to create new tickets.
+      description: Template name to use as the basis to create new tickets.
       isArray: false
       name: template
       required: false
@@ -709,8 +709,8 @@ script:
       default: false
       defaultValue: 'false'
       description: Flag that indicates whether to set field values using the display
-        value or the actual value. true will treat input value as the dispaly value.
-        false treats input values as actual values. Default is false.
+        value or the actual value. 'true' treats input values as the dispaly value.
+        'false' treats input values as actual values. Default is false.
       isArray: false
       name: input_display_value
       predefined:
@@ -724,43 +724,43 @@ script:
     name: servicenow-create-ticket
     outputs:
     - contextPath: ServiceNow.Ticket.ID
-      description: ServiceNow ticket ID.
+      description: Ticket ID.
       type: string
     - contextPath: ServiceNow.Ticket.OpenedBy
-      description: ServiceNow ticket opener ID.
+      description: Ticket opener ID.
       type: string
     - contextPath: ServiceNow.Ticket.CreatedOn
-      description: ServiceNow ticket creation date.
+      description: Ticket creation date.
       type: date
     - contextPath: ServiceNow.Ticket.Assignee
-      description: ServiceNow ticket assignee ID.
+      description: Ticket assignee ID.
       type: string
     - contextPath: ServiceNow.Ticket.State
-      description: ServiceNow ticket state.
+      description: Ticket state.
       type: string
     - contextPath: ServiceNow.Ticket.Summary
-      description: ServiceNow ticket short summary.
+      description: Ticket short summary.
       type: string
     - contextPath: ServiceNow.Ticket.Number
-      description: ServiceNow ticket number.
+      description: Ticket number.
       type: string
     - contextPath: ServiceNow.Ticket.Active
-      description: ServiceNow ticket active.
+      description: Ticket active.
       type: boolean
     - contextPath: ServiceNow.Ticket.AdditionalComments
-      description: ServiceNow ticket comments.
+      description: Ticket comments.
       type: string
     - contextPath: ServiceNow.Ticket.Priority
-      description: ServiceNow ticket priority.
+      description: Ticket priority.
       type: string
     - contextPath: ServiceNow.Ticket.OpenedAt
-      description: ServiceNow ticket opening time.
+      description: Ticket opening time.
       type: date
     - contextPath: ServiceNow.Ticket.ResolvedBy
-      description: ServiceNow ticket resolver ID.
+      description: Ticket resolver ID.
       type: string
     - contextPath: ServiceNow.Ticket.CloseCode
-      description: ServiceNow ticket close code.
+      description: Ticket close code.
       type: string
   - arguments:
     - default: false
@@ -788,7 +788,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Ticket urgency. You can either select from the predefined options
-        or enter another value, for example: "Urgent" or "5".'
+        or enter another value. For example, "Urgent" or "5".'
       isArray: false
       name: urgency
       predefined:
@@ -800,7 +800,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Ticket severity. You can either select from the predefined options
-        or enter another value, for example: "Urgent" or "5".'
+        or enter another value. For example, "Urgent" or "5".'
       isArray: false
       name: severity
       predefined:
@@ -1266,8 +1266,8 @@ script:
       default: false
       defaultValue: 'false'
       description: Flag that indicates whether to set field values using the display
-        value or the actual value. true will treat input value as the dispaly value.
-        false treats input values as actual values. Default is false.
+        value or the actual value. 'true' treats input values as the dispaly value.
+        'false' treats input values as actual values. Default is false.
       isArray: false
       name: input_display_value
       predefined:
@@ -1336,7 +1336,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Starting record index to begin retrieving records from.
+      description: Starting record index from which to begin retrieving records.
       isArray: false
       name: offset
       required: false
@@ -1547,7 +1547,7 @@ script:
       secret: false
     - default: false
       description: 'Comma-separated list of table fields to display and output to
-        the context, for example: name,tag,company. ID field is added by default.'
+        the context. For example, name,tag,company. ID field is added by default.'
       isArray: false
       name: fields
       required: false
@@ -1603,14 +1603,14 @@ script:
       secret: false
     - default: false
       description: 'Comma-separated list of table fields to display and output to
-        the context, for example: name,tag,company. ID field is added by default.'
+        the context. For example, name,tag,company. ID field is added by default.'
       isArray: true
       name: fields
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Starting record index to begin retrieving records from.
+      description: Starting record index from which to begin retrieving records.
       isArray: false
       name: offset
       required: false
@@ -1668,8 +1668,8 @@ script:
       default: false
       defaultValue: 'false'
       description: Flag that indicates whether to set field values using the display
-        value or the actual value. true will treat input value as the dispaly value.
-        false treats input values as actual values. Default is false.
+        value or the actual value. 'true' treats input value as the dispaly value.
+        'false' treats input values as actual values. Default is false.
       isArray: false
       name: input_display_value
       predefined:
@@ -1730,8 +1730,8 @@ script:
       default: false
       defaultValue: 'false'
       description: Flag that indicates whether to set field values using the display
-        value or the actual value. true will treat input value as the dispaly value.
-        false treats input values as actual values. Default is false.
+        value or the actual value. 'true' treats input value as the dispaly value.
+        'false' treats input values as actual values. Default is false.
       isArray: false
       name: input_display_value
       predefined:
@@ -2200,7 +2200,7 @@ script:
       secret: false
     - default: false
       description: If there are mandatory variables defined for the item, they must
-        be passed to the endpoint. Can be retrieved using the servicenow-get-item-details
+        be passed to the endpoint. Can be retrieved using the !servicenow-get-item-details
         command. For example, var1=value1;var2=value2.
       isArray: false
       name: variables
