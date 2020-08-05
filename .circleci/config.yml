@@ -583,7 +583,7 @@ jobs:
                       exit 0
                   fi
                   PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")/run_tests_${PUBLIC_IP}.log"
+                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
             - *destroy_instances
             - *store_artifacts
@@ -639,7 +639,7 @@ jobs:
                       exit 0
                   fi
                   PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")/run_tests_${PUBLIC_IP}.log"
+                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
             - *destroy_instances
             - *store_artifacts
@@ -696,7 +696,7 @@ jobs:
                       exit 0
                   fi
                   PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")/run_tests_${PUBLIC_IP}.log"
+                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
 
             - *destroy_instances
@@ -753,7 +753,7 @@ jobs:
                       exit 0
                   fi
                   PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")/run_tests_${PUBLIC_IP}.log"
+                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
                   export RETVAL=$?
                   cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
@@ -817,7 +817,7 @@ jobs:
                   fi
                   source $BASH_ENV
                   PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")/run_tests_${PUBLIC_IP}.log"
+                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
                   export RETVAL=$?
                   cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
