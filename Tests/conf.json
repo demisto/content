@@ -2930,8 +2930,8 @@
             "playbookID": "Imperva WAF - Test"
         },
         {
-            "integrations": "CheckpointFirewall",
-            "playbookID": "checkpoint-testplaybook",
+            "integrations": "CheckPointFirewall",
+			"playbookID": "checkpoint-testplaybook",
             "timeout": 500,
             "nightly": true
         }
