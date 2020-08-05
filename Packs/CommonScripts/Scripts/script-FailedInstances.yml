@@ -54,9 +54,9 @@ script: |
   if (failedInstances.length === 0) {
       hr = '### All active instances are available! ✅';
   } else {
-      hr = 'Total enabled instances: ' + total +'\n';
-      hr += 'Successed Instances: ' + success +'\n';
-      hr += 'Failed Instances: ' + failed +'\n';
+      hr = 'Total Enabled Instances: ' + total +'\n';
+      hr += 'Successful Instances: ' + success +'\n';
+      hr += 'Failure Instances: ' + failed +'\n';
       hr += tableToMarkdown('Failed Instances:', failedInstances, ['instance', 'brand', 'category', 'information']);
   }
 
@@ -67,9 +67,9 @@ script: |
       HumanReadable: hr,
       EntryContext: {
           'FailedInstances': allInstances,
-          'FailedInstances.failedCount': failed,
+          'FailedInstances.failureCount': failed,
           'FailedInstances.totalCount': total,
-          'FailedInstances.goodCount': success
+          'FailedInstances.successCount': success
         }
   };
 type: javascript
@@ -93,10 +93,10 @@ outputs:
 - contextPath: FailedInstances.status
   description: Status of the instance.
   type: string
-- contextPath: FailedInstances.failedCount
+- contextPath: FailedInstances.failureCount
   description: The number of failed instnaces.
   type: string
-- contextPath: FailedInstances.goodCount
+- contextPath: FailedInstances.successCount
   description: The number of working instances.
   type: string
 - contextPath: FailedInstances.totalCount

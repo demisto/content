@@ -23,6 +23,6 @@ There are no inputs for this script.
 | FailedInstances.category | The category of the failed integration instance. | string |
 | FailedInstances.information | The error information of the failed integration instance. | string |
 | FailedInstances.status | Status of the instance. | string |
-| FailedInstances.failedCount | The number of failed instances. | string |
-| FailedInstances.goodCount | The number of working instances. | string |
+| FailedInstances.failureCount | The number of failed instances. | string |
+| FailedInstances.successCount | The number of working instances. | string |
 | FailedInstances.totalCount | The number of total enabled instances. | string |

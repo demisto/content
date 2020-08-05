@@ -122,7 +122,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Carbon Black Enterprise EDR
+              simple: Whois
       - - operator: isEqualString
           left:
             value:
