@@ -122,7 +122,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Whois
+              simple: Carbon Black Enterprise EDR
       - - operator: isEqualString
           left:
             value:
@@ -182,7 +182,7 @@ tasks:
     task:
       id: de46beb9-6fcc-4047-8266-88ef793abee3
       version: -1
-      name: Check another success instance
+      name: Check failed instance
       type: condition
       iscommand: false
       brand: ""
@@ -200,7 +200,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: d2
+              simple: fcm
       - - operator: isEqualString
           left:
             value:
@@ -208,7 +208,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: success
+              simple: failure
     view: |-
       {
         "position": {
@@ -223,10 +223,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: dd0001a8-7620-4787-8061-8b6018802851
+    taskid: 312f6b43-7bb2-4125-8567-543f499e481d
     type: condition
     task:
-      id: dd0001a8-7620-4787-8061-8b6018802851
+      id: 312f6b43-7bb2-4125-8567-543f499e481d
       version: -1
       name: Check Total count
       type: condition
@@ -252,6 +252,14 @@ tasks:
           right:
             value:
               simple: "4"
+        - operator: isEqualString
+          left:
+            value:
+              simple: FailedInstances.totalCount
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     view: |-
       {
         "position": {
