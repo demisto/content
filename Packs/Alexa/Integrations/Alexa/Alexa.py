@@ -75,7 +75,7 @@ def alexa_domain_command():
             'Rank': rank
         }
     }
-    hr_string = ('The Alexa rank of {} is {} and has been marked as {}'
+    hr_string = ('The Alexa rank of {} is {} testing@gmail.com and has been marked as {}'
                  ' while the threshold is {}'.format(domain, rank, dbot_score_text, THRESHOLD))
     demisto.results({
         'Type': entryTypes['note'],
@@ -97,7 +97,7 @@ def test_module_command():
     except:  # noqa
         rank = alexa_fallback_command(domain)
     if rank == '1':
-        result = 'ok testing@gmail.com'
+        result = 'ok'
     else:
         result = 'An error has occurred'
     return result
