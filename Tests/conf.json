@@ -3013,7 +3013,8 @@
         "Recorded Future Test": "Issue 26741",
         "CirclIntegrationTest": "Issue 25600",
         "Luminate-TestPlaybook": "Issue 27016",
-        "AutoFocus V2 test": "Issue 26464"
+        "AutoFocus V2 test": "Issue 26464",
+        "Claroty - Test": "Issue 27210"
     },
     "skipped_integrations": {
         
