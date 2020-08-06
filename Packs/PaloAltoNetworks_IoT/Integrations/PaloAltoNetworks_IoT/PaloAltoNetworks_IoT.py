@@ -280,7 +280,7 @@ def iot_list_alerts(client, args):
     """
     stime = args.get('start_time', '-1')
     offset = args.get('offset', 0)
-    pagelength = int(args.get('limit', client.max_fetch), PAGELENGTH)
+    pagelength = min(int(args.get('limit', client.max_fetch)), PAGELENGTH)
     result = client.list_alerts(stime, offset, pagelength, 'desc')
 
     outputs = {
@@ -309,7 +309,7 @@ def iot_list_vulns(client, args):
     """
     stime = args.get('start_time', '-1')
     offset = args.get('offset', 0)
-    pagelength = int(args.get('limit', client.max_fetch), PAGELENGTH)
+    pagelength = min(int(args.get('limit', client.max_fetch)), PAGELENGTH)
     result = client.list_vulns(stime, offset, pagelength)
 
     outputs = {
