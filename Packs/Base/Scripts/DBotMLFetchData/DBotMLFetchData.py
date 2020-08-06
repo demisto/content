@@ -90,7 +90,7 @@ signal.signal(signal.SIGALRM, timeout_handler)
 '''
 Define heuristics for finding label field
 '''
-LABEL_FIELDS_BLACKLIST = set([EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, 'emailbodyhtml''CustomFields',
+LABEL_FIELDS_BLACKLIST = set([EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, 'emailbodyhtml', 'CustomFields',
                               'ShardID', 'account', 'activated', 'attachment', 'autime', 'canvases',
                               'category', 'closeNotes', 'closed', 'closingUserId', 'created', 'criticalassets',
                               'dbotCreatedBy', 'details', 'detectionsla', 'droppedCount', 'dueDate', 'emailbody',
