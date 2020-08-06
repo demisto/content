@@ -1,0 +1,75 @@
+{
+	"brandName": "Infinipoint",
+	"custom": true,
+	"defaultIncidentType": "",
+	"feed": false,
+	"id": "48806a47-870e-46ac-8a98-264b47de0c5c",
+	"incidentSamples": [],
+	"indicatorSamples": null,
+	"instanceId": "41cad3ed-3ba2-4e2c-86e9-fce09ad33d43",
+	"instanceName": "Infinipoint_instance_3_copy_copy",
+	"isDefault": false,
+	"keyTypeMap": {
+		"1": "Infinipoint Compliant",
+		"2": "Infinipoint NotCompliant"
+	},
+	"mapping": {
+		"Infinipoint Compliant": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Infinipoint complianceState ": {
+					"complex": null,
+					"simple": "complianceState"
+				},
+				"Infinipoint deviceID ": {
+					"complex": null,
+					"simple": "deviceID"
+				},
+				"Infinipoint hostname": {
+					"complex": null,
+					"simple": "hostname"
+				},
+				"Infinipoint policyID": {
+					"complex": null,
+					"simple": "policyID"
+				},
+				"Infinipoint policyName": {
+					"complex": null,
+					"simple": "policyName"
+				}
+			}
+		},
+		"Infinipoint NotCompliant": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Infinipoint complianceState ": {
+					"complex": null,
+					"simple": "complianceState"
+				},
+				"Infinipoint deviceID ": {
+					"complex": null,
+					"simple": "deviceID"
+				},
+				"Infinipoint hostname": {
+					"complex": null,
+					"simple": "hostname"
+				},
+				"Infinipoint policyID": {
+					"complex": null,
+					"simple": "policyID"
+				},
+				"Infinipoint policyName": {
+					"complex": null,
+					"simple": "policyName"
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": "complianceState"
+	},
+	"unclassifiedCases": {},
+	"version": -1
+}

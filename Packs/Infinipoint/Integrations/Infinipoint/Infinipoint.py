@@ -148,7 +148,7 @@ COMMANDS_CONFIG = {
         "args": {
             "discoveryId": "contains"
         },
-        "route": "/api/discover/{discoveryId}/details",
+        "route": "/api/discover/details/{discoveryId}",
         "outputs_prefix": "Infinipoint.Device.Details",
         "outputs_key_field": "$device",
         "pagination": False,
@@ -163,6 +163,17 @@ COMMANDS_CONFIG = {
         "outputs_prefix": "Infinipoint.Responses",
         "outputs_key_field": "$host",
         "format_route": True
+    },
+
+    "infinipoint-get-compliance-status": {
+        "args": {
+            "device_id": "="
+        },
+        "route": "/api/compliance/device/{device_id}",
+        "outputs_prefix": "Infinipoint.Compliance.Device",
+        "outputs_key_field": "success",
+        "pagination": False,
+        "get_req": True
     }
 }
 
@@ -282,7 +293,7 @@ def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional
         max_results = MAX_INCIDENTS_TO_FETCH
 
     last_fetch = last_run.get('last_fetch', None)
-    subscription = demisto.params().get('incident_type', 'event, alert')
+    subscription = demisto.params().get('incident_type', ["event", "alert"])
 
     if last_fetch is None:
         last_fetch = first_fetch_time

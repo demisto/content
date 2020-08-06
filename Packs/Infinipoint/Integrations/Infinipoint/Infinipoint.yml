@@ -35,17 +35,16 @@ configuration:
   required: true
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
-  type: 8
   required: false
+#
 - display: "Incident type"
-  name: 'incident_type'
-  defaultvalue: Events,Alerts
+  name: incident_type
+  defaultvalue: event,alert
   type: 16
   required: false
   options:
-  - events
-  - alerts
+  - event
+  - alert
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "10"
@@ -70,10 +69,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 script:
   type: python
   commands:
@@ -1005,6 +1000,20 @@ script:
     - contextPath: Infinipoint.Device.Details.username
       description: User name
       type: String
+  - name: infinipoint-get-compliance-status
+    description: get compliance status
+    arguments:
+    - name: device_id
+      description: device id
+      required: true
+    outputs:
+    - contextPath: Infinipoint.Compliance.Device.response.compliance
+      description: compliance statius - 0 - errot | 1 - compliance | 2 - non-compliance
+      type: Number
+    - contextPath: Infinipoint.Compliance.Device.success
+      description: success
+      type: Number
+
   dockerimage: demisto/pyjwt3:1.0.0.8871
   isfetch: true
   runonce: false

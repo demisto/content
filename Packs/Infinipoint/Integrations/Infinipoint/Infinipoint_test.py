@@ -207,7 +207,7 @@ def test_device_details_command(requests_mock):
     args = {
         "discoveryId": "23eb50e7ceb907975686ba5cebbd3520"
     }
-    requests_mock.get(f'http://test.com/api/discover/{args.get("discoveryId")}/details',
+    requests_mock.get(f'http://test.com/api/discover/details/{args.get("discoveryId")}',
                       json=mock_response)
     client = Client(
         base_url='http://test.com',
