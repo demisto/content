@@ -208,7 +208,7 @@ Create an archive task to archive packets of interest on EndaceProbe. Archived p
 | src_port_list | List of comma delimited Source Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
 | dest_port_list | List of comma delimited Destination Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
 | protocol | IANA defined IP Protocol Name or Number. For example: either use TCP or tcp or 6 for tcp protocol  | Optional | 
-| archive_filename | Name of the archive file. For example, archive_filename could be an event ID. To keep archive filename unique, value of epoch seconds at the time of execution of the command is appended to this filename argument. For example - if the event id is eventid, then archive_filename is eventid-<epochtime>. | Required | 
+| archive_filename | Name of the archive file. For example, archive_filename could be an event ID. To keep archive filename unique, value of epoch seconds at the time of execution of the command is appended to this filename argument. For example - if the event id is eventid, then archive_filename is eventid-[epochtime]. | Required | 
 
 
 ##### Context Output
