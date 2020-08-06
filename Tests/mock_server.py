@@ -191,12 +191,6 @@ class MITMProxy:
         self.empty_files = []
         self.rerecorded_tests = []
 
-        if os.getenv('TESTS_LOG_PATH'):
-            self.logs_file = open(os.getenv('TESTS_LOG_PATH'), 'a')
-        else:
-            self.logs_file = open(f'/home/circleci/project/artifacts/{self.public_ip}.log', 'a')
-        self.print_to_log = lambda *objects: print(*objects, file=self.logs_file, flush=True)
-
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
     def configure_proxy_in_demisto(self, demisto_api_key, server, proxy=''):
@@ -280,11 +274,6 @@ class MITMProxy:
             prints_manager.add_print_job(err_msg, print_error, thread_index)
             return
         problem_keys = json.loads(self.ami.check_output(['cat', problem_keys_filepath]))
-        prints_manager.add_print_job(
-            f'Test "{playbook_id}" problem_keys: \n{json.dumps(problem_keys, indent=4)}',
-            self.print_to_log,
-            thread_index
-        )
 
         # is there data in problematic_keys.json that needs whitewashing?
         prints_manager.add_print_job('checking if there is data to whitewash', print, thread_index)
@@ -311,12 +300,7 @@ class MITMProxy:
             split_command = command.split()
             prints_manager.add_print_job('Let\'s try and clean the mockfile from timestamp data!', print, thread_index)
             try:
-                clean_cmd_output = check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
-                prints_manager.add_print_job(
-                    f'clean_cmd_output.decode()={clean_cmd_output.decode()}',
-                    self.print_to_log,
-                    thread_index
-                )
+                check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
             except CalledProcessError as e:
                 cleaning_err_msg = 'There may have been a problem when filtering timestamp data from the mock file.'
                 prints_manager.add_print_job(cleaning_err_msg, print_error, thread_index)
@@ -379,13 +363,7 @@ class MITMProxy:
         repo_problem_keys_filepath = os.path.join(
             self.repo_folder, get_folder_path(playbook_id), 'problematic_keys.json'
         )
-        prints_manager.add_print_job(
-            f'repo_problem_keys_filepath={repo_problem_keys_filepath}', self.print_to_log, thread_index
-        )
         current_problem_keys_filepath = os.path.join(path, get_folder_path(playbook_id), 'problematic_keys.json')
-        prints_manager.add_print_job(
-            f'current_problem_keys_filepath={current_problem_keys_filepath}', self.print_to_log, thread_index
-        )
 
         # when recording, copy the `problematic_keys.json` for the test to current temporary directory if it exists
         # that way previously recorded or manually added keys will only be added upon and not wiped with an overwrite
@@ -395,9 +373,7 @@ class MITMProxy:
             )
 
         script_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'timestamp_replacer.py')
-        prints_manager.add_print_job(f'script_filepath={script_filepath}', self.print_to_log, thread_index)
         remote_script_path = self.ami.copy_file(script_filepath)
-        prints_manager.add_print_job(f'remote_script_path={remote_script_path}', self.print_to_log, thread_index)
 
         # if recording
         # record with detect_timestamps and then rewrite mock file
@@ -424,7 +400,6 @@ class MITMProxy:
         command = "source .bash_profile && mitmdump --ssl-insecure --verbose --listen-port {} {} {}{}".format(
             self.PROXY_PORT, actions, os.path.join(path, get_mock_file_path(playbook_id)), debug_opt
         )
-        prints_manager.add_print_job(f'mitm command: "{command}"', self.print_to_log, thread_index)
         command = command.split()
 
         # Start proxy server
@@ -456,9 +431,9 @@ class MITMProxy:
         self.ami.call(["rm", "-rf", "/tmp/_MEI*"])  # Clean up temp files
 
         # Handle logs
-        print_func = print if self.debug else self.print_to_log
-        prints_manager.add_print_job('proxy outputs:', print_func, thread_index)
-        prints_manager.add_print_job(f'{self.process.stdout.read()}', print_func, thread_index)
-        prints_manager.add_print_job(f'{self.process.stderr.read()}', print_func, thread_index)
+        if self.debug:
+            prints_manager.add_print_job('proxy outputs:', print, thread_index)
+            prints_manager.add_print_job(f'{self.process.stdout.read()}', print, thread_index)
+            prints_manager.add_print_job(f'{self.process.stderr.read()}', print, thread_index)
 
         self.process = None
