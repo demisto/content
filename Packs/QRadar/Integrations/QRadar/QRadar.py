@@ -517,7 +517,7 @@ def fetch_incidents():
     raw_offenses = []
     fetch_query = ''
     lim_id = None
-    latest_offense_fnd = True
+    latest_offense_fnd = False
     while not latest_offense_fnd:
         start_offense_id = offense_id
         end_offense_id = int(offense_id) + OFFENSES_PER_CALL + 1
@@ -662,24 +662,28 @@ def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
 
 # Helper method: Enriches the source addresses ids dictionary with the source addresses values corresponding to the ids
 def enrich_source_addresses_dict(src_adrs):
-    src_ids_str = dict_values_to_comma_separated_string(src_adrs)
-    demisto.debug('QRadarMsg - Enriching source addresses: {}'.format(src_ids_str))
-    source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
-    src_res = send_request('GET', source_url, AUTH_HEADERS)
-    for src_adr in src_res:
-        src_adrs[src_adr['id']] = convert_to_str(src_adr['source_ip'])
+    batch_size = demisto.params().get('enrich_size', 100)
+    for b in batch(src_adrs.values(), batch_size=int(batch_size)):
+        src_ids_str = dict_values_to_comma_separated_string(b)
+        demisto.debug('QRadarMsg - Enriching source addresses: {}'.format(src_ids_str))
+        source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
+        src_res = send_request('GET', source_url, AUTH_HEADERS)
+        for src_adr in src_res:
+            src_adrs[src_adr['id']] = convert_to_str(src_adr['source_ip'])
     return src_adrs
 
 
 # Helper method: Enriches the destination addresses ids dictionary with the source addresses values corresponding to
 # the ids
 def enrich_destination_addresses_dict(dst_adrs):
-    dst_ids_str = dict_values_to_comma_separated_string(dst_adrs)
-    demisto.debug('QRadarMsg - Enriching destination addresses: {}'.format(dst_adrs))
-    destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
-    dst_res = send_request('GET', destination_url, AUTH_HEADERS)
-    for dst_adr in dst_res:
-        dst_adrs[dst_adr['id']] = convert_to_str(dst_adr['local_destination_ip'])
+    batch_size = demisto.params().get('enrich_size', 100)
+    for b in batch(dst_adrs.values(), batch_size=int(batch_size)):
+        dst_ids_str = dict_values_to_comma_separated_string(b)
+        demisto.debug('QRadarMsg - Enriching destination addresses: {}'.format(dst_ids_str))
+        destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
+        dst_res = send_request('GET', destination_url, AUTH_HEADERS)
+        for dst_adr in dst_res:
+            dst_adrs[dst_adr['id']] = convert_to_str(dst_adr['local_destination_ip'])
     return dst_adrs
 
 
