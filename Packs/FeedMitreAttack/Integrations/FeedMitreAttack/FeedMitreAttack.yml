@@ -18,9 +18,9 @@ configuration:
     if they are part of a MITRE Intrusion Set
 - display: Fetch indicators
   name: feed
-  defaultvalue: ''
   type: 8
   required: false
+  defaultvalue: 'true'
 - display: Indicator Reputation
   name: feedReputation
   options:
