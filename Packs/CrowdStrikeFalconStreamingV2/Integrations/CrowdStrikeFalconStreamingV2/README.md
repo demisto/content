@@ -41,6 +41,8 @@ The required scope is Event streams.
    In order to fetch all events of all types, you can leave it empty.
    
    You can also add event type that is not listed, by entering it in the parameter value.
+   
+ - Only one client can connect to a stream at a time, so make sure the settings you set in the integration instance configuration are not used by another API consumer, such as another Cortex XSOAR environment. 
 
 ## Fetched Incidents Data
 Event metadata will be fetched as the incident details, which contain the following:
