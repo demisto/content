@@ -2942,6 +2942,11 @@
         {
             "integrations": "Imperva WAF",
             "playbookID": "Imperva WAF - Test"
+        },
+        {
+            "playbookID": "FailedInstances - Test",
+            "integrations": "Whois",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
