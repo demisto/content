@@ -460,6 +460,9 @@ There is no context output for this command.
 Returns all entries in the Active List
 
 
+### Limitations
+Returns up to 2000 entries.
+
 #### Base Command
 
 `as-get-entries`
