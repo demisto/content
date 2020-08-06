@@ -1,16 +1,17 @@
 ## Overview
 ---
-
 The Illusive Attack Management API allows customers to retrieve detected incidents with a forensics timeline, attack surface insights, collect forensics on-demand, and manage a variety of operations with regard to deceptive entities, deception policies, and more.
-This integration was integrated and tested with version xx of IllusiveNetworks
-
+This integration was integrated and tested with version 130 of IllusiveNetworks
+## Configure IllusiveNetworks on Cortex XSOAR
 ## Use Cases
----
-- Retrieve detected incidents with a rich set of details and a forensics timeline
-- Collect forensics from any compromised host and retrieve a forensics timeline
-- Manage deceptive entities - retrieve detailed lists, approve suggested, delete, and query
-- Manage deception policy assignments per host
-- Retrieve attack surface insights for Crown Jewels and specific hosts
+* Automatically collect data and forensics from new incidents detected by Illusive
+* Enrich SOC data by retrieving a rich set of incident and forensics information, including: 1) host details and forensics from a potentially compromised host, 2) a forensics timeline, 3) forensics analysis, 4) additional data
+* Auto-analyze collected data and calculate incident severity to speed up SOC response times
+* Collect forensics from any compromised host and retrieve a forensics timeline
+* Retrieve detailed lists of approved and suggested deceptive servers and users
+* Approve, delete, and query deceptive entities
+* Manage deception policy assignments per host
+* Retrieve attack surface insights for Crown Jewels and specific hosts
 
 ## Configure IllusiveNetworks on Demisto
 ---
@@ -31,6 +32,7 @@ This integration was integrated and tested with version xx of IllusiveNetworks
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | fetch_time | The initial time to fetch from | False |
+| has_forensics | Fetch only incidents with forensics | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -74,16 +76,20 @@ After you successfully execute a command, a DBot message appears in the War Room
 14. illusive-run-forensics-on-demand
 15. illusive-get-incidents
 16. illusive-get-event-incident-id
+17. illusive-get-incident-events
+18. illusive-get-forensics-analyzers
+19. illusive-get-forensics-triggering-process-info
+20. illusive-get-forensics-artifacts
 
 ### illusive-get-forensics-timeline
----
+***
 Retrieve forensics timeline for a specific incident
 
 
-##### Base Command
+#### Base Command
 
 `illusive-get-forensics-timeline`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -92,7 +98,7 @@ Retrieve forensics timeline for a specific incident
 | end_date | The last date of the forensics timeline. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -105,35 +111,33 @@ Retrieve forensics timeline for a specific incident
 | Illusive.Forensics.Evidence.title | String | The forensics evidence description | 
 | Illusive.Forensics.IncidentId | String | The Incident Id | 
 | Illusive.Forensics.Status | String | The process progress \( Done, InProgress\) | 
+| Illusive.Forensics.Evidence.date | Date | The forensics evidence date | 
 
 
-##### Command Example
+#### Command Example
 illusive-get-forensics-timeline incident_id=80 start_date="10 days" end_date="3 hours"
 
-##### Human Readable Output
-### Illusive Forensics Timeline
-|details|eventId|id|source|starred|time|title|type|
-|---|---|---|---|---|---|---|---|
-| date: 2020-04-21 15:04:26.234<br/>serviceType: EXTERNAL<br/>hasForensics: No<br/>data: API call source IP: 172.16.1.42<br/>sourceIP: 172.27.139.14<br/>id: 90<br/>type: EXTERNAL<br/>title: [External] Event 90 | 90 | ad552472-9132-4b80-8e4e-092dadd56f24 | MANAGEMENT | false | 1587481466234 | [External] Event 90 | EVENT |
-| date: 2020-04-21 15:05:21.035<br/>serviceType: EXTERNAL<br/>hasForensics: No<br/>data: API call source IP: 172.16.1.42<br/>sourceIP: 172.27.139.14<br/>id: 92<br/>type: EXTERNAL<br/>title: [External] Event 92 | 92 | 421c517d-a252-4aec-a492-2ad6486ad6ab | MANAGEMENT | false | 1587481521035 | [External] Event 92 | EVENT |
-
+#### Human Readable Output
+|date|details|eventId|id|source|starred|time|title|type|
+|---|---|---|---|---|---|---|---|---|
+| 2020-06-29 09:16:17.480 | id: 4<br/>date: 2020-06-29 09:16:17.480<br/>type: LOGIN<br/>sourceIP: 172.27.102.12<br/>trap: hr<br/>injectedUserName: dgffg<br/>injectedPassword: **********<br/>destinationIpAddress: 172.27.102.6<br/>serviceType: WEB<br/>data: Is Successful Login: false,<br/>Accept-language: en-US,en;q=0.9,<br/>Web Protocol: HTTP,<br/>Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9,<br/>Web Host: 172.27.102.6,<br/>Web Url: /,<br/>Authorization: Digest username="dgffg", realm="Domain Name", nonce="1593422172658:ad3f7cc0c86b52747fba1d68583c3827", uri="/", response="9f5d4174395c7d09460fc88e454713aa", opaque="9AC5ADA4A6317F9FB4F2B1211D8A7EFE", qop=auth, nc=00000002, cnonce="b000143183c56904",<br/>Web Body: ,<br/>Web Method: GET,<br/>Upgrade-insecure-requests: 1,<br/>Web User Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36,<br/>Connection: keep-alive,<br/>Cache-control: max-age=0,<br/>Accept-encoding: gzip, deflate<br/>hasForensics: No<br/>title: WEB login attempt with the username dgffg to the deceptive URL 172.27.102.6/ | 4 | d59f0b0a-4a66-40d0-9565-563adc7534f1 | MANAGEMENT | false | 1593422177480 | WEB login attempt with the username dgffg to the deceptive URL 172.27.102.6/ | EVENT |
 
 ### illusive-get-asm-host-insight
----
+***
 Retrieve the specified host insights from Attack Surface Manager
 
 
-##### Base Command
+#### Base Command
 
 `illusive-get-asm-host-insight`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hostnameOrIp | The hostname or IP address of the desired host | Required | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -157,20 +161,19 @@ illusive-get-asm-host-insight hostnameOrIp=172.27.139.12
 |---|---|---|---|---|---|---|---|
 | illusive.com | win5.illusive.com | Workstation | 172.27.139.12,::1,fe80::ffff:ffff:fffe,fe80::2d2d:5763:8c1a:7b9 | Windows 10 |  | clients | 0.0 |
 
-
 ### illusive-get-asm-cj-insight
----
+***
 Retrieve Crown-Jewels insights from Attack Surface Manager
 
 
-##### Base Command
+#### Base Command
 
 `illusive-get-asm-cj-insight`
-##### Input
+#### Input
 
 There are no input arguments for this command.
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -192,21 +195,21 @@ illusive-get-asm-cj-insight
 
 
 ### illusive-get-deceptive-users
----
+***
 Retrieve a list of all deceptive users
 
 
-##### Base Command
+#### Base Command
 
 `illusive-get-deceptive-users`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The status of the desired deceptive users (APPROVED, SUGGESTED, ALL) | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -231,21 +234,21 @@ Retrieve a list of all deceptive users
 
 
 ### illusive-get-deceptive-servers
----
+***
 Retrieve a list of all deceptive servers
 
 
-##### Base Command
+#### Base Command
 
 `illusive-get-deceptive-servers`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The status of the desired deceptive servers (APPROVED, SUGGESTED, ALL) | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -269,21 +272,21 @@ Retrieve a list of all deceptive servers
 
 
 ### illusive-is-deceptive-user
----
+***
 Retrieve whether a specified user is deceptive
 
 
-##### Base Command
+#### Base Command
 
 `illusive-is-deceptive-user`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | username | The username to be verified | Required | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -302,21 +305,21 @@ Retrieve whether a specified user is deceptive
 
 
 ### illusive-is-deceptive-server
----
+***
 Retrieve whether a specified server is deceptive
 
 
-##### Base Command
+#### Base Command
 
 `illusive-is-deceptive-server`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hostname | The server hostname to be verified | Required | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -335,14 +338,14 @@ Retrieve whether a specified server is deceptive
 
 
 ### illusive-add-deceptive-users
----
+***
 Add or approve deceptive users
 
 
-##### Base Command
+#### Base Command
 
 `illusive-add-deceptive-users`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -352,7 +355,7 @@ Add or approve deceptive users
 | username | The deceptive user name | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -367,14 +370,14 @@ There is no context output for this command.
 
 
 ### illusive-add-deceptive-servers
----
+***
 Add or approve deceptive servers
 
 
-##### Base Command
+#### Base Command
 
 `illusive-add-deceptive-servers`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -383,7 +386,7 @@ Add or approve deceptive servers
 | service_types | The deception services to be assigned to the new deceptive server | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -402,21 +405,21 @@ There is no context output for this command.
 
 
 ### illusive-delete-deceptive-users
----
+***
 Delete deceptive users
 
 
-##### Base Command
+#### Base Command
 
 `illusive-delete-deceptive-users`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | deceptive_users | The list of deceptive users to delete | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -427,22 +430,23 @@ There is no context output for this command.
 ###  Deceptive User ['user3'] was successfully Deleted
 
 
+
 ### illusive-delete-deceptive-servers
----
+***
 Delete deceptive servers
 
 
-##### Base Command
+#### Base Command
 
 `illusive-delete-deceptive-servers`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | deceptive_hosts | The list of deceptive servers to delete | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -458,15 +462,16 @@ There is no context output for this command.
 ###Deceptive Servers ['server5.illusive.com', 'server1.illusive.com'] were successfully Deleted
 
 
+
 ### illusive-assign-host-to-policy
----
+***
 Assign a deception policy to domain hosts
 
 
-##### Base Command
+#### Base Command
 
 `illusive-assign-host-to-policy`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -474,7 +479,7 @@ Assign a deception policy to domain hosts
 | hosts | List of hosts to assign, in the following format: machine@domain.<br/>Maximum number of hosts is 1000. | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -489,21 +494,21 @@ There is no context output for this command.
 
 
 ### illusive-remove-host-from-policy
----
+***
 Remove deception policy assignment from domain hosts
 
 
-##### Base Command
+#### Base Command
 
 `illusive-remove-host-from-policy`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hosts | List of hosts to remove policy assignment from, in the following format: machine@domain.<br/>Maximum number of hosts is 1000 | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -518,25 +523,26 @@ There is no context output for this command.
 
 
 ### illusive-run-forensics-on-demand
----
+***
 Collect forensics on a specified host and retrieve the forensics timeline
 
 
-##### Base Command
+#### Base Command
 
 `illusive-run-forensics-on-demand`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | fqdn_or_ip | The host fqdn or IP address on which to collect forensics | Required | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Illusive.Event.eventId | String | The created event ID of the operation  | 
+| Illusive.Event.eventId | Number | The created event ID of the operation  | 
+
 
 
 ##### Command Example
@@ -550,14 +556,14 @@ Collect forensics on a specified host and retrieve the forensics timeline
 
 
 ### illusive-get-incidents
----
+***
 Retrieve incidents
 
 
-##### Base Command
+#### Base Command
 
 `illusive-get-incidents`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -569,7 +575,7 @@ Retrieve incidents
 | start_date | start date | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -584,13 +590,13 @@ the incident |
 | Illusive.Incident.incidentTypes | Unknown | Type of events detected | 
 | Illusive.Incident.lastSeenUser | String | The user who last reviewed the incident | 
 | Illusive.Incident.policyName | String | The compromised host's policy | 
-| Illusive.Incident.riskInsights.stepsToCrownJewel | Number | The compromised host?s lateral distance from Crown Jewels | 
-| Illusive.Incident.riskInsights.stepsToDomainAdmin | Number | The compromised host?s lateral distance from domain admin accounts | 
+| Illusive.Incident.riskInsights.stepsToCrownJewel | Number | The compromised host's lateral distance from Crown Jewels | 
+| Illusive.Incident.riskInsights.stepsToDomainAdmin | Number | The compromised host's lateral distance from domain admin accounts | 
 | Illusive.Incident.sourceHostname | String | The compromised host's name | 
-| Illusive.Incident.sourceIp | String | The compromised host?s IP address | 
-| Illusive.Incident.sourceOperatingSystem | String | The compromised host?s operating system | 
+| Illusive.Incident.sourceIp | String | The compromised host's IP address | 
+| Illusive.Incident.sourceOperatingSystem | String | The compromised host's operating system | 
 | Illusive.Incident.unread | Boolean | Whether the incident has been read | 
-| Illusive.Incident.userNotes | String | The analyst?s comments | 
+| Illusive.Incident.userNotes | String | The analyst's comments | 
 
 
 ##### Command Example
@@ -604,26 +610,26 @@ the incident |
 
 
 ### illusive-get-event-incident-id
----
+***
 Retrieve the incident ID of an event
 
 
-##### Base Command
+#### Base Command
 
 `illusive-get-event-incident-id`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | event_id | The Event id | Required | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Illusive.Event.incidentId | String | The Incident ID | 
-| Illusive.Event.eventId | String | The given event ID | 
+| Illusive.Event.incidentId | Number | The Incident ID | 
+| Illusive.Event.eventId | Number | The given event ID | 
 | Illusive.Event.status | String | The status command \( Done, InProgress\) | 
 
 
@@ -635,4 +641,152 @@ Retrieve the incident ID of an event
 |eventId|incidentId|status|
 |---|---|---|
 | 80 | 72 | Done |
+
+
+### illusive-get-incident-events
+***
+Retrieve all the events that are associated with an incident
+
+
+#### Base Command
+
+`illusive-get-incident-events`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident ID on which to retrieve the associated events | Required | 
+| limit | The maximum number of events to retrieve | Optional | 
+| offset | Use offset and limit for pagination | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Illusive.Incident.incidentId | Number | The corresponding incident ID | 
+| Illusive.Incident.eventsNumber | Number | The number of associated events | 
+| Illusive.Incident.Event.eventId | Number | The event ID | 
+| Illusive.Incident.Event.eventTimeUTC | Date | The event time | 
+| Illusive.Incident.Event.hasForensics | Boolean | Whether the event has forensics | 
+
+
+#### Command Example
+!illusive-get-incident-events incident_id=2
+
+#### Human Readable Output
+### Illusive get incident's events
+|eventId|eventTimeUTC|hasForensics|
+|---|---|---|
+| 4 | 2020-06-29T09:16:17.480Z | false |
+| 3 | 2020-06-29T09:16:17.464Z | false |
+| 2 | 2020-06-29T09:16:12.673Z | false |
+
+
+
+### illusive-get-forensics-analyzers
+***
+Retrieve Illusive's forensics analyzers on a certain event
+
+
+#### Base Command
+
+`illusive-get-forensics-analyzers`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | The event ID to retrieve the forensics analyzers from | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Illusive.Event.incidentId | Number | The corresponding incident ID | 
+| Illusive.Event.eventId | Number | The corresponding event ID | 
+| Illusive.Event.ForensicsAnalyzers.analyzerName | String | The forensics analyzer name | 
+| Illusive.Event.ForensicsAnalyzers.analyzerValue | String | The forensics analyzer description | 
+
+
+#### Command Example
+!illusive-get-forensics-analyzers event_id=2
+
+#### Human Readable Output
+### Illusive Forensics Analyzers
+|analyzerName|analyzerValue|
+|---|---|
+| Summary | An attempt to browse to the deceptive URL hr (172.27.102.6) was detected from 172.27.102.12 |
+| Event Source And Destination | Event ID: 2<br/>Event time: 2020-06-29T09:16:12.673Z<br/>Event originated from 172.27.102.12<br/>Event targeted hr (172.27.102.6)<br/> |
+| Web | A GET request was made to the url http://172.27.102.6/ |
+| Forensics Failure Reason | No resolving for host 172.27.102.12 |
+
+
+
+### illusive-get-forensics-triggering-process-info
+***
+Retrieve the triggering process information from Illusive's forensics
+
+
+#### Base Command
+
+`illusive-get-forensics-triggering-process-info`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | The event ID to retrieve the triggering process information from | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Illusive.Event.incidentId | Number | The corresponding incident ID | 
+| Illusive.Event.eventId | Number | The corresponding event ID | 
+| Illusive.Event.ForensicsTriggeringProcess.commandLine | String | The triggering process command line | 
+| Illusive.Event.ForensicsTriggeringProcess.connectionsNum | Number | The triggering process active connections | 
+| Illusive.Event.ForensicsTriggeringProcess.md5 | String | The triggering process md5 | 
+| Illusive.Event.ForensicsTriggeringProcess.sha256 | String | The triggering process sha256 | 
+| Illusive.Event.ForensicsTriggeringProcess.name | String | The triggering process name | 
+| Illusive.Event.ForensicsTriggeringProcess.parent | String | The parent process of the triggering process | 
+| Illusive.Event.ForensicsTriggeringProcess.path | String | The triggering process path | 
+| Illusive.Event.ForensicsTriggeringProcess.startTime | Date | The triggering process start time | 
+
+
+#### Command Example
+!illusive-get-forensics-triggering-process-info event_id=5
+
+#### Human Readable Output
+### Illusive Triggering Processes Info
+|commandLine|connectionsNum|md5|name|parent|path|sha256|startTime|
+|---|---|---|---|---|---|---|---|
+| "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --type=utility --field-trial-handle=1472,8764100348922490764,5250110531070070503,131072 --lang=en-US --service-sandbox-type=network --enable-audio-service-sandbox --mojo-platform-channel-handle=1900 /prefetch:8 | 15 | 9E46D108805A743D2D88D04019370A05 | chrome.exe | chrome.exe(7848) | C:\Program Files (x86)\Google\Chrome\Application\chrome.exe | D7771E5F5090EF37BE554D5DD9E1C24C8CD83EBF284C48CC5D1EF45D02C0E77F | 2020-06-29T09:16:47.245+00:00 |
+
+
+### illusive-get-forensics-artifacts
+***
+Retrieve forensics artifacts from Illusive's forensics
+
+
+#### Base Command
+
+`illusive-get-forensics-artifacts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | The event ID to retrieve the forensics artifacts from | Required | 
+| artifact_type | The type of forensics artifact to retrieve  | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+!illusive-get-forensics-artifacts event_id=2
+
+#### Human Readable Output
+### event id 2 has no artifacts
 

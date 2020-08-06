@@ -2,7 +2,7 @@
     "name": "Non Supported",
     "description": "Non supported in marketplace pack that includes old format content items. This pack has content items with to version < 6.0.0. Non Supported is not uploaded to GCS and considered ignored pack.",
     "support": "nonsupported",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",
