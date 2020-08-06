@@ -1,23 +1,5 @@
-import pytest
-from FeedCrowdstrikeFalconIntel import Client
-
-@pytest.mark.parametrize(
-    "params, actors_filter, expected",
-    [
-        ({}, '', '/intel/combined/actors/v1'),
-        ({}, 'blabla', '/intel/combined/actors/v1blabla'),
-        ('last_modified_date%3A%3E{relevant_time}', 'blabla',
-         '/intel/combined/actors/v1blabla%2Blast_modified_date%3A%3E{relevant_time}'),
-        ('last_modified_date%3A%3E{relevant_time}', '',
-         '/intel/combined/actors/v1?filter=last_modified_date%3A%3E{relevant_time}')
-    ]
-)
-def test_build_url_suffix(params, actors_filter, expected):
-    res = Client.build_url_suffix(Client, params, actors_filter)
-    assert res == expected
-
-
-list_data_cs = {
+{
+  "list_data_cs": {
     "meta": {
         "query_time": 0.0188748,
         "pagination": {
@@ -39,7 +21,7 @@ list_data_cs = {
             "last_modified_date": 1595568692,
             "first_activity_date": 1462060800,
             "last_activity_date": 1580860800,
-            "active": False,
+            "active": false,
             "capability": {
                 "id": 1,
                 "slug": "hi",
@@ -53,7 +35,7 @@ list_data_cs = {
                     "value": "food"
                 }
             ],
-            "notify_users": False,
+            "notify_users": false,
             "origins": [
                 {
                     "id": 1,
@@ -71,14 +53,14 @@ list_data_cs = {
                     "id": 1,
                     "slug": "hotel",
                     "value": "hotel"
-                },
+                }
             ],
             "target_industries": [
                 {
                     "id": 1,
                     "slug": "stores",
                     "value": "stores"
-                },
+                }
             ]
         },
         {
@@ -91,7 +73,7 @@ list_data_cs = {
             "last_modified_date": 1595627719,
             "first_activity_date": 1483228800,
             "last_activity_date": 1593993600,
-            "active": False,
+            "active": false,
             "capability": {
                 "id": 2,
                 "slug": "hi",
@@ -105,7 +87,7 @@ list_data_cs = {
                     "value": "sports"
                 }
             ],
-            "notify_users": False,
+            "notify_users": false,
             "origins": [
                 {
                     "id": 2,
@@ -123,28 +105,28 @@ list_data_cs = {
                     "id": 2,
                     "slug": "bus_stations",
                     "value": "bus_stations"
-                },
+                }
             ],
             "target_industries": [
                 {
                     "id": 2,
                     "slug": "supermarkets",
                     "value": "supermarkets"
-                },
+                }
             ]
         }
     ],
     "errors": []
-}
+  },
 
-expected_list = [
+  "expected_list": [
     {
         "type": "Threat Actor",
         "value": "A",
         "rawJSON": {
-                    'type': 'Threat Actor',
-                    'value': "A",
-                    'service': 'List Actors Feed',
+                    "type": "Threat Actor",
+                    "value": "A",
+                    "service": "List Actors Feed",
                     "id": 1,
                     "name": "A",
                     "slug": "a",
@@ -154,7 +136,7 @@ expected_list = [
                     "last_modified_date": 1595568692,
                     "first_activity_date": 1462060800,
                     "last_activity_date": 1580860800,
-                    "active": False,
+                    "active": false,
                     "capability": {
                         "id": 1,
                         "slug": "hi",
@@ -168,7 +150,7 @@ expected_list = [
                             "value": "food"
                         }
                     ],
-                    "notify_users": False,
+                    "notify_users": false,
                     "origins": [
                         {
                             "id": 1,
@@ -186,32 +168,32 @@ expected_list = [
                             "id": 1,
                             "slug": "hotel",
                             "value": "hotel"
-                        },
+                        }
                     ],
                     "target_industries": [
                         {
                             "id": 1,
                             "slug": "stores",
                             "value": "stores"
-                        },
+                        }
                     ]
                     },
-        'fields': {'tags': {}, 'actor': "A", 'region': {"id": 1, "slug": "hostel", "value": "hostel"},
-                   'actor_capability': {"id": 1, "slug": "hi", "value": "hi"}, 'geo_country': [
+        "fields": {"tags": {}, "actor": "A", "region": {"id": 1, "slug": "hostel", "value": "hostel"},
+                   "actor_capability": {"id": 1, "slug": "hi", "value": "hi"}, "geo_country": [
                    {"id": 1, "slug": "apartment", "value": "apartment"}],
-                   'description': "hello", 'alias': "aaa",
-                   'creation_date': 1487960014, 'actor_motivation': [{"id": 1, "slug": "food", "value": "food"}],
-                   'updated_date': 1595568692,
-                   'actor_target_country': [{"id": 1, "slug": "hotel", "value": "hotel"}],
-                   'actor_target_industry': [{"id": 1, "slug": "stores", "value": "stores"}]}
+                   "description": "hello", "alias": "aaa",
+                   "creation_date": 1487960014, "actor_motivation": [{"id": 1, "slug": "food", "value": "food"}],
+                   "updated_date": 1595568692,
+                   "actor_target_country": [{"id": 1, "slug": "hotel", "value": "hotel"}],
+                   "actor_target_industry": [{"id": 1, "slug": "stores", "value": "stores"}]}
     },
     {
         "type": "Threat Actor",
         "value": "B",
         "rawJSON": {
-                    'type': 'Threat Actor',
-                    'value': "B",
-                    'service': 'List Actors Feed',
+                    "type": "Threat Actor",
+                    "value": "B",
+                    "service": "List Actors Feed",
                     "id": 2,
                     "name": "B",
                     "slug": "b",
@@ -221,7 +203,7 @@ expected_list = [
                     "last_modified_date": 1595627719,
                     "first_activity_date": 1483228800,
                     "last_activity_date": 1593993600,
-                    "active": False,
+                    "active": false,
                     "capability": {
                         "id": 2,
                         "slug": "hi",
@@ -235,7 +217,7 @@ expected_list = [
                             "value": "sports"
                         }
                     ],
-                    "notify_users": False,
+                    "notify_users": false,
                     "origins": [
                         {
                             "id": 2,
@@ -253,37 +235,24 @@ expected_list = [
                             "id": 2,
                             "slug": "bus_stations",
                             "value": "bus_stations"
-                        },
+                        }
                     ],
                     "target_industries": [
                         {
                             "id": 2,
                             "slug": "supermarkets",
                             "value": "supermarkets"
-                        },
+                        }
                     ]
                     },
-        'fields': {'tags': {}, 'actor': "B", 'region': {"id": 2, "slug": "home", "value": "home"},
-                   'actor_capability': {"id": 2, "slug": "hi", "value": "hi"}, 'geo_country':
+        "fields": {"tags": {}, "actor": "B", "region": {"id": 2, "slug": "home", "value": "home"},
+                   "actor_capability": {"id": 2, "slug": "hi", "value": "hi"}, "geo_country":
                    [{"id": 2, "slug": "house", "value": "house"}],
-                   'description': "hello world", 'alias': "bbb",
-                   'creation_date': 1589572143, 'actor_motivation': [{"id": 2, "slug": "sports", "value": "sports"}],
-                   'updated_date': 1595627719,
-                   'actor_target_country': [{"id": 2, "slug": "bus_stations", "value": "bus_stations"}],
-                   'actor_target_industry': [{"id": 2, "slug": "supermarkets", "value": "supermarkets"}]}
+                   "description": "hello world", "alias": "bbb",
+                   "creation_date": 1589572143, "actor_motivation": [{"id": 2, "slug": "sports", "value": "sports"}],
+                   "updated_date": 1595627719,
+                   "actor_target_country": [{"id": 2, "slug": "bus_stations", "value": "bus_stations"}],
+                   "actor_target_industry": [{"id": 2, "slug": "supermarkets", "value": "supermarkets"}]}
     }
-]
-
-
-@pytest.mark.parametrize(
-    "response, expected",
-    [
-        (list_data_cs, expected_list),
-    ]
-)
-def test_create_indicators_from_response(response, expected):
-    res = Client.create_indicators_from_response(Client, list_data_cs, {})
-    assert res == expected_list
-
-
-
+  ]
+}
