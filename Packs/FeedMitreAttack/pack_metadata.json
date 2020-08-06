@@ -16,11 +16,5 @@
         "MITRE",
         "Feed",
         "ATT&CK"
-    ],
-    "dependencies": {
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        }
-    }
+    ]
 }
