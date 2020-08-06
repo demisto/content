@@ -2001,16 +2001,17 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     """
     parsed_args = UpdateRemoteSystemArgs(args)
+    entry_tags = params.get('entry_tags', 'work_notes,comments').split(",")
     if parsed_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
+    changed_field = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data.keys()}
     if parsed_args.incident_changed:
-        fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
-
-        demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
-        result = client.update(ticket_type, ticket_id, fields)
+        # fields = get_ticket_fields(changed_field, ticket_type=ticket_type)
+        demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {changed_field}')
+        result = client.update(ticket_type, ticket_id, changed_field)
 
         demisto.info(f'Ticket Update result {result}')
 
@@ -2025,8 +2026,12 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
                 path_res = demisto.getFilePath(entry.get('id'))
                 file_name = path_res.get('name')
                 client.upload_file(ticket_id, entry.get('id'), file_name, ticket_type)
-
-            key = 'comments'
+            # Mirroring comment and work notes as entries
+            tags = entry.get('tags', [])
+            if entry_tags[0] in tags:
+                key = 'work_notes'
+            elif entry_tags[1] in tags:
+                key = 'comments'
             user = entry.get('user', 'dbot')
             text = f"({user}): {str(entry.get('contents', ''))}"
             client.add_comment(ticket_id, ticket_type, key, text)
