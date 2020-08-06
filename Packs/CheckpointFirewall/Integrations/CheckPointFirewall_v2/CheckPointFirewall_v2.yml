@@ -1733,7 +1733,7 @@ script:
     - contextPath: CheckPoint.Gateways.domain-type
       description: Doamin type
       type: String
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: false
   longRunning: false
