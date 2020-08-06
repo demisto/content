@@ -41,7 +41,7 @@ tasks:
       name: email-take-action
       description: |-
         Takes actions on a batch of specified email messages.
-        supports only  in office365 - exchange
+        Relevant for office365 - exchange only.
       script: TrendMicro Cloud App Security|||trendmicro-cas-email-take-action
       type: regular
       iscommand: true
