@@ -534,7 +534,7 @@ def get_alias_index(field_name, alias):
 
 
 def get_most_relevant_json_field(field_name, json_field_to_alias):
-    if not json_field_to_alias:
+    if len(json_field_to_alias) == 0:
         return
 
     # calculate jaccard score for each alias, and get the candidates with max score
@@ -613,7 +613,8 @@ def match_for_incidents(incidents_to_match):
         for k, v in match_for_incident(flat_incident).items():
             if k not in fields_cnt:
                 fields_cnt[k] = Counter()
-            fields_cnt[k][v] += 1
+            if v:
+                fields_cnt[k][v] += 1
     mapping_result = {field_name: get_most_relevant_match_for_field(field_name, field_cnt) for field_name, field_cnt in
                       fields_cnt.items()}
     return mapping_result
