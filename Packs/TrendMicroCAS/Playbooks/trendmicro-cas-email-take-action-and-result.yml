@@ -1,7 +1,7 @@
 id: TrendMicro CAS - Email take action and the result
 version: -1
 name: TrendMicro CAS - Email take action and the result
-description: This playbook runs the "trendmicro-cas-email-take-action" command and waits for the result from the "trendmicro-cas-email-action-result-query" command.
+description: This playbook runs takes action on emails using the "trendmicro-cas-email-take-action" command and returns the result from the "trendmicro-cas-email-action-result-query" command.
 starttaskid: "0"
 tasks:
   "0":
@@ -85,7 +85,6 @@ tasks:
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
         The remote action should have the following structure:
-
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
@@ -185,31 +184,31 @@ inputs:
 - key: action_type
   value: {}
   required: true
-  description: 'Action to take on an email message. Options include: MAIL_DELETE:
-    deletes an email message MAIL_QUARANTINE: quarantines an email message.'
+  description: 'The action to take on an email message, such as delete or quarantine. Can be: "MAIL_DELETE", or
+    "MAIL_QUARANTINE".'
   playbookInputQuery:
 - key: mailbox
   value: {}
   required: true
-  description: Email address of an email message to take action on.
+  description: The email address of an email message for which to take action.
   playbookInputQuery:
 - key: mail_messge_id
   value: {}
   required: true
-  description: Internet message ID of an email message to take action on It can be
-    obtained from "trendmicro-cas-email-sweep" command.
+  description: The Internet message ID of an email message for which to take action. To retrieve the ID
+    use the "trendmicro-cas-email-sweep" command.
   playbookInputQuery:
 - key: mail_unique_id
   value: {}
   required: true
-  description: Unique ID of an email message to take action on It can be obtained
-    from "trendmicro-cas-email-sweep" command.
+  description: The unique ID of an email message for which to take action. To retrieve the ID use the 
+    "trendmicro-cas-email-sweep" command.
   playbookInputQuery:
 - key: mail_message_delivery_time
   value: {}
   required: true
-  description: Date and time when an email message to take action on is sent It can
-    be obtained from "trendmicro-cas-email-sweep" command.
+  description: The time and date when an email message is sent. To retrieve the information, use the
+    "trendmicro-cas-email-sweep" command.
   playbookInputQuery:
 - key: Interval
   value:
@@ -225,50 +224,49 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: TrendMicroCAS.EmailActionResult.account_provider
-  description: Provider of the protected service
+  description: The provider of the protected service.
   type: string
 - contextPath: TrendMicroCAS.EmailActionResult.account_user_email
-  description: Email address used to create the user account on which an action
+  description: The email address used to create the user account on which an action.
   type: string
 - contextPath: TrendMicroCAS.EmailActionResult.action_executed_at
-  description: Date and time when the action was processed
+  description: The time and date when the action was processed.
   type: date
 - contextPath: TrendMicroCAS.EmailActionResult.action_id
-  description: Unique ID of a threat mitigation task
+  description: The unique ID of a threat mitigation task.
   type: string
 - contextPath: TrendMicroCAS.EmailActionResult.action_requested_at
-  description: Date and time when the API request containing the action was received
+  description: The time and date when the API request containing the action was received.
   type: date
 - contextPath: TrendMicroCAS.EmailActionResult.action_type
-  description: Action taken on an email message or user account
+  description: The action taken on an email message.
   type: string
 - contextPath: TrendMicroCAS.EmailActionResult.batch_id
-  description: Unique ID of a Threat Mitigation API request
+  description: The unique ID of the Threat Mitigation API request.
   type: string
 - contextPath: TrendMicroCAS.EmailActionResult.error_code
-  description: Result code of the action.
+  description: The result code of the action.
   type: string
 - contextPath: TrendMicroCAS.EmailActionResult.error_message
-  description: String describing the result code.
+  description: The string describing the result code.
   type: number
 - contextPath: TrendMicroCAS.EmailActionResult.status
   description: |-
-    Status of an action taken. Options include: Created: The API request
-            containing the action is received. Executing: The action is being processed.
-            Success: The action is successfully taken. Skipped: The action is skipped
-            for certain reason. For example, the same action was requested twice. Failed:
-            The action fails
+    The status of an action taken. Can be: "Created": The API request
+            containing the action was received. "Executing": The action is executing.
+            "Success": The action was successful. "Skipped": The action is skipped.
+            "Failed": The action failed.
   type: string
 - contextPath: TrendMicroCAS.EmailActionResult.service
-  description: Name of the protected service
+  description: The name of the protected service.
   type: string
 - contextPath: TrendMicroCAS.EmailActionResult.mail_unique_id
-  description: Unique ID of an email message on which an action was taken.
+  description: The Unique ID of an email message on which an action was taken.
   type: string
 - contextPath: TrendMicroCAS.EmailActionResult.mail_message_id
-  description: Internet message ID of an email message on which an action was
+  description: The Internet message ID of an email message on which an action was taken.
   type: string
 - contextPath: TrendMicroCAS.EmailActionResult.mailbox
-  description: Email address of an email message on which an action was taken.
+  description: The email address of an email message on which an action was taken.
   type: string
 fromversion: 5.0.0
