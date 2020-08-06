@@ -67,6 +67,9 @@ script:
     - contextPath: CheckPoint.Host.type
       description: object type
       type: String
+    - contextPath: CheckPoint.Host.ipv4
+      description: IP-v4 address of a spesific host
+      type: String
   - arguments:
     - default: false
       description: object unique identifier (uid) or name
@@ -1330,6 +1333,12 @@ script:
       name: session_id
       required: true
       secret: false
+    - default: false
+      description: Collection of group identifiers.
+      isArray: false
+      name: groups
+      required: false
+      secret: false
     deprecated: false
     description: Add application site
     execution: false
@@ -1368,6 +1377,9 @@ script:
     - contextPath: CheckPoint.ApplicationSite.last-modifier
       description: Indicates the last user modified this object
       type: String
+    - contextPath: CheckPoint.ApplicationSite.groups
+      description: Collection of group identifiers
+      type: Unknown
   - arguments:
     - default: false
       description: uid or name.
@@ -1420,6 +1432,13 @@ script:
       name: session_id
       required: true
       secret: false
+    - default: false
+      description: Collection of group identifiers. Can be a single group or a list
+        of groups.
+      isArray: false
+      name: groups
+      required: false
+      secret: false
     deprecated: false
     description: "Edit existing application using object name or uid. \nIt's impossible\
       \ to set  'application-signature' when the application was initialized with\
@@ -1453,6 +1472,9 @@ script:
       type: String
     - contextPath: CheckPoint.ApplicationSite.url-list
       description: URLs that determine this particular application.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.groups
+      description: Collection of group identifiers
       type: String
   - arguments:
     - default: false

@@ -42,7 +42,7 @@ class Client(BaseClient):
                                       headers=self.headers, json_data=body)
 
         response['objects'] = response.pop('objects-dictionary')
-        return format_list_objects(response, 'access-rule')
+        return format_list_objects(response, 'AccessRule')
 
     def checkpoint_add_rule_command(self, layer: str, position, name: str = None):
         """
@@ -59,7 +59,7 @@ class Client(BaseClient):
         body = {"layer": layer, "position": position, 'name': name}
         response = self._http_request(method='POST', url_suffix='add-access-rule',
                                       headers=self.headers, json_data=body)
-        return format_add_object(response, 'access-rule')
+        return format_add_object(response, 'AccessRule')
 
     def checkpoint_update_rule_command(self, identifier: str, layer: str, ignore_warnings: bool,
                                        ignore_errors: bool, enabled: bool, action: str = None,
@@ -94,7 +94,7 @@ class Client(BaseClient):
                 }
         response = self._http_request(method='POST', url_suffix='set-access-rule',
                                       headers=self.headers, json_data=body)
-        return format_update_object(response, 'access-rule')
+        return format_update_object(response, 'AccessRule')
 
     def checkpoint_delete_rule_command(self, identifier: str):
         """
@@ -107,7 +107,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='delete-access-rule',
                                       headers=self.headers,
                                       json_data={'name': identifier})
-        return format_delete_object(response, 'access-rule')
+        return format_delete_object(response, 'AccessRule')
 
     def checkpoint_list_hosts_command(self, limit: int, offset: int):
         """
@@ -122,7 +122,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='show-hosts',
                                       headers=self.headers, resp_type='json',
                                       json_data={'limit': limit, 'offset': offset})
-        return format_list_objects(response, 'host')
+        return format_list_objects(response, 'Host')
 
     def checkpoint_get_host_command(self, identifier: str):
         """
@@ -134,7 +134,7 @@ class Client(BaseClient):
         body = {'name': identifier}
         response = self._http_request(method='POST', url_suffix='show-host', headers=self.headers,
                                       json_data=body)
-        return format_get_object(response, 'host')
+        return format_get_object(response, 'Host')
 
     def checkpoint_add_host_command(self, name: str, ip_address: str, groups=None):
         """
@@ -148,7 +148,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='add-host', headers=self.headers,
                                       json_data={"name": name, "ip-address": ip_address,
                                                  'groups': groups})
-        return format_add_object(response, 'host')
+        return format_add_object(response, 'Host')
 
     def checkpoint_update_host_command(self, identifier: str, ignore_warnings: bool,
                                        ignore_errors: bool, ip_address: str = None,
@@ -179,7 +179,7 @@ class Client(BaseClient):
                 }
         response = self._http_request(method='POST', url_suffix='set-host', headers=self.headers,
                                       json_data=body)
-        return format_update_object(response, 'host')
+        return format_update_object(response, 'Host')
 
     def checkpoint_delete_host_command(self, identifier: str):
         """
@@ -190,7 +190,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='delete-host', headers=self.headers,
                                       json_data={'name': identifier})
-        return format_delete_object(response, 'host')
+        return format_delete_object(response, 'Host')
 
     def checkpoint_list_groups_command(self, limit: int, offset: int):
         """
@@ -202,7 +202,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='show-groups', headers=self.headers,
                                       json_data={"limit": limit, "offset": offset})
-        return format_list_objects(response, 'group')
+        return format_list_objects(response, 'Group')
 
     def checkpoint_get_group_command(self, identifier: str):
         """
@@ -213,7 +213,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='show-group', headers=self.headers,
                                       json_data={'name': identifier})
-        return format_get_object(response, 'group')
+        return format_get_object(response, 'Group')
 
     def checkpoint_add_group_command(self, name: str):
         """
@@ -225,7 +225,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='add-group', headers=self.headers,
                                       json_data={"name": name})
-        return format_add_object(response, 'group')
+        return format_add_object(response, 'Group')
 
     def checkpoint_update_group_command(self, identifier: str, ignore_warnings: bool,
                                         ignore_errors: bool,
@@ -249,7 +249,7 @@ class Client(BaseClient):
                 'ignore-errors': ignore_errors}
         response = self._http_request(method='POST', url_suffix='set-group', headers=self.headers,
                                       json_data=body)
-        return format_update_object(response, 'group')
+        return format_update_object(response, 'Group')
 
     def checkpoint_delete_group_command(self, identifier: str):
         """
@@ -261,7 +261,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='delete-group',
                                       headers=self.headers,
                                       json_data={'name': identifier})
-        return format_delete_object(response, 'group')
+        return format_delete_object(response, 'Group')
 
     def checkpoint_list_address_ranges_command(self, limit: int, offset: int):
         """
@@ -274,7 +274,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='show-address-ranges',
                                       headers=self.headers,
                                       json_data={"limit": limit, "offset": offset})
-        return format_list_objects(response, 'address-range')
+        return format_list_objects(response, 'AddressRange')
 
     def checkpoint_get_address_range_command(self, identifier: str):
         """
@@ -285,7 +285,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='show-address-range',
                                       headers=self.headers, json_data={'name': identifier})
-        return format_get_object(response, 'address-range')
+        return format_get_object(response, 'AddressRange')
 
     def checkpoint_add_address_range_command(self, name: str, ip_address_first: str,
                                              ip_address_last: str, set_if_exists: bool,
@@ -312,7 +312,7 @@ class Client(BaseClient):
                 }
         response = self._http_request(method='POST', url_suffix='add-address-range',
                                       headers=self.headers, json_data=body)
-        return format_add_object(response, 'address-range')
+        return format_add_object(response, 'AddressRange')
 
     def checkpoint_update_address_range_command(self, identifier: str, ignore_warnings: bool,
                                                 ignore_errors: bool, ip_address_first: str = None,
@@ -345,7 +345,7 @@ class Client(BaseClient):
 
         response = self._http_request(method='POST', url_suffix='set-address-range',
                                       headers=self.headers, json_data=body)
-        return format_update_object(response, 'address-range')
+        return format_update_object(response, 'AddressRange')
 
     def checkpoint_delete_address_range_command(self, identifier: str):
         """
@@ -357,7 +357,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='delete-address-range',
                                       headers=self.headers,
                                       json_data={'name': identifier})
-        return format_delete_object(response, 'address-range')
+        return format_delete_object(response, 'AddressRange')
 
     def checkpoint_list_threat_indicators_command(self, limit: int, offset: int):
         """
@@ -371,7 +371,7 @@ class Client(BaseClient):
                                       headers=self.headers,
                                       json_data={"limit": limit, "offset": offset})
         response['objects'] = response.pop('indicators')
-        return format_list_objects(response, 'threat-indicator')
+        return format_list_objects(response, 'ThreatIndicator')
 
     def checkpoint_get_threat_indicator_command(self, identifier):
         """
@@ -385,7 +385,7 @@ class Client(BaseClient):
                                       headers=self.headers,
                                       json_data={'name': identifier})
 
-        return format_get_object(response, 'threat-indicator')
+        return format_get_object(response, 'ThreatIndicator')
 
     def checkpoint_add_threat_indicator_command(self, name: str, observables: list):
         """
@@ -398,7 +398,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='add-threat-indicator',
                                       headers=self.headers,
                                       json_data={"name": name, "observables": observables})
-        return format_add_object(response, 'threat-indicator')
+        return format_add_object(response, 'ThreatIndicator')
 
     def checkpoint_update_threat_indicator_command(self, identifier: str, action: str = None,
                                                    new_name: str = None, comments: str = None):
@@ -420,7 +420,7 @@ class Client(BaseClient):
                 }
         response = self._http_request(method='POST', url_suffix='set-threat-indicator',
                                       headers=self.headers, json_data=body)
-        return format_update_object(response, 'threat-indicator')
+        return format_update_object(response, 'ThreatIndicator')
 
     def checkpoint_delete_threat_indicator_command(self, identifier: str):
         """
@@ -432,7 +432,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='delete-threat-indicator',
                                       headers=self.headers,
                                       json_data={'name': identifier})
-        return format_delete_object(response, 'threat-indicator')
+        return format_delete_object(response, 'ThreatIndicator')
 
     def checkpoint_list_application_sites_command(self, limit: int, offset: int):
         """
@@ -447,9 +447,10 @@ class Client(BaseClient):
                 'offset': offset}
         response = self._http_request(method='POST', url_suffix='show-application-sites',
                                       headers=self.headers, json_data=body)
-        return format_list_objects(response, 'application-site')
+        return format_list_objects(response, 'ApplicationSite')
 
-    def checkpoint_add_application_site_command(self, name: str, primary_category: str, identifier):
+    def checkpoint_add_application_site_command(self, name: str, primary_category: str, identifier,
+                                                groups=None):
         """
         Add application site objects.
 
@@ -462,15 +463,17 @@ class Client(BaseClient):
                                                           application
                                    application-signature(str): Application signature generated by
                                                                 Signature Tool.
+            groups(str or list): Collection of group identifiers.
         """
-        body = {"name": name, "primary-category": primary_category, 'url-list': identifier}
+        body = {"name": name, "primary-category": primary_category,
+                'url-list': identifier, 'groups': groups}
         response = self._http_request(method='POST', url_suffix='add-application-site',
                                       headers=self.headers, json_data=body)
-        return format_add_object(response, 'application-site')
+        return format_add_object(response, 'ApplicationSite')
 
     def checkpoint_update_application_site_command(self, identifier: str,
                                                    urls_defined_as_regular_expression: bool,
-                                                   url_list=None,
+                                                   groups=None, url_list=None,
                                                    description: str = None, new_name: str = None,
                                                    primary_category: str = None,
                                                    application_signature: str = None):
@@ -483,6 +486,7 @@ class Client(BaseClient):
                                     can be a string of a URL or a list of URLs.
             urls_defined_as_regular_expression(bool): States whether the URL is defined as a
                                                       Regular Expression or not.
+            groups(str or list): Collection of group identifiers.
             description(str): A description for the application.
             new_name(str): New name of the object.
             primary_category (str): Each application is assigned to one primary category based on
@@ -495,13 +499,14 @@ class Client(BaseClient):
                 'new-name': new_name,
                 'primary-category': primary_category,
                 'urls-defined-as-regular-expression': urls_defined_as_regular_expression,
+                'groups': groups,
                 'application-signature': application_signature,
                 'url-list': url_list,
                 }
 
         response = self._http_request(method='POST', url_suffix='set-application-site',
                                       headers=self.headers, json_data=body)
-        return format_update_object(response, 'application-site')
+        return format_update_object(response, 'ApplicationSite')
 
     def checkpoint_delete_application_site_command(self, identifier: str):
         """
@@ -512,7 +517,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='delete-application-site',
                                       headers=self.headers, json_data={'name': identifier})
-        return format_delete_object(response, 'application-site')
+        return format_delete_object(response, 'ApplicationSite')
 
     def checkpoint_list_packages_command(self, limit: int, offset: int):
         """
@@ -527,7 +532,7 @@ class Client(BaseClient):
                                       headers=self.headers,
                                       json_data={'limit': limit, 'offset': offset})
         response = response.get('packages')
-        return format_list_servers(response, 'packages')
+        return format_list_servers(response, 'Packages')
 
     def checkpoint_list_gateways_command(self, limit: int, offset: int):
         """
@@ -542,7 +547,7 @@ class Client(BaseClient):
                                       json_data={'limit': limit, 'offset': offset,
                                                  'details-level': 'full'})
         response = response.get('objects')
-        return format_list_servers(response, 'gateways')
+        return format_list_servers(response, 'Gateways')
 
     def install_policy_command(self, policy_package: str, targets, access: bool):
         """
@@ -564,7 +569,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='install-policy',
                                       headers=self.headers, json_data=body)
 
-        return format_task_id(response, 'install-policy')
+        return format_task_id(response, 'InstallPolicy')
 
     def verify_policy_command(self, policy_package: str):
         """
@@ -576,7 +581,7 @@ class Client(BaseClient):
         body = {'policy-package': policy_package, }
         response = self._http_request(method='POST', url_suffix='verify-policy',
                                       headers=self.headers, json_data=body)
-        return format_task_id(response, 'verify-policy')
+        return format_task_id(response, 'VerifyPolicy')
 
     def checkpoint_show_task_command(self, task_id):
         """
@@ -596,7 +601,7 @@ class Client(BaseClient):
         """
         response = self._http_request(method='POST', url_suffix='publish', headers=self.headers,
                                       json_data={})
-        return format_task_id(response, 'publish')
+        return format_task_id(response, 'Publish')
 
     def checkpoint_logout(self):
         """logout from current session"""
@@ -627,7 +632,7 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
                              json={'user': username, 'password': password,
                                    'session-timeout': session_timeout}).json()
     printable_result = {'session-id': response.get('sid')}
-    outputs = {'CheckPoint(val.uid && val.uid == obj.uid)': printable_result}
+    outputs = {'CheckPoint.Login(val.uid && val.uid == obj.uid)': printable_result}
     readable_output = tableToMarkdown('CheckPoint session data:', printable_result)
     return readable_output, outputs, response
 
@@ -674,14 +679,16 @@ def format_list_objects(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     for element in object_list:
         current_object_data = {'name': element.get('name'),
                                'uid': element.get('uid')}
-        if endpoint != 'access-rule':
+        if endpoint != 'AccessRule':
             current_object_data['type'] = element.get('type')
+        if endpoint == 'Host':
+            current_object_data['ipv4'] = element.get('ipv4-address')
 
         printable_result.append(current_object_data)
 
     outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': printable_result}
     readable_output = tableToMarkdown(f'CheckPoint data for listing {endpoint}s:', printable_result,
-                                      ['name', 'uid', 'type'], removeNull=True)
+                                      ['name', 'uid', 'type', 'ipv4'], removeNull=True)
     return readable_output, outputs, result
 
 
@@ -703,9 +710,9 @@ def format_get_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
         'name': result.get('name'),
         'uid': result.get('uid'),
         'type': result.get('type'),
-        'ipv4_address': result.get('ipv4-address'),
-        'ipv6_address': result.get('ipv4-address'),
-        'read_only': result.get('read-only'),
+        'ipv4-address': result.get('ipv4-address'),
+        'ipv6-address': result.get('ipv4-address'),
+        'read-only': result.get('read-only'),
     }
     domain_data = result.get('domain')
     if domain_data:
@@ -719,7 +726,7 @@ def format_get_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     if meta_info:
         printable_result.update({
             'creator': meta_info.get('creator'),
-            'last_modifier': meta_info.get('last-modifier')
+            'last-modifier': meta_info.get('last-modifier')
         })
     readable_output = tableToMarkdown(f'CheckPoint data for getting {endpoint}:', printable_result,
                                       removeNull=True)
@@ -739,7 +746,7 @@ def format_get_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
         readable_output = readable_output + groups_readable_output
 
     # add new table for group members objects
-    if endpoint == 'group':
+    if endpoint == 'Group':
         members = result.get('members')
         members_printable_result = []
         if members:
@@ -801,7 +808,7 @@ def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
     if meta_info:
         readable_output.update({
             'creator': meta_info.get('creator'),
-            'last_modifier': meta_info.get('last-modifier'),
+            'last-modifier': meta_info.get('last-modifier'),
         })
     groups = result.get('groups')
     if groups:
@@ -811,13 +818,13 @@ def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
         readable_output['groups'] = group_list
 
     unique_outputs = {}
-    if endpoint == 'application-site':
+    if endpoint == 'ApplicationSite':
         unique_outputs = {
             'application-id': result.get('application-id'),
             'description': result.get('description'),
             'url-list': result.get('url-list'),
         }
-    elif endpoint == 'access-rule':
+    elif endpoint == 'AccessRule':
         unique_outputs = {
             'layer': result.get('layer'),
             'enabled': result.get('enabled'),
@@ -830,11 +837,11 @@ def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
             'ipv6-address-last': result.get('ipv6-address-last'),
             'read-only': result.get('read-only')
         }
-    elif endpoint == 'group':
+    elif endpoint == 'Group':
         groups = result.get('groups')
         if groups:
             unique_outputs = {'groups-name': groups[0]}
-    elif endpoint == 'host':
+    elif endpoint == 'Host':
         unique_outputs = {
             'ipv4-address': result.get('ipv4-address'),
             'ipv6-address': result.get('ipv4-address'),
@@ -880,11 +887,10 @@ def format_update_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
             'domain-uid': domain_data.get('uid'),
             'domain-type': domain_data.get('type'),
         })
-    if endpoint == 'host' or endpoint == 'address-range':
-        groups_data = result.get('groups')
-        if groups_data:
-            groups_data = groups_data[0]
-            readable_output.update({'groups': groups_data.get('name')})
+    groups_data = result.get('groups')
+    if groups_data:
+        groups_data = groups_data[0]
+        readable_output.update({'groups': groups_data.get('name')})
 
     outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': readable_output}
     readable_output = tableToMarkdown(f'CheckPoint Data for updating {endpoint}:', readable_output,
@@ -942,7 +948,7 @@ def format_show_task(result: dict) -> Tuple[str, dict, dict]:
                                }
         printable_result.append(current_object_data)
 
-    outputs = {'CheckPoint.show-task(val.uid && val.uid == obj.uid)': printable_result}
+    outputs = {'CheckPoint.ShowTask(val.uid && val.uid == obj.uid)': printable_result}
     readable_output = tableToMarkdown('CheckPoint data for listing tasks:', printable_result,
                                       ['task-name', 'task-id', 'status', 'suppressed',
                                        'progress-percentage'], removeNull=True)
@@ -1001,7 +1007,7 @@ def format_list_servers(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
             current_object_data['domain-uid'] = domain.get('uid')
             current_object_data['domain-type'] = domain.get('type')
 
-        if endpoint == 'gateways':
+        if endpoint == 'Gateways':
             current_object_data['version'] = element.get('version')
             current_object_data['network-security-blades'] = element.get('network-security-blades')
             current_object_data['management-blades'] = element.get('management-blades')
