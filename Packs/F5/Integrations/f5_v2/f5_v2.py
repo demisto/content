@@ -922,7 +922,7 @@ def format_policy_methods_command(result: dict):
     if not result:
         return 'No data to show.', {}, result
 
-    outputs = {'f5.policy-methods(val.uid && val.uid == obj.uid)': {
+    outputs = {'f5.PolicyMethods(val.uid && val.uid == obj.uid)': {
         'name': result.get('name'),
         'id': result.get('id'),
         'act-as-method': result.get('actAsMethod'),
@@ -1096,6 +1096,7 @@ def format_policy_blocking_settings_list_command(result: dict, endpoint: str):
 def format_policy_blocking_settings_single_command(result: dict, endpoint: str):
     """
         Format a single BS (Blocking Setting) element for demisto.
+
         Args:
             result(dict): API response from F5.
             endpoint(str): One of: evasions, violations, web-services-securities, http-protocols.
@@ -1119,9 +1120,9 @@ def format_policy_blocking_settings_single_command(result: dict, endpoint: str):
         'self-link': result.get('selfLink'),
         'last-update': format_date(result.get('lastUpdateMicros')),
     }
-    section_reference = result.get('sectionReference').get('link')
+    section_reference = result.get('sectionReference')
     if section_reference:
-        printable_result['section-reference'] = section_reference
+        printable_result['section-reference'] = section_reference.get('link')
 
     reference_link = result.get(references.get(endpoint))
     if reference_link:

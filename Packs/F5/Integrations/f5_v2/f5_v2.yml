@@ -1715,5 +1715,5 @@ script:
   subtype: python3
   type: python
 tests:
-- f5_v2_testplaybook
+- F5_firewall_v2_testplaybook
 fromversion: 5.0.0
