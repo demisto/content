@@ -337,10 +337,11 @@ def search_users(default_base_dn, page_size):
     attributes: List[str] = []
     custom_attributes: List[str] = []
 
-    # zero is actually no limitation, default is 200
-    limit = int(args.get('limit', '200'))
-    if limit == 0:
-        LOG("Limit set to 0 therefore there is no limitation on number of users")
+    # zero is actually no limitation, default is 20
+    limit = int(args.get('limit', '20'))
+    if limit <= 0:
+        limit = 20
+
     # default query - list all users
     query = "(&(objectClass=User)(objectCategory=person))"
 
