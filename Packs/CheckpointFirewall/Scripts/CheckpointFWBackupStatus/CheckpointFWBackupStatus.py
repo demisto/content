@@ -1,3 +1,8 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+
 CLI_SHOW = 'show backup status'
 BASH_SHOW = '/etc/cli.sh -c "' + CLI_SHOW + '"'
 keepPolling = True

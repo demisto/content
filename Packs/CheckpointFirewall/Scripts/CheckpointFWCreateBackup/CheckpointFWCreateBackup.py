@@ -1,5 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
+from CommonServerUserPython import *
+
 
 CLI_ADD = "add backup local"
 BASH_ADD = '/etc/cli.sh -c "' + CLI_ADD + '"'
