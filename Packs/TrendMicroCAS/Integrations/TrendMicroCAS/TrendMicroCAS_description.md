@@ -6,6 +6,6 @@
 Important:
 Before using the ACCOUNT_ENABLE_MFA and ACCOUNT_RESET_PASSWORD actions on "trendmicro-cas-user-take-action" , run a PowerShell script to assign the Company Administrator role to Cloud App Security. For details, [see Assigning the User Account Administrator Role](https://docs.trendmicro.com/en-us/enterprise/cloud-app-security-integration-api-online-help/supported-cloud-app-_001/threat-mitigation-ap/take-actions-on-user/assigning-the-user-a.aspx).
 
-In the fetch incidents, each service and event type must be marked separately.
-Note that multiple selections can cause a problem that you exceed your user license rate limit.
-You can test this with the test button in the instance setting
+In the fetch incidents field, each service and event type must be marked separately.
+Note: Multiple selections may exceed your user license rate limit.
+You can test this with the test button in the instance setting.
