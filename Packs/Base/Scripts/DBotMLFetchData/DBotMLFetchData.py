@@ -22,6 +22,8 @@ from datetime import datetime
 import tldextract
 from email.utils import parseaddr
 
+MAX_ALLOWED_EXCEPTIONS = 20
+
 NO_FETCH_EXTRACT = tldextract.TLDExtract(suffix_list_urls=None)
 NON_POSITIVE_VALIDATION_VALUES = set(['none', 'fail', 'softfail'])
 
@@ -88,7 +90,8 @@ signal.signal(signal.SIGALRM, timeout_handler)
 '''
 Define heuristics for finding label field
 '''
-LABEL_FIELDS_BLACKLIST = set(['CustomFields', 'ShardID', 'account', 'activated', 'attachment', 'autime', 'canvases',
+LABEL_FIELDS_BLACKLIST = set([EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, 'emailbodyhtml''CustomFields',
+                              'ShardID', 'account', 'activated', 'attachment', 'autime', 'canvases',
                               'category', 'closeNotes', 'closed', 'closingUserId', 'created', 'criticalassets',
                               'dbotCreatedBy', 'details', 'detectionsla', 'droppedCount', 'dueDate', 'emailbody',
                               'emailheaders', 'emailsubject', 'hasRole', 'id', 'investigationId', 'isPlayground',
@@ -586,6 +589,8 @@ def extract_features_from_all_incidents(incidents_df):
         except Exception:
             exception_indices.add(index)
             exceptions_log.append(traceback.format_exc())
+            if len(exception_indices) == MAX_ALLOWED_EXCEPTIONS:
+                break
         finally:
             signal.alarm(0)
     n_fetched_incidents = len(incidents_df) - len(exception_indices) - len(timeout_indices)
