@@ -321,6 +321,10 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
                             ' this exceeds you user license rate limit')
                     demisto.info('quota_error - maximum allowed requests exceeded - All incidents collected were saved')
                     break
+                elif 'Authentication token not found' in str(e):
+                    return_error('Authorization Error: make sure Token Key or Service URL are correctly set')
+                else:
+                    raise e
             security_events = result.get('security_events')
             if not security_events:
                 continue
