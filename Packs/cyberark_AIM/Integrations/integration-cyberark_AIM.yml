@@ -32,6 +32,14 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+- display: Authentication Type (NTLM or Basic)
+  name: authType
+  defaultvalue: Basic
+  type: 15
+  options:
+    - Basic
+    - NTLM
+  required: true
 - display: "Fetches credentials"
   name: isFetchCredentials
   defaultvalue: "true"
@@ -117,7 +125,8 @@ script:
                 {
                     Method: 'POST',
                     Headers: headers,
-                    Body: JSON.stringify(data)
+                    Body: JSON.stringify(data),
+                    AuthProtocol: [params.authType]
                 },
                 insecure,
                 proxy
