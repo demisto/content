@@ -15,9 +15,7 @@ if not devices:
     res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Received empty device list!"})
 else:
     devices = ','.join(devices) if isinstance(devices, list) else devices
-    sshArgs = {"using": devices,
-            "cmd": BASH_SHOW
-            }
+    sshArgs = {"using": devices, "cmd": BASH_SHOW}
     while keepPolling:
         resSSH = demisto.executeCommand("ssh", sshArgs)
         try:
@@ -33,21 +31,23 @@ else:
                         backFileLocEnd = output.find("Backup process finished")
                         result = 'Answer returned'
                         devicesBackupStarted.append({
-                            'DeviceName' : device,
-                            'System' : demisto.get(entry, 'Contents.system'),
+                            'DeviceName': device,
+                            'System': demisto.get(entry, 'Contents.system'),
                             'Status': ("Done" if output.find("local backup succeeded.") > -1 else "Pending"),
-                            'Path': (output[backFileLoc+len("Backup file location: ") : backFileLocEnd-1] if backFileLoc > -1 else None)
-                            })
+                            'Path': (output[backFileLoc + len("Backup file location: "): backFileLocEnd - 1] if backFileLoc > -1
+                                    else None)})  # noqa: E128
                     else:
                         devicesBackupError.append(device)
                         output = "Output:\n" + str(demisto.get(entry, 'Contents.output')) + "Error:\n" + \
-                                                            str(demisto.get(entry, 'Contents.error'))
+                            str(demisto.get(entry, 'Contents.error'))
                         result = 'Failed to query'
 
-                    tbl.append({'DeviceName': device, 'System': demisto.get(entry, 'Contents.system'), 'Query result': result, 'Output': output })
+                    tbl.append({'DeviceName': device, 'System': demisto.get(entry, 'Contents.system'),
+                                'Query result': result, 'Output': output})
         except Exception as ex:
             res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                        "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSSH)})
+                        "Contents": "Error occurred while parsing output from command. "
+                        "Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSSH)})
         keepPolling = False
     demisto.setContext('CheckpointBackup', devicesBackupStarted)
 
