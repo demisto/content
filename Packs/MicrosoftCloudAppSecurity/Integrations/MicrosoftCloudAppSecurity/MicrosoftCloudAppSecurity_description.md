@@ -3,13 +3,12 @@ API connectors, and reverse proxy. It provides rich visibility, control over dat
 and sophisticated analytics to identify and combat cyberthreats across all your Microsoft and third-party cloud services.
 
 ## Grant Demisto Authorization in Microsoft Cloud App Security API
-To allow us to access Microsoft Management Activity API you will be required to give us authorization to access it.
+To access the Microsoft Management Activity API, you need to grant authorization.
 
-To grant authorization, click the [HERE](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication).
-And you will get a detailed explanation of how to produce Server URL and User key (token).
+To grant authorization, click [HERE](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication) to view a detailed explanation of how to create the Server URL and User key (token).
 
 
-## customer filters
-Note - If you want to filter the call results to the api yourself (custom_filter) make sure it matches 
-the filtering format Microsoft Cloud App Security - [HERE](https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters)
+## Customer Filters
+Note - To filter the call results of the API (custom_filter), make sure it matches 
+the Microsoft Cloud App Security filtering format. Click [HERE](https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters) for details.
 
