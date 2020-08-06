@@ -124,7 +124,6 @@ def construct_entities_block(entities_data: dict):
 
 
 def get_pack_entities(pack_path):
-    pack_path = '/Users/adaud/dev/demisto/content/Packs/PrismaCloud'
     print(f'Processing "{pack_path}" files:')
     pack_entities = sum([
         glob.glob(f'{pack_path}/*/*.json'),
