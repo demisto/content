@@ -1,8 +1,5 @@
 {
-	"id": "EWS v2-mapper",
-    "name": "EWS - Incoming Mapper",
-    "type": "mapping-incoming",
-    "description": "Maps incoming EWS phishing email message fields.",
+	"id": "894621ff-3e64-4e61-8315-349d464a06ea",
 	"version": -1,
 	"defaultIncidentType": "",
 	"mapping": {
@@ -354,5 +351,17 @@
 			"dontMapEventToLabels": false
 		}
 	},
-	"fromVersion": "6.0.0"
+	"unclassifiedCases": {},
+	"custom": true,
+	"transformer": {
+		"simple": "importance",
+		"complex": null
+	},
+	"keyTypeMap": {
+		"High": "Phishing",
+		"Low": "Phishing",
+		"Normal": "Phishing"
+	},
+	"brandName": "EWSO365",
+	"toVersion": "5.9.9"
 }
