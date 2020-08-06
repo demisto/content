@@ -12,7 +12,7 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
     -   **Secret**
     -   **First fetch timestamp ( , e.g., 12 hours, 7 days)**
     -   **Max incidents per fetch**
-    -   **Fetch query (Reference: [Falcon Query Language](https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql#filter-with-fql)**
+    -   **Fetch query (Reference: [Falcon Query Language](https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql#filter-with-fql))**
     -   **Fetch incidents**
     -   **Incident type**
     -   **Trust any certificate (not secure)**
