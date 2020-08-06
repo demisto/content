@@ -80,9 +80,17 @@ Executes an Analytics query for data.
 
 
 #### Command Example
-``` ```
+```!azure-log-analytics-execute-query query="Usage | take 10" workspace_id=WORKSPACE_ID```
 
 #### Human Readable Output
+## Query Results
+### PrimaryResult
+|Tenant Id|Computer|Time Generated|Source System|Start Time|End Time|Resource Uri|Data Type|Solution|Batches Within Sla|Batches Outside Sla|Batches Capped|Total Batches|Avg Latency In Seconds|Quantity|Quantity Unit|Is Billable|Meter Id|Linked Meter Id|Type|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| TENANT_ID | Deprecated field: see http://aka.ms/LA-Usage | 2020-07-30T04:00:00Z | OMS | 2020-07-30T03:00:00Z | 2020-07-30T04:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | Operation | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.00714 | MBytes | false | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
+| TENANT_ID | Deprecated field: see http://aka.ms/LA-Usage | 2020-07-30T04:00:00Z | OMS | 2020-07-30T03:00:00Z | 2020-07-30T04:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.012602 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
+| TENANT_ID | Deprecated field: see http://aka.ms/LA-Usage | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | OfficeActivity | Office365/SecurityInsights | 0 | 0 | 0 | 0 | 0 | 0.00201499908978072 | MBytes | false | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
+| TENANT_ID | Deprecated field: see http://aka.ms/LA-Usage | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.009107 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
 
 
 
@@ -120,9 +128,15 @@ Gets the saved searches of the Log Analytics workspace.
 
 
 #### Command Example
-``` ```
+```!azure-log-analytics-saved-search-list limit=3```
 
 #### Human Readable Output
+### Saved searches
+|Etag|Id|Category|Display Name|Function Alias|Function Parameters|Query|Tags|Version|Type|
+|---|---|---|---|---|---|---|---|---|---|
+| W/"datetime'2020-07-05T13%3A38%3A41.053438Z'" | test2 | kurwa | test2 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
+| W/"datetime'2020-07-28T18%3A43%3A56.8625448Z'" | test123 | Saved Search Test Category | test123 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
+| W/"datetime'2020-07-30T11%3A41%3A35.1459664Z'" | test1234 | test | test |  |  | 	SecurityAlert<br>\| summarize arg_max(TimeGenerated, *) by SystemAlertId<br>\| where SystemAlertId in("TEST_SYSTEM_ALERT_ID") |  | 2 | Microsoft.OperationalInsights/savedSearches |
 
 
 
@@ -158,9 +172,13 @@ Gets a specified saved search from the Log Analytics workspace.
 
 
 #### Command Example
-``` ```
+```!azure-log-analytics-get-saved-search-by-id saved_search_id=test1234```
 
 #### Human Readable Output
+### Saved search `test1234` properties
+|Etag|Id|Category|Display Name|Query|Version|
+|---|---|---|---|---|---|
+| W/"datetime'2020-07-30T12%3A21%3A05.3197505Z'" | test1234 | test | test | SecurityAlert &#124; summarize arg_max(TimeGenerated, *) by SystemAlertId &#124; where SystemAlertId in("TEST_SYSTEM_ALERT_ID") | 2 |
 
 
 
@@ -203,10 +221,17 @@ Creates or updates a saved search from the Log Analytics workspace.
 
 
 #### Command Example
-``` ```
+```
+!azure-log-analytics-saved-search-create-or-update saved_search_id="test1234" category="test" display_name="new display name test" query=`SecurityAlert
+| summarize arg_max(TimeGenerated, *) by SystemAlertId
+| where SystemAlertId in("TEST_SYSTEM_ALERT_ID")
+```
 
 #### Human Readable Output
-
+### Saved search `test1234` properties
+|Etag|Id|Category|Display Name|Query|Version|
+|---|---|---|---|---|---|
+| W/"datetime'2020-07-30T12%3A21%3A05.3197505Z'" | test1234 | test | new display name test | SecurityAlert &#124; summarize arg_max(TimeGenerated, *) by SystemAlertId &#124; where SystemAlertId in("TEST_SYSTEM_ALERT_ID") | 2 |
 
 
 ### azure-log-analytics-delete-saved-search
@@ -229,10 +254,10 @@ Deletes a specified saved search in the Log Analytics workspace.
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!azure-log-analytics-saved-search-delete saved_search_id=test1234```
 
 #### Human Readable Output
-
+Successfully deleted the saved search test1234.
 
 
 

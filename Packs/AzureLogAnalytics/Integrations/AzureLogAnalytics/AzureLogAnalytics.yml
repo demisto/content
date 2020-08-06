@@ -106,7 +106,7 @@ script:
     deprecated: false
     description: Gets the saved searches of the Log Analytics workspace.
     execution: false
-    name: azure-log-analytics-saved-search-list
+    name: azure-log-analytics-list-saved-searches
     outputs:
     - contextPath: AzureLogAnalytics.SavedSearch.id
       description: The ID of the saved search.
@@ -250,7 +250,7 @@ script:
     deprecated: false
     description: Creates or updates a saved search from the Log Analytics workspace.
     execution: false
-    name: azure-log-analytics-saved-search-create-or-update
+    name: azure-log-analytics-create-or-update-saved-search
     outputs:
     - contextPath: AzureLogAnalytics.SavedSearch.id
       description: The id of the saved search.
@@ -298,7 +298,7 @@ script:
     deprecated: false
     description: Deletes a specified saved search in the Log Analytics workspace.
     execution: false
-    name: azure-log-analytics-saved-search-delete
+    name: azure-log-analytics-delete-saved-search
   dockerimage: demisto/crypto:1.0.0.303
   isfetch: false
   longRunning: false
