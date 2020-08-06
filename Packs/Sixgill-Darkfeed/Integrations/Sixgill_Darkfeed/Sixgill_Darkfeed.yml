@@ -11,7 +11,7 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- defaultvalue: true
+- defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
@@ -114,7 +114,7 @@ script:
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.8958
+  dockerimage: demisto/sixgill:1.0.0.10254
   feed: true
   isfetch: false
   longRunning: false
