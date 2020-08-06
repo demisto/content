@@ -115,7 +115,7 @@ def construct_entities_block(entities_data: dict):
     for entity_type, entities_description in sorted(entities_data.items()):
         release_notes += f'#### {entity_type}\n'
         for name, description in entities_description.items():
-            if entity_type in('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields'):
+            if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields'):
                 release_notes += f'- **{name}**\n'
             else:
                 release_notes += f'##### {name}  \n{description}\n'
