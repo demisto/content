@@ -94,9 +94,9 @@ configuration:
   required: false
   type: 8
 description: Palo Alto Networks Cortex Data Lake provides cloud-based, centralized
-  log storage and aggregation for your organization on premise, virtual (private cloud and public
-  cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex
-  XDR.
+  log storage and aggregation for your organization on premise, virtual (private cloud
+  and public cloud) firewalls, for Prisma Access, and for cloud-delivered services
+  such as Cortex XDR.
 display: Cortex Data Lake
 name: Cortex Data Lake
 script:
@@ -203,8 +203,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3
-        weeks).
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days,
+        3 weeks).
       isArray: false
       name: time_range
       predefined:
@@ -386,8 +386,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3
-        weeks).
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days,
+        3 weeks).
       isArray: false
       name: time_range
       predefined:
@@ -548,8 +548,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3
-        weeks).
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days,
+        3 weeks).
       isArray: false
       name: time_range
       predefined:
@@ -766,8 +766,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: 'The fields selected in the query. Selection can be "all"
-        (same as *) or a comma separated list of specific fields in the table. '
+      description: 'The fields selected in the query. Selection can be "all" (same
+        as *) or a comma separated list of specific fields in the table. '
       isArray: false
       name: fields
       predefined:
@@ -923,8 +923,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3
-        weeks).
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days,
+        3 weeks).
       isArray: false
       name: time_range
       predefined:
@@ -955,15 +955,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: An IP address or an array of IP addresses for
-        which to search, for example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
+      description: An IP address or an array of IP addresses for which to search,
+        for example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      description: A port or array of ports to
-        search. Used instead of the source/destination port.
+      description: A port or array of ports to search. Used instead of the source/destination
+        port.
       isArray: false
       name: port
       required: false
@@ -1352,8 +1352,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3
-        weeks).
+      description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days,
+        3 weeks).
       isArray: false
       name: time_range
       predefined:
@@ -1369,15 +1369,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The IP address or an array of IP addresses for
-        which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
+      description: The IP address or an array of IP addresses for which to search.
+        For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      description: The port or array of ports to
-        search. Used instead of the source/destination port.
+      description: The port or array of ports to search. Used instead of the source/destination
+        port.
       isArray: false
       name: port
       required: false
@@ -1535,57 +1535,53 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: A source IP address or an array of
-        IP addresses for which to search. For example, 1.1.1.1,2.2.2.2.
+      description: A source IP address or an array of IP addresses for which to search.
+        For example, 1.1.1.1,2.2.2.2.
       isArray: false
       name: source_ip
       required: false
       secret: false
     - default: false
-      description: A destination IP address or an array
-        of IP addresses for which to search. For example, 1.1.1.1,2.2.2.2.
+      description: A destination IP address or an array of IP addresses for which
+        to search. For example, 1.1.1.1,2.2.2.2.
       isArray: false
       name: dest_ip
       required: false
       secret: false
     - default: false
-      description: The name of the security policy rule or an array of rule names to search.
+      description: The name of the security policy rule or an array of rule names
+        to search.
       isArray: false
       name: rule_matched
       required: false
       secret: false
     - default: false
-      description: The networking zone or array of zones
-        to search.
+      description: The networking zone or array of zones to search.
       isArray: false
       name: from_zone
       required: false
       secret: false
     - default: false
-      description: The networking zone or array of zones
-        to search.
+      description: The networking zone or array of zones to search.
       isArray: false
       name: to_zone
       required: false
       secret: false
     - default: false
-      description: The source port or array of ports
-        to search.
+      description: The source port or array of ports to search.
       isArray: false
       name: source_port
       required: false
       secret: false
     - default: false
-      description: The network traffic's destination port or array of ports
-        to search.
+      description: The network traffic's destination port or array of ports to search.
       isArray: false
       name: dest_port
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The action or array of actions that the firewall undertook
-        to search.
+      description: The action or array of actions that the firewall undertook to search.
       isArray: false
       name: action
       predefined:
@@ -1759,7 +1755,8 @@ script:
       secret: false
     - default: false
       defaultValue: '''1970-01-01 00:00:00'''
-      description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
+      description: The query start time. For example, start_time="2018-04-26 00:00:00".
+        Default is 1970-01-01 00:00:00.
       isArray: false
       name: start_time
       required: false
@@ -1772,8 +1769,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: First log time (<number> <time unit>. For example, 12 minutes, 7 days, 3
-        weeks).
+      description: First log time (<number> <time unit>. For example, 12 minutes,
+        7 days, 3 weeks).
       isArray: false
       name: time_range
       predefined:
@@ -1789,17 +1786,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: The IP address or an array of IP addresses for
-        which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
+      description: The IP address or an array of IP addresses for which to search.
+        For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      description: The port or array of ports to
-        search. Used instead of the source/destination port.
+      description: The port or array of ports to search. Used instead of the source/destination
+        port.
       isArray: false
       name: port
+      required: false
+      secret: false
+    - default: false
+      description: "This argument allows to perform a LIKE search of the specified\
+        \ values on the Url and Uri fields. \nAn example value will be paloaltonetworks.com,\
+        \ demisto\twhich will provide results like https://apps.paloaltonetworks.com\
+        \ and https://demisto.com"
+      isArray: false
+      name: url
       required: false
       secret: false
     deprecated: false
@@ -1818,14 +1824,14 @@ script:
       description: The application associated with the network traffic.
       type: String
     - contextPath: CDL.Logging.URL.PcapID
-      description: Packet capture (pcap) ID. Used to correlate threat pcap
-        files with extended pcaps taken as a part of the session flow. All threat
-        logs contain either a pcap_id of 0 (no associated pcap), or an ID referencing
-        the extended pcap file.
+      description: Packet capture (pcap) ID. Used to correlate threat pcap files with
+        extended pcaps taken as a part of the session flow. All threat logs contain
+        either a pcap_id of 0 (no associated pcap), or an ID referencing the extended
+        pcap file.
       type: String
     - contextPath: CDL.Logging.URL.DestinationPort
-      description: The network traffic's destination port. If this value is 0, then the
-        app is using its standard port.
+      description: The network traffic's destination port. If this value is 0, then
+        the app is using its standard port.
       type: String
     - contextPath: CDL.Logging.URL.AppCategory
       description: Identifies the high-level family of the application.
@@ -1935,7 +1941,7 @@ script:
     - contextPath: CDL.Logging.URL.TechnologyOfApp
       description: The networking technology used by the identified application.
       type: String
-  dockerimage: demisto/python_pancloud_v2:1.0.0.10071
+  dockerimage: demisto/python_pancloud_v2:1.0.0.10260
   feed: false
   isfetch: true
   longRunning: false
