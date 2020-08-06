@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: f5_v2
+  id: F5 firewall
   version: -1
 configuration:
 - display: Server URL (e.g. 8.8.8.8)
@@ -29,7 +29,7 @@ configuration:
   type: 8
 description: Manages F5 firewall
 display: f5 firewall v2
-name: f5_v2
+name: F5 firewall
 script:
   commands:
   - arguments:

@@ -1,5 +1,5 @@
-id: f5_v2_testplaybook
-name: f5_v2_testplaybook
+id: F5_firewall_v2_testplaybook
+name: F5_firewall_v2_testplaybook
 version: -1
 fromversion: 4.5.0
 starttaskid: '0'
