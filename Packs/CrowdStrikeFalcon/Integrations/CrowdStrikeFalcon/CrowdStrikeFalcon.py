@@ -1201,6 +1201,7 @@ def fetch_incidents():
             raw_res = get_detections_entities(detections_ids)
 
             if "resources" in raw_res:
+                raw_res['type'] = "detections"
                 for detection in demisto.get(raw_res, "resources"):
                     incident = detection_to_incident(detection)
                     incident_date = incident['occurred']
@@ -1267,6 +1268,7 @@ def fetch_incidents():
             raw_res = get_incidents_entities(incidents_ids)
 
             if "resources" in raw_res:
+                raw_res['type'] = "incidents"
                 for incident in demisto.get(raw_res, "resources"):
                     incident_to_context = incident_to_incident_context(incident)
                     incident_date = incident_to_context['occurred']
@@ -2023,19 +2025,19 @@ def refresh_session_command():
 
 def detections_to_human_readable(detections):
     detections_readable_outputs = []
-    for detection in detections['resources']:
+    for detection in detections:
         readable_output = assign_params(first_behavior=detection.get('first_behavior'), status=detection.get('status'),
                                         max_severity=detection.get('max_severity_displayname'),
                                         detection_id=detection.get('detection_id'),
                                         created_time=detection.get('created_timestamp'))
         detections_readable_outputs.append(readable_output)
     headers = ['first_behavior', 'status', 'max_severity', 'detection_id', 'created_time']
-    human_readable = tableToMarkdown('Microsoft CAS Alerts', detections_readable_outputs, headers, removeNull=True)
+    human_readable = tableToMarkdown('CrowdStrike Detections', detections_readable_outputs, headers, removeNull=True)
     return human_readable
 
 
 def list_detection_summaries_command():
-    fetch_query = demisto.params().get('fetch_query')
+    fetch_query = demisto.args().get('fetch_query')
 
     if fetch_query:
         fetch_query = "{query}".format(query=fetch_query)
@@ -2045,19 +2047,19 @@ def list_detection_summaries_command():
     detections_response_data = {}
     if detections_ids:
         detections_response_data = get_detections_entities(detections_ids)
-
-    detections_human_readable = detections_to_human_readable(detections_response_data)
+    detections = [resource for resource in detections_response_data['resources']]
+    detections_human_readable = detections_to_human_readable(detections)
 
     return CommandResults(
         readable_output=detections_human_readable,
         outputs_prefix='CrowdStrike.Detections',
         outputs_key_field='detection_id',
-        outputs=detections_response_data
+        outputs=detections
     )
 
 
 def list_incident_summaries_command():
-    fetch_query = demisto.params().get('fetch_query')
+    fetch_query = demisto.args().get('fetch_query')
 
     if fetch_query:
         fetch_query = "{query}".format(query=fetch_query)

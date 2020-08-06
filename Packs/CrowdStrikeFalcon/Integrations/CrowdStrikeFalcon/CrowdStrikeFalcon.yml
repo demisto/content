@@ -997,11 +997,25 @@ script:
     description: Refresh a session timeout on a single host.
     execution: false
     name: cs-falcon-refresh-session
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Query to filter with
+      isArray: false
+      name: fetch_query
+      required: false
+      secret: false
+    deprecated: false
     description: List of detection summaries
     execution: false
     name: cs-falcon-list-detection-summaries
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Query to filter with
+      isArray: false
+      name: fetch_query
+      required: false
+      secret: false
+    deprecated: false
     description: List of incident summaries
     execution: false
     name: cs-falcon-list-incident-summaries
