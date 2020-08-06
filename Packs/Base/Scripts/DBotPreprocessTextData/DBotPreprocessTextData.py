@@ -81,7 +81,7 @@ def read_file(input_entry_or_string, file_type):
         with open(file_path, 'rb') as f:
             file_content = BytesIO(f.read())
     if file_type.startswith('csv'):
-        return json.loads(pd.read_csv(file_content).fillna('').to_json(orient='records'))
+        return pd.read_csv(file_content).fillna('').to_dict(orient='records')
     elif file_type.startswith('json'):
         return json.loads(file_content.getvalue())
     elif file_type.startswith('pickle'):
