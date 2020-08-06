@@ -84,7 +84,7 @@ references:
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
 
-        if [ "${CIRCLE_BRANCH}" -eq "new_freeze_4_1" ];
+        if [ "${CIRCLE_BRANCH}" == "new_freeze_4_1" ];
         then
           echo 'export NIGHTLY=true' >> $BASH_ENV
         fi
