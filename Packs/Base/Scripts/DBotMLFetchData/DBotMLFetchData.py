@@ -672,6 +672,7 @@ def main():
         incidents_query_args['query'] = '(status:Closed)'
     if 'limit' in args:
         incidents_query_args['limit'] = args['limit']
+    incidents_query_args['fromDate'] = '2 months ago'
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', incidents_query_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
