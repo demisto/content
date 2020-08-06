@@ -3000,7 +3000,6 @@
         "Office365_Feed_Test": "Issue 26455",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
-        "Keylight v2 - Test": "Issue 26462",
         "HybridAnalysis-Test": "Issue 26599",
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
@@ -3019,7 +3018,8 @@
         "Recorded Future Test": "Issue 26741",
         "CirclIntegrationTest": "Issue 25600",
         "Luminate-TestPlaybook": "Issue 27016",
-        "AutoFocus V2 test": "Issue 26464"
+        "AutoFocus V2 test": "Issue 26464",
+        "Claroty - Test": "Issue 27210"
     },
     "skipped_integrations": {
         

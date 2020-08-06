@@ -921,6 +921,36 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
+    def test_multiple_outputs_keys(self):
+        """
+        Given
+        - File has 3 unique keys. sha256, md5 and sha1
+
+        When
+        - creating CommandResults with outputs_key_field=[sha1, sha256, md5]
+
+        Then
+        - entrycontext DT expression contains all 3 unique fields
+        """
+        from CommonServerPython import CommandResults
+
+        files = [
+            {
+                'sha256': '111',
+                'sha1': '111',
+                'md5': '111'
+            },
+            {
+                'sha256': '222',
+                'sha1': '222',
+                'md5': '222'
+            }
+        ]
+        results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
+
+        assert list(results.to_context()['EntryContext'].keys())[0] == \
+               'File(val.sha1 == obj.sha1 && val.sha256 == obj.sha256 && val.md5 == obj.md5)'
+
     def test_readable_only_context(self):
         """
         Given:
