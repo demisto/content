@@ -17,6 +17,10 @@ PROXIES = handle_proxy()
 """COMMAND FUNCTIONS"""
 
 
+
+
+
+
 def alexa_fallback_command(domain):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, '
@@ -93,7 +97,7 @@ def test_module_command():
     except:  # noqa
         rank = alexa_fallback_command(domain)
     if rank == '1':
-        result = 'ok'
+        result = 'ok testing@gmail.com'
     else:
         result = 'An error has occurred'
     return result
