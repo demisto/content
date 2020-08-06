@@ -36,7 +36,7 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   required: false
-#
+  type: 8
 - display: "Incident type"
   name: incident_type
   defaultvalue: event,alert
@@ -69,6 +69,10 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
 script:
   type: python
   commands:
