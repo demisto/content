@@ -124,3 +124,24 @@ def test_decode_arcsight_output_event_ids():
     assert isinstance(d.get('eventId'), str)
     assert isinstance(d.get('baseEventIds'), str)
     assert d == expected
+
+
+def test_filtered():
+    import ArcSightESMv2
+    entries = [
+        {'userAccount': 'abba', 'internalAddress': '127.0.0.2', 'externalLocation': 'Russia',
+         'externalAddress': '1.2.3.4'},
+        {'userAccount': 'abba', 'internalAddress': '127.0.0.1', 'externalLocation': 'USA',
+         'externalAddress': '1.2.3.4'},
+        {'userAccount': 'abba', 'internalAddress': '127.0.0.1', 'externalLocation': 'ISS',
+         'externalAddress': '1.2.3.4'}
+    ]
+    entry_filter = 'userAccount:abba,internalAddress:127.0.0.1'
+    expected_output = [
+        {'userAccount': 'abba', 'internalAddress': '127.0.0.1', 'externalLocation': 'USA',
+         'externalAddress': '1.2.3.4'},
+        {'userAccount': 'abba', 'internalAddress': '127.0.0.1', 'externalLocation': 'ISS',
+         'externalAddress': '1.2.3.4'}
+    ]
+    filtered_entries = ArcSightESMv2.filter_entries(entries, entry_filter)
+    assert filtered_entries == expected_output
