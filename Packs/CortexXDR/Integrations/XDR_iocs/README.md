@@ -5,6 +5,10 @@ Use the Cortex XDR - IOCs feed integration to sync indicators between Cortex XSO
 
 This integration was integrated and tested with Branch: stable-50 of XDR.
 
+## Prerequisites
+
+An API key of type **Advanced** with an **Administrator** role.
+
 ## Configure Cortex XDR - IOC on Cortex XSOAR  
   
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.  
