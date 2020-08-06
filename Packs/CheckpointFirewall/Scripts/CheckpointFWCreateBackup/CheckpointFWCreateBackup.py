@@ -46,7 +46,7 @@ else:
                     entry, 'Contents.system'), 'Query result': result, 'Output': output})
     except Exception as ex:
         res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                    "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + \
+                    "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) +
                                 "\n\nInvalid output:\n" + str(resSSH)})
     demisto.setContext('CheckpointBackup', devicesBackupStarted)
     res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": tbl})
