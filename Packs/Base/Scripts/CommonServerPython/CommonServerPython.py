@@ -2602,7 +2602,7 @@ class CommandResults:
         self.outputs_key_field = outputs_key_field
 
         self._outputs_key_field = None  # type: Optional[List[str]]
-        if outputs_key_field is None or outputs_key_field == '':
+        if not outputs_key_field:
             self._outputs_key_field = None
         elif isinstance(outputs_key_field, STRING_TYPES):
             self._outputs_key_field = [outputs_key_field]
