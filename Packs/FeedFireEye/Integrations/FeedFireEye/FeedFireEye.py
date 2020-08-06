@@ -317,7 +317,7 @@ def get_indicators_command(client: Client, feedTags: list):
     indicators, raw_response = fetch_indicators_command(client, feedTags, limit)
 
     human_readable = tableToMarkdown('Indicators from FireEye Feed:', indicators,
-                                     headers=['value', 'type'], removeNull=True)
+                                     headers=['value', 'type', 'rawJSON'], removeNull=True)
 
     return human_readable, {}, {'raw_response': raw_response}
 
