@@ -899,7 +899,6 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                 updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
                 prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
                 ami.upload_mock_files(build_name, build_number)
-                prints_manager.execute_thread_prints(thread_index)
 
         if playbook_skipped_integration and build_name == 'master':
             comment = 'The following integrations are skipped and critical for the test:\n {}'. \
