@@ -185,7 +185,7 @@ references:
       name: Secrets
       when: always
       command: |
-        demisto-sdk secrets --post-commit --ignore-entropy --prev-ver origin\new_freeze_4_1
+        demisto-sdk secrets --post-commit --ignore-entropy --prev-ver origin/new_freeze_4_1
 
   validate_files_and_yaml: &validate_files_and_yaml
     run:
