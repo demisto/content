@@ -52,7 +52,7 @@ configuration:
   name: parseNotableEventsRaw
   required: false
   type: 8
-- defaultvalue: false
+- defaultvalue: 'false'
   display: Replace with Underscore in Incident Fields
   name: replaceKeys
   required: false
@@ -105,6 +105,13 @@ configuration:
   name: use_requests_handler
   required: false
   type: 8
+- defaultvalue: '1'
+  display: The interval in minutes to fetch incidents. (e.g. 5 would fetch every five
+    minutes)
+  hidden: false
+  name: fetch_interval
+  required: false
+  type: 0
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -389,7 +396,8 @@ script:
       secret: false
     - default: true
       defaultValue: search
-      description: The name of the Splunk application in which to create the KV store. The default is "search".
+      description: The name of the Splunk application in which to create the KV store.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -414,7 +422,8 @@ script:
       secret: false
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      description: The name of the Splunk application that contains the KV store collection.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -446,7 +455,8 @@ script:
       secret: false
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      description: The name of the Splunk application that contains the KV store collection.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -458,7 +468,8 @@ script:
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application in which to create the KV store. The default is "search".
+      description: The name of the Splunk application in which to create the KV store.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -474,7 +485,8 @@ script:
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      description: The name of the Splunk application that contains the KV store collection.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -498,8 +510,9 @@ script:
     name: splunk-kv-store-collection-data-list
     outputs:
     - contextPath: Splunk.KVstoreData
-      description: An array of collection names. Each collection name will have
-        an array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the data in the collection).
+      description: An array of collection names. Each collection name will have an
+        array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the
+        data in the collection).
       type: Unknown
   - arguments:
     - default: true
@@ -523,7 +536,8 @@ script:
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store. The default is "store".
+      description: The name of the Splunk application that contains the KV store.
+        The default is "store".
       isArray: false
       name: app_name
       required: true
@@ -541,7 +555,8 @@ script:
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      description: The name of the Splunk application that contains the KV store collection.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -567,26 +582,28 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Complex query to search in the store with operators such as "and", "or", "not", etc. For more information see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore
+      description: 'Complex query to search in the store with operators such as "and",
+        "or", "not", etc. For more information see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore'
       isArray: false
       name: query
       required: false
       secret: false
     deprecated: false
-    description: Searches for specific objects in a store. Search can be basic key value
-      or a full query.
+    description: Searches for specific objects in a store. Search can be basic key
+      value or a full query.
     execution: false
     name: splunk-kv-store-collection-search-entry
     outputs:
     - contextPath: Splunk.KVstoreData
-      description: An array of collection names. Each collection name will have
-        an array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the data in the collection).
+      description: An array of collection names. Each collection name will have an
+        array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the
+        data in the collection).
       type: Unknown
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The deafult is "search".
+      description: The name of the Splunk application that contains the KV store collection.
+        The deafult is "search".
       isArray: false
       name: app_name
       required: true
@@ -626,10 +643,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Deletes the specified object in store. Search can be basic key value or a full query.
+    description: Deletes the specified object in store. Search can be basic key value
+      or a full query.
     execution: false
     name: splunk-kv-store-collection-delete-entry
-  dockerimage45: demisto/splunksdk:1.0
   dockerimage: demisto/splunksdk:1.0.0.8854
   feed: false
   isfetch: true
@@ -642,5 +659,5 @@ script:
 tests:
 - SplunkPy-Test-V2
 - SplunkPy KV commands
-defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper
+defaultclassifier: SplunkPy
