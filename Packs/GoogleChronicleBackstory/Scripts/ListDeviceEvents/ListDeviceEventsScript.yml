@@ -1,0 +1,30 @@
+args:
+- default: true
+  description: Host Name, IP Address or MAC Address of the asset.
+  isArray: false
+  name: asset_identifier
+  required: true
+  secret: false
+comment: List all of the events discovered within your enterprise on a particular
+  device within 2 hours earlier than the current time.
+commonfields:
+  id: ListDeviceEvents
+  version: -1
+enabled: true
+name: ListDeviceEvents
+script: '-'
+subtype: python3
+system: false
+tags:
+- enhancement
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.5.10455
+runas: DBotWeakRole
+runonce: false
+tests:
+- No tests (auto formatted)
+dependson:
+  must:
+  - '|||gcb-list-events'
+fromversion: 5.0.0
