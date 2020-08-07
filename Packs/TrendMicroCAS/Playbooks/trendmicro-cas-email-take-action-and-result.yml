@@ -1,7 +1,7 @@
 id: TrendMicro CAS - Email take action and the result
 version: -1
 name: TrendMicro CAS - Email take action and the result
-description: This playbook takes action on emails using the "trendmicro-cas-email-take-action" command and returns the results from the "trendmicro-cas-email-action-result-query" command.
+description: This playbook runs various actions on emails, such as deleting and quarantine email messages, using the "trendmicro-cas-email-take-action" command and returns the results from the "trendmicro-cas-email-action-result-query" command.
 starttaskid: "0"
 tasks:
   "0":
