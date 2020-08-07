@@ -1,0 +1,5 @@
+!get-user scim={"id":"U2432468"} using=EnvoyITAdmin
+!create-user scim={"userName":"cortexXoar6Aug@paloaltonetworks.com","name":{"familyName":"cortex27123","givenName":"XoarAug123"},"emails":[{"value":"cotexXoar06Aug@paloaltonetworks.com","type":"work","primary":true}]} using=EnvoyITAdmin
+!update-user oldScim={"id":"U2432468"} newScim={"emails":[{"value":"XoarOkat1234598@okta.example.com","type":"home"}]} using=EnvoyITAdmin
+!enable-user scim={"id":"U2432468"} using=EnvoyITAdmin
+!disable-user scim={"id":"U2432468"} using=EnvoyITAdmin
