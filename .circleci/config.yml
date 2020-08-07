@@ -582,9 +582,13 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+
+                    else
+                      echo "Not AMI run, can't run on this version"
+                  fi
             - *destroy_instances
             - *store_artifacts
   Server 4_5:
@@ -638,9 +642,13 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+
+                    else
+                      echo "Not AMI run, can't run on this version"
+                  fi
             - *destroy_instances
             - *store_artifacts
   Server 5_0:
@@ -695,9 +703,13 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
+                    else
+                      echo "Not AMI run, can't run on this version"
+                  fi
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
 
             - *destroy_instances
             - *store_artifacts
@@ -752,12 +764,16 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
-                  export RETVAL=$?
-                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                  exit $RETVAL
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                      export RETVAL=$?
+                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                      exit $RETVAL
+
+                  else
+                      echo "Not AMI run, can't run on this version"
+                  fi
             - *destroy_instances
             - *store_artifacts
   Server 6_0:
@@ -816,9 +832,7 @@ jobs:
                     echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
                   fi
                   source $BASH_ENV
-                  PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
                   export RETVAL=$?
                   cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                   exit $RETVAL
