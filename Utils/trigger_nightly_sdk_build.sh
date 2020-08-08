@@ -4,7 +4,7 @@ _branch=$1
 _circle_token=$2
 
 trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
-
+echo "testing"
 
 post_data=$(cat <<EOF
 {
