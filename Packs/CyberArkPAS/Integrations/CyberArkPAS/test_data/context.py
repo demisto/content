@@ -1,5 +1,5 @@
 ADD_USER_CONTEXT = {
-  "CyberArkPAS.Users.123(val.id == obj.id)": {
+  "CyberArkPAS.Users(val.id == obj.id)": {
     "authenticationMethod": [
       "AuthTypePass"
     ],
@@ -58,7 +58,7 @@ ADD_USER_CONTEXT = {
 }
 
 UPDATE_USER_CONTEXT = {
-  "CyberArkPAS.Users.123(val.id == obj.id)": {
+  "CyberArkPAS.Users(val.id == obj.id)": {
     "authenticationMethod": [
       "AuthTypePass"
     ],
@@ -163,7 +163,7 @@ GET_USERS_CONTEXT = {
 }
 
 ADD_SAFE_CONTEXT = {
-  "CyberArkPAS.Safes.TestSafe(val.SafeName == obj.SafeName)": {
+  "CyberArkPAS.Safes(val.SafeName == obj.SafeName)": {
     "AutoPurgeEnabled": False,
     "Description": "safe for tests",
     "Location": "\\",
@@ -176,7 +176,7 @@ ADD_SAFE_CONTEXT = {
 }
 
 UPDATE_SAFE_CONTEXT = {
-  "CyberArkPAS.Safes.TestSafe(val.SafeName == obj.SafeName)": {
+  "CyberArkPAS.Safes(val.SafeName == obj.SafeName)": {
     "AutoPurgeEnabled": False,
     "Description": "UpdatedSafe",
     "Location": "\\",
@@ -189,7 +189,7 @@ UPDATE_SAFE_CONTEXT = {
 }
 
 GET_SAFE_BY_NAME_CONTEXT = {
-  "CyberArkPAS.Safes.TestSafe(val.SafeName == obj.SafeName)": {
+  "CyberArkPAS.Safes(val.SafeName == obj.SafeName)": {
     "AutoPurgeEnabled": False,
     "Description": "safe for tests",
     "Location": "\\",
@@ -217,7 +217,7 @@ GET_LIST_SAFES_CONTEXT = {
     }]}
 
 ADD_SAFE_MEMBER_CONTEXT = {
-  "CyberArkPAS.TestSafe.TestUser(val.TestUser == obj.TestUser)": {
+  "CyberArkPAS.Safes.Members": {
     "MemberName": "TestUser",
     "MembershipExpirationDate": "",
     "Permissions": [
@@ -311,7 +311,7 @@ ADD_SAFE_MEMBER_CONTEXT = {
 }
 
 UPDATE_SAFE_MEMBER_CONTEXT = {
-  "CyberArkPAS.TestSafe.TestUser(val.TestUser == obj.TestUser)": {
+  "CyberArkPAS.Safes.Members(val.TestUser == obj.TestUser)": {
     "MemberName": "TestUser",
     "MembershipExpirationDate": "",
     "Permissions": [
@@ -405,7 +405,7 @@ UPDATE_SAFE_MEMBER_CONTEXT = {
 }
 
 LIST_SAFE_MEMBER_CONTEXT = {
-  "CyberArkPAS.TestSafe.Members(val.MemberName == obj.MemberName)": [
+  "CyberArkPAS.Safes.Members(val.MemberName == obj.MemberName)": [
     {
       "IsExpiredMembershipEnable": False,
       "IsPredefinedUser": True,
@@ -471,7 +471,7 @@ LIST_SAFE_MEMBER_CONTEXT = {
 }
 
 ADD_ACCOUNT_CONTEXT = {
-  "CyberArkPAS.Accounts.77_4(val.id == obj.id)": {
+  "CyberArkPAS.Accounts(val.id == obj.id)": {
     "address": "/",
     "categoryModificationTime": 1594835018,
     "createdTime": 1594838456,
@@ -489,7 +489,7 @@ ADD_ACCOUNT_CONTEXT = {
 }
 
 UPDATE_ACCOUNT_CONTEXT = {
-  "CyberArkPAS.Accounts.77_4(val.id == obj.id)": {
+  "CyberArkPAS.Accounts(val.id == obj.id)": {
     "address": "/",
     "categoryModificationTime": 1594835018,
     "createdTime": 1594838456,
@@ -545,7 +545,7 @@ GET_LIST_ACCOUNT_CONTEXT = {
 }
 
 GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT = {
-  "CyberArkPAS.77_4.Activities": [
+  "CyberArkPAS.Activities": [
     {
       "Action": "Rename File",
       "ActionID": 124,
@@ -561,6 +561,7 @@ GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT = {
       "ActionID": 294,
       "Alert": False,
       "ClientID": "PVWA",
+      "Date": 1594838456,
       "Date": 1594838456,
       "MoreInfo": "",
       "Reason": "",

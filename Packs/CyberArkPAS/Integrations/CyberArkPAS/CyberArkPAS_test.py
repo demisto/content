@@ -125,7 +125,7 @@ GET_LIST_ACCOUNT_ACTIVITIES_ARGS = {
     (get_list_account_activity_command, GET_LIST_ACCOUNT_ACTIVITIES_ARGS, GET_LIST_ACCOUNT_ACTIVITIES_RAW_RESPONSE,
      GET_LIST_ACCOUNT_ACTIVITIES_CONTEXT),
 ])
-def test_cyberark_aim_commands(command, args, http_response, context, mocker):
+def test_cyberark_pas_commands(command, args, http_response, context, mocker):
     """Unit test
     Given
     - demisto args
