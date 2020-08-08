@@ -81,6 +81,7 @@ configuration:
   name: feed
   required: false
   type: 8
+  defaultvalue: 'true'
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability
@@ -566,7 +567,7 @@ script:
     - contextPath: SafeBreach.Test.ScheduledTime
       description: Time when the test was triggered.
       type: Datetime
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10289
   feed: true
   isfetch: false
   longRunning: false
