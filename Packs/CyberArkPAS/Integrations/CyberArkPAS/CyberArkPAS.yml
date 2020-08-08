@@ -43,8 +43,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Privileged Access Security solution provides a ‘Safe Haven’ within your enterprise where all your
-  administrative passwords can be securely archived, transferred and shared by authorized users.
+description: The Privileged Access Security solution provides a ‘Safe Haven’ within
+  your enterprise where all your administrative passwords can be securely archived,
+  transferred and shared by authorized users.
 display: CyberArk PAS
 name: CyberArkPAS
 script:
@@ -185,6 +186,49 @@ script:
     description: Add a new user to the vault.
     execution: false
     name: cyberark-pas-user-add
+    outputs:
+    - contextPath: CyberArkPAS.Users.id
+      description: The unique id of the user.
+      type: Number
+    - contextPath: CyberArkPAS.Users.authenticationMethod
+      description: The users authentication method.
+      type: String
+    - contextPath: CyberArkPAS.Users.changePassOnNextLogon
+      description: Whether or not the user must change their password.
+      type: Boolean
+    - contextPath: CyberArkPAS.Users.description
+      description: Description of the user.
+      type: String
+    - contextPath: CyberArkPAS.Users.enableUser
+      description: Whether or not the user is enabled.
+      type: Boolean
+    - contextPath: CyberArkPAS.Users.expiryDate
+      description: The expiry date of the user.
+      type: Number
+    - contextPath: CyberArkPAS.Users.internet.businessEmail
+      description: The users email.
+      type: String
+    - contextPath: CyberArkPAS.Users.lastSuccessfulLoginDate
+      description: The last successful login date of the user.
+      type: Number
+    - contextPath: CyberArkPAS.Users.location
+      description: The location in the vault where the user will be created
+      type: String
+    - contextPath: CyberArkPAS.Users.personalDetails.profession
+      description: The profession of the user.
+      type: String
+    - contextPath: CyberArkPAS.Users.suspended
+      description: Whether or not the user is suspended.
+      type: Boolean
+    - contextPath: CyberArkPAS.Users.userType
+      description: The type of the user.
+      type: String
+    - contextPath: CyberArkPAS.Users.username
+      description: The name of the user.
+      type: String
+    - contextPath: CyberArkPAS.Users.vaultAuthorization
+      description: The permissions of the user.
+      type: String
   - arguments:
     - default: false
       description: The name of the user.
@@ -300,7 +344,7 @@ script:
     - default: false
       description: |-
         The user’s distinguished name.
-        The usage is for PKI authentication, this will match the certificate Subject Name or domain name.
+        The usage is for PKI authentication, this will match the certificate subject name or domain name.
       isArray: false
       name: distinguished_name
       required: false
@@ -321,6 +365,49 @@ script:
     description: Updates an existing vault user.
     execution: false
     name: cyberark-pas-user-update
+    outputs:
+    - contextPath: CyberArkPAS.Users.id
+      description: The unique id of the user.
+      type: Number
+    - contextPath: CyberArkPAS.Users.authenticationMethod
+      description: The users authentication method.
+      type: String
+    - contextPath: CyberArkPAS.Users.changePassOnNextLogon
+      description: Whether or not the user must change their password.
+      type: Boolean
+    - contextPath: CyberArkPAS.Users.description
+      description: Description of the user.
+      type: String
+    - contextPath: CyberArkPAS.Users.enableUser
+      description: Whether or not the user is enabled.
+      type: Boolean
+    - contextPath: CyberArkPAS.Users.expiryDate
+      description: The expiry date of the user.
+      type: Number
+    - contextPath: CyberArkPAS.Users.internet.businessEmail
+      description: The users email.
+      type: String
+    - contextPath: CyberArkPAS.Users.lastSuccessfulLoginDate
+      description: The last successful login date of the user.
+      type: Number
+    - contextPath: CyberArkPAS.Users.location
+      description: The location in the vault where the user will be created
+      type: String
+    - contextPath: CyberArkPAS.Users.personalDetails.profession
+      description: The profession of the user.
+      type: String
+    - contextPath: CyberArkPAS.Users.suspended
+      description: Whether or not the user is suspended.
+      type: Boolean
+    - contextPath: CyberArkPAS.Users.userType
+      description: The type of the user.
+      type: String
+    - contextPath: CyberArkPAS.Users.username
+      description: The name of the user.
+      type: String
+    - contextPath: CyberArkPAS.Users.vaultAuthorization
+      description: The permissions of the user.
+      type: String
   - arguments:
     - default: false
       description: The user's unique ID.
@@ -332,6 +419,10 @@ script:
     description: Delete a specific user in the vault.
     execution: false
     name: cyberark-pas-user-delete
+    outputs:
+    - contextPath: CyberArkPAS.Safes.Deleted
+      description: Whether the safe was deleted.
+      type: Boolean
   - arguments:
     - default: false
       description: Retrieve users using filters.
@@ -349,6 +440,49 @@ script:
     description: Returns a list of all existing users in the vault.
     execution: false
     name: cyberark-pas-users-list
+    outputs:
+    - contextPath: CyberArkPAS.Users.id
+      description: The unique ids of the users.
+      type: Number
+    - contextPath: CyberArkPAS.Users.authenticationMethod
+      description: The userss authentication methods.
+      type: String
+    - contextPath: CyberArkPAS.Users.changePassOnNextLogon
+      description: Whether or not the users must change their password.
+      type: Boolean
+    - contextPath: CyberArkPAS.Users.description
+      description: Descriptions of the users.
+      type: String
+    - contextPath: CyberArkPAS.Users.enableUser
+      description: Whether or not the users are enabled.
+      type: Boolean
+    - contextPath: CyberArkPAS.Users.expiryDate
+      description: The expiry dates of the users.
+      type: Number
+    - contextPath: CyberArkPAS.Users.internet.businessEmail
+      description: The userss emails.
+      type: String
+    - contextPath: CyberArkPAS.Users.lastSuccessfulLoginDate
+      description: The last successful login dates of the users.
+      type: Number
+    - contextPath: CyberArkPAS.Users.location
+      description: The locations in the vault where the users were created
+      type: String
+    - contextPath: CyberArkPAS.Users.personalDetails.profession
+      description: The professions of the users.
+      type: String
+    - contextPath: CyberArkPAS.Users.suspended
+      description: Whether or not the users are suspended.
+      type: Boolean
+    - contextPath: CyberArkPAS.Users.userType
+      description: The types of the users.
+      type: String
+    - contextPath: CyberArkPAS.Users.username
+      description: The names of the users.
+      type: String
+    - contextPath: CyberArkPAS.Users.vaultAuthorization
+      description: The permissions of the users.
+      type: String
   - arguments:
     - default: false
       description: The user's unique ID.
@@ -365,6 +499,30 @@ script:
     description: Returns information about all of the user’s safes in the vault.
     execution: false
     name: cyberark-pas-safes-list
+    outputs:
+    - contextPath: CyberArkPAS.Safes.SafeName
+      description: Names of the safes.
+      type: String
+    - contextPath: CyberArkPAS.Safes.Description
+      description: Descriptions of the safes.
+      type: String
+    - contextPath: CyberArkPAS.Safes.Location
+      description: The locations of the safes.
+      type: String
+    - contextPath: CyberArkPAS.Safes.ManagingCPM
+      description: The names of the CPM user who will manage the safes.
+      type: String
+    - contextPath: CyberArkPAS.Safes.NumberOfDaysRetention
+      description: The number of retained versions of every password that is stored
+        in the safes.
+      type: Number
+    - contextPath: CyberArkPAS.Safes.NumberOfVersionsRetention
+      description: The number of days for which password versions are saved in the
+        safes.
+      type: Number
+    - contextPath: CyberArkPAS.Safes.OLACEnabled
+      description: Whether or not to enable Object Level Access Control for the safes.
+      type: Boolean
   - arguments:
     - default: false
       description: The name of the safe about which information is returned.
@@ -376,6 +534,30 @@ script:
     description: Return information about a specific safe in the vault.
     execution: false
     name: cyberark-pas-safe-get-by-name
+    outputs:
+    - contextPath: CyberArkPAS.Safes.SafeName
+      description: Name of the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.Description
+      description: Description of the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.Location
+      description: The location of the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.ManagingCPM
+      description: The name of the CPM user who will manage the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.NumberOfDaysRetention
+      description: The number of retained versions of every password that is stored
+        in the safe.
+      type: Number
+    - contextPath: CyberArkPAS.Safes.NumberOfVersionsRetention
+      description: The number of days for which password versions are saved in the
+        safe.
+      type: Number
+    - contextPath: CyberArkPAS.Safes.OLACEnabled
+      description: Whether or not to enable Object Level Access Control for the safe.
+      type: Boolean
   - arguments:
     - default: false
       description: Name of a safe to create.
@@ -399,7 +581,7 @@ script:
     - default: false
       description: The name of the CPM user who will manage the new safe.
       isArray: false
-      name: managing_cmp
+      name: managing_cpm
       required: false
       secret: false
     - default: false
@@ -423,9 +605,33 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add a new Safe to the vault.
+    description: Add a new safe to the vault.
     execution: false
     name: cyberark-pas-safe-add
+    outputs:
+    - contextPath: CyberArkPAS.Safes.SafeName
+      description: Name of the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.Description
+      description: Description of the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.Location
+      description: The location of the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.ManagingCPM
+      description: The name of the CPM user who will manage the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.NumberOfDaysRetention
+      description: The number of retained versions of every password that is stored
+        in the safe.
+      type: Number
+    - contextPath: CyberArkPAS.Safes.NumberOfVersionsRetention
+      description: The number of days for which password versions are saved in the
+        safe.
+      type: Number
+    - contextPath: CyberArkPAS.Safes.OLACEnabled
+      description: Whether or not to enable Object Level Access Control for the safe.
+      type: Boolean
   - arguments:
     - default: false
       description: The name of the safe that will be updated.
@@ -434,34 +640,34 @@ script:
       required: true
       secret: false
     - default: false
-      description: Description of the new Safe.
+      description: Description of the updated safe.
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: Whether or not to enable Object Level Access Control for the new
-        Safe.
+      description: Whether or not to enable Object Level Access Control for the updated
+        safe.
       isArray: false
       name: OLAC_enabled
       required: false
       secret: false
     - default: false
-      description: The name of the CPM user who will manage the new Safe.
+      description: The name of the CPM user who will manage the updated safe.
       isArray: false
-      name: managing_cmp
+      name: managing_cpm
       required: false
       secret: false
     - default: false
       description: The number of retained versions of every password that is stored
-        in the Safe.
+        in the safe.
       isArray: false
       name: number_of_versions_retention
       required: false
       secret: false
     - default: false
       description: The number of days for which password versions are saved in the
-        Safe.
+        safe.
       isArray: false
       name: number_of_days_retention
       required: false
@@ -482,6 +688,30 @@ script:
     description: Update a single safe in the vault.
     execution: false
     name: cyberark-pas-safe-update
+    outputs:
+    - contextPath: CyberArkPAS.Safes.SafeName
+      description: Name of the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.Description
+      description: Description of the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.Location
+      description: The location of the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.ManagingCPM
+      description: The name of the CPM user who will manage the safe.
+      type: String
+    - contextPath: CyberArkPAS.Safes.NumberOfDaysRetention
+      description: The number of retained versions of every password that is stored
+        in the safe.
+      type: Number
+    - contextPath: CyberArkPAS.Safes.NumberOfVersionsRetention
+      description: The number of days for which password versions are saved in the
+        safe.
+      type: Number
+    - contextPath: CyberArkPAS.Safes.OLACEnabled
+      description: Whether or not to enable Object Level Access Control for the safe.
+      type: Boolean
   - arguments:
     - default: false
       description: Name of the safe that will be deleted.
@@ -493,6 +723,10 @@ script:
     description: Delete a safe from the vault.
     execution: false
     name: cyberark-pas-safe-delete
+    outputs:
+    - contextPath: CyberArkPAS.Safes.Deleted
+      description: Whether the safe was deleted.
+      type: Boolean
   - arguments:
     - default: false
       description: The name of the safe whose safe members will be listed.
@@ -504,6 +738,19 @@ script:
     description: Return a list of the members of the safe.
     execution: false
     name: cyberark-pas-safe-members-list
+    outputs:
+      - contextPath: CyberArkPAS.Safes.Members.MemberName
+        description: Names of the safe members.
+        type: String
+      - contextPath: CyberArkPAS.Safes.Members.MembershipExpirationDate
+        description: Expiration dates of the safe members.
+        type: Number
+      - contextPath: CyberArkPAS.Safes.Members.Permissions
+        description: Permissions of the safe members.
+        type: Unknown
+      - contextPath: CyberArkPAS.Safes.Members.SearchIn
+        description: The Vault or Domain where the users or groups was found.
+        type: String
   - arguments:
     - default: false
       description: The name of the user to add as a safe member.
@@ -559,6 +806,19 @@ script:
     description: Add an existing user as a safe member.
     execution: false
     name: cyberark-pas-safe-member-add
+    outputs:
+      - contextPath: CyberArkPAS.Safes.Members.MemberName
+        description: Name of the safe member.
+        type: String
+      - contextPath: CyberArkPAS.Safes.Members.MembershipExpirationDate
+        description: Expiration date of the safe member.
+        type: Number
+      - contextPath: CyberArkPAS.Safes.Members.Permissions
+        description: Permissions of the safe member.
+        type: Unknown
+      - contextPath: CyberArkPAS.Safes.Members.SearchIn
+        description: The Vault or Domain where the user or group was found.
+        type: String
   - arguments:
     - default: false
       description: Member name that will be updated.
@@ -607,6 +867,19 @@ script:
     description: Update an existing safe member.
     execution: false
     name: cyberark-pas-safe-member-update
+    outputs:
+      - contextPath: CyberArkPAS.Safes.Members.MemberName
+        description: Name of the safe member.
+        type: String
+      - contextPath: CyberArkPAS.Safes.Members.MembershipExpirationDate
+        description: Expiration date of the safe member.
+        type: Number
+      - contextPath: CyberArkPAS.Safes.Members.Permissions
+        description: Permissions of the safe member.
+        type: Unknown
+      - contextPath: CyberArkPAS.Safes.Members.SearchIn
+        description: The Vault or Domain where the user or group was found.
+        type: String
   - arguments:
     - default: false
       description: The name of the safe to add a member to.
@@ -624,6 +897,10 @@ script:
     description: Remove a specific member from a safe.
     execution: false
     name: cyberark-pas-safe-member-delete
+    outputs:
+      - contextPath: CyberArkPAS.Safes.Members.Deleted
+        description: Whether the safe member was deleted.
+        type: Boolean
   - arguments:
     - default: false
       description: The name of the account.
@@ -719,6 +996,37 @@ script:
     description: Add a new privileged account or SSH key to the vault.
     execution: false
     name: cyberark-pas-account-add
+    outputs:
+      - contextPath: CyberArkPAS.Accounts.id
+        description: The unique id of the account.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.categoryModificationTime
+        description: Last modified date of the account.
+        type: Number
+      - contextPath: CyberArkPAS.Accounts.createdTime
+        description: Create date of the account.
+        type: Number
+      - contextPath: CyberArkPAS.Accounts.name
+        description: The name of the account.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.platformId
+        description: The platform assigned to this account.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.safeName
+        description: The safe where the account is created.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.secretManagement
+        description: Whether the account secret is automatically managed by the CPM.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.secretType
+        description: The type of password.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.userName
+        description: Account user's name.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.address
+        description: The name or address of the machine where the account will be used.
+        type: String
   - arguments:
     - default: false
       description: The unique id of the account to delete.
@@ -730,6 +1038,10 @@ script:
     description: Delete a specific account in the vault.
     execution: false
     name: cyberark-pas-account-delete
+    outputs:
+      - contextPath: CyberArkPAS.Accounts.Deleted
+        description: Whether the safe was deleted.
+        type: Boolean
   - arguments:
     - default: false
       description: The unique id of the account to update.
@@ -765,6 +1077,37 @@ script:
     description: Update an existing account's details.
     execution: false
     name: cyberark-pas-account-update
+    outputs:
+      - contextPath: CyberArkPAS.Accounts.id
+        description: The unique id of the account.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.categoryModificationTime
+        description: Last modified date of the account.
+        type: Number
+      - contextPath: CyberArkPAS.Accounts.createdTime
+        description: Create date of the account.
+        type: Number
+      - contextPath: CyberArkPAS.Accounts.name
+        description: The name of the account.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.platformId
+        description: The platform assigned to this account.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.safeName
+        description: The safe where the account is created.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.secretManagement
+        description: Whether the account secret is automatically managed by the CPM.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.secretType
+        description: The type of password.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.userName
+        description: Account user's name.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.address
+        description: The name or address of the machine where the account will be used.
+        type: String
   - arguments:
     - default: false
       description: |-
@@ -809,6 +1152,37 @@ script:
     description: Return a list of all the accounts in the vault.
     execution: false
     name: cyberark-pas-accounts-list
+    outputs:
+      - contextPath: CyberArkPAS.Accounts.id
+        description: The unique ids of the accounts.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.categoryModificationTime
+        description: Last modified dates of the accounts.
+        type: Number
+      - contextPath: CyberArkPAS.Accounts.createdTime
+        description: Create dates of the accounts.
+        type: Number
+      - contextPath: CyberArkPAS.Accounts.name
+        description: The names of the accounts.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.platformId
+        description: The platforms assigned to this accounts.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.safeName
+        description: The safes where the accounts were created.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.secretManagement
+        description: Whether the accounts secrets is automatically managed by the CPM.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.secretType
+        description: The type of passwords.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.userName
+        description: Accounts user's names.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.address
+        description: The names or addresses of the machine where the accounts are used.
+        type: String
   - arguments:
     - default: false
       description: The id of the account whose activities will be retrieved.
@@ -821,6 +1195,31 @@ script:
       its account id.
     execution: false
     name: cyberark-pas-account-get-list-activity
+    outputs:
+      - contextPath: CyberArkPAS.Activities.Action
+        description: The activity that was performed.
+        type: String
+      - contextPath: CyberArkPAS.Activities.ActionID
+        description: The code identification of the specific activity.
+        type: Number
+      - contextPath: CyberArkPAS.Activities.Alert
+        description: Whether or not the activity cause an alert.
+        type: Boolean
+      - contextPath: CyberArkPAS.Activities.ClientID
+        description: The name of the account.
+        type: String
+      - contextPath: CyberArkPAS.Activities.Date
+        description: Create date of the account.
+        type: Number
+      - contextPath: CyberArkPAS.Activities.MoreInfo
+        description: More information about the activity.
+        type: String
+      - contextPath: CyberArkPAS.Activities.Reason
+        description: The reason given by the user for the activity.
+        type: String
+      - contextPath: CyberArkPAS.Activities.User
+        description: The user who performed the activity.
+        type: String
   - arguments:
     - default: false
       description: The unique ID of the account.
@@ -901,7 +1300,9 @@ script:
       required: true
       secret: false
     - default: false
+      defaultValue: '50'
       description: The number of events that will be shown, from newest to oldest.
+        Default is 50.
       isArray: false
       name: limit
       required: false
@@ -910,6 +1311,28 @@ script:
     description: Returns all PTA security events.
     execution: false
     name: cyberark-pas-security-events-get
+    outputs:
+      - contextPath: CyberArkPAS.SecurityEvents.id
+        description: The unique id of the security events.
+        type: Number
+      - contextPath: CyberArkPAS.SecurityEvents.additionalData
+        description: Additional data about the security events.
+        type: String
+      - contextPath: CyberArkPAS.SecurityEvents.audits.createTime
+        description: The create time the security events.
+        type: Number
+      - contextPath: CyberArkPAS.SecurityEvents.lastUpdateTime
+        description: The last update time the security events.
+        type: Number
+      - contextPath: CyberArkPAS.SecurityEvents.mStatus
+        description: The status of the security events.
+        type: String
+      - contextPath: CyberArkPAS.SecurityEvents.score
+        description: The score of the security events.
+        type: Number
+      - contextPath: CyberArkPAS.SecurityEvents.type
+        description: The type of the security events.
+        type: String
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true

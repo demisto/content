@@ -249,7 +249,7 @@ class Client(BaseClient):
                  safe_name: str,
                  description: str,
                  OLAC_enabled: str,
-                 managing_cmp: str,
+                 managing_cpm: str,
                  number_of_versions_retention: str,
                  number_of_days_retention: str,
                  location: str
@@ -260,7 +260,7 @@ class Client(BaseClient):
             "SafeName": safe_name,
             "Description": description,
             "OLACEnabled": OLAC_enabled == "true",
-            "ManagingCPM": managing_cmp,
+            "ManagingCPM": managing_cpm,
             "NumberOfVersionsRetention": number_of_versions_retention,
             "NumberOfDaysRetention": number_of_days_retention,
             "Location": location
@@ -272,7 +272,7 @@ class Client(BaseClient):
                     safe_new_name: str,
                     description: str,
                     OLAC_enabled: str,
-                    managing_cmp: str,
+                    managing_cpm: str,
                     number_of_versions_retention: str,
                     number_of_days_retention: str,
                     location: str = ""
@@ -284,7 +284,7 @@ class Client(BaseClient):
             "SafeName": safe_new_name,
             "Description": description,
             "OLACEnabled": OLAC_enabled == "true",
-            "ManagingCPM": managing_cmp,
+            "ManagingCPM": managing_cpm,
             "NumberOfVersionsRetention": number_of_versions_retention,
             "NumberOfDaysRetention": number_of_days_retention,
             "Location": location
@@ -621,10 +621,9 @@ def add_user_command(
                                change_password_on_the_next_logon, password_never_expires, vault_authorization_list,
                                description, email, first_name, last_name, enable_user, profession, distinguished_name,
                                location)
-    id = response.get("id")
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArkPAS.Users.{id}',
+        outputs_prefix='CyberArkPAS.Users',
         outputs_key_field='id',
         outputs=response
     )
@@ -683,10 +682,9 @@ def update_user_command(
                                   description, email, first_name, last_name, enable_user, profession,
                                   distinguished_name,
                                   location)
-    user_id = response.get("id")
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArkPAS.Users.{user_id}',
+        outputs_prefix='CyberArkPAS.Users',
         outputs_key_field='id',
         outputs=response
     )
@@ -706,9 +704,9 @@ def delete_user_command(
     client.delete_user(user_id)
     return CommandResults(
         readable_output=f"User {user_id} was deleted",
-        outputs_prefix=f'CyberArkPAS.Users.{user_id}',
+        outputs_prefix='CyberArkPAS.Users',
         outputs_key_field='id',
-        outputs={"id": user_id, "deleted": True}
+        outputs={"id": user_id, "Deleted": True}
     )
 
 
@@ -777,7 +775,7 @@ def add_safe_command(
         safe_name: str,
         description: str = "",
         OLAC_enabled: str = "true",
-        managing_cmp: str = "",
+        managing_cpm: str = "",
         number_of_versions_retention: str = "",
         number_of_days_retention: str = "",
         location: str = ""
@@ -787,17 +785,17 @@ def add_safe_command(
     :param safe_name: Name of a safe to create.
     :param description: Description of the new safe.
     :param OLAC_enabled: Whether or not to enable Object Level Access Control for the new safe.
-    :param managing_cmp: The name of the CPM user who will manage the new safe.
+    :param managing_cpm: The name of the CPM user who will manage the new safe.
     :param number_of_versions_retention: The number of retained versions of every password that is stored in the safe.
     :param number_of_days_retention: The number of days for which password versions are saved in the safe.
     :param location: The location of the safe.
     :return: CommandResults
     """
-    response = client.add_safe(safe_name, description, OLAC_enabled, managing_cmp, number_of_versions_retention,
+    response = client.add_safe(safe_name, description, OLAC_enabled, managing_cpm, number_of_versions_retention,
                                number_of_days_retention, location)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
+        outputs_prefix='CyberArkPAS.Safes',
         outputs_key_field='SafeName',
         outputs=response
     )
@@ -810,7 +808,7 @@ def update_safe_command(
         safe_new_name: str = "",
         description: str = "",
         OLAC_enabled: str = "true",
-        managing_cmp: str = "",
+        managing_cpm: str = "",
         number_of_versions_retention: str = "",
         number_of_days_retention: str = "",
         location: str = ""
@@ -821,18 +819,18 @@ def update_safe_command(
     :param safe_new_name: The new name of the safe.
     :param description: Description of the new safe.
     :param OLAC_enabled: Whether or not to enable Object Level Access Control for the new safe.
-    :param managing_cmp: The name of the CPM user who will manage the new safe.
+    :param managing_cpm: The name of the CPM user who will manage the new safe.
     :param number_of_versions_retention: The number of retained versions of every password that is stored in the safe.
     :param number_of_days_retention: The number of days for which password versions are saved in the safe.
     :param location: The location of the safe.
     :return: CommandResults
     """
-    response = client.update_safe(safe_name, safe_new_name, description, OLAC_enabled, managing_cmp,
+    response = client.update_safe(safe_name, safe_new_name, description, OLAC_enabled, managing_cpm,
                                   number_of_versions_retention,
                                   number_of_days_retention, location)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
+        outputs_prefix='CyberArkPAS.Safes',
         outputs_key_field='SafeName',
         outputs=response
     )
@@ -852,9 +850,9 @@ def delete_safe_command(
     client.delete_safe(safe_name)
     return CommandResults(
         readable_output=f"Safe {safe_name} was deleted",
-        outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
+        outputs_prefix='CyberArkPAS.Safes',
         outputs_key_field='SafeName',
-        outputs={"SafeName": safe_name, "deleted": True}
+        outputs={"SafeName": safe_name, "Deleted": True}
     )
 
 
@@ -870,7 +868,7 @@ def get_safe_by_name_command(
     response = client.get_safe_by_name(safe_name)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArkPAS.Safes.{safe_name}',
+        outputs_prefix='CyberArkPAS.Safes',
         outputs_key_field='SafeName',
         outputs=response
     )
@@ -893,7 +891,7 @@ def list_safe_members_command(
     results = CommandResults(
         raw_response=response,
         readable_output=tableToMarkdown(headline, members),
-        outputs_prefix=f'CyberArkPAS.{safe_name}.Members',
+        outputs_prefix='CyberArkPAS.Safes.Members',
         outputs_key_field='MemberName',
         outputs=members
     )
@@ -924,8 +922,7 @@ def add_safe_member_command(
                                       permissions_list, search_in)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArkPAS.{safe_name}.{member_name}',
-        outputs_key_field=member_name,
+        outputs_prefix='CyberArkPAS.Safes.Members',
         outputs=response.get("member")
     )
     return results
@@ -953,7 +950,7 @@ def update_safe_member_command(
                                          membership_expiration_date, permissions_list)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArkPAS.{safe_name}.{member_name}',
+        outputs_prefix='CyberArkPAS.Safes.Members',
         outputs_key_field=member_name,
         outputs=response.get("member")
     )
@@ -975,9 +972,9 @@ def delete_safe_member_command(
     client.delete_safe_member(safe_name, member_name)
     return CommandResults(
         readable_output=f"Member {member_name} was deleted from {safe_name} safe",
-        outputs_prefix=f'CyberArkPAS.{safe_name}.{member_name}',
+        outputs_prefix='CyberArkPAS.Safes.Members',
         outputs_key_field='MemberName',
-        outputs={"MemberName": member_name, "deleted": True}
+        outputs={"MemberName": member_name, "Deleted": True}
     )
 
 
@@ -1018,7 +1015,7 @@ def add_account_command(
                                   access_restricted_to_remote_machines)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArkPAS.Accounts.{response.get("id")}',
+        outputs_prefix='CyberArkPAS.Accounts',
         outputs_key_field='id',
         outputs=response
     )
@@ -1045,7 +1042,7 @@ def update_account_command(
     response = client.update_account(account_id, account_name, address, username, platform_id)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArkPAS.Accounts.{response.get("id")}',
+        outputs_prefix='CyberArkPAS.Accounts',
         outputs_key_field='id',
         outputs=response
     )
@@ -1065,9 +1062,9 @@ def delete_account_command(
     client.delete_account(account_id)
     return CommandResults(
         readable_output=f"Account {account_id} was deleted",
-        outputs_prefix=f'CyberArkPAS.Accounts.{account_id}',
+        outputs_prefix='CyberArkPAS.Accounts',
         outputs_key_field='id',
-        outputs={"id": account_id, "deleted": True}
+        outputs={"id": account_id, "Deleted": True}
     )
 
 
@@ -1114,7 +1111,7 @@ def get_list_account_activity_command(
     response = client.get_list_account_activity(account_id)
     results = CommandResults(
         raw_response=response,
-        outputs_prefix=f'CyberArkPAS.{account_id}.Activities',
+        outputs_prefix='CyberArkPAS.Activities',
         outputs_key_field='',
         outputs=response.get("Activities")
     )
@@ -1193,7 +1190,7 @@ def reconcile_credentials_command(
 def get_security_events_command(
         client: Client,
         start_time: str,
-        limit: str
+        limit: str = "50"
 ) -> CommandResults:
     """Returns all PTA security events.
     :param client: The client object with an access token
@@ -1218,7 +1215,7 @@ def get_security_events_command(
     results = CommandResults(
         outputs=events_data,
         raw_response=events_data,
-        outputs_prefix='CyberArkPAS.Accounts',
+        outputs_prefix='CyberArkPAS.SecurityEvents',
         outputs_key_field='id',
     )
     return results
