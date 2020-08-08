@@ -2602,12 +2602,12 @@ class CommandResults:
         self.outputs_key_field = outputs_key_field
 
         self._outputs_key_field = None  # type: Optional[List[str]]
-        if isinstance(outputs_key_field, STRING_TYPES):
+        if not outputs_key_field:
+            self._outputs_key_field = None
+        elif isinstance(outputs_key_field, STRING_TYPES):
             self._outputs_key_field = [outputs_key_field]
         elif isinstance(outputs_key_field, list):
             self._outputs_key_field = outputs_key_field
-        elif outputs_key_field is None:
-            self._outputs_key_field = None
         else:
             raise TypeError('outputs_key_field must be of type str or list')
 
