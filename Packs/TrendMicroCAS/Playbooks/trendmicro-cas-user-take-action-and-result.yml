@@ -1,6 +1,6 @@
-id: TrendMicro CAS - User take action and the result
+id: Trend Micro CAS - Take Action On User Accounts
 version: -1
-name: TrendMicro CAS - User take action and the result
+name: Trend Micro CAS - Take Action On User Accounts
 description: This playbook runs various actions on a user's account, such as disabling accounts, requesting multi-factor authentication, and requesting a password, using the "trendmicro-cas-user-take-action" command and returns the result using the "trendmicro-cas-user-action-result-query" command.
 starttaskid: "0"
 tasks:
@@ -240,3 +240,5 @@ outputs:
     "Failed": The action failed.'
   type: String
 fromversion: 5.0.0
+tests:
+- playbook_TrendmicroCAS_Test

@@ -108,9 +108,9 @@ script:
       secret: false
     - default: false
       description: |-
-        The start time to retrieve logs, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or 2020-08-01T02:31:20.001Z.
+        The start time to retrieve logs, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         The request retrieves logs within a maximum of 72 hours before the request is sent.
-        If a start time is added, the request retrieves all logs within 5 minutes after the start time.
+        If a start time is added, the request retrieves all from the start time.
         If a start and end time are added, the request retrieves logs within the configured duration.
         If start and end times are not added, the request retrieves logs within 5 minutes before the request is sent.        
       isArray: false
@@ -119,7 +119,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The end time to retrieve logs, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or 2020-08-01T02:31:20.001Z.
+        The end time to retrieve logs, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         The request retrieves logs within a maximum of 72 hours before request is sent.
         If an end time is added, the request retrieves logs within five minutes before the end time.
         If start and end are added, the request retrieves logs within the configured duration. Ensure the end time is no earlier than the start time.
@@ -129,7 +129,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of log items to display. Default (and maximum) is 500.
+      description: The maximum number of log items to display. Default is 50 and Maximum is 500.
       isArray: false
       name: limit
       required: false
@@ -273,7 +273,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The start time to search for email messages using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or 2020-08-01T02:31:20.001Z.
+        The start time to search for email messages using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         The request searches email messages according to the following settings:
         If both start and end are not added, the request searches email messages within seven days (7 × 24 hours) before the request was sent.
         If both start and end are added, the request searches email messages within this configured duration. Ensure the end time is no earlier than the start time.
@@ -286,7 +286,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The end time to search for email messages using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or 2020-08-01T02:31:20.001Z.
+        The end time to search for email messages using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         Cloud App Security saves the meta information of email messages for 90 days.
         The request searches email messages according to the following settings:
         If both start and end are not added, the request searches email messages within seven days (7 × 24 hours) before the request was sent.
@@ -558,7 +558,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The start time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or 2020-08-01T02:31:20.001Z.
+        The start time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         If using start, end is required.
       isArray: false
       name: start
@@ -566,7 +566,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The end time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or 2020-08-01T02:31:20.001Z.
+        The end time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         If using end, start is required. Ensure the end time is not earlier than the start time.
       isArray: false
       name: end
@@ -630,7 +630,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The start time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or 2020-08-01T02:31:20.001Z.
+        The start time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         If using start, end is required.         
       isArray: false
       name: start
@@ -638,7 +638,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The end time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or 2020-08-01T02:31:20.001Z.
+        The end time to retrieve action results within a time period, using the date and time format ISO 8601. For example, 2020-08-01T02:31:20Z or in human-readable format. For example, "in 1 day" or "3 weeks ago".
         If using end, start is required. Ensure the end time is not earlier than the start time.
       isArray: false
       name: end
@@ -777,3 +777,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- playbook_TrendmicroCAS_Test
