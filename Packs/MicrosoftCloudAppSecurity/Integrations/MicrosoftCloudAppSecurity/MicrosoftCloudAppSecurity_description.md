@@ -9,6 +9,6 @@ To grant authorization, click [HERE](https://docs.microsoft.com/en-us/cloud-app-
 
 
 ## Customer Filters
-Note - To filter the call results of the API (custom_filter), make sure it matches 
+To filter the call results of the API (custom_filter), make sure it matches 
 the Microsoft Cloud App Security filtering format. Click [HERE](https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters) for details.
 
