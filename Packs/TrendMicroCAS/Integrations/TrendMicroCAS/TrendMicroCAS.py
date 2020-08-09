@@ -331,10 +331,12 @@ def fetch_incidents(client: Client, max_results: int, last_run, list_services: L
             new_latest_ids = []
             for event in security_events:
                 if event.get('log_item_id') not in last_fetch_ids:
-                    incident_name = event.get('log_item_id')
+                    message = event.get("message")
+                    incident_name = f"{event.get('event')} on {message.get('affected_user')} at" \
+                                    f" {message.get('location')} - {event.get('log_item_id')}"
                     incident = {
                         'name': incident_name,
-                        'occurred': event.get('message').get('detection_time'),
+                        'occurred': message.get('detection_time'),
                         'rawJSON': json.dumps(event)
                     }
                     incidents.append(incident)
