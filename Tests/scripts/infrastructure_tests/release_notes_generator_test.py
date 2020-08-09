@@ -5,7 +5,9 @@ from Utils.release_notes_generator import (get_release_notes_dict,
                                            get_pack_entities,
                                            read_and_format_release_note,
                                            merge_version_blocks,
-                                           EMPTY_LINES_REGEX)
+                                           EMPTY_LINES_REGEX,
+                                           get_new_entity_record,
+                                           construct_entities_block)
 
 TEST_DATA_PATH = 'Tests/scripts/infrastructure_tests/tests_data/RN_tests_data'
 
@@ -265,3 +267,87 @@ class TestMergeVersionBlocks:
         assert 'fake2 minor' in rn_block
         assert 'fake1 major' in rn_block
         assert 'fake2 major' in rn_block
+
+    def test_get_new_entity_record_integration(self):
+        """
+        Given
+            fake integration path.
+
+        When
+            getting entity record for integration.
+
+        Then
+            Ensure the method is valid and returns the integration name and description.
+        """
+        name, description = get_new_entity_record(os.path.join(TEST_DATA_PATH,
+                                                               'FakePack5', 'Integrations', 'fake_integration.yml'))
+
+        assert name == 'fake_integration'
+        assert description == 'Use the Zoom integration manage your Zoom users and meetings'
+
+    def test_get_new_entity_record_layout(self):
+        """
+        Given
+            fake layout path.
+
+        When
+            getting entity record for layout.
+
+        Then
+            Ensure the method is valid and returns the layout name and description.
+        """
+        name, description = get_new_entity_record(os.path.join(TEST_DATA_PATH,
+                                                               'FakePack5', 'Layouts', 'fake_layout.json'))
+
+        assert name == 'Fake layout - Close'
+        assert description == ''
+
+    def test_get_new_entity_record_classifier(self):
+        """
+        Given
+            fake classifier path.
+
+        When
+            getting entity record for classifier.
+
+        Then
+            Ensure the method is valid and returns the classifier name and description.
+        """
+        name, description = get_new_entity_record(os.path.join(TEST_DATA_PATH,
+                                                               'FakePack5', 'Classifiers', 'fake_classifier.json'))
+
+        assert name == 'Fake classifier'
+        assert description == 'Maps incoming Prisma Cloud event fields.'
+
+    def test_construct_entities_block_integration(self):
+        """
+        Given
+            integration entities_data.
+
+        When
+            generates pack release note block for integration.
+
+        Then
+            Ensure the method is valid and the release note block contains Tanium integration.
+        """
+        entities_data = {'Integrations': {'Tanium': 'Tanium endpoint security and systems management'}}
+        rn = construct_entities_block(entities_data)
+        assert '### Integrations' in rn
+        assert '##### Tanium' in rn
+        assert 'Tanium endpoint security and systems management' in rn
+
+    def test_construct_entities_block_indicator_types(self):
+        """
+        Given
+            indicator type entities_data.
+
+        When
+            generates pack release note block for indicator type.
+
+        Then
+            Ensure the method is valid and the release note block contains accountRep indicator.
+        """
+        entities_data = {'IndicatorTypes': {'accountRep': ''}}
+        rn = construct_entities_block(entities_data)
+        assert '### IndicatorTypes' in rn
+        assert '- **accountRep**' in rn
