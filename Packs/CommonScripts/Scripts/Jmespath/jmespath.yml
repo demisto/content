@@ -7,7 +7,7 @@ type: python
 tags:
 - transformer
 - general
-comment: Performs jmespath search on input JSON.
+comment: Performs a jmespath search on an input JSON.
 enabled: true
 args:
 - name: expression
