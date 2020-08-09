@@ -147,6 +147,13 @@ DEVICE_MAP = {
 ''' Utility methods '''
 
 
+class FetchMode:
+    """Enum class for fetch mode"""
+    no_events = 'Fetch Without Events'
+    all_events = 'Fetch With All Events'
+    correlations_only = 'Fetch Correlation Events Only'
+
+
 class AtomicCounter(object):
     """An atomic, thread-safe counter"""
 
@@ -212,6 +219,7 @@ def replace_keys(src, trans_map):
     Change the keys of a dictionary according to a conversion map
     trans_map - { 'OldKey': 'NewKey', ...}
     """
+
     def replace(key, trans_map_):
         if key in trans_map_:
             return trans_map_[key]
@@ -363,6 +371,10 @@ def convert_offense_type_id_to_name(offense_type_id, offense_types=None):
             if o_type['id'] == offense_type_id:
                 return o_type['name']
     return offense_type_id
+
+
+def print_debug_msg(msg):
+    demisto.debug(f'QRadarMsg - {msg}')
 
 
 ''' Request/Response methods '''
@@ -554,7 +566,13 @@ def test_module():
 
 
 def offense_enrichment_worker(raw_offenses_queue, enriched_offenses_queue, counter):
-    events_columns = demisto.params().get('events_columns')
+    params = demisto.params()
+    events_columns = params.get('events_columns')
+    events_limit = int(params.get('events_limit') or 20)
+    fetch_mode = params.get('fetch_mode')
+    additional_where = ''
+    if fetch_mode == FetchMode.correlations_only:
+        additional_where = "AND LOGSOURCETYPENAME(devicetype) != 'Custom Rule Engine'"
     while True:
         try:
             offense = raw_offenses_queue.get()
@@ -564,31 +582,44 @@ def offense_enrichment_worker(raw_offenses_queue, enriched_offenses_queue, count
 
         try:
             offense_start_time = offense['start_time']
-            query_expression = 'SELECT {} FROM events WHERE INOFFENSE({}) START \'{}\''.format(
-                events_columns, offense['id'], offense_start_time)
-            correlations_query = {
+            query_expression = f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense["id"]})' \
+                               f'{additional_where}  limit {events_limit} START \'{offense_start_time}\''
+            events_query = {
                 'headers': '',
                 'query_expression': query_expression
             }
-            raw_search = search(correlations_query)
-            search_res_correlations = deepcopy(raw_search)
-            search_res_correlations = filter_dict_non_intersection_key_to_value(
-                replace_keys(search_res_correlations, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
 
-            search_id = search_res_correlations.get('ID')
-            query_status = search_res_correlations.get('Status')
+            print_debug_msg(f'Starting events fetch for offense {offense["id"]}. Query: {query_expression}')
 
+            raw_search = search(events_query)
+            search_res_events = deepcopy(raw_search)
+            search_res_events = filter_dict_non_intersection_key_to_value(
+                replace_keys(search_res_events, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
+
+            search_id = search_res_events.get('ID')
+            query_status = search_res_events.get('Status')
+
+            i = 1
+            sleep_seconds = 15
             while not (query_status == 'COMPLETED' or query_status == 'ERROR' or query_status == 'CANCELED'):
+                # print status debug every minute
+                if not i % 60:
+                    print_debug_msg(f'Still fetching offense {offense["id"]} events, search_id: {search_id}')
                 raw_search = get_search(search_id)
                 search_res_query = deepcopy(raw_search)
                 search_res_query = filter_dict_non_intersection_key_to_value(
                     replace_keys(search_res_query, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP)
                 query_status = search_res_query.get('Status')
-                time.sleep(1)
+                # prepare next run
+                i = i % 60 + sleep_seconds
+                time.sleep(sleep_seconds)
 
             if query_status == 'COMPLETED':
+                print_debug_msg(f'Events fetched successfully for offense {offense["id"]}')
                 raw_search_results = get_search_results(search_id)
                 offense['events'] = raw_search_results.get('events', [])
+        except Exception as e:
+            print_debug_msg(f"Failed events fetch for offense {offense['id']}: {str(e)}")
         finally:
             enriched_offenses_queue.put(offense)
             counter.increment()
@@ -629,7 +660,7 @@ def fetch_raw_offenses(offense_id):
         fetch_query = 'id>{0} AND id<{1} {2}'.format(start_offense_id,
                                                      end_offense_id,
                                                      'AND ({})'.format(user_query) if user_query else '')
-        demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
+        print_debug_msg(f'Fetching {fetch_query}')
         raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL - 1), _filter=fetch_query)
         if raw_offenses:
             latest_offense_fnd = True
@@ -645,12 +676,12 @@ def fetch_raw_offenses(offense_id):
                 offense_id += OFFENSES_PER_CALL
             else:
                 latest_offense_fnd = True
-    demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
+    print_debug_msg(f'Fetched {fetch_query} successfully')
 
     if full_enrich and raw_offenses:
-        demisto.debug('QRadarMsg - Enriching  {}'.format(fetch_query))
+        print_debug_msg(f'Enriching  {fetch_query}')
         enrich_offense_res_with_source_and_destination_address(raw_offenses)
-        demisto.debug('QRadarMsg - Enriched  {} successfully'.format(fetch_query))
+        print_debug_msg(f'Enriched  {fetch_query} successfully')
 
     return raw_offenses
 
@@ -658,11 +689,11 @@ def fetch_raw_offenses(offense_id):
 def fetch_incidents_long_running_samples():
     offense_id = 0
 
-    get_events = demisto.params().get('get_events')
-    if get_events:
+    fetch_mode = demisto.params().get('fetch_mode')
+    if fetch_mode in (FetchMode.all_events, FetchMode.correlations_only):
         last_run = get_integration_context(SYNC_CONTEXT)
         return last_run.get('samples', [])  # type: ignore [attr-defined]
-    else:
+    elif fetch_mode == FetchMode.no_events:
         raw_offenses = fetch_raw_offenses(offense_id)
 
         incidents_batch = []
@@ -670,6 +701,7 @@ def fetch_incidents_long_running_samples():
             incidents_batch.append(create_incident_from_offense(offense))
 
         return incidents_batch
+    return []
 
 
 def fetch_incidents_long_running_events(raw_offenses_queue, enriched_offenses_queue, counter):
@@ -685,9 +717,9 @@ def fetch_incidents_long_running_events(raw_offenses_queue, enriched_offenses_qu
         offense_id = max(offense_id, offense['id'])
         raw_offenses_queue.put(offense)
 
-    incidents_batch = []
     incidents_batch_for_sample = []
     while counter.value != len(raw_offenses):
+        incidents_batch = []
         while not enriched_offenses_queue.empty():
             offense = enriched_offenses_queue.get()
             incidents_batch.append(create_incident_from_offense(offense))
@@ -702,6 +734,7 @@ def fetch_incidents_long_running_events(raw_offenses_queue, enriched_offenses_qu
 
     # Read from enriched_offenses_queue again in case offenses were left
     while not enriched_offenses_queue.empty():
+        incidents_batch = []
         offense = enriched_offenses_queue.get()
         incidents_batch.append(create_incident_from_offense(offense))
         if not last_run:
@@ -740,30 +773,6 @@ def fetch_incidents_long_running_no_events():
 
     context = {'id': offense_id}
     set_integration_context(context, SYNC_CONTEXT)
-
-
-# Finds the last page position for QRadar query that receives a range parameter
-def find_last_page_pos(fetch_query):
-    # Make sure it wasn't a fluke we have exactly OFFENSES_PER_CALL results
-    if len(get_offenses(_range='{0}-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)) == 0:
-        return OFFENSES_PER_CALL - 1
-    # Search up until we don't have any more results
-    pos = OFFENSES_PER_CALL * 2
-    while len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetch_query)) == 1:
-        pos = pos * 2
-    # Binary search the gap from the las step
-    high = pos
-    low = pos / 2
-    while high > low + 1:
-        pos = (high + low) / 2
-        if len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetch_query)) == 1:
-            # we still have results, raise the bar
-            low = pos
-        else:
-            # we're too high, lower the bar
-            high = pos
-    # low holds the last pos of the list
-    return low
 
 
 def create_incident_from_offense(offense):
@@ -1410,6 +1419,7 @@ def fetch_loop_with_events():
         worker.start()
 
     while True:
+        print_debug_msg(f"Starting fetch loop with events. Raw Offense Queue size: {raw_offenses_queue.qsize()}")
         fetch_incidents_long_running_events(raw_offenses_queue, enriched_offenses_queue, counter)
         time.sleep(60)
 
@@ -1421,10 +1431,11 @@ def fetch_loop_no_events():
 
 
 def long_running_main():
-    get_events = demisto.params().get('get_events')
-    if get_events:
+    fetch_mode = demisto.params().get('fetch_mode')
+    print_debug_msg(f'Starting fetch with "{fetch_mode}"')
+    if fetch_mode in (FetchMode.all_events, FetchMode.correlations_only):
         fetch_loop_with_events()
-    else:
+    elif fetch_mode == FetchMode.no_events:
         fetch_loop_no_events()
 
 
