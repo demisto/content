@@ -290,6 +290,6 @@ script:
       description: Connection comment
       type: string
     description: Get SecureApp application connections
-  dockerimage: demisto/netutils:1.0.0.5165
+  dockerimage: demisto/netutils:1.0.0.9714
   runonce: false
   subtype: python3

@@ -3,7 +3,8 @@ from IllusiveNetworks import Client, is_deceptive_user_command, is_deceptive_ser
     get_asm_host_insight_command, get_asm_cj_insight_command, get_deceptive_users_command, \
     get_deceptive_servers_command, get_forensics_timeline_command, assign_host_to_policy_command, \
     remove_host_from_policy_command, add_deceptive_users_command, add_deceptive_servers_command, \
-    get_incidents_command, get_event_incident_id_command, fetch_incidents
+    get_incidents_command, get_event_incident_id_command, fetch_incidents, get_incident_events_command, \
+    get_forensics_analyzers_command, get_forensics_triggering_process_info_command, get_forensics_artifacts_command
 
 from CommonServerPython import parse_date_range
 
@@ -118,7 +119,7 @@ def test_get_event_incident_id_command(requests_mock):
     _, outputs, _ = get_event_incident_id_command(client, args)
 
     assert outputs == {'Illusive.Event(val.eventId == obj.eventId)':
-                       [{'eventId': '1234', 'incidentId': {'EventId': '1234', 'IncidentId': '1'},
+                       [{'eventId': 1234, 'incidentId': {'EventId': '1234', 'IncidentId': '1'},
                         'status': 'Done'}]}
 
 
@@ -181,7 +182,7 @@ def test_get_deceptive_servers_command(requests_mock):
 
 
 def test_get_forensics_timeline_command(requests_mock):
-    mock_response = {'IncidentId': "aaa", 'Status': 'Done', 'Evidence': []}
+    mock_response = [{'IncidentId': "aaa", 'Status': 'Done', 'details': {'date': 'aaa'}}]
     client = Client(base_url='https://server', verify=False)
     start_date = "1 month"
     end_date = "3 days"
@@ -199,7 +200,7 @@ def test_get_forensics_timeline_command(requests_mock):
 
     assert outputs == {'Illusive.Forensics(val.IncidentId == obj.IncidentId)':
                        {'IncidentId': '3', 'Status': 'Done', 'Evidence':
-                        {'IncidentId': 'aaa', 'Status': 'Done', 'Evidence': []}}}
+                        [{'IncidentId': 'aaa', 'Status': 'Done', 'details': {'date': 'aaa'}, 'date': 'aaa'}]}}
 
 
 def test_remove_host_from_policy_command(requests_mock):
@@ -328,3 +329,69 @@ def test_fetch_incidents_first_fetch(requests_mock):
     assert str(nextcheck['last_run']) == last_fetch
     assert isinstance(incidents, list)
     assert len(incidents) == 0
+
+
+def test_get_incident_events_command(requests_mock):
+    mock_response = [{'eventId': '11', 'eventTimeUTC': '1234', 'hasForensics': True},
+                     {'eventId': '22', 'eventTimeUTC': '1234', 'hasForensics': True}]
+    requests_mock.get('https://server/api/v1/incidents/events?incident_id=3&limit=100&offset=0', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False)
+    args = {
+        'incident_id': '3'
+    }
+    _, outputs, _ = get_incident_events_command(client, args)
+
+    assert outputs == {'Illusive.Incident(val.incidentId == obj.incidentId)': {'Event': [
+                      {'eventId': '11', 'eventTimeUTC': '1234', 'hasForensics': True},
+                      {'eventId': '22', 'eventTimeUTC': '1234', 'hasForensics': True}],
+        'eventsNumber': 2, 'incidentId': 3}}
+
+
+def test_get_forensics_analyzers_command(requests_mock):
+    mock_response1 = [{'analyzerName': 'bbb', 'analyzerValue': '1234'},
+                      {'analyzerName': 'aaa', 'analyzerValue': '4321'}]
+    mock_response2 = 3
+    requests_mock.get('https://server/api/v1/forensics/analyzers?event_id=3', json=mock_response1)
+    requests_mock.get('https://server/api/v1/incidents/id?event_id=3', json=mock_response2)
+
+    client = Client(base_url='https://server', verify=False)
+    args = {
+        'event_id': '3'
+    }
+    _, outputs, _ = get_forensics_analyzers_command(client, args)
+
+    assert outputs == {'Illusive.Event(val.eventId == obj.eventId)': {'ForensicsAnalyzers':
+                       [{'analyzerName': 'bbb', 'analyzerValue': '1234'},
+                        {'analyzerName': 'aaa', 'analyzerValue': '4321'}], 'eventId': 3, 'incidentId': 3}}
+
+
+def test_get_forensics_triggering_process_info_command(requests_mock):
+    mock_response = {'processes': [{'commandLine': 'bbb', 'name': '1234', 'parent': '1234', 'sha256': '1234'},
+                     {'commandLine': 'aaa', 'name': '34556', 'parent': 'dfg', 'sha256': 'erf'}]}
+    requests_mock.get('https://server/api/v1/forensics/triggering_process_info?event_id=3', json=mock_response)
+
+    client = Client(base_url='https://server', verify=False)
+    args = {
+        'event_id': '3'
+    }
+    _, outputs, _ = get_forensics_triggering_process_info_command(client, args)
+
+    assert outputs == {'Illusive.Event(val.eventId == obj.eventId)': {'ForensicsTriggeringProcess': [
+                      {'commandLine': 'bbb', 'name': '1234', 'parent': '1234', 'sha256': '1234'},
+                      {'commandLine': 'aaa', 'name': '34556', 'parent': 'dfg', 'sha256': 'erf'}], 'eventId': '3'}}
+
+
+def test_get_forensics_artifacts_command(requests_mock):
+    mock_response = bytes()
+    mock_response2 = 3
+    requests_mock.get('https://server/api/v1/incidents/id?event_id=3', json=mock_response2)
+    requests_mock.get('https://server/api/v1/forensics/artifacts?event_id=3&artifacts_type=DESKTOP_SCREENSHOT',
+                      content=mock_response)
+
+    client = Client(base_url='https://server', verify=False)
+    args = {
+        'event_id': '3',
+        'artifact_type': 'DESKTOP_SCREENSHOT'
+    }
+    get_forensics_artifacts_command(client, args)

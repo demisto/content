@@ -276,13 +276,13 @@ script:
       type: string
     - contextPath: ArcSightESM.SecurityEvents.eventId
       description: Event ID
-      type: number
+      type: string
     - contextPath: ArcSightESM.SecurityEvents.type
       description: Event type (e.g., CORRELATION)
       type: string
     - contextPath: ArcSightESM.SecurityEvents.baseEventIds
       description: Base event IDs
-      type: Unknown
+      type: string
     - contextPath: ArcSightESM.SecurityEvents.source.address
       description: Event source address
       type: Unknown

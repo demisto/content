@@ -56,6 +56,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Druva Ransomware Response",
+            "playbookID": "Druva-Test"
+        },
+        {
             "integrations": "Smokescreen IllusionBLACK",
             "playbookID": "Smokescreen IllusionBLACK-Test",
             "fromversion": "5.0.0"
@@ -2554,11 +2558,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "Sixgill",
-            "playbookID": "Sixgill-Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
             "fromversion": "5.5.0"
@@ -2833,6 +2832,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "CyberTotal",
+            "playbookID": "CyberTotal_TestPlaybook",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Azure AD Connect Health Feed",
             "playbookID": "FeedAzureADConnectHealth_Test",
             "fromversion": "5.5.0"
@@ -2847,13 +2851,28 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
+            "fromversion": "5.0.0",
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general"
+        },
+        {
             "playbookID": "PCAP File Carving Test",
-            "instance_names": "virus_total_general",
             "integrations": [
                 "VirusTotal",
                 "WildFire-v2"
             ],
+            "instance_names": "virus_total_general",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "PCAP Analysis Test",
+            "integrations": [
+                "Recorded Future v2",
+                "WildFire-v2"
+            ],
+            "fromversion": "5.0.0",
+            "timeout": 1200
         },
         {
             "integrations": "VirusTotal",
@@ -2878,6 +2897,11 @@
             "playbookID": "CrowdStrikeMalquery-Test",
             "fromversion": "5.0.0",
             "timeout": 1500
+        },
+        {
+            "integrations": "Sixgill_Darkfeed",
+            "playbookID": "Sixgill-Darkfeed_Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "hashIncidentFields-test",
@@ -2909,14 +2933,25 @@
         {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Imperva WAF",
+            "playbookID": "Imperva WAF - Test"
+        },
+        {
+            "playbookID": "FailedInstances - Test",
+            "integrations": "Whois",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
+        "PCAP File Carving Test": "Merged with PCAP Analysis Test",
+        "PCAP Parsing And Indicator Enrichment Test": "Merged with PCAP Analysis Test",
+        "PCAP Search test": "Merged with PCAP Analysis Test",
         "PAN-OS DAG Configuration Test": "Issue 60693",
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
-        "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 25477",
         "SentinelOne V2 - test": "Issue 24933",
         "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
@@ -2965,7 +3000,6 @@
         "Office365_Feed_Test": "Issue 26455",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "Google Chronicle Backstory Asset - Test": "Issue 26460",
-        "Keylight v2 - Test": "Issue 26462",
         "HybridAnalysis-Test": "Issue 26599",
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
@@ -2978,12 +3012,18 @@
         "EvaluateMLModllAtProduction-Test": "Issue 26849",
         "hashIncidentFields-test": "Issue 26850",
         "MISP V2 Test": "Issue 26905",
-        "Mimecast test": "Issue 26906",
         "Mail Sender (New) Test": "Issue 25602",
         "TAXII_Feed_Test": "Issue 22423",
         "Recorded Future Test": "Issue 26741",
         "CirclIntegrationTest": "Issue 25600",
-        "Luminate-TestPlaybook": "Issue 27016"
+        "Luminate-TestPlaybook": "Issue 27016",
+        "AutoFocus V2 test": "Issue 26464",
+        "Claroty - Test": "Issue 27210",
+        "test-Expanse": "Issue 27279",
+        "CrowdStrikeMalquery-Test": "Issue 27239",
+        "SepioPrimeAPI-Test": "Issue 27240",
+        "Trend Micro Apex - Test": "Issue 27280",
+        "Cortex Data Lake Test": "Issue 24346"
     },
     "skipped_integrations": {
         
@@ -3035,6 +3075,7 @@
         "PolySwarm": "contribution",
         "Blueliv ThreatContext": "contribution",
         "Silverfort": "contribution",
+        "Druva Ransomware Response": "contribution",
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
@@ -3222,7 +3263,6 @@
         "Rasterize",
         "CVE Search v2",
         "VulnDB",
-        "VirusTotal",
         "CheckPhish",
         "Tanium",
         "LogRhythmRest",
