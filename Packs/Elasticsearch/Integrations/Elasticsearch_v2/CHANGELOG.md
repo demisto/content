@@ -2,6 +2,10 @@
 Fixed an issue where ***fetch-incident*** would raise an error when the *Time field type* integration parameter is set to "Timestamp-Millisecond" or "Timestamp-Seconds".
 
 
+## [Unreleased]
+Added get-mapping-fields command to fetch a given index schema
+
+
 ## [20.5.0] - 2020-05-12
 -
 
