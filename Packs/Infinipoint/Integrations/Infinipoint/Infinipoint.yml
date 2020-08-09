@@ -90,17 +90,17 @@ script:
     description: infinipoint get assets programs
     arguments:
     - name: name
-      description: Software name
+      description: Software name, e.g. VMware
       auto: PREDEFINED
       predefined:
       - Software name
     - name: publisher
-      description: Software publisher name
+      description: Software publisher name, e.g. Microsoft Corporation
       auto: PREDEFINED
       predefined:
       - Software publisher name
     - name: version
-      description: Software version
+      description: Software version, e.g. 12.0.21005
       auto: PREDEFINED
       predefined:
       - Software version
@@ -142,7 +142,7 @@ script:
     description: infinipoint get cve
     arguments:
     - name: cve_id
-      description: cve id
+      description: cve id, e.g. CVE-2020-1301
       required: true
     outputs:
     - contextPath: Infinipoint.Cve.Details.campaign_intelligence.apt
@@ -338,7 +338,7 @@ script:
     description: get device
     arguments:
     - name: host
-      description: hostname
+      description: hostname, e.g. DESKTOP-CIK123
       auto: PREDEFINED
       predefined:
       - Devices hostname
@@ -358,7 +358,7 @@ script:
       - "1"
       description: Device current status:- 0 = Offline | 1 = Online
     - name: agentVersion
-      description: Infinipoint agent version
+      description: Infinipoint agent version, e.g. 3.200.10.0
       auto: PREDEFINED
       predefined:
       - Device Infinipoint’s agent version
@@ -466,7 +466,7 @@ script:
     description: get tag
     arguments:
     - name: name
-      description: Tag name
+      description: Tag name, e.g. it-department-tag
     outputs:
     - contextPath: Infinipoint.Tags.color
       description: Tag color
@@ -489,10 +489,10 @@ script:
   - name: infinipoint-get-networks
     description: get networks
     arguments:
-    - name: alias
+    - name: alias, e.g. office
       description: network alias name
     - name: cidr
-      description: cidr
+      description: cidr, e.g. 10.65.0.1/16
     outputs:
     - contextPath: Infinipoint.Networks.Info.alias
       description: Alias name
@@ -582,7 +582,7 @@ script:
     description: get assets hardware
     arguments:
     - name: host
-      description: hostname
+      description: hostname, e.g. DESKTOP-CIK123
     - name: os_type
       auto: PREDEFINED
       predefined:
@@ -769,7 +769,7 @@ script:
   - name: infinipoint-get-action
     description: get action
     arguments:
-    - name: action_id
+    - name: action_id, e.g. 9ef2494d-862e-43c8-963c-3587cde75c4d
       description: Action id (infinipoint)
       required: true
     outputs:
@@ -792,7 +792,7 @@ script:
     description: get queries
     arguments:
     - name: name
-      description: Query name
+      description: Query name, e.g Windows Logon Session
       required: true
     outputs:
     - contextPath: Infinipoint.Scripts.Search.aggregation
@@ -823,10 +823,10 @@ script:
     description: run queries
     arguments:
     - name: id
-      description: Query ID
+      description: Query ID, e.g 9b071f4c-da87-409c-9cd1-59a275e52c9d
       required: true
     - name: target
-      description: Target devices ID
+      description: Target devices ID,e.g ["4f16532e-d41a-4b78-9a5c-946d3d3619ca"]
       isArray: true
     outputs:
     - contextPath: Infinipoint.Scripts.execute.actionId
@@ -888,7 +888,7 @@ script:
     description: get device details
     arguments:
     - name: discoveryId
-      description: discovery id
+      description: discovery id, e.g 23eb50e7ceb907975686ba5cebbd3520
       required: true
     outputs:
     - contextPath: Infinipoint.Device.Details.$device
