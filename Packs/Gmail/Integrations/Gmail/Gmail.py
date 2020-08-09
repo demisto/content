@@ -1669,18 +1669,11 @@ def attachment_handler(message, attachments):
 
 def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
               transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
-    demisto.log("the body is " + str(body))
-    demisto.log("the attach_cid is " + str(attach_cid))
-    demisto.log("htmlBody is " + str(htmlBody))
-    demisto.log("entry_ids is " + str(entry_ids))
-    demisto.log("file_names is " + str(file_names))
-    if entry_ids == [] and file_names == [] and attach_cid == [] and htmlBody and body is None:
+    if htmlBody and not any([entry_ids, file_names, attach_cid, body]):
         # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
-        demisto.log("entered to only html body without attachments")
         message = MIMEText(htmlBody, 'html')
-    elif entry_ids == [] and file_names == [] and attach_cid == [] and body and htmlBody is None:
+    elif body and not any([entry_ids, file_names, attach_cid, htmlBody]):
         # if there is only body and no attachments to the mail , we would like to send it without attaching every part
-        demisto.log("entered to only body without attachments")
         message = MIMEText(body, 'plain', 'utf-8')
     else:
         message = MIMEMultipart()
@@ -1704,8 +1697,8 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
 
         if additional_headers is not None and len(additional_headers) > 0:
             for h in additional_headers:
-                header_name_and_value = h.split('=')
-                message[header_name_and_value[0]] = header(header_name_and_value[1])
+                header_name, header_value = h.split('=')
+                message[header_name] = header(header_value)
 
         msg = MIMEText(body, 'plain', 'utf-8')
         message.attach(msg)
