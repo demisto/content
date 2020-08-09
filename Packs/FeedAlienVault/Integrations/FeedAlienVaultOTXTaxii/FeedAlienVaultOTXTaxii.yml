@@ -113,7 +113,7 @@ script:
     description: Gets the indicators from AlienVault OTX.
     execution: false
     name: alienvaultotx-get-indicators
-  dockerimage: demisto/taxii:1.0.0.9263
+  dockerimage: demisto/taxii:1.0.0.9793
   feed: true
   isfetch: false
   longRunning: false
