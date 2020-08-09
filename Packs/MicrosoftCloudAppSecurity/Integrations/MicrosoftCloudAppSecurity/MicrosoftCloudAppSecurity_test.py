@@ -8,52 +8,55 @@ def get_fetch_data():
         return json.loads(f.read())
 
 
-expected_alerts = {'filters': {'entity.service': {'eq': 111}, 'entity.instance': {'eq': 111}, 'severity': {'eq': 0},
-                   'resolutionStatus': {'eq': 0}, 'entity.entity': {'eq': {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2',
-                                                                           'saas': 11161, 'inst': 0}}},
-                   'skip': 5, 'limit': 10}
-request_data_alerts = {"service": "111", "instance": "111", "severity": "Low",
-                       "username": '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}',
-                       "resolution_status": "Open", "skip": "5", "limit": "10"}
+expected_filtered_alerts = {'filters': {'entity.service': {'eq': 111}, 'entity.instance': {'eq': 111},
+                            'severity': {'eq': 0}, 'resolutionStatus': {'eq': 0}, 'entity.entity': {'eq':
+                                        {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2', 'saas': 11161, 'inst': 0}}},
+                            'skip': 5, 'limit': 10}
+response_alerts_data = {"service": "111", "instance": "111", "severity": "Low",
+                        "username": '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}',
+                        "resolution_status": "Open", "skip": "5", "limit": "10"}
 
 
-expected_activities = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'ip.address': {'eq': '8.8.8.8'},
-                       'ip.category': {'eq': 1}, 'activity.takenAction': {'eq': 'block'}, 'source': {'eq': 0}},
-                       'skip': 5, 'limit': 10}
-request_data_activities = {"service": "111", "instance": "111", "ip": "8.8.8.8", "ip_category": "Corporate",
-                           'taken_action': 'block', 'source': 'Access_control', "skip": "5", "limit": "10"}
+expected_filtered_activities = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'ip.address':
+                                {'eq': '8.8.8.8'}, 'ip.category': {'eq': 1}, 'activity.takenAction': {'eq': 'block'},
+                                            'source': {'eq': 0}}, 'skip': 5, 'limit': 10}
+response_activities_data = {"service": "111", "instance": "111", "ip": "8.8.8.8", "ip_category": "Corporate",
+                            'taken_action': 'block', 'source': 'Access_control', "skip": "5", "limit": "10"}
 
 
-expected_files = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'fileType': {'eq': 0},
-                  'quarantined': {'eq': True}, 'owner.entity':
-                                 {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}},
-                              'sharing': {'eq': 0}, 'extension': {'eq': 'png'}, }, 'skip': 5, 'limit': 10}
-request_data_files = {"service": "111", "instance": "111", "file_type": "Other", "username":
-                      '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "sharing": 'Private',
-                      'extension': 'png', 'quarantined': 'True', "skip": "5", "limit": "10"}
+expected_filtered_files = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'fileType': {'eq': 0},
+                           'quarantined': {'eq': True}, 'owner.entity':
+                                          {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161,
+                                                  "inst": 0}}, 'sharing': {'eq': 0}, 'extension': {'eq': 'png'}, },
+                           'skip': 5, 'limit': 10}
+response_files_data = {"service": "111", "instance": "111", "file_type": "Other", "username":
+                       '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "sharing": 'Private',
+                       'extension': 'png', 'quarantined': 'True', "skip": "5", "limit": "10"}
 
 
-expected_entities = {'filters': {'app': {'eq': 111}, 'instance': {'eq': 111}, 'type': {'eq': 'user'}, 'isExternal':
-                     {'eq': True}, 'status': {'eq': 0}, 'userGroups': {'eq': '1234'}, 'isAdmin': {'eq': 'demisto'},
-                     'entity': {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}}},
-                     'skip': 5, 'limit': 10}
-request_data_entities = {"service": "111", "instance": "111", "type": "user", "status": 'N/A', "username":
-                         '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "group_id": '1234',
-                         'is_admin': 'demisto', 'is_external': 'External', "skip": "5", "limit": "10"}
+expected_filtered_users_accounts = {'filters': {'app': {'eq': 111}, 'instance': {'eq': 111}, 'type': {'eq': 'user'},
+                                    'isExternal': {'eq': True}, 'status': {'eq': 0}, 'userGroups': {'eq': '1234'},
+                                                'isAdmin': {'eq': 'demisto'},
+                                                'entity': {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
+                                                                  "saas": 11161, "inst": 0}}}, 'skip': 5, 'limit': 10}
+response_users_accounts_data = {"service": "111", "instance": "111", "type": "user", "status": 'N/A', "username":
+                                '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}',
+                                "group_id": '1234', 'is_admin': 'demisto', 'is_external': 'External', "skip": "5",
+                                "limit": "10"}
 
 
 @pytest.mark.parametrize(
-    "request_data_entities, url_suffix, expected",
+    "response_data, url_suffix, expected",
     [
-        (request_data_alerts, '/alerts/', expected_alerts),
-        (request_data_activities, '/activities/', expected_activities),
-        (request_data_files, '/files/', expected_files),
-        (request_data_entities, '/entities/', expected_entities)
+        (response_alerts_data, '/alerts/', expected_filtered_alerts),
+        (response_activities_data, '/activities/', expected_filtered_activities),
+        (response_files_data, '/files/', expected_filtered_files),
+        (response_users_accounts_data, '/entities/', expected_filtered_users_accounts)
     ]
 )
-def test_args_or_params_to_filter(request_data_entities, url_suffix, expected):
+def test_args_or_params_to_filter(response_data, url_suffix, expected):
     from MicrosoftCloudAppSecurity import args_or_params_to_filter
-    res = args_or_params_to_filter(request_data_entities, url_suffix)
+    res = args_or_params_to_filter(response_data, url_suffix)
     assert res == expected
 
 
@@ -80,7 +83,6 @@ def test_list_alerts_command(requests_mock):
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/5f06d71dba4289d0602ba5ac',
                       json=alert['ALERT_BY_ID_DATA'])
     res = list_alerts_command(client_mocker, {'alert_id': '5f06d71dba4289d0602ba5ac'})
-
     assert res.outputs[0] == alert['ALERT_BY_ID_DATA_CONTEXT']
 
 
