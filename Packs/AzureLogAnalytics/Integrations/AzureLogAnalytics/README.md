@@ -28,7 +28,7 @@ Follow these steps for a self-deployed configuration.
 
 ## Get the additional instance parameters
 
-To get the ***Subscription ID***, ***Workspace ID*** and ***Resource Group*** parameters, navigate in the Azure Portal to ***Azure Sentinel > YOUR-WORKSPACE > Settings*** and click on ***Workspace Settings*** tab.
+To get the ***Subscription ID***, ***Workspace Name***, ***Workspace ID*** and ***Resource Group*** parameters, navigate in the Azure Portal to ***Azure Sentinel > YOUR-WORKSPACE > Settings*** and click on ***Workspace Settings*** tab.
 
 
 ## Configure Azure Log Analytics on Cortex XSOAR
@@ -47,6 +47,7 @@ To get the ***Subscription ID***, ***Workspace ID*** and ***Resource Group*** pa
 | auth_code | Authorization code \(received from the authorization step \- see Detailed Instructions \(?\) section\) | False |
 | subscriptionID | Subscription ID | True |
 | resourceGroupName | Resource Group Name | True |
+| workspaceName | Workspace Name | True |
 | workspaceID | Workspace ID \(the UUID of the workspace, e.g. 123e4567\-e89b\-12d3\-a456\-426614174000\) | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |

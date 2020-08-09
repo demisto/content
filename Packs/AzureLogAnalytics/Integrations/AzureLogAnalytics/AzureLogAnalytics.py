@@ -314,7 +314,7 @@ def main():
             auth_code=params.get('auth_code'),
             subscription_id=params.get('subscriptionID'),
             resource_group_name=params.get('resourceGroupName'),
-            workspace_name=params.get('workspaceID'),
+            workspace_name=params.get('workspaceName'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False)
         )

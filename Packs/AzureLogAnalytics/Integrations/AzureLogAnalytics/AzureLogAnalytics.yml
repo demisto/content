@@ -39,6 +39,10 @@ configuration:
   name: resourceGroupName
   required: true
   type: 0
+- display: Workspace Name
+  name: workspaceName
+  required: true
+  type: 0
 - display: Workspace ID (the UUID of the workspace, e.g. 123e4567-e89b-12d3-a456-426614174000)
   name: workspaceID
   required: true
