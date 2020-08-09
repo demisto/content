@@ -302,8 +302,7 @@ inputs:
   value:
     simple: "120"
   required: false
-  description: The duration after which to stop polling and to resume the playbook
-    (in minutes).
+  description: The duration after which to stop polling and to resume the playbook (in minutes).
 - key: VM
   value: {}
   required: false
@@ -502,4 +501,5 @@ outputs:
   description: Task analysis status.
   type: String
 tests:
-  - No test
+- No test
+toversion: 4.5.9

@@ -1,1 +1,0 @@
-The purpose of this integration is to provide access to Digital Defense's Frontline Vulnerability Management through Demisto's comprehensive security orchestration platform.
