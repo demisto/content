@@ -19,7 +19,7 @@ response_alerts_data = {"service": "111", "instance": "111", "severity": "Low",
 
 expected_filtered_activities = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'ip.address':
                                 {'eq': '8.8.8.8'}, 'ip.category': {'eq': 1}, 'activity.takenAction': {'eq': 'block'},
-                                            'source': {'eq': 0}}, 'skip': 5, 'limit': 10}
+                                'source': {'eq': 0}}, 'skip': 5, 'limit': 10}
 response_activities_data = {"service": "111", "instance": "111", "ip": "8.8.8.8", "ip_category": "Corporate",
                             'taken_action': 'block', 'source': 'Access_control', "skip": "5", "limit": "10"}
 
