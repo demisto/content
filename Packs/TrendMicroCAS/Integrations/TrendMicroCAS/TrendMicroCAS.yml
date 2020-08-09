@@ -524,8 +524,8 @@ script:
       secret: false
     - default: false
       description: |-
-        Date and time when an email message to take action on is sent
-        To retrieve the ID, use the "trendmicro-cas-email-sweep" command.
+        The time and date when an email message sent
+        To retrieve the information, use the "trendmicro-cas-email-sweep" command.
       isArray: false
       name: mail_message_delivery_time
       required: true
