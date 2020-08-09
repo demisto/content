@@ -82,7 +82,7 @@ class TestConf(object):
         for integration in tested_integrations:
             try:
                 int_path = id_set__get_integration_file_path(id_set, integration)
-                pack = tools.get_pack_name(int_path)
+                pack = tools.get_pack_name(str(int_path))
                 if pack:
                     packs.add(pack)
             except TypeError as e:
@@ -930,7 +930,7 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
 def get_test_from_conf(branch_name, conf=deepcopy(CONF)):
     tests = set([])
     changed = set([])
-    change_string = tools.run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
+    change_string = tools.run_command("git diff origin/reeze_4_5...{} Tests/conf.json".format(branch_name))
     added_groups = re.findall(r'(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
@@ -1240,8 +1240,8 @@ def create_test_file(is_nightly, skip_save=False):
         branch_name = branch_name_reg.group(1)
 
         logging.info("Getting changed files from the branch: {0}".format(branch_name))
-        if branch_name != 'master':
-            files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
+        if branch_name != 'freeze_4_5':
+            files_string = tools.run_command("git diff --name-status origin/freeze_4_5...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
             if os.getenv('CONTRIB_BRANCH'):
                 packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
