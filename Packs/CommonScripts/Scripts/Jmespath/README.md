@@ -1,4 +1,4 @@
-Performs a jmespath search on an input JSON, when using a transformer.
+Performs a JMESPath search on an input JSON format, when using a transformer.
 ## Script Data
 ---
 
@@ -13,7 +13,7 @@ Performs a jmespath search on an input JSON, when using a transformer.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| expression | Jmespath expression |
+| expression | JMESPath expression |
 | value | Original input value |
 
 ## Outputs
