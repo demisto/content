@@ -50,16 +50,26 @@ configuration:
   name: longRunning
   type: 8
   required: false
-- display: Pull events as part of offense creation
-  name: get_events
-  defaultvalue: "true"
-  type: 8
-  required: false
 - display: Event columns to return from the events query
   name: events_columns
-  defaultvalue: '*'
+  defaultvalue: "*,LOGSOURCETYPENAME(devicetype) AS 'DeviceNames'"
   type: 0
   required: false
+- defaultvalue: Fetch With All Events
+  display: Fetch mode
+  hidden: false
+  name: fetch_mode
+  options:
+  - Fetch Without Events
+  - Fetch With All Events
+  - Fetch Correlation Events Only
+  required: true
+  type: 15
+- defaultvalue: '20'
+  display: Max number of events per incident
+  name: events_limit
+  required: false
+  type: 0
 description: Fetch offenses as incidents and search QRadar
 display: IBM QRadar V2
 name: QRadar_v2
