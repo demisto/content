@@ -61,7 +61,7 @@ configuration:
   name: extractFields
   required: false
   type: 12
-- defaultvalue: 'false'
+- defaultvalue: 'true'
   display: Use Splunk Clock Time For Fetch
   name: useSplunkTime
   required: false
