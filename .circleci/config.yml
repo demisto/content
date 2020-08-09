@@ -215,9 +215,9 @@ references:
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -prev-ver 'freeze_4_5' -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -a --prev-ver 'freeze_4_5' -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         else
-          demisto-sdk lint -p 8 -g -prev-ver 'freeze_4_5' -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -g --prev-ver 'freeze_4_5' -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         fi
 
 
