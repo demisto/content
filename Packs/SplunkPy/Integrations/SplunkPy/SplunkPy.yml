@@ -253,7 +253,7 @@ script:
       description: Comment to add to the notable event.
       isArray: false
       name: comment
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
