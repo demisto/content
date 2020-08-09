@@ -44,12 +44,12 @@ class TextExtractHtmlParser(HTMLParser):
         self._ignore = False
 
     def handle_starttag(self, tag, attrs):
-        if tag in ('p', 'br') and not self._ignore:
+        if tag in ('p', 'br') and not self._ignore:  # ignore
             self._texts.append('\n')
         elif tag in ('script', 'style'):
             self._ignore = True
 
-    def handle_startendtag(self, tag, attrs):
+    def handle_startendtag(self, tag, attrs):  # ignore
         if tag in ('br', 'tr') and not self._ignore:
             self._texts.append('\n')
 
