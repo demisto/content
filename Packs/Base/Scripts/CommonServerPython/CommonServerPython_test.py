@@ -951,6 +951,28 @@ class TestCommandResults:
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.sha256 == obj.sha256 && val.md5 == obj.md5)'
 
+    def test_output_prefix_includes_dt(self):
+        """
+        Given
+        - Returning File with only outputs_prefix which includes DT in it
+        - outputs key fields are not provided
+
+        When
+        - creating CommandResults
+
+        Then
+        - EntryContext key should contain only the outputs_prefix
+        """
+        from CommonServerPython import CommandResults
+
+        files = []
+        results = CommandResults(outputs_prefix='File(val.sha1 == obj.sha1 && val.md5 == obj.md5)',
+                                 outputs_key_field='', outputs=files)
+
+        assert list(results.to_context()['EntryContext'].keys())[0] == \
+               'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
+
+
     def test_readable_only_context(self):
         """
         Given:
