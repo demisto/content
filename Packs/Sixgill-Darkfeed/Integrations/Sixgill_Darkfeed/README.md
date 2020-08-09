@@ -1,5 +1,5 @@
 Sixgill's premium underground intelligence collection capabilities, real-time collection and advanced warning about IOCs to help you keep your edge against unknown threats.
-This integration was integrated and tested with version 0.1.2 of sixgill clients
+This integration was integrated and tested with version 0.1.6 of sixgill clients
 ## Configure Sixgill_Darkfeed on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -50,7 +50,7 @@ There is no context output for this command.
 ### Indicators from Sixgill Dark Feed:
 |value|type|rawJSON|score|
 |---|---|---|---|
-| https://dropmefiles.com/TgvuH | URL | created: 2020-02-06T10:03:54.091Z description: Malware available for download from file-sharing sites external_reference: {'description': 'Mitre attack tactics and technique reference', 'mitre_attack_tactic': 'Build Capabilities', 'mitre_attack_tactic_id': 'TA0024', 'mitre_attack_tactic_url': 'https://attack.mitre.org/tactics/TA0024/', 'mitre_attack_technique': 'Obtain/re-use payloads', 'mitre_attack_technique_id': 'T1346', 'mitre_attack_technique_url': 'https://attack.mitre.org/techniques/T1346/', 'source_name': 'mitre-attack'} id: indicator--7a39257a-83d4-4f39-90d1-5b81ce1156e9 labels: malicious-activity, malware, Build Capabilities, Obtain/re-use payloads lang: en modified: 2020-02-06T10:03:54.091Z object_marking_refs: marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4, marking-definition--f88d31f6-486f-44da-b317-01333bde0b82 pattern: [url:value = 'https://dropmefiles.com/TgvuH'] sixgill_actor: vvv555 sixgill_confidence: 80 sixgill_feedid: darkfeed_010 sixgill_feedname: malware_download_urls sixgill_postid: 2f1dcc205421d20a4038b9f51b9d2c5b0b7451d1 sixgill_posttitle: SOCKS  socks4 sixgill_severity: 80 sixgill_source: forum_bhf spec_version: 2.0 type: indicator valid_from: 2020-01-06T03:00:59Z | 3 |
+| https://dropmefiles.com/TgvuH | URL | `created: 2020-02-06T10:03:54.091Z description: Malware available for download from file-sharing sites external_reference: {'description': 'Mitre attack tactics and technique reference', 'mitre_attack_tactic': 'Build Capabilities', 'mitre_attack_tactic_id': 'TA0024', 'mitre_attack_tactic_url': 'https://attack.mitre.org/tactics/TA0024/', 'mitre_attack_technique': 'Obtain/re-use payloads', 'mitre_attack_technique_id': 'T1346', 'mitre_attack_technique_url': 'https://attack.mitre.org/techniques/T1346/', 'source_name': 'mitre-attack'} id: indicator--7a39257a-83d4-4f39-90d1-5b81ce1156e9 labels: malicious-activity, malware, Build Capabilities, Obtain/re-use payloads lang: en modified: 2020-02-06T10:03:54.091Z object_marking_refs: marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4, marking-definition--f88d31f6-486f-44da-b317-01333bde0b82 pattern: [url:value = 'https://dropmefiles.com/TgvuH'] sixgill_actor: vvv555 sixgill_confidence: 80 sixgill_feedid: darkfeed_010 sixgill_feedname: malware_download_urls sixgill_postid: 2f1dcc205421d20a4038b9f51b9d2c5b0b7451d1 sixgill_posttitle: SOCKS  socks4 sixgill_severity: 80 sixgill_source: forum_bhf spec_version: 2.0 type: indicator valid_from: 2020-01-06T03:00:59Z` | 3 |
 
 ### Output:
 ```[{

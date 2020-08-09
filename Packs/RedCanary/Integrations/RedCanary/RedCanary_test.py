@@ -1,35 +1,41 @@
 import demistomock as demisto
-import pytest
 import json
 import RedCanary
+
+last_run_dict = {"time": "2019-12-13T17:23:22Z", "last_event_ids": []}
+latest_time_of_occurrence_of_incidents1 = "2019-12-30T22:00:50Z"
+latest_time_of_occurrence_of_incidents2 = "2020-12-25T02:07:37Z"
+number_of_incidents = 3
 
 
 with open("./TestData/incidents.json") as f:
     data = json.load(f)
 
+with open("TestData/incidents2.json") as f2:
+    data2 = json.load(f2)
 
-class TestFetchIncidents:
-    test_collection = [
-        # lastRun is time
-        ({"time": "2019-12-13T17:23:22Z"}, 3, "2019-12-30T22:00:51Z"),
-        # No last run
-        (None, 3, "2019-12-30T22:00:51Z"),
-    ]
 
-    @pytest.mark.parametrize("lastRun, incidents_len, new_last_run", test_collection)
-    def test_fetch_when_last_run_is_time(
-        self, mocker, lastRun, incidents_len, new_last_run
-    ):
-        mocker.patch.object(demisto, "incidents")
-        mocker.patch.object(demisto, "setLastRun")
-        mocker.patch.object(demisto, "getLastRun", return_value=lastRun)
-        mocker.patch.object(
-            RedCanary, "get_unacknowledged_detections", return_value=data["data"]
-        )
-        mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
-        RedCanary.fetch_incidents()
-        assert len(demisto.incidents.call_args[0][0]) == incidents_len
-        assert demisto.setLastRun.call_args[0][0]["time"] == new_last_run
+def test_fetch_when_last_run_is_time(mocker):
+    """Unit test
+    Given
+    - raw response of the http request
+    When
+    - fetching incidents
+    Then
+    - check the number of incidents that are being created
+    check that the time in last_run is the on of the latest incident
+    """
+    mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "getLastRun")
+    mocker.patch.object(
+        RedCanary, "get_unacknowledged_detections", return_value=data["data"]
+    )
+    mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
+    last_run, incidents = RedCanary.fetch_incidents(last_run_dict)
+
+    assert len(incidents) == number_of_incidents
+    assert last_run["time"] == latest_time_of_occurrence_of_incidents1
 
 
 def test_get_endpoint_context():
@@ -106,3 +112,70 @@ def test_get_endpoint_context():
         'MACAddress': ['g9:gg:c2:0f:3d:5f'],
         'OS': 'OS X',
         'OSVersion': 'Mac OSX 10.14.6'}]
+
+
+def test_fetch_multiple_times_when_already_fetched_incident_keep(mocker):
+    """Unit test
+    Given
+    - raw response of the http request
+    When
+    - fetching incidents couple of times
+    Then
+    - fetch for 3 times
+    in the first time makes sure 3 incidents were created
+    in the others there the same incidents are being fetched as data but no new incidents are being created
+    """
+    mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "setLastRun")
+
+    mocker.patch.object(demisto, "getLastRun")
+    mocker.patch.object(RedCanary, "get_unacknowledged_detections", return_value=data["data"])
+    mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
+
+    # fetching for the first time
+    last_run, incidents = RedCanary.fetch_incidents(last_run_dict)
+    assert len(incidents) == 3
+    assert last_run["time"] == "2019-12-30T22:00:50Z"
+
+    # fetching for the second time
+    last_run, incidents = RedCanary.fetch_incidents(last_run)
+    assert len(incidents) == 0
+    assert last_run["time"] == "2019-12-30T22:00:50Z"
+
+    # fetching for the third time
+    last_run, incidents = RedCanary.fetch_incidents(last_run)
+    assert len(incidents) == 0
+    assert last_run["time"] == "2019-12-30T22:00:50Z"
+
+
+def test_fetch_multiple_times_with_new_incidents(mocker):
+    """Unit test
+    Given
+    - raw response of the http request
+    When
+    - fetching incidents couple of times
+    fetch incidents for the first time - as in previous tests
+    fetch again with new incidents
+    Then
+    one of the incidents in the new fetch was shown before
+    makes sure it is not created again
+    the last_run in getting updated
+    """
+    mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "setLastRun")
+
+    mocker.patch.object(demisto, "getLastRun")
+    mocker.patch.object(RedCanary, "get_unacknowledged_detections", return_value=data["data"])
+    mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
+
+    # fetching for the first time
+    last_run, incidents = RedCanary.fetch_incidents(last_run_dict)
+    assert len(incidents) == 3
+    assert last_run["time"] == "2019-12-30T22:00:50Z"
+
+    # fetching for the second time
+    mocker.patch.object(RedCanary, "get_unacknowledged_detections", return_value=data2["data"])
+    last_run, incidents = RedCanary.fetch_incidents(last_run)
+    # only one incidents is being created out of the 2 that were fetched
+    assert len(incidents) == 1
+    assert last_run["time"] == latest_time_of_occurrence_of_incidents2

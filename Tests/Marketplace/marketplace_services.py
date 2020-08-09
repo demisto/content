@@ -1407,7 +1407,7 @@ def input_to_list(input_data, capitalize_input=False):
     input_data = input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
 
     if capitalize_input:
-        return [i.title() for i in input_data]
+        return [" ".join([w.title() if w.islower() else w for w in i.split()]) for i in input_data]
     else:
         return input_data
 
