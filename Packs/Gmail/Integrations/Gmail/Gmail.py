@@ -218,7 +218,7 @@ def create_base_time(internal_date_timestamp, header_date):
 
 def get_email_context(email_data, mailbox):
     context_headers = email_data.get('payload', {}).get('headers', [])
-    context_headers = [{'Name': v['name'], 'Value': v['value']}
+    context_headers = [{'Name': v['name'], 'Value':v['value']}
                        for v in context_headers]
     headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
     body = demisto.get(email_data, 'payload.body.data')
@@ -231,8 +231,7 @@ def get_email_context(email_data, mailbox):
         # in case no internalDate field exists will revert to extracting the date from the email payload itself
         # Note: this should not happen in any command other than other than gmail-move-mail which doesn't return the
         # email payload nor internalDate
-        demisto.info(
-            "No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
+        demisto.info("No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
         base_time = str(headers.get('date', ''))
 
     context_gmail = {
@@ -509,8 +508,7 @@ def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject):
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, gmail_context, headers, removeNull=True),
-        'EntryContext': {
-            'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context}
+        'EntryContext': {'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context}
     }
 
 
@@ -693,7 +691,7 @@ def hide_user_command():
     hide_value = args.get('visible-globally')
     result = hide_user(user_key, hide_value)
 
-    return users_to_entry('User {}:'.format(user_key, ), [result])
+    return users_to_entry('User {}:'.format(user_key,), [result])
 
 
 def hide_user(user_key, hide_value):
@@ -842,7 +840,7 @@ def create_user(primary_email, first_name, family_name, password):
         'name': {
             'givenName': first_name,
             'familyName': family_name,
-            'fullName': '%s %s' % (first_name, family_name,),
+            'fullName': '%s %s' % (first_name, family_name, ),
         },
         'password': password
     }
@@ -1033,7 +1031,7 @@ def search_command(mailbox=None):
 
     if max_results > 500:
         raise ValueError(
-            'maxResults must be lower than 500, got %s' % (max_results,))
+            'maxResults must be lower than 500, got %s' % (max_results, ))
 
     mails, q = search(user_id, subject, _from, to, before, after, filename, _in, query,
                       fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
@@ -1055,9 +1053,9 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'in': _in,
         'has': 'attachment' if has_attachments else ''
     }
-    q = ' '.join('%s:%s ' % (name, value,)
+    q = ' '.join('%s:%s ' % (name, value, )
                  for name, value in query_values.iteritems() if value != '')
-    q = ('%s %s' % (q, query,)).strip()
+    q = ('%s %s' % (q, query, )).strip()
 
     command_args = {
         'userId': user_id,
@@ -1788,14 +1786,14 @@ def fetch_incidents():
 
     query += last_fetch.strftime(' after:%Y/%m/%d')
     LOG('GMAIL: fetch parameters:\nuser: %s\nquery=%s\nfetch time: %s' %
-        (user_key, query, last_fetch,))
+        (user_key, query, last_fetch, ))
 
     result = service.users().messages().list(
         userId=user_key, maxResults=100, q=query).execute()
 
     incidents = []
     # so far, so good
-    LOG('GMAIL: possible new incidents are %s' % (result,))
+    LOG('GMAIL: possible new incidents are %s' % (result, ))
     for msg in result.get('messages', []):
         msg_result = service.users().messages().get(
             id=msg['id'], userId=user_key).execute()
@@ -1851,7 +1849,7 @@ def main():
         'gmail-get-role': get_role_command
     }
     command = demisto.command()
-    LOG('GMAIL: command is %s' % (command,))
+    LOG('GMAIL: command is %s' % (command, ))
     try:
         if command == 'test-module':
             list_users(ADMIN_EMAIL.split('@')[1])
