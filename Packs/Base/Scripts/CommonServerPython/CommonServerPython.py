@@ -2651,7 +2651,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict``
+    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget``
     :param results:
 
     :return: None
@@ -2667,7 +2667,7 @@ def return_results(results):
         return
 
     if isinstance(results, BaseWidget):
-        demisto.results(results.publish())
+        demisto.results(results.to_display())
         return
 
     demisto.results(results)
@@ -4043,25 +4043,53 @@ class DemistoException(Exception):
 
 class BaseWidget:
     @abstractmethod
-    def publish(self):
+    def to_display(self):
         pass
 
 
 class TextWidget(BaseWidget):
+    """Text Widget representation
+
+    :type text: ``str``
+    :param text: The text for the widget to display
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     def __init__(self, text):
+        # type: (str) -> TextWidget
         self.text = text
 
-    def publish(self):
+    def to_display(self):
+        """Text Widget representation
+
+        :type text: ``str``
+        :param text: The text for the widget to display
+
+        :return: No data returned
+        :rtype: ``None``
+        """
         return self.text
 
 
 class TrendWidget(BaseWidget):
+    """Trend Widget representation
+
+    :type current_number: ``int``
+    :param current_number: The Current number in the trend.
+
+    :type previous_number: ``int``
+    :param previous_number: The previous number in the trend.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     def __init__(self, current_number, previous_number):
         # type: (int, int) -> TrendWidget
         self.current_number = current_number
         self.previous_number = previous_number
 
-    def publish(self):
+    def to_display(self):
         return json.dumps({
             'currSum': self.current_number,
             'prevSum': self.previous_number
@@ -4069,33 +4097,84 @@ class TrendWidget(BaseWidget):
 
 
 class NumberWidget(BaseWidget):
+    """Number Widget representation
+
+    :type number: ``int``
+    :param number: The number for the widget to display.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     def __init__(self, number):
         # type: (int) -> NumberWidget
         self.number = number
 
-    def publish(self):
+    def to_display(self):
         return self.number
 
 
 class BarColumnPieWidget(BaseWidget):
+    """Bar/Column/Pie Widget representation
+
+    :type categories: ``Any``
+    :param categories: a list of categories to display(Better use the add_category function to populate the data.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     def __init__(self, categories=None):
+        # type: (dict) -> BarColumnPieWidget
         self.categories = categories if categories else []
 
     def add_category(self, name, number):
+        """Add a category to widget.
+
+        :type name: ``str``
+        :param name: the name of the category to add.
+
+        :type number: ``int``
+        :param number: the number value of the category.
+
+        :return: No data returned.
+        :rtype: ``None``
+        """
         self.categories.append({
             'name': name,
             'data': [number]
         })
 
-    def publish(self):
+    def to_display(self):
         return json.dumps(self.categories)
 
 
 class LineWidget(BaseWidget):
+    """Line Widget representation
+
+    :type categories: ``Any``
+    :param categories: a list of categories to display(Better use the add_category function to populate the data.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     def __init__(self, categories=None):
+        # type: (dict) -> LineWidget
         self.categories = categories if categories else []
 
     def add_category(self, name, number, group):
+        """Add a category to widget.
+
+        :type name: ``str``
+        :param name: the name of the category to add.
+
+        :type number: ``int``
+        :param number: the number value of the category.
+
+        :type group: ``str``
+        :param group: the name of the relevant group.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
         self.categories.append({
             'name': name,
             'data': [number],
@@ -4107,7 +4186,7 @@ class LineWidget(BaseWidget):
             ]
         })
 
-    def publish(self):
+    def to_display(self):
         processed_names = []
         processed_categories = []
         for cat in self.categories:
@@ -4125,28 +4204,33 @@ class LineWidget(BaseWidget):
         return json.dumps(processed_categories)
 
 
-class DurationWidget(BaseWidget):  # todo: check this out, doesn't have the option to be custom
-    def __init__(self, name, seconds):
-        self.name = name
-        self.seconds = seconds
-
-    def publish(self):
-        return json.dumps([{
-            'name': self.name,
-            'data': [self.seconds]
-        }])
-
-
 class TableOrListWidget(BaseWidget):
+    """Table/List Widget representation
+
+    :type data: ``Any``
+    :param data: a list of data to display(Better use the add_category function to populate the data.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     def __init__(self, data=None):
+        # type: (Any) -> TableOrListWidget
         self.data = data if data else []
         if not isinstance(self.data, list):
             self.data = [data]
 
     def add_row(self, data):
+        """Add a row to the widget.
+
+        :type data: ``Any``
+        :param data: the data to add to the list/table.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
         self.data.append(data)
 
-    def publish(self):
+    def to_display(self):
         return json.dumps({
             'total': len(self.data),
             'data': self.data
