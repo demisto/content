@@ -1,5 +1,5 @@
-id: Infinipoint-Test
-version: -1
+id: 663e1ec3-5590-4e23-8d99-d8a4e0c22a52
+version: 118
 name: Infinipoint-Test
 starttaskid: "0"
 tasks:
@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -68,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: bbacbd6f-b93f-4157-8580-e2c80167ece0
+    taskid: a9969479-8138-4557-8492-692af0c354f1
     type: regular
     task:
-      id: bbacbd6f-b93f-4157-8580-e2c80167ece0
+      id: a9969479-8138-4557-8492-692af0c354f1
       version: -1
       name: infinipoint-get-cve
       script: '|||infinipoint-get-cve'
@@ -83,7 +82,7 @@ tasks:
       - "3"
     scriptarguments:
       cve_id:
-        simple: CVE-2020-1301
+        simple: CVE-2020-9859
     separatecontext: false
     view: |-
       {
@@ -152,7 +151,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -234,99 +232,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "9":
-    id: "9"
-    taskid: e8301a1f-f9b6-4f54-877e-abad55a0dd99
-    type: condition
-    task:
-      id: e8301a1f-f9b6-4f54-877e-abad55a0dd99
-      version: -1
-      name: Validate Outputs (infinipoint-get-assets-programs)
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Infinipoint.Assets.Programs.items.$device
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1230,
-          "y": 1330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 817a2a03-a59f-4f58-8121-c3a8cfdd1bcc
-    type: title
-    task:
-      id: 817a2a03-a59f-4f58-8121-c3a8cfdd1bcc
-      version: -1
-      name: Success - infinipoint-get-assets-programs
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1230,
-          "y": 1490
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: c243686d-916f-453f-88dd-1c732e59d478
-    type: regular
-    task:
-      id: c243686d-916f-453f-88dd-1c732e59d478
-      version: -1
-      name: infinipoint-get-assets-programs
-      script: Infinipoint|||infinipoint-get-assets-programs
-      type: regular
-      iscommand: true
-      brand: Infinipoint
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      name:
-        simple: nmap
-      publisher: {}
-      version: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1230,
-          "y": 1180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "13":
     id: "13"
     taskid: 07e6dd49-771a-405d-8e13-f2aee77fcb18
@@ -375,7 +280,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -507,7 +411,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -640,7 +543,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -774,7 +676,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -905,7 +806,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -1035,7 +935,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -1130,7 +1029,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -1212,90 +1110,6 @@ tasks:
         "position": {
           "x": 90,
           "y": 4670
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "40":
-    id: "40"
-    taskid: d347977d-8359-46ae-8a8c-a96e5fbd6276
-    type: regular
-    task:
-      id: d347977d-8359-46ae-8a8c-a96e5fbd6276
-      version: -1
-      name: infinipoint-get-osquery
-      script: '|||infinipoint-get-osquery'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      name:
-        simple: Kernel version
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 120,
-          "y": 5570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "41":
-    id: "41"
-    taskid: 78a85bdc-e863-41a0-8f82-34672e673822
-    type: regular
-    task:
-      id: 78a85bdc-e863-41a0-8f82-34672e673822
-      version: -1
-      name: infinipoint-run-osquery
-      script: '|||infinipoint-run-osquery'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      query_id:
-        simple: ${Infinipoint.Scripts.Search.id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 320,
-          "y": 5720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "43":
-    id: "43"
-    taskid: 75d0f10c-1c6e-4347-8f9a-057cb315847b
-    type: regular
-    task:
-      id: 75d0f10c-1c6e-4347-8f9a-057cb315847b
-      version: -1
-      name: infinipoint-run-script
-      script: '|||infinipoint-run-script'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      script_id:
-        simple: 4bd9038e-fc2b-4060-8370-c66bf19acddc
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 310,
-          "y": 4840
         }
       }
     note: false
@@ -1388,7 +1202,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "49"
@@ -1476,10 +1289,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: bd7bef7d-9529-40a7-84a8-c896b57dd0cd
+    taskid: 90a75549-9a0a-4b41-8143-1467b9ca725d
     type: condition
     task:
-      id: bd7bef7d-9529-40a7-84a8-c896b57dd0cd
+      id: 90a75549-9a0a-4b41-8143-1467b9ca725d
       version: -1
       name: Validate Output (infinipoint-run-osquery flow)
       type: condition
@@ -1492,7 +1305,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEmpty
+      - - operator: isNotEmpty
           left:
             value:
               simple: Infinipoint.Responses
@@ -1520,7 +1333,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -1762,7 +1574,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 6525,
-        "width": 1520,
+        "width": 1160,
         "x": 90,
         "y": -180
       }
@@ -1770,4 +1582,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0

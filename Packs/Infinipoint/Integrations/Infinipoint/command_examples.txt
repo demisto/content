@@ -1,4 +1,4 @@
-!infinipoint-get-cve cve_id="CVE-2020-1301"
+!infinipoint-get-cve cve_id="CVE-2020-9859"
 !infinipoint-get-assets-programs name="VMware"
 !infinipoint-get-assets-hardware os_type="1"
 !infinipoint-get-assets-cloud source="GCP API"
