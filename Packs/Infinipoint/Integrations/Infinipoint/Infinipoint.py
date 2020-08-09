@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, cast
 import jwt
 import math
 import dateparser
+from datetime import timezone
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -253,7 +254,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
         return int(arg)
 
     if isinstance(arg, str):
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
         if date is None:
             # if d is None it means dateparser failed to parse it
@@ -313,19 +314,19 @@ def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional
     if alerts:
         for alert in alerts.outputs:
             if alert.get("subscription") in subscription:
-                incident_created_time = int(alert.get('timestamp', '0'))
-                incident_created_time_ms = incident_created_time * 1000
+                incident_created_epoch_time = int(alert.get('timestamp', '0'))
+                incident_created_time = datetime.fromtimestamp(int(alert.get('timestamp', '0')), timezone.utc)
 
                 incident = {
                     'name': f'Infinipoint {alert.get("name")}',
                     'type': f'Infinipoint {alert.get("type")}',
-                    'occurred': timestamp_to_datestring(incident_created_time_ms),
+                    'occurred': incident_created_time.isoformat(),
                     'rawJSON': json.dumps(alert.get('rawJSON'))
                 }
 
                 incidents.append(incident)
-                if incident_created_time > latest_created_time:
-                    latest_created_time = incident_created_time
+                if incident_created_epoch_time > latest_created_time:
+                    latest_created_time = incident_created_epoch_time
 
     next_run = {'last_fetch': latest_created_time}
 
@@ -383,8 +384,8 @@ def infinipoint_command(client: Client, args=None, optional_args=None, paginatio
         for node in res:
             # Handle time format - convert to ISO from epoch
             if '$time' in node and isinstance(node['$time'], int):
-                created_time_ms = int(node.get('$time', '0')) * 1000
-                node['$time'] = timestamp_to_datestring(created_time_ms)
+                created_time = datetime.fromtimestamp(int(node.get('$time', '0')), timezone.utc)
+                node['$time'] = created_time.isoformat()
 
         # CVE reputation
         if "cve_id" in res:
@@ -420,13 +421,12 @@ def run_queries_command(client: Client, args: Dict, optional_args=None):
 
 
 def main():
-    insecure = demisto.params().get('insecure', False)
+    verify_ssl = not demisto.params().get('insecure', False)
     access_key = demisto.params().get('access_key')
     private_key = demisto.params().get('private_key')
     first_fetch_time = arg_to_timestamp(arg=demisto.params().get('first_fetch', '3 days'),
                                         arg_name='First fetch time', required=True)
     proxy = demisto.params().get('proxy', False)
-    # MAX_INCIDENTS_TO_FETCH = 1000
 
     demisto.info(f'command is {demisto.command()}')
 
@@ -434,12 +434,12 @@ def main():
         headers = get_auth_headers(access_key, private_key)
         client = Client(
             base_url=BASE_URL,
-            verify=insecure,
+            verify=verify_ssl,
             headers=headers,
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            test_module("/api/auth/health/", BASE_URL, insecure, headers)
+            test_module("/api/auth/health/", BASE_URL, verify_ssl, headers)
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
