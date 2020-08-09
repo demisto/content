@@ -1,4 +1,4 @@
-Performs jmespath search on input JSON.
+Performs a jmespath search on an input JSON, when using a transformer.
 ## Script Data
 ---
 
