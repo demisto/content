@@ -420,7 +420,7 @@ script:
     execution: false
     name: cyberark-pas-user-delete
     outputs:
-    - contextPath: CyberArkPAS.Safes.Deleted
+    - contextPath: CyberArkPAS.Users.Deleted
       description: Whether the safe was deleted.
       type: Boolean
   - arguments:
@@ -578,6 +578,7 @@ script:
       description: Whether or not to enable Object Level Access Control for the new
         safe.
       isArray: false
+      defaultValue: 'true'
       name: OLAC_enabled
       predefined:
       - 'true'
