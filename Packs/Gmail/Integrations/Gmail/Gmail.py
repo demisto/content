@@ -413,11 +413,8 @@ def users_to_entry(title, response, next_page_token=None):
     context = []
 
     for user_data in response:
-        username = user_data.get('name').get('givenName') if user_data.get('name') and 'givenName' in user_data.get(
-            'name') else None
-
-        display = user_data.get('name').get('fullName') if user_data.get('name') and 'fullName' in user_data.get(
-            'name') else None
+        username = dict_safe_get(user_data, ['name', 'givenName'])
+        display = dict_safe_get(user_data, ['name', 'fullName'])
         context.append({
             'Type': 'Google',
             'ID': user_data.get('id'),
@@ -1706,7 +1703,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
             htmlBody, htmlAttachments = handle_html(htmlBody)
             msg = MIMEText(htmlBody, 'html', 'utf-8')
             message.attach(msg)
-            if attach_cid is not None and len(attach_cid) > 0:
+            if attach_cid:
                 inlineAttachments = collect_inline_attachments(attach_cid)
 
         else:
