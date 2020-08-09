@@ -19,7 +19,7 @@ from typing import Dict, List
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-SOURCE_NAME = "Alien Vault OTX TAXIII"
+SOURCE_NAME = "Alien Vault OTX TAXII"
 
 
 # disable insecure warnings
