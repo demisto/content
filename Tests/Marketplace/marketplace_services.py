@@ -355,8 +355,7 @@ class Pack(object):
             Doesn't return
         """
         if yaml_type == 'Integration':
-            for configuration in yaml_content.get('configuration'):
-                if configuration.get('name') == 'feed':
+            if yaml_content.get('script', {}).get('feed', False) == True:
                     self._is_feed = True
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):
