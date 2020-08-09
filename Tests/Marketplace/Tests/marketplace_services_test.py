@@ -90,6 +90,18 @@ class TestMetadataParsing:
 
         assert parsed_metadata['price'] == expected
 
+    @pytest.mark.parametrize('is_feed_pack, tags',
+                             [(True, ["tag number one", "Tag number two", 'TIM']),
+                              (False, ["tag number one", "Tag number two"])
+                              ])
+    def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, is_feed_pack, tags):
+        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                    pack_id='test_pack_id', integration_images=[], author_image="",
+                                                    dependencies_data={}, server_min_version="5.5.0",
+                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                    is_feed_pack=True)
+        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'TIM']
+
 
 class TestParsingInternalFunctions:
     """ Test class for internal functions that are used in _parse_pack_metadata static method.
@@ -235,6 +247,32 @@ class TestHelperFunctions:
                                            compared_content_item=compared_content_item, pack_name="dummy")
 
         assert result == expected_result
+
+    @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed',
+                             [
+                                 # Check is_feed by Integration
+                                 ({'category': 'TIM', 'configuration': [{'display': 'Services', 'name': 'url',
+                                                                         'required': True, 'type': 16},
+                                                                        {'defaultvalue': 'true', 'display':
+                                                                            'Fetch indicators', 'name': 'feed',
+                                                                         'required': False, 'type': 8}]},
+                                  'Integration', True),
+                                 ({'category': 'NotTIM', 'configuration':
+                                     [{'display': 'Services', 'name': 'url', 'required': True, 'type': 16}]},
+                                  'Integration', False),
+
+                                 # Check is_feed by playbook
+                                 ({'id': 'TIM - Example', 'version': -1, 'fromversion': '5.5.0',
+                                   'name': 'TIM - Example', 'description': 'This is a playbook TIM example'},
+                                  'Playbook', True),
+                                 ({'id': 'NotTIM - Example', 'version': -1, 'fromversion': '5.5.0',
+                                   'name': 'NotTIM - Example', 'description': 'This is a playbook which is not TIM'},
+                                  'Playbook', False)
+                             ])
+    def test_is_feed(self, yaml_context, yaml_type, is_actually_feed):
+        dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
+        dummy_pack.is_feed_pack(yaml_context, yaml_type)
+        assert dummy_pack.is_feed == is_actually_feed
 
 
 class TestVersionSorting:
