@@ -43,13 +43,13 @@ class TextExtractHtmlParser(HTMLParser):
         self._texts = []  # type: list
         self._ignore = False
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag):
         if tag in ('p', 'br') and not self._ignore:
             self._texts.append('\n')
         elif tag in ('script', 'style'):
             self._ignore = True
 
-    def handle_startendtag(self, tag, attrs):
+    def handle_startendtag(self, tag):
         if tag in ('br', 'tr') and not self._ignore:
             self._texts.append('\n')
 
@@ -127,9 +127,8 @@ def get_credentials(additional_scopes=None, delegated_user=None):
     if additional_scopes is not None:
         scopes += additional_scopes
 
-    cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),
-                                                                            # type: ignore
-                                                                            scopes=scopes)
+    cred = service_account.ServiceAccountCredentials. \
+        from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT), scopes=scopes)  # type: ignore
 
     return cred.create_delegated(delegated_user)
 
@@ -415,11 +414,11 @@ def users_to_entry(title, response, next_page_token=None):
     context = []
 
     for user_data in response:
-        username = user_data.get('name').get('givenName') if user_data.get('name') and 'givenName' in \
-                                                             user_data.get('name') else None
+        username = user_data.get('name').get('givenName') if user_data.get('name') and 'givenName' in user_data.get(
+            'name') else None
 
-        display = user_data.get('name').get('fullName') if user_data.get('name') and 'fullName' in \
-                                                           user_data.get('name') else None
+        display = user_data.get('name').get('fullName') if user_data.get('name') and 'fullName' in user_data.get(
+            'name') else None
         context.append({
             'Type': 'Google',
             'ID': user_data.get('id'),
@@ -484,7 +483,7 @@ def autoreply_to_entry(title, response, user_id):
     }
 
 
-def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, subject):
+def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject):
     gmail_context = []
     for mail_results_data in response:
         gmail_context.append({
@@ -1671,12 +1670,12 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
               transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
     if htmlBody and not any([entry_ids, file_names, attach_cid, body]):
         # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
-        message = MIMEText(htmlBody, 'html')
+        message = MIMEText(htmlBody, 'html')  # type: ignore
     elif body and not any([entry_ids, file_names, attach_cid, htmlBody]):
         # if there is only body and no attachments to the mail , we would like to send it without attaching every part
-        message = MIMEText(body, 'plain', 'utf-8')
+        message = MIMEText(body, 'plain', 'utf-8')  # type: ignore
     else:
-        message = MIMEMultipart()
+        message = MIMEMultipart()  # type: ignore
 
     message['to'] = header(','.join(emailto))
     message['cc'] = header(','.join(cc))
@@ -1761,7 +1760,7 @@ def send_mail_command():
     result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
                        replyTo, file_names, attchCID, transientFile, transientFileContent,
                        transientFileCID, additional_headers, template_param)
-    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, htmlBody, body, subject)
+    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
 
 
 '''FETCH INCIDENTS'''
