@@ -15,6 +15,8 @@
 # In this case, the script will trigger a build and the demisto-marketplace instance will live for 7 hours.
 # Notice that if you want to run a build on contributor branch you must specify time to live argument and the recommended time is 180 minutes.
 
+
+
 if [[ "$#" -lt 2 ]]; then
   echo "Usage: $0 <content branch name: such as master> <circle ci token> [time to live] [contributor branch: such as testUser:testBranch] [changed pack: such as Packs/test_pack/]"
   echo "You can get a circle ci token from: CircleCI -> User -> Personal API Tokens"
