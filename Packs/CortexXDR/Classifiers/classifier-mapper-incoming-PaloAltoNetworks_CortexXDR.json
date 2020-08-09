@@ -99,6 +99,14 @@
 					"complex": null,
 					"simple": "incident_id"
 				},
+				"dbotMirrorDirection": {
+					"complex": null,
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorInstance": {
+					"complex": null,
+					"simple": "mirror_instance"
+				},
 				"occurred": {
 					"complex": {
 						"accessor": "",

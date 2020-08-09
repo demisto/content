@@ -53,6 +53,13 @@ XSOAR_RESOLVED_STATUS_TO_XDR = {
     'False Positive': 'resolved_false_positive'
 }
 
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -1691,7 +1698,6 @@ def drop_field_underscore(section):
     for field in section_copy.keys():
         if '_' in field:
             section[field.replace('_', '')] = section.get(field)
-            del section[field]
 
 
 def reformat_sublist_fields(sublist):
@@ -1743,6 +1749,76 @@ def handle_incoming_closing_incident(incident_data):
     return closing_entry
 
 
+def handle_incoming_error_in_mirror(incident_data, error):
+    error_entries = []
+    integration_cache = demisto.getIntegrationContext()
+
+    # setup new error if needed
+    if integration_cache.get('in_mirror_error') is None or integration_cache.get('in_mirror_error') != error:
+        demisto.debug(f"Error in incoming mirror for XDR incident {incident_data.get('incident_id')}: {error}")
+        integration_cache['in_mirror_error'] = error
+        integration_cache['in_error_printed'] = False
+
+    # handle incoming error
+    if integration_cache.get('in_mirror_error'):
+        incident_data['in_mirror_error'] = True
+
+        # check if error was printed
+        if not integration_cache.get('in_error_printed'):
+            error_entries.append({
+                'Type': EntryType.ERROR,
+                'Contents': "An error occurred while mirroring incoming "
+                            "data: " + integration_cache.get('in_mirror_error'),
+                'ContentsFormat': EntryFormat.TEXT
+            })
+            integration_cache['in_error_printed'] = True
+
+    demisto.setIntegrationContext(integration_cache)
+
+    # check for outgoing error
+    out_error_entry = handle_outgoing_error_in_mirror(incident_data)
+    if out_error_entry:
+        error_entries.append(out_error_entry)
+
+    return GetRemoteDataResponse(
+        mirrored_object=incident_data,
+        entries=error_entries
+    )
+
+
+def handle_outgoing_error_in_mirror(incident_data):
+    out_error_entry = {}
+    integration_cache = demisto.getIntegrationContext()
+
+    # handle incoming error
+    if integration_cache.get('out_mirror_error'):
+        incident_data['out_mirror_error'] = True
+
+        # check if error was printed
+        if not integration_cache.get('out_error_printed'):
+            out_error_entry = {
+                'Type': EntryType.ERROR,
+                'Contents': "An error occurred while mirroring outgoing "
+                            "data: " + integration_cache.get('out_mirror_error'),
+                'ContentsFormat': EntryFormat.TEXT
+            }
+            integration_cache['out_error_printed'] = True
+            demisto.setIntegrationContext(integration_cache)
+
+    return out_error_entry
+
+
+def reset_in_and_out_errors(incident_data):
+    integration_cache = demisto.getIntegrationContext()
+    integration_cache['in_mirror_error'] = None
+    incident_data['in_mirror_error'] = False
+
+    if integration_cache.get('out_mirror_error') is None:
+        incident_data['out_mirror_error'] = False
+
+    demisto.setIntegrationContext(integration_cache)
+
+
 def get_mapping_fields_command():
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=XDR_INCIDENT_TYPE_NAME)
     for field in XDR_INCIDENT_FIELDS:
@@ -1753,40 +1829,60 @@ def get_mapping_fields_command():
 
 def get_remote_data_command(client, args):
     remote_args = GetRemoteDateArgs(args)
+    try:
+        incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
+                                                                 "alerts_limit": 1000})[2].get('incident')
 
-    incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
-                                                             "alerts_limit": 1000})[2].get('incident')
-    incident_data['id'] = incident_data.get('incident_id')
-    current_modified_time = int(incident_data.get('modification_time'))
-    demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"
-                  f"modified time: {int(incident_data.get('modification_time'))}\n"
-                  f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
+        incident_data['id'] = incident_data.get('incident_id')
+        current_modified_time = int(incident_data.get('modification_time'))
+        demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"
+                      f"modified time: {int(incident_data.get('modification_time'))}\n"
+                      f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
 
-    if arg_to_timestamp(current_modified_time, 'modification_time') > \
-            arg_to_timestamp(remote_args.last_update, 'last_update'):
-        demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
+        if arg_to_timestamp(current_modified_time, 'modification_time') > \
+                arg_to_timestamp(remote_args.last_update, 'last_update'):
+            demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
 
-        sort_all_list_incident_fields(incident_data)
+            sort_all_list_incident_fields(incident_data)
 
-        # handle unasignment
-        if incident_data.get('assigned_user_mail') is None:
-            handle_incoming_user_unassignment(incident_data)
+            # handle unasignment
+            if incident_data.get('assigned_user_mail') is None:
+                handle_incoming_user_unassignment(incident_data)
+
+            else:
+                # handle owner sync
+                sync_incoming_incident_owners(incident_data)
+
+            # handle closed issue in XDR and handle outgoing error entry
+            entries = [handle_incoming_closing_incident(incident_data), handle_outgoing_error_in_mirror(incident_data)]
+
+            reformatted_entries = []
+            for entry in entries:
+                if entry:
+                    reformatted_entries.append(entry)
+
+            reset_in_and_out_errors(incident_data)
+
+            return GetRemoteDataResponse(
+                mirrored_object=incident_data,
+                entries=reformatted_entries
+            )
 
         else:
-            # handle owner sync
-            sync_incoming_incident_owners(incident_data)
+            # no new data modified - checking for outgoing error
+            outgoing_error_entry = handle_outgoing_error_in_mirror(incident_data)
+            if outgoing_error_entry:
+                return GetRemoteDataResponse(
+                    mirrored_object=incident_data,
+                    entries=[outgoing_error_entry]
+                )
 
-        # handle closed issue in XDR
-        closing_entry = handle_incoming_closing_incident(incident_data)
+            # no error, not updating the incident
+            return {}
 
-        return GetRemoteDataResponse(
-            mirrored_object=incident_data,
-            entries=[closing_entry] if closing_entry else []
-        )
-
-    else:
-        # no new data modified so not updating the incident
-        return {}
+    except Exception as e:
+        return handle_incoming_error_in_mirror({'incident_id': remote_args.remote_incident_id,
+                                                'id': remote_args.remote_incident_id}, str(e))
 
 
 def handle_outgoing_incident_owner_sync(update_args):
@@ -1826,21 +1922,39 @@ def get_update_args(delta, inc_status):
 
 
 def update_remote_system_command(client, args):
-    remote_args = UpdateRemoteSystemArgs(args)
-    if remote_args.delta and remote_args.incident_changed:
-        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
-                      f'incident {remote_args.remote_incident_id}')
-        update_args = get_update_args(remote_args.delta, remote_args.inc_status)
+    try:
+        remote_args = UpdateRemoteSystemArgs(args)
+        if remote_args.delta and remote_args.incident_changed:
+            demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
+                          f'incident {remote_args.remote_incident_id}')
+            update_args = get_update_args(remote_args.delta, remote_args.inc_status)
 
-        update_args['incident_id'] = remote_args.remote_incident_id
-        demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to XDR\n')
-        update_incident_command(client, update_args)
+            update_args['incident_id'] = remote_args.remote_incident_id
+            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to XDR\n')
+            update_incident_command(client, update_args)
 
-    else:
-        demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
-                      f'as it is not new nor changed')
+            # no outgoing mirror error
+            integration_cache = demisto.getIntegrationContext()
+            integration_cache['out_mirror_error'] = None
+            integration_cache['out_error_printed'] = False
+            demisto.setIntegrationContext(integration_cache)
 
-    return remote_args.remote_incident_id
+        else:
+            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+                          f'as it is not new nor changed')
+
+        return remote_args.remote_incident_id
+
+    except Exception as e:
+        # setup outgoing mirror error
+        integration_cache = demisto.getIntegrationContext()
+        if integration_cache.get('out_mirror_error') is None or integration_cache.get('out_mirror_error') != str(e):
+            demisto.debug(f"Error in outgoing mirror for XDR incident {remote_args.remote_incident_id}: {str(e)}")
+            integration_cache['out_mirror_error'] = str(e)
+            integration_cache['out_error_printed'] = False
+
+        demisto.setIntegrationContext(integration_cache)
+        return remote_args.remote_incident_id
 
 
 def fetch_incidents(client, first_fetch_time, last_run: dict = None):
@@ -1865,6 +1979,9 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None):
             incident_data = raw_incident
 
         sort_all_list_incident_fields(incident_data)
+
+        incident_data['mirror_direction'] = MIRROR_DIRECTION[demisto.params().get('mirror_direction')]
+        incident_data['mirror_instance'] = demisto.integrationInstance()
 
         description = raw_incident.get('description')
         occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')

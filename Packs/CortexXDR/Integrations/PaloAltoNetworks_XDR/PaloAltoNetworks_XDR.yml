@@ -23,22 +23,15 @@ configuration:
   name: apikey
   required: true
   type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Fetch incident alerts and artifacts
+- defaultvalue: 'true'
+  display: Fetch incident alerts and artifacts
   hidden: false
   name: extra_data
-  defaultvalue: true
   required: false
   type: 8
 - additionalinfo: If selected, for every incident fetched from Cortex XDR to XOSAR
-    - the incident owners will be synced. Note this only applies in a single direction.
+    - the incident owners will be synced. Note this only applies in a single direction
+    and only if the users exist in both Cortex XSOAR and Cortex XDR.
   display: Sync Incident Owners
   hidden: false
   name: sync_owners
@@ -49,6 +42,25 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
@@ -1650,7 +1662,7 @@ script:
       will not update the current incident, it's here for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: true
   longRunning: false

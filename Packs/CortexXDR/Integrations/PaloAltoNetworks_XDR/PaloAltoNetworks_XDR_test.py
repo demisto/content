@@ -40,10 +40,13 @@ def test_fetch_incidents(requests_mock, mocker):
     modified_raw_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
     modified_raw_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
     modified_raw_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
+    modified_raw_incident['mirror_direction'] = 'In'
+    modified_raw_incident['mirror_instance'] = 'MyInstance'
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
-    mocker.patch.object(demisto, 'params', return_value={"extra_data": True})
+    mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
+    mocker.patch.object(demisto, 'integrationInstance', return_value='MyInstance')
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1'
@@ -834,6 +837,8 @@ def test_get_remote_data_command_should_update(requests_mock):
     expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
     expected_modified_incident['assigned_user_mail'] = ''
     expected_modified_incident['assigned_user_pretty_name'] = ''
+    expected_modified_incident['in_mirror_error'] = False
+    expected_modified_incident['out_mirror_error'] = False
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)
@@ -902,6 +907,8 @@ def test_get_remote_data_command_should_close_issue(requests_mock):
     expected_modified_incident['assigned_user_pretty_name'] = ''
     expected_modified_incident['closeReason'] = 'Resolved'
     expected_modified_incident['closeNotes'] = 'Handled'
+    expected_modified_incident['in_mirror_error'] = False
+    expected_modified_incident['out_mirror_error'] = False
 
     expected_closing_entry = {
         'Type': 1,
@@ -956,6 +963,8 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     expected_modified_incident['assigned_user_mail'] = 'some@mail.com'
     expected_modified_incident['assigned_user_pretty_name'] = ''
     expected_modified_incident['owner'] = 'username'
+    expected_modified_incident['in_mirror_error'] = False
+    expected_modified_incident['out_mirror_error'] = False
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)
@@ -1012,7 +1021,7 @@ def test_get_update_args_owner_sync(mocker):
         - the resolve_comment is the same as the closeNotes
     """
     from PaloAltoNetworks_XDR import get_update_args
-    mocker.patch.object(demisto, 'params', return_value={"sync_owners": True})
+    mocker.patch.object(demisto, 'params', return_value={"sync_owners": True, "mirror_direction": "Incoming"})
     mocker.patch.object(demisto, 'findUser', return_value={"email": "some@mail.com", 'username': 'username'})
     delta = {'owner': 'username'}
 
