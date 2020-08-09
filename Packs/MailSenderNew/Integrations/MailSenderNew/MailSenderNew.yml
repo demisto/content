@@ -16,11 +16,12 @@ configuration:
   name: credentials
   required: false
   type: 9
-- defaultvalue: noreply@demisto.com
+- defaultvalue: Cortex XSOAR <noreply@demisto.com>
   display: Sender address
   name: from
   required: true
   type: 0
+  additionalinfo: Sender address can be specified as 'user@host.com' or 'Full Name <user@host.com>'
 - display: Fully Qualified Domain Name (FQDN) - used in EHLO
   name: fqdn
   required: false
