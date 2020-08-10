@@ -83,7 +83,7 @@ class MicrosoftClient(BaseClient):
 
         self.multi_resource = multi_resource
         if self.multi_resource:
-            self.resources = resources
+            self.resources = resources if resources else []
             self.resource_to_access_token = {}  # type: Dict[str, str]
 
     def http_request(self, *args, resp_type='json', headers=None, return_empty_response=False, resource='', **kwargs):
@@ -157,9 +157,9 @@ class MicrosoftClient(BaseClient):
             if not self.multi_resource:
                 access_token, expires_in, refresh_token = self._oproxy_authorize()
             else:
-                for resource in self.resources:
-                    access_token, expires_in, refresh_token = self._oproxy_authorize(resource)
-                    self.resource_to_access_token[resource] = access_token
+                for resource_str in self.resources:
+                    access_token, expires_in, refresh_token = self._oproxy_authorize(resource_str)
+                    self.resource_to_access_token[resource_str] = access_token
                     self.refresh_token = refresh_token
         else:
             access_token, expires_in, refresh_token = self._get_self_deployed_token(refresh_token)
@@ -247,7 +247,7 @@ class MicrosoftClient(BaseClient):
                 return self._get_self_deployed_token_auth_code(refresh_token)
 
             else:
-                expires_in = ''
+                expires_in = -1  # init variable as an int
                 for resource in self.resources:
                     access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
                                                                                                       resource)

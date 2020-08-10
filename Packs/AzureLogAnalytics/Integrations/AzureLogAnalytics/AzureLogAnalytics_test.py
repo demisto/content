@@ -80,13 +80,13 @@ def test_execute_query_command(mocker):
 
     assert 'Query Results' in command_result.readable_output
     assert len(command_result.outputs) == 2
-    assert command_result.outputs[0].get('name') == 'Table 1'
-    assert command_result.outputs[1].get('data')[0].get('column4') == 4
+    assert command_result.outputs[0].get('TableName') == 'Table 1'
+    assert command_result.outputs[1].get('Data')[0].get('column4') == 4
 
 
 def test_list_saved_searches_command(mocker):
     client = mock_client()
-    args = {'limit': '1'}
+    args = {'limit': '1', 'page': '0'}
     mocker.patch.object(client, 'http_request', return_value=MOCKED_SAVED_SEARCHES_OUTPUT)
 
     command_result = list_saved_searches_command(client, args=args)
@@ -102,6 +102,6 @@ def test_tags_arg_to_request_format():
     tags_arg = 'name1=value1;name2=value2'
     parsed_tags = tags_arg_to_request_format(tags_arg)
 
-    assert len(parse_tags) == 2
+    assert len(parsed_tags) == 2
     assert parsed_tags[0].get('name1') == 'value1'
     assert parsed_tags[1].get('name2') == 'value2'
