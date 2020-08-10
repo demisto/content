@@ -30,7 +30,8 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit")
+                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                    downloads_count=10)
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'test_pack_id'
         assert parsed_metadata['description'] == 'Description of test pack'
@@ -54,6 +55,7 @@ class TestMetadataParsing:
         assert 'integrations' in parsed_metadata
         assert parsed_metadata['useCases'] == ["Some Use Case"]
         assert parsed_metadata['keywords'] == ["dummy keyword", "Additional dummy keyword"]
+        assert parsed_metadata['downloads'] == 10
         assert 'dependencies' in parsed_metadata
 
     def test_parsed_metadata_empty_input(self):
@@ -63,7 +65,8 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash")
+                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                    downloads_count=10)
 
         assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
@@ -86,7 +89,8 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
                                                     pack_id="test_pack_id", integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash")
+                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                    downloads_count=10)
 
         assert parsed_metadata['price'] == expected
 
@@ -101,7 +105,7 @@ class TestMetadataParsing:
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="5.5.0",
                                                     build_number="dummy_build_number", commit_hash="dummy_commit",
-                                                    is_feed_pack=True)
+                                                    downloads_count=10, is_feed_pack=True)
         assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'TIM']
 
 
