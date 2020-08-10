@@ -673,17 +673,20 @@ def close_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     request_id = args.get('request_id')
-    params = {
+    closure_info: Dict[str, Any] = {
+        "requester_ack_resolution": args.get('requester_ack_resolution', 'false'),
+        "requester_ack_comments": args.get('requester_ack_comments', ''),
+        "closure_comments": args.get('closure_comments', ''),
+    }
+    if args.get('closure_code'):
+        closure_info["closure_code"] = {'name': args.get('closure_code')}
+    input_data = {
         "request": {
-            "closure_info": {
-                "requester_ack_resolution": args.get('requester_ack_resolution'),
-                "requester_ack_comments": args.get('requester_ack_comments'),
-                "closure_comments": args.get('closure_comments'),
-                "closure_code": {
-                    'name': args.get('closure_code')
-                }
-            }
+            "closure_info": closure_info
         }
+    }
+    params = {
+        'input_data': f'{input_data}'
     }
     result = client.http_request('PUT', url_suffix=f'requests/{request_id}/close', params=params)
     hr = f'### Successfully closed request {request_id}'

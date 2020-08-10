@@ -6,7 +6,7 @@ from datetime import datetime
 from distutils.version import LooseVersion
 
 from demisto_sdk.commands.common.tools import find_type
-from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR
+from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR, FileType
 
 
 INITIAL_FROM_VERSION = "4.5.0"
@@ -109,7 +109,7 @@ def run():
         for file_path in os.listdir(test_playbook_dir_path):
             is_yml_file = file_path.endswith('.yml')
             file_path = os.path.join(test_playbook_dir_path, file_path)
-            if is_yml_file and find_type(file_path) == 'playbook':
+            if is_yml_file and find_type(file_path) == FileType.TEST_PLAYBOOK:
                 test_playbook_id, fromversion = get_playbook_data(file_path)
                 if test_playbook_id not in existing_test_playbooks:
                     pack_test_playbooks.append((test_playbook_id, fromversion))
