@@ -1,0 +1,5 @@
+!get-user scim={"id":8712882293630852} using=SmartsheetITAdmin_instance_1
+!create-user scim={"name":{"familyName":"lastname","givenName":"name6"},"emails":[{"primary":true,"type":"work","value":"qwerty@paloaltonetwork.com"}],"urn:scim:schemas:extension:custom:1.0:user":{"admin":false,"licensedSheetCreator":false,"groupAdmin":false,"resourceViewer":false}} using=Smartsheet
+!update-user oldScim={"id":8712882293630852} newScim={"name":{"familyName":"updatedname","givenName":"updatedname"},"urn:scim:schemas:extension:custom:1.0:user":{"admin":true,"licensedSheetCreator":true,"groupAdmin":true,"resourceViewer":true}} using=Smartsheet
+!disable-user scim={"id":3636179410151300,"urn:scim:schemas:extension:custom:1.0:user":{"smartsheettransferto":"test"}} using=Smartsheet
+!enable-user scim={"name":{"familyName":"name1","givenName":"name"},"emails":[{"primary":true,"type":"work","value":"testmail@paloaltonetwork.com"}],"urn:scim:schemas:extension:custom:1.0:user":{"admin":false,"licensedSheetCreator":false,"groupAdmin":false,"resourceViewer":false}} using=Smartsheet

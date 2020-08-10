@@ -1,0 +1,779 @@
+id: SmartsheetITAdmin-Test
+version: -1
+name: SmartsheetITAdmin-Test
+starttaskid: "0"
+description: ""
+tasks:
+  "0":
+    id: "0"
+    taskid: a94dc7f3-2ec5-4910-890b-e827895b9c8f
+    type: start
+    task:
+      id: a94dc7f3-2ec5-4910-890b-e827895b9c8f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 26ea128c-67c7-4e44-8d11-f458a03cd1d1
+    type: regular
+    task:
+      id: 26ea128c-67c7-4e44-8d11-f458a03cd1d1
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ed3d62b6-0917-42d7-8274-1ac4cd8dadd0
+    type: regular
+    task:
+      id: ed3d62b6-0917-42d7-8274-1ac4cd8dadd0
+      version: -1
+      name: create-user
+      description: This command creates the user based on the scim and custom map
+        passed in argument.
+      script: Smartsheet IT Admin|||create-user
+      type: regular
+      iscommand: true
+      brand: Smartsheet IT Admin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      customMap: {}
+      customMapping:
+        simple: |-
+          {
+          "smartsheetadmin": "admin",
+          "smartsheetlicensedsheetcreator": "licensedSheetCreator",
+          "smartsheetgroupadmin": "groupAdmin",
+          "smartsheetresourceviewer": "resourceViewer",
+          "smartsheetremovefromsharing": "removeFromSharing",
+          "smartsheettransfersheets": "transferSheets",
+          "smartsheettransferto": "transferTo"
+          }
+      scim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 44b3cb5d-db8c-4d51-806a-32fc2571c9f8
+    type: condition
+    task:
+      id: 44b3cb5d-db8c-4d51-806a-32fc2571c9f8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CreateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 383d8036-45b2-441b-849a-a121bbd4f21b
+    type: regular
+    task:
+      id: 383d8036-45b2-441b-849a-a121bbd4f21b
+      version: -1
+      name: update-user
+      description: Update a user
+      script: Smartsheet IT Admin|||update-user
+      type: regular
+      iscommand: true
+      brand: Smartsheet IT Admin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      customMap: {}
+      customMapping: {}
+      newScim:
+        simple: ${scim}
+      oldScim:
+        simple: '{"id": ${id}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 7ebc7ca2-1833-42ca-8338-98173d6b8697
+    type: condition
+    task:
+      id: 7ebc7ca2-1833-42ca-8338-98173d6b8697
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UpdateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 5b8f689f-3336-4895-8cb8-58f877a994f2
+    type: regular
+    task:
+      id: 5b8f689f-3336-4895-8cb8-58f877a994f2
+      version: -1
+      name: get-user
+      description: Retrieve the user details based on id.
+      script: Smartsheet IT Admin|||get-user
+      type: regular
+      iscommand: true
+      brand: Smartsheet IT Admin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      scim:
+        simple: '{"id": ${id}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3c83f418-9bfd-4414-82c9-8699fe0f530a
+    type: condition
+    task:
+      id: 3c83f418-9bfd-4414-82c9-8699fe0f530a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GetUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 1c0f22e2-c47f-4c49-8505-051ae0325973
+    type: regular
+    task:
+      id: 1c0f22e2-c47f-4c49-8505-051ae0325973
+      version: -1
+      name: disable-user
+      description: This command removes the user.
+      script: Smartsheet IT Admin|||disable-user
+      type: regular
+      iscommand: true
+      brand: Smartsheet IT Admin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: '{"id": ${id}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 6cb7a9f8-5a97-4f33-85d5-8588d7a51679
+    type: condition
+    task:
+      id: 6cb7a9f8-5a97-4f33-85d5-8588d7a51679
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 9612b7a6-be8a-4e5b-8ad1-6bebbe457989
+    type: regular
+    task:
+      id: 9612b7a6-be8a-4e5b-8ad1-6bebbe457989
+      version: -1
+      name: enable-user
+      description: This command creates the user based on the scim and custom map
+        passed in argument.
+      script: Smartsheet IT Admin|||enable-user
+      type: regular
+      iscommand: true
+      brand: Smartsheet IT Admin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      customMapping:
+        simple: |-
+          {
+          "smartsheetadmin": "admin",
+          "smartsheetlicensedsheetcreator": "licensedSheetCreator",
+          "smartsheetgroupadmin": "groupAdmin",
+          "smartsheetresourceviewer": "resourceViewer",
+          "smartsheetremovefromsharing": "removeFromSharing",
+          "smartsheettransfersheets": "transferSheets",
+          "smartsheettransferto": "transferTo"
+          }
+      scim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: c4587c83-f121-453f-8ec7-211ab0d23911
+    type: condition
+    task:
+      id: c4587c83-f121-453f-8ec7-211ab0d23911
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EnableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: f04d9560-d888-4b3a-84ac-a08492eae7a3
+    type: title
+    task:
+      id: f04d9560-d888-4b3a-84ac-a08492eae7a3
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: f721a162-7c4e-4eb6-8c27-92c3db2a31cd
+    type: regular
+    task:
+      id: f721a162-7c4e-4eb6-8c27-92c3db2a31cd
+      version: -1
+      name: Set Instance Name
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append: {}
+      key:
+        simple: appInstanceName
+      stringify: {}
+      value:
+        simple: Smartsheet
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 2ecee7b9-cc9f-4266-8392-11702b9e91cf
+    type: regular
+    task:
+      id: 2ecee7b9-cc9f-4266-8392-11702b9e91cf
+      version: -1
+      name: set scim data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: scim
+      stringify: {}
+      value:
+        simple: |-
+          {
+             "name":{
+                "familyName":"lastname",
+                "givenName":"name"
+             },
+             "emails":[
+                {
+                   "primary":true,
+                   "type":"work",
+                   "value":"qwerty@paloaltonetwork.com"
+                }
+             ],
+             "urn:scim:schemas:extension:custom:1.0:user":{
+                "admin":false,
+                "licensedSheetCreator":false,
+                "groupAdmin":false,
+                "resourceViewer":false
+             }
+          }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 58defb67-f892-46b2-83cf-fea2523d7edd
+    type: regular
+    task:
+      id: 58defb67-f892-46b2-83cf-fea2523d7edd
+      version: -1
+      name: set id for update
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append: {}
+      key:
+        simple: id
+      stringify: {}
+      value:
+        complex:
+          root: CreateUser
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CreateUser.instanceName
+                iscontext: true
+              right:
+                value:
+                  simple: ${appInstanceName}
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: f611c530-a6a4-46d0-8e37-a3c786ec2a40
+    type: regular
+    task:
+      id: f611c530-a6a4-46d0-8e37-a3c786ec2a40
+      version: -1
+      name: set scim for update
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: scim
+      stringify: {}
+      value:
+        simple: |-
+          {
+             "name":{
+                "familyName":"updatedname",
+                "givenName":"updatedname"
+             },
+             "urn:scim:schemas:extension:custom:1.0:user":{
+                "admin":true,
+                "licensedSheetCreator":true,
+                "groupAdmin":true,
+                "resourceViewer":true
+             }
+          }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: ca825d30-4d2c-4253-8576-c2b949e24bfd
+    type: regular
+    task:
+      id: ca825d30-4d2c-4253-8576-c2b949e24bfd
+      version: -1
+      name: set id for get
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: id
+      stringify: {}
+      value:
+        complex:
+          root: UpdateUser
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UpdateUser.instanceName
+                iscontext: true
+              right:
+                value:
+                  simple: ${appInstanceName}
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 6d9b867a-cc3c-4d85-8fe7-57fffa0f8d2a
+    type: regular
+    task:
+      id: 6d9b867a-cc3c-4d85-8fe7-57fffa0f8d2a
+      version: -1
+      name: set scim for enable
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: scim
+      stringify: {}
+      value:
+        simple: |-
+          {
+             "name":{
+                "familyName":"lastname",
+                "givenName":"name"
+             },
+             "emails":[
+                {
+                   "primary":true,
+                   "type":"work",
+                   "value":"qwerty@paloaltonetwork.com"
+                }
+             ],
+             "urn:scim:schemas:extension:custom:1.0:user":{
+                "admin":false,
+                "licensedSheetCreator":false,
+                "groupAdmin":false,
+                "resourceViewer":false
+             }
+          }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3185,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+

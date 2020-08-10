@@ -1,0 +1,16 @@
+{
+    "name": "SmartSheetITAdmin",
+    "description": "Smartsheet Integration consists of set of endpoints that allows the customers to do the following- 1. Get / Retrieve user information from Smartsheet 2. Create a user in Smartsheet 3. Update a user 4. Disable a user",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Mukul Puspam",
+    "url": "https://github.com/sonaaru/content.git",
+    "email": "mpuspam@paloaltonetworks.com",
+    "created": "2020-07-16T11:25:04Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
