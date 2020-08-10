@@ -1,18 +1,50 @@
 {
     "name": "Prisma Cloud",
-    "description": "Prisma Cloud Related Content",
+    "description": "Automate and unify security incident response across your cloud environments, while still giving a degree of control to dedicated cloud teams.",
     "support": "xsoar",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Network Security"
     ],
-    "tags": [
-        "Prisma Cloud"
-    ],
+    "tags": [],
     "created": "2020-05-11T18:00:53Z",
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "AWS-S3": {
+            "mandatory": false,
+            "display_name": "AWS - S3"
+        },
+        "AWS-CloudWatchLogs": {
+            "mandatory": false,
+            "display_name": "AWS - CloudWatchLogs"
+        },
+        "AWS-CloudTrail": {
+            "mandatory": false,
+            "display_name": "AWS - CloudTrail"
+        },
+        "GoogleCloudCompute": {
+            "mandatory": false,
+            "display_name": "Google Cloud Compute"
+        },
+        "AWS-EC2": {
+            "mandatory": false,
+            "display_name": "AWS - EC2"
+        },
+        "AWS-IAM": {
+            "mandatory": false,
+            "display_name": "AWS - IAM"
+        }
+    }
 }

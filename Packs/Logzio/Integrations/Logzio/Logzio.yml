@@ -76,15 +76,15 @@ script:
       required: true
       default: true
       description: A string specifying the search query, written in Apache Lucene
-        syntax e.g. 'fname:John AND sname:Smith' .
+        syntax e.g. 'fname:John AND sname:Smith' (limited to 2 days range).
       defaultValue: '*'
     - name: size
       description: An integer specifying the maximum number of results to return.
     - name: from_time
-      description: Unix timestamp. Specifies the earliest timestamp to be returned
+      description: Specifies the earliest timestamp to be returned
         by the query.
     - name: to_time
-      description: Unix timestamp. Specifies the latest timestamp to be returned by
+      description: Specifies the latest timestamp to be returned by
         the query.
     - name: timeout
       description: Timeout in seconds
@@ -124,7 +124,7 @@ script:
       type: date
     description: Fetches the logs that triggered a security event in Logz.io Cloud
       SIEM
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: true
   runonce: false
   subtype: python3
