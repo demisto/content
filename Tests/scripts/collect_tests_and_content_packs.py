@@ -930,7 +930,7 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
 def get_test_from_conf(branch_name, conf=deepcopy(CONF)):
     tests = set([])
     changed = set([])
-    change_string = tools.run_command("git diff origin/reeze_4_5...{} Tests/conf.json".format(branch_name))
+    change_string = tools.run_command("git diff origin/4_5...{} Tests/conf.json".format(branch_name))
     added_groups = re.findall(r'(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
