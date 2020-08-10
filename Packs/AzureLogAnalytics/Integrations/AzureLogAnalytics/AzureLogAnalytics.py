@@ -255,14 +255,14 @@ def create_or_update_saved_search_command(client, args):
     url_suffix = f'/savedSearches/{saved_search_id}'
 
     data = {
-      'properties': {
-        'category': category,
-        'displayName': display_name,
-        'functionAlias': args.get('function_alias'),
-        'functionParameters': args.get('function_parameters'),
-        'query': query,
-        'tags': tags_arg_to_request_format(args.get('tags'))
-      }
+        'properties': {
+            'category': category,
+            'displayName': display_name,
+            'functionAlias': args.get('function_alias'),
+            'functionParameters': args.get('function_parameters'),
+            'query': query,
+            'tags': tags_arg_to_request_format(args.get('tags'))
+        }
     }
 
     remove_nulls_from_dictionary(data.get('properties'))

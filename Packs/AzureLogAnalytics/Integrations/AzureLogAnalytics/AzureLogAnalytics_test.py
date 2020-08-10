@@ -1,4 +1,4 @@
-from AzureLogAnalytics import Client, execute_query_command, list_saved_searches_command, parse_tags
+from AzureLogAnalytics import Client, execute_query_command, list_saved_searches_command, tags_arg_to_request_format
 
 MOCKED_SAVED_SEARCHES_OUTPUT = {
     'value': [
@@ -98,9 +98,9 @@ def test_list_saved_searches_command(mocker):
     assert command_result.outputs[0].get('displayName') == 'mocked saved search'
 
 
-def test_parse_tags():
+def test_tags_arg_to_request_format():
     tags_arg = 'name1=value1;name2=value2'
-    parsed_tags = parse_tags(tags_arg)
+    parsed_tags = tags_arg_to_request_format(tags_arg)
 
     assert len(parse_tags) == 2
     assert parsed_tags[0].get('name1') == 'value1'

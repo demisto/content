@@ -84,7 +84,7 @@ class MicrosoftClient(BaseClient):
         self.multi_resource = multi_resource
         if self.multi_resource:
             self.resources = resources
-            self.resource_to_access_token = {}
+            self.resource_to_access_token = {}  # type: Dict[str, str]
 
     def http_request(self, *args, resp_type='json', headers=None, return_empty_response=False, resource='', **kwargs):
         """
@@ -241,7 +241,7 @@ class MicrosoftClient(BaseClient):
         return (parsed_response.get('access_token', ''), parsed_response.get('expires_in', 3595),
                 parsed_response.get('refresh_token', ''))
 
-    def _get_self_deployed_token(self, refresh_token: str = ''):
+    def _get_self_deployed_token(self, refresh_token: str = '') -> Tuple[str, int, str]:
         if self.grant_type == AUTHORIZATION_CODE:
             if not self.multi_resource:
                 return self._get_self_deployed_token_auth_code(refresh_token)
