@@ -65,8 +65,8 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-description: Deprecated - We recommend using ServiceNow v2 instead.
-display: ServiceNow - Deprecated
+description: Deprecated. We recommend using ServiceNow v2 instead.
+display: Deprecated. ServiceNow
 deprecated: true
 name: ServiceNow
 script:
@@ -109,7 +109,7 @@ script:
       - 'false'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieve ticket information by specific ticket ID
     execution: false
     name: servicenow-get-ticket
