@@ -17,7 +17,7 @@ def feed_related_indicator():
 
     for item in indicator:
         content.append({
-            'Value': f"[{item.get('value', '')}]({server_url}/indicator/{ioc_id})" if item.get('value') else '',
+            'Value': f"[{item.get('value')}]({server_url}/indicator/{ioc_id})" if item.get('value') else '',
             'Type': item.get('type'),
             'Description': f"[{item.get('description')}]({item.get('description')})"
         })
