@@ -1,4 +1,4 @@
-category: CASB
+category: Authentication
 commonfields:
   id: TrendMicro Cloud App Security
   version: -1
