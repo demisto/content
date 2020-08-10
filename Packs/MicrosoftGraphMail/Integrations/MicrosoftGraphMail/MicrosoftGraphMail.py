@@ -85,17 +85,13 @@ class MsGraphClient:
             list: list of all pages
         """
         responses = [response]
-        i = page_count
-        while i != 0:
+        for i in range(page_count - 1):
             next_link = response.get('@odata.nextLink')
             if next_link:
-                responses.append(
-                    self.ms_client.http_request('GET', full_url=next_link, url_suffix=None)
-                )
-
+                response = self.ms_client.http_request('GET', full_url=next_link, url_suffix=None)
+                responses.append(response)
             else:
                 return responses
-            i -= 1
         return responses
 
     def list_mails(self, user_id: str, folder_id: str = '', search: str = None, odata: str = None) -> Union[dict, list]:
@@ -110,15 +106,15 @@ class MsGraphClient:
         Returns:
             dict or list:
         """
-        no_folder = f'/users/{user_id}/messages/'
-        with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/'
+        no_folder = f'/users/{user_id}/messages'
+        with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages'
         pages_to_pull = demisto.args().get('pages_to_pull', 1)
 
         if search:
-            odata = f'?{odata}$search={search}' if odata else f'?$search={search}'
+            odata = f'{odata}&$search="{search}"' if odata else f'$search="{search}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
-            suffix += odata
+            suffix += f'?{odata}'
         response = self.ms_client.http_request('GET', suffix)
         return self.pages_puller(response, assert_pages(pages_to_pull))
 
@@ -176,7 +172,7 @@ class MsGraphClient:
 
         suffix = with_folder if folder_id else no_folder
         if odata:
-            suffix += odata
+            suffix += f'?{odata}'
         response = self.ms_client.http_request('GET', suffix)
 
         # Add user ID
@@ -1054,17 +1050,15 @@ def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: b
         return None
 
     mails_list = list()
-    if isinstance(raw_response, list):
+    if isinstance(raw_response, list):  # response from list_emails_command
         for page in raw_response:
-            # raw_response can be a list containing multiple pages or one response
-            # if value in page, we got
+            # raw_response is a list containing multiple pages or one page
+            # if value is not empty, there are emails in the page
             value = page.get('value')
             if value:
                 for mail in value:
                     mails_list.append(build_mail(mail))
-            else:
-                mails_list.append(build_mail(page))
-    elif isinstance(raw_response, dict):
+    elif isinstance(raw_response, dict):  # response from get_message_command
         return build_mail(raw_response)
     return mails_list
 
@@ -1107,14 +1101,18 @@ def list_mails_command(client: MsGraphClient, args):
 
     raw_response = client.list_mails(user_id, folder_id=folder_id, search=search, odata=odata)
     mail_context = build_mail_object(raw_response, user_id)
-    entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
+    entry_context = {}
+    if mail_context:
+        entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
 
-    # human_readable builder
-    human_readable = tableToMarkdown(
-        f'### Total of {len(mail_context)} of mails received',
-        mail_context,
-        headers=['Subject', 'From', 'SendTime']
-    )
+        # human_readable builder
+        human_readable = tableToMarkdown(
+            f'### Total of {len(mail_context)} mails received',
+            mail_context,
+            headers=['Subject', 'From', 'SendTime']
+        )
+    else:
+        human_readable = '### No mails were found'
     return_outputs(human_readable, entry_context, raw_response)
 
 
