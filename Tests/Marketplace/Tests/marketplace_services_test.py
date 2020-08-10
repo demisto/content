@@ -95,6 +95,8 @@ class TestMetadataParsing:
                               (False, ["tag number one", "Tag number two"])
                               ])
     def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, is_feed_pack, tags):
+        """ Test 'TIM' tag is added if is_feed_pack is True
+        """
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="5.5.0",
@@ -251,14 +253,15 @@ class TestHelperFunctions:
     @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed',
                              [
                                  # Check is_feed by Integration
-                                 ({'category': 'TIM', 'configuration': [{'display': 'Services', 'name': 'url',
-                                                                         'required': True, 'type': 16},
-                                                                        {'defaultvalue': 'true', 'display':
-                                                                            'Fetch indicators', 'name': 'feed',
-                                                                         'required': False, 'type': 8}]},
+                                 ({'category': 'TIM', 'configuration':[{'display': 'Services'}],
+                                   'script': {'commands': [], 'dockerimage': 'bla', 'feed': True}},
                                   'Integration', True),
-                                 ({'category': 'NotTIM', 'configuration':
-                                     [{'display': 'Services', 'name': 'url', 'required': True, 'type': 16}]},
+                                 ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
+                                   'script': {'commands': [], 'dockerimage': 'bla', 'feed': False}},
+                                  'Integration', False),
+                                 # Checks no feed parameter
+                                 ({'category': 'NotTIM', 'configuration':[{'display': 'Services'}],
+                                   'script': {'commands': [], 'dockerimage': 'bla'}},
                                   'Integration', False),
 
                                  # Check is_feed by playbook
@@ -270,6 +273,9 @@ class TestHelperFunctions:
                                   'Playbook', False)
                              ])
     def test_is_feed(self, yaml_context, yaml_type, is_actually_feed):
+        """ Tests that is_feed for pack changes if it has a playbook that starts with "TIM " or an integration with
+            script.feed==true
+        """
         dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
         dummy_pack.is_feed_pack(yaml_context, yaml_type)
         assert dummy_pack.is_feed == is_actually_feed
