@@ -10,6 +10,5 @@ pyminizip===0.2.4
 requests_mock==1.7.0
 google-cloud-storage==1.29.0
 google-cloud-bigquery==1.26.1
-pandas==1.1.0
 pyarrow==1.0.0
 prettytable==0.7.2
