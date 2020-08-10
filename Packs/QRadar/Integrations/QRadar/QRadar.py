@@ -540,7 +540,7 @@ def fetch_incidents():
                 offense_id += OFFENSES_PER_CALL
             else:
                 latest_offense_fnd = True
-    demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
+    demisto.debug('QRadarMsg - Fetched {} results for {}'.format(len(raw_offenses), fetch_query))
 
     # set incident
     raw_offenses = unicode_to_str_recur(raw_offenses)
