@@ -74,6 +74,15 @@ def mock_client():
 
 
 def test_execute_query_command(mocker):
+    """
+    Given:
+        - A LogAnalytics client object
+    When:
+        - Calling function execute_query_command
+    Then:
+        - Ensure the readable output's title is correct
+        - Ensure the output's structure is as expected
+    """
     client = mock_client()
     args = {}
     mocker.patch.object(client, 'http_request', return_value=MOCKED_EXECUTE_QUERY_OUTPUT)
@@ -87,6 +96,18 @@ def test_execute_query_command(mocker):
 
 
 def test_list_saved_searches_command(mocker):
+    """
+    Given:
+        - A LogAnalytics client object
+        - Arguments of azure-log-analytics-list-saved-searches command, representing we want
+          a single saved search from the first page of the list to be retrieved
+    When:
+        - Calling function list_saved_searches_command
+    Then:
+        - Ensure the readable output's title is correct
+        - Ensure a single saved search is returned
+        - Ensure the output's structure is as expected
+    """
     client = mock_client()
     args = {'limit': '1', 'page': '0'}
     mocker.patch.object(client, 'http_request', return_value=MOCKED_SAVED_SEARCHES_OUTPUT)
@@ -101,6 +122,15 @@ def test_list_saved_searches_command(mocker):
 
 
 def test_tags_arg_to_request_format():
+    """
+    Given:
+        - `tags` argument from azure-log-analytics-execute-query command
+        - The argument has two tags (a name and a value for each tag)
+    When:
+        - Calling function tags_arg_to_request_format
+    Then:
+        - Ensure the argument is parsed correctly to a dict with two tags.
+    """
     tags_arg = 'name1=value1;name2=value2'
     parsed_tags = tags_arg_to_request_format(tags_arg)
 
