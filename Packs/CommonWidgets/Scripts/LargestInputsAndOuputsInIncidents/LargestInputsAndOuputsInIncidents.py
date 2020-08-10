@@ -20,28 +20,33 @@ def get_extra_data_from_investigations(investigations):
     for inv in investigations:
         outputs = []
         inputs = []
-        inputs_and_outputs = demisto.executeCommand('LargestInvestigationsWidget',
-                                                    args={inv.get('IncidentID')}).get('Contents').get('tasks')
-        for task in inputs_and_outputs:
-            if 'outputs' in task:
-                for output in task.get('outputs'):
-                    outputs.append({
-                        'TaskID': task.get('id'),
-                        'TaskName': task.get('name'),
-                        'Name': output.get('name'),
-                        'Size': output.get('size'),
-                        "InputOrOutput": 'Output'
-                    })
+        inputs_and_outputs = demisto.executeCommand('getInvPlaybookMetaData',
+                                                    args={
+                                                        "incidentId": inv.get('IncidentID')
+                                                    })[0].get('Contents').get('tasks')
+        if inputs_and_outputs:
+            for task in inputs_and_outputs:
+                if 'outputs' in task:
+                    for output in task.get('outputs'):
+                        outputs.append({
+                            'IncidentID': inv.get('IncidentID'),
+                            'TaskID': task.get('id'),
+                            'TaskName': task.get('name'),
+                            'Name': output.get('name'),
+                            'Size': output.get('size'),
+                            "InputOrOutput": 'Output'
+                        })
 
-            else:
-                for arg in task.get('args'):
-                    inputs.append({
-                        'TaskID': task.get('id'),
-                        'TaskName': task.get('name'),
-                        'Name': arg.get('name'),
-                        'Size': arg.get('size'),
-                        'InputOrOutput': "Input"
-                    })
+                else:
+                    for arg in task.get('args'):
+                        inputs.append({
+                            'IncidentID': inv.get('IncidentID'),
+                            'TaskID': task.get('id'),
+                            'TaskName': task.get('name'),
+                            'Name': arg.get('name'),
+                            'Size': arg.get('size'),
+                            'InputOrOutput': "Input"
+                        })
         if inputs:
             largest_inputs_and_outputs.append(find_largest_input_or_output(inputs))
 
@@ -59,7 +64,7 @@ def get_extra_data_from_investigations(investigations):
 def main():
     try:
         raw_output = demisto.executeCommand('LargestInvestigationsWidget', args={})
-        investigations = raw_output.get('Contents').get('data')
+        investigations = raw_output[0].get('Contents').get('data')
         demisto.results(get_extra_data_from_investigations(investigations))
     except Exception:
         demisto.error(traceback.format_exc())  # print the traceback

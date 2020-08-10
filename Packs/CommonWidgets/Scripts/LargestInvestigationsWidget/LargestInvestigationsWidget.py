@@ -44,7 +44,7 @@ def get_current_month_db():
 
 def main():
     try:
-        raw_output = demisto.executeCommand('getDBStatistics', args={})
+        raw_output = demisto.executeCommand('getDBStatistics', args={"filter": get_current_month_db()})
         investigations = get_investigations(raw_output)
         demisto.results(parse_investigations_to_table(investigations))
     except Exception:
