@@ -663,8 +663,8 @@ def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
 # Helper method: Enriches the source addresses ids dictionary with the source addresses values corresponding to the ids
 def enrich_source_addresses_dict(src_adrs):
     batch_size = demisto.params().get('enrich_size', 100)
-    for b in batch(src_adrs.values(), batch_size=int(batch_size)):
-        src_ids_str = dict_values_to_comma_separated_string(b)
+    for b in batch(list(src_adrs.values()), batch_size=int(batch_size)):
+        src_ids_str = ','.join(map(str, b))
         demisto.debug('QRadarMsg - Enriching source addresses: {}'.format(src_ids_str))
         source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
         src_res = send_request('GET', source_url, AUTH_HEADERS)
@@ -677,8 +677,8 @@ def enrich_source_addresses_dict(src_adrs):
 # the ids
 def enrich_destination_addresses_dict(dst_adrs):
     batch_size = demisto.params().get('enrich_size', 100)
-    for b in batch(dst_adrs.values(), batch_size=int(batch_size)):
-        dst_ids_str = dict_values_to_comma_separated_string(b)
+    for b in batch(list(dst_adrs.values()), batch_size=int(batch_size)):
+        dst_ids_str = ','.join(map(str, b))
         demisto.debug('QRadarMsg - Enriching destination addresses: {}'.format(dst_ids_str))
         destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
         dst_res = send_request('GET', destination_url, AUTH_HEADERS)
