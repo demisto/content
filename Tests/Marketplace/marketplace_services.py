@@ -1456,7 +1456,8 @@ def init_bigquery_client(service_account=None):
 
 
 def get_packs_statistics_dataframe(bq_client):
-    """ #todo
+    """ Runs big query, selects all columns from top_packs table and returns table as pandas data frame.
+    Additionally table index is set to pack_name (pack unique id).
 
     Args:
         bq_client (google.cloud.bigquery.client.Client): google cloud big query client.
@@ -1465,6 +1466,7 @@ def get_packs_statistics_dataframe(bq_client):
         pandas.core.frame.DataFrame: downloads statistics table dataframe.
     """
     query = f"SELECT * FROM `{GCPConfig.DOWNLOADS_TABLE}` LIMIT {GCPConfig.BIG_QUERY_MAX_RESULTS}"
+    # ignore missing package warning
     warnings.filterwarnings("ignore", message="Cannot create BigQuery Storage client, the dependency ")
     packs_statistic_table = bq_client.query(query).result().to_dataframe()
     packs_statistic_table.set_index('pack_name', inplace=True)
