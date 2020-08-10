@@ -14,7 +14,6 @@ def feed_related_indicator():
             ioc_id = ioc_field.get('id')
     urls = demisto.demistoUrls()
     server_url = urls.get('server', '')
-
     for item in indicator:
         content.append({
             'Value': f"[{item.get('value')}]({server_url}/indicator/{ioc_id})" if item.get('value') else '',
