@@ -81,7 +81,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter that the customer builds himself. (Filter template - https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters)
+      description: Filter that the customer builds himself. (Filter docs - https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters)
       isArray: false
       name: custom_filter
       required: false
@@ -145,7 +145,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter that the customer builds himself. (If the customer use "customer_filters"
+      description: Filter that the customer builds himself. (If the customer use "custome_filter"
         other filters will not work - https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters)
       isArray: false
       name: custom_filter
@@ -172,124 +172,124 @@ script:
       description: Alert id
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.timestamp
-      description: Alert date
+      description: Alert create time
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.id
-      description: Alerts policyRule id
-      type: Number
+      description: id of the rule that triggers the alerts
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.label
-      description: Alerts policyRule label
+      description: label of the rule that triggers the alerts
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.type
-      description: Alerts policyRule type
+      description: type of the rule that triggers the alerts
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policyRule.policyType
-      description: Alerts policyRule policyType
+      description: policy type of the rule that triggers the alerts
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.service.id
-      description: Alerts service id
+      description: cloud service id
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alerts.service.label
-      description: Alerts service label
-      type: Number
+      description: cloud service name
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.service.type
-      description: Alerts service type
-      type: Number
+      description: cloud service type
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.file.id
-      description: Alerts file id
-      type: Number
+      description: id of the alert file
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.file.label
-      description: Alerts file label
-      type: Number
+      description: label of the alert file
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.file.type
-      description: Alerts file type
-      type: Number
+      description: type of the alert file
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.user.id
-      description: Alerts user id
-      type: Number
+      description: the id of the user who received the alert
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.user.label
-      description: Alerts user label
-      type: Number
+      description: the label of the user who received the alert
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.user.type
-      description: Alerts user type
-      type: Number
+      description: the type of the user who received the alert
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.country.id
-      description: Alerts country id
-      type: Number
+      description: country id from which alert came
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.country.label
-      description: Alerts country label
-      type: Number
+      description: country label from which alert came
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.country.type
-      description: Alerts country type
-      type: Number
+      description: country type from which alert came
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.id
-      description: Alerts ip id
-      type: Number
+      description: ip from which alert came
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.label
-      description: Alerts ip label
-      type: Number
+      description: ip label from which alert came
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.type
-      description: Alerts ip type
-      type: Number
+      description: ip type from which alert came
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.ip.triggeredAlert
-      description: Alerts ip triggeredAlert
-      type: Number
+      description: is this ip triggered alert
+      type: Boolean
     - contextPath: MicrosoftCloudAppSecurity.Alerts.account.id
-      description: Alerts account id
-      type: Number
+      description: the id of the account who received the alert
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.account.label
-      description: Alerts account label
-      type: Number
+      description: the label of the account who received the alert
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.account.type
-      description: Alerts account type
-      type: Number
+      description: the type of the account who received the alert
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.account.inst
-      description: Alerts account inst
+      description: the instance of the account who received the alert
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alerts.account.saas
-      description: Alerts account saas
+      description: the service of the account who received the alert
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alerts.account.pa
-      description: Alerts account pa
-      type: Number
+      description: the email of the account who received the alert
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.account.entityType
-      description: Alerts account entityType
+      description: the entity type of the account who received the alert
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alerts.title
-      description: Alert title
+      description: the title of the alert
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.description
-      description: Alert description
+      description: the description of the alert
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.id
-      description: Alert policy id
+      description: the id of the reason (policy) that the alert was triggered
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.label
-      description: Alert policy label
+      description: the label of the reason (policy) that the alert was triggered
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.policyType
-      description: Alert policy policyType
+      description: the policy type of the reason (policy) that the alert was triggered
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.threatScore
-      description: Alert threatScore
+      description: threat score of the alert
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alerts.isSystemAlert
-      description: Alert isSystemAlert
-      type: Number
+      description: is system alert
+      type: Boolean
     - contextPath: MicrosoftCloudAppSecurity.Alerts.statusValue
-      description: Alert statusValue
+      description: status value of the alert
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alerts.severityValue
-      description: Alert severityValue
+      description: status value of the alert
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alerts.handledByUser
-      description: Alert handledByUser
-      type: Unknown
+      description: The user who handle the alert
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.comment
-      description: Alert comment
-      type: Unknown
+      description: the comment of the alert
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.resolveTime
-      description: Alert resolveTime
+      description: Alert resolve time
       type: Date
   - arguments:
     - default: false
@@ -420,13 +420,13 @@ script:
     name: microsoft-cas-activities-list
     outputs:
     - contextPath: MicrosoftCloudAppSecurity.Activities._id
-      description: Activities _id
+      description: Activity id
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Activities.saasId
-      description: Activities saasId
+      description: activity from service (app) Id
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Activities.timestamp
-      description: Activities timestamp
+      description: Activity create time
       type: Date
     - contextPath: MicrosoftCloudAppSecurity.Activities.instantiation
       description: Activities instantiation
