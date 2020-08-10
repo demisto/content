@@ -41,16 +41,10 @@ configuration:
   defaultvalue: "7"
   type: 0
   required: false
-- display: ProxyIP  (or http://${ip} )
-  name: proxyIp
-  defaultvalue: ""
-  type: 0
+- display: Use system proxy settings
+  name: proxy
   required: false
-- display: ProxyPort
-  name: proxyPort
-  defaultvalue: ""
-  type: 0
-  required: false
+  type: 8
 script:
   script: '-'
   type: python
