@@ -643,7 +643,8 @@ def cases_to_entry(esm, title, cases):
         fixed_case = {
             'ID': case['id']['value'],
             'Summary': case['summary'],
-            'Status': esm.case_status_id_to_name(case['statusId']['value'] if type(case['statusId']) is dict else case['statusId']),
+            'Status': esm.case_status_id_to_name(
+                case['statusId']['value'] if type(case['statusId']) is dict else case['statusId']),
             'OpenTime': case['openTime'],
             'Severity': case['severity']
         }
