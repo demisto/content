@@ -1,0 +1,105 @@
+{
+	"associatedToAll": true,
+	"associatedTypes": null,
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "gridwithmultiselect",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "name",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "name",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "are you hungry",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "areyouhungry",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "boolean",
+			"width": 150
+		},
+		{
+			"displayName": "what to eat?",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "whattoeat",
+			"required": false,
+			"script": "",
+			"selectValues": [
+				"salad",
+				"pizza",
+				"hotdog",
+				"other"
+			],
+			"type": "multiSelect",
+			"width": 150
+		}
+	],
+	"content": false,
+	"defaultRows": [
+		{
+			"name": "eynav",
+			"whattoeat": [
+				"salad",
+				"pizza"
+			]
+		},
+		{
+			"name": "bar"
+		},
+		{
+			"name": "hadas"
+		},
+		{
+			"name": "ayal"
+		}
+	],
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"fromServerVersion": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_gridwithmultiselect",
+	"isReadOnly": false,
+	"itemVersion": "",
+	"locked": false,
+	"mergeStrategy": "",
+	"name": "grid with multiselect",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"packID": "33671de6-3083-4814-841a-fdae8f7cba5e",
+	"placeholder": "",
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"script": "",
+	"selectValues": null,
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 72,
+	"toServerVersion": "",
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}
