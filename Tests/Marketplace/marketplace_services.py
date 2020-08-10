@@ -161,6 +161,7 @@ class Pack(object):
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
+        self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
 
     @property
@@ -190,6 +191,19 @@ class Pack(object):
         """ str: current status of the packs.
         """
         return self._status
+
+    @property
+    def is_feed(self):
+        """
+        bool: whether the pack is a feed pack
+        """
+        return self._is_feed
+
+    @is_feed.setter
+    def is_feed(self, is_feed):
+        """ setter of is_feed
+        """
+        self._is_feed = is_feed
 
     @status.setter
     def status(self, status_value):
@@ -346,6 +360,23 @@ class Pack(object):
 
         return pack_integration_images
 
+    def is_feed_pack(self, yaml_content, yaml_type):
+        """
+        Checks if an integration is a feed integration. If so, updates Pack._is_feed
+        Args:
+            yaml_content: The yaml content extracted by yaml.safe_load().
+            yaml_type: The type of object to check. Should be 'Playbook' or 'Integration'.
+
+        Returns:
+            Doesn't return
+        """
+        if yaml_type == 'Integration':
+            if yaml_content.get('script', {}).get('feed', False) is True:
+                self._is_feed = True
+        if yaml_type == 'Playbook':
+            if yaml_content.get('name').startswith('TIM '):
+                self._is_feed = True
+
     @staticmethod
     def _clean_release_notes(release_notes_lines):
         return re.sub(r'<\!--.*?-->', '', release_notes_lines, flags=re.DOTALL)
@@ -448,7 +479,7 @@ class Pack(object):
 
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data, server_min_version, build_number, commit_hash, downloads_count):
+                             dependencies_data, server_min_version, build_number, commit_hash, downloads_count, is_feed_pack=False):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -462,6 +493,7 @@ class Pack(object):
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
             downloads_count (int): number of packs downloads.
+            is_feed_pack (bool): a flag that indicates if the pack is a feed pack.
 
         Returns:
             dict: parsed pack metadata.
@@ -491,6 +523,8 @@ class Pack(object):
         pack_metadata['commit'] = commit_hash
         pack_metadata['downloads'] = downloads_count
         pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
+        if is_feed_pack and 'TIM' not in pack_metadata['tags']:
+            pack_metadata['tags'].append('TIM')
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
@@ -945,13 +979,14 @@ class Pack(object):
                             'tags': content_item.get('tags', [])
                         })
                     elif current_directory == PackFolders.PLAYBOOKS.value:
+                        self.is_feed_pack(content_item, 'Playbook')
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', "")
                         })
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
-
+                        self.is_feed_pack(content_item, 'Integration')
                         folder_collected_items.append({
                             'name': content_item.get('display', ""),
                             'description': content_item.get('description', ""),
@@ -1109,7 +1144,8 @@ class Pack(object):
                                                            dependencies_data=dependencies_data,
                                                            server_min_version=self.server_min_version,
                                                            build_number=build_number, commit_hash=commit_hash,
-                                                           downloads_count=self.downloads_count)
+                                                           downloads_count=self.downloads_count,
+                                                           is_feed_pack=self._is_feed)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
