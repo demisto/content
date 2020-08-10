@@ -54,4 +54,5 @@ script:
   runonce: false
 fromversion: 4.5.0
 tests:
-- SecurityAdvisor-Test
+- No test
+toversion: 4.5.9

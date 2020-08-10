@@ -72,8 +72,7 @@ tasks:
       id: cc2e09be-8b67-44e6-8545-b48c4e5e5c93
       version: -1
       name: Set Values final
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the specified value exists in context. If the value exists, it will be set in context, otherwise no value will be set it context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -321,3 +320,6 @@ inputs:
   required: false
   description: ''
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

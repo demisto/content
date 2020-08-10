@@ -570,27 +570,25 @@ inputs:
       root: URL
       accessor: Data
   required: false
-  description: URL of the webpage or file url to detonate. The URL is taken from the
-    context.
-  playbookInputQuery: null
+  description: URL of the webpage or file url to detonate. The URL is taken from the context.
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Duration for executing the polling (in minutes).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "60"
   required: false
-  description: The duration after which to stop polling and to resume the playbook
-    (in minutes).
-  playbookInputQuery: null
+  description: The duration after which to stop polling and to resume the playbook (in minutes).
+  playbookInputQuery:
 - key: ReportFileType
   value: {}
   required: false
   description: The resource type to download. Default is PDF. XML is also possible.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore
   description: The DBotScore object
@@ -602,7 +600,7 @@ outputs:
   description: File size
   type: number
 - contextPath: File.MD5
-  description: MD5 hash 
+  description: MD5 hash
   type: string
 - contextPath: File.SHA1
   description: SHA1 hash
@@ -686,4 +684,5 @@ outputs:
   description: URL of the submission.
   type: string
 tests:
-- Detonate URL - WildFire v2.1 - Test
+- No test
+toversion: 4.5.9

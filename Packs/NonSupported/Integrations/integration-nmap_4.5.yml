@@ -9,10 +9,13 @@ description: Run nmap scans with the given parameters
 configuration: []
 toversion: 4.5.9
 script:
-  script: |
+  script: >
     from libnmap.process import NmapProcess
+
     from libnmap.parser import NmapParser
+
     from libnmap.reportjson import ReportEncoder
+
 
     if demisto.command() == 'test-module':
         demisto.results('ok')
@@ -90,3 +93,5 @@ script:
     description: Scan targets with the given parameters
     execution: true
   dockerimage: demisto/nmap
+tests:
+- No test

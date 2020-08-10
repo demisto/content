@@ -290,8 +290,7 @@ tasks:
       - "12"
     scriptarguments:
       Hash:
-        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f];
-          }).reduce(function(a, b){ return a.concat(b); }, [])}
+        simple: ${.=Object.keys(val.inputs).map(function(f) { return val.inputs[f]; }).reduce(function(a, b){ return a.concat(b); }, [])}
     separatecontext: true
     loop:
       iscommand: false
@@ -417,4 +416,5 @@ outputs:
   description: The endpoint
   type: unknown
 tests:
-  - No test - tests exist for sub playbooks
+- No test
+toversion: 4.5.9

@@ -275,4 +275,5 @@ outputs:
   type: unknown
 fromversion: 4.5.0
 tests:
-- No tests
+- No test
+toversion: 4.5.9

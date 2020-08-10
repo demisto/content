@@ -23,9 +23,7 @@ args:
   predefined:
   - "yes"
   - "no"
-  description: If "yes", will return all generated files. If "no", will return only the main file. Relevant
-    for formats that might generate multiple files, such as html (which will generate
-    image files additionally to the main html file). Default is "no".
+  description: If "yes", will return all generated files. If "no", will return only the main file. Relevant for formats that might generate multiple files, such as html (which will generate image files additionally to the main html file). Default is "no".
   defaultValue: "no"
 outputs:
 - contextPath: File.Name
@@ -45,6 +43,8 @@ outputs:
   type: String
 scripttarget: 0
 runonce: false
-dockerimage45: demisto/office-utils:1.0.0.2553
-dockerimage: demisto/office-utils:2.0.0.5456
+dockerimage: demisto/office-utils:1.0.0.2553
 runas: DBotWeakRole
+toversion: 4.5.9
+tests:
+- No test

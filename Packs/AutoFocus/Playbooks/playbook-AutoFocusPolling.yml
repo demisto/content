@@ -240,13 +240,11 @@ inputs:
   value:
     simple: "10"
   required: true
-  description: Amount of time to poll before declaring a timeout and resuming the
-    playbook (in minutes).
+  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
 - key: dt
   value: {}
   required: true
-  description: DT filter for polling IDs. Polling will stop when no results are returned.
-    Use single quotes, e.g WildFire.Report(val.Status!==''Success'').SHA256.
+  description: DT filter for polling IDs. Polling will stop when no results are returned. Use single quotes, e.g WildFire.Report(val.Status!==''Success'').SHA256.
 - key: AdditionalPollingCommandArgNames
   value: {}
   required: false
@@ -266,4 +264,5 @@ outputs:
   type: string
   description: Results of Autofocus tags search
 tests:
-- Autofocus Query Samples, Sessions and Tags Test Playbook
+- No test
+toversion: 4.5.9

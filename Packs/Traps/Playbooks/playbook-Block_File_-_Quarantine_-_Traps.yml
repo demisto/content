@@ -238,8 +238,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: Traps.QuarantineResult(val.Status == 'pending' || val.Status == 'in
-          progress').OperationID
+        simple: Traps.QuarantineResult(val.Status == 'pending' || val.Status == 'in progress').OperationID
     separatecontext: true
     loop:
       iscommand: false
@@ -309,4 +308,5 @@ inputs:
   description: Traps event ID. The playbook quarantines the related files.
 outputs: []
 tests:
-  - No Test
+- No test
+toversion: 4.5.9

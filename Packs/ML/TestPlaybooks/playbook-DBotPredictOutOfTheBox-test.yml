@@ -189,8 +189,7 @@ tasks:
       id: 8b49572a-0b69-4ea4-82cc-39a39235938f
       version: -1
       name: Load Automation's Docker
-      description: Predict phishing incidents using the out-of-the-box pretrained
-        model.
+      description: Predict phishing incidents using the out-of-the-box pretrained model.
       scriptName: DBotPredictOutOfTheBox
       type: regular
       iscommand: false
@@ -269,3 +268,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

@@ -106,4 +106,4 @@ script:
   subtype: python2
 defaultEnabled: true
 tests:
-  - Rasterize Test
+- No test
