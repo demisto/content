@@ -2915,7 +2915,8 @@
         },
         {
             "integrations": "RSA Archer v2",
-            "playbookID": "Archer v2 - Test"
+            "playbookID": "Archer v2 - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Ivanti Heat",
