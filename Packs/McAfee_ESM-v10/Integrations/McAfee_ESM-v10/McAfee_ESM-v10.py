@@ -892,7 +892,7 @@ def watchlists_to_entry(watchlists):
             'IsActive': watchlist['active'],
         })
 
-    context = {'EsmWatchlists(val.ID && val.ID == obj.ID)': fixed_watchlists}
+    context = {'EsmWatchlist(val.ID && val.ID == obj.ID)': fixed_watchlists}
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
