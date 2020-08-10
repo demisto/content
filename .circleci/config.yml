@@ -178,7 +178,7 @@ references:
       name: Secrets
       when: always
       command: |
-        demisto-sdk secrets --post-commit --ignore-entropy --prev-ver origin/4_5
+        demisto-sdk secrets --post-commit --ignore-entropy --prev-ver origin/feature_branch_4_5
 
   validate_files_and_yaml: &validate_files_and_yaml
     run:
@@ -211,13 +211,13 @@ references:
         echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
         echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
-        SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh 4_5)
+        SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh feature_branch_4_5)
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a --prev-ver '4_5' -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -a --prev-ver 'feature_branch_4_5' -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         else
-          demisto-sdk lint -p 8 -g --prev-ver '4_5' -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -g --prev-ver 'feature_branch_4_5' -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
         fi
 
 
