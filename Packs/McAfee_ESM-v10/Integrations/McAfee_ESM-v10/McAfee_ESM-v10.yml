@@ -723,19 +723,19 @@ script:
   - name: esm-get-watchlists
     arguments: []
     outputs:
-      - contextPath: EsmWatchlists.ID
+      - contextPath: EsmWatchlist.ID
         description: The Id of the watchlist
         type: string
-      - contextPath: EsmWatchlists.Type
+      - contextPath: EsmWatchlist.Type
         description: The type of the watchlist
         type: string
-      - contextPath: EsmWatchlists.ValuesNumber
+      - contextPath: EsmWatchlist.ValuesNumber
         description: The number of values in the watchlist
         type: number
-      - contextPath: EsmWatchlists.IsDynamic
+      - contextPath: EsmWatchlist.IsDynamic
         description: Is the watchlist dynamic
         type: boolean
-      - contextPath: EsmWatchlists.IsActive
+      - contextPath: EsmWatchlist.IsActive
         description: Is the watchlist active
         type: boolean
     description: Gets the names of the watchlists
