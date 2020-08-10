@@ -20,3 +20,4 @@ circleci==1.2.2
 pylint==2.5.3
 coloredlogs==14.0
 pandas==1.1.0
+pyarrow==1.0.0
