@@ -283,8 +283,8 @@ tasks:
     task:
       id: 497ef432-c486-4751-8a46-e72f5333c47a
       version: -1
-      name: TrendMicro CAS - User take action and the result
-      playbookName: TrendMicro CAS - User take action and the result
+      name: Trend Micro CAS - Take Action On User Accounts
+      playbookName: Trend Micro CAS - Take Action On User Accounts
       type: playbook
       iscommand: false
       brand: ""
@@ -326,8 +326,8 @@ tasks:
     task:
       id: 795061c4-8ce0-4fa9-869a-bd366d47e5c6
       version: -1
-      name: TrendMicro CAS - Email take action and the result
-      playbookName: TrendMicro CAS - Email take action and the result
+      name: Trend Micro CAS - Take Action On Emails
+      playbookName: Trend Micro CAS - Take Action On Emails
       type: playbook
       iscommand: false
       brand: ""
