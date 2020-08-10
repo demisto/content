@@ -1,0 +1,14 @@
+comment: Feed Related Indicators script.
+commonfields:
+  id: FeedRelatedIndicators
+  version: -1
+enabled: false
+name: FeedRelatedIndicators
+script: '-'
+subtype: python3
+system: false
+tags:
+- dynamic-indicator-section
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.3.8715
