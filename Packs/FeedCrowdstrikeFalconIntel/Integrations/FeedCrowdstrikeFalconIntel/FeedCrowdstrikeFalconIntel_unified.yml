@@ -157,7 +157,7 @@ script:
     description: Gets indicators from Crowdstrike Falcon Intel Feed.
     execution: false
     name: crowdstrike-falcon-intel-get-indicators
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10455
   feed: true
   isfetch: false
   longRunning: false
@@ -167,7 +167,7 @@ script:
     # IMPORTS
     from datetime import datetime
     import requests
-    from typing import List, Tuple, Dict
+    from typing import List, Tuple
 
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -223,10 +223,10 @@ script:
             for actor in response['resources']:
                 if actor:
                     indicator = {
-                        "type": 'Actor',
+                        "type": "STIX threat actor",
                         "value": actor.get('name'),
                         "rawJSON": {
-                            'type': 'Actor',
+                            'type': 'STIX threat actor',
                             'value': actor.get('name'),
                             'service': 'List Actors Feed'
                         },
@@ -305,9 +305,10 @@ script:
             demisto.setIntegrationContext(integration_context_to_set)
 
         def get_last_modified_time(self):
+            demisto.setIntegrationContext(None)
             integration_context = demisto.getIntegrationContext()
             if not integration_context:
-                params = {}
+                params = ''
                 self.set_last_modified_time()
             else:
                 last_modified_time = demisto.getIntegrationContext()
@@ -371,8 +372,8 @@ script:
         human_readable = tableToMarkdown("Indicators from CrowdStrike:", hr_indicators,
                                          headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
 
-        if args.get('limit'):
-            human_readable = human_readable
+        # if args.get('limit'):
+        #     human_readable = human_readable
         return human_readable, {}, indicators
 
 
