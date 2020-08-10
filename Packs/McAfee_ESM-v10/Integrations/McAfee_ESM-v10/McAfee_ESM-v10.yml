@@ -759,7 +759,7 @@ script:
           with the "esm-get-watchlists" command.
       - name: values
         required: true
-        description: 'Coma separated values of the data we want to remove from the watchlist.
+        description: 'A comma-separated list of values to be removed from the watchlist.
         Example: "1.1.1.1,2.2.2.2". Please add the correct type of values to correct
         watchlist type.'
     description: 'Remove values from an existing watchlist. '
