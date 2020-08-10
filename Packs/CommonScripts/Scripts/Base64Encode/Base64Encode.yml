@@ -1,0 +1,24 @@
+args:
+- default: false
+  description: Will encode an input using Base64 format.
+  isArray: false
+  name: input
+  required: true
+  secret: false
+comment: Encodes an input to Base64 format.
+commonfields:
+  id: Base64Encode
+  version: -1
+enabled: false
+name: Base64Encode
+outputs:
+- contextPath: Base64.encoded
+  description: input encoded as Base64 format.
+  type: Unknown
+script: '-'
+subtype: python3
+system: false
+tags:
+- Utility
+timeout: '0'
+type: python
