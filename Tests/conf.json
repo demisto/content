@@ -3022,8 +3022,7 @@
         "Claroty - Test": "Issue 27210",
         "test-Expanse": "Issue 27279",
         "SepioPrimeAPI-Test": "Issue 27240",
-        "Trend Micro Apex - Test": "Issue 27280",
-        "Cortex Data Lake Test": "Issue 24346"
+        "Trend Micro Apex - Test": "Issue 27280"
     },
     "skipped_integrations": {
         
