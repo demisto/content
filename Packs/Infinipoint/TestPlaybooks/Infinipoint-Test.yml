@@ -1,5 +1,5 @@
 id: 663e1ec3-5590-4e23-8d99-d8a4e0c22a52
-version: 118
+version: 119
 name: Infinipoint-Test
 starttaskid: "0"
 tasks:
@@ -1119,10 +1119,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: e7d522fe-5c4a-4b30-80da-fc3b5fc63dd6
+    taskid: a009174d-4f51-4d62-869f-0800596649ab
     type: regular
     task:
-      id: e7d522fe-5c4a-4b30-80da-fc3b5fc63dd6
+      id: a009174d-4f51-4d62-869f-0800596649ab
       version: -1
       name: infinipoint-get-action
       tags:
@@ -1137,6 +1137,10 @@ tasks:
     scriptarguments:
       action_id:
         simple: ${Infinipoint.Scripts.execute.actionId}
+      action_id, e.g. 9ef2494d-862e-43c8-963c-3587cde75c4d:
+        complex:
+          root: Infinipoint
+          accessor: Scripts.execute.actionId
       execution-timeout:
         simple: "60"
       retry-count:

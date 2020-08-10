@@ -769,8 +769,8 @@ script:
   - name: infinipoint-get-action
     description: get action
     arguments:
-    - name: action_id, e.g. 9ef2494d-862e-43c8-963c-3587cde75c4d
-      description: Action id (infinipoint)
+    - name: action_id
+      description: Action id (infinipoint), e.g. 9ef2494d-862e-43c8-963c-3587cde75c4d
       required: true
     outputs:
     - contextPath: Infinipoint.Responses.$data
