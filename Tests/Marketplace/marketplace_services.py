@@ -479,7 +479,8 @@ class Pack(object):
 
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data, server_min_version, build_number, commit_hash, downloads_count, is_feed_pack=False):
+                             dependencies_data, server_min_version, build_number, commit_hash, downloads_count,
+                             is_feed_pack=False):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
