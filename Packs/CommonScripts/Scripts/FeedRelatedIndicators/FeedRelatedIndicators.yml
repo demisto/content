@@ -1,9 +1,10 @@
-comment: Feed Related Indicators script.
+comment: Widget script to view information about the relationship between an indicator,
+  entity and other indicators and connect to indicators, if relevant.
 commonfields:
-  id: FeedRelatedIndicators
+  id: FeedRelatedIndicatorsWidget
   version: -1
 enabled: false
-name: FeedRelatedIndicators
+name: FeedRelatedIndicatorsWidget
 script: '-'
 subtype: python3
 system: false
@@ -13,4 +14,4 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.8.5.10455
 tests:
-  - No tests
+- No tests
