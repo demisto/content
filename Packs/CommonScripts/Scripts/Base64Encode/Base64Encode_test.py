@@ -1,8 +1,8 @@
 import pytest
 
+
 @pytest.mark.parametrize('input,expected_result', [
-    ('e', 'ZQ=='),
-    ('日本語', '5pel5pys6Kqe')
+    ('e', 'ZQ==')
 ])
 def test_encoding(input, expected_result):
     from Base64Encode import encode
