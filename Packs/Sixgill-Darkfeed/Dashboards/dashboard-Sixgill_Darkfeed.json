@@ -1,0 +1,901 @@
+{
+    "id": "Sixgill Darkfeed",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 30,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Sixgill Darkfeed",
+    "layout": [
+        {
+            "id": "eea21ff0-a49b-11ea-bb0a-85c8fc40a0d2",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "eea21ff0-a49b-11ea-bb0a-85c8fc40a0d2",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "sixgill-darkfeed-indicators-by-type",
+                "version": 1,
+                "modified": "2020-06-02T06:40:09.830283562Z",
+                "sortValues": null,
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Sixgill Darkfeed Indicators by Type",
+                "prevName": "Sixgill Darkfeed Indicators by Type",
+                "dataType": "indicators",
+                "widgetType": "column",
+                "query": "sourceBrands:Sixgill_Darkfeed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "type"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "investigationIDs",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "dc9c84c0-a49c-11ea-bb0a-85c8fc40a0d2",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "dc9c84c0-a49c-11ea-bb0a-85c8fc40a0d2",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "sixgill-darkfeed-collected-iocs",
+                "version": 1,
+                "modified": "2020-06-02T06:46:56.579743988Z",
+                "sortValues": null,
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Sixgill Darkfeed - Collected IOCs",
+                "prevName": "Sixgill Darkfeed - Collected IOCs",
+                "dataType": "indicators",
+                "widgetType": "line",
+                "query": "sourceBrands:Sixgill_Darkfeed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "calculatedTime(d)",
+                        "sourceBrands"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "investigationIDs",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "3a1e6ad0-a4d6-11ea-b9e7-9d0426a8eb20",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "3a1e6ad0-a4d6-11ea-b9e7-9d0426a8eb20",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "sixgill-darkfeed-subfeed-composition",
+                "version": 1,
+                "modified": "2020-06-02T13:37:31.692328578Z",
+                "sortValues": null,
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Sixgill Darkfeed - Subfeed Composition",
+                "prevName": "Sixgill Darkfeed - Subfeed Composition",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "sourceBrands:Sixgill_Darkfeed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "sixgillfeedname"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "investigationIDs",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "564daab0-ab2d-11ea-9f2e-d55a0dbc44c8",
+            "forceRange": false,
+            "x": 0,
+            "y": 6,
+            "i": "564daab0-ab2d-11ea-9f2e-d55a0dbc44c8",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "sixgill-darkfeed-mitre-attack-tactics",
+                "version": 1,
+                "modified": "2020-06-10T15:16:15.479365269Z",
+                "sortValues": null,
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Sixgill Darkfeed - Mitre ATT&CK Tactics",
+                "prevName": "Sixgill Darkfeed - Mitre ATT&CK Tactics",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "sourceBrands:Sixgill_Darkfeed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "sixgillmitreattcktactic"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "investigationIDs",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "c0700350-ae04-11ea-b31e-7da52879f1f8",
+            "forceRange": false,
+            "x": 6,
+            "y": 3,
+            "i": "c0700350-ae04-11ea-b31e-7da52879f1f8",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "sixgill-darkfeed-top-10-threat-actors",
+                "version": 1,
+                "modified": "2020-06-14T06:03:16.831524681Z",
+                "sortValues": null,
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Sixgill Darkfeed - Top 10 Threat Actors",
+                "prevName": "Sixgill Darkfeed - Top 10 Threat Actors",
+                "dataType": "indicators",
+                "widgetType": "bar",
+                "query": "sourceBrands:Sixgill_Darkfeed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "sixgillactor"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "investigationIDs",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "e08d12c0-ae06-11ea-b31e-7da52879f1f8",
+            "forceRange": false,
+            "x": 6,
+            "y": 6,
+            "i": "e08d12c0-ae06-11ea-b31e-7da52879f1f8",
+            "w": 6,
+            "h": 3,
+            "widget": {
+                "id": "sixgill-mitre-attack-techniques",
+                "version": 1,
+                "modified": "2020-06-14T06:18:25.004781666Z",
+                "sortValues": null,
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Sixgill Mitre ATT&CK Techniques",
+                "prevName": "Sixgill Mitre ATT&CK Techniques",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "sourceBrands:Sixgill_Darkfeed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "sixgillmitreattcktechnique"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "investigationIDs",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "8f091550-ae08-11ea-b31e-7da52879f1f8",
+            "forceRange": false,
+            "x": 0,
+            "y": 4,
+            "i": "8f091550-ae08-11ea-b31e-7da52879f1f8",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "sixgill-darkfeed-ioc-detection-rate-by-virus-total",
+                "version": 1,
+                "modified": "2020-06-14T06:30:33.416826298Z",
+                "sortValues": null,
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Sixgill Darkfeed IOC detection rate by Virus Total",
+                "prevName": "Sixgill Darkfeed IOC detection rate by Virus Total",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "sourceBrands:Sixgill_Darkfeed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "sixgillvirustotaldetectionrate"
+                    ],
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "width": 120
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "value",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "score",
+                            "width": 120
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "width": 190
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "width": 175
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Sixgill Actor",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Sixgill Feed Name",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Sixgill Post Reference",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Sixgill Post Title",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Sixgill Source",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Sixgill Virus Total Detection Rate",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Sixgill Virus Total URL",
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "6d98fc30-ae0a-11ea-b31e-7da52879f1f8",
+            "forceRange": false,
+            "x": 0,
+            "y": 9,
+            "i": "6d98fc30-ae0a-11ea-b31e-7da52879f1f8",
+            "w": 12,
+            "h": 3,
+            "widget": {
+                "id": "sixgill-darkfeed-threads-from-the-underground",
+                "version": 1,
+                "modified": "2020-06-14T06:43:54.421176797Z",
+                "sortValues": null,
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Sixgill Darkfeed - Threads from the Underground",
+                "prevName": "Sixgill Darkfeed - Threads from the Underground",
+                "dataType": "indicators",
+                "widgetType": "table",
+                "query": "sourceBrands:Sixgill_Darkfeed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {},
+                        "type": "above"
+                    },
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "key": "Sixgill Post Title",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Sixgill Source",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "value",
+                            "width": 300
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        }
+    ],
+    "fromVersion": "6.0.0",
+    "description": "",
+    "isPredefined": true
+}

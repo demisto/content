@@ -1,7 +1,7 @@
 {
     "upload_file_results": {
         "Type": 1,
-        "ContentsFormat": "json",
+        "ContentsFormat": "text",
         "Contents": "F100",
         "HumanReadable": "### File uploaded successfully\n|EntryID|FileName|ID|Status|\n|---|---|---|---|\n| 12345 | abc | F100 | In Progress |\n",
         "EntryContext": {
@@ -15,7 +15,7 @@
     },
     "upload_url_results": {
         "Type": 1,
-        "ContentsFormat": "json",
+        "ContentsFormat": "text",
         "Contents": "U100",
         "HumanReadable": "### Url uploaded successfully\n|ID|Status|URL|\n|---|---|---|\n| U100 | In Progress | http://test.com |\n",
         "EntryContext": {

@@ -648,6 +648,7 @@ tasks:
         simple: headername
       unpack_nested_elements:
         simple: "true"
+    continueonerror: true
     separatecontext: false
     view: |-
       {

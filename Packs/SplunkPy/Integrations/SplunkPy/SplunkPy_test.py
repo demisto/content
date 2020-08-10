@@ -1,6 +1,7 @@
 from copy import deepcopy
 import pytest
 import SplunkPy as splunk
+import demistomock as demisto
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
@@ -73,6 +74,57 @@ RAW_WITH_MESSAGE = '{"@timestamp":"2019-10-15T13:30:08.578-04:00","message":"{"T
                    '"autopay\/payroll\/v1\/employer-details"}","TXID":"3AF-D30-ABCDEF","ADP-MessageID":' \
                    '"a1d57ed2-1fe6-4800-be7a-26cd89bf686d","SESSIONID":"stY46PpweFToT5JX04CZGMeCvP8=","ORGOID":' \
                    '"G2SY6MR3ATKA232T","AOID":"G2N2TJETBRAAXAAA","MSGID":"a1d57ed2-1fe6-0000-be7a-26cd89bf686d"}'
+
+SAMPLE_RESPONSE = [{
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-04T05:45:16.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+}]
 
 EXPECTED = {
     "action": "allowed",
@@ -215,3 +267,166 @@ def test_commands(search_result, chosen_fields, expected_result):
     headers = update_headers_from_field_names(search_result, chosen_fields)
 
     assert expected_result == headers
+
+
+APPS = ['app']
+STORES = ['store']
+EMPTY_CASE = {}
+STORE_WITHOUT_APP = {"kv_store_collection_name": "test"}
+JUST_APP_NAME = {'app_name': 'app'}  # happens in splunk-kv-store-collections-list command
+CREATE_COMMAND = {'app_name': 'app', 'kv_store_name': 'not_store'}
+CORRECT = {'app_name': 'app', 'kv_store_collection_name': 'store'}
+INCORRECT_STORE_NAME = {'app_name': 'app', 'kv_store_collection_name': 'not_store'}
+data_test_check_error = [
+    (EMPTY_CASE, 'app not found'),
+    (STORE_WITHOUT_APP, 'app not found'),
+    (JUST_APP_NAME, 'empty'),
+    (CREATE_COMMAND, 'empty'),
+    (CORRECT, 'empty'),
+    (INCORRECT_STORE_NAME, 'KV Store not found'),
+]
+
+
+@pytest.mark.parametrize('args, out_error', data_test_check_error)
+def test_check_error(args, out_error):
+    class Service:
+        def __init__(self):
+            self.apps = APPS
+            self.kvstore = STORES
+
+    try:
+        splunk.check_error(Service(), args)
+        raise splunk.DemistoException('empty')
+    except splunk.DemistoException as error:
+        output = str(error)
+    assert output == out_error, 'check_error(service, {})\n\treturns: {}\n\tinstead: {}'.format(args,
+                                                                                                output, out_error)
+
+
+EMPTY_CASE = {}
+JUST_KEY = {"key": "key"}
+WITH_ALL_PARAMS = {"key": "demisto", "value": "is awesome", "limit": 1, "query": "test"}
+STANDARD_KEY_VAL = {"key": "demisto", "value": "is awesome"}
+KEY_AND_LIMIT = {"key": "key", "limit": 1}
+KEY_AND_QUERY = {"key": "key", "query": 'test_query'}
+QUERY = {"query": 'test_query'}
+QUERY_AND_VALUE = {"query": 'test_query', "value": "awesome"}
+data_test_build_kv_store_query = [
+    (EMPTY_CASE, str(EMPTY_CASE)),
+    (JUST_KEY, str(EMPTY_CASE)),
+    (STANDARD_KEY_VAL, '{"demisto": "is awesome"}'),
+    (WITH_ALL_PARAMS, '{"demisto": "is awesome"}'),
+    (KEY_AND_LIMIT, {"limit": 1}),
+    (KEY_AND_QUERY, 'test_query'),
+    (QUERY, 'test_query'),
+    (QUERY_AND_VALUE, 'test_query'),
+]
+
+
+@pytest.mark.parametrize('args, expected_query', data_test_build_kv_store_query)
+def test_build_kv_store_query(args, expected_query, mocker):
+    mocker.patch('SplunkPy.get_key_type', return_value=None)
+    output = splunk.build_kv_store_query(None, args)
+    assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output,
+                                                                                                     expected_query)
+
+
+data_test_build_kv_store_query_with_key_val = [
+    ({"key": "demisto", "value": "is awesome"}, str, '{"demisto": "is awesome"}'),
+    ({"key": "demisto", "value": "1"}, int, '{"demisto": 1}'),
+    ({"key": "demisto", "value": "True"}, bool, '{"demisto": true}'),
+]
+
+
+@pytest.mark.parametrize('args, _type, expected_query', data_test_build_kv_store_query_with_key_val)
+def test_build_kv_store_query_with_key_val(args, _type, expected_query, mocker):
+    mocker.patch('SplunkPy.get_key_type', return_value=_type)
+    output = splunk.build_kv_store_query(None, args)
+    assert output == expected_query, 'build_kv_store_query({})\n\treturns: {}\n\tinstead: {}'.format(args, output,
+                                                                                                     expected_query)
+
+    test_test_get_key_type = [
+        ({'field.key': 'number'}, float),
+        ({'field.key': 'string'}, str),
+        ({'field.key': 'cidr'}, str),
+        ({'field.key': 'boolean'}, bool),
+        ({'field.key': 'empty'}, None),
+        ({'field.key': 'time'}, str),
+    ]
+
+    @pytest.mark.parametrize('keys_and_types, expected_type', test_test_get_key_type)
+    def test_get_key_type(keys_and_types, expected_type, mocker):
+        mocker.patch('SplunkPy.get_keys_and_types', return_value=keys_and_types)
+
+        output = splunk.get_key_type(None, 'key')
+        assert output == expected_type, 'get_key_type(kv_store, key)\n\treturns: {}\n\tinstead: {}'.format(output,
+                                                                                                           expected_type)
+
+
+EMPTY_CASE = {}
+WITHOUT_FIELD = {'empty': 'number'}
+STRING_FIELD = {'field.test': 'string'}
+NUMBER_FIELD = {'field.test': 'number'}
+INDEX = {'index.test': 'string'}
+MIXED = {'field.test': 'string', 'empty': 'field'}
+data_test_get_keys_and_types = [
+    (EMPTY_CASE, EMPTY_CASE),
+    (WITHOUT_FIELD, EMPTY_CASE),
+    (STRING_FIELD, {'field.test': 'string'}),
+    (NUMBER_FIELD, {'field.test': 'number'}),
+    (INDEX, {'index.test': 'string'}),
+    (MIXED, {'field.test': 'string'}),
+]
+
+
+@pytest.mark.parametrize('raw_keys, expected_keys', data_test_get_keys_and_types)
+def test_get_keys_and_types(raw_keys, expected_keys):
+    class KVMock:
+        def __init__(self):
+            pass
+
+        def content(self):
+            return raw_keys
+
+    output = splunk.get_keys_and_types(KVMock())
+    assert output == expected_keys, 'get_keys_and_types(kv_store)\n\treturns: {}\n\tinstead: {}'.format(output,
+                                                                                                        expected_keys)
+
+
+START_OUTPUT = '#### configuration for {} store\n| field name | type |\n| --- | --- |'.format('name')
+EMPTY_OUTPUT = ''
+STANDARD_CASE = {'field.test': 'number'}
+STANDARD_OUTPUT = '\n| field.test | number |'
+data_test_get_kv_store_config = [
+    ({}, EMPTY_OUTPUT),
+    (STANDARD_CASE, STANDARD_OUTPUT)
+]
+
+
+@pytest.mark.parametrize('fields, expected_output', data_test_get_kv_store_config)
+def test_get_kv_store_config(fields, expected_output, mocker):
+    class Name:
+        def __init__(self):
+            self.name = 'name'
+
+    mocker.patch('SplunkPy.get_keys_and_types', return_value=fields)
+    output = splunk.get_kv_store_config(Name())
+    expected_output = '{}{}'.format(START_OUTPUT, expected_output)
+    assert output == expected_output
+
+
+def test_fetch_incidents(mocker):
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    splunk.fetch_incidents(service)
+    incidents = demisto.incidents.call_args[0][0]
+    assert demisto.incidents.call_count == 1
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
+                                   "Recurring Malware Infection - Rule"
