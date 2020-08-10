@@ -60,7 +60,8 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- display: Tags
+- additionalinfo: Supports CSV values.
+  display: Tags
   name: feedTags
   required: false
   type: 0
@@ -91,7 +92,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: tor-get-indicators
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.3.9324
   feed: true
   isfetch: false
   longRunning: false
