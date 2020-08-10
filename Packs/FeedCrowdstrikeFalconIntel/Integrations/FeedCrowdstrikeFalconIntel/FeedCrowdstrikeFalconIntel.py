@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 # IMPORTS
 from datetime import datetime
 import requests
-from typing import List, Tuple, Dict
+from typing import List, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -145,7 +145,7 @@ class Client(BaseClient):
     def get_last_modified_time(self):
         integration_context = demisto.getIntegrationContext()
         if not integration_context:
-            params = {}
+            params = ''
             self.set_last_modified_time()
         else:
             last_modified_time = demisto.getIntegrationContext()
@@ -209,8 +209,8 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple
     human_readable = tableToMarkdown("Indicators from CrowdStrike:", hr_indicators,
                                      headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
 
-    if args.get('limit'):
-        human_readable = human_readable
+    # if args.get('limit'):
+    #     human_readable = human_readable
     return human_readable, {}, indicators
 
 

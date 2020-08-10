@@ -36,6 +36,3 @@ def test_build_url_suffix(params, actors_filter, expected):
 def test_create_indicators_from_response(response, expected):
     res = Client.create_indicators_from_response(Client, indicators["list_data_cs"], {})
     assert res == indicators["expected_list"]
-
-
-
