@@ -458,26 +458,10 @@ jobs:
           when: on_success
           command: |
             [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=360
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                if [ -n "${NIGHTLY}" ] ;
-                  then
-                    export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
-                elif [ -n "${INSTANCE_TESTS}" ] ;
-                  then
-                    export IFRA_ENV_TYPE="Demisto PreGA" # disable-secrets-detection
-                elif [ -n "${CONTRIB_BRANCH}" ] ;
-                  then
-                    export IFRA_ENV_TYPE="Demisto Marketplace" # disable-secrets-detection
-                else
-                  export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
-                fi
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
 
-              else
-                . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
-            fi
+            export IFRA_ENV_TYPE=4_5_Content # disable-secrets-detection
+            python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
+
       - run:
           name: Setup Instance
           when: on_success
