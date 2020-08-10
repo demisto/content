@@ -253,14 +253,14 @@ class TestHelperFunctions:
     @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed',
                              [
                                  # Check is_feed by Integration
-                                 ({'category': 'TIM', 'configuration':[{'display': 'Services'}],
+                                 ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': True}},
                                   'Integration', True),
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': False}},
                                   'Integration', False),
                                  # Checks no feed parameter
-                                 ({'category': 'NotTIM', 'configuration':[{'display': 'Services'}],
+                                 ({'category': 'NotTIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla'}},
                                   'Integration', False),
 
