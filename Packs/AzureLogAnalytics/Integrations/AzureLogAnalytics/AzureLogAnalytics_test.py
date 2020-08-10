@@ -10,7 +10,9 @@ MOCKED_SAVED_SEARCHES_OUTPUT = {
                 'query': 'mocked_query'
             }
         },
-        'MORE_DUMMY_DATA'
+        {
+            'id': 'MORE_DUMMY_DATA'
+        }
     ]
 }
 
@@ -81,7 +83,7 @@ def test_execute_query_command(mocker):
     assert 'Query Results' in command_result.readable_output
     assert len(command_result.outputs) == 2
     assert command_result.outputs[0].get('TableName') == 'Table 1'
-    assert command_result.outputs[1].get('Data')[0].get('column4') == 4
+    assert command_result.outputs[1].get('Data')[1].get('column4') == 4
 
 
 def test_list_saved_searches_command(mocker):
@@ -103,5 +105,5 @@ def test_tags_arg_to_request_format():
     parsed_tags = tags_arg_to_request_format(tags_arg)
 
     assert len(parsed_tags) == 2
-    assert parsed_tags[0].get('name1') == 'value1'
-    assert parsed_tags[1].get('name2') == 'value2'
+    assert parsed_tags[0].get('name') == 'name1'
+    assert parsed_tags[1].get('value') == 'value2'

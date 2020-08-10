@@ -204,8 +204,8 @@ def list_saved_searches_command(client, args):
     to_index = min(from_index + limit, len(response))
 
     output = [
-        flatten_saved_search_object(saved_search) for saved_search in response
-    ][from_index:to_index]
+        flatten_saved_search_object(saved_search) for saved_search in response[from_index:to_index]
+    ]
 
     readable_output = tableToMarkdown('Saved searches', output,
                                       headers=SAVED_SEARCH_HEADERS,
