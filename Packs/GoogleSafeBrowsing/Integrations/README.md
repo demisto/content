@@ -21,7 +21,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### url
 ***
-Check URL Reputation
+Checks the reputation of a URL.
 
 
 #### Base Command
@@ -38,13 +38,13 @@ Check URL Reputation
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | unknown | Bad URLs found | 
-| URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision | 
-| URL.Malicious.Description | unknown | For malicious URLs, the reason for the vendor to make the decision | 
-| DBotScore.Indicator | unknown | The indicator we tested | 
-| DBotScore.Type | unknown | The type of the indicator | 
-| DBotScore.Vendor | unknown | Vendor used to calculate the score | 
-| DBotScore.Score | unknown | The actual score | 
+| URL.Data | string | Bad URLs found | 
+| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision | 
+| URL.Malicious.Description | string | For malicious URLs, the reason for the vendor to make the decision | 
+| DBotScore.Indicator | string | The indicator we tested | 
+| DBotScore.Type | string | The type of indicator | 
+| DBotScore.Vendor | string | Vendor used to calculate the score | 
+| DBotScore.Score | int | The actual score | 
 
 
 #### Command Example
@@ -81,4 +81,3 @@ Check URL Reputation
 >300s | ALL_PLATFORMS | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
 >300s | OSX | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
 >300s | CHROME | {"url":"http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"} | URL | MALWARE
-
