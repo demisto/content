@@ -443,13 +443,13 @@ script:
       isArray: false
       name: user
       required: true
-      secret: true
+      secret: false
     - default: false
       description: The new password.
       isArray: false
       name: password
       required: true
-      secret: false
+      secret: true
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
