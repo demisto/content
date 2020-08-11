@@ -422,6 +422,19 @@ class MITMProxy:
         proxy_up_message = 'Proxy process up and running. Took {} seconds'.format(seconds_since_init)
         prints_manager.add_print_job(proxy_up_message, print, thread_index)
 
+        # verify that mitmdump process is listening on port 9997
+        try:
+            prints_manager.add_print_job('verifying that mitmdump is listening on port 9997', print, thread_index)
+            lsof_cmd = ['sudo', 'lsof', '-iTCP:9997', '-sTCP:LISTEN']
+            lsof_cmd_output = self.ami.check_output(lsof_cmd).decode().strip()
+            prints_manager.add_print_job(f'lsof_cmd_output={lsof_cmd_output}', print, thread_index)
+        except CalledProcessError as e:
+            cleaning_err_msg = 'No process listening on port 9997'
+            prints_manager.add_print_job(cleaning_err_msg, print_error, thread_index)
+            err_msg = f'command `{command}` exited with return code [{e.returncode}]'
+            err_msg += f'{err_msg} and the output of "{e.output}"' if e.output else err_msg
+            prints_manager.add_print_job(err_msg, print_error, thread_index)
+
     def stop(self, thread_index=0, prints_manager=None):
         if not self.process:
             raise Exception("Cannot stop proxy - not running.")
