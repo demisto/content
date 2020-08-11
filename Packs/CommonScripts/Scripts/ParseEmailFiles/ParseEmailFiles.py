@@ -10,8 +10,7 @@ import email.utils
 from email.parser import HeaderParser
 import traceback
 import tempfile
-import sys
-
+import io
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python
 # Based on MS-OXMSG protocol specification
@@ -2666,7 +2665,7 @@ class Message(object):
      Class to store Message properties
     """
 
-    def __init__(self, directory_entries, parent_directory_path=None):
+    def __init__(self, directory_entries, msg_file_path, parent_directory_path=None):
 
         if parent_directory_path is None:
             parent_directory_path = []
@@ -2676,6 +2675,7 @@ class Message(object):
         self._data_model = DataModel()
         self._parent_directory_path = parent_directory_path
         self._nested_attachments_depth = 0
+        self.msg_path = msg_file_path
         self.properties = self._get_properties()
         self.attachments = self._get_attachments()
         self.recipients = self._get_recipients()
@@ -3005,14 +3005,21 @@ class Message(object):
         self.html = property_values.get("Html")
         self.body = property_values.get("Body")
 
-        if not self.body and "RtfCompressed" in property_values:
+        if "RtfCompressed" in property_values:
             try:
-                import compressed_rtf
+                import extract_msg
             except ImportError:
-                compressed_rtf = None
-            if compressed_rtf:
-                compressed_rtf_body = property_values['RtfCompressed']
-                self.body = compressed_rtf.decompress(compressed_rtf_body)
+                extract_msg = None
+            if extract_msg:
+                from pyth.plugins.rtf15.reader import Rtf15Reader
+                from pyth.plugins.xhtml.writer import XHTMLWriter
+                msg = extract_msg.openMsg(self.msg_path)
+                bytes(msg.rtfBody)
+                b = io.BytesIO(msg.rtfBody)
+
+                doc = Rtf15Reader.read(b, clean_paragraphs=True)
+                html_body = XHTMLWriter.write(doc, pretty=True, ).read()
+                self.html = html_body
 
     def _set_recipients(self):
         recipients = self.recipients
@@ -3108,7 +3115,7 @@ class MsOxMessage(object):
             ole_root = ole_file.root
             kids_dict = ole_root.kids_dict
 
-            self._message = Message(kids_dict)
+            self._message = Message(kids_dict, self.msg_file_path)
 
         finally:
             if ole_file is not None:
@@ -3589,6 +3596,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
             elif part.get_content_type() == 'text/html':
                 html = get_utf_string(part.get_payload(decode=True), 'HTML')
+                print(html)
 
             elif part.get_content_type() == 'text/plain':
                 text = get_utf_string(part.get_payload(decode=True), 'TEXT')
@@ -3642,7 +3650,7 @@ def is_email_data_populated(email_data):
 
 def main():
     file_type = ''
-    entry_id = demisto.args()['entryid']
+    # entry_id = demisto.args()['entryid']
     max_depth = int(demisto.args().get('max_depth', '3'))
 
     # we use the MAX_DEPTH_CONST to calculate the depth of the email
@@ -3661,12 +3669,17 @@ def main():
             return_error(get_error(result))
 
         file_path = result[0]['Contents']['path']
+        # file_path = "tester.msg"
         file_name = result[0]['Contents']['name']
+        # file_name = "tester.msg"
         result = demisto.executeCommand('getEntry', {'id': entry_id})
         if is_error(result):
             return_error(get_error(result))
 
         file_metadata = result[0]['FileMetadata']
+        # file_metadata = {
+        #     "type": "CDFV2 Microsoft Outlook Message"
+        # }
         file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
 
     except Exception as ex:
