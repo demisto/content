@@ -1,0 +1,1461 @@
+id: SalesforceITAdmin-Test
+name: SalesforceITAdmin-Test
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: get-user
+      description: ''
+      script: '|||get-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetUser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetUser.brand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetUser.instanceName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetUser.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetUser.active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetUser.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetUser.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetUser.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetUser.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetUser.errorMessage
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetUser.details
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: create-user
+      description: ''
+      script: '|||create-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.brand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.instanceName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.errorMessage
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.details
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: update-user
+      description: ''
+      script: '|||update-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UpdateUser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UpdateUser.brand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UpdateUser.instanceName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UpdateUser.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UpdateUser.active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UpdateUser.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UpdateUser.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UpdateUser.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UpdateUser.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UpdateUser.errorMessage
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: UpdateUser.details
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: salesforce-assign-permission-set
+      description: ''
+      script: '|||salesforce-assign-permission-set'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSet
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSet.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSet.PermissionSetAssign.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSet.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSet.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: salesforce-get-assigned-permission-set
+      description: ''
+      script: '|||salesforce-get-assigned-permission-set'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSet
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSet.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.attributes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.AssigneeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSet.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSet.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: salesforce-delete-assigned-permission-set
+      description: ''
+      script: '|||salesforce-delete-assigned-permission-set'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSet
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSet.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSet.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSet.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '14'
+    type: regular
+    task:
+      id: '14'
+      version: -1
+      name: salesforce-freeze-user-account
+      description: ''
+      script: '|||salesforce-freeze-user-account'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '15'
+    type: condition
+    task:
+      id: '15'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceFreezeUserAccount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceFreezeUserAccount.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceFreezeUserAccount.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceFreezeUserAccount.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: salesforce-unfreeze-user-account
+      description: ''
+      script: '|||salesforce-unfreeze-user-account'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '17'
+    type: condition
+    task:
+      id: '17'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceUnfreezeUserAccount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceUnfreezeUserAccount.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceUnfreezeUserAccount.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceUnfreezeUserAccount.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: '18'
+    type: regular
+    task:
+      id: '18'
+      version: -1
+      name: salesforce-get-user-isfrozen-status
+      description: ''
+      script: '|||salesforce-get-user-isfrozen-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '19'
+    type: condition
+    task:
+      id: '19'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetUserIsfrozenStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetUserIsfrozenStatus.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.attributes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.IsFrozen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetUserIsfrozenStatus.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetUserIsfrozenStatus.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '20'
+    type: regular
+    task:
+      id: '20'
+      version: -1
+      name: salesforce-assign-permission-set-license
+      description: ''
+      script: '|||salesforce-assign-permission-set-license'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '21'
+    type: condition
+    task:
+      id: '21'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSetLicense
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSetLicense.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSetLicense.PermissionSetLicenseAssign.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSetLicense.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSetLicense.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '22'
+    type: regular
+    task:
+      id: '22'
+      version: -1
+      name: salesforce-get-assigned-permission-set-license
+      description: ''
+      script: '|||salesforce-get-assigned-permission-set-license'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '23'
+    type: condition
+    task:
+      id: '23'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSetLicense
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSetLicense.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.attributes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.AssigneeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSetLicense.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSetLicense.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: '24'
+    type: regular
+    task:
+      id: '24'
+      version: -1
+      name: salesforce-delete-assigned-permission-set-license
+      description: ''
+      script: '|||salesforce-delete-assigned-permission-set-license'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '25'
+    type: condition
+    task:
+      id: '25'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSetLicense
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSetLicense.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSetLicense.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSetLicense.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: '26'
+    type: regular
+    task:
+      id: '26'
+      version: -1
+      name: salesforce-assign-package-license
+      description: ''
+      script: '|||salesforce-assign-package-license'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: '27'
+    taskid: '27'
+    type: condition
+    task:
+      id: '27'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPackageLicense
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPackageLicense.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPackageLicense.PackageLicenseAssign.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPackageLicense.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPackageLicense.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: '28'
+    type: regular
+    task:
+      id: '28'
+      version: -1
+      name: salesforce-get-assigned-package-license
+      description: ''
+      script: '|||salesforce-get-assigned-package-license'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: '29'
+    taskid: '29'
+    type: condition
+    task:
+      id: '29'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPackageLicense
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPackageLicense.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.attributes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.AssigneeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPackageLicense.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPackageLicense.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: 30
+    taskid: '30'
+    type: regular
+    task:
+      id: '30'
+      version: -1
+      name: salesforce-delete-assigned-package-license
+      description: ''
+      script: '|||salesforce-delete-assigned-package-license'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: '31'
+    taskid: '31'
+    type: condition
+    task:
+      id: '31'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '32'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPackageLicense
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPackageLicense.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPackageLicense.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPackageLicense.errorMessage
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: 32
+    taskid: '32'
+    type: regular
+    task:
+      id: '32'
+      version: -1
+      name: enable-user
+      description: ''
+      script: '|||enable-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: '33'
+    taskid: '33'
+    type: condition
+    task:
+      id: '33'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '34'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EnableUser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EnableUser.brand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EnableUser.instanceName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EnableUser.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EnableUser.active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EnableUser.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EnableUser.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EnableUser.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EnableUser.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EnableUser.errorMessage
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EnableUser.details
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: 34
+    taskid: '34'
+    type: regular
+    task:
+      id: '34'
+      version: -1
+      name: disable-user
+      description: ''
+      script: '|||disable-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: '35'
+    taskid: '35'
+    type: condition
+    task:
+      id: '35'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '36'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DisableUser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DisableUser.brand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DisableUser.instanceName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DisableUser.success
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DisableUser.active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DisableUser.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DisableUser.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DisableUser.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DisableUser.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DisableUser.errorMessage
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DisableUser.details
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '36':
+    id: '36'
+    taskid: '36'
+    type: title
+    task:
+      id: '36'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []

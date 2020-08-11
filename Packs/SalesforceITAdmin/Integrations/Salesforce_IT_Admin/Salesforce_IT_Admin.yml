@@ -1,0 +1,567 @@
+category: Authentication
+commonfields:
+  id: Salesforce IT Admin
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: 'Salesforce url (Eg: https://<domain>.salesforce.com/)'
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: User name
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Client ID
+  name: client_id
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Client secret
+  name: client_secret
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Secret token
+  name: secret_token
+  required: true
+  type: 4
+- additionalinfo: An optional custom mapping that takes custom values in the SCIM
+    data into the integration.
+  defaultvalue: ""
+  display: Custom Mapping for Create User
+  name: customMappingCreateUser
+  required: false
+  type: 12
+- additionalinfo: An optional custom mapping that takes custom values in the SCIM
+    data into the integration.
+  defaultvalue: ""
+  display: Custom Mapping for Update User
+  name: customMappingUpdateUser
+  required: false
+  type: 12
+description: The SalesForce API consists of a set of API endpoints that allow customers
+  to perform CRUD operation on their user profiles.
+display: Salesforce IT Admin
+name: Salesforce IT Admin
+script:
+  commands:
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    description: Get a user
+    name: get-user
+    outputs:
+    - contextPath: GetUser
+      description: Command context path
+      type: Unknown
+    - contextPath: GetUser.brand
+      description: Name of the Integration
+      type: String
+    - contextPath: GetUser.instanceName
+      description: Name of the instance used for testing
+      type: String
+    - contextPath: GetUser.success
+      description: Status of the result. Can be true or false.
+      type: Boolean
+    - contextPath: GetUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: Boolean
+    - contextPath: GetUser.id
+      description: Value of id passed as argument
+      type: String
+    - contextPath: GetUser.username
+      description: Value of username passed as argument
+      type: String
+    - contextPath: GetUser.email
+      description: Email ID of the user
+      type: String
+    - contextPath: GetUser.errorCode
+      description: HTTP response code other than 200 (if there is error in response)
+      type: Number
+    - contextPath: GetUser.errorMessage
+      description: Reason why the API is failed
+      type: String
+    - contextPath: GetUser.details
+      description: Gives the raw response from API
+      type: String
+  - arguments:
+    - description: SCIM content in JSON formatt
+      name: scim
+      required: true
+    - description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+      name: customMapping
+    description: Creates a user
+    name: create-user
+    outputs:
+    - contextPath: CreateUser
+      description: Command context path
+      type: Unknown
+    - contextPath: CreateUser.brand
+      description: Name of the Integration
+      type: String
+    - contextPath: CreateUser.instanceName
+      description: Name of the instance used for testing
+      type: String
+    - contextPath: CreateUser.success
+      description: Status of the result. Can be true or false.
+      type: Boolean
+    - contextPath: CreateUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: Boolean
+    - contextPath: CreateUser.id
+      description: Value of id created, returns only if response is success
+      type: String
+    - contextPath: CreateUser.username
+      description: Value of username created, returns only if response is success
+      type: String
+    - contextPath: CreateUser.email
+      description: Value of email ID passed as argument
+      type: String
+    - contextPath: CreateUser.errorCode
+      description: HTTP response code other than 200 (if there is error in response)
+      type: Number
+    - contextPath: CreateUser.errorMessage
+      description: Reason why the API is failed
+      type: String
+    - contextPath: CreateUser.details
+      description: Gives the raw response from API
+      type: Unknown
+  - arguments:
+    - description: Old SCIM content in JSON format
+      name: oldScim
+      required: true
+    - description: New SCIM content in JSON format
+      name: newScim
+      required: true
+    - description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+      name: customMapping
+    description: Update a user
+    name: update-user
+    outputs:
+    - contextPath: UpdateUser
+      description: Command context path
+      type: Unknown
+    - contextPath: UpdateUser.brand
+      description: Name of the Integration
+      type: String
+    - contextPath: UpdateUser.instanceName
+      description: Name of the instance used for testing
+      type: String
+    - contextPath: UpdateUser.success
+      description: Status of the result. Can be true or false.
+      type: Boolean
+    - contextPath: UpdateUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: Boolean
+    - contextPath: UpdateUser.id
+      description: Value of id passed as argument
+      type: String
+    - contextPath: UpdateUser.username
+      description: Value of username passed as argument
+      type: String
+    - contextPath: UpdateUser.email
+      description: Value of email ID passed as argument
+      type: String
+    - contextPath: UpdateUser.errorCode
+      description: HTTP response code other than 200 (if there is error in response)
+      type: String
+    - contextPath: UpdateUser.errorMessage
+      description: ' Reason why the API is failed'
+      type: String
+    - contextPath: UpdateUser.details
+      description: Gives the raw response from API
+      type: String
+  - arguments:
+    - description: User ID
+      name: user_id
+      required: true
+    - description: Permission set ID of tthe user
+      name: permission_set_id
+      required: true
+    description: Assign Permission set for user
+    name: salesforce-assign-permission-set
+    outputs:
+    - contextPath: SalesforceAssignPermissionSet
+      description: Command context path
+    - contextPath: SalesforceAssignPermissionSet.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceAssignPermissionSet.PermissionSetAssign.id
+      description: Permission set assignment id created
+      type: string
+    - contextPath: SalesforceAssignPermissionSet.errorCode
+      description: Error code from API, displayed in case of failure
+      type: string
+    - contextPath: SalesforceAssignPermissionSet.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: User ID
+      name: user_id
+      required: true
+    description: Get the assigned permission set
+    name: salesforce-get-assigned-permission-set
+    outputs:
+    - contextPath: SalesforceGetAssignedPermissionSet
+      description: Command context path
+    - contextPath: SalesforceGetAssignedPermissionSet.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.attributes
+      description: Attributes field gives the information about the type and url of
+        the field fetched
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.AssigneeId
+      description: User ID passed as input
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.Id
+      description: Permission Set Assignment Id created
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSet.errorCode
+      description: Error code from API, displayed in case of failure
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSet.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: Id in PermissionSetAssignment object. PermissionSetAssignment -
+        Represent the association between a User and a PermissionSet.
+      name: permission_set_assignment_id
+      required: true
+    description: To Delete Assigned Permission Set
+    name: salesforce-delete-assigned-permission-set
+    outputs:
+    - contextPath: SalesforceDeleteAssignedPermissionSet
+      description: Command context path
+    - contextPath: SalesforceDeleteAssignedPermissionSet.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceDeleteAssignedPermissionSet.errorCode
+      description: Error code from API, displayed in case of failure
+      type: number
+    - contextPath: SalesforceDeleteAssignedPermissionSet.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: Id in UserLogin object. UserLogin - Represents the settings that
+        affect a user’s ability to log into an organization. To access this object,
+        you need the UserPermissions.ManageUsers permission. For more details Please
+        refer "https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm"
+      name: user_login_id
+      required: true
+    description: Freeze the user account
+    name: salesforce-freeze-user-account
+    outputs:
+    - contextPath: SalesforceFreezeUserAccount
+      description: Command context path
+    - contextPath: SalesforceFreezeUserAccount.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceFreezeUserAccount.errorCode
+      description: Error code from API, displayed in case of failure
+      type: number
+    - contextPath: SalesforceFreezeUserAccount.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: Id in UserLogin object. UserLogin - Represents the settings that
+        affect a user’s ability to log into an organization. To access this object,
+        you need the UserPermissions.ManageUsers permission. For more details Please
+        refer "https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm"
+      name: user_login_id
+      required: true
+    description: Unfreeze User Account
+    name: salesforce-unfreeze-user-account
+    outputs:
+    - contextPath: SalesforceUnfreezeUserAccount
+      description: Command context path
+    - contextPath: SalesforceUnfreezeUserAccount.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceUnfreezeUserAccount.errorCode
+      description: Error code from API, displayed in case of failure
+      type: number
+    - contextPath: SalesforceUnfreezeUserAccount.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: User ID
+      name: user_id
+      required: true
+    description: Get the user frozen status
+    name: salesforce-get-user-isfrozen-status
+    outputs:
+    - contextPath: SalesforceGetUserIsfrozenStatus
+      description: Command context path
+    - contextPath: SalesforceGetUserIsfrozenStatus.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.attributes
+      description: Attributes field gives the information about the type,  url of
+        the field fetched.
+      type: string
+    - contextPath: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.Id
+      description: Id in UserLogin object. UserLogin - Represents the settings that
+        affect a user’s ability to log into an organization. To access this object,
+        you need the UserPermissions.ManageUsers permission. For more details Please
+        refer "https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm"
+      type: string
+    - contextPath: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.IsFrozen
+      description: Whether the User account is in frozen state. Can be true or false
+      type: boolean
+    - contextPath: SalesforceGetUserIsfrozenStatus.errorCode
+      description: Error code from API, displayed in case of failure
+      type: string
+    - contextPath: SalesforceGetUserIsfrozenStatus.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: User ID
+      name: user_id
+      required: true
+    - description: Permission set license id
+      name: permission_set_license_id
+      required: true
+    description: Assign permission set license
+    name: salesforce-assign-permission-set-license
+    outputs:
+    - contextPath: SalesforceAssignPermissionSetLicense
+      description: Command context path
+      type: unknown
+    - contextPath: SalesforceAssignPermissionSetLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceAssignPermissionSetLicense.PermissionSetLicenseAssign.id
+      description: Permission set assignment license id created
+      type: string
+    - contextPath: SalesforceAssignPermissionSetLicense.errorCode
+      description: Error code from API, displayed in case of failure
+      type: string
+    - contextPath: SalesforceAssignPermissionSetLicense.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: User ID
+      name: user_id
+      required: true
+    description: Get assigned permission set license
+    name: salesforce-get-assigned-permission-set-license
+    outputs:
+    - contextPath: SalesforceGetAssignedPermissionSetLicense
+      description: Command context path
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.attributes
+      description: Attributes field gives the information about the type and url of
+        the field fetched
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.AssigneeId
+      description: User ID passed as input
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.Id
+      description: Permission Set License Assignments Id assigned for given user ID
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.errorCode
+      description: Error code from API, displayed in case of failure
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: Id in PermissionSetLicenseAssign object. PermissionSetLicenseAssign
+        - Represents the association between a User and a PermissionSetLicense
+      name: permission_set_assignment_license_id
+      required: true
+    description: Delete assigned permission set license
+    name: salesforce-delete-assigned-permission-set-license
+    outputs:
+    - contextPath: SalesforceDeleteAssignedPermissionSetLicense
+      description: Command context path
+    - contextPath: SalesforceDeleteAssignedPermissionSetLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceDeleteAssignedPermissionSetLicense.errorCode
+      description: Error code from API, displayed in case of failure
+      type: string
+    - contextPath: SalesforceDeleteAssignedPermissionSetLicense.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: User ID
+      name: user_id
+      required: true
+    - description: Package License ID
+      name: package_license_id
+      required: true
+    description: Assign Package License
+    name: salesforce-assign-package-license
+    outputs:
+    - contextPath: SalesforceAssignPackageLicense
+      description: Command context path
+      type: unknown
+    - contextPath: SalesforceAssignPackageLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceAssignPackageLicense.PackageLicenseAssign.id
+      description: Package License Assign Id created
+      type: boolean
+    - contextPath: SalesforceAssignPackageLicense.errorCode
+      description: Error code from API, displayed in case of failure
+      type: number
+    - contextPath: SalesforceAssignPackageLicense.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: User ID
+      name: user_id
+      required: true
+    description: Get Assigned Package License
+    name: salesforce-get-assigned-package-license
+    outputs:
+    - contextPath: SalesforceGetAssignedPackageLicense
+      description: Command context path
+      type: unknown
+    - contextPath: SalesforceGetAssignedPackageLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.attributes
+      description: Attributes field gives the information about the type and url of
+        the field fetched
+      type: boolean
+    - contextPath: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.AssigneeId
+      description: User ID passed as input
+      type: string
+    - contextPath: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.Id
+      description: Package License Assignment ID  assigned for given user ID
+      type: string
+    - contextPath: SalesforceGetAssignedPackageLicense.errorCode
+      description: Error code from API, displayed in case of failure
+      type: number
+    - contextPath: SalesforceGetAssignedPackageLicense.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: Id field in the UserPackageLicense object.
+      name: user_package_license_id
+      required: true
+    description: Delete Assigned Package License
+    name: salesforce-delete-assigned-package-license
+    outputs:
+    - contextPath: SalesforceDeleteAssignedPackageLicense
+      description: Command context path
+    - contextPath: SalesforceDeleteAssignedPackageLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceDeleteAssignedPackageLicense.errorCode
+      description: Error code from API, displayed in case of failure
+      type: number
+    - contextPath: SalesforceDeleteAssignedPackageLicense.errorMessage
+      description: Error message from API, displayed in case of failure
+      type: string
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    description: Enable a disabled user
+    name: enable-user
+    outputs:
+    - contextPath: EnableUser
+      description: Command context path
+    - contextPath: EnableUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: EnableUser.instanceName
+      description: Name the instance used for testing
+      type: string
+    - contextPath: EnableUser.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: EnableUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: boolean
+    - contextPath: EnableUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: EnableUser.username
+      description: Value of username passed as argument
+      type: string
+    - contextPath: EnableUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: EnableUser.errorCode
+      description: HTTP response code other than 200 (if there is error in response)
+      type: number
+    - contextPath: EnableUser.errorMessage
+      description: Reason why the API is failed
+      type: string
+    - contextPath: EnableUser.details
+      description: Gives the raw response from API in case of error
+      type: string
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    - description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+      name: customMapping
+    description: Disable a user
+    execution: true
+    name: disable-user
+    outputs:
+    - contextPath: DisableUser
+      description: Command context path
+    - contextPath: DisableUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: DisableUser.instanceName
+      description: Name the instance used for testing
+      type: string
+    - contextPath: DisableUser.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: DisableUser.active
+      description: 'Gives the active status of user. Can be true of false. '
+      type: boolean
+    - contextPath: DisableUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: DisableUser.username
+      description: Value of username passed as argument
+      type: string
+    - contextPath: DisableUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: DisableUser.errorCode
+      description: HTTP response code other than 200 (if there is error in response)
+      type: number
+    - contextPath: DisableUser.errorMessage
+      description: Reason why the API is failed
+      type: string
+    - contextPath: DisableUser.details
+      description: Gives the raw response from API in case of error
+      type: string
+  dockerimage: demisto/python3:3.8.5.10455
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
