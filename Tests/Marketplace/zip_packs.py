@@ -9,7 +9,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, IGNORED_
 
 from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion, str2bool
 
-ARTIFACT_NAME = 'zipped_packs.zip'
+ARTIFACT_NAME = 'content_marketplace_packs.zip'
 MAX_THREADS = 4
 BUILD_GCP_PATH = 'content/builds'
 
