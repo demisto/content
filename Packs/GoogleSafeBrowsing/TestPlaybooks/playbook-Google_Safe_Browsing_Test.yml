@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f93a7db8-bfac-4d8b-8413-7c5d0889807b
+    taskid: 7997981c-d609-4251-8308-de52c9118a81
     type: start
     task:
-      id: f93a7db8-bfac-4d8b-8413-7c5d0889807b
+      id: 7997981c-d609-4251-8308-de52c9118a81
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 4e232e48-e906-416f-8a28-74fba599e4b0
+    taskid: 1b87c8d4-0eab-4cbc-8c5a-3c5d2bed0624
     type: regular
     task:
-      id: 4e232e48-e906-416f-8a28-74fba599e4b0
+      id: 1b87c8d4-0eab-4cbc-8c5a-3c5d2bed0624
       version: -1
       name: Check non-malicious URL
       script: GoogleSafeBrowsing|||url
@@ -64,10 +64,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 2e9c2edc-4fa6-4fc3-853c-a381138e2080
+    taskid: 432848c0-2a54-4cdb-867e-832022b1397d
     type: condition
     task:
-      id: 2e9c2edc-4fa6-4fc3-853c-a381138e2080
+      id: 432848c0-2a54-4cdb-867e-832022b1397d
       version: -1
       name: Check if found malicious
       type: condition
@@ -103,10 +103,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 0c351e62-60a1-43e1-881c-bd28c939e43a
+    taskid: 9d8990b7-bfde-435a-8a56-0afd5ddb4187
     type: regular
     task:
-      id: 0c351e62-60a1-43e1-881c-bd28c939e43a
+      id: 9d8990b7-bfde-435a-8a56-0afd5ddb4187
       version: -1
       name: Check malicious URL
       script: GoogleSafeBrowsing|||url
@@ -134,10 +134,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: e443a8ea-90e2-434a-8e63-d2ed4fb0fb4c
+    taskid: 5d0e629f-9f5d-4e84-8e50-90edab1463d0
     type: condition
     task:
-      id: e443a8ea-90e2-434a-8e63-d2ed4fb0fb4c
+      id: 5d0e629f-9f5d-4e84-8e50-90edab1463d0
       version: -1
       name: Check if found malicious
       type: condition
@@ -147,7 +147,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "11"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -171,13 +171,13 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 9f729942-a66e-4486-8123-fc20caf586ec
+    taskid: 68b31715-56db-4d48-88ad-7a63308a5097
     type: regular
     task:
-      id: 9f729942-a66e-4486-8123-fc20caf586ec
+      id: 68b31715-56db-4d48-88ad-7a63308a5097
       version: -1
       name: FAIL - False Positive
-      script: RaiseError
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -199,13 +199,13 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: b3bdea26-4c06-4e1c-85fb-499891aa5bb2
+    taskid: 1de5bdba-8166-4d29-8c29-079aa2997220
     type: regular
     task:
-      id: b3bdea26-4c06-4e1c-85fb-499891aa5bb2
+      id: 1de5bdba-8166-4d29-8c29-079aa2997220
       version: -1
       name: FAIL - False Positive
-      script: RaiseError
+      scriptName: RaiseError
       type: regular
       iscommand: false
       brand: ""
@@ -216,8 +216,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": -100,
+          "y": 920
         }
       }
     note: false
@@ -227,10 +227,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 80c67921-4b9c-4a4d-8e86-ec319ffdef57
+    taskid: 7d3d0531-aec5-48f2-89ae-5711ecd1b8c8
     type: title
     task:
-      id: 80c67921-4b9c-4a4d-8e86-ec319ffdef57
+      id: 7d3d0531-aec5-48f2-89ae-5711ecd1b8c8
       version: -1
       name: Done
       type: title
@@ -240,8 +240,92 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 490,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: e5c94e54-7f3c-4342-8523-a5cf8920a658
+    type: condition
+    task:
+      id: e5c94e54-7f3c-4342-8523-a5cf8920a658
+      version: -1
+      name: Check Dbot Score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "11"
+    separatecontext: false
+    defaultassigneecomplex:
+      complex:
+        root: DBotScore
+        filters:
+        - - operator: isEqualString
+            left:
+              value:
+                simple: DBotScore
+              iscontext: true
+            right:
+              value:
+                simple: "0"
+        accessor: Score
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 440,
           "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 7bd14f36-0ae7-4042-84a8-907e33fb8f5b
+    type: regular
+    task:
+      id: 7bd14f36-0ae7-4042-84a8-907e33fb8f5b
+      version: -1
+      name: FAIL - Dbot score check
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual: {}
+      details: {}
+      error:
+        simple: expected Dbot Score to be 0
+      expected: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -115,
+          "y": 1205
         }
       }
     note: false
@@ -254,9 +338,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
-        "width": 1025,
-        "x": 50,
+        "height": 1250,
+        "width": 1190,
+        "x": -115,
         "y": 50
       }
     }
