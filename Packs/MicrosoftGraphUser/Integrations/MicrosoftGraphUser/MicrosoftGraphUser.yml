@@ -167,7 +167,7 @@ script:
       isArray: false
       name: password
       required: true
-      secret: true
+      secret: truex
     - default: false
       description: ' The user principal name, for example: foo@test.com. '
       isArray: false
@@ -445,7 +445,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The new password
+      description: The new password.
       isArray: false
       name: password
       required: true
@@ -453,7 +453,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Wheter the passwrod will be changed on the next sign in.
+      description: Whether the password will be changed on the next sign in.
       isArray: false
       name: force_change_password_next_sign_in
       predefined:
@@ -464,7 +464,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to cahgne the passwrod with MFA.
+      description: Whether to change the password with MFA.
       isArray: false
       name: force_change_password_with_mfa
       predefined:
@@ -474,7 +474,7 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Changes the properties of a user object.
+      Changes the user password.
       Permissions: Directory.AccessAsUser.All(Delegated)
     execution: true
     name: msgraph-user-change-password
