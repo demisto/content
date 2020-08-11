@@ -1566,8 +1566,8 @@
         {
             "integrations": "DNSDB",
             "playbookID": "DNSDB-Test",
-	    "timeout": 500,
-	    "nightly": true
+            "timeout": 500,
+            "nightly": true
         },
         {
             "integrations": "carbonblack-v2",
