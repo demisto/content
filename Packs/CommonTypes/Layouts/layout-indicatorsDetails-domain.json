@@ -480,7 +480,7 @@
 							{
 								"args": {
 									"field": {
-										"simple": "Tags"
+										"simple": "tags"
 									}
 								},
 								"endCol": 1,
@@ -505,7 +505,7 @@
 							{
 								"args": {
 									"field": {
-										"simple": "Tags"
+										"simple": "tags"
 									}
 								},
 								"dropEffect": "move",
