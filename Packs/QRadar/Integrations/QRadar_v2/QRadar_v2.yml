@@ -21,7 +21,7 @@ configuration:
   type: 0
 - defaultvalue: '50'
   display: Number of offenses to pull per API call
-  name: offensesPerCall
+  name: offenses_per_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -70,6 +70,11 @@ configuration:
   name: events_limit
   required: false
   type: 0
+- display: Advanced Parameters
+  name: adv_params
+  type: 12
+  additionalinfo: Comma separated advanced configuration values. e.g. EVENTS_INTERVAL_SECS=20,WORKERS_NUM=5
+  required: false
 description: Fetch offenses as incidents and search QRadar
 display: IBM QRadar V2
 name: QRadar_v2
@@ -77,7 +82,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'Query to filter offenses. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+      description: 'Query to filter offenses. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       isArray: false
       name: filter
       required: false
