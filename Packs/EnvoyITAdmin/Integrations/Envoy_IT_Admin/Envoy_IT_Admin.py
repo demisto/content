@@ -5,6 +5,7 @@ import json
 import traceback
 import requests
 
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -183,20 +184,8 @@ def map_changes_to_existing_user(existing_user, new_json):
             # as of now only emails, phone numbers needs to be handled
             if key in ('emails', 'phoneNumbers'):
                 existing_complex_list = existing_user.get(key)
-
-                # update
-                for new_json_item in value:
-                    for existing_json_item in existing_complex_list:
-                        if existing_json_item.get('type') == new_json_item.get('type'):
-                            if existing_json_item.get('value') != new_json_item.get('value'):
-                                existing_json_item['value'] = new_json_item.get('value')
-                            if new_json_item.get('primary', None) is not None:
-                                existing_json_item['primary'] = new_json_item.get('primary')
-                            else:
-                                if existing_json_item.get('primary', None) is not None:
-                                    existing_json_item['primary'] = existing_json_item.get('primary')
-                            break
-
+                # map emails and phoneNumbers data to the list(existing_complex_list) using new_json
+                map_changes_emails_phoneNumbers(value, existing_complex_list)
                 # add
                 new_complex_list = []
                 for new_json_item in value:
@@ -213,28 +202,10 @@ def map_changes_to_existing_user(existing_user, new_json):
                         new_complex_list.append(new_dict)
                 existing_complex_list.extend(new_complex_list)
 
-            if key in ('address'):
+            if key in ('addresses'):
                 existing_complex_list = existing_user.get(key)
-
-                # update
-                for new_json_item in value:
-                    for existing_json_item in existing_complex_list:
-                        if existing_json_item.get('type') == new_json_item.get('type'):
-                            if existing_json_item.get('formatted') != new_json_item.get('formatted'):
-                                existing_json_item['formatted'] = new_json_item.get('formatted')
-                            if existing_json_item.get('streetAddress') != new_json_item.get('streetAddress'):
-                                existing_json_item['streetAddress'] = new_json_item.get('streetAddress')
-                            if existing_json_item.get('locality') != new_json_item.get('locality'):
-                                existing_json_item['locality'] = new_json_item.get('locality')
-                            if existing_json_item.get('region') != new_json_item.get('region'):
-                                existing_json_item['region'] = new_json_item.get('region')
-                            if existing_json_item.get('postalCode') != new_json_item.get('postalCode'):
-                                existing_json_item['postalCode'] = new_json_item.get('postalCode')
-                            if existing_json_item.get('country') != new_json_item.get('country'):
-                                existing_json_item['country'] = new_json_item.get('country')
-
-                            break
-
+                # map address data to the list(existing_complex_list) using new_json
+                map_changes_address(value, existing_complex_list)
                 # add
                 new_complex_list = []
                 for new_json_item in value:
@@ -250,7 +221,9 @@ def map_changes_to_existing_user(existing_user, new_json):
                                     'locality': new_json_item.get('locality', ''),
                                     'region': new_json_item.get('region', ''),
                                     'postalCode': new_json_item.get('postalCode', ''),
-                                    'country': new_json_item.get('country', '')}
+                                    'country': new_json_item.get('country', ''),
+                                    'primary': new_json_item.get('primary', '')
+                                    }
                         new_complex_list.append(new_dict)
                 existing_complex_list.extend(new_complex_list)
 
@@ -259,6 +232,43 @@ def map_changes_to_existing_user(existing_user, new_json):
                 map_changes_to_existing_user(existing_user.get(key), value)
         else:
             existing_user[key] = value
+
+
+def map_changes_emails_phoneNumbers(value, existing_complex_list):
+    # update
+    for new_json_item in value:
+        for existing_json_item in existing_complex_list:
+            if existing_json_item.get('type') == new_json_item.get('type'):
+                if existing_json_item.get('value') != new_json_item.get('value'):
+                    existing_json_item['value'] = new_json_item.get('value')
+                if new_json_item.get('primary', None) is not None:
+                    existing_json_item['primary'] = new_json_item.get('primary')
+                else:
+                    if existing_json_item.get('primary', None) is not None:
+                        existing_json_item['primary'] = existing_json_item.get('primary')
+                break
+
+
+def map_changes_address(value, existing_complex_list):
+    # update
+    for new_json_item in value:
+        for existing_json_item in existing_complex_list:
+            if existing_json_item.get('type') == new_json_item.get('type'):
+                if new_json_item.get('primary', None) is not None:
+                    existing_json_item['primary'] = new_json_item.get('primary')
+                if existing_json_item.get('formatted') != new_json_item.get('formatted'):
+                    existing_json_item['formatted'] = new_json_item.get('formatted')
+                if existing_json_item.get('streetAddress') != new_json_item.get('streetAddress'):
+                    existing_json_item['streetAddress'] = new_json_item.get('streetAddress')
+                if existing_json_item.get('locality') != new_json_item.get('locality'):
+                    existing_json_item['locality'] = new_json_item.get('locality')
+                if existing_json_item.get('region') != new_json_item.get('region'):
+                    existing_json_item['region'] = new_json_item.get('region')
+                if existing_json_item.get('postalCode') != new_json_item.get('postalCode'):
+                    existing_json_item['postalCode'] = new_json_item.get('postalCode')
+                if existing_json_item.get('country') != new_json_item.get('country'):
+                    existing_json_item['country'] = new_json_item.get('country')
+                break
 
 
 ''' COMMAND FUNCTIONS '''
@@ -361,7 +371,7 @@ def get_user_command(client, args):
                                                         username=username, details=item, active=active)
                     generic_iam_context_data_list.append(generic_iam_context.data)
 
-    else:  # api returns 404, not found for user not found case.
+    else:
         generic_iam_context = OutputContext(success=False, iden=user_id, username=username, email=email,
                                             errorCode=res.status_code,
                                             errorMessage=res.headers.get('status'), details=str(res_json))
@@ -457,8 +467,8 @@ def update_user_command(client, args):
 
     old_scim = verify_and_load_scim_data(args.get('oldScim'))
     new_scim = verify_and_load_scim_data(args.get('newScim'))
-    format_pre_text = 'Update'
-    return process_update_command(client, args, old_scim, new_scim, format_pre_text)
+    command_name = 'Update'
+    return process_update_command(client, args, old_scim, new_scim, command_name)
 
 
 def enable_user_command(client, args):
@@ -475,13 +485,11 @@ def enable_user_command(client, args):
 
     old_scim = verify_and_load_scim_data(args.get('scim'))
     new_scim = verify_and_load_scim_data(args.get('scim'))
-    del new_scim['id']
-    if not new_scim:
-        new_scim = {'active': True}
-    elif not new_scim.get('active'):
-        new_scim.update({'active': True})
-    format_pre_text = 'Enable'
-    return process_update_command(client, args, old_scim, new_scim, format_pre_text)
+    if 'id' in new_scim:
+        del new_scim['id']
+    new_scim['active'] = True
+    command_name = 'Enable'
+    return process_update_command(client, args, old_scim, new_scim, command_name)
 
 
 def disable_user_command(client, args):
@@ -497,11 +505,11 @@ def disable_user_command(client, args):
     """
     old_scim = verify_and_load_scim_data(args.get('scim'))
     new_scim = {'active': False}
-    format_pre_text = 'Disable'
-    return process_update_command(client, args, old_scim, new_scim, format_pre_text)
+    command_name = 'Disable'
+    return process_update_command(client, args, old_scim, new_scim, command_name)
 
 
-def process_update_command(client, args, old_scim, new_scim, format_pre_text):
+def process_update_command(client, args, old_scim, new_scim, command_name):
     parsed_old_scim = map_scim(old_scim)
     user_id = parsed_old_scim.get('id')
 
@@ -542,7 +550,7 @@ def process_update_command(client, args, old_scim, new_scim, format_pre_text):
                                                 errorMessage=res_update.headers.get('status'),
                                                 details=res_update.headers.get('status'))
 
-    else:  # api returns 404, not found for user not found case.
+    else:
         generic_iam_context = OutputContext(success=False, iden=user_id,
                                             errorCode=res.status_code,
                                             errorMessage=res.headers.get('status'), details=str(existing_user))
@@ -553,7 +561,7 @@ def process_update_command(client, args, old_scim, new_scim, format_pre_text):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown(name=f'{format_pre_text} Envoy User:',
+    readable_output = tableToMarkdown(name=f'{command_name} Envoy User:',
                                       t=generic_iam_context.data,
                                       headers=["brand", "instanceName", "success", "active", "id",
                                                "username", "email",
