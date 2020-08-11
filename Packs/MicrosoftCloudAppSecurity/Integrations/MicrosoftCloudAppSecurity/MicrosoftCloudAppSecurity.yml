@@ -294,7 +294,7 @@ script:
     - default: false
       description: |-
         Multiple alerts matching the specified filters.
-        Alert_id should be like this template - "55af7415f8a0a7a29eef2e1f".
+        Alert_id should be like this template - "1234567890abcdefg".
       isArray: true
       name: alert_ids
       required: false
@@ -350,7 +350,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filter activities with the specified subnet categories. Valid values are: Corporate, Administrative, Risky, VPN, Cloud_provider, Other.'
+      description: 'Filter activities with the specified subnet categories. Valid values are: Corporate, Administrative, Risky, VPN, Cloud_provider, Other.'
       isArray: false
       name: 'ip_category'
       predefined:
