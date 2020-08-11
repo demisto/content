@@ -14,9 +14,10 @@ name: Base64EncodeV2
 outputs:
 - contextPath: Base64.encoded
   description: input encoded as Base64 format.
-  type: Unknown
+  type: string
 script: '-'
 subtype: python3
+dockerimage: demisto/python3:3.8.5.10455
 system: false
 tags:
 - Utility
