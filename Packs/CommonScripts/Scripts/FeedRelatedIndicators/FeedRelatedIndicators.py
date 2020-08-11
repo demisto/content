@@ -20,7 +20,7 @@ def feed_related_indicator():
             content.append({
                 'Value': f"[{item.get('value')}]({server_url}/indicator/{ioc_id})" if item.get('value') else '',
                 'Type': item.get('type'),
-                'Description': f"[{item.get('description')}]({item.get('description')})"
+                'Description': f"[{item.get('description')}]({item.get('description')})\n\n"
             })
     else:
         # In case that no related indicators were found, return the table without the link.
@@ -28,10 +28,10 @@ def feed_related_indicator():
             content.append({
                 'Value': item.get('value', ''),
                 'Type': item.get('type'),
-                'Description': f"[{item.get('description')}]({item.get('description')})"
+                'Description': f"[{item.get('description')}]({item.get('description')})\n\n"
             })
 
-    output = tableToMarkdown('Feed Related Indicators', content, ['Type', 'Value', 'Description'], removeNull=True)
+    output = tableToMarkdown('', content, ['Type', 'Value', 'Description'], removeNull=True)
     return CommandResults(
         readable_output=output
     )
