@@ -1,5 +1,6 @@
 import pytest
 import demistomock as demisto
+import importlib
 
 integration_params = {
     'insecure': 'False',
@@ -62,10 +63,10 @@ def test_cases_to_entry(Cases, mocker):
             - run the cases to entry Function
             - Check that both statusID were parsed correctly with no exeptions.
             """
-    from McAfee_ESM_v10 import cases_to_entry, NitroESM
-    esm = NitroESM("Test", "Test", "Test")
+    mcafee = importlib.import_module("McAfee_ESM-v10")
+    esm = mcafee.NitroESM("Test", "Test", "Test")
     mocker.patch.object(esm, 'case_status_id_to_name', return_value='Open')
     try:
-        cases_to_entry(esm, "test", Cases)
+        mcafee.cases_to_entry(esm, "test", Cases)
     except Exception:
         assert False
