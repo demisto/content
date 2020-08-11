@@ -77,7 +77,7 @@ tasks:
       - "3"
     scriptarguments:
       id:
-        simple: 00:0a:9c:61:ef:71
+        simple: b8:27:eb:e1:38:23
     separatecontext: false
     view: |-
       {
@@ -367,7 +367,7 @@ tasks:
       - "11"
     scriptarguments:
       id:
-        simple: 5d48337d37774a0d00a7e14c
+        simple: 5e73ecb3eff46f80a7cdc57a
       reason:
         simple: XSOAR nightly integration test
       reason_type:
@@ -402,9 +402,9 @@ tasks:
       - "12"
     scriptarguments:
       full_name:
-        simple: CVE-2017-12857
+        simple: CVE-2019-10960
       id:
-        simple: vuln-dbed9f33
+        simple: vuln-b12d4f0a
       reason:
         simple: XSOAR nightly integration test
     separatecontext: false

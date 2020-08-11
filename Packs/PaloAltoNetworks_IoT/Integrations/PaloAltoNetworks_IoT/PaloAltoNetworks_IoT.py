@@ -207,7 +207,7 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    client.get_device("")
+    client.list_devices(0, 1)
     if demisto.params().get('isFetch'):
         fetch_incidents(client, last_run=demisto.getLastRun(), is_test=True)
     return 'ok'
