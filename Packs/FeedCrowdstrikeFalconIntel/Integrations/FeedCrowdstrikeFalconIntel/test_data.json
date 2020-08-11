@@ -121,10 +121,10 @@
 
   "expected_list": [
     {
-        "type": "Threat Actor",
+        "type": "STIX Threat Actor",
         "value": "A",
         "rawJSON": {
-                    "type": "Threat Actor",
+                    "type": "STIX Threat Actor",
                     "value": "A",
                     "service": "List Actors Feed",
                     "id": 1,
@@ -188,10 +188,10 @@
                    "actor_target_industry": [{"id": 1, "slug": "stores", "value": "stores"}]}
     },
     {
-        "type": "Threat Actor",
+        "type": "STIX Threat Actor",
         "value": "B",
         "rawJSON": {
-                    "type": "Threat Actor",
+                    "type": "STIX Threat Actor",
                     "value": "B",
                     "service": "List Actors Feed",
                     "id": 2,
