@@ -154,6 +154,7 @@ class DBotScoreType(object):
     DBotScoreType.FILE
     DBotScoreType.DOMAIN
     DBotScoreType.URL
+    DBotScoreType.CVE
     :return: None
     :rtype: ``None``
     """
