@@ -81,6 +81,16 @@ class EntryType(object):
     WIDGET = 17
 
 
+class IncidentStatus(object):
+    """
+    Enum: contains all the incidents status types (e.g. pending, active, done, archive)
+    """
+    PENDING = 0
+    ACTIVE = 1
+    DONE = 2
+    ARCHIVE = 3
+
+
 # DEPRECATED - use EntryFormat enum instead
 formats = {
     'html': 'html',
@@ -2687,6 +2697,14 @@ def return_results(results):
         demisto.results(results.to_context())
         return
 
+    if isinstance(results, GetMappingFieldsResponse):
+        demisto.results(results.extract_mapping())
+        return
+
+    if isinstance(results, GetRemoteDataResponse):
+        demisto.results(results.extract_for_local())
+        return
+
     demisto.results(results)
 
 
@@ -4064,3 +4082,137 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 class DemistoException(Exception):
     pass
+
+
+class GetRemoteDataArgs:
+    """get-remote-data args parser
+    :type args: ``dict``
+    :param args: arguments for the command of the command.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, args):
+        self.remote_incident_id = args['id']
+        self.last_update = args['lastUpdate']
+
+
+class UpdateRemoteSystemArgs:
+    """update-remote-system args parser
+    :type args: ``dict``
+    :param args: arguments for the command of the command.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, args):
+        self.data = args.get('data')  # type: ignore
+        self.entries = args.get('entries')
+        self.incident_changed = args.get('incidentChanged')
+        self.remote_incident_id = args.get('remoteId')
+        self.inc_status = args.get('status')
+        self.delta = args.get('delta')
+
+
+class GetRemoteDataResponse:
+    """get-remote-data response parser
+    :type mirrored_object: ``dict``
+    :param mirrored_object: The object you are mirroring, in most cases the incident.
+
+    :type entries: ``list``
+    :param entries: The entries you want to add to the war room.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, mirrored_object, entries):
+        self.mirrored_object = mirrored_object
+        self.entries = entries
+
+    def extract_for_local(self):
+        """Extracts the response into the mirrored incident.
+
+        :return: List of details regarding the mirrored incident.
+        :rtype: ``list``
+        """
+        if self.mirrored_object:
+            demisto.info('Updating object {}'.format(self.mirrored_object["id"]))
+            return [self.mirrored_object] + self.entries
+
+
+class SchemeTypeMapping:
+    """Scheme type mappings builder.
+
+    :type type_name: ``str``
+    :param type_name: The name of the remote incident type.
+
+    :type fields: ``list``
+    :param fields: The list of fields to their description.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, type_name='', fields=None):
+        self.type_name = type_name
+        self.fields = fields if fields else []
+
+    def add_field(self, name, description=''):
+        """Adds a field to the incident type mapping.
+
+        :type name: ``str``
+        :param name: The name of the field.
+
+        :type description: ``str``
+        :param description: The description for that field.a
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        self.fields.append({
+            name: description
+        })
+
+    def extract_mapping(self):
+        """Extracts the mapping into XSOAR mapping screen.
+
+        :return: the mapping object for the current field.
+        :rtype: ``dict``
+        """
+        return {
+            self.type_name: self.fields
+        }
+
+class GetMappingFieldsResponse:
+    """Handler for the mapping fields object.
+
+    :type scheme_types_mapping: ``list``
+    :param scheme_types_mapping: List of all the mappings in the remote system.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, scheme_types_mapping=None):
+        self.scheme_types_mappings = scheme_types_mapping if scheme_types_mapping else []
+
+    def add_scheme_type(self, scheme_type_mapping):
+        """Add another incident type mapping.
+
+        :type scheme_type_mapping: ``dict``
+        :param scheme_type_mapping: mapping of a singular field.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        self.scheme_types_mappings.append(scheme_type_mapping)
+
+    def extract_mapping(self):
+        """Extracts the mapping into XSOAR mapping screen.
+
+        :return: the mapping object for the current field.
+        :rtype: ``dict``
+        """
+        all_mappings = []
+        for scheme_types_mapping in self.scheme_types_mappings:
+            all_mappings.append(scheme_types_mapping.extract_mapping())
+
+        return all_mappings
