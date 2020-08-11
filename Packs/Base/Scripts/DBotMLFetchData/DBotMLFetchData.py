@@ -692,9 +692,14 @@ def main():
     else:
         tag_field = demisto.args().get('tagField', None)
         data = extract_data_from_incidents(incidents, tag_field)
-        encoded_data = json.dumps(data).encode('utf-8', errors='ignore')
-        compressed_data = zlib.compress(encoded_data, 4)
-        compressed_hr_data = b64encode(compressed_data).decode('utf-8')
+        data_str = json.dumps(data)
+        compress = demisto.args().get('compress', 'True') == 'True'
+        if compress:
+            encoded_data = data_str.encode('utf-8', errors='ignore')
+            compressed_data = zlib.compress(encoded_data, 4)
+            compressed_hr_data = b64encode(compressed_data).decode('utf-8')
+        else:
+            compressed_hr_data = data_str
         res = {'PayloadVersion': FETCH_DATA_VERSION, 'PayloadData': compressed_hr_data,
                'Execution Time': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}
         return_json_entry(res)

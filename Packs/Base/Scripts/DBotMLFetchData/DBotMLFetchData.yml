@@ -78,6 +78,17 @@ args:
   name: tagField
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'True'
+  description: Whether to compress the fetched data. Default if True
+  isArray: false
+  name: compress
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
 comment: Collect telemetry data from the environment.
 commonfields:
   id: DBotMLFetchData
