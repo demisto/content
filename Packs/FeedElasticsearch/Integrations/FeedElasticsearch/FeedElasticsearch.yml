@@ -37,6 +37,7 @@ configuration:
   type: 15
 - display: Fetch indicators
   name: feed
+  defaultvalue: 'true'
   required: false
   type: 8
 - additionalinfo: Determine how far to look back for fetched indicators (<number>
@@ -167,7 +168,7 @@ script:
     description: Gets indicators available in the configured Elasticsearch database.
     execution: false
     name: es-get-indicators
-  dockerimage: demisto/elasticsearch:1.0.0.9516
+  dockerimage: demisto/elasticsearch:1.0.0.10134
   feed: true
   isfetch: false
   longRunning: false

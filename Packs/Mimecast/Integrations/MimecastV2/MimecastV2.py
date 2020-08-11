@@ -1647,8 +1647,12 @@ def download_attachment_request(attachment_id):
     }
 
     response = http_request('POST', api_endpoint, str(payload), is_file=True)
-    if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    try:
+        json_response = response.json()
+        if json_response.get('fail'):
+            return_error(json_response.get('fail', [{}])[0].get('errors'))
+    except ValueError:
+        pass
     return response.content
 
 
