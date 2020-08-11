@@ -564,7 +564,6 @@ def print_packs_summary(packs_list):
                      or pack.status == PackStatus.FAILED_DETECTING_MODIFIED_FILES.name]
     failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
 
-    add_pr_comment('test')
     print("\n")
     print("------------------------------------------ Packs Upload Summary ------------------------------------------")
     print(f"Total number of packs: {len(packs_list)}")
@@ -663,6 +662,7 @@ def handle_github_response(response):
 
 
 def main():
+    add_pr_comment('test')
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path
