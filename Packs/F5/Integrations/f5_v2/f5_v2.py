@@ -1,4 +1,4 @@
-import time
+from typing import Tuple
 import requests
 
 import demistomock as demisto
@@ -8,11 +8,26 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+BASIC_FIELDS = ['name', 'id', 'type', 'protocol', 'method', 'actAsMethod', 'selfLink',
+                'queryStringLength', 'checkRequestLength', 'enforcementType',
+                'ipAddress', 'ipMask', 'blockRequests', 'ignoreAnomalies', 'neverLogRequests',
+                'neverLearnRequests', 'trustedByPolicyBuilder', 'includeSubdomains',
+                'description', 'mandatoryBody', 'clickjackingProtection', 'isBase64',
+                'performStaging', 'createdBy', 'lastUpdateMicros', 'active', 'allowed', 'isAllowed']
+
+BASIC_OBJECT_FIELDS = ['name', 'id', 'type', 'protocol', 'method', 'actAsMethod', 'selfLink',
+                       'queryStringLength', 'checkRequestLength', 'responseCheck', 'urlLength',
+                       'checkUrlLength', 'postDataLength', 'enforcementType', 'isBase64',
+                       'description', 'includeSubdomains', 'clickjackingProtection',
+                       'ipAddress', 'ipMask', 'blockRequests', 'ignoreAnomalies',
+                       'neverLogRequests', 'neverLearnRequests', 'trustedByPolicyBuilder',
+                       'includeSubdomains', 'createdBy', 'performStaging', 'allowed', 'isAllowed',
+                       'lastUpdateMicros']
 
 
 class Client(BaseClient):
     """
-    Client for f5 RESTful API.
+    Client for f5 RESTful API!.
     Args:
           base_url (str): f5 server url.
           token (str): f5 user token.
@@ -47,7 +62,7 @@ class Client(BaseClient):
             return policy_name
         return response.partition('policies/')[2].partition('/')[0]
 
-    def get_id(self, md5: str, method_name: str, action: str):
+    def get_id(self, md5: str, method_name: str, action: str, compare_value: str = 'name'):
         """
             Get the ID of a specific element (similar to getting the ID of the policy).
 
@@ -55,63 +70,20 @@ class Client(BaseClient):
                 md5(str): MD5 hash of the policy the element is a member of.
                 method_name(str): Name of the element the ID is from.
                 action(str): endpoint where the element resides.
+                compare_value(str): Dict field to compare values in (name, ipAddress etc).
 
             Returns:
                 str: MD5 hash (can also be called ID) of the element.
         """
+
         response = self._http_request(method='GET', url_suffix=f'asm/policies/{md5}/{action}',
                                       headers=self.headers, params={})
         index = -1
         for element in response.get('items'):
-            if element.get('name') == method_name:
+            if element.get(compare_value) == method_name:
                 index = response.get('items').index(element)
         if index == -1:
             return method_name
-        return (response.get('items')[index]).get('id')
-
-    def get_blocking_settings_id(self, md5: str, category: str, description: str):
-        """
-            Same as get_id, but for elements inside blocking_settings.
-
-            Args:
-                md5(str): MD5
-                category(str): Category that the specific setting is in.
-                description(str): Description of the policy (used like name).
-
-            Returns:
-                str: ID of the specific element, ready to be used for reference.
-        """
-        response = self._http_request(method='GET', url_suffix=f'asm/policies/'
-                                                               f'{md5}/blocking-settings'
-                                                               f'/{category}',
-                                      headers=self.headers, params={})
-        index = -1
-        for element in response.get('items'):
-            if element.get('description') == description:
-                index = response.get('items').index(element)
-        if index == -1:
-            return description
-        return (response.get('items')[index]).get('id')
-
-    def get_ip_id(self, md5: str, ip_address: str):
-        """
-            Same as get_id, but for elements inside /whitelist_ips/.
-
-            Args:
-                md5(str): MD5
-                ip_address(str): IP address (used like name)
-
-            Returns:
-                str: ID of the specific IP, ready to be used for reference.
-                """
-        response = self._http_request(method='GET', url_suffix=f'asm/policies/{md5}/whitelist-ips',
-                                      headers=self.headers, params={})
-        index = -1
-        for element in response.get('items'):
-            if element.get('ipAddress') == ip_address:
-                index = response.get('items').index(element)
-        if index == -1:
-            return ip_address
         return (response.get('items')[index]).get('id')
 
     def get_policy_self_link(self, policy_name):
@@ -195,7 +167,7 @@ class Client(BaseClient):
         md5_hash = self.get_policy_md5(policy_name)
         response = self._http_request(method='GET', headers=self.headers, json_data={},
                                       url_suffix=f'asm/policies/{md5_hash}/methods')
-        return format_list_policy_methods(response)
+        return format_list_policy_functions(response, 'PolicyMethods')
 
     def f5_add_policy_methods_command(self, policy_name: str, new_method_name: str,
                                       act_as_method: str):
@@ -212,7 +184,7 @@ class Client(BaseClient):
         body = {'name': new_method_name, 'actAsMethod': act_as_method.upper()}
         response = self._http_request(method='POST', headers=self.headers, json_data=body,
                                       url_suffix=f'asm/policies/{md5_hash}/methods')
-        return format_policy_methods_command(response)
+        return format_policy_object(response, 'PolicyMethods')
 
     def f5_update_policy_methods_command(self, policy_name: str, method_name: str,
                                          act_as_method: str):
@@ -230,7 +202,7 @@ class Client(BaseClient):
 
         response = self._http_request(method='PATCH', headers=self.headers, json_data=body,
                                       url_suffix=f'asm/policies/{md5_hash}/methods/{method_id}')
-        return format_policy_methods_command(response)
+        return format_policy_object(response, 'PolicyMethods')
 
     def f5_delete_policy_methods_command(self, policy_name: str, method_name: str):
         """
@@ -245,7 +217,7 @@ class Client(BaseClient):
         method_id = self.get_id(md5_hash, method_name, 'methods')
         response = self._http_request(method='DELETE', headers=self.headers, json_data={},
                                       url_suffix=f'asm/policies/{md5_hash}/methods/{method_id}')
-        return format_policy_methods_command(response)
+        return format_policy_object(response, 'PolicyMethods')
 
     def f5_list_policy_file_types_command(self, policy_name: str):
         """
@@ -257,7 +229,7 @@ class Client(BaseClient):
         md5_hash = self.get_policy_md5(policy_name)
         response = self._http_request(method='GET', headers=self.headers, json_data={},
                                       url_suffix=f'asm/policies/{md5_hash}/filetypes')
-        return format_list_policy_file_type(response)
+        return format_list_policy_functions(response, 'FileType')
 
     def f5_add_policy_file_types_command(self, policy_name: str, new_file_type: str,
                                          query_string_length: int,
@@ -289,7 +261,7 @@ class Client(BaseClient):
 
         response = self._http_request(method='POST', headers=self.headers, json_data=body,
                                       url_suffix=f'asm/policies/{md5_hash}/filetypes')
-        return format_file_type_command(response)
+        return format_policy_object(response, 'FileType')
 
     def f5_update_policy_file_types_command(self, policy_name: str, file_type_name: str,
                                             query_string_length: int,
@@ -323,7 +295,7 @@ class Client(BaseClient):
 
         response = self._http_request(method='PATCH', headers=self.headers, json_data=body,
                                       url_suffix=f'asm/policies/{md5}/filetypes/{file_type_id}')
-        return format_file_type_command(response)
+        return format_policy_object(response, 'FileType')
 
     def f5_delete_policy_file_types_command(self, policy_name: str, file_type_name: str):
         """
@@ -337,7 +309,7 @@ class Client(BaseClient):
         file_type_id = self.get_id(md5, file_type_name, 'filetypes')
         response = self._http_request(method='DELETE', headers=self.headers, json_data={},
                                       url_suffix=f'asm/policies/{md5}/filetypes/{file_type_id}')
-        return format_file_type_command(response)
+        return format_policy_object(response, 'FileType')
 
     def f5_list_policy_hostname_command(self, policy_name: str):
         """
@@ -349,7 +321,7 @@ class Client(BaseClient):
         md5 = self.get_policy_md5(policy_name)
         response = self._http_request(method='GET', headers=self.headers, json_data={},
                                       url_suffix=f'asm/policies/{md5}/host-names')
-        return format_policy_hostnames_command(response)
+        return format_list_policy_functions(response, 'Hostname')
 
     def f5_add_policy_hostname_command(self, policy_name: str, name: str,
                                        include_subdomains: bool):
@@ -366,7 +338,7 @@ class Client(BaseClient):
                                       json_data={'name': name,
                                                  'includeSubdomains': include_subdomains},
                                       url_suffix=f'asm/policies/{md5}/host-names')
-        return format_policy_hostname_command(response)
+        return format_policy_object(response, 'Hostname')
 
     def f5_update_policy_hostname_command(self, policy_name: str, name: str,
                                           include_subdomains: bool):
@@ -383,7 +355,7 @@ class Client(BaseClient):
         response = self._http_request(method='PATCH', headers=self.headers,
                                       json_data={'includeSubdomains': include_subdomains},
                                       url_suffix=f'asm/policies/{md5}/host-names/{hostname_id}')
-        return format_policy_hostname_command(response)
+        return format_policy_object(response, 'Hostname')
 
     def f5_delete_policy_hostname_command(self, policy_name: str, name: str):
         """
@@ -397,7 +369,7 @@ class Client(BaseClient):
         hostname_id = self.get_id(md5, name, 'host-names')
         response = self._http_request(method='DELETE', headers=self.headers,
                                       url_suffix=f'asm/policies/{md5}/host-names/{hostname_id}')
-        return format_policy_hostname_command(response)
+        return format_policy_object(response, 'Hostname')
 
     def f5_list_policy_blocking_settings_command(self, policy_name: str, endpoint: str):
         """
@@ -413,7 +385,7 @@ class Client(BaseClient):
         return format_policy_blocking_settings_list_command(response, endpoint)
 
     def f5_update_policy_blocking_settings_command(self, policy_name: str, endpoint: str,
-                                                   description: str, enabled=None, learn=True,
+                                                   description: str, enabled=None, learn=None,
                                                    alarm=None, block=None):
         """
             Update a specific BS element of a certain policy.
@@ -428,21 +400,19 @@ class Client(BaseClient):
                 block(bool): If possible, have the element block.
         """
         md5 = self.get_policy_md5(policy_name)
-        print(md5)
-        blocking_settings_id = self.get_blocking_settings_id(md5, endpoint, description)
+        endpoint = 'blocking-settings/' + endpoint
+        blocking_settings_id = self.get_id(md5, action=endpoint, method_name=description,
+                                           compare_value='description')
         json_body_start = {'enabled': enabled, 'learn': learn, 'alarm': alarm, 'block': block}
-
-        body = {}
-
+        json_body = {}
         for pair in json_body_start.items():
             if pair[1] is not None:
-                body.update({pair[0]: pair[1]})
+                json_body.update({pair[0]: pair[1]})
 
-        print(body)
-        url_suffix = f'asm/policies/{md5}/blocking-settings/{endpoint}/{blocking_settings_id}'
-        response = self._http_request(method='PATCH', headers=self.headers,
-                                      url_suffix=url_suffix, json_data=body)
-        return format_policy_blocking_settings_single_command(response, endpoint)
+        url_suffix = f'asm/policies/{md5}/{endpoint}/{blocking_settings_id}'
+        response = self._http_request(method='PATCH', url_suffix=url_suffix,
+                                      headers=self.headers, json_data=json_body)
+        return format_policy_blocking_settings_update_command(response, endpoint)
 
     def f5_list_policy_urls_command(self, policy_name: str):
         """
@@ -454,10 +424,11 @@ class Client(BaseClient):
         md5 = self.get_policy_md5(policy_name)
         response = self._http_request(method='GET', headers=self.headers, json_data={},
                                       url_suffix=f'asm/policies/{md5}/urls')
-        return format_list_policy_urls_command(response)
+        return format_list_policy_functions(response, 'Url')
 
-    def f5_add_policy_url_command(self, policy_name: str, name: str, method: str, protocol: str,
-                                  url_type: str, description: str = '', is_allowed=True):
+    def f5_add_policy_url_command(self, policy_name: str, name: str, protocol: str, url_type: str,
+                                  is_allowed: bool, clickjacking_protection: bool = None,
+                                  method: str = None, description: str = ''):
         """
             Create a new URL in a selected policy.
 
@@ -468,18 +439,23 @@ class Client(BaseClient):
                 protocol(str): HTTP or HTTPS
                 description(str): Optional descrption for the URL.
                 url_type(str): Explicit or wildcard.
-                is_allowed(str): Whether or not the URL is allowed
+                is_allowed(str): Whether or not the URL is allowed.
+                clickjacking_protection(str): Whether or not to enable clickjacking protection.
+
         """
         md5 = self.get_policy_md5(policy_name)
-        json_body = {'name': name, 'protocol': protocol, 'description': description,
-                     'method': method, 'type': url_type, 'isAllowed': is_allowed}
+        base_dictionary = {'name': name, 'protocol': protocol, 'description': description,
+                           'method': method, 'type': url_type, 'isAllowed': is_allowed,
+                           'clickjackingProtection': clickjacking_protection}
+        json_body = {key: value for key, value in base_dictionary.items() if value is not None}
+
         response = self._http_request(method='POST', headers=self.headers, json_data=json_body,
                                       url_suffix=f'asm/policies/{md5}/urls')
-        return format_policy_url_command(response)
+        return format_policy_object(response, 'Url')
 
     def f5_update_policy_url_command(self, policy_name: str, name: str, perform_staging=None,
                                      description=None, mandatory_body=None,
-                                     clickjacking_protection=None, url_isreferrer=None):
+                                     url_isreferrer=None):
         """
             Update an existing URL in a policy.
 
@@ -489,24 +465,19 @@ class Client(BaseClient):
                 perform_staging(str): Whether or not to stage the URL.
                 description(str): Optional new description.
                 mandatory_body(str): Whether or not the body is mandatory
-                clickjacking_protection(str): Whether or not to enable clickjacking protection
                 url_isreferrer(str): Whether or not the URL is a referrer.
         """
         md5 = self.get_policy_md5(policy_name)
         url_id = self.get_id(md5, name, 'urls')
-        json_body_start = {'performStaging': perform_staging, 'description': description,
+        base_dictionary = {'performStaging': perform_staging, 'description': description,
                            'mandatoryBody': mandatory_body,
-                           'clickjackingProtection': clickjacking_protection,
                            'urlIsReferrer': url_isreferrer}
-        json_body = {}
-        for pair in json_body_start.items():
-            if pair[1] is not None:
-                json_body.update({pair[0]: pair[1]})
 
+        json_body = {key: value for key, value in base_dictionary.items() if value is not None}
         response = self._http_request(method='PATCH', headers=self.headers, json_data=json_body,
                                       url_suffix=f'asm/policies/{md5}/urls/{url_id}')
 
-        return format_policy_url_command(response)
+        return format_policy_object(response, 'Url')
 
     def f5_delete_policy_url_command(self, policy_name: str, name: str):
         """
@@ -520,7 +491,7 @@ class Client(BaseClient):
         url_id = self.get_id(md5, name, 'urls')
         response = self._http_request(method='DELETE', headers=self.headers, json_data={},
                                       url_suffix=f'asm/policies/{md5}/urls/{url_id}')
-        return format_policy_url_command(response)
+        return format_policy_object(response, 'Url')
 
     def f5_list_policy_cookies_command(self, policy_name: str):
         """
@@ -532,7 +503,7 @@ class Client(BaseClient):
         md5_hash = self.get_policy_md5(policy_name)
         response = self._http_request(method='GET', headers=self.headers, json_data={},
                                       url_suffix=f'asm/policies/{md5_hash}/cookies')
-        return format_list_cookies(response)
+        return format_list_policy_functions(response, 'Cookies')
 
     def f5_add_policy_cookies_command(self, policy_name: str, new_cookie_name: str,
                                       perform_staging: bool):
@@ -550,12 +521,12 @@ class Client(BaseClient):
 
         response = self._http_request(method='POST', headers=self.headers, json_data=body,
                                       url_suffix=f'asm/policies/{md5_hash}/cookies')
-        return format_cookies_command(response, 'adding')
+        return format_policy_object(response, 'Cookies')
 
     def f5_update_policy_cookies_command(self, policy_name: str, cookie_name: str,
                                          perform_staging: bool):
         """
-        Update a given file type from a certain policy.
+        Update a given cookie from a certain policy.
 
         Args:
             policy_name(str): The policy name.
@@ -564,15 +535,14 @@ class Client(BaseClient):
         """
 
         md5_hash = self.get_policy_md5(policy_name)
-        print(md5_hash)
-        file_type_id = self.get_id(md5_hash, cookie_name, 'policy-cookies')
+        file_type_id = self.get_id(md5_hash, cookie_name, 'cookies')
 
         body = {'name': cookie_name,
                 'performStaging': perform_staging}
 
         response = self._http_request(method='PATCH', headers=self.headers, json_data=body,
                                       url_suffix=f'asm/policies/{md5_hash}/cookies/{file_type_id}')
-        return format_cookies_command(response, 'updating')
+        return format_policy_object(response, 'Cookies')
 
     def f5_delete_policy_cookies_command(self, policy_name: str, cookie_name: str):
         """
@@ -587,7 +557,7 @@ class Client(BaseClient):
         file_type_id = self.get_id(md5, cookie_name, 'cookies')
         response = self._http_request(method='DELETE', headers=self.headers, json_data={},
                                       url_suffix=f'asm/policies/{md5}/cookies/{file_type_id}')
-        return format_cookies_command(response, 'deleting')
+        return format_policy_object(response, 'Cookies')
 
     def f5_list_policy_whitelist_ips_command(self, policy_name: str):
         """
@@ -600,14 +570,13 @@ class Client(BaseClient):
         md5_hash = self.get_policy_md5(policy_name)
         response = self._http_request(method='GET', headers=self.headers, json_data={},
                                       url_suffix=f'asm/policies/{md5_hash}/whitelist-ips')
-        return format_policy_whitelist_ips_command(response)
+        return format_list_policy_functions(response, 'WhitelistIP')
 
     def f5_add_policy_whitelist_ips_command(self, policy_name: str, ip_address: str,
                                             ip_mask=None, trusted_by_builder=None,
-                                            ignore_brute_detection=None,
-                                            description=None, block_requests=None,
-                                            ignore_learning=None, never_log=None,
-                                            ignore_intelligence=None):
+                                            ignore_brute_detection=None, description=None,
+                                            block_requests=None, ignore_learning=None,
+                                            never_log=None, ignore_intelligence=None):
         """
             Create a new whitelisted IP for a certain policy.
 
@@ -623,21 +592,21 @@ class Client(BaseClient):
                 never_log(bool): Whether or not to never log from the IP.
                 ignore_intelligence(bool): Whether or not to ignore intelligence gathered on the IP.
         """
+
         md5_hash = self.get_policy_md5(policy_name)
-        json_body_start = {'ipAddress': ip_address, 'ipMask': ip_mask,
+        base_dictionary = {'ipAddress': ip_address, 'ipMask': ip_mask,
                            'ignoreIpReputation': ignore_intelligence,
                            'blockRequests': block_requests,
                            'ignoreAnomalies': ignore_brute_detection, 'description': description,
                            'neverLearnRequests': ignore_learning, 'neverLogRequests': never_log,
                            'trustedByPolicyBuilder': trusted_by_builder}
-        json_body = {}
-        for pair in json_body_start.items():
-            if pair[1] is not None:
-                json_body.update({pair[0]: pair[1]})
+
+        json_body = {key: value for key, value in base_dictionary.items() if value is not None}
+
         response = self._http_request(method='POST', headers=self.headers,
                                       url_suffix=f'asm/policies/{md5_hash}/whitelist-ips/',
                                       json_data=json_body)
-        return format_policy_whitelist_ip_command(response, 'created')
+        return format_policy_object(response, 'WhitelistIP')
 
     def f5_update_policy_whitelist_ips_command(self, policy_name: str, ip_address: str,
                                                trusted_by_builder=None,
@@ -660,20 +629,19 @@ class Client(BaseClient):
                 ignore_intelligence(bool): Whether or not to ignore intelligence gathered on the IP.
         """
         md5_hash = self.get_policy_md5(policy_name)
-        ip_id = self.get_ip_id(md5_hash, ip_address)
-        json_body_start = {'ignoreIpReputation': ignore_intelligence,
+        ip_id = self.get_id(md5_hash, ip_address, 'whitelist-ips', compare_value='ipAddress')
+        base_dictionary = {'ignoreIpReputation': ignore_intelligence,
                            'blockRequests': block_requests,
                            'ignoreAnomalies': ignore_brute_detection, 'description': description,
                            'neverLearnRequests': ignore_learning, 'neverLogRequests': never_log,
                            'trustedByPolicyBuilder': trusted_by_builder}
-        json_body = {}
-        for pair in json_body_start.items():
-            if pair[1] is not None:
-                json_body.update({pair[0]: pair[1]})
+
+        json_body = {key: value for key, value in base_dictionary.items() if value is not None}
         response = self._http_request(method='PATCH', headers=self.headers,
                                       url_suffix=f'asm/policies/{md5_hash}/whitelist-ips/{ip_id}',
                                       json_data=json_body)
-        return format_policy_whitelist_ip_command(response, 'updated')
+
+        return format_policy_object(response, 'WhitelistIP')
 
     def f5_delete_policy_whitelist_ips_command(self, policy_name: str, ip_address: str):
         """
@@ -684,10 +652,10 @@ class Client(BaseClient):
                 ip_address(str): IP address.
         """
         md5_hash = self.get_policy_md5(policy_name)
-        ip_id = self.get_ip_id(md5_hash, ip_address)
+        ip_id = self.get_id(md5_hash, ip_address, 'whitelist-ips', compare_value='ipAddress')
         response = self._http_request(method='DELETE', headers=self.headers, json_data={},
                                       url_suffix=f'asm/policies/{md5_hash}/whitelist-ips/{ip_id}')
-        return format_policy_whitelist_ip_command(response, 'deleted')
+        return format_policy_object(response, 'WhitelistIP')
 
 
 def test_module(server_address, username, password, verify_certificate):
@@ -711,7 +679,7 @@ def login(server_ip: str, username: str, password: str, verify_certificate: bool
     return res.json().get('token').get('token')
 
 
-def format_list_policies(result: dict):
+def format_list_policies(result: dict) -> Tuple[str, dict, dict]:
     """
         Formats f5 policy list Demisto's outputs.
 
@@ -729,14 +697,15 @@ def format_list_policies(result: dict):
         return 'No data to show.', {}, result
 
     printable_result = []
+    current_object_data = {}
     for item in result:
         current_object_data = {
             'name': item.get('name'),
             'id': item.get('id'),
             'type': item.get('type'),
-            'creator-name': item.get('creatorName'),
-            'created-time': item.get('createdDatetime'),
-            'enforcement-mode': item.get('enforcementMode'),
+            'creatorName': item.get('creatorName'),
+            'createdTime': item.get('createdDatetime'),
+            'enforcementMode': item.get('enforcementMode'),
             'active': item.get('active'),
         }
         printable_result.append(current_object_data)
@@ -748,7 +717,7 @@ def format_list_policies(result: dict):
     return readable_output, outputs, result
 
 
-def format_apply_policy(result):
+def format_apply_policy(result) -> Tuple[str, dict, dict]:
     """
         Formats f5 policy apply Demisto's outputs.
 
@@ -761,10 +730,10 @@ def format_apply_policy(result):
         return 'No data to show.', {}, result
 
     outputs = {'f5.ApplyPolicy(val.uid && val.uid == obj.uid)': {
-        'policy-reference': result.get('policyReference').get('link'),
+        'policyReference': result.get('policyReference').get('link'),
         'status': result.get('status'),
         'id': result.get('id'),
-        'start-time': result.get('startTime'),
+        'startTime': result.get('startTime'),
         'kind': result.get('kind'),
     }}
 
@@ -774,7 +743,7 @@ def format_apply_policy(result):
     return readable_output, outputs, result
 
 
-def format_export_policy(result):
+def format_export_policy(result) -> Tuple[str, dict, dict]:
     """
         Formats f5 policy export Demisto's outputs.
 
@@ -790,7 +759,7 @@ def format_export_policy(result):
     outputs = {'f5.ExportPolicy(val.uid && val.uid == obj.uid)': {
         'status': result.get('status'),
         'id': result.get('id'),
-        'start-time': result.get('startTime'),
+        'startTime': result.get('startTime'),
         'kind': result.get('kind'),
         'format': result.get('format'),
         'filename': result.get('filename'),
@@ -805,7 +774,7 @@ def format_export_policy(result):
     return readable_output, outputs, result
 
 
-def format_delete_policy(result):
+def format_delete_policy(result) -> Tuple[str, dict, dict]:
     """
         Formats f5 delete policy to Demisto's outputs.
 
@@ -820,21 +789,26 @@ def format_delete_policy(result):
     if not result:
         return 'No data to show.', {}, result
 
-    outputs = {'f5.delete-policy(val.uid && val.uid == obj.uid)': {
+    outputs = {'f5.DeletePolicy(val.uid && val.uid == obj.uid)': {
         'name': result.get('name'),
         'id': result.get('id'),
-        'self-link': result.get('selfLink'),
+        'selfLink': result.get('selfLink'),
     }}
 
-    table_data = outputs['f5.delete-policy(val.uid && val.uid == obj.uid)']
+    table_data = outputs['f5.DeletePolicy(val.uid && val.uid == obj.uid)']
     readable_output = tableToMarkdown('f5 data for deleting policy:', table_data,
-                                      ['name', 'id', 'self-link'], removeNull=True)
+                                      ['name', 'id', 'selfLink'], removeNull=True)
     return readable_output, outputs, result
 
 
-def format_list_policy_methods(result: dict):
+def format_list_policy_functions(result: dict,
+                                 context_path_endpoint: str) -> Tuple[str, dict, dict]:
     """
-        Formats f5 policy methods to Demisto's outputs.
+        Formats all f5 list functions to Demisto's outputs.
+
+    Args:
+        result(dict): The response from API.
+        context_path_endpoint(str): The context path endpoint to format.
 
     Returns:
         str: the markdown to display inside Demisto.
@@ -849,70 +823,28 @@ def format_list_policy_methods(result: dict):
 
     printable_result = []
     for item in result:
-        current_object_data = {
-            'name': item.get('name'),
-            'act-as-method': item.get('actAsMethod'),
-            'id': item.get('id'),
-            'self-link': item.get('selfLink'),
-            'kind': item.get('kind'),
-            'last-updated': format_date(item.get('lastUpdateMicros')),
-        }
+        current_object_data = {}
+        for endpoint in BASIC_FIELDS:
+            if endpoint == 'lastUpdateMicros':
+                current_object_data[endpoint] = format_date(item.get(endpoint))
+            else:
+                current_object_data[endpoint] = item.get(endpoint)
         printable_result.append(current_object_data)
 
-    outputs = {'f5.PolicyMethods(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown('f5 data for listing all policy methods:', printable_result,
-                                      ['name', 'act-as-method', 'id', 'self-link', 'kind',
-                                       'last-updated'], removeNull=True)
+    outputs = {f'f5.{context_path_endpoint}(val.uid && val.uid == obj.uid)': printable_result}
+    readable_output = tableToMarkdown(f'f5 data for {context_path_endpoint}:',
+                                      printable_result, BASIC_FIELDS, removeNull=True)
     return readable_output, outputs, result
 
 
-def format_list_policy_file_type(result: dict):
+def format_policy_object(result: dict,
+                         context_path_endpoint: str) -> Tuple[str, dict, dict]:
     """
-        Formats f5 policy file type to Demisto's outputs.
+        Formats all f5 add, update and remove functions to Demisto's outputs.
 
     Args:
-        result (dict): the report from f5.
-
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from f5 (used for debugging).
-    """
-    if not result:
-        return 'No data to show.', {}, result
-    result = result.get('items')
-    if not result:
-        return 'No data to show.', {}, result
-
-    printable_result = []
-    for item in result:
-        current_object_data = {
-            'name': item.get('name'),
-            'id': item.get('id'),
-            'self-link': item.get('selfLink'),
-            'query-string-length': item.get('queryStringLength'),
-            'check-request-length': item.get('checkRequestLength'),
-            'kind': item.get('kind'),
-            'allowed': item.get('allowed'),
-            'last-updated': format_date(item.get('lastUpdateMicros')),
-        }
-        printable_result.append(current_object_data)
-
-    outputs = {'f5.FileTypes(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown('Listing all f5 file type:', printable_result,
-                                      ['name', 'id', 'self-link', 'query-string-length',
-                                       'check-request-length',
-                                       'kind', 'allowed', 'last-updated'], removeNull=True)
-
-    return readable_output, outputs, result
-
-
-def format_policy_methods_command(result: dict):
-    """
-        Formats f5 policy methods to Demisto's outputs.
-
-    Args:
-        result (dict): the report from f5.
+        result(dict): The response from API.
+        context_path_endpoint(str): The context path endpoint to format.
 
     Returns:
         str: the markdown to display inside Demisto.
@@ -922,129 +854,21 @@ def format_policy_methods_command(result: dict):
     if not result:
         return 'No data to show.', {}, result
 
-    outputs = {'f5.PolicyMethods(val.uid && val.uid == obj.uid)': {
-        'name': result.get('name'),
-        'id': result.get('id'),
-        'act-as-method': result.get('actAsMethod'),
-        'self-link': result.get('selfLink'),
-        'kind': result.get('kind'),
-    }}
-
-    table_data = outputs['f5.PolicyMethods(val.uid && val.uid == obj.uid)']
-    readable_output = tableToMarkdown('f5 data for policy methods:',
-                                      table_data, ['name', 'act-as-method', 'id', 'self-link',
-                                                   'kind'], removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_file_type_command(result: dict):
-    """
-        Formats f5 policy methods to Demisto's outputs.
-
-    Args:
-        result (dict): the report from f5.
-
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from f5 (used for debugging).
-    """
-
-    if not result:
-        return 'No data to show.', {}, result
-
-    outputs = {'f5.FileType(val.uid && val.uid == obj.uid)': {
-        'name': result.get('name'),
-        'id': result.get('id'),
-        'self-link': result.get('selfLink'),
-        'query-string-length': result.get('queryStringLength'),
-        'check-request-length': result.get('checkRequestLength'),
-        'response-check': result.get('responseCheck'),
-        'check-url-length': result.get('checkUrlLength'),
-        'post-data-length': result.get('postDataLength'),
-        'url-length': result.get('urlLength'),
-        'perform-staging': result.get('performStaging'),
-        'allowed': result.get('allowed'),
-        'last-updated': format_date(result.get('lastUpdateMicros')),
-    }}
-    table_data = outputs['f5.FileType(val.uid && val.uid == obj.uid)']
-
-    readable_output = tableToMarkdown('f5 data for file types:', table_data,
-                                      ['name', 'id', 'self-link', 'query-string-length',
-                                       'check-request-length',
-                                       'response-check', 'check-url-length', 'url-length',
-                                       'post-data-length',
-                                       'perform-staging', 'allowed', 'last-updated'],
-                                      removeNull=True)
+    printable_result = {}
+    for endpoint in BASIC_OBJECT_FIELDS:
+        if endpoint == 'lastUpdateMicros':
+            printable_result[endpoint] = format_date(result.get('lastUpdateMicros'))
+        else:
+            printable_result[endpoint] = result.get(endpoint)
+    outputs = {f'f5.{context_path_endpoint}(val.uid && val.uid == obj.uid)': printable_result}
+    readable_output = tableToMarkdown(f'f5 data for listing all {context_path_endpoint}:',
+                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
 
     return readable_output, outputs, result
 
 
-def format_policy_hostname_command(result: dict):
-    """
-            Formats f5 policy hostnames to Demisto's outputs.
-
-        Args:
-            result (dict): the report from f5.
-
-        Returns:
-            str: the markdown to display inside Demisto.
-            dict: the context to return into Demisto.
-            dict: the report from f5 (used for debugging).
-        """
-    if not result:
-        return 'Nothing to show', {}, result
-    printable_result = {
-        'name': result.get('name'),
-        'id': result.get('id'),
-        'created-by': result.get('createdBy'),
-        'self-link': result.get('selfLink'),
-        'include-subdomains': result.get('includeSubdomains'),
-        'last-update': format_date(result.get('lastUpdateMicros')),
-    }
-    outputs = {'f5.Hostname(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown("f5 information about hosts", printable_result,
-                                      headers=['id', 'name', 'created-by', 'include-subdomains',
-                                               'kind', 'self-link', 'last-update'],
-                                      removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_policy_hostnames_command(result: dict):
-    """
-                Formats f5 policy hostname to Demisto's outputs.
-
-            Args:
-                result (dict): the report from f5.
-
-            Returns:
-                str: the markdown to display inside Demisto.
-                dict: the context to return into Demisto.
-                dict: the report from f5 (used for debugging).
-            """
-    entries = result.get('items')
-    if not entries:
-        return 'Nothing to show', {}, result
-    printable_result = []
-    for item in entries:
-        current_object_data = {
-            'name': item.get('name'),
-            'id': item.get('id'),
-            'created-by': item.get('createdBy'),
-            'self-link': item.get('selfLink'),
-            'include-subdomains': item.get('includeSubdomains'),
-            'last-update': format_date(item.get('lastUpdateMicros')),
-        }
-        printable_result.append(current_object_data)
-    outputs = {'f5.Hostname(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown("f5 information about hosts", printable_result,
-                                      headers=['id', 'name', 'created-by', 'include-subdomains',
-                                               'kind', 'self-link', 'last-update'],
-                                      removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_policy_blocking_settings_list_command(result: dict, endpoint: str):
+def format_policy_blocking_settings_list_command(result: dict,
+                                                 endpoint: str) -> Tuple[str, dict, dict]:
     """
         Format multiple BS (Blocking Setting) entries for demisto.
         Args:
@@ -1056,14 +880,18 @@ def format_policy_blocking_settings_list_command(result: dict, endpoint: str):
                 dict: the context to return into Demisto.
                 dict: the report from f5 (used for debugging).
     """
+    if not result:
+        return 'Nothing to show', {}, result
+    result = result.get('items')
+    if not result:
+        return 'Nothing to show', {}, result
+
+    printable_result = []
     references = {'evasions': 'evasionReference', 'violations': 'violationReference',
                   'web-services-securities': 'webServicesSecurityReference',
                   'http-protocols': 'httpProtocolReference'}
-    entries = result.get('items')
-    if not entries:
-        return 'Nothing to show', {}, result
-    printable_result = []
-    for item in entries:
+
+    for item in result:
         current_object_data = {
             'description': item.get('description'),
             'learn': item.get('learn'),
@@ -1087,13 +915,14 @@ def format_policy_blocking_settings_list_command(result: dict, endpoint: str):
     readable_output = tableToMarkdown(f'{endpoint.capitalize()} for selected policy',
                                       printable_result,
                                       headers=['id', 'description', 'enabled', 'learn', 'alarm',
-                                               'block', 'kind', 'reference',
-                                               'self-link', 'section-reference', 'last-update'],
+                                               'block', 'kind', 'reference', 'self-link',
+                                               'section-reference', 'last-update'],
                                       removeNull=True)
     return readable_output, outputs, result
 
 
-def format_policy_blocking_settings_single_command(result: dict, endpoint: str):
+def format_policy_blocking_settings_update_command(result: dict,
+                                                   endpoint: str) -> Tuple[str, dict, dict]:
     """
         Format a single BS (Blocking Setting) element for demisto.
 
@@ -1106,6 +935,10 @@ def format_policy_blocking_settings_single_command(result: dict, endpoint: str):
                 dict: the context to return into Demisto.
                 dict: the report from f5 (used for debugging).
     """
+
+    if not result:
+        return 'Nothing to show', {}, result
+
     references = {'evasions': 'evasionReference', 'violations': 'violationReference',
                   'web-services-securities': 'webServicesSecurityReference',
                   'http-protocols': 'httpProtocolReference'}
@@ -1133,238 +966,6 @@ def format_policy_blocking_settings_single_command(result: dict, endpoint: str):
                                       headers=['id', 'description', 'enabled', 'learn', 'alarm',
                                                'block', 'kind', 'reference', 'self-link',
                                                'section-reference', 'last-update'],
-                                      removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_list_policy_urls_command(result: dict):
-    """
-        Formats multiple resource URLs for demisto
-        Args:
-            result(dict): API response from F5.
-
-        Returns:
-                str: the markdown to display inside Demisto.
-                dict: the context to return into Demisto.
-                dict: the report from f5 (used for debugging).
-    """
-    entries = result.get('items')
-    if not entries:
-        return 'Nothing to show', {}, result
-    printable_result = []
-    for item in entries:
-        current_object = {'id': item.get('id'), 'name': item.get('name'),
-                          'description': item.get('description'), 'protocol': item.get('protocol'),
-                          'type': item.get('type'), 'method': item.get('method'),
-                          'is-allowed': item.get('isAllowed'),
-                          'clickjacking-protection': item.get('clickjackingProtection'),
-                          'perform-staging': item.get('performStaging'),
-                          'mandatory-body': item.get('mandatoryBody'),
-                          'self-link': item.get('selfLink'),
-                          'last-update': format_date(item.get('lastUpdateMicros'))}
-        printable_result.append(current_object)
-    outputs = {'f5.Url(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown("URL for selected policy", printable_result,
-                                      headers=['id', 'name', 'description', 'protocol', 'type',
-                                               'method', 'is-allowed',
-                                               'clickjacking-protection', 'perform-staging',
-                                               'mandatory-body', 'self-link',
-                                               'last-update'], removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_policy_url_command(result: dict):
-    """
-        Formats a single resource URL for demisto
-        Args:
-            result(dict): API response from F5.
-
-        Returns:
-                str: the markdown to display inside Demisto.
-                dict: the context to return into Demisto.
-                dict: the report from f5 (used for debugging).
-    """
-    current_object = {'id': result.get('id'),
-                      'name': result.get('name'),
-                      'description': result.get('description'),
-                      'protocol': result.get('protocol'),
-                      'type': result.get('type'),
-                      'method': result.get('method'),
-                      'is-allowed': result.get('isAllowed'),
-                      'clickjacking-protection': result.get('clickjackingProtection'),
-                      'perform-staging': result.get('performStaging'),
-                      'mandatory-body': result.get('mandatoryBody'),
-                      'self-link': result.get('selfLink'),
-                      'last-update': format_date(result.get('lastUpdateMicros'))}
-    printable_result = current_object
-    outputs = {'f5.Url(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown("URL for selected policy", printable_result,
-                                      headers=['id', 'name', 'description', 'protocol', 'type',
-                                               'method', 'is-allowed',
-                                               'clickjacking-protection', 'perform-staging',
-                                               'mandatory-body', 'self-link',
-                                               'last-update'], removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_list_cookies(result: dict):
-    """
-        Formats f5 policy cookies to Demisto's outputs.
-
-    Args:
-        result (dict): the report from f5.
-
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from f5 (used for debugging).
-    """
-    if not result:
-        return 'No data to show.', {}, result
-
-    result = result.get('items')
-    if not result:
-        return 'No data to show.', {}, result
-
-    printable_result = []
-    for item in result:
-        current_object_data = {
-            'name': item.get('name'),
-            'id': item.get('id'),
-            'self-link': item.get('selfLink'),
-            'enforcement-type': item.get('enforcementType'),
-            'perform-staging': item.get('performStaging'),
-            'kind': item.get('kind'),
-            'is-base-64': item.get('isBase64'),
-            'created-by': item.get('createdBy'),
-        }
-        printable_result.append(current_object_data)
-    outputs = {'f5.Cookies(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown('f5 data for policy cookies:', printable_result,
-                                      ['name', 'id', 'self-link', 'enforcement-type',
-                                       'perform-staging', 'kind', 'is-base-64', 'created-by'],
-                                      removeNull=True)
-
-    return readable_output, outputs, result
-
-
-def format_cookies_command(result: dict, action: str):
-    """
-        Formats f5 policy cookie to Demisto's outputs.
-
-    Args:
-        result (dict): the report from f5.
-        action (str): The action taken on a policy cookie.
-
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from f5 (used for debugging).
-    """
-    if not result:
-        return 'No data to show.', {}, result
-
-    printable_result = {
-        'name': result.get('name'),
-        'id': result.get('id'),
-        'self-link': result.get('selfLink'),
-        'enforcement-type': result.get('enforcementType'),
-        'perform-staging': result.get('performStaging'),
-        'type': result.get('type'),
-        'is-base-64': result.get('isBase64'),
-        'created-by': result.get('createdBy'),
-    }
-    outputs = {'f5.Cookies(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown(f'f5 data for {action} policy cookies:', printable_result,
-                                      ['name', 'id', 'self-link', 'enforcement-type',
-                                       'perform-staging', 'type', 'is-base-64', 'created-by'],
-                                      removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_policy_whitelist_ips_command(result: dict):
-    """
-        Formats multiple whitelisted IPs for Demisto to show.
-
-        Args:
-            result (dict): the report from f5.
-
-        Returns:
-            str: the markdown to display inside Demisto.
-            dict: the context to return into Demisto.
-            dict: the report from f5 (used for debugging).
-    """
-
-    if not result:
-        return 'No data to show.', {}, result
-
-    result = result.get('items')
-    if not result:
-        return 'No data to show.', {}, result
-
-    printable_result = []
-    for item in result:
-        current_object_data = {
-            'id': item.get('id'),
-            'self-link': item.get('selfLink'),
-            'ip-address': item.get('ipAddress'),
-            'ip-mask': item.get('ipMask'),
-            'description': item.get('description'),
-            'block-requests': item.get('blockRequests'),
-            'ignore-anomalies': item.get('ignoreAnomalies'),
-            'never-log-requests': item.get('neverLogRequests'),
-            'never-learn-requests': item.get('neverLearnRequests'),
-            'trusted-by-policy-builder': item.get('trustedByPolicyBuilder'),
-            'last-update': format_date(item.get('lastUpdateMicros')),
-        }
-        printable_result.append(current_object_data)
-    outputs = {'f5.WhitelistIP(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown('f5 data for resource whitelisted IPs:', printable_result,
-                                      ['id', 'ip-address', 'ip-mask', 'description',
-                                       'block-requests', 'ignore-anomalies',
-                                       'never-log-requests', 'never-learn-requests',
-                                       'trusted-by-policy-builder', 'self-link', 'last-update'],
-                                      removeNull=True)
-
-    return readable_output, outputs, result
-
-
-def format_policy_whitelist_ip_command(result: dict, action: str):
-    """
-        Format a single whitelisted IP to demisto.
-
-        Args:
-            result (dict): the report from f5.
-            action (str): Created / Updated / Deleted.
-
-        Returns:
-            str: the markdown to display inside Demisto.
-            dict: the context to return into Demisto.
-            dict: the report from f5 (used for debugging).
-    """
-    if not result:
-        return 'No data to show.', {}, result
-
-    printable_result = {
-        'id': result.get('id'),
-        'self-link': result.get('selfLink'),
-        'ip-address': result.get('ipAddress'),
-        'ip-mask': result.get('ipMask'),
-        'description': result.get('description'),
-        'block-requests': result.get('blockRequests'),
-        'ignore-anomalies': result.get('ignoreAnomalies'),
-        'never-log-requests': result.get('neverLogRequests'),
-        'never-learn-requests': result.get('neverLearnRequests'),
-        'trusted-by-policy-builder': result.get('trustedByPolicyBuilder'),
-        'last-update': format_date(result.get('lastUpdateMicros')),
-    }
-    outputs = {'f5.WhitelistIP(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown(f'f5 data for {action} resource whitelisted IP:',
-                                      printable_result,
-                                      ['id', 'ip-address', 'ip-mask',
-                                       'description', 'block-requests', 'ignore-anomalies',
-                                       'never-log-requests', 'never-learn-requests',
-                                       'trusted-by-policy-builder', 'self-link', 'last-update'],
                                       removeNull=True)
     return readable_output, outputs, result
 

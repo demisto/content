@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: F5 firewall
+  id: F5_firewall
   version: -1
 configuration:
 - display: Server URL (e.g. 8.8.8.8)
@@ -28,8 +28,8 @@ configuration:
   required: false
   type: 8
 description: Manages F5 firewall
-display: f5 firewall v2
-name: F5 firewall
+display: f5 firewall - v2
+name: F5_firewall
 script:
   commands:
   - arguments:
@@ -559,13 +559,13 @@ script:
     execution: false
     name: f5-asm-policy-delete
     outputs:
-    - contextPath: f5.FileType.name
+    - contextPath: f5.DeletePolicy.name
       description: Name of the deleted policy.
       type: String
-    - contextPath: f5.FileType.id
+    - contextPath: f5.DeletePolicy.id
       description: ID of the deleted policy.
       type: String
-    - contextPath: f5.FileType.self-link
+    - contextPath: f5.DeletePolicy.self-link
       description: Self link of the deleted policy.
       type: String
   - arguments:
@@ -1062,6 +1062,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: 'true'
       description: Whether or not the URL is allowed
       isArray: false
       name: is_allowed
@@ -1071,12 +1072,21 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '*'
       description: What method to use in the URL
       isArray: false
       name: method
       predefined:
       - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is clickjacking protection enabled in the URL.
+      isArray: false
+      name: clickjacking_protection
+      predefined:
+      - 'true'
+      - ' false'
       required: false
       secret: false
     deprecated: false
@@ -1140,7 +1150,7 @@ script:
       name: perform_staging
       predefined:
       - 'true'
-      - 'false'
+      - ' false'
       required: false
       secret: false
     - default: false
@@ -1161,22 +1171,12 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether or not to enable clickjacking protection.
-      isArray: false
-      name: clickjacking_protection
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
       description: Whether or not the URL is a referrer.
       isArray: false
       name: url_isreferrer
       predefined:
       - 'true'
-      - 'false'
+      - ' false'
       required: false
       secret: false
     deprecated: false

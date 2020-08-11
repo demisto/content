@@ -1,7 +1,6 @@
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 ### f5-asm-policy-list
 ***
 list all policies
@@ -38,30 +37,30 @@ list all policies
 ```
 {
     "f5": {
-        "list-policies": [
+        "ListPolicies": [
             {
-                "active": false,
-                "created-time": "2020-08-05T21:06:05Z",
-                "creator-name": "admin",
-                "enforcement-mode": "blocking",
-                "id": "63EXMG4Y3tJ--Fo0GjuAkw",
-                "name": "Test_Policyy",
-                "type": "security"
-            },
-            {
-                "active": false,
-                "created-time": "2020-08-05T20:58:47Z",
-                "creator-name": "admin",
-                "enforcement-mode": "blocking",
+                "active": true,
+                "createdTime": "2020-08-05T20:58:47Z",
+                "creatorName": "admin",
+                "enforcementMode": "blocking",
                 "id": "kpD2qFaUlGAbw8RhN5IFQA",
                 "name": "Test_Policy",
                 "type": "security"
             },
             {
                 "active": false,
-                "created-time": "2020-07-02T21:11:06Z",
-                "creator-name": "tsconfd",
-                "enforcement-mode": "blocking",
+                "createdTime": "2020-07-27T14:06:28Z",
+                "creatorName": "admin",
+                "enforcementMode": "blocking",
+                "id": "eTzNEnVBWVG87KIljElZIw",
+                "name": "Lior-test",
+                "type": "security"
+            },
+            {
+                "active": false,
+                "createdTime": "2020-07-02T21:11:06Z",
+                "creatorName": "tsconfd",
+                "enforcementMode": "blocking",
                 "id": "JOUWVIcEjvePSjYEMXhL3A",
                 "name": "Test_Policy2",
                 "type": "security"
@@ -74,11 +73,11 @@ list all policies
 #### Human Readable Output
 
 >### f5 data for listing policies:
->|name|id|type|enforcement-mode|creator-name|active|created-time|
->|---|---|---|---|---|---|---|
->| Test_Policyy | 63EXMG4Y3tJ--Fo0GjuAkw | security | blocking | admin | false | 2020-08-05T21:06:05Z |
->| Test_Policy | kpD2qFaUlGAbw8RhN5IFQA | security | blocking | admin | false | 2020-08-05T20:58:47Z |
->| Test_Policy2 | JOUWVIcEjvePSjYEMXhL3A | security | blocking | tsconfd | false | 2020-07-02T21:11:06Z |
+>|name|id|type|active|
+>|---|---|---|---|
+>| Test_Policy | kpD2qFaUlGAbw8RhN5IFQA | security | true |
+>| Lior-test | eTzNEnVBWVG87KIljElZIw | security | false |
+>| Test_Policy2 | JOUWVIcEjvePSjYEMXhL3A | security | false |
 
 
 ### f5-asm-policy-apply
@@ -114,11 +113,11 @@ Applying a policy in application security manager
 ```
 {
     "f5": {
-        "apply-policy": {
-            "id": "gEOu_vi6USsrY2jMQbzH0g",
+        "ApplyPolicy": {
+            "id": "rDsg_fntTK5jNKP_Slshjg",
             "kind": "tm:asm:tasks:apply-policy:apply-policy-taskstate",
-            "policy-reference": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0",
-            "start-time": "2020-08-05T21:14:38Z",
+            "policyReference": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0",
+            "startTime": "2020-08-11T16:02:16Z",
             "status": "NEW"
         }
     }
@@ -128,9 +127,9 @@ Applying a policy in application security manager
 #### Human Readable Output
 
 >### f5 data for applying policy:
->|id|kind|policy-reference|start-time|status|
+>|id|kind|policyReference|startTime|status|
 >|---|---|---|---|---|
->| gEOu_vi6USsrY2jMQbzH0g | tm:asm:tasks:apply-policy:apply-policy-taskstate | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0 | 2020-08-05T21:14:38Z | NEW |
+>| rDsg_fntTK5jNKP_Slshjg | tm:asm:tasks:apply-policy:apply-policy-taskstate | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA?ver=15.1.0 | 2020-08-11T16:02:16Z | NEW |
 
 
 ### f5-asm-policy-export-file
@@ -170,12 +169,12 @@ export policy file
 ```
 {
     "f5": {
-        "export-policy": {
+        "ExportPolicy": {
             "filename": "exported_file.xml",
             "format": "xml",
-            "id": "itIfJ-Hp2yTSTv9hFp_Ycw",
+            "id": "erI1Tg-bEX3woKuUTFzFwA",
             "kind": "tm:asm:tasks:export-policy:export-policy-taskstate",
-            "start-time": "2020-08-05T21:14:39Z",
+            "startTime": "2020-08-11T16:02:17Z",
             "status": "NEW"
         }
     },
@@ -186,9 +185,9 @@ export policy file
 #### Human Readable Output
 
 >### f5 data for exporting policy:
->|filename|format|id|kind|start-time|status|
+>|filename|format|id|kind|startTime|status|
 >|---|---|---|---|---|---|
->| exported_file.xml | xml | itIfJ-Hp2yTSTv9hFp_Ycw | tm:asm:tasks:export-policy:export-policy-taskstate | 2020-08-05T21:14:39Z | NEW |
+>| exported_file.xml | xml | erI1Tg-bEX3woKuUTFzFwA | tm:asm:tasks:export-policy:export-policy-taskstate | 2020-08-11T16:02:17Z | NEW |
 
 
 ### f5-asm-policy-methods-list
@@ -225,38 +224,186 @@ Lists the HTTP methods that are enforced in the security policy.
 ```
 {
     "f5": {
-        "policy-methods": [
+        "PolicyMethods": [
             {
-                "act-as-method": "GET",
+                "actAsMethod": "POST",
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": null,
+                "enforcementType": null,
+                "id": "QB1BzVdfL5WfSHrpP_2MOQ",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-11T12:32:56Z",
+                "mandatoryBody": null,
+                "method": null,
+                "name": "test_get_2",
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/QB1BzVdfL5WfSHrpP_2MOQ?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": null
+            },
+            {
+                "actAsMethod": "GET",
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": null,
+                "enforcementType": null,
+                "id": "fY-VmdD8p450Aqd86HMKtQ",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-11T12:30:44Z",
+                "mandatoryBody": null,
+                "method": null,
+                "name": "test_get",
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/fY-VmdD8p450Aqd86HMKtQ?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": null
+            },
+            {
+                "actAsMethod": "GET",
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": null,
+                "enforcementType": null,
                 "id": "9l8WogEiTHYEa8UzGruaBg",
-                "kind": "tm:asm:policies:methods:methodstate",
-                "last-updated": "2020-08-05T21:07:26Z",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T21:07:26Z",
+                "mandatoryBody": null,
+                "method": null,
                 "name": "getty",
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/9l8WogEiTHYEa8UzGruaBg?ver=15.1.0"
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/9l8WogEiTHYEa8UzGruaBg?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": null
             },
             {
-                "act-as-method": "GET",
+                "actAsMethod": "GET",
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": null,
+                "enforcementType": null,
                 "id": "4V4hb8HGOfeHsSMezfob-A",
-                "kind": "tm:asm:policies:methods:methodstate",
-                "last-updated": "2020-08-05T20:58:48Z",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T20:58:48Z",
+                "mandatoryBody": null,
+                "method": null,
                 "name": "HEAD",
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/4V4hb8HGOfeHsSMezfob-A?ver=15.1.0"
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/4V4hb8HGOfeHsSMezfob-A?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": null
             },
             {
-                "act-as-method": "POST",
+                "actAsMethod": "POST",
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": null,
+                "enforcementType": null,
                 "id": "oCQ57CKdi-DnSwwWAjkjEA",
-                "kind": "tm:asm:policies:methods:methodstate",
-                "last-updated": "2020-08-05T20:58:48Z",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T20:58:48Z",
+                "mandatoryBody": null,
+                "method": null,
                 "name": "POST",
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/oCQ57CKdi-DnSwwWAjkjEA?ver=15.1.0"
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/oCQ57CKdi-DnSwwWAjkjEA?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": null
             },
             {
-                "act-as-method": "GET",
+                "actAsMethod": "GET",
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": null,
+                "enforcementType": null,
                 "id": "dSgDWpPuac7bHb3bLwv8yA",
-                "kind": "tm:asm:policies:methods:methodstate",
-                "last-updated": "2020-08-05T20:58:48Z",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T20:58:48Z",
+                "mandatoryBody": null,
+                "method": null,
                 "name": "GET",
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/dSgDWpPuac7bHb3bLwv8yA?ver=15.1.0"
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/dSgDWpPuac7bHb3bLwv8yA?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": null
             }
         ]
     }
@@ -265,13 +412,15 @@ Lists the HTTP methods that are enforced in the security policy.
 
 #### Human Readable Output
 
->### f5 data for listing all policy methods:
->|name|act-as-method|id|self-link|kind|last-updated|
->|---|---|---|---|---|---|
->| getty | GET | 9l8WogEiTHYEa8UzGruaBg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/9l8WogEiTHYEa8UzGruaBg?ver=15.1.0 | tm:asm:policies:methods:methodstate | 2020-08-05T21:07:26Z |
->| HEAD | GET | 4V4hb8HGOfeHsSMezfob-A | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/4V4hb8HGOfeHsSMezfob-A?ver=15.1.0 | tm:asm:policies:methods:methodstate | 2020-08-05T20:58:48Z |
->| POST | POST | oCQ57CKdi-DnSwwWAjkjEA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/oCQ57CKdi-DnSwwWAjkjEA?ver=15.1.0 | tm:asm:policies:methods:methodstate | 2020-08-05T20:58:48Z |
->| GET | GET | dSgDWpPuac7bHb3bLwv8yA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/dSgDWpPuac7bHb3bLwv8yA?ver=15.1.0 | tm:asm:policies:methods:methodstate | 2020-08-05T20:58:48Z |
+>### f5 data for PolicyMethods:
+>|name|id|actAsMethod|selfLink|lastUpdateMicros|
+>|---|---|---|---|---|
+>| test_get_2 | QB1BzVdfL5WfSHrpP_2MOQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/QB1BzVdfL5WfSHrpP_2MOQ?ver=15.1.0 | 2020-08-11T12:32:56Z |
+>| test_get | fY-VmdD8p450Aqd86HMKtQ | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/fY-VmdD8p450Aqd86HMKtQ?ver=15.1.0 | 2020-08-11T12:30:44Z |
+>| getty | 9l8WogEiTHYEa8UzGruaBg | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/9l8WogEiTHYEa8UzGruaBg?ver=15.1.0 | 2020-08-05T21:07:26Z |
+>| HEAD | 4V4hb8HGOfeHsSMezfob-A | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/4V4hb8HGOfeHsSMezfob-A?ver=15.1.0 | 2020-08-05T20:58:48Z |
+>| POST | oCQ57CKdi-DnSwwWAjkjEA | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/oCQ57CKdi-DnSwwWAjkjEA?ver=15.1.0 | 2020-08-05T20:58:48Z |
+>| GET | dSgDWpPuac7bHb3bLwv8yA | GET | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/dSgDWpPuac7bHb3bLwv8yA?ver=15.1.0 | 2020-08-05T20:58:48Z |
 
 
 ### f5-asm-policy-file-type-list
@@ -310,36 +459,96 @@ Lists the file types that are allowed or disallowed in the security policy.
 ```
 {
     "f5": {
-        "file-types": [
+        "FileType": [
             {
+                "actAsMethod": null,
+                "active": null,
                 "allowed": true,
-                "check-request-length": true,
+                "blockRequests": null,
+                "checkRequestLength": true,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": null,
+                "enforcementType": null,
                 "id": "3-1bwXe4erMXxYTgZWatxg",
-                "kind": "tm:asm:policies:filetypes:filetypestate",
-                "last-updated": "2020-08-05T21:05:35Z",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T21:05:35Z",
+                "mandatoryBody": null,
+                "method": null,
                 "name": "py",
-                "query-string-length": 100,
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/3-1bwXe4erMXxYTgZWatxg?ver=15.1.0"
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": false,
+                "protocol": null,
+                "queryStringLength": 100,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/3-1bwXe4erMXxYTgZWatxg?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": "explicit"
             },
             {
+                "actAsMethod": null,
+                "active": null,
                 "allowed": true,
-                "check-request-length": true,
+                "blockRequests": null,
+                "checkRequestLength": true,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": null,
+                "enforcementType": null,
                 "id": "mOgzedRVODecKsTkfDvoHQ",
-                "kind": "tm:asm:policies:filetypes:filetypestate",
-                "last-updated": "2020-08-05T21:05:11Z",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T21:05:11Z",
+                "mandatoryBody": null,
+                "method": null,
                 "name": "exe",
-                "query-string-length": 100,
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/mOgzedRVODecKsTkfDvoHQ?ver=15.1.0"
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": false,
+                "protocol": null,
+                "queryStringLength": 100,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/mOgzedRVODecKsTkfDvoHQ?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": "explicit"
             },
             {
+                "actAsMethod": null,
+                "active": null,
                 "allowed": true,
-                "check-request-length": true,
+                "blockRequests": null,
+                "checkRequestLength": true,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": null,
+                "enforcementType": null,
                 "id": "M4na42GvebBMnI5wV_YMxg",
-                "kind": "tm:asm:policies:filetypes:filetypestate",
-                "last-updated": "2020-08-05T20:58:49Z",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T20:58:49Z",
+                "mandatoryBody": null,
+                "method": null,
                 "name": "*",
-                "query-string-length": 1000,
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/M4na42GvebBMnI5wV_YMxg?ver=15.1.0"
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": true,
+                "protocol": null,
+                "queryStringLength": 1000,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/M4na42GvebBMnI5wV_YMxg?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": "wildcard"
             }
         ]
     }
@@ -348,12 +557,12 @@ Lists the file types that are allowed or disallowed in the security policy.
 
 #### Human Readable Output
 
->### Listing all f5 file type:
->|name|id|self-link|query-string-length|check-request-length|kind|allowed|last-updated|
->|---|---|---|---|---|---|---|---|
->| py | 3-1bwXe4erMXxYTgZWatxg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/3-1bwXe4erMXxYTgZWatxg?ver=15.1.0 | 100 | true | tm:asm:policies:filetypes:filetypestate | true | 2020-08-05T21:05:35Z |
->| exe | mOgzedRVODecKsTkfDvoHQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/mOgzedRVODecKsTkfDvoHQ?ver=15.1.0 | 100 | true | tm:asm:policies:filetypes:filetypestate | true | 2020-08-05T21:05:11Z |
->| * | M4na42GvebBMnI5wV_YMxg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/M4na42GvebBMnI5wV_YMxg?ver=15.1.0 | 1000 | true | tm:asm:policies:filetypes:filetypestate | true | 2020-08-05T20:58:49Z |
+>### f5 data for FileType:
+>|name|id|type|selfLink|queryStringLength|checkRequestLength|performStaging|lastUpdateMicros|allowed|
+>|---|---|---|---|---|---|---|---|---|
+>| py | 3-1bwXe4erMXxYTgZWatxg | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/3-1bwXe4erMXxYTgZWatxg?ver=15.1.0 | 100 | true | false | 2020-08-05T21:05:35Z | true |
+>| exe | mOgzedRVODecKsTkfDvoHQ | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/mOgzedRVODecKsTkfDvoHQ?ver=15.1.0 | 100 | true | false | 2020-08-05T21:05:11Z | true |
+>| * | M4na42GvebBMnI5wV_YMxg | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/M4na42GvebBMnI5wV_YMxg?ver=15.1.0 | 1000 | true | true | 2020-08-05T20:58:49Z | true |
 
 
 ### f5-asm-policy-methods-add
@@ -385,10 +594,54 @@ add new allowed method
 
 
 #### Command Example
-```!f5-asm-policy-methods-add ```
+```!f5-asm-policy-methods-add policy_name=Test_Policy new_method_name="Posty" act_as_method="POST"```
+
+#### Context Example
+```
+{
+    "f5": {
+        "PolicyMethods": {
+            "actAsMethod": "POST",
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": null,
+            "description": null,
+            "enforcementType": null,
+            "id": "cwMuAdnzCUXmGBTc552zvQ",
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:23Z",
+            "method": null,
+            "name": "Posty",
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": null,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": null,
+            "urlLength": null
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### f5 data for listing all PolicyMethods:
+>|name|id|actAsMethod|selfLink|lastUpdateMicros|
+>|---|---|---|---|---|
+>| Posty | cwMuAdnzCUXmGBTc552zvQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0 | 2020-08-11T16:02:23Z |
 
 
 ### f5-asm-policy-methods-update
@@ -420,10 +673,54 @@ update a policy method
 
 
 #### Command Example
-```!f5-asm-policy-methods-update ```
+```!f5-asm-policy-methods-update policy_name=Test_Policy method_name="Posty" act_as_method="POST"```
+
+#### Context Example
+```
+{
+    "f5": {
+        "PolicyMethods": {
+            "actAsMethod": "POST",
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": null,
+            "description": null,
+            "enforcementType": null,
+            "id": "cwMuAdnzCUXmGBTc552zvQ",
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:23Z",
+            "method": null,
+            "name": "Posty",
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": null,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": null,
+            "urlLength": null
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### f5 data for listing all PolicyMethods:
+>|name|id|actAsMethod|selfLink|lastUpdateMicros|
+>|---|---|---|---|---|
+>| Posty | cwMuAdnzCUXmGBTc552zvQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0 | 2020-08-11T16:02:23Z |
 
 
 ### f5-asm-policy-methods-delete
@@ -452,6 +749,7 @@ Delete a method from a certain policy
 | f5.PolicyMethods.self-link | String | self link | 
 | f5.PolicyMethods.kind | String | kind | 
 
+
 #### Command Example
 ```!f5-asm-policy-methods-delete policy_name=Test_Policy method_name="Posty"```
 
@@ -459,12 +757,37 @@ Delete a method from a certain policy
 ```
 {
     "f5": {
-        "policy-methods": {
-            "act-as-method": "POST",
+        "PolicyMethods": {
+            "actAsMethod": "POST",
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": null,
+            "description": null,
+            "enforcementType": null,
             "id": "cwMuAdnzCUXmGBTc552zvQ",
-            "kind": "tm:asm:policies:methods:methodstate",
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:23Z",
+            "method": null,
             "name": "Posty",
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0"
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": null,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": null,
+            "urlLength": null
         }
     }
 }
@@ -472,10 +795,10 @@ Delete a method from a certain policy
 
 #### Human Readable Output
 
->### f5 data for policy methods:
->|name|act-as-method|id|self-link|kind|
+>### f5 data for listing all PolicyMethods:
+>|name|id|actAsMethod|selfLink|lastUpdateMicros|
 >|---|---|---|---|---|
->| Posty | POST | cwMuAdnzCUXmGBTc552zvQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0 | tm:asm:policies:methods:methodstate |
+>| Posty | cwMuAdnzCUXmGBTc552zvQ | POST | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/methods/cwMuAdnzCUXmGBTc552zvQ?ver=15.1.0 | 2020-08-11T16:02:23Z |
 
 
 ### f5-asm-policy-file-type-add
@@ -525,19 +848,37 @@ add new file type
 ```
 {
     "f5": {
-        "file-type": {
+        "FileType": {
+            "actAsMethod": null,
             "allowed": true,
-            "check-request-length": true,
-            "check-url-length": true,
+            "blockRequests": null,
+            "checkRequestLength": true,
+            "checkUrlLength": true,
+            "clickjackingProtection": null,
+            "createdBy": null,
+            "description": null,
+            "enforcementType": null,
             "id": "x4JPPU1fey8i0DR1jB6UVA",
-            "last-updated": "2020-08-05T21:15:28Z",
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:28Z",
+            "method": null,
             "name": "txt",
-            "perform-staging": false,
-            "post-data-length": 100,
-            "query-string-length": 100,
-            "response-check": true,
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0",
-            "url-length": 100
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": false,
+            "postDataLength": 100,
+            "protocol": null,
+            "queryStringLength": 100,
+            "responseCheck": true,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": "explicit",
+            "urlLength": 100
         }
     }
 }
@@ -545,10 +886,10 @@ add new file type
 
 #### Human Readable Output
 
->### f5 data for file types:
->|name|id|self-link|query-string-length|check-request-length|response-check|check-url-length|url-length|post-data-length|perform-staging|allowed|last-updated|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| txt | x4JPPU1fey8i0DR1jB6UVA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | 100 | true | true | true | 100 | 100 | false | true | 2020-08-05T21:15:28Z |
+>### f5 data for listing all FileType:
+>|name|id|type|selfLink|queryStringLength|checkRequestLength|responseCheck|urlLength|checkUrlLength|postDataLength|performStaging|allowed|lastUpdateMicros|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| txt | x4JPPU1fey8i0DR1jB6UVA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | 100 | true | true | 100 | true | 100 | false | true | 2020-08-11T16:02:28Z |
 
 
 ### f5-asm-policy-file-type-update
@@ -598,19 +939,37 @@ update policy file type
 ```
 {
     "f5": {
-        "file-type": {
+        "FileType": {
+            "actAsMethod": null,
             "allowed": true,
-            "check-request-length": true,
-            "check-url-length": true,
+            "blockRequests": null,
+            "checkRequestLength": true,
+            "checkUrlLength": true,
+            "clickjackingProtection": null,
+            "createdBy": null,
+            "description": null,
+            "enforcementType": null,
             "id": "x4JPPU1fey8i0DR1jB6UVA",
-            "last-updated": "2020-08-05T21:15:28Z",
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:28Z",
+            "method": null,
             "name": "txt",
-            "perform-staging": false,
-            "post-data-length": 100,
-            "query-string-length": 100,
-            "response-check": true,
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0",
-            "url-length": 100
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": false,
+            "postDataLength": 100,
+            "protocol": null,
+            "queryStringLength": 100,
+            "responseCheck": true,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": "explicit",
+            "urlLength": 100
         }
     }
 }
@@ -618,10 +977,10 @@ update policy file type
 
 #### Human Readable Output
 
->### f5 data for file types:
->|name|id|self-link|query-string-length|check-request-length|response-check|check-url-length|url-length|post-data-length|perform-staging|allowed|last-updated|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| txt | x4JPPU1fey8i0DR1jB6UVA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | 100 | true | true | true | 100 | 100 | false | true | 2020-08-05T21:15:28Z |
+>### f5 data for listing all FileType:
+>|name|id|type|selfLink|queryStringLength|checkRequestLength|responseCheck|urlLength|checkUrlLength|postDataLength|performStaging|allowed|lastUpdateMicros|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| txt | x4JPPU1fey8i0DR1jB6UVA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | 100 | true | true | 100 | true | 100 | false | true | 2020-08-11T16:02:28Z |
 
 
 ### f5-asm-policy-file-type-delete
@@ -656,19 +1015,37 @@ Delete policy file type
 ```
 {
     "f5": {
-        "file-type": {
+        "FileType": {
+            "actAsMethod": null,
             "allowed": true,
-            "check-request-length": true,
-            "check-url-length": true,
+            "blockRequests": null,
+            "checkRequestLength": true,
+            "checkUrlLength": true,
+            "clickjackingProtection": null,
+            "createdBy": null,
+            "description": null,
+            "enforcementType": null,
             "id": "x4JPPU1fey8i0DR1jB6UVA",
-            "last-updated": "2020-08-05T21:15:28Z",
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:28Z",
+            "method": null,
             "name": "txt",
-            "perform-staging": false,
-            "post-data-length": 100,
-            "query-string-length": 100,
-            "response-check": true,
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0",
-            "url-length": 100
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": false,
+            "postDataLength": 100,
+            "protocol": null,
+            "queryStringLength": 100,
+            "responseCheck": true,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": "explicit",
+            "urlLength": 100
         }
     }
 }
@@ -676,10 +1053,10 @@ Delete policy file type
 
 #### Human Readable Output
 
->### f5 data for file types:
->|name|id|self-link|query-string-length|check-request-length|response-check|check-url-length|url-length|post-data-length|perform-staging|allowed|last-updated|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| txt | x4JPPU1fey8i0DR1jB6UVA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | 100 | true | true | true | 100 | 100 | false | true | 2020-08-05T21:15:28Z |
+>### f5 data for listing all FileType:
+>|name|id|type|selfLink|queryStringLength|checkRequestLength|responseCheck|urlLength|checkUrlLength|postDataLength|performStaging|allowed|lastUpdateMicros|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| txt | x4JPPU1fey8i0DR1jB6UVA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/filetypes/x4JPPU1fey8i0DR1jB6UVA?ver=15.1.0 | 100 | true | true | 100 | true | 100 | false | true | 2020-08-11T16:02:28Z |
 
 
 ### f5-asm-policy-delete
@@ -701,9 +1078,9 @@ Delete policy
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.FileType.name | String | Name of the deleted policy. | 
-| f5.FileType.id | String | ID of the deleted policy. | 
-| f5.FileType.self-link | String | Self link of the deleted policy. | 
+| f5.DeletePolicy.name | String | Name of the deleted policy. | 
+| f5.DeletePolicy.id | String | ID of the deleted policy. | 
+| f5.DeletePolicy.self-link | String | Self link of the deleted policy. | 
 
 
 #### Command Example
@@ -730,14 +1107,15 @@ Delete policy
 >| Test_Policyy | 63EXMG4Y3tJ--Fo0GjuAkw | https://localhost/mgmt/tm/asm/policies/63EXMG4Y3tJ--Fo0GjuAkw?ver=15.1.0 |
 
 
-### f5-asm-resource-hostnames-list
+
+### f5-asm-policy-hostnames-list
 ***
 List policy hostnames
 
 
 #### Base Command
 
-`f5-asm-resource-hostnames-list`
+`f5-asm-policy-hostnames-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -749,37 +1127,111 @@ List policy hostnames
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.ResourceHostname.name | String | Policy hostname | 
-| f5.ResourceHostname.id | String | Policy ID | 
-| f5.ResourceHostname.created-by | String | Interface used to create the hostname | 
-| f5.ResourceHostname.self-link | String | URI of specific hostname | 
-| f5.ResourceHostname.include-subdomains | Boolean | Whether or not to include subdomains | 
-| f5.ResourceHostname.last-update | String | Time of last update | 
+| f5.Hostname.name | String | Policy hostname | 
+| f5.Hostname.id | String | Policy ID | 
+| f5.Hostname.created-by | String | Interface used to create the hostname | 
+| f5.Hostname.self-link | String | URI of specific hostname | 
+| f5.Hostname.include-subdomains | Boolean | Whether or not to include subdomains | 
+| f5.Hostname.last-update | String | Time of last update | 
 
 
 #### Command Example
-```!f5-asm-resource-hostnames-list policy_name=Test_Policy```
+```!f5-asm-policy-hostnames-list policy_name=Test_Policy```
 
 #### Context Example
 ```
 {
     "f5": {
-        "resource-hostname": [
+        "Hostname": [
             {
-                "created-by": "GUI",
-                "id": "_3pBVxU6gHchLIdX_Tm4vQ",
-                "include-subdomains": false,
-                "last-update": "2020-08-05T21:09:06Z",
-                "name": "cnn",
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/_3pBVxU6gHchLIdX_Tm4vQ?ver=15.1.0"
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": "GUI",
+                "description": null,
+                "enforcementType": null,
+                "id": "tM6UhfuSaPYYRnUS6-k2vg",
+                "ignoreAnomalies": null,
+                "includeSubdomains": true,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-11T13:24:10Z",
+                "mandatoryBody": null,
+                "method": null,
+                "name": "qmasters.co.il",
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/tM6UhfuSaPYYRnUS6-k2vg?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": null
             },
             {
-                "created-by": "GUI",
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": "GUI",
+                "description": null,
+                "enforcementType": null,
+                "id": "_3pBVxU6gHchLIdX_Tm4vQ",
+                "ignoreAnomalies": null,
+                "includeSubdomains": false,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T21:09:06Z",
+                "mandatoryBody": null,
+                "method": null,
+                "name": "cnn",
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/_3pBVxU6gHchLIdX_Tm4vQ?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": null
+            },
+            {
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": "GUI",
+                "description": null,
+                "enforcementType": null,
                 "id": "HVkg9LRLJ6gCvXfE8FNvWg",
-                "include-subdomains": false,
-                "last-update": "2020-08-05T21:08:39Z",
+                "ignoreAnomalies": null,
+                "includeSubdomains": false,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T21:08:39Z",
+                "mandatoryBody": null,
+                "method": null,
                 "name": "google.com",
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/HVkg9LRLJ6gCvXfE8FNvWg?ver=15.1.0"
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/HVkg9LRLJ6gCvXfE8FNvWg?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": null
             }
         ]
     }
@@ -788,21 +1240,22 @@ List policy hostnames
 
 #### Human Readable Output
 
->### f5 information about hosts
->|id|name|created-by|include-subdomains|self-link|last-update|
+>### f5 data for Hostname:
+>|name|id|selfLink|includeSubdomains|createdBy|lastUpdateMicros|
 >|---|---|---|---|---|---|
->| _3pBVxU6gHchLIdX_Tm4vQ | cnn | GUI | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/_3pBVxU6gHchLIdX_Tm4vQ?ver=15.1.0 | 2020-08-05T21:09:06Z |
->| HVkg9LRLJ6gCvXfE8FNvWg | google.com | GUI | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/HVkg9LRLJ6gCvXfE8FNvWg?ver=15.1.0 | 2020-08-05T21:08:39Z |
+>| qmasters.co.il | tM6UhfuSaPYYRnUS6-k2vg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/tM6UhfuSaPYYRnUS6-k2vg?ver=15.1.0 | true | GUI | 2020-08-11T13:24:10Z |
+>| cnn | _3pBVxU6gHchLIdX_Tm4vQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/_3pBVxU6gHchLIdX_Tm4vQ?ver=15.1.0 | false | GUI | 2020-08-05T21:09:06Z |
+>| google.com | HVkg9LRLJ6gCvXfE8FNvWg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/HVkg9LRLJ6gCvXfE8FNvWg?ver=15.1.0 | false | GUI | 2020-08-05T21:08:39Z |
 
 
-### f5-asm-resource-hostnames-add
+### f5-asm-policy-hostnames-add
 ***
 Add a new hostname to a policy
 
 
 #### Base Command
 
-`f5-asm-resource-hostnames-add`
+`f5-asm-policy-hostnames-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -816,28 +1269,52 @@ Add a new hostname to a policy
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.ResourceHostname.name | String | Policy hostname | 
-| f5.ResourceHostname.id | String | Policy ID | 
-| f5.ResourceHostname.created-by | String | Interface used to create the hostname | 
-| f5.ResourceHostname.self-link | String | URI of specific hostname | 
-| f5.ResourceHostname.include-subdomains | Boolean | Whether or not to include subdomains | 
-| f5.ResourceHostname.last-update | String | Time of last update | 
+| f5.Hostname.name | String | Policy hostname | 
+| f5.Hostname.id | String | Policy ID | 
+| f5.Hostname.created-by | String | Interface used to create the hostname | 
+| f5.Hostname.self-link | String | URI of specific hostname | 
+| f5.Hostname.include-subdomains | Boolean | Whether or not to include subdomains | 
+| f5.Hostname.last-update | String | Time of last update | 
 
 
 #### Command Example
-```!f5-asm-resource-hostnames-add policy_name=Test_Policy name=qmasters.co```
+```!f5-asm-policy-hostnames-add policy_name=Test_Policy name=qmasters.co```
 
 #### Context Example
 ```
 {
     "f5": {
-        "resource-hostname": {
-            "created-by": "GUI",
+        "Hostname": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": "GUI",
+            "description": null,
+            "enforcementType": null,
             "id": "dsblcoDkMkFb_A_H6BS6eA",
-            "include-subdomains": false,
-            "last-update": "2020-08-05T21:15:41Z",
+            "ignoreAnomalies": null,
+            "includeSubdomains": false,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:37Z",
+            "method": null,
             "name": "qmasters.co",
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0"
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": null,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": null,
+            "urlLength": null
         }
     }
 }
@@ -845,20 +1322,20 @@ Add a new hostname to a policy
 
 #### Human Readable Output
 
->### f5 information about hosts
->|id|name|created-by|include-subdomains|self-link|last-update|
->|---|---|---|---|---|---|
->| dsblcoDkMkFb_A_H6BS6eA | qmasters.co | GUI | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | 2020-08-05T21:15:41Z |
+>### f5 data for listing all Hostname:
+>|name|id|selfLink|includeSubdomains|includeSubdomains|createdBy|lastUpdateMicros|
+>|---|---|---|---|---|---|---|
+>| qmasters.co | dsblcoDkMkFb_A_H6BS6eA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | false | false | GUI | 2020-08-11T16:02:37Z |
 
 
-### f5-asm-resource-hostnames-update
+### f5-asm-policy-hostnames-update
 ***
 Update an existing policy hostname
 
 
 #### Base Command
 
-`f5-asm-resource-hostnames-update`
+`f5-asm-policy-hostnames-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -872,28 +1349,52 @@ Update an existing policy hostname
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.ResourceHostname.name | String | Policy hostname | 
-| f5.ResourceHostname.id | String | Policy ID | 
-| f5.ResourceHostname.created-by | String | Interface used to create the hostname | 
-| f5.ResourceHostname.self-link | String | URI of specific hostname | 
-| f5.ResourceHostname.include-subdomains | Boolean | Whether or not to include subdomains | 
-| f5.ResourceHostname.last-update | String | Time of last update | 
+| f5.Hostname.name | String | Policy hostname | 
+| f5.Hostname.id | String | Policy ID | 
+| f5.Hostname.created-by | String | Interface used to create the hostname | 
+| f5.Hostname.self-link | String | URI of specific hostname | 
+| f5.Hostname.include-subdomains | Boolean | Whether or not to include subdomains | 
+| f5.Hostname.last-update | String | Time of last update | 
 
 
 #### Command Example
-```!f5-asm-resource-hostnames-update policy_name=Test_Policy name=qmasters.co include_subdomains=true```
+```!f5-asm-policy-hostnames-update policy_name=Test_Policy name=qmasters.co include_subdomains=true```
 
 #### Context Example
 ```
 {
     "f5": {
-        "resource-hostname": {
-            "created-by": "GUI",
+        "Hostname": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": "GUI",
+            "description": null,
+            "enforcementType": null,
             "id": "dsblcoDkMkFb_A_H6BS6eA",
-            "include-subdomains": true,
-            "last-update": "2020-08-05T21:15:47Z",
+            "ignoreAnomalies": null,
+            "includeSubdomains": true,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:38Z",
+            "method": null,
             "name": "qmasters.co",
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0"
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": null,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": null,
+            "urlLength": null
         }
     }
 }
@@ -901,20 +1402,20 @@ Update an existing policy hostname
 
 #### Human Readable Output
 
->### f5 information about hosts
->|id|name|created-by|include-subdomains|self-link|last-update|
->|---|---|---|---|---|---|
->| dsblcoDkMkFb_A_H6BS6eA | qmasters.co | GUI | true | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | 2020-08-05T21:15:47Z |
+>### f5 data for listing all Hostname:
+>|name|id|selfLink|includeSubdomains|includeSubdomains|createdBy|lastUpdateMicros|
+>|---|---|---|---|---|---|---|
+>| qmasters.co | dsblcoDkMkFb_A_H6BS6eA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | true | true | GUI | 2020-08-11T16:02:38Z |
 
 
-### f5-asm-resource-hostnames-delete
+### f5-asm-policy-hostnames-delete
 ***
 Delete a hostname from a policy
 
 
 #### Base Command
 
-`f5-asm-resource-hostnames-delete`
+`f5-asm-policy-hostnames-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -927,28 +1428,52 @@ Delete a hostname from a policy
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| f5.ResourceHostname.name | String | Policy hostname | 
-| f5.ResourceHostname.id | String | Policy ID | 
-| f5.ResourceHostname.created-by | String | Interface used to create the hostname | 
-| f5.ResourceHostname.self-link | String | URI of specific hostname | 
-| f5.ResourceHostname.include-subdomains | Boolean | Whether or not to include subdomains | 
-| f5.ResourceHostname.last-update | String | Time of last update | 
+| f5.Hostname.name | String | Policy hostname | 
+| f5.Hostname.id | String | Policy ID | 
+| f5.Hostname.created-by | String | Interface used to create the hostname | 
+| f5.Hostname.self-link | String | URI of specific hostname | 
+| f5.Hostname.include-subdomains | Boolean | Whether or not to include subdomains | 
+| f5.Hostname.last-update | String | Time of last update | 
 
 
 #### Command Example
-```!f5-asm-resource-hostnames-delete policy_name=Test_Policy name=qmasters.co```
+```!f5-asm-policy-hostnames-delete policy_name=Test_Policy name=qmasters.co```
 
 #### Context Example
 ```
 {
     "f5": {
-        "resource-hostname": {
-            "created-by": "GUI",
+        "Hostname": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": "GUI",
+            "description": null,
+            "enforcementType": null,
             "id": "dsblcoDkMkFb_A_H6BS6eA",
-            "include-subdomains": true,
-            "last-update": "2020-08-05T21:15:47Z",
+            "ignoreAnomalies": null,
+            "includeSubdomains": true,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:38Z",
+            "method": null,
             "name": "qmasters.co",
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0"
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": null,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": null,
+            "urlLength": null
         }
     }
 }
@@ -956,10 +1481,10 @@ Delete a hostname from a policy
 
 #### Human Readable Output
 
->### f5 information about hosts
->|id|name|created-by|include-subdomains|self-link|last-update|
->|---|---|---|---|---|---|
->| dsblcoDkMkFb_A_H6BS6eA | qmasters.co | GUI | true | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | 2020-08-05T21:15:47Z |
+>### f5 data for listing all Hostname:
+>|name|id|selfLink|includeSubdomains|includeSubdomains|createdBy|lastUpdateMicros|
+>|---|---|---|---|---|---|---|
+>| qmasters.co | dsblcoDkMkFb_A_H6BS6eA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/host-names/dsblcoDkMkFb_A_H6BS6eA?ver=15.1.0 | true | true | GUI | 2020-08-11T16:02:38Z |
 
 
 ### f5-asm-policy-cookies-list
@@ -998,36 +1523,126 @@ List all cookies of a given policy
 ```
 {
     "f5": {
-        "policy-cookies": [
+        "Cookies": [
             {
-                "created-by": "GUI",
-                "enforcement-type": "allow",
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": "GUI",
+                "description": null,
+                "enforcementType": "allow",
+                "id": "w3iYXWKemaToYhPbDNXnDQ",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": false,
+                "lastUpdateMicros": "2020-08-11T15:21:54Z",
+                "mandatoryBody": null,
+                "method": null,
+                "name": "chocolate",
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": true,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/w3iYXWKemaToYhPbDNXnDQ?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": "explicit"
+            },
+            {
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": "GUI",
+                "description": null,
+                "enforcementType": "allow",
                 "id": "E1g7FVU2CYuY30F-Rp_MUw",
-                "is-base-64": false,
-                "kind": "tm:asm:policies:cookies:cookiestate",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": false,
+                "lastUpdateMicros": "2020-08-05T21:04:51Z",
+                "mandatoryBody": null,
+                "method": null,
                 "name": "yummy",
-                "perform-staging": false,
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/E1g7FVU2CYuY30F-Rp_MUw?ver=15.1.0"
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": false,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/E1g7FVU2CYuY30F-Rp_MUw?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": "explicit"
             },
             {
-                "created-by": "GUI",
-                "enforcement-type": "allow",
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": "GUI",
+                "description": null,
+                "enforcementType": "allow",
                 "id": "HeC08NE594GztN6H7bTecA",
-                "is-base-64": false,
-                "kind": "tm:asm:policies:cookies:cookiestate",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": false,
+                "lastUpdateMicros": "2020-08-05T21:04:43Z",
+                "mandatoryBody": null,
+                "method": null,
                 "name": "yum",
-                "perform-staging": false,
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/HeC08NE594GztN6H7bTecA?ver=15.1.0"
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": false,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/HeC08NE594GztN6H7bTecA?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": "explicit"
             },
             {
-                "created-by": "GUI",
-                "enforcement-type": "allow",
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": "GUI",
+                "description": null,
+                "enforcementType": "allow",
                 "id": "M4na42GvebBMnI5wV_YMxg",
-                "is-base-64": false,
-                "kind": "tm:asm:policies:cookies:cookiestate",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": null,
+                "isBase64": false,
+                "lastUpdateMicros": "2020-08-05T20:58:49Z",
+                "mandatoryBody": null,
+                "method": null,
                 "name": "*",
-                "perform-staging": true,
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/M4na42GvebBMnI5wV_YMxg?ver=15.1.0"
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": true,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/M4na42GvebBMnI5wV_YMxg?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
+                "type": "wildcard"
             }
         ]
     }
@@ -1036,22 +1651,23 @@ List all cookies of a given policy
 
 #### Human Readable Output
 
->### f5 data for policy cookies:
->|name|id|self-link|enforcement-type|perform-staging|kind|is-base-64|created-by|
->|---|---|---|---|---|---|---|---|
->| yummy | E1g7FVU2CYuY30F-Rp_MUw | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/E1g7FVU2CYuY30F-Rp_MUw?ver=15.1.0 | allow | false | tm:asm:policies:cookies:cookiestate | false | GUI |
->| yum | HeC08NE594GztN6H7bTecA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/HeC08NE594GztN6H7bTecA?ver=15.1.0 | allow | false | tm:asm:policies:cookies:cookiestate | false | GUI |
->| * | M4na42GvebBMnI5wV_YMxg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/M4na42GvebBMnI5wV_YMxg?ver=15.1.0 | allow | true | tm:asm:policies:cookies:cookiestate | false | GUI |
+>### f5 data for Cookies:
+>|name|id|type|selfLink|enforcementType|isBase64|performStaging|createdBy|lastUpdateMicros|
+>|---|---|---|---|---|---|---|---|---|
+>| chocolate | w3iYXWKemaToYhPbDNXnDQ | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/w3iYXWKemaToYhPbDNXnDQ?ver=15.1.0 | allow | false | true | GUI | 2020-08-11T15:21:54Z |
+>| yummy | E1g7FVU2CYuY30F-Rp_MUw | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/E1g7FVU2CYuY30F-Rp_MUw?ver=15.1.0 | allow | false | false | GUI | 2020-08-05T21:04:51Z |
+>| yum | HeC08NE594GztN6H7bTecA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/HeC08NE594GztN6H7bTecA?ver=15.1.0 | allow | false | false | GUI | 2020-08-05T21:04:43Z |
+>| * | M4na42GvebBMnI5wV_YMxg | wildcard | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/M4na42GvebBMnI5wV_YMxg?ver=15.1.0 | allow | false | true | GUI | 2020-08-05T20:58:49Z |
 
 
-### f5-asm-resource-blocking-settings-list
+### f5-asm-policy-blocking-settings-list
 ***
 Retreive a BS list from a selected policy.
 
 
 #### Base Command
 
-`f5-asm-resource-blocking-settings-list`
+`f5-asm-policy-blocking-settings-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1078,13 +1694,13 @@ Retreive a BS list from a selected policy.
 
 
 #### Command Example
-```!f5-asm-resource-blocking-settings-list policy_name=Test_Policy endpoint=evasions```
+```!f5-asm-policy-blocking-settings-list policy_name=Test_Policy endpoint=evasions```
 
 #### Context Example
 ```
 {
     "f5": {
-        "resource-blocking-settings": [
+        "BlockingSettings": [
             {
                 "alarm": null,
                 "block": null,
@@ -1092,8 +1708,8 @@ Retreive a BS list from a selected policy.
                 "enabled": false,
                 "id": "9--k-GSum4jUNSf0sU91Dw",
                 "kind": "tm:asm:policies:blocking-settings:evasions:evasionstate",
-                "last-update": "2020-08-05T20:58:49Z",
-                "learn": true,
+                "last-update": "2020-08-11T14:43:18Z",
+                "learn": false,
                 "reference": "https://localhost/mgmt/tm/asm/sub-violations/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0",
                 "section-reference": null,
                 "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0"
@@ -1199,7 +1815,7 @@ Retreive a BS list from a selected policy.
 >### Evasions for selected policy
 >|id|description|enabled|learn|kind|reference|self-link|last-update|
 >|---|---|---|---|---|---|---|---|
->| 9--k-GSum4jUNSf0sU91Dw | Bad unescape | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | 2020-08-05T20:58:49Z |
+>| 9--k-GSum4jUNSf0sU91Dw | Bad unescape | false | false | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | 2020-08-11T14:43:18Z |
 >| Ahu8fuILcRNNU-ICBr1v6w | Apache whitespace | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/Ahu8fuILcRNNU-ICBr1v6w?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/Ahu8fuILcRNNU-ICBr1v6w?ver=15.1.0 | 2020-08-05T20:58:49Z |
 >| EKfN2XD-E1z097tVwOO1nw | Bare byte decoding | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/EKfN2XD-E1z097tVwOO1nw?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/EKfN2XD-E1z097tVwOO1nw?ver=15.1.0 | 2020-08-05T20:58:49Z |
 >| dtxhHW66r8ZswIeccbXbXA | IIS Unicode codepoints | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/dtxhHW66r8ZswIeccbXbXA?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/dtxhHW66r8ZswIeccbXbXA?ver=15.1.0 | 2020-08-05T20:58:49Z |
@@ -1209,14 +1825,14 @@ Retreive a BS list from a selected policy.
 >| qH_2eaLz5x2RgaZ7dUISLA | Directory traversals | false | true | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/sub-violations/evasions/qH_2eaLz5x2RgaZ7dUISLA?ver=15.1.0 | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/qH_2eaLz5x2RgaZ7dUISLA?ver=15.1.0 | 2020-08-05T20:58:49Z |
 
 
-### f5-asm-resource-blocking-settings-update
+### f5-asm-policy-blocking-settings-update
 ***
 Update a BS element
 
 
 #### Base Command
 
-`f5-asm-resource-blocking-settings-update`
+`f5-asm-policy-blocking-settings-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1248,20 +1864,43 @@ Update a BS element
 
 
 #### Command Example
-```!f5-asm-resource-blocking-settings-update ```
+```!f5-asm-policy-blocking-settings-update policy_name=Test_Policy endpoint=evasions description="Bad unescape"  ```
+
+#### Context Example
+```
+{
+    "f5": {
+        "BlockingSettings": {
+            "alarm": null,
+            "block": null,
+            "description": "Bad unescape",
+            "enabled": false,
+            "id": "9--k-GSum4jUNSf0sU91Dw",
+            "kind": "tm:asm:policies:blocking-settings:evasions:evasionstate",
+            "last-update": "2020-08-11T14:43:18Z",
+            "learn": false,
+            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Modified blocking-settings/evasions
+>|id|description|enabled|learn|kind|self-link|last-update|
+>|---|---|---|---|---|---|---|
+>| 9--k-GSum4jUNSf0sU91Dw | Bad unescape | false | false | tm:asm:policies:blocking-settings:evasions:evasionstate | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/blocking-settings/evasions/9--k-GSum4jUNSf0sU91Dw?ver=15.1.0 | 2020-08-11T14:43:18Z |
 
 
-### f5-asm-resource-urls-list
+### f5-asm-policy-urls-list
 ***
 List all policy URLs
 
 
 #### Base Command
 
-`f5-asm-resource-urls-list`
+`f5-asm-policy-urls-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1288,53 +1927,101 @@ List all policy URLs
 
 
 #### Command Example
-```!f5-asm-resource-urls-list policy_name=Test_Policy```
+```!f5-asm-policy-urls-list policy_name=Test_Policy```
 
 #### Context Example
 ```
 {
     "f5": {
-        "resource-url": [
+        "Url": [
             {
-                "clickjacking-protection": false,
-                "description": "",
-                "id": "Q6tL31BrUl-vlY0yKsNSqA",
-                "is-allowed": true,
-                "last-update": "2020-08-05T21:16:50Z",
-                "mandatory-body": false,
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": "GUI",
+                "description": null,
+                "enforcementType": null,
+                "id": "6ER7SOq208zow5rraOzwyQ",
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": false,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-11T14:00:44Z",
+                "mandatoryBody": true,
                 "method": "*",
-                "name": "/validation",
-                "perform-staging": false,
-                "protocol": "https",
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/Q6tL31BrUl-vlY0yKsNSqA?ver=15.1.0",
+                "name": "/http",
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": null,
+                "protocol": "http",
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/6ER7SOq208zow5rraOzwyQ?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
                 "type": "explicit"
             },
             {
-                "clickjacking-protection": false,
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": false,
+                "createdBy": "GUI",
                 "description": "",
+                "enforcementType": null,
                 "id": "faiefv884qtHRU3Qva2AbQ",
-                "is-allowed": true,
-                "last-update": "2020-08-05T20:58:51Z",
-                "mandatory-body": false,
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": true,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T20:58:51Z",
+                "mandatoryBody": false,
                 "method": "*",
                 "name": "*",
-                "perform-staging": true,
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": true,
                 "protocol": "http",
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/faiefv884qtHRU3Qva2AbQ?ver=15.1.0",
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/faiefv884qtHRU3Qva2AbQ?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
                 "type": "wildcard"
             },
             {
-                "clickjacking-protection": false,
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": null,
+                "checkRequestLength": null,
+                "clickjackingProtection": false,
+                "createdBy": "GUI",
                 "description": "",
+                "enforcementType": null,
                 "id": "N_a3D1S7OKDehYEPb-mgCg",
-                "is-allowed": true,
-                "last-update": "2020-08-05T20:58:51Z",
-                "mandatory-body": false,
+                "ignoreAnomalies": null,
+                "includeSubdomains": null,
+                "ipAddress": null,
+                "ipMask": null,
+                "isAllowed": true,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T20:58:51Z",
+                "mandatoryBody": false,
                 "method": "*",
                 "name": "*",
-                "perform-staging": true,
+                "neverLearnRequests": null,
+                "neverLogRequests": null,
+                "performStaging": true,
                 "protocol": "https",
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/N_a3D1S7OKDehYEPb-mgCg?ver=15.1.0",
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/N_a3D1S7OKDehYEPb-mgCg?ver=15.1.0",
+                "trustedByPolicyBuilder": null,
                 "type": "wildcard"
             }
         ]
@@ -1344,13 +2031,12 @@ List all policy URLs
 
 #### Human Readable Output
 
->### URL for selected policy
->|id|name|protocol|type|method|is-allowed|clickjacking-protection|perform-staging|mandatory-body|self-link|last-update|
->|---|---|---|---|---|---|---|---|---|---|---|
->| Q6tL31BrUl-vlY0yKsNSqA | /validation | https | explicit | * | true | false | false | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/Q6tL31BrUl-vlY0yKsNSqA?ver=15.1.0 | 2020-08-05T21:16:50Z |
->| faiefv884qtHRU3Qva2AbQ | * | http | wildcard | * | true | false | true | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/faiefv884qtHRU3Qva2AbQ?ver=15.1.0 | 2020-08-05T20:58:51Z |
->| N_a3D1S7OKDehYEPb-mgCg | * | https | wildcard | * | true | false | true | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/N_a3D1S7OKDehYEPb-mgCg?ver=15.1.0 | 2020-08-05T20:58:51Z |
-
+>### f5 data for Url:
+>|name|id|type|protocol|method|selfLink|mandatoryBody|clickjackingProtection|performStaging|createdBy|lastUpdateMicros|isAllowed|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| /http | 6ER7SOq208zow5rraOzwyQ | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/6ER7SOq208zow5rraOzwyQ?ver=15.1.0 | true |  |  | GUI | 2020-08-11T14:00:44Z | false |
+>| * | faiefv884qtHRU3Qva2AbQ | wildcard | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/faiefv884qtHRU3Qva2AbQ?ver=15.1.0 | false | false | true | GUI | 2020-08-05T20:58:51Z | true |
+>| * | N_a3D1S7OKDehYEPb-mgCg | wildcard | https | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/N_a3D1S7OKDehYEPb-mgCg?ver=15.1.0 | false | false | true | GUI | 2020-08-05T20:58:51Z | true |
 
 
 ### f5-asm-policy-cookies-add
@@ -1391,15 +2077,37 @@ Add new cookie to a specific policy
 ```
 {
     "f5": {
-        "policy-cookies": {
-            "created-by": "GUI",
-            "enforcement-type": "allow",
+        "Cookies": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": "GUI",
+            "description": null,
+            "enforcementType": "allow",
             "id": "7t_U2dbYEAQp89Wp0m_QoA",
-            "is-base-64": false,
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": false,
+            "lastUpdateMicros": "2020-08-11T16:02:32Z",
+            "method": null,
             "name": "new_cookie",
-            "perform-staging": false,
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0",
-            "type": "explicit"
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": false,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": "explicit",
+            "urlLength": null
         }
     }
 }
@@ -1407,20 +2115,20 @@ Add new cookie to a specific policy
 
 #### Human Readable Output
 
->### f5 data for adding policy cookies:
->|name|id|self-link|enforcement-type|perform-staging|type|is-base-64|created-by|
->|---|---|---|---|---|---|---|---|
->| new_cookie | 7t_U2dbYEAQp89Wp0m_QoA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0 | allow | false | explicit | false | GUI |
+>### f5 data for listing all Cookies:
+>|name|id|type|selfLink|enforcementType|isBase64|createdBy|performStaging|lastUpdateMicros|
+>|---|---|---|---|---|---|---|---|---|
+>| new_cookie | 7t_U2dbYEAQp89Wp0m_QoA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0 | allow | false | GUI | false | 2020-08-11T16:02:32Z |
 
 
-### f5-asm-resource-urls-add
+### f5-asm-policy-urls-add
 ***
 Add a new URL to a policy
 
 
 #### Base Command
 
-`f5-asm-resource-urls-add`
+`f5-asm-policy-urls-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1432,6 +2140,7 @@ Add a new URL to a policy
 | url_type | Type of URL (explicit or wildcard) | Optional | 
 | is_allowed | Whether or not the URL is allowed | Optional | 
 | method | What method to use in the URL | Optional | 
+| clickjacking_protection | Is clickjacking protection enabled in the URL. | Optional | 
 
 
 #### Context Output
@@ -1453,25 +2162,43 @@ Add a new URL to a policy
 
 
 #### Command Example
-```!f5-asm-resource-urls-add policy_name=Test_Policy protocol=https name=validation```
+```!f5-asm-policy-urls-add policy_name=Test_Policy protocol=http name=http_example```
 
 #### Context Example
 ```
 {
     "f5": {
-        "resource-url": {
-            "clickjacking-protection": false,
+        "Url": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": false,
+            "createdBy": "GUI",
             "description": "",
-            "id": "Q6tL31BrUl-vlY0yKsNSqA",
-            "is-allowed": true,
-            "last-update": "2020-08-05T21:16:50Z",
-            "mandatory-body": false,
+            "enforcementType": null,
+            "id": "q_O5IGzUqSmFYZhlkA1CpQ",
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": true,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:44Z",
             "method": "*",
-            "name": "/validation",
-            "perform-staging": false,
-            "protocol": "https",
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/Q6tL31BrUl-vlY0yKsNSqA?ver=15.1.0",
-            "type": "explicit"
+            "name": "/http_example",
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": false,
+            "postDataLength": null,
+            "protocol": "http",
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/q_O5IGzUqSmFYZhlkA1CpQ?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": "explicit",
+            "urlLength": null
         }
     }
 }
@@ -1479,20 +2206,20 @@ Add a new URL to a policy
 
 #### Human Readable Output
 
->### URL for selected policy
->|id|name|protocol|type|method|is-allowed|clickjacking-protection|perform-staging|mandatory-body|self-link|last-update|
+>### f5 data for listing all Url:
+>|name|id|type|protocol|method|selfLink|clickjackingProtection|createdBy|performStaging|isAllowed|lastUpdateMicros|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| Q6tL31BrUl-vlY0yKsNSqA | /validation | https | explicit | * | true | false | false | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/Q6tL31BrUl-vlY0yKsNSqA?ver=15.1.0 | 2020-08-05T21:16:50Z |
+>| /http_example | q_O5IGzUqSmFYZhlkA1CpQ | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/q_O5IGzUqSmFYZhlkA1CpQ?ver=15.1.0 | false | GUI | false | true | 2020-08-11T16:02:44Z |
 
 
-### f5-asm-resource-urls-update
+### f5-asm-policy-urls-update
 ***
 Update an existing policy URL
 
 
 #### Base Command
 
-`f5-asm-resource-urls-update`
+`f5-asm-policy-urls-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1502,7 +2229,6 @@ Update an existing policy URL
 | perform_staging | Whether or not to stage the URL | Optional | 
 | description | Optional new description for the URL | Optional | 
 | mandatory_body | Whether or not to have a mandatory body | Optional | 
-| clickjacking_protection | Whether or not to enable clickjacking protection. | Optional | 
 | url_isreferrer | Whether or not the URL is a referrer. | Optional | 
 
 
@@ -1525,25 +2251,43 @@ Update an existing policy URL
 
 
 #### Command Example
-```!f5-asm-resource-urls-update policy_name=Test_Policy  name=/validation```
+```!f5-asm-policy-urls-update policy_name=Test_Policy name="/http_example"```
 
 #### Context Example
 ```
 {
     "f5": {
-        "resource-url": {
-            "clickjacking-protection": false,
+        "Url": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": false,
+            "createdBy": "GUI",
             "description": "",
-            "id": "xRwehdjQeUIVcKaT8yjN6g",
-            "is-allowed": true,
-            "last-update": "2020-08-05T21:10:46Z",
-            "mandatory-body": false,
+            "enforcementType": null,
+            "id": "q_O5IGzUqSmFYZhlkA1CpQ",
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": true,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:44Z",
             "method": "*",
-            "name": "/validation",
-            "perform-staging": false,
+            "name": "/http_example",
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": false,
+            "postDataLength": null,
             "protocol": "http",
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/xRwehdjQeUIVcKaT8yjN6g?ver=15.1.0",
-            "type": "explicit"
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/q_O5IGzUqSmFYZhlkA1CpQ?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": "explicit",
+            "urlLength": null
         }
     }
 }
@@ -1551,20 +2295,20 @@ Update an existing policy URL
 
 #### Human Readable Output
 
->### URL for selected policy
->|id|name|protocol|type|method|is-allowed|clickjacking-protection|perform-staging|mandatory-body|self-link|last-update|
+>### f5 data for listing all Url:
+>|name|id|type|protocol|method|selfLink|clickjackingProtection|createdBy|performStaging|isAllowed|lastUpdateMicros|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| xRwehdjQeUIVcKaT8yjN6g | /validation | http | explicit | * | true | false | false | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/xRwehdjQeUIVcKaT8yjN6g?ver=15.1.0 | 2020-08-05T21:10:46Z |
+>| /http_example | q_O5IGzUqSmFYZhlkA1CpQ | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/q_O5IGzUqSmFYZhlkA1CpQ?ver=15.1.0 | false | GUI | false | true | 2020-08-11T16:02:44Z |
 
 
-### f5-asm-resource-urls-delete
+### f5-asm-policy-urls-delete
 ***
 Delete a URL from a policy
 
 
 #### Base Command
 
-`f5-asm-resource-urls-delete`
+`f5-asm-policy-urls-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1592,25 +2336,43 @@ Delete a URL from a policy
 
 
 #### Command Example
-```!f5-asm-resource-urls-delete policy_name=Test_Policy  name=/validation```
+```!f5-asm-policy-urls-delete policy_name=Test_Policy name="/http_example"```
 
 #### Context Example
 ```
 {
     "f5": {
-        "resource-url": {
-            "clickjacking-protection": false,
+        "Url": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": false,
+            "createdBy": "GUI",
             "description": "",
-            "id": "xRwehdjQeUIVcKaT8yjN6g",
-            "is-allowed": true,
-            "last-update": "2020-08-05T21:10:46Z",
-            "mandatory-body": false,
+            "enforcementType": null,
+            "id": "q_O5IGzUqSmFYZhlkA1CpQ",
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": true,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:44Z",
             "method": "*",
-            "name": "/validation",
-            "perform-staging": false,
+            "name": "/http_example",
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": false,
+            "postDataLength": null,
             "protocol": "http",
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/xRwehdjQeUIVcKaT8yjN6g?ver=15.1.0",
-            "type": "explicit"
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/q_O5IGzUqSmFYZhlkA1CpQ?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": "explicit",
+            "urlLength": null
         }
     }
 }
@@ -1618,10 +2380,10 @@ Delete a URL from a policy
 
 #### Human Readable Output
 
->### URL for selected policy
->|id|name|protocol|type|method|is-allowed|clickjacking-protection|perform-staging|mandatory-body|self-link|last-update|
+>### f5 data for listing all Url:
+>|name|id|type|protocol|method|selfLink|clickjackingProtection|createdBy|performStaging|isAllowed|lastUpdateMicros|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| xRwehdjQeUIVcKaT8yjN6g | /validation | http | explicit | * | true | false | false | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/xRwehdjQeUIVcKaT8yjN6g?ver=15.1.0 | 2020-08-05T21:10:46Z |
+>| /http_example | q_O5IGzUqSmFYZhlkA1CpQ | explicit | http | * | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/urls/q_O5IGzUqSmFYZhlkA1CpQ?ver=15.1.0 | false | GUI | false | true | 2020-08-11T16:02:44Z |
 
 
 ### f5-asm-policy-cookies-update
@@ -1656,10 +2418,54 @@ Update a cookie object
 
 
 #### Command Example
-```!f5-asm-policy-cookies-update ```
+```!f5-asm-policy-cookies-update policy_name=Test_Policy cookie_name=new_cookie```
+
+#### Context Example
+```
+{
+    "f5": {
+        "Cookies": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": "GUI",
+            "description": null,
+            "enforcementType": "allow",
+            "id": "7t_U2dbYEAQp89Wp0m_QoA",
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": false,
+            "lastUpdateMicros": "2020-08-11T16:02:32Z",
+            "method": null,
+            "name": "new_cookie",
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": false,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": "explicit",
+            "urlLength": null
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### f5 data for listing all Cookies:
+>|name|id|type|selfLink|enforcementType|isBase64|createdBy|performStaging|lastUpdateMicros|
+>|---|---|---|---|---|---|---|---|---|
+>| new_cookie | 7t_U2dbYEAQp89Wp0m_QoA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0 | allow | false | GUI | false | 2020-08-11T16:02:32Z |
 
 
 ### f5-asm-policy-cookies-delete
@@ -1693,20 +2499,64 @@ Delete cookie
 
 
 #### Command Example
-```!f5-asm-policy-cookies-delete ```
+```!f5-asm-policy-cookies-delete policy_name=Test_Policy cookie_name=new_cookie```
+
+#### Context Example
+```
+{
+    "f5": {
+        "Cookies": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": null,
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": "GUI",
+            "description": null,
+            "enforcementType": "allow",
+            "id": "7t_U2dbYEAQp89Wp0m_QoA",
+            "ignoreAnomalies": null,
+            "includeSubdomains": null,
+            "ipAddress": null,
+            "ipMask": null,
+            "isAllowed": null,
+            "isBase64": false,
+            "lastUpdateMicros": "2020-08-11T16:02:32Z",
+            "method": null,
+            "name": "new_cookie",
+            "neverLearnRequests": null,
+            "neverLogRequests": null,
+            "performStaging": false,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0",
+            "trustedByPolicyBuilder": null,
+            "type": "explicit",
+            "urlLength": null
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### f5 data for listing all Cookies:
+>|name|id|type|selfLink|enforcementType|isBase64|createdBy|performStaging|lastUpdateMicros|
+>|---|---|---|---|---|---|---|---|---|
+>| new_cookie | 7t_U2dbYEAQp89Wp0m_QoA | explicit | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/cookies/7t_U2dbYEAQp89Wp0m_QoA?ver=15.1.0 | allow | false | GUI | false | 2020-08-11T16:02:32Z |
 
 
-### f5-asm-resource-whitelist-ips-list
+### f5-asm-policy-whitelist-ips-list
 ***
 List all whitelisted IPs for a policy
 
 
 #### Base Command
 
-`f5-asm-resource-whitelist-ips-list`
+`f5-asm-policy-whitelist-ips-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1732,51 +2582,192 @@ List all whitelisted IPs for a policy
 
 
 #### Command Example
-```!f5-asm-resource-whitelist-ips-list policy_name=Test_Policy```
+```!f5-asm-policy-whitelist-ips-list policy_name=Test_Policy```
 
 #### Context Example
 ```
 {
     "f5": {
-        "policy-whitelist-ip": [
+        "WhitelistIP": [
             {
-                "block-requests": "policy-default",
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": "policy-default",
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
                 "description": "",
+                "enforcementType": null,
                 "id": "4CuqTmGkqfI01diFbc2PJQ",
-                "ignore-anomalies": false,
-                "ip-address": "100.100.100.100",
-                "ip-mask": "255.255.255.255",
-                "last-update": "2020-08-05T21:13:09Z",
-                "never-learn-requests": false,
-                "never-log-requests": false,
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/4CuqTmGkqfI01diFbc2PJQ?ver=15.1.0",
-                "trusted-by-policy-builder": false
+                "ignoreAnomalies": false,
+                "includeSubdomains": null,
+                "ipAddress": "100.100.100.100",
+                "ipMask": "255.255.255.255",
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T21:13:09Z",
+                "mandatoryBody": null,
+                "method": null,
+                "name": null,
+                "neverLearnRequests": false,
+                "neverLogRequests": false,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/4CuqTmGkqfI01diFbc2PJQ?ver=15.1.0",
+                "trustedByPolicyBuilder": false,
+                "type": null
             },
             {
-                "block-requests": "policy-default",
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": "policy-default",
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
                 "description": "",
+                "enforcementType": null,
                 "id": "lbpOAL2E2f2C7qp7kiV3OA",
-                "ignore-anomalies": false,
-                "ip-address": "20.20.20.20",
-                "ip-mask": "255.255.255.255",
-                "last-update": "2020-08-05T21:13:38Z",
-                "never-learn-requests": false,
-                "never-log-requests": false,
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/lbpOAL2E2f2C7qp7kiV3OA?ver=15.1.0",
-                "trusted-by-policy-builder": false
+                "ignoreAnomalies": false,
+                "includeSubdomains": null,
+                "ipAddress": "20.20.20.20",
+                "ipMask": "255.255.255.255",
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T21:13:38Z",
+                "mandatoryBody": null,
+                "method": null,
+                "name": null,
+                "neverLearnRequests": false,
+                "neverLogRequests": false,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/lbpOAL2E2f2C7qp7kiV3OA?ver=15.1.0",
+                "trustedByPolicyBuilder": false,
+                "type": null
             },
             {
-                "block-requests": "policy-default",
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": "policy-default",
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
                 "description": "",
+                "enforcementType": null,
                 "id": "Uey6PzyJhbb6Qm-w0RD__Q",
-                "ignore-anomalies": false,
-                "ip-address": "30.30.30.30",
-                "ip-mask": "255.255.255.255",
-                "last-update": "2020-08-05T21:13:48Z",
-                "never-learn-requests": false,
-                "never-log-requests": false,
-                "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/Uey6PzyJhbb6Qm-w0RD__Q?ver=15.1.0",
-                "trusted-by-policy-builder": false
+                "ignoreAnomalies": false,
+                "includeSubdomains": null,
+                "ipAddress": "30.30.30.30",
+                "ipMask": "255.255.255.255",
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-05T21:13:48Z",
+                "mandatoryBody": null,
+                "method": null,
+                "name": null,
+                "neverLearnRequests": false,
+                "neverLogRequests": false,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/Uey6PzyJhbb6Qm-w0RD__Q?ver=15.1.0",
+                "trustedByPolicyBuilder": false,
+                "type": null
+            },
+            {
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": "policy-default",
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": "",
+                "enforcementType": null,
+                "id": "9lSC2hzsLvpsEgSTEpi4yw",
+                "ignoreAnomalies": false,
+                "includeSubdomains": null,
+                "ipAddress": "11.22.33.44",
+                "ipMask": "255.255.255.255",
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-09T15:15:56Z",
+                "mandatoryBody": null,
+                "method": null,
+                "name": null,
+                "neverLearnRequests": false,
+                "neverLogRequests": false,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/9lSC2hzsLvpsEgSTEpi4yw?ver=15.1.0",
+                "trustedByPolicyBuilder": false,
+                "type": null
+            },
+            {
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": "policy-default",
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": "",
+                "enforcementType": null,
+                "id": "F2ZRy81hCYIAnYolA0fqzg",
+                "ignoreAnomalies": false,
+                "includeSubdomains": null,
+                "ipAddress": "1.2.3.44",
+                "ipMask": "255.255.255.255",
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-11T14:32:19Z",
+                "mandatoryBody": null,
+                "method": null,
+                "name": null,
+                "neverLearnRequests": false,
+                "neverLogRequests": true,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/F2ZRy81hCYIAnYolA0fqzg?ver=15.1.0",
+                "trustedByPolicyBuilder": false,
+                "type": null
+            },
+            {
+                "actAsMethod": null,
+                "active": null,
+                "allowed": null,
+                "blockRequests": "policy-default",
+                "checkRequestLength": null,
+                "clickjackingProtection": null,
+                "createdBy": null,
+                "description": "",
+                "enforcementType": null,
+                "id": "6fatQ08fMtHzcywc4gQDJA",
+                "ignoreAnomalies": false,
+                "includeSubdomains": null,
+                "ipAddress": "1.2.3.144",
+                "ipMask": "255.255.255.255",
+                "isAllowed": null,
+                "isBase64": null,
+                "lastUpdateMicros": "2020-08-11T14:31:24Z",
+                "mandatoryBody": null,
+                "method": null,
+                "name": null,
+                "neverLearnRequests": true,
+                "neverLogRequests": false,
+                "performStaging": null,
+                "protocol": null,
+                "queryStringLength": null,
+                "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/6fatQ08fMtHzcywc4gQDJA?ver=15.1.0",
+                "trustedByPolicyBuilder": true,
+                "type": null
             }
         ]
     }
@@ -1785,22 +2776,25 @@ List all whitelisted IPs for a policy
 
 #### Human Readable Output
 
->### f5 data for resource whitelisted IPs:
->|id|ip-address|ip-mask|block-requests|ignore-anomalies|never-log-requests|never-learn-requests|trusted-by-policy-builder|self-link|last-update|
+>### f5 data for WhitelistIP:
+>|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
 >|---|---|---|---|---|---|---|---|---|---|
->| 4CuqTmGkqfI01diFbc2PJQ | 100.100.100.100 | 255.255.255.255 | policy-default | false | false | false | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/4CuqTmGkqfI01diFbc2PJQ?ver=15.1.0 | 2020-08-05T21:13:09Z |
->| lbpOAL2E2f2C7qp7kiV3OA | 20.20.20.20 | 255.255.255.255 | policy-default | false | false | false | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/lbpOAL2E2f2C7qp7kiV3OA?ver=15.1.0 | 2020-08-05T21:13:38Z |
->| Uey6PzyJhbb6Qm-w0RD__Q | 30.30.30.30 | 255.255.255.255 | policy-default | false | false | false | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/Uey6PzyJhbb6Qm-w0RD__Q?ver=15.1.0 | 2020-08-05T21:13:48Z |
+>| 4CuqTmGkqfI01diFbc2PJQ | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/4CuqTmGkqfI01diFbc2PJQ?ver=15.1.0 | 100.100.100.100 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-05T21:13:09Z |
+>| lbpOAL2E2f2C7qp7kiV3OA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/lbpOAL2E2f2C7qp7kiV3OA?ver=15.1.0 | 20.20.20.20 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-05T21:13:38Z |
+>| Uey6PzyJhbb6Qm-w0RD__Q | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/Uey6PzyJhbb6Qm-w0RD__Q?ver=15.1.0 | 30.30.30.30 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-05T21:13:48Z |
+>| 9lSC2hzsLvpsEgSTEpi4yw | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/9lSC2hzsLvpsEgSTEpi4yw?ver=15.1.0 | 11.22.33.44 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-09T15:15:56Z |
+>| F2ZRy81hCYIAnYolA0fqzg | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/F2ZRy81hCYIAnYolA0fqzg?ver=15.1.0 | 1.2.3.44 | 255.255.255.255 | policy-default | false | true | false | false | 2020-08-11T14:32:19Z |
+>| 6fatQ08fMtHzcywc4gQDJA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/6fatQ08fMtHzcywc4gQDJA?ver=15.1.0 | 1.2.3.144 | 255.255.255.255 | policy-default | false | false | true | true | 2020-08-11T14:31:24Z |
 
 
-### f5-asm-resource-whitelist-ips-add
+### f5-asm-policy-whitelist-ips-add
 ***
 Add a new whitelisted IP to a policy.
 
 
 #### Base Command
 
-`f5-asm-resource-whitelist-ips-add`
+`f5-asm-policy-whitelist-ips-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1835,24 +2829,43 @@ Add a new whitelisted IP to a policy.
 
 
 #### Command Example
-```!f5-asm-resource-whitelist-ips-add policy_name=Test_Policy ip_address=1.2.3.4```
+```!f5-asm-policy-whitelist-ips-add policy_name=Test_Policy ip_address=1.2.3.4```
 
 #### Context Example
 ```
 {
     "f5": {
-        "policy-whitelist-ip": {
-            "block-requests": "policy-default",
+        "WhitelistIP": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": "policy-default",
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": null,
             "description": "",
+            "enforcementType": null,
             "id": "pwbUREF-1u-BDw9MrdisOA",
-            "ignore-anomalies": false,
-            "ip-address": "1.2.3.4",
-            "ip-mask": "255.255.255.255",
-            "last-update": "2020-08-05T21:17:05Z",
-            "never-learn-requests": false,
-            "never-log-requests": false,
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0",
-            "trusted-by-policy-builder": false
+            "ignoreAnomalies": false,
+            "includeSubdomains": null,
+            "ipAddress": "1.2.3.4",
+            "ipMask": "255.255.255.255",
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:49Z",
+            "method": null,
+            "name": null,
+            "neverLearnRequests": false,
+            "neverLogRequests": false,
+            "performStaging": null,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0",
+            "trustedByPolicyBuilder": false,
+            "type": null,
+            "urlLength": null
         }
     }
 }
@@ -1860,20 +2873,20 @@ Add a new whitelisted IP to a policy.
 
 #### Human Readable Output
 
->### f5 data for created resource whitelisted IP:
->|id|ip-address|ip-mask|block-requests|ignore-anomalies|never-log-requests|never-learn-requests|trusted-by-policy-builder|self-link|last-update|
+>### f5 data for listing all WhitelistIP:
+>|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
 >|---|---|---|---|---|---|---|---|---|---|
->| pwbUREF-1u-BDw9MrdisOA | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 2020-08-05T21:17:05Z |
+>| pwbUREF-1u-BDw9MrdisOA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-11T16:02:49Z |
 
 
-### f5-asm-resource-whitelist-ips-update
+### f5-asm-policy-whitelist-ips-update
 ***
 Update an existing whitelisted IP.
 
 
 #### Base Command
 
-`f5-asm-resource-whitelist-ips-update`
+`f5-asm-policy-whitelist-ips-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1907,24 +2920,43 @@ Update an existing whitelisted IP.
 
 
 #### Command Example
-```!f5-asm-resource-whitelist-ips-update policy_name=Test_Policy ip_address=1.2.3.4```
+```!f5-asm-policy-whitelist-ips-update policy_name=Test_Policy ip_address=1.2.3.4```
 
 #### Context Example
 ```
 {
     "f5": {
-        "policy-whitelist-ip": {
-            "block-requests": "policy-default",
+        "WhitelistIP": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": "policy-default",
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": null,
             "description": "",
+            "enforcementType": null,
             "id": "pwbUREF-1u-BDw9MrdisOA",
-            "ignore-anomalies": false,
-            "ip-address": "1.2.3.4",
-            "ip-mask": "255.255.255.255",
-            "last-update": "2020-08-05T21:17:05Z",
-            "never-learn-requests": false,
-            "never-log-requests": false,
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0",
-            "trusted-by-policy-builder": false
+            "ignoreAnomalies": false,
+            "includeSubdomains": null,
+            "ipAddress": "1.2.3.4",
+            "ipMask": "255.255.255.255",
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:49Z",
+            "method": null,
+            "name": null,
+            "neverLearnRequests": false,
+            "neverLogRequests": false,
+            "performStaging": null,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0",
+            "trustedByPolicyBuilder": false,
+            "type": null,
+            "urlLength": null
         }
     }
 }
@@ -1932,20 +2964,20 @@ Update an existing whitelisted IP.
 
 #### Human Readable Output
 
->### f5 data for updated resource whitelisted IP:
->|id|ip-address|ip-mask|block-requests|ignore-anomalies|never-log-requests|never-learn-requests|trusted-by-policy-builder|self-link|last-update|
+>### f5 data for listing all WhitelistIP:
+>|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
 >|---|---|---|---|---|---|---|---|---|---|
->| pwbUREF-1u-BDw9MrdisOA | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 2020-08-05T21:17:05Z |
+>| pwbUREF-1u-BDw9MrdisOA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-11T16:02:49Z |
 
 
-### f5-asm-resource-whitelist-ips-delete
+### f5-asm-policy-whitelist-ips-delete
 ***
 Delete an existing whitelisted IP from a policy.
 
 
 #### Base Command
 
-`f5-asm-resource-whitelist-ips-delete`
+`f5-asm-policy-whitelist-ips-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1972,24 +3004,43 @@ Delete an existing whitelisted IP from a policy.
 
 
 #### Command Example
-```!f5-asm-resource-whitelist-ips-delete policy_name=Test_Policy ip_address=1.2.3.4```
+```!f5-asm-policy-whitelist-ips-delete policy_name=Test_Policy ip_address=1.2.3.4```
 
 #### Context Example
 ```
 {
     "f5": {
-        "policy-whitelist-ip": {
-            "block-requests": "policy-default",
+        "WhitelistIP": {
+            "actAsMethod": null,
+            "allowed": null,
+            "blockRequests": "policy-default",
+            "checkRequestLength": null,
+            "checkUrlLength": null,
+            "clickjackingProtection": null,
+            "createdBy": null,
             "description": "",
+            "enforcementType": null,
             "id": "pwbUREF-1u-BDw9MrdisOA",
-            "ignore-anomalies": false,
-            "ip-address": "1.2.3.4",
-            "ip-mask": "255.255.255.255",
-            "last-update": "2020-08-05T21:17:05Z",
-            "never-learn-requests": false,
-            "never-log-requests": false,
-            "self-link": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0",
-            "trusted-by-policy-builder": false
+            "ignoreAnomalies": false,
+            "includeSubdomains": null,
+            "ipAddress": "1.2.3.4",
+            "ipMask": "255.255.255.255",
+            "isAllowed": null,
+            "isBase64": null,
+            "lastUpdateMicros": "2020-08-11T16:02:49Z",
+            "method": null,
+            "name": null,
+            "neverLearnRequests": false,
+            "neverLogRequests": false,
+            "performStaging": null,
+            "postDataLength": null,
+            "protocol": null,
+            "queryStringLength": null,
+            "responseCheck": null,
+            "selfLink": "https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0",
+            "trustedByPolicyBuilder": false,
+            "type": null,
+            "urlLength": null
         }
     }
 }
@@ -1997,8 +3048,8 @@ Delete an existing whitelisted IP from a policy.
 
 #### Human Readable Output
 
->### f5 data for deleted resource whitelisted IP:
->|id|ip-address|ip-mask|block-requests|ignore-anomalies|never-log-requests|never-learn-requests|trusted-by-policy-builder|self-link|last-update|
+>### f5 data for listing all WhitelistIP:
+>|id|selfLink|ipAddress|ipMask|blockRequests|ignoreAnomalies|neverLogRequests|neverLearnRequests|trustedByPolicyBuilder|lastUpdateMicros|
 >|---|---|---|---|---|---|---|---|---|---|
->| pwbUREF-1u-BDw9MrdisOA | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 2020-08-05T21:17:05Z |
+>| pwbUREF-1u-BDw9MrdisOA | https://localhost/mgmt/tm/asm/policies/kpD2qFaUlGAbw8RhN5IFQA/whitelist-ips/pwbUREF-1u-BDw9MrdisOA?ver=15.1.0 | 1.2.3.4 | 255.255.255.255 | policy-default | false | false | false | false | 2020-08-11T16:02:49Z |
 

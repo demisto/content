@@ -16,6 +16,3 @@ This integration was integrated and tested with version 15.1.0.3 of f5
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.

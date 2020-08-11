@@ -15,24 +15,24 @@
 !f5-asm-policy-cookies-list policy_name=Test_Policy
 !f5-asm-policy-cookies-add policy_name=Test_Policy new_cookie_name=new_cookie
 !f5-asm-policy-cookies-update policy_name=Test_Policy cookie_name=new_cookie
-!f5-asm-policy-cookies-delete policy_name=Test_Policy new_cookie_name=new_cookie
+!f5-asm-policy-cookies-delete policy_name=Test_Policy cookie_name=new_cookie
 
-!f5-asm-resource-hostnames-list policy_name=Test_Policy
-!f5-asm-resource-hostnames-add policy_name=Test_Policy name=qmasters.co
-!f5-asm-resource-hostnames-update policy_name=Test_Policy name=qmasters.co include_subdomains=true
-!f5-asm-resource-hostnames-delete policy_name=Test_Policy name=qmasters.co
+!f5-asm-policy-hostnames-list policy_name=Test_Policy
+!f5-asm-policy-hostnames-add policy_name=Test_Policy name=qmasters.co
+!f5-asm-policy-hostnames-update policy_name=Test_Policy name=qmasters.co include_subdomains=true
+!f5-asm-policy-hostnames-delete policy_name=Test_Policy name=qmasters.co
 
-!f5-asm-resource-blocking-settings-list policy_name=Test_Policy endpoint=evasions
-!f5-asm-resource-blocking-settings-update policy_name=Test_Policy endpoint=evasions description="Bad unescape"  
+!f5-asm-policy-blocking-settings-list policy_name=Test_Policy endpoint=evasions
+!f5-asm-policy-blocking-settings-update policy_name=Test_Policy endpoint=evasions description="Bad unescape"  
 
-!f5-asm-resource-urls-list policy_name=Test_Policy
-!f5-asm-resource-urls-add policy_name=Test_Policy protocol=https name=validation
-!f5-asm-resource-urls-update policy_name=Test_Policy  name=/validation
-!f5-asm-resource-urls-delete policy_name=Test_Policy  name=/validation
+!f5-asm-policy-urls-list policy_name=Test_Policy
+!f5-asm-policy-urls-add policy_name=Test_Policy protocol=http name=http_example
+!f5-asm-policy-urls-update policy_name=Test_Policy name="/http_example"
+!f5-asm-policy-urls-delete policy_name=Test_Policy name="/http_example"
 
-!f5-asm-resource-whitelist-ips-list policy_name=Test_Policy
-!f5-asm-resource-whitelist-ips-add policy_name=Test_Policy ip_address=1.2.3.4
-!f5-asm-resource-whitelist-ips-update policy_name=Test_Policy ip_address=1.2.3.4
-!f5-asm-resource-whitelist-ips-delete policy_name=Test_Policy ip_address=1.2.3.4
+!f5-asm-policy-whitelist-ips-list policy_name=Test_Policy
+!f5-asm-policy-whitelist-ips-add policy_name=Test_Policy ip_address=1.2.3.4
+!f5-asm-policy-whitelist-ips-update policy_name=Test_Policy ip_address=1.2.3.4
+!f5-asm-policy-whitelist-ips-delete policy_name=Test_Policy ip_address=1.2.3.4
 
 !f5-asm-policy-delete policy_name=Test_Policyy
