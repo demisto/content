@@ -49,7 +49,6 @@ class Client(BaseClient):
         ok_codes = (200, 401, 403, 404, 500)  # includes responses that are ok (200) and error responses that should be
         # handled by the client and not in the BaseClient
         try:
-            LOG(f'\n\n\n\n\n IN HTTP_REQUEST! method: {method}, url_suffix: {url_suffix} \n\n\n\n\n')
             demisto.debug(f'\n\n\n\n\n IN HTTP_REQUEST-debug! method: {method}, url_suffix: {url_suffix} \n\n\n\n\n')
             res = self._http_request(method, url_suffix, resp_type='response', ok_codes=ok_codes)
             if res.status_code == 200:
