@@ -20,7 +20,7 @@ args:
   secret: false
   deprecated: true
 - default: false
-  defaultValue: xdrassignedusermail
+  defaultValue: xdrassigneduseremail
   description: The assigned_user_mail field name in Demisto.
   isArray: false
   name: assigned_user_mail
