@@ -597,7 +597,7 @@ def extract_features_from_all_incidents(incidents_df):
     return X, n_fetched_incidents, exceptions_log, exception_indices, timeout_indices, durations
 
 
-def extract_data_from_incidents(incidents, input_label_field):
+def extract_data_from_incidents(incidents, input_label_field=None):
     incidents_df = pd.DataFrame(incidents)
     if 'created' in incidents_df:
         incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))   # type: ignore
