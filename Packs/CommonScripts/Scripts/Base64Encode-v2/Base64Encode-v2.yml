@@ -7,10 +7,10 @@ args:
   secret: false
 comment: Encodes an input to Base64 format.
 commonfields:
-  id: Base64Encode
+  id: Base64Encode-v2
   version: -1
 enabled: false
-name: Base64Encode
+name: Base64Encode-v2
 outputs:
 - contextPath: Base64.encoded
   description: input encoded as Base64 format.
