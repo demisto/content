@@ -1761,15 +1761,18 @@ def handle_incoming_error_in_mirror(incident_data, error):
 
     # handle incoming error
     if integration_cache.get('in_mirror_error'):
-        incident_data['in_mirror_error'] = True
+        incident_data['in_mirror_error'] = integration_cache.get('in_mirror_error')
 
         # check if error was printed
         if not integration_cache.get('in_error_printed'):
+            # TODO: change this to an error type
             error_entries.append({
-                'Type': EntryType.ERROR,
-                'Contents': "An error occurred while mirroring incoming "
-                            "data: " + integration_cache.get('in_mirror_error'),
-                'ContentsFormat': EntryFormat.TEXT
+                'Type': EntryType.NOTE,
+                'Contents': "",
+                'HumanReadable': f"An error occurred while "
+                                 f"mirroring incoming data: {integration_cache.get('in_mirror_error')}",
+                'ReadableContentsFormat': EntryFormat.TEXT,
+                'ContentsFormat': EntryFormat.TEXT,
             })
             integration_cache['in_error_printed'] = True
 
@@ -1792,17 +1795,20 @@ def handle_outgoing_error_in_mirror(incident_data):
 
     # handle incoming error
     if integration_cache.get('out_mirror_error'):
-        incident_data['out_mirror_error'] = True
+        incident_data['out_mirror_error'] = integration_cache.get('out_mirror_error')
 
         # check if error was printed
         if not integration_cache.get('out_error_printed'):
+            # TODO: change this to an error type
             out_error_entry = {
-                'Type': EntryType.ERROR,
-                'Contents': "An error occurred while mirroring outgoing "
-                            "data: " + integration_cache.get('out_mirror_error'),
-                'ContentsFormat': EntryFormat.TEXT
+                'Type': EntryType.NOTE,
+                'Contents': "",
+                'HumanReadable': f"An error occurred while "
+                                 f"mirroring outgoing data: {integration_cache.get('out_mirror_error')}",
+                'ReadableContentsFormat': EntryFormat.TEXT,
+                'ContentsFormat': EntryFormat.TEXT,
             }
-            integration_cache['out_error_printed'] = True
+            integration_cache['out_error_printed'] = integration_cache.get('out_mirror_error')
             demisto.setIntegrationContext(integration_cache)
 
     return out_error_entry
@@ -1811,10 +1817,10 @@ def handle_outgoing_error_in_mirror(incident_data):
 def reset_in_and_out_errors(incident_data):
     integration_cache = demisto.getIntegrationContext()
     integration_cache['in_mirror_error'] = None
-    incident_data['in_mirror_error'] = False
+    incident_data['in_mirror_error'] = ''
 
     if integration_cache.get('out_mirror_error') is None:
-        incident_data['out_mirror_error'] = False
+        incident_data['out_mirror_error'] = ''
 
     demisto.setIntegrationContext(integration_cache)
 

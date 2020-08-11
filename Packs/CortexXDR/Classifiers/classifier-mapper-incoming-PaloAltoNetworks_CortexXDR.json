@@ -107,6 +107,14 @@
 					"complex": null,
 					"simple": "mirror_instance"
 				},
+				"IncomingMirrorError": {
+					"complex": null,
+					"simple": "in_mirror_error"
+				},
+				"OutgoingMirrorError": {
+					"complex": null,
+					"simple": "out_mirror_error"
+				},
 				"occurred": {
 					"complex": {
 						"accessor": "",

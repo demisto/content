@@ -837,8 +837,8 @@ def test_get_remote_data_command_should_update(requests_mock):
     expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
     expected_modified_incident['assigned_user_mail'] = ''
     expected_modified_incident['assigned_user_pretty_name'] = ''
-    expected_modified_incident['in_mirror_error'] = False
-    expected_modified_incident['out_mirror_error'] = False
+    expected_modified_incident['in_mirror_error'] = ''
+    expected_modified_incident['out_mirror_error'] = ''
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)
@@ -907,8 +907,8 @@ def test_get_remote_data_command_should_close_issue(requests_mock):
     expected_modified_incident['assigned_user_pretty_name'] = ''
     expected_modified_incident['closeReason'] = 'Resolved'
     expected_modified_incident['closeNotes'] = 'Handled'
-    expected_modified_incident['in_mirror_error'] = False
-    expected_modified_incident['out_mirror_error'] = False
+    expected_modified_incident['in_mirror_error'] = ''
+    expected_modified_incident['out_mirror_error'] = ''
 
     expected_closing_entry = {
         'Type': 1,
@@ -963,8 +963,8 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     expected_modified_incident['assigned_user_mail'] = 'some@mail.com'
     expected_modified_incident['assigned_user_pretty_name'] = ''
     expected_modified_incident['owner'] = 'username'
-    expected_modified_incident['in_mirror_error'] = False
-    expected_modified_incident['out_mirror_error'] = False
+    expected_modified_incident['in_mirror_error'] = ''
+    expected_modified_incident['out_mirror_error'] = ''
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)
@@ -1047,12 +1047,14 @@ def test_handle_outgoing_error_in_mirror__should_update(mocker):
     incident_data = {}
     out_entry = handle_outgoing_error_in_mirror(incident_data)
     expected_out_entry = {
-        'Type': 4,
-        'Contents': "An error occurred while mirroring outgoing data: Some Error",
-        'ContentsFormat': 'text'
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
     }
     assert out_entry == expected_out_entry
-    assert incident_data.get('out_mirror_error')
+    assert incident_data.get('out_mirror_error') == 'Some Error'
 
 
 def test_handle_outgoing_error_in_mirror__should_not_update(mocker):
@@ -1072,7 +1074,7 @@ def test_handle_outgoing_error_in_mirror__should_not_update(mocker):
     incident_data = {}
     out_entry = handle_outgoing_error_in_mirror(incident_data)
     assert out_entry == {}
-    assert incident_data.get('out_mirror_error')
+    assert incident_data.get('out_mirror_error') == 'Some Error'
 
 
 def test_handle_incoming_error_in_mirror__should_update_in_only(mocker):
@@ -1093,16 +1095,18 @@ def test_handle_incoming_error_in_mirror__should_update_in_only(mocker):
     }
 
     expected_in_error_entry = {
-        'Type': 4,
-        'Contents': "An error occurred while mirroring incoming data: My in error",
-        'ContentsFormat': 'text'
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring incoming data: My in error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
     }
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
     mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
     incident_data = {}
     response = handle_incoming_error_in_mirror(incident_data, "My in error")
-    assert response.mirrored_object.get('in_mirror_error')
-    assert response.mirrored_object.get('out_mirror_error')
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
     assert len(response.entries) == 1
     assert response.entries[0] == expected_in_error_entry
 
@@ -1124,21 +1128,25 @@ def test_handle_incoming_error_in_mirror__should_update_in_and_out(mocker):
         "out_error_printed": False,
     }
     expected_in_error_entry = {
-        'Type': 4,
-        'Contents': "An error occurred while mirroring incoming data: My in error",
-        'ContentsFormat': 'text'
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring incoming data: My in error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
     }
     expected_out_entry = {
-        'Type': 4,
-        'Contents': "An error occurred while mirroring outgoing data: Some Error",
-        'ContentsFormat': 'text'
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
     }
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
     mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
     incident_data = {}
     response = handle_incoming_error_in_mirror(incident_data, "My in error")
-    assert response.mirrored_object.get('in_mirror_error')
-    assert response.mirrored_object.get('out_mirror_error')
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
     assert len(response.entries) == 2
     assert expected_in_error_entry in response.entries
     assert expected_out_entry in response.entries
@@ -1162,16 +1170,18 @@ def test_handle_incoming_error_in_mirror__should_update_out_only(mocker):
         "in_error_printed": True
     }
     expected_out_entry = {
-        'Type': 4,
-        'Contents': "An error occurred while mirroring outgoing data: Some Error",
-        'ContentsFormat': 'text'
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
     }
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
     mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
     incident_data = {}
     response = handle_incoming_error_in_mirror(incident_data, "My in error")
-    assert response.mirrored_object.get('in_mirror_error')
-    assert response.mirrored_object.get('out_mirror_error')
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
     assert len(response.entries) == 1
     assert expected_out_entry in response.entries
 
@@ -1197,6 +1207,6 @@ def test_handle_incoming_error_in_mirror__should_not_update(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
     incident_data = {}
     response = handle_incoming_error_in_mirror(incident_data, "My in error")
-    assert response.mirrored_object.get('in_mirror_error')
-    assert response.mirrored_object.get('out_mirror_error')
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
     assert len(response.entries) == 0
