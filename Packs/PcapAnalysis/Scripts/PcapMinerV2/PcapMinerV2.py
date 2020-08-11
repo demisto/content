@@ -39,7 +39,7 @@ class PCAP():
         """
 
         # setup data structures
-        self.hierarchy = {}  # type: Dict[str, int]
+        self.hierarchy: Dict[str, int] = {}
         self.num_of_packets = 0
         self.tcp_streams = 0
         self.udp_streams = 0
@@ -47,17 +47,17 @@ class PCAP():
         self.bytes_transmitted = 0
         self.min_time = float('inf')
         self.max_time = -float('inf')
-        self.conversations = {}  # type: Dict[tuple, Any]
-        self.flows = {}  # type: Dict[tuple, Any]
-        self.unique_source_ip = set([])  # type: set
-        self.unique_dest_ip = set([])  # type: set
-        self.ips_extracted = set([])  # type: set
-        self.urls_extracted = set([])  # type: set
-        self.emails_extracted = set([])  # type: set
-        self.homemade_extracted = set([])  # type: set
-        self.last_layer = set([])  # type: set
-        self.irc_data = list()  # type: list
-        self.protocol_data = dict()  # type: Dict[str, Any]
+        self.conversations: Dict[tuple, Any] = {}
+        self.flows: Dict[tuple, Any] = {}
+        self.unique_source_ip: set = set([])
+        self.unique_dest_ip: set = set([])
+        self.ips_extracted: set = set([])
+        self.urls_extracted: set = set([])
+        self.emails_extracted: set = set([])
+        self.homemade_extracted: set = set([])
+        self.last_layer: set = set([])
+        self.irc_data: list = list()
+        self.protocol_data: Dict[str, Any] = dict()
         self.entry_id = entry_id
         self.extracted_protocols = extracted_protocols
         self.homemade_regex = homemade_regex
@@ -69,7 +69,7 @@ class PCAP():
         if 'LLMNR' in extracted_protocols:
             self.llmnr_type = re.compile('Type: (.*)\n')
             self.llmnr_class = re.compile('Class: (.*)\n')
-            self.llmnr_dict = {}  # type: dict
+            self.llmnr_dict: dict = {}
 
         if is_reg_extract:
             self.reg_ip = re.compile(IP_REGEX)
@@ -80,7 +80,7 @@ class PCAP():
             self.reg_pragma = re.compile(PRAGMA_REGEX)
 
         if 'ICMP' in extracted_protocols:
-            self.icmp_data = set()  # type: set
+            self.icmp_data: set = set()
         if 'DNS' in extracted_protocols or 'NETBIOS' in extracted_protocols or 'ICMP' in extracted_protocols:
             self.reg_type = re.compile(TYPE_REGEX)
         if 'NETBIOS' in extracted_protocols:
@@ -89,20 +89,20 @@ class PCAP():
             self.reg_cmd = re.compile(COMMAND_REGEX)
         if 'KERBEROS' in extracted_protocols:
             self.reg_sname = re.compile(SNAME_REGEX)
-            self.kerb_data = list()  # type: ignore
+            self.kerb_data: list = list()
         if 'SSH' in extracted_protocols:
             self.ssh_data = {
                 'EntryID': entry_id,
                 'ClientProtocols': set(),
                 'ServerProtocols': set(),
                 'KeyExchangeMessageCode': set()
-            }  # type: dict
+            }
             self.reg_message_code = re.compile(MESSAGE_CODE)
         if 'FTP' in extracted_protocols:
             self.reg_res_code = re.compile(RESPONSE_CODE)
         if 'TELNET' in extracted_protocols:
-            self.telnet_data = set()  # type: set
-            self.telnet_commands = set()  # type: set
+            self.telnet_data: set = set()
+            self.telnet_commands: set = set()
         if homemade_regex:
             self.reg_homemade = re.compile(self.homemade_regex)
 
@@ -235,13 +235,13 @@ class PCAP():
         message_code_results = self.reg_message_code.findall(str(ssh_layer))
         if protocol and ssh_layer.get('direction') == 1:
             # direction is server to client
-            self.ssh_data['ServerProtocols'].add(protocol)
+            self.ssh_data['ServerProtocols'].add(protocol)  # type: ignore[attr-defined]
         if protocol and ssh_layer.get('direction') == 0:
             # direction is client to server
-            self.ssh_data['ClientProtocols'].add(protocol)
+            self.ssh_data['ClientProtocols'].add(protocol)  # type: ignore[attr-defined]
         if message_code_results:
             if message_code_results:
-                self.ssh_data['KeyExchangeMessageCode'].add(message_code_results[0])
+                self.ssh_data['KeyExchangeMessageCode'].add(message_code_results[0])  # type: ignore[attr-defined]
         return
 
     @logger
@@ -387,11 +387,11 @@ class PCAP():
         ec = {'PCAPResults(val.EntryID == obj.EntryID)': general_context}
         for protocol in self.extracted_protocols:
             if self.protocol_data[protocol]:
-                ec[f'PCAPResults{protocol}'] = list(self.protocol_data[protocol].values())  # type: ignore
+                ec[f'PCAPResults{protocol}'] = list(self.protocol_data[protocol].values())  # type: ignore[assignment]
         if 'ICMP' in self.extracted_protocols and self.icmp_data:
-            ec[f'PcapResultsICMP'] = list(self.icmp_data)  # type: ignore
+            ec['PcapResultsICMP'] = list(self.icmp_data)   # type: ignore[assignment]
         if 'KERBEROS' in self.extracted_protocols and self.kerb_data:
-            ec[f'PCAPResultsKERBEROS'] = self.kerb_data  # type: ignore
+            ec['PCAPResultsKERBEROS'] = self.kerb_data   # type: ignore[assignment]
         if 'SSH' in self.extracted_protocols:
             temp = {
                 'EntryID': self.entry_id,
@@ -416,7 +416,7 @@ class PCAP():
             all_ips = self.unique_source_ip.copy()
             all_ips.update(self.unique_dest_ip)
             if general_context.get('IP'):
-                general_context.get('IP').append(list(all_ips))  # type: ignore
+                general_context.get('IP').append(list(all_ips))  # type: ignore[union-attr]
             else:
                 general_context['IP'] = list(all_ips)
 
@@ -451,11 +451,11 @@ class PCAP():
                 self.last_packet = int(packet.number)
                 self.last_layer.add(packet.layers[-1].layer_name.upper())
 
-                layers = str(packet.layers)
+                layers_string = str(packet.layers)
                 # remove duplicate layer names such as [ETH,DATA,DATA] -> # [ETH, DATA]
-                layers = list(dict.fromkeys(layers.split(',')))  # type: ignore
+                layers: list = list(dict.fromkeys(layers_string.split(',')))
                 layers = strip(str(layers))
-                self.hierarchy[layers] = self.hierarchy.get(layers, 0) + 1  # type: ignore
+                self.hierarchy[layers] = self.hierarchy.get(layers, 0) + 1   # type: ignore[index, call-overload]
 
                 # update times
                 packet_epoch_time = float(packet.frame_info.get('time_epoch'))
@@ -593,7 +593,7 @@ def hierarchy_to_md(hierarchy: dict) -> str:
         A markdown string for displaying the hierarchy in a nice view. The script also counts the number of occurrences
         each hierarchy.
     """
-    final_dict = {}  # type: Dict[str, Any]
+    final_dict: Dict[str, Any] = {}
     num_of_all_packets = 0
     for k in hierarchy.keys():
         layer_heir = ''

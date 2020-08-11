@@ -68,6 +68,13 @@ def test_validator():
     assert validator.validate_date("", "1582816207")
     assert validator.validate_date("", "2020-05-14T12:58:31Z")
 
+    assert validator.validate_url("", "http://google.com")
+    assert validator.validate_url("", "https://google.com")
+    assert validator.validate_url("", "hxxp://google.com")
+    assert validator.validate_url("", "https://paloaltonetworks.zoom.us/j/12345?pwd=1234&status=success")
+    assert not validator.validate_url("", "word")
+    assert not validator.validate_url("", "https:// google.com")
+
 
 def test_list_utils():
     assert is_sublist_of_list([1, 2], [1, 1, 2, 3, 4])
@@ -119,7 +126,7 @@ def test_suggest_field():
     assert 'src ip' in DBotSuggestClassifierMapping.ALIASING_MAP
     assert 'source ip' in DBotSuggestClassifierMapping.ALIASING_MAP
     assert 'source address' in DBotSuggestClassifierMapping.ALIASING_MAP
-    assert get_candidates("src ip") == ['src ip', 'src']
+    assert get_candidates("src ip") == ['src ip']
     assert suggest_field_with_alias("src ip", "1.2.3.4") == ('Source IP', 'src ip')
 
 
@@ -168,8 +175,8 @@ def test_main_qradar(mocker):
     assert 'local_destination_address_ids.[0]' == get_complex_value_key(mapper['Destination IP']['complex'])
     assert 'start_time' == get_complex_value_key(mapper['occurred']['complex'])
     assert 'severity' == get_complex_value_key(mapper['severity']['complex'])
-    assert 'destination_networks.[0]' == get_complex_value_key(mapper['Dest NT Domain']['complex'])
-    assert 'source_network' == get_complex_value_key(mapper['Src NT Domain']['complex'])
+    assert 'destination_networks.[0]' == get_complex_value_key(mapper['Destination Network']['complex'])
+    assert 'source_network' == get_complex_value_key(mapper['Source Network']['complex'])
 
 
 def test_main_arcsight(mocker):
@@ -188,7 +195,7 @@ def test_main_arcsight(mocker):
     assert 'Event-Destination Address' == get_complex_value_key(mapper['Destination IP']['complex'])
     assert 'Event-Source Address' == get_complex_value_key(mapper['Source IP']['complex'])
     assert 'Event-Attacker Geo Country Code' == get_complex_value_key(mapper['Country']['complex'])
-    assert 'Event-Source Host Name' == get_complex_value_key(mapper['Hostname']['complex'])
+    assert 'Event-Source Host Name' == get_complex_value_key(mapper['Source Hostname']['complex'])
     assert 'Event-Start Time' == get_complex_value_key(mapper['occurred']['complex'])
     assert 'Event-Agent ID' == get_complex_value_key(mapper['Agent ID']['complex'])
 
@@ -220,6 +227,30 @@ def test_main_outgoing(mocker):
     mocker.patch.object(demisto, 'args', return_value=args)
     mapper = main()
 
-    assert 'severity' == get_complex_value_key(mapper['user_priority'])
+    assert 'severity' == get_complex_value_key(mapper['src_priority'])
     assert 'category' == get_complex_value_key(mapper['category'])
-    assert 'severity' == get_complex_value_key(mapper['user_priority'])
+
+
+def test_main_splunk_schemes(mocker, capfd):
+    incidents = json.load(open('TestData/splunk_scheme.json'))
+    fields = []
+    for siem_field in SIEM_FIELDS:
+        machine_name = siem_field.replace(" ", "").lower()
+        fields.append({INCIDENT_FIELD_NAME: siem_field, INCIDENT_FIELD_MACHINE_NAME: machine_name})
+    args = {
+        'incidentSamples': incidents,
+        'incidentSamplesType': 'scheme',
+        'incidentFields': all_incident_fields,
+    }
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mapper = main()
+    assert 'protocol' == get_complex_value_key(mapper['Protocol']['complex'])
+    assert 'severity' == get_complex_value_key(mapper['severity']['complex'])
+    assert 'body' == get_complex_value_key(mapper['Email Body']['complex'])
+    assert 'subject' == get_complex_value_key(mapper['Email Subject']['complex'])
+    assert 'country' == get_complex_value_key(mapper['Country']['complex'])
+    assert 'vendor_product' == get_complex_value_key(mapper['Vendor Product']['complex'])
+    assert 'signature' == get_complex_value_key(mapper['Signature']['complex'])
+    assert 'os' == get_complex_value_key(mapper['OS']['complex'])
+    assert 'app' == get_complex_value_key(mapper['App']['complex'])
+    assert 'description' == get_complex_value_key(mapper['Description']['complex'])

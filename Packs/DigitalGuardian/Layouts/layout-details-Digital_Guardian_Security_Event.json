@@ -554,5 +554,6 @@
         ],
         "typeId": "Digital Guardian Security Event",
         "version": -1
-    }
+    },
+    "toVersion": "5.9.9"
 }

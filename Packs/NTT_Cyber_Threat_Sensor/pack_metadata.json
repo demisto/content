@@ -15,5 +15,29 @@
         "alert"
     ],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "PcapAnalysis": {
+            "mandatory": true,
+            "display_name": "PCAP Analysis"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CommonPlaybooks",
+        "PcapAnalysis",
+        "CommonTypes",
+        "CommonScripts"
+    ]
 }

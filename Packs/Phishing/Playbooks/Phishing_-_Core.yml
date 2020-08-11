@@ -1327,4 +1327,4 @@ inputs:
 outputs: []
 fromversion: 4.5.0
 tests:
-- Phishing - Core - Test
+  - Phishing - Core - Test - Incident Starter

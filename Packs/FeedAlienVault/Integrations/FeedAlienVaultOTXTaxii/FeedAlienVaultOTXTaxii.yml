@@ -3,7 +3,7 @@ commonfields:
   id: AlienVault OTX TAXII Feed
   version: -1
 configuration:
-- defaultvalue: true
+- defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
@@ -35,6 +35,7 @@ configuration:
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
+  display: ''
   options:
   - never
   - interval
@@ -42,17 +43,22 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-  display: ""
 - defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
-  display: ""
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
@@ -60,19 +66,21 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-  defaultvalue: ""
 - display: API Key
   hidden: false
   name: api_key
   required: true
   type: 4
-- additionalinfo: 'When selected, will run on all active collections regardless of the supplied collections. Inactive or empty collections will be ignored.'
+- additionalinfo: When selected, will run on all active collections regardless of
+    the supplied collections. Inactive or empty collections will be ignored.
   display: Get All Active Collections
   hidden: false
   name: all_collections
   required: false
   type: 8
-- additionalinfo: 'Supports a CSV of collections to fetch from. If an inactive or empty collection is supplied, n error will be raised. If not set, will raise an error listing all the available collections.'
+- additionalinfo: Supports a CSV of collections to fetch from. If an inactive or empty
+    collection is supplied, an error will be raised. If not set, it will raise an error
+    listing all the available collections.
   display: Collections to Fetch From
   hidden: false
   name: collections
@@ -86,7 +94,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This integration fetches indicators from AlienVault OTX using a TAXII client.
+description: This integration fetches indicators from AlienVault OTX using a TAXII
+  client.
 display: AlienVault OTX TAXII Feed
 name: AlienVault OTX TAXII Feed
 script:
@@ -94,7 +103,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of indicators to return. The default value is 10.
+      description: The maximum number of indicators to return. The default value is
+        10.
       isArray: false
       name: limit
       required: true
@@ -103,7 +113,7 @@ script:
     description: Gets the indicators from AlienVault OTX.
     execution: false
     name: alienvaultotx-get-indicators
-  dockerimage: demisto/taxii:1.0.0.6243
+  dockerimage: demisto/taxii:1.0.0.9263
   feed: true
   isfetch: false
   longRunning: false

@@ -1,16 +1,16 @@
 {
     "name": "US - Breach Notification",
-    "description": "This pack performs a PII classification check and helps with the required notification process in case of a data breach in the United States.",
+    "description": "This ContentPpack helps you understand if a breach has occurred and automates repetitive tasks associated with US Breach notification procedures.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [],
     "tags": [
-        "Breach Notification",
-        "PII",
-        "Compliance"
+        "Breach",
+        "Compliance",
+        "PII"
     ],
     "created": "2020-05-06T18:47:57Z",
     "useCases": [

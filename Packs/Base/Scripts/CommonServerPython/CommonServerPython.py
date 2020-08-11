@@ -40,7 +40,7 @@ if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
 else:
-    STRING_TYPES = (str, unicode)  # type: ignore
+    STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
 
@@ -303,7 +303,7 @@ def auto_detect_indicator_type(indicator_value):
         return FeedIndicatorType.CVE
 
     try:
-        no_cache_extract = tldextract.TLDExtract(cache_file=False,suffix_list_urls=None)
+        no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
         if no_cache_extract(indicator_value).suffix:
             if '*' in indicator_value:
                 return FeedIndicatorType.DomainGlob
@@ -371,7 +371,7 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
         if insecure_param_name is None:
             param_names = ('insecure', 'unsecure')
         else:
-            param_names = (insecure_param_name, )
+            param_names = (insecure_param_name, )  # type: ignore[assignment]
         for p in param_names:
             if demisto.params().get(p, False):
                 for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
@@ -838,7 +838,7 @@ def encode_string_results(text):
         return text
     try:
         return str(text)
-    except UnicodeEncodeError as exception:
+    except UnicodeEncodeError:
         return text.encode("utf8", "replace")
 
 
@@ -1251,7 +1251,7 @@ def appendContext(key, data, dedup=False):
 
         elif isinstance(existing, dict):
             if isinstance(data, dict):
-                new_val = [existing, data]
+                new_val = [existing, data]  # type: ignore[assignment]
             else:
                 new_val = data + existing  # will raise a self explanatory TypeError
 
@@ -1260,10 +1260,10 @@ def appendContext(key, data, dedup=False):
                 existing.extend(data)
             else:
                 existing.append(data)
-            new_val = existing
+            new_val = existing  # type: ignore[assignment]
 
         else:
-            new_val = [existing, data]
+            new_val = [existing, data]  # type: ignore[assignment]
 
         if dedup and isinstance(new_val, list):
             new_val = list(set(new_val))
@@ -1340,7 +1340,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if t and len(headers) > 0:
         newHeaders = []
         if headerTransform is None:  # noqa
-            headerTransform = lambda s: s  # noqa
+            def headerTransform(s): return s  # noqa
         for header in headers:
             newHeaders.append(headerTransform(header))
         mdResult += '|'
@@ -1392,7 +1392,7 @@ def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
     """
     res = {}  # type: dict
     if keyTransform is None:
-        keyTransform = lambda s: s  # noqa
+        def keyTransform(s): return s  # noqa
     keys = obj.keys()
     for key in keys:
         if removeNull and obj[key] in ('', None, [], {}):
@@ -1476,7 +1476,7 @@ def fileResult(filename, data, file_type=None):
         file_type = entryTypes['file']
     temp = demisto.uniqueFile()
     # pylint: disable=undefined-variable
-    if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore
+    if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore # noqa: F821
         data = data.encode('utf-8')
     # pylint: enable=undefined-variable
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
@@ -1633,7 +1633,6 @@ def formatTimeColumns(data, timeColumnNames):
 
 
 def strip_tag(tag):
-    strip_ns_tag = tag
     split_array = tag.split('}')
     if len(split_array) > 1:
         strip_ns_tag = split_array[1]
@@ -2313,6 +2312,9 @@ class Common(object):
         :type positive_detections: ``int``
         :param positive_detections: The number of engines that positively detected the indicator as malicious.
 
+        :type category: ``str``
+        :param category: The category associated with the indicator.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
 
@@ -2321,10 +2323,11 @@ class Common(object):
         """
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None):
+        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
+            self.category = category
 
             self.dbot_score = dbot_score
 
@@ -2338,6 +2341,9 @@ class Common(object):
 
             if self.positive_detections:
                 url_context['PositiveDetections'] = self.positive_detections
+
+            if self.category:
+                url_context['Category'] = self.category
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 url_context['Malicious'] = {
@@ -2353,7 +2359,6 @@ class Common(object):
                 ret_value.update(self.dbot_score.to_context())
 
             return ret_value
-
 
     class Domain(Indicator):
         """ ignore docstring
@@ -2390,7 +2395,6 @@ class Common(object):
             self.admin_email = admin_email
             self.admin_phone = admin_phone
             self.admin_country = admin_country
-
 
             self.domain_status = domain_status
             self.name_servers = name_servers
@@ -2602,8 +2606,8 @@ class CommandResults:
         if self.readable_output:
             human_readable = self.readable_output
         else:
-            human_readable = None
-        raw_response = None
+            human_readable = None  # type: ignore[assignment]
+        raw_response = None  # type: ignore[assignment]
 
         if self.indicators:
             for indicator in self.indicators:
@@ -2630,7 +2634,7 @@ class CommandResults:
                 outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
-                outputs = self.outputs
+                outputs = self.outputs  # type: ignore[assignment]
 
         return_entry = {
             'Type': EntryType.NOTE,
@@ -2872,9 +2876,9 @@ regexFlags = re.M  # Multi line matching
 # else, use re.match({regex_format},str)
 
 ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b([^\/]|$)'
-ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'
-ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'
-ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'
+ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa: E501
+ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa: E501
+ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa: E501
 emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
@@ -3153,20 +3157,29 @@ def assign_params(keys_to_ignore=None, values_to_ignore=None, **kwargs):
     }
 
 
-def get_demisto_version():
-    """Returns the Demisto version and build number.
-
-    :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
-    :rtype: ``dict``
+class GetDemistoVersion:
     """
-    if getattr(get_demisto_version, '_version', None):
-        return get_demisto_version._version
-    if hasattr(demisto, 'demistoVersion'):
-        version = demisto.demistoVersion()
-        get_demisto_version._version = version
-        return version
-    else:
-        raise AttributeError('demistoVersion attribute not found.')
+    Callable class to replace get_demisto_version function
+    """
+
+    def __init__(self):
+        self._version = None
+
+    def __call__(self):
+        """Returns the Demisto version and build number.
+
+        :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
+        :rtype: ``dict``
+        """
+        if self._version is None:
+            if hasattr(demisto, 'demistoVersion'):
+                self._version = demisto.demistoVersion()
+            else:
+                raise AttributeError('demistoVersion attribute not found.')
+        return self._version
+
+
+get_demisto_version = GetDemistoVersion()
 
 
 def is_demisto_version_ge(version):
@@ -3580,7 +3593,7 @@ if 'requests' in sys.modules:
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
-                          return_empty_response = False, retries=0, status_list_to_retry=None,
+                          return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -3744,11 +3757,10 @@ if 'requests' in sys.modules:
             except requests.exceptions.RetryError as exception:
                 try:
                     reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
-                except:
+                except Exception:
                     reason = ''
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
                 raise DemistoException(err_msg, exception)
-
 
         def _is_status_code_valid(self, response, ok_codes=None):
             """If the status code is OK, return 'True'.
@@ -3790,8 +3802,9 @@ def batch(iterable, batch_size=1):
         current_batch = not_batched[:batch_size]
         not_batched = not_batched[batch_size:]
 
-def dict_safe_get(dict_object, keys, default_return_value = None):
-    """Recursive safe get query, If keys found return value othewise return None or default value.
+
+def dict_safe_get(dict_object, keys, default_return_value=None):
+    """Recursive safe get query, If keys found return value otherwise return None or default value.
 
     :type dict_object: ``dict``
     :param dict_object: dictionary to query.
@@ -3800,7 +3813,7 @@ def dict_safe_get(dict_object, keys, default_return_value = None):
     :param keys: keys for recursive get.
 
     :type default_return_value: ``object``
-    :param default_return_value: Value to return when no key availble.
+    :param default_return_value: Value to return when no key available.
 
     :rtype: ``object``
     :return:: Value found.
@@ -3914,7 +3927,7 @@ def is_versioned_context_available():
 
 
 def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
-                                            max_retry_times = CONTEXT_UPDATE_RETRY_TIMES):
+                                            max_retry_times=CONTEXT_UPDATE_RETRY_TIMES):
     """
     Update the integration context with a dictionary of keys and values with multiple attempts.
     The function supports merging the context keys using the provided object_keys parameter.
@@ -3954,11 +3967,11 @@ def set_to_integration_context_with_retries(context, object_keys=None, sync=True
         try:
             set_integration_context(integration_context, sync, version)
             demisto.debug('Successfully updated integration context. New version is {}.'
-                         .format(version + 1 if version != -1 else version))
+                          ''.format(version + 1 if version != -1 else version))
             break
         except ValueError as ve:
             demisto.debug('Failed updating integration context with version {}: {} Attempts left - {}'
-                         .format(version, str(ve), CONTEXT_UPDATE_RETRY_TIMES - attempt))
+                          ''.format(version, str(ve), CONTEXT_UPDATE_RETRY_TIMES - attempt))
             # Sleep for a random time
             time_to_sleep = randint(1, 100) / 1000
             time.sleep(time_to_sleep)

@@ -592,7 +592,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "22"
     scriptarguments:
       getAttachments:
         simple: '"true"'

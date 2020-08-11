@@ -8,7 +8,7 @@ with open("TestData/search_output.json") as f:
 
 data = raw["data"]
 threats = data["threats"]
-client = Client("https://www.threathq.com", ("username", "password"))
+client = Client("https://www.threathq.com", ("username", "password"), tags=['tag1', 'tag2'])
 
 
 class TestFetchIndicators:
@@ -27,6 +27,7 @@ class TestFetchIndicators:
             assert len(ans) == length
             assert first_obj["value"] == value
             assert first_obj["type"] == _type
+            assert first_obj['fields']['tags'] == client.tags
         else:
             assert not ans
 
@@ -68,5 +69,6 @@ class TestFetchIndicators:
             for i, res in enumerate(results):
                 assert expected_value[i] in res["value"]
                 assert expected_type[i] in res["type"]
+                assert res['fields']['tags'] == client.tags
         else:
             assert not results

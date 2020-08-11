@@ -1,4 +1,4 @@
-Enriches entities using one or more integrations.
+DEPRECATED. Use "Entity Enrichment - Generic v3" playbook instead. Enriches entities using one or more integrations.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
