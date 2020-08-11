@@ -681,7 +681,7 @@ def main():
         incidents_query_args['query'] = '({}) and (status:Closed)'.format(incidents_query_args['query'])
     else:
         incidents_query_args['query'] = '(status:Closed)'
-    if 'limit' in args:
+    if 'limit' in args and 'limit' not in incidents_query_args:
         incidents_query_args['limit'] = args['limit']
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', incidents_query_args)
     if is_error(incidents_query_res):
