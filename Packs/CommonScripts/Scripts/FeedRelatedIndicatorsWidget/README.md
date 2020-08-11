@@ -1,4 +1,6 @@
 Widget script to view information about the relationship between an indicator, entity and other indicators and connect to indicators, if relevant.
+
+The script will be used in the **Feed Related Indicators** section in the indicators layouts. 
 ## Script Data
 ---
 

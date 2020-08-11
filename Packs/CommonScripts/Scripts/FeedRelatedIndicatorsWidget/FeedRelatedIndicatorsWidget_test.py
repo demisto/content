@@ -8,7 +8,7 @@ FILE_INDICATOR = {'CustomFields': {
         {'description': 'https://securelist.com/lazarus-under-the-hood/77908/', 'type': 'MITRE ATT&CK', 'value': None},
         {'description': 'https://attack.mitre.org/techniques/T1496', 'type': 'MITRE ATT&CK', 'value': 'T1496'}]}}
 
-SEARCH_INDICAORS_RESPONSE = {'total': 1, 'iocs': [
+SEARCH_INDICATORS_RESPONSE = {'total': 1, 'iocs': [
     {'id': '4467', 'version': 4, 'modified': '2020-08-09T16:38:12.862662+03:00', 'sortValues':
         [' \x01\x16\x14g#Wjx\x1d\x00', '4467'],
      'comments': [
@@ -23,7 +23,7 @@ SEARCH_INDICAORS_RESPONSE = {'total': 1, 'iocs': [
      'manualScore': False, 'manualSetTime': '0001-01-01T00:00:00Z',
      'insightCache': {'id': 't1345', 'version': 1, 'modified': '2020-08-09T16:33:44.495265+03:00', 'sortValues': None,
                       'scores': {'MITRE ATT&CK': {
-                          'score': 0, 'content': "## ['T1345'](https://TLVMAC30YCJG5H:8443/#/indicator/4467):\n ",
+                          'score': 0, 'content': "## ['T1345'](https://ABCDEFG:8443/#/indicator/4467):\n ",
                           'contentFormat': 'markdown', 'timestamp': '2020-08-09T16:33:44.49526+03:00',
                           'scoreChangeTimestamp': '2020-08-09T16:33:44.49526+03:00', 'isTypedIndicator': False,
                           'type': 'MITRE ATT&CK', 'context':
@@ -51,20 +51,24 @@ SEARCH_INDICAORS_RESPONSE = {'total': 1, 'iocs': [
      'aggregatedReliability': ''}], 'searchAfter': [' \x01\x16\x14g#Wjx\x1d\x00', '4467']}
 
 
-def test_main(mocker):
-    from FeedRelatedIndicators import main
-    mocker.patch.object(demisto, 'args', return_value={'indicator': FILE_INDICATOR}),
-    mocker.patch.object(demisto, 'searchIndicators', return_value=SEARCH_INDICAORS_RESPONSE)
-    mocker.patch.object(demisto, 'results')
-    main()
-    assert demisto.results.call_count == 1
-    results = demisto.results.call_args[0]
-    assert results[0]['HumanReadable'] == '|Type|Value|Description|\n|---|---|---|\n| MITRE ATT&CK |  | ' \
-                                          '[https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-' \
-                                          'af0bf1b878fc](https://blog.cloudsploit.com/the-danger-of-unused-aws-' \
-                                          'regions-af0bf1b878fc)<br><br> |\n| MITRE ATT&CK |  | ' \
-                                          '[https://securelist.com/lazarus-under-the-hood/77908/]' \
-                                          '(https://securelist.com/lazarus-under-the-hood/77908/)<br><br> |\n| ' \
-                                          'MITRE ATT&CK | [T1496](https://test-address:8443/indicator/4467) | ' \
-                                          '[https://attack.mitre.org/techniques/T1496]' \
-                                          '(https://attack.mitre.org/techniques/T1496)<br><br> |\n'
+def test_feed_related_indicator(mocker):
+    """
+    Given: File hash indicator.
+    When: Running feed_related_indicator command.
+    Then: Verify expected results returns
+    """
+    from FeedRelatedIndicators import feed_related_indicator
+
+    args = {'indicator': FILE_INDICATOR}
+    mocker.patch.object(demisto, 'searchIndicators', return_value=SEARCH_INDICATORS_RESPONSE)
+    result = feed_related_indicator(args)
+
+    assert result.readable_output == '|Type|Value|Description|\n|---|---|---|\n| MITRE ATT&CK |  | ' \
+                                     '[https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc]' \
+                                     '(https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc)' \
+                                     '<br><br> |\n| MITRE ATT&CK |  | ' \
+                                     '[https://securelist.com/lazarus-under-the-hood/77908/]' \
+                                     '(https://securelist.com/lazarus-under-the-hood/77908/)<br><br> |\n| ' \
+                                     'MITRE ATT&CK | [T1496](https://test-address:8443/indicator/4467) | ' \
+                                     '[https://attack.mitre.org/techniques/T1496]' \
+                                     '(https://attack.mitre.org/techniques/T1496)<br><br> |\n'

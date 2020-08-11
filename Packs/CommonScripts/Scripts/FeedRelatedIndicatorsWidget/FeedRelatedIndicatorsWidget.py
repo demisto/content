@@ -2,12 +2,14 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def feed_related_indicator():
-    indicator = demisto.args()['indicator']
+def feed_related_indicator(args) -> CommandResults:
+    indicator = args['indicator']
     feed_related_indicators = indicator.get('CustomFields', {}).get('feedrelatedindicators', [])
-    ioc_ = list(filter(lambda x: x.get('value'), feed_related_indicators))
-    if ioc_:
-        ioc_value = ioc_[0].get('value')
+    ioc = list(filter(lambda x: x.get('value'), feed_related_indicators))
+    if ioc:
+        ioc_value = ioc[0].get('value')
+    else:
+        ioc_value = ''
 
     content = []
     results = demisto.searchIndicators(value=ioc_value).get('iocs', [])
@@ -32,17 +34,15 @@ def feed_related_indicator():
             })
 
     output = tableToMarkdown('', content, ['Type', 'Value', 'Description'], removeNull=True)
-    return CommandResults(
-        readable_output=output
-    )
+    return CommandResults(readable_output=output)
 
 
-def main():
+def main(args):
     try:
-        return_results(feed_related_indicator())
+        return_results(feed_related_indicator(args))
     except Exception as e:
         return_error(f'Failed to execute FeedRelatedIndicatorsWidget. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
+    main(demisto.args())
