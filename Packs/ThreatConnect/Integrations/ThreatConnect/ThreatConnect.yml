@@ -1838,7 +1838,7 @@ script:
     description: Adds tags to a specified group.
     execution: false
     name: tc-add-group-tag
-  - deprecated: false
+  - deprecated: true
     description: Returns all indicator types available.
     execution: false
     name: tc-get-indicator-types

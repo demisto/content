@@ -1398,6 +1398,7 @@ script:
         This can also be set in the settings/integrations page
     description: Retrieve contact items from the Contacts folder
   - name: ews-get-searchable-mailboxes
+    deprecated: true
     arguments:
     - name: filter
       description: Search filter, default is empty
