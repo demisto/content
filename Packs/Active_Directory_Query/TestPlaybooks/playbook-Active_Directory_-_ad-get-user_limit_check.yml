@@ -13,10 +13,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1f523441-8bab-4b2a-8a33-52a7b61cf974
+    taskid: c949911f-7d5e-47d9-8134-3f90b03d5d2e
     type: start
     task:
-      id: 1f523441-8bab-4b2a-8a33-52a7b61cf974
+      id: c949911f-7d5e-47d9-8134-3f90b03d5d2e
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 1c1f4ba5-1b57-4650-823b-015e8fd29bbd
+    taskid: 046460bb-5d1a-41b1-88cd-de7604c432a0
     type: condition
     task:
-      id: 1c1f4ba5-1b57-4650-823b-015e8fd29bbd
+      id: 046460bb-5d1a-41b1-88cd-de7604c432a0
       version: -1
       name: Is Active Directory enabled?
       description: Checks if the Active Directory Query v2 integration is enabled.
@@ -53,7 +53,6 @@ tasks:
       '#default#':
       - "12"
       "yes":
-      - "19"
       - "16"
     separatecontext: false
     conditions:
@@ -96,10 +95,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 9263dbdf-070d-4f02-8c99-a936068f1145
+    taskid: cfa96462-ccbb-4d1c-88ae-7bf158f2387a
     type: title
     task:
-      id: 9263dbdf-070d-4f02-8c99-a936068f1145
+      id: cfa96462-ccbb-4d1c-88ae-7bf158f2387a
       version: -1
       name: Done
       type: title
@@ -109,8 +108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 850
+          "x": 750,
+          "y": 840
         }
       }
     note: false
@@ -120,10 +119,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: d0f66937-98e5-437f-85b0-30f583d3ccf0
+    taskid: e264fa8d-83ff-438a-8574-c679fd28207a
     type: regular
     task:
-      id: d0f66937-98e5-437f-85b0-30f583d3ccf0
+      id: e264fa8d-83ff-438a-8574-c679fd28207a
       version: -1
       name: Run ad-get-user with no limit
       description: Retrieves detailed information about a user account. The user can
@@ -150,8 +149,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 220
+          "x": 440,
+          "y": 200
         }
       }
     note: false
@@ -161,10 +160,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 10315942-3af2-4a27-837f-ab13b588b20d
+    taskid: ca0b0fae-ca3d-457d-8b34-cfa6b2b7a929
     type: condition
     task:
-      id: 10315942-3af2-4a27-837f-ab13b588b20d
+      id: ca0b0fae-ca3d-457d-8b34-cfa6b2b7a929
       version: -1
       name: check
       type: condition
@@ -193,8 +192,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 450
+          "x": 440,
+          "y": 440
         }
       }
     note: false
@@ -204,10 +203,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: a7ff6e09-01e8-4d2a-8d64-189dd7fbdeef
+    taskid: dd5de187-2780-4bc4-81d0-2e9a252cef72
     type: regular
     task:
-      id: a7ff6e09-01e8-4d2a-8d64-189dd7fbdeef
+      id: dd5de187-2780-4bc4-81d0-2e9a252cef72
       version: -1
       name: Limit is not set currently
       description: Prints an error entry with a given message
@@ -222,93 +221,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
-          "y": 770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "19":
-    id: "19"
-    taskid: cc52aff3-836b-4b3c-89b0-6bfff02a0dd4
-    type: regular
-    task:
-      id: cc52aff3-836b-4b3c-89b0-6bfff02a0dd4
-      version: -1
-      name: Run ad-get-user with limit=2
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
-      script: '|||ad-get-user'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      attributes: {}
-      custom-field-data: {}
-      custom-field-type: {}
-      dn: {}
-      email: {}
-      limit:
-        simple: "2"
-      name: {}
-      user-account-control-out: {}
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "20":
-    id: "20"
-    taskid: fd4b83f3-9fe5-4d4e-862f-9ef174e43678
-    type: condition
-    task:
-      id: fd4b83f3-9fe5-4d4e-862f-9ef174e43678
-      version: -1
-      name: check
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "22"
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: Account
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": 440
+          "x": 260,
+          "y": 800
         }
       }
     note: false
@@ -318,10 +232,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 24cc3dc6-7145-41ec-84a7-5b2c373df027
+    taskid: fb9a9ca2-b09e-44bc-8160-bd222f4919b8
     type: regular
     task:
-      id: 24cc3dc6-7145-41ec-84a7-5b2c373df027
+      id: fb9a9ca2-b09e-44bc-8160-bd222f4919b8
       version: -1
       name: Delete context
       description: Delete field from context
@@ -352,43 +266,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "22":
-    id: "22"
-    taskid: a57ce10e-3a19-4079-8143-44c63d670a6b
-    type: regular
-    task:
-      id: a57ce10e-3a19-4079-8143-44c63d670a6b
-      version: -1
-      name: Limit is not set currently
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: '"Limit is not set currently" '
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1295,
-        "width": 1290,
-        "x": 10,
+        "height": 1285,
+        "width": 870,
+        "x": 260,
         "y": -380
       }
     }
