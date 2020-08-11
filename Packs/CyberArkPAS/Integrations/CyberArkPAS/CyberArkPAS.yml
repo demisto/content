@@ -547,8 +547,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether or not to enable Object Level Access Control (OLAC) for the new
-        safe. Valid values are: 'true' or 'false'. Default is 'true'.'
+      description: |-
+        Whether or not to enable Object Level Access Control (OLAC) for the new
+        safe. Valid values are: 'true' or 'false'. Default is 'true'.
       isArray: false
       defaultValue: 'true'
       name: OLAC_enabled
@@ -626,8 +627,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether or not to enable Object Level Access Control (OLAC) for the updated
-        safe. Valid values are: 'true' or 'false'. Default is 'true'.'
+      description: |-
+        Whether or not to enable Object Level Access Control (OLAC) for the updated
+        safe. Valid values are: 'true' or 'false'. Default is 'true'.
       isArray: false
       defaultValue: 'true'
       name: OLAC_enabled
@@ -915,7 +917,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: password
-      description: 'The type of password. Valid values are: 'password', 'key'. Default is 'password'.'
+      description: |-
+        The type of password. Valid values are: 'password', 'key'. Default is 'password'.
       isArray: false
       name: secret_type
       predefined:
@@ -971,7 +974,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Whether or not to restrict access to specified remote machines only. Can be 'true' or 'false'. Default is: 'true'.'
+      description: |-
+        Whether or not to restrict access to specified remote machines only. Can be 'true' or 'false'. Default is: 'true'.
       isArray: false
       name: access_restricted_to_remote_machines
       predefined:
@@ -1281,8 +1285,9 @@ script:
     name: cyberark-pas-credentials-change-set-new-password
   - arguments:
     - default: false
-      description: 'The starting date to get the security events from. Must be in the following timestamp format:
-        (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year).'
+      description: |-
+        The starting date to get the security events from. Must be in the following timestamp format:
+        (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year).
       isArray: false
       name: start_time
       required: true
