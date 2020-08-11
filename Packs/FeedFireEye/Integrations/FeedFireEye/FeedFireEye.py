@@ -19,12 +19,11 @@ class STIX21Processor:
 
     def __init__(self, raw_indicators: List, relationships: Dict, entities: Dict):
         self.raw_indicators = raw_indicators
-        self.relationships = raw_indicators
-        self.entities = raw_indicators
+        self.relationships = relationships
+        self.entities = entities
 
         self.type_to_processor = {
             'tool': self.process_tool,
-            'note': self.process_note,
             'report': self.process_report,
             'opinion': self.process_opinion,
             'malware': self.process_malware,
@@ -34,14 +33,15 @@ class STIX21Processor:
             'location': self.process_location,
             'sighting': self.process_sighting,
             'relationship': self.process_relationship,
-            'threat_actor': self.process_threat_actor,
+            'threat-actor': self.process_threat_actor,
             'observed_data': self.process_observed_data,
             'vulnerability': self.process_vulnerability,
             'attack_pattern': self.process_attack_pattern,
             'infrastructure': self.process_infrastructure,
-            'course_of_action': self.process_course_of_action,
-            'malware_analysis': self.process_malware_analysis,
-            'attack_intrusion_set': self.process_intrusion_set,
+            'course-of-action': self.process_course_of_action,
+            'malware-analysis': self.process_malware_analysis,
+            'attack-intrusion-set': self.process_intrusion_set,
+            'marking-definition': self.process_marking_definition,
         }
 
     def process_indicators(self):
@@ -50,12 +50,12 @@ class STIX21Processor:
         for raw_data in self.raw_indicators:
             processed_indicator = self.process_indicator(raw_data)
             if processed_indicator:
-                processed_indicators.append(processed_indicator)
+                processed_indicators += processed_indicator
 
         return processed_indicators
 
     @staticmethod
-    def process_indicator_value(indicator_pattern_value: str) -> Tuple[str, str, Dict]:
+    def process_indicator_value(indicator_pattern_value: str) -> Tuple[List, List, Dict]:
         indicator_pattern_value = indicator_pattern_value[1:-1]
 
         if indicator_pattern_value.startswith('file'):
@@ -66,44 +66,122 @@ class STIX21Processor:
                 key, value = h.split('=')
                 hashes_dict[key.strip().split('file:hashes.')[1].replace("'", '')] = value.strip().replace("'", '')
 
-            return 'file', hashes_dict['MD5'], hashes_dict
+            return ['file'], [hashes_dict['MD5']], hashes_dict
 
-        else:
-            key, value = indicator_pattern_value.split(':value=')
-            return key, value[1:-1], {}
+        try:
+            keys = list()  # type: List
+            values = list()  # type: List
+            for indicator_value in indicator_pattern_value.split('AND'):
+                if indicator_value.startswith('email-message'):
+                    key, value = indicator_value.split(':from_ref.value=')
+                else:
+                    try:
+                        key, value = indicator_value.split(':value=')
+                    except:
+                        continue
+
+                keys.append(key.strip().replace("'", '').replace('[', '').replace(']', ''))
+                values.append(value.strip().replace("'", '').replace('[', '').replace(']', ''))
+            return keys, values, {}
+        except:
+            return_error(indicator_pattern_value)
+            return [], [], {}
 
     def process_indicator(self, raw_data):
-        indicator = dict()
+        indicators = list()
 
-        _, value, hashes = self.process_indicator_value(raw_data.get('pattern'))
+        _, values, hashes = self.process_indicator_value(raw_data.get('pattern'))
 
-        indicator['type'] = auto_detect_indicator_type(value)
-        if indicator['type']:
-            indicator['value'] = value
-            indicator['rawJSON'] = {
-                'fireeye_id': raw_data.get('id'),
-                'fireeye_labels': raw_data.get('labels'),
-                'fireeye_revoked': raw_data.get('revoked'),
-                'fireeye_created_date': raw_data.get('created'),
-                'fireeye_confidence': raw_data.get('confidence'),
-                'fireeye_valid_from': raw_data.get('valid_from'),
-                'fireeye_modified_date': raw_data.get('modified'),
-                'indicator_types': raw_data.get('indicator_types'),
-                'fireeye_valid_until': raw_data.get('valid_until'),
-                'fireeye_description': raw_data.get('description')
-            }
+        for value in values:
+            indicator = dict()
+            indicator['type'] = auto_detect_indicator_type(value)
+            if indicator['type']:
+                indicator['value'] = value
+                indicator['rawJSON'] = {
+                    'fireeye_id': raw_data.get('id'),
+                    'fireeye_labels': raw_data.get('labels'),
+                    'fireeye_revoked': raw_data.get('revoked'),
+                    'fireeye_created_date': raw_data.get('created'),
+                    'fireeye_confidence': raw_data.get('confidence'),
+                    'fireeye_valid_from': raw_data.get('valid_from'),
+                    'fireeye_modified_date': raw_data.get('modified'),
+                    'indicator_types': raw_data.get('indicator_types'),
+                    'fireeye_valid_until': raw_data.get('valid_until'),
+                    'fireeye_description': raw_data.get('description')
+                }
 
-            if hashes:
-                indicator['rawJSON']['MD5'] = hashes['MD5']
-                indicator['rawJSON']['SHA-1'] = hashes['SHA-1']
-                indicator['rawJSON']['SHA-256'] = hashes['SHA-256']
+                if 'MD5' in hashes:
+                    indicator['rawJSON']['MD5'] = hashes['MD5']
+                if 'SHA-1' in hashes:
+                    indicator['rawJSON']['SHA-1'] = hashes['SHA-1']
+                if 'SHA-256' in hashes:
+                    indicator['rawJSON']['SHA-256'] = hashes['SHA-256']
 
-            return indicator
+                indicators.append(indicator)
 
-        return None
+        return indicators
+
+    def process_stix_entities(self):
+        processed_entities = list()  # type: List
+
+        for entity_type, value in self.entities.items():
+            if value.get('type') in self.type_to_processor:
+                processed_entity = self.type_to_processor[value.get('type')](value)
+                if processed_entity:
+                    processed_entities.append(processed_entity)
+
+        return processed_entities
 
     @staticmethod
     def process_attack_pattern(raw_data):
+        # Not an option in the feed
+        pass
+
+    @staticmethod
+    def process_malware(raw_data):
+        entity = dict()
+
+        entity['type'] = 'STIX Malware'
+        entity['value'] = raw_data.get('name')
+        entity['rawJSON'] = {
+            'fireeye_id': raw_data.get('id'),
+            'fireeye_labels': raw_data.get('labels'),
+            'fireeye_aliases': raw_data.get('aliases'),
+            'fireeye_revoked': raw_data.get('revoked'),
+            'fireeye_is_family': raw_data.get('is_family'),
+            'fireeye_created_date': raw_data.get('created'),
+            'fireeye_modified_date': raw_data.get('modified'),
+            'fireeye_malware_types': raw_data.get('malware_types'),
+            'fireeye_external_references': raw_data.get('external_references')
+        }
+
+        return entity
+
+    @staticmethod
+    def process_report(raw_data):
+        pass
+
+    @staticmethod
+    def process_threat_actor(raw_data):
+        entity = dict()
+
+        entity['type'] = 'STIX Threat Actor'
+        entity['value'] = raw_data.get('name')
+        entity['rawJSON'] = {
+            'fireeye_id': raw_data.get('id'),
+            'fireeye_labels': raw_data.get('labels'),
+            'fireeye_revoked': raw_data.get('revoked'),
+            'fireeye_created_date': raw_data.get('created'),
+            'fireeye_modified_date': raw_data.get('modified'),
+            'fireeye_threat_actor_types': raw_data.get('threat_actor_types'),
+            'fireeye_object_marking_refs': raw_data.get('object_marking_refs')
+        }
+
+        return entity
+
+    @staticmethod
+    def process_tool(raw_data):
+        # Not an option in the feed
         pass
 
     @staticmethod
@@ -135,15 +213,11 @@ class STIX21Processor:
         pass
 
     @staticmethod
-    def process_malware(raw_data):
-        pass
-
-    @staticmethod
     def process_malware_analysis(raw_data):
         pass
 
     @staticmethod
-    def process_note(raw_data):
+    def process_marking_definition(raw_data):
         pass
 
     @staticmethod
@@ -152,18 +226,6 @@ class STIX21Processor:
 
     @staticmethod
     def process_opinion(raw_data):
-        pass
-
-    @staticmethod
-    def process_report(raw_data):
-        pass
-
-    @staticmethod
-    def process_threat_actor(raw_data):
-        pass
-
-    @staticmethod
-    def process_tool(raw_data):
         pass
 
     @staticmethod
@@ -289,16 +351,19 @@ class Client(BaseClient):
         return raw_indicators, relationships, stix_entities
 
     def build_iterator(self) -> List:
+        self.get_access_token()
+
         raw_indicators, relationships, stix_entities = self.fetch_all_indicators_from_api()
         stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities)
-        return stix_processor.process_indicators()
+
+        indicators = stix_processor.process_indicators()
+        stix_indicators = stix_processor.process_stix_entities()
+        return indicators + stix_indicators
 
 
 def test_module(client: Client):
-    client.get_access_token()
-    auth_token = demisto.getIntegrationContext().get('auth_token')
-    expiration_time = demisto.getIntegrationContext().get('expiration_time')
-    return f'{auth_token} - {expiration_time}', {}, {}
+    client.build_iterator()
+    return 'ok'
 
 
 def get_indicators_command(client: Client, feedTags: list):
@@ -345,6 +410,9 @@ def fetch_indicators_command(client: Client, feedTags: list, limit: int = -1):
         indicators.append({
             'value': indicator['value'],
             'type': indicator['type'],
+            'fields': {
+                'tags': feedTags
+            },
             'rawJSON': indicator
         })
 
@@ -361,7 +429,7 @@ def main():
     public_key = demisto.params().get('credentials').get('identifier')
     private_key = demisto.params().get('credentials').get('password')
 
-    feedTags = argToList(demisto.params().get('feedTags'))
+    feedTags = argToList(demisto.params().get('feedTags'), [])
 
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
@@ -376,8 +444,6 @@ def main():
         if command == 'test-module':
             return_outputs(*test_module(client))
         elif command == 'fireeye-get-indicators':
-            if feedTags:
-                feedTags['tags'] = feedTags
             return_outputs(*get_indicators_command(client, feedTags))
         elif command == 'fetch-indicators':
             indicators, _ = fetch_indicators_command(client, feedTags)
