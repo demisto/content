@@ -158,54 +158,6 @@ def test_create_incident_from_offense():
     assert incident['name'] == INCIDENT_RESULT['name']
 
 
-def test_create_incident_from_offense_no_description():
-    """
-    Given:
-        - There's an offense
-    When:
-        - I fetch incidents
-    Then:
-        - The function will create an incident from the offense
-    """
-    import QRadar_v2 as qradar
-    expected_incident_name = '49473 '
-
-    raw_offense = copy.deepcopy(OFFENSE_RAW_RESULT[0])
-    raw_offense['description'] = ''
-    incident = qradar.create_incident_from_offense(raw_offense)
-    assert incident['name'] == expected_incident_name
-
-    raw_offense['description'] = None
-    incident = qradar.create_incident_from_offense(raw_offense)
-    assert incident['name'] == expected_incident_name
-
-
-def test_create_incident_from_offense_new_line_description():
-    """
-    Given:
-        - There's an offense with \n in its description
-    When:
-        - I fetch incidents
-    Then:
-        - The function will create an incident from the offense without \n in the incident name
-    """
-    import QRadar_v2 as qradar
-    raw_offense = copy.deepcopy(OFFENSE_RAW_RESULT[0])
-    raw_offense['description'] = '\n{}\n'.format(raw_offense['description'])
-    incident = qradar.create_incident_from_offense(raw_offense)
-
-    # assert incident['name'] was altered correctly
-    assert incident['name'] == '49473  Activacion '
-
-    # assert offense['description'] wasn't altered
-    description_asserted = False
-    for label in incident['labels']:
-        if label.get('type') == 'description':
-            assert label.get('value') == '\nActivacion\n'
-            description_asserted = True
-    assert description_asserted
-
-
 def test_get_entry_for_object():
     """
     Given:
