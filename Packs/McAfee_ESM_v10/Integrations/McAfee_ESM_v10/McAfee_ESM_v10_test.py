@@ -14,8 +14,6 @@ integration_params = {
     'port': '0000'
 }
 
-
-
 Cases = [
     {u'openTime': u'07/27/2020 08:07:26',
      u'severity': 1,
@@ -53,7 +51,19 @@ def set_params(mocker):
 
 @pytest.mark.parametrize('Cases', [(Cases)])
 def test_cases_to_entry(Cases, mocker):
-    from McAfee_ESM_v10 import cases_to_entry
-    esm = mocker.patch('esm.case_status_id_to_name', return_value='Open')
-    result = cases_to_entry(esm, "test", Cases)
-    print(result)
+    """Unit test
+            Given
+            - List of cases from response one case with statusID value as int and another as dict
+            When
+            - mock the esm case status id to name Function.
+            Then
+            - run the cases to entry Function
+            - Check that both statusID were parsed correctly with no exeptions.
+            """
+    from McAfee_ESM_v10 import cases_to_entry, NitroESM
+    esm = NitroESM("Test", "Test", "Test")
+    mocker.patch.object(esm, 'case_status_id_to_name', return_value='Open')
+    try:
+        cases_to_entry(esm, "test", Cases)
+    except:
+        assert False
