@@ -14,13 +14,14 @@ from enum import IntEnum
 from time import sleep
 from threading import Thread
 from distutils.version import LooseVersion
+
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from paramiko.client import SSHClient, AutoAddPolicy
 import demisto_client
 from ruamel import yaml
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-    run_command, get_last_release_version, checked_type, get_yaml, str2bool, format_version, find_type
-from demisto_sdk.commands.validate.file_validator import FilesValidator
+    run_command, checked_type, get_yaml, str2bool, format_version, find_type
 from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, RUN_ALL_TESTS_FORMAT
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
@@ -242,10 +243,9 @@ def get_new_and_modified_integration_files(git_sha1):
         (tuple): Returns a tuple of two lists, the file paths of the new integrations and modified integrations.
     """
     # get changed yaml files (filter only added and modified files)
-    tag = get_last_release_version()
-    file_validator = FilesValidator()
+    file_validator = ValidateManager()
     change_log = run_command('git diff --name-status {}'.format(git_sha1))
-    modified_files, added_files, _, _ = file_validator.get_modified_files(change_log, tag)
+    modified_files, added_files, _, _, _ = file_validator.filter_changed_files(change_log)
     all_integration_regexes = YML_INTEGRATION_REGEXES
 
     new_integration_files = [
