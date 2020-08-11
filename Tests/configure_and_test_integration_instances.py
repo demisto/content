@@ -1,31 +1,104 @@
 from __future__ import print_function
 
 import argparse
+import logging
 import os
 import uuid
 import json
 import ast
 import subprocess
 import sys
+import zipfile
+from datetime import datetime
+from enum import IntEnum
 from time import sleep
 from threading import Thread
 from distutils.version import LooseVersion
+from paramiko.client import SSHClient, AutoAddPolicy
 import demisto_client
+from ruamel import yaml
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-    run_command, get_last_release_version, checked_type, get_yaml, str2bool, format_version
+    run_command, get_last_release_version, checked_type, get_yaml, str2bool, format_version, find_type
 from demisto_sdk.commands.validate.file_validator import FilesValidator
 from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, RUN_ALL_TESTS_FORMAT
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
-from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager, \
+from Tests.test_content import extract_filtered_tests, ParallelPrintsManager, \
     get_server_numeric_version
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
-    install_all_content_packs
-from Tests.tools import update_server_configuration
+    install_all_content_packs, upload_zipped_packs
 
 MARKET_PLACE_MACHINES = ('master',)
+SKIPPED_PACKS = ['NonSupported', 'ApiModules']
+
+
+class Running(IntEnum):
+    NOT_LOCAL_RUNNING = 0
+    WITH_OTHER_SERVER = 1
+    WITH_LOCAL_SERVER = 2
+
+
+class SimpleSSH(SSHClient):
+    logging.getLogger("paramiko").setLevel(logging.WARNING)
+
+    def __init__(self, host=None, user='ec2-user', port=22, key_file_path='~/.ssh/id_rsa'):
+        self.is_local_running = Build.local_running
+        if self.is_local_running in [Running.NOT_LOCAL_RUNNING, Running.WITH_OTHER_SERVER]:
+            super().__init__()
+            self.load_system_host_keys()
+            self.set_missing_host_key_policy(AutoAddPolicy())
+            if self.is_local_running == Running.NOT_LOCAL_RUNNING:
+                self.connect(hostname=host, username=user, timeout=60.0)
+            elif self.is_local_running == Running.WITH_OTHER_SERVER:
+                if key_file_path.startswith('~'):
+                    key_file_path = key_file_path.replace('~', os.getenv('HOME'), 1)
+                    self.connect(hostname=host, port=port, username=user, key_filename=key_file_path, timeout=60.0)
+
+    def exec_command(self, command, *_other):
+        if self.is_local_running in [Running.NOT_LOCAL_RUNNING, Running.WITH_OTHER_SERVER]:
+            _, _stdout, _stderr = super(SimpleSSH, self).exec_command(command)
+            return _stdout.read(), _stderr.read()
+        else:
+            return run_command(command, is_silenced=False), None
+
+
+class Build:
+    # START CHANGE ON LOCAL RUN #
+    content_path = '{}/project'.format(os.getenv('HOME'))
+    test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
+    key_file_path = 'Use in case of running with non local server'
+    local_running = Running.NOT_LOCAL_RUNNING
+    env_results_path = './env_results.json'
+    #  END CHANGE ON LOCAL RUN  #
+
+    def __init__(self, options):
+        self.git_sha1 = options.git_sha1
+        self.branch_name = options.branch
+        self.ci_build_number = options.build_number
+        self.is_nightly = options.is_nightly
+        self.ami_env = options.ami_env
+        self.servers, self.server_numeric_version = self.get_servers(options.ami_env)
+        self.secret_conf = get_json_file(options.secret)
+        self.username = options.user if options.user else self.secret_conf.get('username')
+        self.password = options.password if options.password else self.secret_conf.get('userPassword')
+
+        conf = get_json_file(options.conf)
+        self.tests = conf['tests']
+        self.skipped_integrations_conf = conf['skipped_integrations']
+
+    @staticmethod
+    def get_servers(ami_env):
+        env_conf = get_env_conf()
+        servers = determine_servers_urls(env_conf, ami_env)
+        if Build.local_running == Running.NOT_LOCAL_RUNNING:
+            server_numeric_version = get_server_numeric_version(ami_env)
+        else:
+            # START CHANGE ON LOCAL RUN #
+            server_numeric_version = '99.99.98'
+            #  END CHANGE ON LOCAL RUN  #
+        return servers, server_numeric_version
 
 
 def options_handler():
@@ -45,32 +118,6 @@ def options_handler():
     options = parser.parse_args()
 
     return options
-
-
-def determine_servers_urls(ami_env):
-    """
-    Use the "env_results.json" file and -env argument passed to the script to determine
-    the demisto server url to connect to.
-    In case there are several machines (nightly - parallel) several urls will be returned.
-
-    Arguments:
-        ami_env: (str)
-            The amazon machine image environment whose IP we should connect to.
-
-    Returns:
-        (lst): The server url list to connect to
-    """
-
-    with open('./env_results.json', 'r') as json_file:
-        env_results = json.load(json_file)
-
-    instances_dns = [env.get('InstanceDNS') for env in env_results if ami_env in env.get('Role', '')]
-
-    server_urls = []
-    for dns in instances_dns:
-        server_url = dns if not dns or dns.startswith('http') else f'https://{dns}'
-        server_urls.append(server_url)
-    return server_urls
 
 
 def check_test_version_compatible_with_server(test, server_version, prints_manager):
@@ -370,7 +417,7 @@ def set_module_params(param_conf, integration_params):
         integration_params (dict): The values to use for an integration's parameters to configure an instance.
 
     Returns:
-        (dict): The configured paramter object
+        (dict): The configured parameter object
     """
     if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
         # param defined in conf
@@ -680,10 +727,12 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
             prints_manager.add_print_job(
                 'Integration: "{}", Instance: "{}"'.format(integration_of_instance, instance_name), print_error, 0)
 
+    prints_manager.execute_thread_prints(0)
+
     return testing_status
 
 
-def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number):
+def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number, is_nightly):
     """Sets custom marketplace GCP bucket based on branch name and build number
 
     Args:
@@ -705,12 +754,11 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
     server_configuration = {
         'content.pack.verify': 'false',
         'marketplace.initial.sync.delay': '0',
-        'content.pack.ignore.missing.warnings.contentpack': 'true',
-        'marketplace.bootstrap.bypass.url':
-            'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
-                branch_name, ci_build_number)
-
+        'content.pack.ignore.missing.warnings.contentpack': 'true'
     }
+    if not is_nightly:
+        server_configuration['marketplace.bootstrap.bypass.url'] = 'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
+                branch_name, ci_build_number)
     error_msg = "Failed to set GCP bucket server config - with status code "
     return update_server_configuration(client, server_configuration, error_msg)
 
@@ -743,120 +791,161 @@ def set_docker_hardening_for_build(client, prints_manager):
     return update_server_configuration(client, server_configuration, error_msg)
 
 
-def get_pack_ids_to_install():
-    with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
-        pack_ids = packs_stream.readlines()
-        return [pack_id.rstrip('\n') for pack_id in pack_ids]
+def update_server_configuration(client, server_configuration, error_msg):
+    """updates server configuration
 
+    Args:
+        client (demisto_client): The configured client to use.
+        server_configuration (dict): The server configuration to be added
+        error_msg (str): The error message
 
-def restart_server(server, prints_manager):
-    installed_content_message = \
-        '\nRestarting servers to apply server config ...'
-    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
-    ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
-                 '"sudo systemctl restart demisto"'
+    Returns:
+        response_data: The response data
+        status_code: The response status code
+    """
+    system_conf_response = demisto_client.generic_request_func(
+        self=client,
+        path='/system/config',
+        method='GET'
+    )
+    system_conf = ast.literal_eval(system_conf_response[0]).get('sysConf', {})
+    system_conf.update(server_configuration)
+    data = {
+        'data': system_conf,
+        'version': -1
+    }
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
+                                                                        method='POST', body=data)
+
     try:
+        result_object = ast.literal_eval(response_data)
+    except ValueError as err:
+        print_error('failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
+        return
+
+    if status_code >= 300 or status_code < 200:
+        message = result_object.get('message', '')
+        msg = f'{error_msg} {status_code}\n{message}'
+        print_error(msg)
+    return response_data, status_code
+
+
+def get_env_conf():
+    if Build.local_running == Running.NOT_LOCAL_RUNNING:
+        return get_json_file(Build.env_results_path)
+
+    elif Build.local_running == Running.WITH_LOCAL_SERVER:
+        # START CHANGE ON LOCAL RUN #
+        return [{
+            "InstanceDNS": "http://localhost:8080",
+            "Role": "Demisto Marketplace"  # e.g. 'Demisto Marketplace'
+        }]
+    elif Build.local_running == Running.WITH_OTHER_SERVER:
+        return [{
+            "InstanceDNS": "DNS NANE",  # without http prefix
+            "Role": "DEMISTO EVN"  # e.g. 'Demisto Marketplace'
+        }]
+    #  END CHANGE ON LOCAL RUN  #
+
+
+def determine_servers_urls(env_results, ami_env):
+    """
+    Arguments:
+        env_results: (dict)
+            env_results.json in server
+        ami_env: (str)
+            The amazon machine image environment whose IP we should connect to.
+
+    Returns:
+        (lst): The server url list to connect to
+    """
+
+    instances_dns = [env.get('InstanceDNS') for env in env_results if ami_env in env.get('Role', '')]
+
+    server_urls = []
+    for dns in instances_dns:
+        server_url = dns if not dns or dns.startswith('http') else f'https://{dns}'
+        server_urls.append(server_url)
+    return server_urls
+
+
+def get_json_file(path):
+    with open(path, 'r') as json_file:
+        return json.loads(json_file.read())
+
+
+def configure_servers_and_restart(build, prints_manager):
+    if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
+        for server in build.servers:
+            client = demisto_client.configure(base_url=server, username=build.username, password=build.password,
+                                              verify_ssl=False)
+            set_docker_hardening_for_build(client, prints_manager)
+            if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
+                set_marketplace_gcp_bucket_for_build(client, prints_manager, build.branch_name, build.ci_build_number, build.is_nightly)
+
+            try:
+                print('Restarting servers to apply server config ...')
+                local_command = 'pgrep -f demisto > xargs kill -9 && server && go mod tidy && go mod vendor && go install -mod=vendor && $GOPATH/bin/server -public ~/dev/demisto/web-client/dist/ -conf conf_for_systemtests -insecure -loglevel debug'
+                command = local_command if Build.local_running == Running.WITH_LOCAL_SERVER else 'sudo systemctl restart demisto'
+                SimpleSSH(host=server.replace('https://', '').replace('http://', ''), key_file_path=Build.key_file_path, user='ec2-user').exec_command(command)
+            except Exception as error:
+                print_error(f'New SSH restart demisto failed with error: {str(error)}')
+                print(error.__traceback__)
+                old_way_to_restart_demisto(server)
+
+        prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
+        prints_manager.execute_thread_prints(0)
+        sleep(60)
+
+
+def old_way_to_restart_demisto(server):
+    try:
+        ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
+                     '"sudo systemctl restart demisto"'
         subprocess.check_output(
             ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
     except subprocess.CalledProcessError as exc:
         print(exc.output)
 
 
-def main():
-    options = options_handler()
-    username = options.user
-    password = options.password
-    ami_env = options.ami_env
-    git_sha1 = options.git_sha1
-    conf_path = options.conf
-    secret_conf_path = options.secret
-    branch_name = options.branch
-    ci_build_number = options.build_number
+def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
+    if Build.local_running == Running.NOT_LOCAL_RUNNING:
+        filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
+        if run_all_tests:
+            # skip test button testing
+            skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT)
+            prints_manager.add_print_job(skipped_instance_test_message, print_warning, 0)
+            tests_for_iteration = []
+        elif filter_configured and filtered_tests:
+            tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
+        else:
+            tests_for_iteration = tests
 
-    servers = determine_servers_urls(ami_env)
-    server_numeric_version = get_server_numeric_version(ami_env)
+        tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version,
+                                                                     prints_manager)
+        prints_manager.execute_thread_prints(0)
 
-    prints_manager = ParallelPrintsManager(1)
+        return tests_for_iteration
+    else:
+        # START CHANGE ON LOCAL RUN #
+        return [
+            {
+                "playbookID": "Docker Hardening Test",
+                "fromversion": "5.0.0"
+            },
+            {
+                "integrations": "SplunkPy",
+                "playbookID": "SplunkPy-Test-V2",
+                "memory_threshold": 500,
+                "instance_names": "use_default_handler"
+            }
+        ]
+        #  END CHANGE ON LOCAL RUN  #
 
-    conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
-    secret_params = secret_conf.get('integrations', []) if secret_conf else []
 
-    username = secret_conf.get('username') if not username else username
-    password = secret_conf.get('userPassword') if not password else password
-
-    if LooseVersion(server_numeric_version) >= LooseVersion('5.5.0'):
-        for server in servers:
-            client = demisto_client.configure(base_url=server, username=username, password=password,
-                                              verify_ssl=False)
-            set_docker_hardening_for_build(client, prints_manager)
-            if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
-                set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
-            restart_server(server, prints_manager)
-        prints_manager.add_print_job('Done restarting servers', print_color, 0, LOG_COLORS.GREEN)
-
-    tests = conf['tests']
-    skipped_integrations_conf = conf['skipped_integrations']
-    all_module_instances = []
-
-    filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=options.is_nightly)
-    tests_for_iteration = tests
-    if run_all_tests:
-        # skip test button testing
-        skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT)
-        prints_manager.add_print_job(skipped_instance_test_message, print_warning, 0)
-        tests_for_iteration = []
-    elif filter_configured and filtered_tests:
-        tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
-
-    tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version,
-                                                                 prints_manager)
-    prints_manager.execute_thread_prints(0)
-
-    # get a list of brand new integrations that way we filter them out to only configure instances
-    # after updating content
+def get_new(git_sha1, prints_manager):
     new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
     new_integrations_names, modified_integrations_names = [], []
-
-    installed_content_packs_successfully = True
-
-    if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
-        # sleep for one minute before starting to search and install packs to ensure bucket is ready
-        prints_manager.add_print_job('Sleeping for 1 minute...', print_warning, 0)
-        prints_manager.execute_thread_prints(0)
-        sleep(60)
-
-        if options.is_nightly:
-            threads_list = []
-            threads_print_manager = ParallelPrintsManager(len(servers))
-            # For each server url we install content
-            for thread_index, server_url in enumerate(servers):
-                client = demisto_client.configure(base_url=server_url, username=username,
-                                                  password=password, verify_ssl=False)
-                t = Thread(target=install_all_content_packs,
-                           kwargs={'client': client, 'host': server_url,
-                                   'prints_manager': threads_print_manager,
-                                   'thread_index': thread_index})
-                threads_list.append(t)
-            run_threads_list(threads_list)
-            prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0, include_timestamp=True)
-            prints_manager.execute_thread_prints(0)
-            sleep(45)
-
-        else:
-            # install content packs in every server
-            pack_ids = get_pack_ids_to_install()
-            for server_url in servers:
-                try:
-                    client = demisto_client.configure(base_url=server_url, username=username, password=password,
-                                                      verify_ssl=False)
-
-                    _, flag = search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
-                    if not flag:
-                        raise Exception('Failed to search and install packs.')
-                except Exception as exc:
-                    prints_manager.add_print_job(str(exc), print_error, 0)
-                    prints_manager.execute_thread_prints(0)
-                    installed_content_packs_successfully = False
 
     if new_integrations_files:
         new_integrations_names = get_integration_names_from_files(new_integrations_files)
@@ -870,19 +959,98 @@ def main():
             'Updated Integrations Since Last Release:\n{}\n'.format('\n'.join(modified_integrations_names))
         prints_manager.add_print_job(modified_integrations_names_message, print_warning, 0)
     prints_manager.execute_thread_prints(0)
-    # Each test is a dictionary from Tests/conf.json which may contain the following fields
-    # "playbookID", "integrations", "instance_names", "timeout", "nightly", "fromversion", "toversion"
-    # Note that only the "playbookID" field is required with all of the others being optional.
-    # Most tests have an "integrations" field listing the integration used for that playbook
-    # and sometimes an "instance_names" field which is used when there are multiple instances
-    # of an integration that we want to configure with different configuration values. Look at
-    # [conf.json](../conf.json) for examples
-    brand_new_integrations = []
+    return new_integrations_names, modified_integrations_names
 
+
+def get_pack_ids_to_install():
+    if Build.local_running == Running.NOT_LOCAL_RUNNING:
+        with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+            pack_ids = packs_stream.readlines()
+            return [pack_id.rstrip('\n') for pack_id in pack_ids]
+    else:
+        # START CHANGE ON LOCAL RUN #
+        return [
+            'SplunkPy'
+        ]
+        #  END CHANGE ON LOCAL RUN  #
+
+
+def install_playbook(client, playbook_path, host, prints_manager, thread_index):
+    try:
+        status_code = client.import_playbook_with_http_info(playbook_path)[1]
+    except Exception as error:
+        prints_manager.add_print_job(f'\nan error occurred when trying to install {playbook_path} in {host} {str(error)}',
+                                     print_error, thread_index)
+    else:
+        if status_code != 200:
+            prints_manager.add_print_job(f'\nan error occurred when trying to install {playbook_path} in {host}', print_error, thread_index)
+
+
+def nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs, test_pack_path=None):
+    threads_list = []
+
+    # For each server url we install pack/ packs
+    for thread_index, server_url in enumerate(build.servers):
+        client = demisto_client.configure(base_url=server_url, username=build.username,
+                                          password=build.password, verify_ssl=False)
+        kwargs = {'client': client, 'host': server_url,
+                  'prints_manager': threads_print_manager,
+                  'thread_index': thread_index}
+        if test_pack_path:
+            kwargs['test_pack_path'] = test_pack_path
+        t = Thread(target=install_method,
+                   kwargs=kwargs)
+        threads_list.append(t)
+    run_threads_list(threads_list)
+
+
+def install_nightly_pack(build, prints_manager):
+    threads_print_manager = ParallelPrintsManager(len(build.servers))
+    nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
+    create_nightly_test_pack()
+    nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs, test_pack_path=Build.test_pack_target)
+
+    prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0, include_timestamp=True)
+    prints_manager.execute_thread_prints(0)
+    sleep(45)
+
+
+def install_packs(build, prints_manager):
+    pack_ids = get_pack_ids_to_install()
+    installed_content_packs_successfully = True
+    for server_url in build.servers:
+        try:
+            client = demisto_client.configure(base_url=server_url, username=build.username, password=build.password,
+                                              verify_ssl=False)
+
+            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, client, prints_manager)
+            if not flag:
+                raise Exception('Failed to search and install packs.')
+        except Exception as exc:
+            prints_manager.add_print_job(str(exc), print_error, 0)
+            prints_manager.execute_thread_prints(0)
+            installed_content_packs_successfully = False
+
+    return installed_content_packs_successfully
+
+
+def configure_server_instances(build: Build, tests_for_iteration, new_integrations, modified_integrations, prints_manager):
+    all_module_instances = []
+    brand_new_integrations = []
+    testing_client = demisto_client.configure(base_url=build.servers[0], username=build.username,
+                                              password=build.password,
+                                              verify_ssl=False)
     for test in tests_for_iteration:
-        testing_client = demisto_client.configure(base_url=servers[0], username=username, password=password,
-                                                  verify_ssl=False)
-        integrations = get_integrations_for_test(test, skipped_integrations_conf)
+        integrations = get_integrations_for_test(test, build.skipped_integrations_conf)
+
+        integrations_names = [i.get('name') for i in integrations]
+        prints_manager.add_print_job('All Integrations for test "{}":'.format(test.get('playbookID')), print_warning, 0)
+        prints_manager.add_print_job(integrations_names, print_warning, 0)
+
+        new_integrations, modified_integrations, unchanged_integrations, integration_to_status = group_integrations(
+            integrations, build.skipped_integrations_conf, new_integrations, modified_integrations
+        )
+
         instance_names_conf = test.get('instance_names', [])
         if not isinstance(instance_names_conf, list):
             instance_names_conf = [instance_names_conf]
@@ -891,22 +1059,15 @@ def main():
         prints_manager.add_print_job('All Integrations for test "{}":'.format(test.get('playbookID')), print_warning, 0)
         prints_manager.add_print_job(integrations_names, print_warning, 0)
 
-        new_integrations, modified_integrations, unchanged_integrations, integration_to_status = group_integrations(
-            integrations, skipped_integrations_conf, new_integrations_names, modified_integrations_names
-        )
-
         integrations_msg = '\n'.join(['"{}" - {}'.format(key, val) for key, val in integration_to_status.items()])
         prints_manager.add_print_job('{}\n'.format(integrations_msg), print_warning, 0)
 
         integrations_to_configure = modified_integrations[:]
         integrations_to_configure.extend(unchanged_integrations)
-
-        # set params for new integrations and [modified + unchanged] integrations, then add the new ones
-        # to brand_new_integrations list for later use
-        placeholders_map = {'%%SERVER_HOST%%': servers[0]}
-        new_ints_params_set = set_integration_params(new_integrations, secret_params, instance_names_conf,
+        placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
+        new_ints_params_set = set_integration_params(new_integrations, build.secret_conf['integrations'], instance_names_conf,
                                                      placeholders_map)
-        ints_to_configure_params_set = set_integration_params(integrations_to_configure, secret_params,
+        ints_to_configure_params_set = set_integration_params(integrations_to_configure, build.secret_conf['integrations'],
                                                               instance_names_conf, placeholders_map)
         if not new_ints_params_set:
             prints_manager.add_print_job(
@@ -923,32 +1084,34 @@ def main():
 
         module_instances = []
         for integration in integrations_to_configure:
-            placeholders_map = {'%%SERVER_HOST%%': servers[0]}
+            placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
             module_instance = configure_integration_instance(integration, testing_client, prints_manager,
                                                              placeholders_map)
             if module_instance:
                 module_instances.append(module_instance)
 
         all_module_instances.extend(module_instances)
+    return all_module_instances, brand_new_integrations
 
-    preupdate_fails = set()
-    postupdate_fails = set()
-    preupdate_success = set()
-    postupdate_success = set()
 
+def instance_testing(build: Build, all_module_instances, prints_manager, pre_update):
+    update_status = 'Pre' if pre_update else 'Post'
+    failed_tests = set()
+    successful_tests = set()
     # Test all module instances (of modified + unchanged integrations) pre-updating content
     if all_module_instances:
         # only print start message if there are instances to configure
-        prints_manager.add_print_job('Start of Instance Testing ("Test" button) prior to Content Update:',
+        prints_manager.add_print_job(f'Start of Instance Testing ("Test" button) ({update_status}-update)',
                                      print_warning, 0)
     else:
-        prints_manager.add_print_job('No integrations to configure for the chosen tests. (Pre-update)',
+        prints_manager.add_print_job(f'No integrations to configure for the chosen tests. ({update_status}-update)',
                                      print_warning, 0)
     prints_manager.execute_thread_prints(0)
 
+    testing_client = demisto_client.configure(base_url=build.servers[0], username=build.username,
+                                              password=build.password,
+                                              verify_ssl=False)
     for instance in all_module_instances:
-        testing_client = demisto_client.configure(base_url=servers[0], username=username, password=password,
-                                                  verify_ssl=False)
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
         msg = 'Testing ("Test" button) for instance "{}" of integration "{}".'.format(instance_name,
@@ -959,70 +1122,134 @@ def main():
         success, _ = __test_integration_instance(testing_client, instance, prints_manager)
         prints_manager.execute_thread_prints(0)
         if not success:
-            preupdate_fails.add((instance_name, integration_of_instance))
+            failed_tests.add((instance_name, integration_of_instance))
         else:
-            preupdate_success.add((instance_name, integration_of_instance))
+            successful_tests.add((instance_name, integration_of_instance))
 
-    if LooseVersion(server_numeric_version) < LooseVersion('6.0.0'):
-        threads_list = []
-        threads_prints_manager = ParallelPrintsManager(len(servers))
-        # For each server url we install content
-        for thread_index, server_url in enumerate(servers):
-            client = demisto_client.configure(base_url=server_url, username=username,
-                                              password=password, verify_ssl=False)
-            t = Thread(target=update_content_on_demisto_instance,
-                       kwargs={'client': client, 'server': server_url, 'ami_name': ami_env,
-                               'prints_manager': threads_prints_manager,
-                               'thread_index': thread_index})
-            threads_list.append(t)
+    return successful_tests, failed_tests
 
-        run_threads_list(threads_list)
 
-    # configure instances for new integrations
-    new_integration_module_instances = []
-    for integration in brand_new_integrations:
-        placeholders_map = {'%%SERVER_HOST%%': servers[0]}
-        new_integration_module_instance = configure_integration_instance(integration, testing_client, prints_manager,
-                                                                         placeholders_map)
-        if new_integration_module_instance:
-            new_integration_module_instances.append(new_integration_module_instance)
+def update_content_till_v6(build: Build):
+    threads_list = []
+    threads_prints_manager = ParallelPrintsManager(len(build.servers))
+    # For each server url we install content
+    for thread_index, server_url in enumerate(build.servers):
+        client = demisto_client.configure(base_url=server_url, username=build.username,
+                                          password=build.password, verify_ssl=False)
+        t = Thread(target=update_content_on_demisto_instance,
+                   kwargs={'client': client, 'server': server_url, 'ami_name': build.ami_env,
+                           'prints_manager': threads_prints_manager,
+                           'thread_index': thread_index})
+        threads_list.append(t)
 
-    all_module_instances.extend(new_integration_module_instances)
+    run_threads_list(threads_list)
 
-    # After content upload has completed - test ("Test" button) integration instances
-    # Test all module instances (of pre-existing AND new integrations) post-updating content
-    if all_module_instances:
-        # only print start message if there are instances to configure
-        prints_manager.add_print_job('Start of Instance Testing ("Test" button) after the Content Update:',
-                                     print_warning, 0)
+
+def disable_instances(build: Build, all_module_instances, prints_manager):
+    # for server_url in build.servers:
+    #     client = demisto_client.configure(base_url=server_url, username=build.username, password=build.password, verify_ssl=False)
+    #     __disable_integrations_instances(client, all_module_instances, prints_manager)
+    client = demisto_client.configure(base_url=build.servers[0], username=build.username, password=build.password,
+                                      verify_ssl=False)
+    __disable_integrations_instances(client, all_module_instances, prints_manager)
+    prints_manager.execute_thread_prints(0)
+
+
+def create_nightly_test_pack():
+    test_pack_zip(Build.content_path, Build.test_pack_target)
+
+
+def test_files(content_path):
+    packs_root, packs, _ = next(os.walk(f'{content_path}/Packs')) # lgtm [py/unguarded-next-in-generator]
+    for pack_dir in packs:
+        if pack_dir in SKIPPED_PACKS:
+            continue
+        if os.path.isdir(f'{packs_root}/{pack_dir}/TestPlaybooks'):
+            playbooks_root, _, playbooks = next(os.walk(f'{packs_root}/{pack_dir}/TestPlaybooks')) # lgtm [py/unguarded-next-in-generator]
+            for playbook in playbooks:
+                yield os.path.join(playbooks_root, playbook), playbook
+
+
+def test_pack_metadata():
+    now = datetime.now().isoformat().split('.')[0]
+    now = f'{now}Z'
+    metadata = {
+        "name": "nightly test",
+        "id": str(uuid.uuid4()),
+        "description": "nightly test pack (all test playbooks and scripts).",
+        "created": now,
+        "updated": now,
+        "legacy": True,
+        "support": "Cortex XSOAR",
+        "supportDetails": {},
+        "author": "Cortex XSOAR",
+        "authorImage": "",
+        "certification": "certified",
+        "price": 0,
+        "serverMinVersion": "6.0.0",
+        "serverLicense": "",
+        "currentVersion": "1.0.0",
+        "general": [],
+        "tags": [],
+        "categories": [
+            "Forensics & Malware Analysis"
+        ],
+        "contentItems": {},
+        "integrations": [],
+        "useCases": [],
+        "keywords": [],
+        "dependencies": {}
+    }
+    return json.dumps(metadata, indent=4)
+
+
+def test_pack_zip(content_path, target):
+    open(f'{target}/test_pack.zip', 'w').close()
+    zip_file = zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED)
+    zip_file.writestr(f'test_pack/metadata.json', test_pack_metadata())
+    for test_path, test in test_files(content_path):
+        if not test_path.endswith('.yml'):
+            continue
+        with open(test_path, 'r') as test_file:
+            if not (test.startswith('playbook-') or test.startswith('script-')):
+                test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
+                test_file.seek(0)
+                test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
+            else:
+                test_target = f'test_pack/TestPlaybooks/{test}'
+            zip_file.writestr(test_target, test_file.read())
+    zip_file.close()
+
+
+def main():
+    build = Build(options_handler())
+
+    prints_manager = ParallelPrintsManager(1)
+
+    configure_servers_and_restart(build, prints_manager)
+    if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
+        if build.is_nightly:
+            install_nightly_pack(build, prints_manager)
+            installed_content_packs_successfully = True
+        else:
+            installed_content_packs_successfully = install_packs(build, prints_manager)
     else:
-        prints_manager.add_print_job('No integrations to configure for the chosen tests. (Post-update)',
-                                     print_warning, 0)
-    prints_manager.execute_thread_prints(0)
+        installed_content_packs_successfully = True
 
-    for instance in all_module_instances:
-        integration_of_instance = instance.get('brand', '')
-        instance_name = instance.get('name', '')
-        msg = 'Testing ("Test" button) for instance "{}" of integration "{}" .'.format(instance_name,
-                                                                                       integration_of_instance)
-        prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
-        prints_manager.execute_thread_prints(0)
-        # If there is a failure, __test_integration_instance will print it
-        success, _ = __test_integration_instance(testing_client, instance, prints_manager)
-        prints_manager.execute_thread_prints(0)
-        if not success:
-            postupdate_fails.add((instance_name, integration_of_instance))
-        else:
-            postupdate_success.add((instance_name, integration_of_instance))
-    # reinitialize all clients since their authorization has probably expired by now
-    for server_url in servers:
-        client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
-        __disable_integrations_instances(client, all_module_instances, prints_manager)
-    prints_manager.execute_thread_prints(0)
+    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly)
+    new_integrations, modified_integrations = get_new(build.git_sha1, prints_manager)
+    all_module_instances, brand_new_integrations = configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
+    if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
+        successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, prints_manager, pre_update=True)
+        update_content_till_v6(build)
+    else:
+        successful_tests_pre, failed_tests_pre = set(), set()
+    all_module_instances.extend(brand_new_integrations)
+    successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager, pre_update=False)
+    disable_instances(build, all_module_instances, prints_manager)
 
-    success = report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
-                                  new_integrations_names, prints_manager)
-    prints_manager.execute_thread_prints(0)
+    success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
+                                  new_integrations, prints_manager)
     if not success or not installed_content_packs_successfully:
         sys.exit(2)
 
