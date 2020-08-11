@@ -19,7 +19,8 @@ Cases = [
      u'severity': 1,
      u'deviceList': None,
      u'eventList': [],
-     u'notes': u'------- Open: 2020/07/27 08:07:26(GMT)   test -------\n\n------- Closed: 08/02/2020 14:34:31(GMT)   test -------\n',
+     u'notes': u'------- Open: 2020/07/27 08:07:26(GMT)   test -------\n\n------- Closed: 08/02/2020 14:34:31(GMT)'
+               u'   test -------\n',
      u'dataSourceList': None,
      u'closeTime': u'08/02/2020 14:34:31',
      u'id': {u'value': 108598},
@@ -32,7 +33,8 @@ Cases = [
      u'severity': 1,
      u'deviceList': None,
      u'eventList': [],
-     u'notes': u'------- Open: 2020/07/27 08:07:26(GMT)   test -------\n\n------- Closed: 08/02/2020 14:34:31(GMT)   test -------\n',
+     u'notes': u'------- Open: 2020/07/27 08:07:26(GMT)   test -------\n\n------- Closed: 08/02/2020 14:34:31(GMT)'
+               u'   test -------\n',
      u'dataSourceList': None,
      u'closeTime': u'08/02/2020 14:34:31',
      u'id': {u'value': 108598},
@@ -65,5 +67,5 @@ def test_cases_to_entry(Cases, mocker):
     mocker.patch.object(esm, 'case_status_id_to_name', return_value='Open')
     try:
         cases_to_entry(esm, "test", Cases)
-    except:
+    except Exception:
         assert False
