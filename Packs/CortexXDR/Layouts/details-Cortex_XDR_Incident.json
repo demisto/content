@@ -588,6 +588,61 @@
 						"w": 1,
 						"x": 2,
 						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "1vduzkpmlh-27575a40-dbd3-11ea-816e-f14862061e21",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotmirrorid",
+								"height": 22,
+								"id": "617e48f0-dbd3-11ea-816e-f14862061e21",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotmirrorinstance",
+								"height": 22,
+								"id": "675fb790-dbd3-11ea-816e-f14862061e21",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "dbotmirrordirection",
+								"height": 22,
+								"id": "63fa6c80-dbd3-11ea-816e-f14862061e21",
+								"index": 2,
+								"listId": "1vduzkpmlh-27575a40-dbd3-11ea-816e-f14862061e21",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotmirrorlastsync",
+								"height": 22,
+								"id": "6b9cec10-dbd3-11ea-816e-f14862061e21",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Mirroring Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 8
 					}
 				],
 				"type": "custom"
