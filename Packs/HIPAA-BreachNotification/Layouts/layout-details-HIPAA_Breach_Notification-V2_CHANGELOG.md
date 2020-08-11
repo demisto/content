@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Changed layout sections to cards from row.
+- Changed layout sections from row to cards.
