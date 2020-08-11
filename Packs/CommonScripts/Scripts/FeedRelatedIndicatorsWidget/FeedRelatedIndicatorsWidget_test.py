@@ -57,7 +57,7 @@ def test_feed_related_indicator(mocker):
     When: Running feed_related_indicator command.
     Then: Verify expected results returns
     """
-    from FeedRelatedIndicators import feed_related_indicator
+    from FeedRelatedIndicatorsWidget import feed_related_indicator
 
     args = {'indicator': FILE_INDICATOR}
     mocker.patch.object(demisto, 'searchIndicators', return_value=SEARCH_INDICATORS_RESPONSE)
