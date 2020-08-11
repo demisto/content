@@ -3009,11 +3009,12 @@ class Message(object):
         if "RtfCompressed" in property_values:
             try:
                 import extract_msg
-            except ImportError:
-                extract_msg = None
-            if extract_msg:
                 from pyth.plugins.rtf15.reader import Rtf15Reader
                 from pyth.plugins.xhtml.writer import XHTMLWriter
+            except ImportError:
+                extract_msg = None
+                pyth = None
+            if extract_msg and pyth:
                 msg = extract_msg.openMsg(self.msg_path)
                 bytes(msg.rtfBody)
                 b = io.BytesIO(msg.rtfBody)
