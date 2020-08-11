@@ -6,10 +6,7 @@ def feed_related_indicator(args) -> CommandResults:
     indicator = args['indicator']
     feed_related_indicators = indicator.get('CustomFields', {}).get('feedrelatedindicators', [])
     ioc = list(filter(lambda x: x.get('value'), feed_related_indicators))
-    if ioc:
-        ioc_value = ioc[0].get('value')
-    else:
-        ioc_value = ''
+    ioc_value = ioc[0].get('value') if ioc else ''
 
     content = []
     results = demisto.searchIndicators(value=ioc_value).get('iocs', [])
