@@ -11,6 +11,7 @@ from email.parser import HeaderParser
 import traceback
 import tempfile
 import io
+import sys
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python
 # Based on MS-OXMSG protocol specification
@@ -3596,7 +3597,6 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
             elif part.get_content_type() == 'text/html':
                 html = get_utf_string(part.get_payload(decode=True), 'HTML')
-                print(html)
 
             elif part.get_content_type() == 'text/plain':
                 text = get_utf_string(part.get_payload(decode=True), 'TEXT')
@@ -3650,7 +3650,7 @@ def is_email_data_populated(email_data):
 
 def main():
     file_type = ''
-    # entry_id = demisto.args()['entryid']
+    entry_id = demisto.args()['entryid']
     max_depth = int(demisto.args().get('max_depth', '3'))
 
     # we use the MAX_DEPTH_CONST to calculate the depth of the email

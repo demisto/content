@@ -1917,6 +1917,11 @@
             "playbookID": "Active Directory Query V2 configuration with port"
         },
         {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja",
+            "playbookID": "Active Directory - ad-get-user limit check"
+        },
+        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
@@ -3022,8 +3027,7 @@
         "Claroty - Test": "Issue 27210",
         "test-Expanse": "Issue 27279",
         "SepioPrimeAPI-Test": "Issue 27240",
-        "Trend Micro Apex - Test": "Issue 27280",
-        "Cortex Data Lake Test": "Issue 24346"
+        "Trend Micro Apex - Test": "Issue 27280"
     },
     "skipped_integrations": {
         
