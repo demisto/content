@@ -1,22 +1,19 @@
 import traceback
 from typing import List
 from operator import itemgetter
-from datetime import datetime
+from dateutil.parser import parse
 
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def get_investigations(raw_output):
-    investigations = {}
+def get_investigations(raw_output, investigations):
     for db in raw_output[0].get('Contents'):
         buckets = db.get('buckets')
         for entry in buckets.keys():
             if entry.startswith('investigations-'):
                 investigations[entry] = buckets.get(entry)
-
-    return investigations
 
 
 def parse_investigations_to_table(investigations):
@@ -35,8 +32,12 @@ def parse_investigations_to_table(investigations):
 
     return widget_table
 
+def
 
-def get_current_month_db():
+def get_month_database_names():
+    db_names = []
+    from_date = parse(demisto.args().get('fromDate'))
+    to_date = parse(demisto.args().get('toDate'))
     current_month = datetime.now().strftime('%m')
     current_year = datetime.now().strftime('%Y')
     return current_month + current_year
@@ -44,8 +45,10 @@ def get_current_month_db():
 
 def main():
     try:
-        raw_output = demisto.executeCommand('getDBStatistics', args={"filter": get_current_month_db()})
-        investigations = get_investigations(raw_output)
+        investigations = {}
+        for db_name in get_month_database_names():
+            raw_output = demisto.executeCommand('getDBStatistics', args={"filter": db_name})
+            get_investigations(raw_output, investigations)
         demisto.results(parse_investigations_to_table(investigations))
     except Exception:
         demisto.error(traceback.format_exc())  # print the traceback
