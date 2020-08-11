@@ -5,7 +5,7 @@ import pytest
     ('e', 'ZQ==')
 ])
 def test_encoding(input, expected_result):
-    from Base64Encode import encode
+    from Base64EncodeV2 import encode
     actual_result, output = encode(input)
 
     assert actual_result == expected_result
