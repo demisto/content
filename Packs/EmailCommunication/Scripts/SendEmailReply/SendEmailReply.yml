@@ -1,0 +1,33 @@
+args:
+- default: false
+  defaultValue: ${File}
+  description: Files
+  isArray: true
+  name: files
+  required: false
+  secret: false
+- default: false
+  defaultValue: ${incident.attachment}
+  description: Attachment
+  isArray: true
+  name: attachment
+  required: false
+  secret: false
+- default: false
+  defaultValue: avishai@demistodev.onmicrosoft.com
+  description: The service mail address.
+  isArray: false
+  name: service_mail
+  required: true
+  secret: false
+comment: Send email reply
+commonfields:
+  id: c5c0d8b8-050e-4457-9463-df5dcb37c2d5
+  version: -1
+enabled: false
+name: SendEmailReply
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python

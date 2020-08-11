@@ -1,0 +1,30 @@
+args:
+- default: false
+  defaultValue: ${incident.attachment}
+  isArray: true
+  name: attachments
+  required: false
+  secret: false
+- default: false
+  isArray: false
+  name: files
+  required: false
+  secret: false
+comment: |-
+  Preprocessing script for email communication layout.
+  This script will check if the incoming mail contains an Incident ID to link the mail to existing incident and will tag the email as "email-thread".
+
+  For more information about the preprocessing rules, please refer to: https://demisto.developers.paloaltonetworks.com/docs/incidents/incident-pre-processing
+commonfields:
+  id: 55dd00a9-4782-4eed-ba57-c638ce09050f
+  version: -1
+enabled: false
+name: PreprocessEmail
+script: '-'
+subtype: python3
+system: false
+tags:
+- email
+- ' preProcessing'
+timeout: '0'
+type: python
