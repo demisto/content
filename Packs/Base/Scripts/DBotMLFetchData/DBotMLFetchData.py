@@ -597,7 +597,7 @@ def extract_features_from_all_incidents(incidents_df):
     return X, n_fetched_incidents, exceptions_log, exception_indices, timeout_indices, durations
 
 
-def extract_data_from_incidents(incidents):
+def extract_data_from_incidents(incidents, input_label_field):
     incidents_df = pd.DataFrame(incidents)
     if 'created' in incidents_df:
         incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))   # type: ignore
@@ -605,7 +605,13 @@ def extract_data_from_incidents(incidents):
         incidents_df_for_finding_labels_fields_candidates = incidents_df.head(500)
     else:
         incidents_df_for_finding_labels_fields_candidates = incidents_df
-    label_fields = find_label_fields_candidates(incidents_df_for_finding_labels_fields_candidates)
+    if input_label_field is None:
+        label_fields = find_label_fields_candidates(incidents_df_for_finding_labels_fields_candidates)
+    else:
+        input_label_field = input_label_field.strip()
+        if input_label_field not in incidents_df:
+            return_error('Could not find label field "{}" among the incidents'.format(input_label_field))
+        label_fields = [input_label_field]
     for label in label_fields:
         incidents_df[label].replace('', float('nan'), regex=True, inplace=True)
     incidents_df.dropna(how='all', subset=label_fields, inplace=True)
@@ -684,7 +690,8 @@ def main():
     if len(incidents) == 0:
         demisto.results('No results were found')
     else:
-        data = extract_data_from_incidents(incidents)
+        tag_field = demisto.args().get('tagField', None)
+        data = extract_data_from_incidents(incidents, tag_field)
         encoded_data = json.dumps(data).encode('utf-8', errors='ignore')
         compressed_data = zlib.compress(encoded_data, 4)
         compressed_hr_data = b64encode(compressed_data).decode('utf-8')
