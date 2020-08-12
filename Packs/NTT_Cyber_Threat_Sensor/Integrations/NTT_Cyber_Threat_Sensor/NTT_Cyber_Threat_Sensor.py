@@ -132,7 +132,7 @@ def fetch_incidents():
 
     incidents = list()
     for artifact_meta in artifacts_meta:
-        demisto.debug('\nRequesting data for event: {}\n\n'.format(artifact_meta['event_id'])
+        demisto.debug('\nRequesting data for event: {}\n\n'.format(artifact_meta['event_id']))
         result_artifact = http_request('GET', '/artifacts/alerts/%s' % artifact_meta['event_id'])
         incidents.append(item_to_incident(result_artifact['alert']))
 
