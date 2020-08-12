@@ -1,6 +1,5 @@
 id: MicrosoftCloudAppSecurity-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: MicrosoftCloudAppSecurity-Test
 starttaskid: "0"
 tasks:
