@@ -1,57 +1,67 @@
-import demistomock as demisto
+''' IMPORTS '''
+
+
 import winrm
-from CommonServerPython import *
+
+
+''' Helper functions '''
 
 
 class Client():
-    def __init__(self, username, password, auth_type, realm):
+    def __init__(self, username, password, auth_type, realm, default_host, decode):
         self.username = username
         self.password = password
         self.auth = auth_type
         self.realm = realm if realm else None
-        self.hostname = None
+        self.hostname = default_host
+        self.decode = decode
         self.runType = None
         self.command = None
         self.script = None
         self.arguments = None
         self.res = None
 
+    def isError(r):
+        if r.status_code != 0:
+            return_error(r.std_err)
+            return 1
+        else:
+            return 0
+
     def run(self):
         if self.auth == "ntlm":
-            winrm_session = winrm.Session(self.hostname, auth=(self.username, self.password), transport=self.auth)
+            s = winrm.Session(self.hostname, auth=(self.username, self.password), transport=self.auth)
         elif self.auth == "kerberos":
-            winrm_session = winrm.Session(self.hostname, auth=(self.username, self.password), transport=self.auth, realm=self.realm)
+            s = winrm.Session(self.hostname, auth=(self.username, self.password), transport=self.auth, realm=self.realm)
         if self.runType == 'Process':
-            self.res = winrm_session.run_cmd(self.command, self.arguments)
+            self.res = s.run_cmd(self.command, self.arguments)
         elif self.runType == 'Script':
-            self.res = winrm_session.run_ps(self.script)
+            self.res = s.run_ps(self.script)
 
     def output(self):
-        entry_context = dict()
+        entryContext = None
         if self.runType == 'Process':
-            data = {"hostname": self.hostname, "process": self.command, "output": self.res.std_out.decode(
-                "utf-8"), "error": self.res.std_err.decode("utf-8"), "status": self.res.status_code}
-            entry_context = {'WinRM.Process(val.hostname == obj.hostname && val.process == obj.process)': data}
+            data = {"hostname": self.hostname, "process": self.command, "output": self.res.std_out.decode(self.decode), "error": self.res.std_err.decode(self.decode), "status": self.res.status_code}
+            entryContext = {'WinRM.Process(val.hostname == obj.hostname && val.process == obj.process)': data}
         elif self.runType == 'Script':
-            data = {"hostname": self.hostname, "script": self.command, "output": self.res.std_out.decode(
-                "utf-8"), "error": self.res.std_err.decode("utf-8"), "status": self.res.status_code}
-            entry_context = {'WinRM.Script(val.hostname && val.hostname == obj.hostname && val.script == obj.script)': data}
+            data = {"hostname": self.hostname, "script": self.command, "output": self.res.std_out.decode(self.decode), "error": self.res.std_err.decode(self.decode), "status": self.res.status_code}
+            entryContext = {'WinRM.Script(val.hostname && val.hostname == obj.hostname && val.script == obj.script)': data}
         if self.res.status_code == 0:
-            this_out = self.res.std_out
+            thisOut = self.res.std_out
         else:
-            this_out = self.res.std_err
+            thisOut = self.res.std_err
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': data,
             'ContentsFormat': formats['json'],
-            'HumanReadable': this_out.decode("utf-8"),
+            'HumanReadable': thisOut.decode(encoding=self.decode),
             'ReadableContentsFormat': formats['text'],
-            "EntryContext": entry_context
+            "EntryContext": entryContext
         })
 
 
 def test_command(client):
-    client.hostname = demisto.params().get('testhost', None)
+    client.hostname = demisto.params().get('default_host', None)
     if not client.hostname:
         return_error('You must provide a value for Default Host for the test button')
     client.runType = 'Process'
@@ -64,26 +74,41 @@ def test_command(client):
 
 
 def run_command(client, runType):
-    client.hostname = demisto.args().get('hostname')
+    args = demisto.args()
+    client.hostname = args.get('hostname', client.hostname)
+    client.decode = args.get('decode', client.decode)
     client.runType = runType
     if runType == 'Process':
-        client.command = demisto.args().get('command')
-        client.arguments = demisto.args().get('arguments', None)
+        client.command = args.get('command')
+        client.arguments = args.get('arguments', None)
     elif runType == 'Script':
-        client.script = demisto.args().get('script')
-        client.command = demisto.args().get('scriptname', None)
+        entry_id = args.get('entryID', None)
+        if entry_id:
+            filePath = demisto.getFilePath(entry_id)
+            client.command = filePath['name']
+            data = open(filePath['path']).read()
+            client.script = data
+        else:
+            client.script = args.get('script', None)
+            client.command = args.get('scriptname', None)
+        if not client.script and not client.command:
+            return_error("You must provide an entryID or script and script name")
     res = client.run()
     client.output()
 
 
 def main():
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
-    auth_type = demisto.params().get('authType')
+    args = demisto.args()
+    params = demisto.params()
+    username = params.get('credentials').get('identifier')
+    password = params.get('credentials').get('password')
+    auth_type = params.get('auth_type')
     realm = demisto.params().get('realm')
+    default_host = params.get('default_host')
+    decode = params.get('decode', 'utf_8')
 
     try:
-        client = Client(username, password, auth_type, realm)
+        client = Client(username, password, auth_type, realm, default_host, decode)
 
         if demisto.command() == 'test-module':
             test_command(client)
