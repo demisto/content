@@ -2,7 +2,6 @@ id: 3635efba-6320-42ed-84fa-4795a30c7308
 version: -1
 name: Handle TD events
 description: Playbook to enrich TD events
-fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -375,3 +374,6 @@ outputs:
 - contextPath: CTS.OccuredTime
   type: date
   description: Timestamp when incident was registered
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
