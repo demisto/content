@@ -583,6 +583,9 @@ class NitroESM(object):
             case['orgId'] = self.organization_name_to_id(organization)
 
         demisto.debug("Check content of notes " + str(case['notes']))
+
+        del case['notes']
+
         cmd = 'caseEditCase'
         query = json.dumps({'caseDetail': case})
         self.cmdquery(cmd, query, no_answer=True)
