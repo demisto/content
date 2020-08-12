@@ -226,6 +226,7 @@ class STIX21Processor:
             'fireeye_external_references': raw_data.get('external_references'),
             'fireeye_tracking_info': raw_data.get('x_fireeye_com_tracking_info'),
             'fireeye_exploitation_rating': raw_data.get('x_fireeye_com_exploitation_rating'),
+            'fireeye_risk_rating_justification': raw_data.get('x_fireeye_com_risk_rating_justification'),
             'fireeye_additional_description_sections': raw_data.get('x_fireeye_com_additional_description_sections'),
         }
 
