@@ -1,8 +1,9 @@
 {
-	"close": {},
+	"close": null,
 	"description": "",
-	"details": {},
+	"details": null,
 	"detailsV2": {
+		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -175,7 +176,7 @@
 						"type": "indicators",
 						"w": 2,
 						"x": 0,
-						"y": 12
+						"y": 8
 					},
 					{
 						"displayType": "CARD",
@@ -185,26 +186,28 @@
 							{
 								"endCol": 1,
 								"fieldId": "occurred",
-								"height": 22,
+								"height": 53,
 								"id": "incident-occurred-field",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
-								"endCol": 1,
-								"fieldId": "dbotmodified",
-								"height": 22,
-								"id": "incident-modified-field",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 53,
+								"id": "incident-dueDate-field",
 								"index": 1,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
-								"endCol": 2,
-								"fieldId": "dbotduedate",
-								"height": 22,
-								"id": "incident-dueDate-field",
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 53,
+								"id": "incident-modified-field",
 								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -212,7 +215,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "dbotcreated",
-								"height": 22,
+								"height": 53,
 								"id": "incident-created-field",
 								"index": 0,
 								"sectionItemType": "field",
@@ -221,9 +224,9 @@
 							{
 								"endCol": 2,
 								"fieldId": "dbotclosed",
-								"height": 22,
+								"height": 53,
 								"id": "incident-closed-field",
-								"index": 1,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 1
 							}
@@ -232,8 +235,8 @@
 						"name": "Timeline Information",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 10
+						"x": 1,
+						"y": 6
 					},
 					{
 						"displayType": "ROW",
@@ -274,7 +277,7 @@
 						"static": false,
 						"w": 1,
 						"x": 1,
-						"y": 10
+						"y": 4
 					},
 					{
 						"displayType": "CARD",
@@ -303,86 +306,6 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "caseinfoid-fac76eb0-d552-11ea-9b05-9b0686355117",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "accountname",
-								"height": 22,
-								"id": "080a8350-d553-11ea-9b05-9b0686355117",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "New Section",
-						"static": false,
-						"w": 1,
-						"x": 1,
-						"y": 8
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-17adf620-d553-11ea-9b05-9b0686355117",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "username",
-								"height": 22,
-								"id": "2ff86030-d553-11ea-9b05-9b0686355117",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "New Section",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 8
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-3486c1f0-d553-11ea-9b05-9b0686355117",
-						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "policytype",
-								"height": 22,
-								"id": "52abbcd0-d553-11ea-9b05-9b0686355117",
-								"index": 0,
-								"listId": "caseinfoid-3486c1f0-d553-11ea-9b05-9b0686355117",
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "New Section",
-						"static": false,
-						"w": 1,
-						"x": 1,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
 						"i": "caseinfoid-57338ee0-d553-11ea-9b05-9b0686355117",
 						"items": [
 							{
@@ -393,69 +316,28 @@
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "policytype",
+								"height": 22,
+								"id": "52abbcd0-d553-11ea-9b05-9b0686355117",
+								"index": 1,
+								"listId": "caseinfoid-3486c1f0-d553-11ea-9b05-9b0686355117",
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "New Section",
+						"name": "Incident Policy ",
 						"static": false,
 						"w": 1,
 						"x": 0,
 						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-70f18620-d553-11ea-9b05-9b0686355117",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "country",
-								"height": 22,
-								"id": "74cd87d0-d553-11ea-9b05-9b0686355117",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "New Section",
-						"static": false,
-						"w": 1,
-						"x": 1,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-76d9d290-d553-11ea-9b05-9b0686355117",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "cloudservice",
-								"height": 22,
-								"id": "7d2acbe0-d553-11ea-9b05-9b0686355117",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "New Section",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 4
 					},
 					{
 						"displayType": "ROW",
@@ -468,7 +350,25 @@
 								"fieldId": "riskscore",
 								"height": 22,
 								"id": "ae7a8b90-d553-11ea-9b05-9b0686355117",
-								"index": 0,
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "country",
+								"height": 22,
+								"id": "74cd87d0-d553-11ea-9b05-9b0686355117",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cloudservice",
+								"height": 22,
+								"id": "7d2acbe0-d553-11ea-9b05-9b0686355117",
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -477,7 +377,46 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "New Section",
+						"name": "Incident Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-4e0f3470-dc5d-11ea-a690-659ed8fbca23",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "username",
+								"height": 22,
+								"id": "b30e6b30-dc5c-11ea-a690-659ed8fbca23",
+								"index": 0,
+								"listId": "caseinfoid-a3655370-d553-11ea-9b05-9b0686355117",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "accountname",
+								"height": 22,
+								"id": "c4d707f0-dc5c-11ea-a690-659ed8fbca23",
+								"index": 1,
+								"listId": "caseinfoid-a3655370-d553-11ea-9b05-9b0686355117",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "User Details",
 						"static": false,
 						"w": 1,
 						"x": 0,
@@ -513,15 +452,23 @@
 			}
 		]
 	},
-	"edit": {},
-	"fromVersion": "6.0.0",
+	"edit": null,
+	"fromServerVersion": "",
 	"group": "incident",
 	"id": "084a304a-d3ef-4ba1-84bd-a1b428795dae",
-	"indicatorsDetails": {},
-	"indicatorsQuickView": {},
-	"mobile": {},
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
 	"name": "MicrosoftCloudAppSecurity",
-	"quickView": {},
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"sortValues": null,
 	"system": false,
+	"toServerVersion": "",
 	"version": -1
 }
