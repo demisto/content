@@ -1969,6 +1969,25 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> Union[List[
             'Note': True
         })
 
+    # Parse user dict to email
+    assigned_to = ticket.get('assigned_to')
+    caller = ticket.get('caller_id')
+    if assigned_to:
+        result = client.get('sys_user', assigned_to.get('value'))
+    user = result.get('result', {})
+    user_email = user.get('email')
+    ticket['assigned_to'] = user_email
+    if ticket['assigned_to'] == user_email:
+        pass
+
+    if caller:
+        result = client.get('sys_user', caller.get('value'))
+    user = result.get('result', {})
+    user_email = user.get('email')
+    ticket['caller_id'] = user_email
+    if ticket['caller_id'] == user_email:
+        pass
+
     original_ticket = result['result']
 
     if original_ticket.get('resolved_by') != '':
@@ -2001,19 +2020,19 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     """
     parsed_args = UpdateRemoteSystemArgs(args)
-    entry_tags = params.get('entry_tags', 'work_notes,comments').split(",")
     if parsed_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
-    changed_field = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data.keys()}
     if parsed_args.incident_changed:
-        # fields = get_ticket_fields(changed_field, ticket_type=ticket_type)
-        demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {changed_field}')
-        result = client.update(ticket_type, ticket_id, changed_field)
+        demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
+        fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
 
-        demisto.info(f'Ticket Update result {result}')
+        demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
+        result = client.update(ticket_type, ticket_id, fields, {})
+
+        demisto.info(f'Ticket Update result {result}\n')
 
     entries = parsed_args.entries
     if entries:
@@ -2026,15 +2045,12 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
                 path_res = demisto.getFilePath(entry.get('id'))
                 file_name = path_res.get('name')
                 client.upload_file(ticket_id, entry.get('id'), file_name, ticket_type)
-            # Mirroring comment and work notes as entries
-            tags = entry.get('tags', [])
-            if entry_tags[0] in tags:
-                key = 'work_notes'
-            elif entry_tags[1] in tags:
+            else:
+                # Mirroring comment and work notes as entries
                 key = 'comments'
-            user = entry.get('user', 'dbot')
-            text = f"({user}): {str(entry.get('contents', ''))}"
-            client.add_comment(ticket_id, ticket_type, key, text)
+                user = entry.get('user', 'dbot')
+                text = f"({user}): {str(entry.get('contents', ''))}"
+                client.add_comment(ticket_id, ticket_type, key, text)
 
     return ticket_id
 

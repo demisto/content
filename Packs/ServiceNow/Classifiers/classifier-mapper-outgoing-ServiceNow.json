@@ -11,15 +11,11 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 10,
+	"logicalVersion": 13,
 	"mapping": {
 		"ServiceNowTicket": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"assignment_group": {
-					"complex": null,
-					"simple": "servicenowassignmentgroup"
-				},
 				"category": {
 					"complex": null,
 					"simple": "servicenowcategory"
@@ -77,10 +73,6 @@
 				"notify": {
 					"complex": null,
 					"simple": "servicenownotify"
-				},
-				"opened_at": {
-					"complex": null,
-					"simple": "servicenowopeneddate"
 				},
 				"priority": {
 					"complex": null,
@@ -287,10 +279,6 @@
 				"urgency": {
 					"complex": null,
 					"simple": "servicenowurgency"
-				},
-				"work_notes": {
-					"complex": null,
-					"simple": "servicenowworknotes"
 				},
 				"work_start": {
 					"complex": null,
