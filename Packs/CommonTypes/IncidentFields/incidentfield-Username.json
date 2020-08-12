@@ -3,8 +3,7 @@
 	"associatedToAll": false,
 	"associatedTypes": [
 		"Impossible Traveler",
-		"Brute Force",
-		"Microsoft CAS Alert"
+		"Brute Force"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
