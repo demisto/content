@@ -5,10 +5,9 @@ from CommonServerPython import *
 
 import dateparser
 import requests
-
 import trustar
-from trustar.models.report import Report
 from trustar.models.indicator import Indicator
+from trustar.models.report import Report
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -247,6 +246,7 @@ class TrustarClient:
 
     LIST_ARGS = [
         "indicators",
+        "indicator_types",
         "values",
         "enclave_ids",
         "priority_event_score",
@@ -286,7 +286,8 @@ class TrustarClient:
             'trustar-get-phishing-indicators': self.get_all_phishing_indicators,
             'trustar-get-phishing-submissions': self.get_phishing_submissions,
             'trustar-set-triage-status': self.set_triage_status,
-            'trustar-copy-report': self.copy_report
+            'trustar-copy-report': self.copy_report,
+            'trustar-redact-report': self.redact_report
         }
         return command_dict
 
@@ -326,7 +327,15 @@ class TrustarClient:
         self.client.ping()
         return "ok"
 
-    def search_indicators(self, search_term=None, enclave_ids=None, limit=None):
+    def search_indicators(self,
+                          search_term=None,
+                          enclave_ids=None,
+                          from_time=None,
+                          to_time=None,
+                          indicator_types=None,
+                          tags=None,
+                          excluded_tags=None,
+                          limit=None):
         """
         Searches for all indicators that contain the given search term.
 
@@ -336,9 +345,16 @@ class TrustarClient:
 
         :return: Entry context with found indicators.
         """
+        from_time = Utils.date_to_unix(from_time) if from_time else from_time
+        to_time = Utils.date_to_unix(to_time) if to_time else to_time
         response = self.client.search_indicators_page(
             search_term=search_term,
             enclave_ids=enclave_ids,
+            from_time=from_time,
+            to_time=to_time,
+            tags=tags,
+            indicator_types=indicator_types,
+            excluded_tags=excluded_tags,
             page_number=0,
             page_size=limit,
         )
@@ -405,7 +421,7 @@ class TrustarClient:
                       time_began=None,
                       distribution_type="ENCLAVE"):
         """
-        Submits a new report to TruSTAR self.station.
+        Submits a new report to TruSTAR station.
 
         :param title: Title of the report.
         :param report_body: Body of the report.
@@ -607,7 +623,14 @@ class TrustarClient:
         results = self.context_manager.get_indicators_context(response)
         return results
 
-    def search_reports(self, search_term=None, enclave_ids=None):
+    def search_reports(self,
+                       search_term=None,
+                       enclave_ids=None,
+                       from_time=None,
+                       to_time=None,
+                       tags=None,
+                       excluded_tags=None,
+                       limit=None):
         """
         Searches for all reports that contain the given search term.
 
@@ -616,7 +639,16 @@ class TrustarClient:
 
         :return: Entry Context with Found reports.
         """
-        response = self.client.search_reports_page(search_term, enclave_ids)
+        response = self.client.search_reports_page(
+            search_term=search_term,
+            enclave_ids=enclave_ids,
+            from_time=from_time,
+            to_time=to_time,
+            tags=tags,
+            excluded_tags=excluded_tags,
+            page_number=0,
+            page_size=limit
+        )
         if not response:
             return "No reports were found"
 
@@ -631,6 +663,44 @@ class TrustarClient:
         title = f'TruSTAR reports that contain the term {search_term}'
         entry = self.get_entry(title, reports, ec)
         return entry
+
+    def redact_report(
+            self,
+            title=None,
+            report_body=None,
+            enclave_ids=None,
+            external_url=None,
+            time_began=None,
+            distribution_type="ENCLAVE"):
+        """
+        Redacts and submits a new report to TruSTAR station.
+
+        :param title: Title of the report.
+        :param report_body: Body of the report.
+        :param enclave_ids: Enclave IDs where to submit the report.
+        :param external_url: External URL of the report.
+        :param time_began: Incident time. Defaults to current time if not given.
+        :param distribution_type: Whether the report will be in the community, or only
+        in enclaves
+
+        :return: Entry context with the submitted report.
+        """
+        response = self.client.redact_report(
+            title=title,
+            report_body=report_body
+        )
+
+        redacted_title = response.title
+        redacted_body = response.body
+
+        return self.submit_report(
+            redacted_title,
+            redacted_body,
+            enclave_ids,
+            external_url,
+            time_began,
+            distribution_type
+        )
 
     def add_to_whitelist(self, indicators=None):
         """
@@ -776,7 +846,8 @@ class TrustarClient:
                                     normalized_indicator_score=None,
                                     from_time=None,
                                     to_time=None,
-                                    status=None):
+                                    status=None,
+                                    limit=None):
         """
         Get phishing indicators that match the given criteria.
 
@@ -788,11 +859,10 @@ class TrustarClient:
 
         :return: Entry Context with Phishing Indicators found.
         """
-        cursor = Utils.encode_cursor(1000, 0)
         args = {'priority_event_score': priority_event_score,
                 'normalized_indicator_score': normalized_indicator_score,
                 'status': status,
-                'cursor': cursor,
+                # 'page_size': limit,
                 'from_time': Utils.date_to_unix(from_time) if from_time else None,
                 'to_time': Utils.date_to_unix(to_time) if to_time else None}
         response = self.client.get_phishing_indicators_page(**args)
@@ -806,7 +876,8 @@ class TrustarClient:
                                  priority_event_score=None,
                                  from_time=None,
                                  to_time=None,
-                                 status=None):
+                                 status=None,
+                                 limit=None):
         """
         Fetches all phishing submissions that fit the given criteria.
 
@@ -817,10 +888,9 @@ class TrustarClient:
 
         :return: Entry Context with all phishing submissions found.
         """
-        cursor = Utils.encode_cursor(1000, 0)
         args = {'priority_event_score': priority_event_score,
                 'status': status,
-                'cursor': cursor,
+                # 'page_size': limit,
                 'from_time': Utils.date_to_unix(from_time) if from_time else None,
                 'to_time': Utils.date_to_unix(to_time) if to_time else None}
         response = self.client.get_phishing_submissions_page(**args)
