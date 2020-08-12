@@ -21,44 +21,6 @@ This integration was integrated and tested with version 1.0 of NTT Cyber Threat 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### fetch_incidents
-***
-Retrieve incidents since last poll
-
-
-#### Base Command
-
-`fetch_incidents`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CTS.DeviceName | string | Name of detecting device | 
-| CTS.Confidence | string | Confidence level | 
-| CTS.Severity | string | Severity level | 
-| CTS.ShortDescription | string | Short description of incident | 
-| CTS.ARAId | string | Id of this Active Response API | 
-| CTS.ARADetails | unknown | Details of the recommended actions | 
-| CTS.Signature | unknown | Signature name of detection | 
-| CTS.OccuredTime | unknown | Date and time of occurrence or detection | 
-| CTS.DeviceId | unknown | Id of detecting device | 
-| CTS.TenantId | unknown | Id of the tenant | 
-| CTS.EventID | string | Id of the event | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### poll-blobs
 ***
 Check if blobs is available
@@ -156,7 +118,7 @@ Collecting blobs, most commonly pcap from an incident
         ]
     },
     "File": {
-        "EntryID": "159@b969e30d-f6de-490a-8f35-81a8939b5b97",
+        "EntryID": "198@b969e30d-f6de-490a-8f35-81a8939b5b97",
         "Extension": "pcap",
         "Info": "application/vnd.tcpdump.pcap",
         "MD5": "f6362d15102678983db75e7b764d973f",
