@@ -4183,6 +4183,7 @@ class SchemeTypeMapping:
             self.type_name: self.fields
         }
 
+
 class GetMappingFieldsResponse:
     """Handler for the mapping fields object.
 
