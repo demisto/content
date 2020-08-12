@@ -1,5 +1,5 @@
 The SalesForce API consists of a set of API endpoints that allow customers to perform CRUD operation on their user profiles.
-This integration was integrated and tested with version xx of Salesforce IT Admin
+This integration was integrated and tested with version 44.0 of Salesforce IT Admin
 ## Configure Salesforce IT Admin on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
