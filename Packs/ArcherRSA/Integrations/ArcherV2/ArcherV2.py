@@ -209,7 +209,7 @@ class Client(BaseClient):
     def do_request(self, method, url_suffix, data=None, params=None):
         if not REQUEST_HEADERS.get('Authorization'):
             self.update_session()
-
+        res = ''
         res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data, params=params,
                                  resp_type='response', ok_codes=(200, 401))
 
