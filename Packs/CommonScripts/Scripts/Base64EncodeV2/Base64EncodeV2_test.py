@@ -11,7 +11,7 @@ class Base64EncodeV2(unittest.TestCase):
         correctly.
         """
         input = '日本語'
-        expected_result = b'5pel5pys6Kqe'
+        expected_result = '5pel5pys6Kqe'
         actual_result, output = encode(input)
         assert actual_result == expected_result
         assert output == {
@@ -29,7 +29,7 @@ class Base64EncodeV2(unittest.TestCase):
         correctly.
         """
         input = 'test'
-        expected_result = b'dGVzdA=='
+        expected_result = 'dGVzdA=='
         actual_result, output = encode(input)
         assert actual_result == expected_result
         assert output == {
@@ -47,7 +47,7 @@ class Base64EncodeV2(unittest.TestCase):
         correctly.
         """
         input = 'äpfel'
-        expected_result = b'w6RwZmVs'
+        expected_result = 'w6RwZmVs'
         actual_result, output = encode(input)
         assert actual_result == expected_result
         assert output == {
@@ -65,7 +65,7 @@ class Base64EncodeV2(unittest.TestCase):
         correctly.
         """
         input = 'בדיקה'
-        expected_result = b'15HXk9eZ16fXlA=='
+        expected_result = '15HXk9eZ16fXlA=='
         actual_result, output = encode(input)
         assert actual_result == expected_result
         assert output == {
@@ -83,7 +83,7 @@ class Base64EncodeV2(unittest.TestCase):
         correctly.
         """
         input = 'امتحان'
-        expected_result = b'2KfZhdiq2K3Yp9mG'
+        expected_result = '2KfZhdiq2K3Yp9mG'
         actual_result, output = encode(input)
         assert actual_result == expected_result
         assert output == {
