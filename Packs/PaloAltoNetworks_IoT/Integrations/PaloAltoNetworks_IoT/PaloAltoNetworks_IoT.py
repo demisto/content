@@ -1,6 +1,8 @@
-from datetime import datetime
+import dateparser
+from datetime import datetime, timezone
 import json
 import time
+from typing import Any, Optional
 
 import demistomock as demisto
 import requests
@@ -146,6 +148,55 @@ class Client(BaseClient):
         )
 
 
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+    """Converts an XSOAR argument to a timestamp (seconds from epoch)
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
+    since epoch). It will throw a ValueError if the input is invalid.
+    If the input is None, it will throw a ValueError if required is ``True``,
+    or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :return:
+        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[int]``
+    """
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp is a str containing digits - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # we use dateparser to handle strings either in ISO8601 format, or
+        # relative time stamps.
+        # For example: format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.replace(tzinfo=timezone.utc).timestamp())
+    if isinstance(arg, (int, float)):
+        # Convert to int if the input is a float
+        return int(arg)
+    raise ValueError(f'Invalid date: "{arg_name}"')
+
+
 def test_module(client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
@@ -156,7 +207,7 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    client.get_device("")
+    client.list_devices(0, 1)
     if demisto.params().get('isFetch'):
         fetch_incidents(client, last_run=demisto.getLastRun(), is_test=True)
     return 'ok'
@@ -229,7 +280,7 @@ def iot_list_alerts(client, args):
     """
     stime = args.get('start_time', '-1')
     offset = args.get('offset', 0)
-    pagelength = int(args.get('limit', client.max_fetch), PAGELENGTH)
+    pagelength = min(int(args.get('limit', client.max_fetch)), PAGELENGTH)
     result = client.list_alerts(stime, offset, pagelength, 'desc')
 
     outputs = {
@@ -258,7 +309,7 @@ def iot_list_vulns(client, args):
     """
     stime = args.get('start_time', '-1')
     offset = args.get('offset', 0)
-    pagelength = int(args.get('limit', client.max_fetch), PAGELENGTH)
+    pagelength = min(int(args.get('limit', client.max_fetch)), PAGELENGTH)
     result = client.list_vulns(stime, offset, pagelength)
 
     outputs = {
@@ -368,8 +419,8 @@ def fetch_incidents(client, last_run, is_test=False):
                     break
 
         for alert in alerts:
-            alert_date_epoch = (
-                datetime.strptime(alert['date'], "%Y-%m-%dT%H:%M:%S.%fZ") - datetime(1970, 1, 1)).total_seconds()
+            alert_date_epoch = datetime.strptime(
+                alert['date'], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
             alert_id = alert["zb_ticketid"].replace("alert-", "")
             incident = {
                 'name': alert['name'],
@@ -414,8 +465,8 @@ def fetch_incidents(client, last_run, is_test=False):
                     break
 
         for vuln in vulns:
-            vuln_date_epoch = (
-                datetime.strptime(vuln['detected_date'], "%Y-%m-%dT%H:%M:%S.%fZ") - datetime(1970, 1, 1)).total_seconds()
+            vuln_date_epoch = datetime.strptime(
+                vuln['detected_date'], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
             vuln_name_encoded = vuln['vulnerability_name'].replace(' ', '+')
             incident = {
                 'name': vuln['name'],
@@ -452,7 +503,16 @@ def main():
     access_key_id = demisto.params()['access_key_id']
     secret_access_key = demisto.params()['secret_access_key']
     api_timeout = int(demisto.params().get('api_timeout', '60'))
-    first_fetch = demisto.params().get('first_fetch', '-1')
+
+    ff = arg_to_timestamp(
+        arg=demisto.params().get('first_fetch'),
+        arg_name='First fetch time',
+        required=False
+    )
+    first_fetch = '-1'
+    if ff:
+        first_fetch = datetime.fromtimestamp(ff).astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+
     max_fetch = int(demisto.params().get('max_fetch', '10'))
 
     # get the service API url
