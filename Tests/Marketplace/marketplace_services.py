@@ -619,6 +619,7 @@ class Pack(object):
         # The path below is custom made for the private repo's build.
         # path_to_directory = self._pack_path
         shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
+        subprocess.check_output('chmod +x ./encryptor')
         current_working_dir = os.getcwd()
         os.chdir(extract_destination_path)
         print_error(f'ls result is: {subprocess.check_output("ls")}')
