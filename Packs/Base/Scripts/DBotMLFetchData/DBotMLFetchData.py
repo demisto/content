@@ -670,20 +670,23 @@ def update_last_execution_time():
         demisto.results(res)
 
 
-def main():
-    incidents_query_args = demisto.args()
-    args = get_args_based_on_last_execution()
-    if 'query' in incidents_query_args and 'query' in args:
-        incidents_query_args['query'] = '({}) and ({}) and (status:Closed)'.format(incidents_query_args['query'], args['query'])
-    elif 'query' in args:
-        incidents_query_args['query'] = '({}) and (status:Closed)'.format(args['query'])
-    elif 'query' in incidents_query_args:
-        incidents_query_args['query'] = '({}) and (status:Closed)'.format(incidents_query_args['query'])
+def determine_incidents_args(input_args, default_args):
+    if 'query' in input_args:
+        input_args['query'] = '({}) and (status:Closed)'.format(input_args['query'])
+    elif 'query' in default_args:
+        input_args['query'] = '({}) and (status:Closed)'.format(default_args['query'])
     else:
-        incidents_query_args['query'] = '(status:Closed)'
-    if 'limit' in args and 'limit' not in incidents_query_args:
-        incidents_query_args['limit'] = args['limit']
-    incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', incidents_query_args)
+        input_args['query'] = '(status:Closed)'
+    if 'limit' in default_args and 'limit' not in input_args:
+        input_args['limit'] = default_args['limit']
+    return input_args
+
+
+def main():
+    input_args = demisto.args()
+    default_args = get_args_based_on_last_execution()
+    input_args = determine_incidents_args(input_args, default_args)
+    incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', input_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents = json.loads(incidents_query_res[-1]['Contents'])
