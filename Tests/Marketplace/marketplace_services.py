@@ -618,8 +618,10 @@ class Pack(object):
     def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
         # The path below is custom made for the private repo's build.
         # path_to_directory = self._pack_path
+        shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
         current_working_dir = os.getcwd()
         os.chdir(extract_destination_path)
+        print_error(f'ls result is: {subprocess.check_output("ls")}')
         # zip_and_encrypt_script_path = os.path.join(extract_destination_path, 'zipAndEncryptDirectory')
         output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
         full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
