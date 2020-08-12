@@ -376,7 +376,7 @@
             "integrations": "Cortex XDR - IOC",
             "playbookID": "Cortex XDR - IOC - Test",
             "fromversion": "5.5.0",
-            "timeout": 1000
+            "timeout": 1200
         },
         {
             "integrations": "Cloaken",
