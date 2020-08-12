@@ -491,7 +491,6 @@ jobs:
             or:
               - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
@@ -504,7 +503,6 @@ jobs:
             or:
               - << pipeline.parameters.instance_tests >>
               - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.nightly >>
               - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
