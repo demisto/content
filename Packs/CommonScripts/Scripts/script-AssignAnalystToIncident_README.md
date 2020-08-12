@@ -8,6 +8,9 @@ Machine-Learning: DBot will calculate and decide who is the best analyst for the
  * online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles are provided, this will fetch all users).
  * current: The user that executed the command.
 
+When the chosen  `assignBy` argument is either: machine-learning, top-user or  less-busy-user, 
+the selection of the analyst will not take into consideration the given role.
+
 ## Script Data
 ---
 

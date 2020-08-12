@@ -190,7 +190,7 @@ script:
     - name: telephone-number
       description: The contact's telephone number.
     - name: custom-attributes
-      description: Sets basic or custom attributes of the contact object. For example, 
+      description: Sets basic or custom attributes of the contact object. For example,
         custom-attributes="{\"notes\":\"some note about the contact\",\"company\":\"some
         company\"}."
     - name: title
@@ -273,7 +273,8 @@ script:
     - name: username
       description: Queries users by the samAccountName attribute.
     - name: limit
-      description: The maximum number of objects to return (default is 20).
+      description: The maximum number of objects to return. Default is 20.
+      defaultValue: "20"
     - name: email
       description: Queries by the user's email address.
     - name: user-account-control-out
@@ -400,7 +401,7 @@ script:
       description: The DN of the group member.
       type: string
     - contextPath: 'ActiveDirectory.Groups.members.category'
-      description: The category of the group members. 
+      description: The category of the group members.
       type: string
     description: Retrieves the list of users or computers that are members of the
       specified group.
