@@ -82,7 +82,7 @@ def download(url):
 
 
 def item_to_incident(item):
-    dt_string = item.get('last_updated')
+    dt_string = item.get('last_updated', '')
     dz_string = dt_string.split('.')[0] + "Z"
 
     incident = {
