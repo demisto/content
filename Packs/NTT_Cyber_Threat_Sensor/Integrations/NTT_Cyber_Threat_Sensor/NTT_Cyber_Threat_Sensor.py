@@ -23,7 +23,7 @@ BASEURL = demisto.params().get('BASEURL', '').strip('/')
 TENANT_ID = demisto.params().get('TENANT_ID')
 DAYS_BACK = demisto.params().get('DAYS_BACK')
 ITEMS_TO_FETCH = demisto.params().get('ITEMS_TO_FETCH')
-USE_SSL = demisto.params().get('insecure')
+USE_SSL = not demisto.params().get('insecure')
 
 HEADERS = {
     'Content-Type': 'application/json',
