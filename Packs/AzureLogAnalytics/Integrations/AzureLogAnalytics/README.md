@@ -3,13 +3,13 @@ This integration was integrated and tested with version ***2020-03-01-preview***
 
 ## Authorize Cortex XSOAR for Azure Log Analytics
 
-You need to grant Cortex XSOAR authorization to access Azure Sentinel.
+You need to grant Cortex XSOAR authorization to access Azure Log Analytics.
 
-1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-azure-sentinel). 
+1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-azure-log-analytics). 
 2. Click the **Start Authorization Process** button and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. 
-3. Click the **Accept** button and you will receive your ID, token, and key. You will need to enter these when you configure the Azure Sentinel integration instance in Cortex XSOAR.
+3. Click the **Accept** button and you will receive your ID, token, and key. You will need to enter these when you configure the Azure Log Analytics integration instance in Cortex XSOAR.
 
-## Authorize Cortex XSOAR for Azure Sentinel (self-deployed configuration)
+## Authorize Cortex XSOAR for Azure Log Analytics (self-deployed configuration)
 
 Follow these steps for a self-deployed configuration.
 
@@ -279,7 +279,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
-```!azure-sentinel-test```
+```!azure-log-analytics-test```
 
 #### Human Readable Output
 ```✅ Success!```

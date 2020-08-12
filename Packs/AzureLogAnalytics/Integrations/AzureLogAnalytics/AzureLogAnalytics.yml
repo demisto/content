@@ -94,8 +94,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of incidents to return. The default and maximum
-        value is 50.
+      description: The maximum number of incidents to return.
       isArray: false
       name: limit
       required: false

@@ -194,7 +194,7 @@ def execute_query_command(client, args):
 
 def list_saved_searches_command(client, args):
     page = int(args.get('page'))
-    limit = min(50, int(args.get('limit')))
+    limit = int(args.get('limit'))
     url_suffix = '/savedSearches'
 
     response = client.http_request('GET', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
