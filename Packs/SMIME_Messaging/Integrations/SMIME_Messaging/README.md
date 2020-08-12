@@ -12,11 +12,11 @@ Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration to sen
 
 <h2>Usage</h2>
 <p>
-In order to send signed/encrypted messages using the S/MIME Messaging and Mail Sender (New) integrations:
-
-1. Run the required command in the S/MIME Messaging integration (e.g. `smime-sign-and-encrypt`)
-2. The output of the command execution from step 1, should be the input for the `raw_message` argument of the `send-mail` command in the Mail Sender (New) integration (e.g. the value stored in the Context Data under `SMIME.SignedAndEncrypted.Message`).
-3. Run the `send-mail` command with the `raw_message` argument as described in step 2, with addition to the optional arguments `to`, `cc` and `bcc` (e.g. `!send-mail to=user@email.com raw_message=${SMIME.SignedAndEncrypted.Message}`).
+In order to send signed/encrypted messages using the S/MIME Messaging and Mail Sender (New) perform the following steps.
+  
+1. Run the required command in the S/MIME Messaging integration (e.g., `smime-sign-and-encrypt`).
+2. Enter the output of the command executed from step 1 as the input for the `raw_message` argument of the `send-mail` command in the Mail Sender (New) integration (e.g. the value stored in the Context Data under `SMIME.SignedAndEncrypted.Message`).
+3. Run the `send-mail` command with the `raw_message` argument (as described in step 2), with any of the optional arguments `to`, `cc` and `bcc` (e.g., `!send-mail to=user@email.com raw_message=${SMIME.SignedAndEncrypted.Message}`).
 </p>
 
 <h2>Configure SMIME Messaging on Cortex XSOAR</h2>
