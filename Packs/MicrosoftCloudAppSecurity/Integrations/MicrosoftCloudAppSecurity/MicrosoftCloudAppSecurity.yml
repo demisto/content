@@ -48,7 +48,8 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- display: 'Incident resolution status. Valid values are: Open, Dismissed, Resolved, All.'
+- display: 'Incident resolution status. Valid values are: Open, Dismissed, Resolved,
+    All.'
   hidden: false
   name: resolution_status
   options:
@@ -58,15 +59,16 @@ configuration:
   - All
   required: false
   type: 16
-- additionalinfo: 'Filter that you create yourself. If you use custom_filter,
-    other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+- additionalinfo: 'Filter that you create yourself. If you use custom_filter, other
+    filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
   display: Custom Filter
   hidden: false
   name: custom_filter
   required: false
   type: 0
 description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker
-  (CASB). It provides rich visibility, control over data travel, and sophisticated analytics to identify and combat cyber threats across all your cloud services.
+  (CASB). It provides rich visibility, control over data travel, and sophisticated
+  analytics to identify and combat cyber threats across all your cloud services.
 display: Microsoft Cloud App Security
 name: MicrosoftCloudAppSecurity
 script:
@@ -81,7 +83,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other filters will not work. The filter template can be found here: https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: 'Filter that you create yourself. If you use custom_filter, other
+        filters will not work. The filter template can be found here: https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
       isArray: false
       name: custom_filter
       required: false
@@ -121,21 +124,10 @@ script:
       - High
       required: false
       secret: false
-    - default: false
-      description: Filter alerts related to the specified service appId.
-      isArray: false
-      name: service
-      required: false
-      secret: false
-    - default: false
-      description: Filter alerts related to the specified instances.
-      isArray: false
-      name: instance
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter by alert resolution status. Valid values are: Open, Dismissed, Resolved.'
+      description: 'Filter by alert resolution status. Valid values are: Open, Dismissed,
+        Resolved.'
       isArray: false
       name: resolution_status
       predefined:
@@ -145,7 +137,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: 'Filter that you create yourself. If you use custom_filter, other
+        filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
       isArray: false
       name: custom_filter
       required: false
@@ -154,12 +147,6 @@ script:
       description: The alert ID
       isArray: false
       name: alert_id
-      required: false
-      secret: false
-    - default: false
-      description: The username. Usually an email address.
-      isArray: false
-      name: username
       required: false
       secret: false
     deprecated: false
@@ -300,7 +287,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: 'Filter that you create yourself. If you use custom_filter, other
+        filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
       isArray: false
       name: custom_filter
       required: false
@@ -331,28 +319,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter activities related to the specified service appID.
-      isArray: false
-      name: 'service'
-      required: false
-      secret: false
-    - default: false
-      description: Filter activities from specified instances.
-      isArray: false
-      name: instance
-      required: false
-      secret: false
-    - default: false
       description: Filter activities originating from the specified IP address.
       isArray: false
-      name: 'ip'
+      name: ip
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter activities with the specified subnet categories. Valid values are: Corporate, Administrative, Risky, VPN, Cloud_provider, Other.'
+      description: 'Filter activities with the specified subnet categories. Valid
+        values are: Corporate, Administrative, Risky, VPN, Cloud_provider, Other.'
       isArray: false
-      name: 'ip_category'
+      name: ip_category
       predefined:
       - Corporate
       - Administrative
@@ -362,15 +339,11 @@ script:
       - Other
       required: false
       secret: false
-    - default: false
-      description: Filter activities by the user who performed the activity.
-      isArray: false
-      name: username
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter activities by the actions taken on them. Valid values are: block, proxy, BypassProxy, encrypt, decrypt, verified, encryptionFailed, protect, verify, null.'
+      description: 'Filter activities by the actions taken on them. Valid values are:
+        block, proxy, BypassProxy, encrypt, decrypt, verified, encryptionFailed, protect,
+        verify, null.'
       isArray: false
       name: taken_action
       predefined:
@@ -388,7 +361,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter all activities by source type. Valid values are: Access_control, Session_control, App_connector, App_connector_analysis, Discovery, MDATP.'
+      description: 'Filter all activities by source type. Valid values are: Access_control,
+        Session_control, App_connector, App_connector_analysis, Discovery, MDATP.'
       isArray: false
       name: source
       predefined:
@@ -401,7 +375,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: 'Filter that you create yourself. If you use custom_filter, other
+        filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
       isArray: false
       name: custom_filter
       required: false
@@ -566,21 +541,10 @@ script:
       name: limit
       required: false
       secret: false
-    - default: false
-      description: Filter files from the specified app appID.
-      isArray: false
-      name: service
-      required: false
-      secret: false
-    - default: false
-      description: Filter files from specified instances.
-      isArray: false
-      name: instance
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter files with the specified file type. Valid value are: Other, Document, Spreadsheet, Presentation, Text, Image, Folder.'
+      description: 'Filter files with the specified file type. Valid value are: Other,
+        Document, Spreadsheet, Presentation, Text, Image, Folder.'
       isArray: false
       name: file_type
       predefined:
@@ -593,15 +557,10 @@ script:
       - Folder
       required: false
       secret: false
-    - default: false
-      description: Filter files owned by the specified entities.
-      isArray: false
-      name: username
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter files with the specified sharing levels. Valid values are: Private, Internal, External, Public, Public_Internet.'
+      description: 'Filter files with the specified sharing levels. Valid values are:
+        Private, Internal, External, Public, Public_Internet.'
       isArray: false
       name: sharing
       predefined:
@@ -620,7 +579,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter by whether the file is quarantined. Valid values are: "True", "False".'
+      description: 'Filter by whether the file is quarantined. Valid values are: "True",
+        "False".'
       isArray: false
       name: quarantined
       predefined:
@@ -629,7 +589,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: 'Filter that you create yourself. If you use custom_filter, other
+        filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
       isArray: false
       name: custom_filter
       required: false
@@ -743,28 +704,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter entities using services with the specified SaaS ID.
-      isArray: false
-      name: service
-      required: false
-      secret: false
-    - default: false
-      description: Filter entities using services with the specified app instances.
-      isArray: false
-      name: instance
-      required: false
-      secret: false
-    - default: false
       description: Filter entities by their type.
       isArray: false
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: Filter entities with the specific entities pks. If a user is selected,
-        will also return all of the user's accounts.
-      isArray: false
-      name: username
       required: false
       secret: false
     - default: false
@@ -781,7 +723,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The affiliation of the entity. Valid values are: External, Internal, No_value.'
+      description: 'The affiliation of the entity. Valid values are: External, Internal,
+        No_value.'
       isArray: false
       name: is_external
       predefined:
@@ -792,7 +735,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter entities by status. Valid values are: N/A, Staged, Active, Suspended, Deleted.'
+      description: 'Filter entities by status. Valid values are: N/A, Staged, Active,
+        Suspended, Deleted.'
       isArray: false
       name: status
       predefined:
@@ -804,7 +748,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: 'Filter that you create yourself. If you use custom_filter, other
+        filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
       isArray: false
       name: custom_filter
       required: false
@@ -911,6 +856,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-
 tests:
 - MicrosoftCloudAppSecurity-Test
