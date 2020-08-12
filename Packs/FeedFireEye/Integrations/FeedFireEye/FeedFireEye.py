@@ -97,6 +97,7 @@ class STIX21Processor:
             indicator['type'] = auto_detect_indicator_type(value)
             if indicator['type']:
                 indicator['value'] = value
+                indicator['fields'] = {}
                 indicator['rawJSON'] = {
                     'fireeye_id': raw_data.get('id'),
                     'fireeye_labels': raw_data.get('labels'),
@@ -134,7 +135,6 @@ class STIX21Processor:
 
     @staticmethod
     def process_attack_pattern(raw_data):
-        # Not an option in the feed
         pass
 
     @staticmethod
@@ -143,6 +143,12 @@ class STIX21Processor:
 
         entity['type'] = 'STIX Malware'
         entity['value'] = raw_data.get('name')
+        entity['fields'] = {
+            'stixid': raw_data.get('id'),
+            'stixdescription': raw_data.get('description'),
+            'stixismalwarefamily': raw_data.get('is_family'),
+            'stixmalwaretypes': raw_data.get('malware_types')
+        }
         entity['rawJSON'] = {
             'fireeye_id': raw_data.get('id'),
             'fireeye_labels': raw_data.get('labels'),
@@ -151,8 +157,10 @@ class STIX21Processor:
             'fireeye_is_family': raw_data.get('is_family'),
             'fireeye_created_date': raw_data.get('created'),
             'fireeye_modified_date': raw_data.get('modified'),
+            'fireeye_description': raw_data.get('description'),
             'fireeye_malware_types': raw_data.get('malware_types'),
-            'fireeye_external_references': raw_data.get('external_references')
+            'fireeye_os_execution_envs': raw_data.get('os_execution_envs'),
+            'fireeye_external_references': raw_data.get('external_references'),
         }
 
         return entity
@@ -167,21 +175,35 @@ class STIX21Processor:
 
         entity['type'] = 'STIX Threat Actor'
         entity['value'] = raw_data.get('name')
+        entity['fields'] = {
+            'stixid': raw_data.get('id'),
+            'stixaliases': raw_data.get('aliases'),
+            'stixdescription': raw_data.get('description'),
+            'stixsophistication': raw_data.get('sophistication'),
+            'stixprimarymotivation': raw_data.get('primary_motivation'),
+            'stixsecondarymotivations': raw_data.get('secondary_motivations'),
+        }
         entity['rawJSON'] = {
             'fireeye_id': raw_data.get('id'),
             'fireeye_labels': raw_data.get('labels'),
+            'fireeye_aliases': raw_data.get('aliases'),
             'fireeye_revoked': raw_data.get('revoked'),
             'fireeye_created_date': raw_data.get('created'),
             'fireeye_modified_date': raw_data.get('modified'),
+            'fireeye_description': raw_data.get('description'),
+            'fireeye_sophistication': raw_data.get('sophistication'),
+            'fireeye_primary_motivation': raw_data.get('primary_motivation'),
             'fireeye_threat_actor_types': raw_data.get('threat_actor_types'),
-            'fireeye_object_marking_refs': raw_data.get('object_marking_refs')
+            'fireeye_object_marking_refs': raw_data.get('object_marking_refs'),
+            'fireeye_secondary_motivations': raw_data.get('secondary_motivations'),
+            'fireeye_intended_effect': raw_data.get('x_fireeye_com_intended_effect'),
+            'fireeye_planning_and_operational_support': raw_data.get('x_fireeye_com_planning_and_operational_support'),
         }
 
         return entity
 
     @staticmethod
     def process_tool(raw_data):
-        # Not an option in the feed
         pass
 
     @staticmethod
@@ -410,9 +432,9 @@ def fetch_indicators_command(client: Client, feedTags: list, limit: int = -1):
         indicators.append({
             'value': indicator['value'],
             'type': indicator['type'],
-            'fields': {
+            'fields': indicator['fields'].update({
                 'tags': feedTags
-            },
+            }),
             'rawJSON': indicator
         })
 
