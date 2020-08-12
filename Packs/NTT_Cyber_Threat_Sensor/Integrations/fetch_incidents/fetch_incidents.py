@@ -141,11 +141,13 @@ def fetch_incidents():
     return_results('ok')
 
 
-def fetch_blobs():
-    """Download one or more blobs from provided event_id
+def poll_blobs():
+    """Check if one or more blobs from provided event_id is ready for download
     """
     event_id = demisto.getArg('event_id')
-
+    cntext = dict()
+    cntext['CTS.Blob.ID'] = event_id
+    cntext['CTS.FetchBlob'] = False
     if demisto.getArg('timestamp'):
         timestamp = dateutil.parser.parse(demisto.getArg('timestamp'))
         now = dateutil.parser.parse(datetime.utcnow().isoformat())
@@ -153,35 +155,64 @@ def fetch_blobs():
 
         # We need to wait three minutes from the time of the event since pcap
         #  are sent little later to make sure we record most of the triggered traffic
+        # We used to wait here but are now using Generic Polling playbook
+        #  https://xsoar.pan.dev/docs/playbooks/generic-polling
         wait_delta = timedelta(minutes=3)
         if diff < wait_delta:
-            ec = {'CTS.EventID': event_id}
+            cntext['CTS.Blob.Status'] = "hold"
             return_results([
                 {
                     'Type': entryTypes['note'],
-                    'EntryContext': ec,
-                    'HumanReadable': '### CTS blob delayd\n'
+                    'EntryContext': cntext,
+                    'HumanReadable': '### CTS blob delayed\n'
                                      + 'The download has been delayed for '
                                      + str(wait_delta.seconds - diff.seconds)
                                      + ' seconds.',
-                    'Contents': ec,
+                    'Contents': cntext,
                     'ContentsFormat': formats['json']
                 }])
+        else:
+            cntext['CTS.Blob.Status'] = "release"
+            result_blobs = http_request('GET', '/artifacts/blobs/%s' % event_id)
+            if 'blobs' in result_blobs and len(result_blobs['blobs']) > 0:
+                cntext['CTS.FetchBlob'] = True
+                return_results([
+                    {
+                        'Type': entryTypes['note'],
+                        'EntryContext': cntext,
+                        'Contents': cntext,
+                        'ContentsFormat': formats['json']
+                    }])
+            else:
+                return_results([
+                    {
+                        'Type': entryTypes['note'],
+                        'EntryContext': cntext,
+                        'Contents': cntext,
+                        'ContentsFormat': formats['json']
+                    }])
+            return_results('ok')
 
-            # Now wait to make sure the blob has been stored in the backend
-            time.sleep(int(wait_delta.seconds - diff.seconds))
 
+def fetch_blobs():
+    """Download one or more blobs from provided event_id
+    """
+    event_id = demisto.getArg('event_id')
+    blob_list = list()
     result_blobs = http_request('GET', '/artifacts/blobs/%s' % event_id)
     if 'blobs' in result_blobs and len(result_blobs['blobs']) > 0:
         for blob in result_blobs['blobs']:
             blob_id = blob['blob_id']
             d = download(blob['url'])
+            blob_list.append(blob_id + '.pcap')
             return_results(fileResult(blob_id + '.pcap', base64.decodebytes(d.content)))
         ec = {'CTS.HasBlob': True}
         return_results([
             {
                 'Type': entryTypes['note'],
                 'EntryContext': ec,
+                'HumanReadable': '### CTS blob(s) downloaded:\n'
+                    + str(blob_list),
                 'Contents': ec,
                 'ContentsFormat': formats['json']
             }])
@@ -191,6 +222,7 @@ def fetch_blobs():
             {
                 'Type': entryTypes['note'],
                 'EntryContext': ec,
+                'HumanReadable': '### CTS blob(s) was not found',
                 'Contents': ec,
                 'ContentsFormat': formats['json']
             }])
@@ -241,7 +273,8 @@ def test_module():
 COMMANDS = {
     'test-module': test_module,
     'fetch-incidents': fetch_incidents,
-    'fetch-blobs': fetch_blobs
+    'fetch-blobs': fetch_blobs,
+    'poll-blobs': poll_blobs
 }
 
 

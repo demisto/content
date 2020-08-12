@@ -46,15 +46,6 @@ configuration:
   defaultvalue: https://cts.eu1.nttsecurity.io/v1
   type: 0
   required: true
-
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 script:
   script: '-'
   type: python
@@ -91,13 +82,33 @@ script:
       description: Id of the event
       type: string
     description: Retrieve incidents since last poll
+  - name: poll-blobs
+    arguments:
+    - name: event_id
+      required: true
+      isArray: true
+      description: ID of the incident from whom to fetch blobs for
+    - name: timestamp
+      description: ISO timestamp for when alert was triggered
+      isArray: true
+      required: true
+    outputs:
+    - contextPath: CTS.FetchBlob
+      description: True if there are blobs to fetch
+      type: boolean
+    - contextPath: CTS.Blob.ID
+      description: ID of the incident
+      type: string
+    - contextPath: CTS.Blob.Status
+      description: hold to wait and release to run
+      type: string
+    description: Check if blobs is available
+    execution: true
   - name: fetch-blobs
     arguments:
     - name: event_id
       required: true
       description: ID of the incident from whom to fetch blobs for
-    - name: timestamp
-      description: ISO timestamp for when alert was triggered
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -134,7 +145,7 @@ script:
       type: boolean
     description: Collecting blobs, most commonly pcap from an incident
     execution: true
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10455
   isfetch: true
   runonce: false
   subtype: python3

@@ -53,11 +53,63 @@ Retrieve incidents since last poll
 
 
 #### Command Example
-```!fetch_incidents ```
+``` ```
 
 #### Human Readable Output
 
 
+
+### poll-blobs
+***
+Check if blobs is available
+
+
+#### Base Command
+
+`poll-blobs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | ID of the incident from whom to fetch blobs for | Required | 
+| timestamp | ISO timestamp for when alert was triggered | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CTS.FetchBlob | boolean | True if there are blobs to fetch | 
+| CTS.Blob.ID | string | ID of the incident | 
+| CTS.Blob.Status | string | hold to wait and release to run | 
+
+
+#### Command Example
+```!poll-blobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7 timestamp=2020-08-12T07:29:01.464841```
+
+#### Context Example
+```
+{
+    "CTS": {
+        "Blob": {
+            "ID": [
+                "07be6916957da6dc0b4c7fbf6995b1e44dccb9e7"
+            ],
+            "Status": [
+                "release"
+            ]
+        },
+        "FetchBlob": [
+            true,
+            false
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>ok
 
 ### fetch-blobs
 ***
@@ -71,8 +123,7 @@ Collecting blobs, most commonly pcap from an incident
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id |  | Required | 
-| timestamp | ISO timestamp for when alert was triggered | Optional | 
+| event_id | ID of the incident from whom to fetch blobs for | Required | 
 
 
 #### Context Output
@@ -93,8 +144,34 @@ Collecting blobs, most commonly pcap from an incident
 
 
 #### Command Example
-```fetch-blobs event_id=974eee6a-bc40-11ea-aed0-00155d5da0e1```
+```!fetch-blobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7```
+
+#### Context Example
+```
+{
+    "CTS": {
+        "HasBlob": [
+            false,
+            true
+        ]
+    },
+    "File": {
+        "EntryID": "159@b969e30d-f6de-490a-8f35-81a8939b5b97",
+        "Extension": "pcap",
+        "Info": "application/vnd.tcpdump.pcap",
+        "MD5": "f6362d15102678983db75e7b764d973f",
+        "Name": "6f5f0353-9ff6-4544-b6d9-1741a9842445.pcap",
+        "SHA1": "a031573de579dea138351bb6742887baf9a5bf5a",
+        "SHA256": "22cf474ab9be274078f4fc3796a7893f2bed9fe7920a921593ea43b8a4705a9f",
+        "SHA512": "a751c7b436755aea5d7bbe3bfd0bc2e5a1ff5ddf8aadd956b50df18acaba4a43d969105bf9d28b66f8d2f9dcd1add1c0f73a5c9e6ccb01f0e34924f52acebee8",
+        "SSDeep": "12288:90nf6/GBLS0c9s+txFd9Ri6KSIb9zK9RmnM:Of6/OYs+9kSaJKHmnM",
+        "Size": 567348,
+        "Type": "pcap capture file, microsecond ts (little-endian) - version 2.4 (Ethernet, capture length 65535)"
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>### CTS blob(s) downloaded:
+>['6f5f0353-9ff6-4544-b6d9-1741a9842445.pcap']
