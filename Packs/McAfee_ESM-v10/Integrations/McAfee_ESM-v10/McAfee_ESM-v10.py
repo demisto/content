@@ -582,8 +582,7 @@ class NitroESM(object):
         if organization is not None:
             case['orgId'] = self.organization_name_to_id(organization)
 
-        case['notes'] = case['notes'] if type(case['notes']) is list else [case['notes']]
-
+        demisto.debug("Check content of notes " + str(case['notes']))
         cmd = 'caseEditCase'
         query = json.dumps({'caseDetail': case})
         self.cmdquery(cmd, query, no_answer=True)
