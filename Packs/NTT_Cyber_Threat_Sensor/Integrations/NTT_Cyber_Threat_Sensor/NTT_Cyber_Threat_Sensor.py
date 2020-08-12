@@ -282,22 +282,21 @@ def main():
     """Main function
     """
     cmd = demisto.command()
-    LOG('Command being called is {}'.format(cmd))
+    demisto.debug('Command being called is {}'.format(cmd))
 
     try:
         if cmd in COMMANDS:
             COMMANDS[cmd]()
         else:
-            LOG('Command {} not implemented'.format(cmd))
+            demisto.debug('Command {} not implemented'.format(cmd))
 
     # Log exceptions
     except Exception as e:
         import traceback
-        LOG(traceback.format_exc())
+        demisto.debug(traceback.format_exc())
 
         if demisto.command() == 'fetch-incidents':
-            LOG(str(e))
-            LOG.print_log()
+            demisto.debug(str(e))
             raise
         else:
             return_error('An error occurred: {}'.format(str(e)))
