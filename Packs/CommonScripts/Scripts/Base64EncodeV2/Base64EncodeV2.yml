@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: Will encode an input using Base64 format.
+  description: Encodes the specified input using Base64 format.
   isArray: false
   name: input
   required: true
@@ -13,7 +13,7 @@ enabled: false
 name: Base64EncodeV2
 outputs:
 - contextPath: Base64.encoded
-  description: input encoded as Base64 format.
+  description: The input encoded as Base64 format.
   type: string
 script: '-'
 subtype: python3
