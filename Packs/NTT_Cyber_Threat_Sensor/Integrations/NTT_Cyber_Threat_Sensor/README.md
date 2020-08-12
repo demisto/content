@@ -1,5 +1,5 @@
 Retrieve alerts and recommendations from NTT CTS
-This integration was integrated and tested with version xx of NTT Cyber Threat Sensor
+This integration was integrated and tested with version 1.0 of NTT Cyber Threat Sensor
 ## Configure NTT Cyber Threat Sensor on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
