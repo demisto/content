@@ -663,7 +663,7 @@
                         "minW": 1,
                         "moved": false,
                         "name": "Feed Related Indicators",
-                        "query": "9d218728-3464-4404-8e7d-07fb28283734",
+                        "query": "FeedRelatedIndicatorsWidget",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamicIndicator",
