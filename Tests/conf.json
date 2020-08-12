@@ -33,10 +33,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Bastille Networks",
-            "playbookID": "BastilleNetworks-Test"
-        },
-        {
             "integrations": "MITRE ATT&CK",
             "playbookID": "Mitre Attack List 10 Indicators Feed Test",
             "fromversion": "5.5.0"
@@ -81,10 +77,6 @@
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",
             "timeout": 600
-        },
-        {
-            "integrations": "APIVoid",
-            "playbookID": "APIVoid Test"
         },
         {
             "integrations": "Cisco Firepower",
@@ -964,11 +956,6 @@
             "playbookID": "Detonate URL - WildFire v2.1 - Test"
         },
         {
-            "integrations": "GRR",
-            "playbookID": "GRR Test",
-            "nightly": true
-        },
-        {
             "integrations": "VirusTotal",
             "instance_names": "virus_total_general",
             "playbookID": "virusTotal-test-playbook",
@@ -1288,12 +1275,6 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy KV commands",
-            "memory_threshold": 200,
-            "instance_names": "use_default_handler"
-        },
-        {
-            "integrations": "SplunkPy",
             "playbookID": "SplunkPy-Test-V2",
             "memory_threshold": 500,
             "instance_names": "use_python_requests_handler"
@@ -1325,11 +1306,6 @@
         {
             "integrations": "PhishTank",
             "playbookID": "PhishTank Testing"
-        },
-        {
-            "integrations": "McAfee Web Gateway",
-            "playbookID": "McAfeeWebGatewayTest",
-            "timeout": 500
         },
         {
             "integrations": "TCPIPUtils",
@@ -2909,11 +2885,6 @@
             "timeout": 60000
         },
         {
-            "integrations": "TruSTAR v2",
-            "playbookID": "TruSTAR v2-Test",
-            "timeout": 500
-        },
-        {
             "integrations": "RSA Archer v2",
             "playbookID": "Archer v2 - Test",
             "fromversion": "5.0.0"
@@ -2934,10 +2905,6 @@
         {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Imperva WAF",
-            "playbookID": "Imperva WAF - Test"
         },
         {
             "playbookID": "FailedInstances - Test",

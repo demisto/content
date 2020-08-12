@@ -224,7 +224,7 @@ def edit_reputations_json(new_to_version):
             reputation['toVersion'] = new_to_version
 
     with open(rep_json_path, 'w') as f:
-        json.dump(rep_content, f, indent=4)
+        ujson.dump(rep_content, f, indent=4, encode_html_chars=True)
 
 
 def main():
