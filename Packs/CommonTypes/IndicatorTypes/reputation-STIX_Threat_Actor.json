@@ -10,7 +10,7 @@
     "file": false,
     "fileHashesPriority": null,
     "formatScript": "",
-    "id": "STIX Threat Actor",
+    "id": "Threat Actor",
     "locked": false,
     "manualMapping": {},
     "mergeContext": false,

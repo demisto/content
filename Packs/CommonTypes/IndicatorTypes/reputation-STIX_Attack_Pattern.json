@@ -10,7 +10,7 @@
     "file": false,
     "fileHashesPriority": null,
     "formatScript": "",
-    "id": "STIX Attack Pattern",
+    "id": "Attack Pattern",
     "locked": false,
     "manualMapping": {},
     "mergeContext": false,
