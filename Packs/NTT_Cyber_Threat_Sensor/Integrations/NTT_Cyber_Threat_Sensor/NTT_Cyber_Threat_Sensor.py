@@ -1,5 +1,4 @@
 import json
-import time
 import base64
 from datetime import datetime
 from datetime import timezone
@@ -209,8 +208,7 @@ def fetch_blobs():
             {
                 'Type': entryTypes['note'],
                 'EntryContext': ec,
-                'HumanReadable': '### CTS blob(s) downloaded:\n'
-                    + str(blob_list),
+                'HumanReadable': '### CTS blob(s) downloaded:\n' + str(blob_list),
                 'Contents': ec,
                 'ContentsFormat': formats['json']
             }])
