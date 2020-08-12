@@ -86,7 +86,7 @@ script: |-
 type: javascript
 tags:
 - phishing
-comment: Process a suspected email and check URLs, attachments and sender via reputation
+comment: Deprecated. Process a suspected email and check URLs, attachments and sender via reputation
   services
 system: true
 deprecated: true

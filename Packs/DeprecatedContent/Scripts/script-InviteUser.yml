@@ -6,7 +6,7 @@ script: return executeCommand('@', args);
 type: javascript
 tags:
 - server
-comment: |
+comment: Deprecated.
   Send a notification to another user and add user to the team
 system: true
 args:

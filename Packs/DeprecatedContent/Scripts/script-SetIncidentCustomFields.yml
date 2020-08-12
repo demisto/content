@@ -15,7 +15,7 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: Sets current incident custom fields. (Deprecated. Use the setIncident command to set incident custom fields.)
+comment: Deprecated. Sets current incident custom fields. (Deprecated. Use the setIncident command to set incident custom fields.)
 deprecated: true
 enabled: true
 args:

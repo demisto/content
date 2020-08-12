@@ -41,7 +41,7 @@ tags:
 - server
 - threat-intel
 - crowdstrike
-comment: Query CrowdStrike indicators based on given parameters.
+comment: Deprecated. Query CrowdStrike indicators based on given parameters.
 system: true
 deprecated: true
 args:

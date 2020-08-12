@@ -55,7 +55,7 @@ type: python
 subtype: python2
 tags:
 - virustotal
-comment: Query Virustotal with a file hash
+comment: Deprecated. Query Virustotal with a file hash
 system: true
 args:
 - name: hash
