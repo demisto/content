@@ -4221,6 +4221,17 @@ class GetMappingFieldsResponse:
 
 
 def handle_incoming_error_in_mirror(incident_data, error):
+    """Handle incoming mirror error.
+
+    :type incident_data: ``dict``
+    :param incident_data: the incoming incident info.
+
+    :type error: ``str``
+    :param error: The incoming mirror error message.
+
+    :return: GetRemoteDataResponse that will include the incoming error information.
+    :rtype: ``GetRemoteDataResponse``
+    """
     error_entries = []
     integration_cache = demisto.getIntegrationContext()
 
@@ -4261,6 +4272,14 @@ def handle_incoming_error_in_mirror(incident_data, error):
 
 
 def handle_outgoing_error_in_mirror(incident_data):
+    """Handle outgoing mirror error.
+
+    :type incident_data: ``dict``
+    :param incident_data: the incident info.
+
+    :return: An error entry if the current outgoing error was not printed, an empty dict otherwise.
+    :rtype: ``dict``
+    """
     out_error_entry = {}
     integration_cache = demisto.getIntegrationContext()
 
@@ -4286,6 +4305,14 @@ def handle_outgoing_error_in_mirror(incident_data):
 
 
 def reset_incoming_and_outgoing_mirror_errors(incident_data):
+    """Handle incoming and outgoing mirror error reset.
+
+    :type incident_data: ``dict``
+    :param incident_data: the incident info.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
     integration_cache = demisto.getIntegrationContext()
     integration_cache['in_mirror_error'] = None
     incident_data['in_mirror_error'] = ''
