@@ -138,8 +138,6 @@ def fetch_incidents():
 
     demisto.incidents(incidents)
     demisto.setLastRun(last_run)
-    return_results('ok')
-
 
 def poll_blobs():
     """Check if one or more blobs from provided event_id is ready for download
