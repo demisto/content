@@ -22,7 +22,9 @@
 	"content": true,
 	"group": 0,
 	"hidden": false,
-	"associatedTypes": [],
+	"associatedTypes": [
+		"Microsoft CAS Alert"
+	],
 	"systemAssociatedTypes": null,
 	"associatedToAll": true,
 	"unmapped": false,

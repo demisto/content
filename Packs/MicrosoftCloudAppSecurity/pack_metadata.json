@@ -1,6 +1,6 @@
 {
     "name": "MicrosoftCloudAppSecurity",
-    "description": "MicrosoftCloudAppSecurity",
+    "description": "Microsoft Cloud App Security Integration",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
