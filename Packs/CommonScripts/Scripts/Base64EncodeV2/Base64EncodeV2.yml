@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: Encodes the specified input using Base64 format.
+  description: The input to encode using Base64 format.
   isArray: false
   name: input
   required: true
