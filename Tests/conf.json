@@ -376,7 +376,7 @@
             "integrations": "Cortex XDR - IOC",
             "playbookID": "Cortex XDR - IOC - Test",
             "fromversion": "5.5.0",
-            "timeout": 1000
+            "timeout": 1200
         },
         {
             "integrations": "Cloaken",
@@ -2959,7 +2959,6 @@
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
         "SentinelOne V2 - test": "Issue 24933",
-        "Maltiverse Test": "Issue 24335",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
         "SNDBOX_Test": "Issue 24349",
@@ -3019,7 +3018,6 @@
         "hashIncidentFields-test": "Issue 26850",
         "MISP V2 Test": "Issue 26905",
         "Mail Sender (New) Test": "Issue 25602",
-        "TAXII_Feed_Test": "Issue 22423",
         "Recorded Future Test": "Issue 26741",
         "CirclIntegrationTest": "Issue 25600",
         "Luminate-TestPlaybook": "Issue 27016",
@@ -3168,9 +3166,9 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "AWS - Security Hub": "Issue 24926",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
-        "ThreatConnect v2": "Issue 26794",
         "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
@@ -3257,7 +3255,8 @@
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
-        "GoogleKubernetesEngine": "SDK"
+        "GoogleKubernetesEngine": "SDK",
+        "TAXIIFeed": "Cannot use proxy"
     },
     "parallel_integrations": [
         "SNDBOX",

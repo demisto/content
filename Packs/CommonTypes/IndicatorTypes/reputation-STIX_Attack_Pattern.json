@@ -10,7 +10,7 @@
     "file": false,
     "fileHashesPriority": null,
     "formatScript": "",
-    "id": "STIX Attack Pattern",
+    "id": "Attack Pattern",
     "locked": false,
     "manualMapping": {},
     "mergeContext": false,
@@ -21,5 +21,7 @@
     "system": false,
     "updateAfter": 0,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "layout": "STIX Attack Pattern"
+
 }
