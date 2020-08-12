@@ -66,6 +66,8 @@ entryTypes = {
 class EntryType(object):
     """
     Enum: contains all the entry types (e.g. NOTE, ERROR, WARNING, FILE, etc.)
+    :return: None
+    :rtype: ``None``
     """
     NOTE = 1
     DOWNLOAD_AGENT = 2
@@ -84,6 +86,8 @@ class EntryType(object):
 class IncidentStatus(object):
     """
     Enum: contains all the incidents status types (e.g. pending, active, done, archive)
+    :return: None
+    :rtype: ``None``
     """
     PENDING = 0
     ACTIVE = 1
