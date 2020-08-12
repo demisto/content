@@ -12,11 +12,11 @@ Encode an input to Base64 format.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| input | Will encode an input using Base64 format. |
+| input | The input to encode using Base64 format. |
 
 ## Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Base64.encoded | input encoded as Base64 format. | string |
+| Base64.encoded | The input encoded as Base64 format. | string |
