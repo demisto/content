@@ -3028,13 +3028,12 @@
         "CirclIntegrationTest": "Issue 25600",
         "Luminate-TestPlaybook": "Issue 27016",
         "AutoFocus V2 test": "Issue 26464",
-        "Claroty - Test": "Issue 27210",
         "test-Expanse": "Issue 27279",
         "SepioPrimeAPI-Test": "Issue 27240",
         "Trend Micro Apex - Test": "Issue 27280"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -3153,7 +3152,6 @@
         
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
-        "Cisco ASA": "Issue 25741",
         "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
