@@ -102,7 +102,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: fireeye-get-indicators
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.5.10455
   feed: true
   isfetch: false
   longRunning: false
@@ -112,4 +112,5 @@ script:
   subtype: python3
   type: python
 tests:
+  - No test
 fromversion: 5.5.0

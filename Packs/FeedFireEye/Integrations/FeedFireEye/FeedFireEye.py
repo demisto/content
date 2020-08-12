@@ -24,25 +24,9 @@ class STIX21Processor:
         self.reports = reports
 
         self.type_to_processor = {
-            'tool': self.process_tool,
             'report': self.process_report,
-            'opinion': self.process_opinion,
             'malware': self.process_malware,
-            'campaign': self.process_campaign,
-            'grouping': self.process_grouping,
-            'identity': self.process_identity,
-            'location': self.process_location,
-            'sighting': self.process_sighting,
-            'relationship': self.process_relationship,
             'threat-actor': self.process_threat_actor,
-            'observed_data': self.process_observed_data,
-            'vulnerability': self.process_vulnerability,
-            'attack_pattern': self.process_attack_pattern,
-            'infrastructure': self.process_infrastructure,
-            'course-of-action': self.process_course_of_action,
-            'malware-analysis': self.process_malware_analysis,
-            'attack-intrusion-set': self.process_intrusion_set,
-            'marking-definition': self.process_marking_definition,
         }
 
     def process_indicators(self):
@@ -57,6 +41,18 @@ class STIX21Processor:
 
     @staticmethod
     def process_indicator_value(indicator_pattern_value: str) -> Tuple[List, List, Dict]:
+        """Processes the `pattern` value from the feed response into indicator types according to FireEye, their values,
+            and, in case of file type, it's hashes values.
+
+        Args:
+            indicator_pattern_value (str): The raw value of the `pattern` value from the feed response.
+
+        Returns:
+            Tuple[List, List, Dict]:
+                indicator_types - List of indicator types according to FireEye classification.
+                values - List of indicator values.
+                hashes - Dict of `hash_type: hash_value`, in case of `file` indicator type.
+        """
         indicator_pattern_value = indicator_pattern_value[1:-1]
 
         if indicator_pattern_value.startswith('file'):
@@ -70,7 +66,7 @@ class STIX21Processor:
             return ['file'], [hashes_dict['MD5']], hashes_dict
 
         try:
-            keys = list()  # type: List
+            indicator_types = list()  # type: List
             values = list()  # type: List
             for indicator_value in indicator_pattern_value.split('AND'):
                 if indicator_value.startswith('email-message'):
@@ -81,9 +77,9 @@ class STIX21Processor:
                     except:
                         continue
 
-                keys.append(key.strip().replace("'", '').replace('[', '').replace(']', ''))
+                indicator_types.append(key.strip().replace("'", '').replace('[', '').replace(']', ''))
                 values.append(value.strip().replace("'", '').replace('[', '').replace(']', ''))
-            return keys, values, {}
+            return indicator_types, values, {}
         except:
             return_error(indicator_pattern_value)
             return [], [], {}
@@ -134,9 +130,15 @@ class STIX21Processor:
 
         return processed_entities
 
-    @staticmethod
-    def process_attack_pattern(raw_data):
-        pass
+    def process_reports(self):
+        processed_reports = list()  # type: List
+
+        for raw_data in self.reports:
+            processed_report = self.process_report(raw_data)
+            if processed_report:
+                processed_reports.append(processed_report)
+
+        return processed_reports
 
     @staticmethod
     def process_malware(raw_data):
@@ -165,10 +167,6 @@ class STIX21Processor:
         }
 
         return entity
-
-    @staticmethod
-    def process_report(raw_data):
-        pass
 
     @staticmethod
     def process_threat_actor(raw_data):
@@ -204,64 +202,34 @@ class STIX21Processor:
         return entity
 
     @staticmethod
-    def process_tool(raw_data):
-        pass
+    def process_report(raw_data):
+        report = dict()
 
-    @staticmethod
-    def process_campaign(raw_data):
-        pass
+        report['type'] = 'STIX Report'
+        report['value'] = raw_data.get('name')
+        report['fields'] = {
+            'stixid': raw_data.get('id'),
+            'published': raw_data.get('published'),
+            'stixdescription': raw_data.get('description'),
+        }
+        report['rawJSON'] = {
+            'fireeye_id': raw_data.get('id'),
+            'fireeye_labels': raw_data.get('labels'),
+            'fireeye_threats': raw_data.get('threats'),
+            'fireeye_revoked': raw_data.get('revoked'),
+            'fireeye_published': raw_data.get('published'),
+            'fireeye_created_date': raw_data.get('created'),
+            'fireeye_modified_date': raw_data.get('modified'),
+            'fireeye_description': raw_data.get('description'),
+            'fireeye_report_types': raw_data.get('report_types'),
+            'fireeye_metadata': raw_data.get('x_fireeye_com_metadata'),
+            'fireeye_external_references': raw_data.get('external_references'),
+            'fireeye_tracking_info': raw_data.get('x_fireeye_com_tracking_info'),
+            'fireeye_exploitation_rating': raw_data.get('x_fireeye_com_exploitation_rating'),
+            'fireeye_additional_description_sections': raw_data.get('x_fireeye_com_additional_description_sections'),
+        }
 
-    @staticmethod
-    def process_course_of_action(raw_data):
-        pass
-
-    @staticmethod
-    def process_grouping(raw_data):
-        pass
-
-    @staticmethod
-    def process_identity(raw_data):
-        pass
-
-    @staticmethod
-    def process_infrastructure(raw_data):
-        pass
-
-    @staticmethod
-    def process_intrusion_set(raw_data):
-        pass
-
-    @staticmethod
-    def process_location(raw_data):
-        pass
-
-    @staticmethod
-    def process_malware_analysis(raw_data):
-        pass
-
-    @staticmethod
-    def process_marking_definition(raw_data):
-        pass
-
-    @staticmethod
-    def process_observed_data(raw_data):
-        pass
-
-    @staticmethod
-    def process_opinion(raw_data):
-        pass
-
-    @staticmethod
-    def process_vulnerability(raw_data):
-        pass
-
-    @staticmethod
-    def process_relationship(raw_data):
-        pass
-
-    @staticmethod
-    def process_sighting(raw_data):
-        pass
+        return report
 
 
 class Client(BaseClient):
@@ -281,6 +249,14 @@ class Client(BaseClient):
 
     @staticmethod
     def parse_access_token_expiration_time(expires_in: str) -> int:
+        """Computes the expiration time of the new fetched authentication time.
+
+        Args:
+            expires_in (str): Amount of time the authentication token will be valid according to the API.
+
+        Returns:
+            int. Epoch time that represents the expiration timeof the token.
+        """
         try:
             current_time = datetime.now()
             expiration_time = current_time + timedelta(seconds=int(expires_in))
@@ -291,7 +267,12 @@ class Client(BaseClient):
 
         return epoch_expiration_time
 
-    def fetch_new_access_token(self):
+    def fetch_new_access_token(self) -> str:
+        """Fetches new authentication token from the API.
+
+        Returns:
+            str. Authentication token.
+        """
         response = self._http_request(
             method='POST',
             url_suffix='token',
@@ -313,7 +294,12 @@ class Client(BaseClient):
 
         return auth_token
 
-    def get_access_token(self):
+    def get_access_token(self) -> str:
+        """Returns the current valid authentication token for the feed.
+
+        Returns:
+            str. Authentication token.
+        """
         last_token_fetched_expiration_time = demisto.getIntegrationContext().get('expiration_time')
         current_time = int(datetime.now().strftime('%s'))
 
@@ -325,6 +311,14 @@ class Client(BaseClient):
         return auth_token
 
     def fetch_all_indicators_from_api(self) -> Tuple[List, Dict, Dict]:
+        """Collects raw data of indicators and their relationships from the feed.
+
+        Returns:
+            Tuple[List, Dict, Dict].
+                raw_indicators - List of STIX 2.1 indicators objects.
+                relationships - Dict of `id: STIX 2.1 relationship object`.
+                stix_entities - Dict of `id: STIX 2.1 entity object`.
+        """
         raw_indicators = list()  # type: List
         relationships = dict()  # type: Dict
         stix_entities = dict()  # type: Dict
@@ -374,6 +368,11 @@ class Client(BaseClient):
         return raw_indicators, relationships, stix_entities
 
     def fetch_all_reports_from_api(self) -> List:
+        """Collects reports raw data from the feed.
+
+        Returns:
+            List. List of STIX 2.1 reports objects.
+        """
         raw_reports = list()  # type: List
 
         headers = {
@@ -413,13 +412,14 @@ class Client(BaseClient):
 
         raw_indicators, relationships, stix_entities = self.fetch_all_indicators_from_api()
         raw_reports = self.fetch_all_reports_from_api()
+
         stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports)
 
         indicators = stix_processor.process_indicators()
         stix_indicators = stix_processor.process_stix_entities()
-        reports = list()
+        reports = stix_processor.process_reports()
 
-        return indicators + stix_indicators
+        return indicators + stix_indicators + reports
 
 
 def test_module(client: Client):
@@ -490,7 +490,7 @@ def main():
     public_key = demisto.params().get('credentials').get('identifier')
     private_key = demisto.params().get('credentials').get('password')
 
-    feedTags = argToList(demisto.params().get('feedTags'), [])
+    feedTags = argToList(demisto.params().get('feedTags'), '')
 
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
