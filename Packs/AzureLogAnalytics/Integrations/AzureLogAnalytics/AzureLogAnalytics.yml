@@ -94,7 +94,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of incidents to return.
+      description: The maximum number of saved searches to return.
       isArray: false
       name: limit
       required: false
