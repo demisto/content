@@ -1,55 +1,55 @@
-id: Handle TD events
+id: 3635efba-6320-42ed-84fa-4795a30c7308
 version: -1
 name: Handle TD events
 starttaskid: "0"
-description: Playbook to enritch TD events
 tasks:
   "0":
     id: "0"
-    taskid: 8d397612-7e3b-4938-8230-1bd29db8f2c0
+    taskid: c2b5562c-754c-4f4a-832a-60dace59b9f2
     type: start
     task:
-      id: 8d397612-7e3b-4938-8230-1bd29db8f2c0
+      id: c2b5562c-754c-4f4a-832a-60dace59b9f2
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: Start handling TD event
     nexttasks:
       '#none#':
-      - "1"
+      - "12"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 380,
-          "y": 120
+          "y": -200
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: dcbb7bc7-c01f-48ab-8959-32fce9fe738a
+    taskid: af05737a-33b1-4310-8079-6d8813d45b22
     type: regular
     task:
-      id: dcbb7bc7-c01f-48ab-8959-32fce9fe738a
+      id: af05737a-33b1-4310-8079-6d8813d45b22
       version: -1
       name: Fetch PCAP
       description: Collecting blobs, most commonly pcap from an incident
-      script: NTT Cyber Threat Sensor|||fetch-blobs
+      script: '|||fetch-blobs'
       type: regular
       iscommand: true
-      brand: NTT Cyber Threat Sensor
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
       event_id:
-        simple: ${incident.eventid}
-      timestamp:
-        simple: ${incident.occurred}
+        complex:
+          root: incident
+          accessor: labels.sha
     separatecontext: false
     view: |-
       {
@@ -61,115 +61,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 4c34590f-cbbd-46cf-8cf0-9d32f78b05b8
-    type: regular
-    task:
-      id: 4c34590f-cbbd-46cf-8cf0-9d32f78b05b8
-      version: -1
-      name: PCAPMiner
-      description: |-
-        PcapMIner V2 allows to parse PCAP files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
-        This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine large files you can either:
-        a) Use the `pcap_filter` parameter to filter your PCAP file and thus make is smaller.
-        b) Copy the automation and change the `default timeout` parameter to match your needs.
-      scriptName: PcapMinerV2
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      convs_to_display: {}
-      custom_regex: {}
-      entry_id:
-        simple: ${File.EntryID}
-      extract_ips: {}
-      extract_strings: {}
-      filtered_file_name: {}
-      pcap_filter: {}
-      protocol_output: {}
-      rsa_decrypt_key_entry_id: {}
-      wpa_password: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: de6361f6-dd94-46be-8f9c-79d7c9f178aa
-    type: playbook
-    task:
-      id: de6361f6-dd94-46be-8f9c-79d7c9f178aa
-      version: -1
-      name: Extract Indicators From File - Generic v2
-      description: |-
-        Extracts indicators from a file.
-        Supported file types:
-        - CSV
-        - PDF
-        - TXT
-        - HTM, HTML
-        - DOC, DOCX
-        - PPT
-        - PPTX
-        - RTF
-        - XLS
-        - XLSX
-        - XML
-      playbookName: Extract Indicators From File - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      File:
-        simple: ${File}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 70c0d97d-dac0-4a85-8fae-25db0373e03f
+    taskid: 134df418-de3e-4d15-892c-8c086fc1b608
     type: condition
     task:
-      id: 70c0d97d-dac0-4a85-8fae-25db0373e03f
+      id: 134df418-de3e-4d15-892c-8c086fc1b608
       version: -1
-      name: Check if the Incident has a blob
+      name: Check if the download was successful
       type: condition
       iscommand: false
-      description: Check if the Incident has a blob or not
       brand: ""
     nexttasks:
       '#default#':
       - "7"
       "yes":
-      - "4"
-      "no":
-      - "7"
+      - "11"
     separatecontext: false
     conditions:
     - label: "YES"
@@ -190,79 +99,263 @@ tasks:
       {
         "position": {
           "x": 380,
-          "y": 440
+          "y": 430
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: da50f0a1-e78d-4eeb-81ff-422db2fb3e0b
+    taskid: 113a4d40-f115-4da8-82c5-ee52ab2c01e8
     type: title
     task:
-      id: da50f0a1-e78d-4eeb-81ff-422db2fb3e0b
+      id: 113a4d40-f115-4da8-82c5-ee52ab2c01e8
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: All done!
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 380,
-          "y": 1175
+          "x": 620,
+          "y": 900
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 7d17eb07-b43a-4ce0-877f-cc066b03193f
-    type: regular
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 3a36d49a-b71d-404b-8464-de3b386a10ee
+    type: playbook
     task:
-      id: 7d17eb07-b43a-4ce0-877f-cc066b03193f
+      id: 3a36d49a-b71d-404b-8464-de3b386a10ee
       version: -1
-      name: Mark PCAP as evidence
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
-      type: regular
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: timestamp
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: incident
+          accessor: labels.last_updated
+      Ids:
+        simple: ${CTS.Blobs.ID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: event_id
+      PollingCommandName:
+        simple: poll-blobs
+      Timeout:
+        simple: "5"
+      dt:
+        simple: CTS.Blobs(val.Status!=='release').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 1c1a8cf9-e163-4554-800d-5730d3d0eebd
+    type: playbook
+    task:
+      id: 1c1a8cf9-e163-4554-800d-5730d3d0eebd
+      version: -1
+      name: PCAP Analysis
+      playbookName: PCAP Analysis
+      type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
-      desc: {}
-      description: {}
-      entryIDs:
-        simple: ${File.EntryID}
-      occurred: {}
-      tags: {}
-    separatecontext: false
+      AdvancedSearchFilter: {}
+      AutoDetonateFiles:
+        simple: "True"
+      ExtractedFilesLimit:
+        simple: "5"
+      FileExtensionFilter: {}
+      FileTypeFilter: {}
+      FilterType:
+        simple: inclusive
+      IPAddressToSearch: {}
+      InternalEmailDomainName: {}
+      InternalIPRange: {}
+      InternalUrlName: {}
+      PcapFileEntryID:
+        complex:
+          root: ${File}
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapfile.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pcap
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: cap
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pcapng
+      ProtocolToSearch: {}
+      QueryOperator:
+        simple: and
+      RegexToSearch: {}
+      RsaDecryptKeyEntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapencryptionkey.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: key
+          accessor: EntryID
+      RunFileCarving:
+        simple: "true"
+      RunParsingAndEnrichment:
+        simple: "true"
+      TCPPortsToSearch: {}
+      UDPPortsToSearch: {}
+      WhichIndicatorTypeToEnrich:
+        simple: ip,url,email
+      WpaPassword: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": -40,
-          "y": 970
+          "x": 270,
+          "y": 710
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 06c6ca2f-5e8c-4386-8462-50431b696806
+    type: regular
+    task:
+      id: 06c6ca2f-5e8c-4386-8462-50431b696806
+      version: -1
+      name: Enable GenericPolling by polling for blobs
+      description: Check if blobs is available
+      script: NTT Cyber Threat Sensor|||poll-blobs
+      type: regular
+      iscommand: true
+      brand: NTT Cyber Threat Sensor
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      event_id:
+        simple: ${incident.labels.sha}
+      timestamp:
+        simple: ${incident.labels.last_updated}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "5_11_yes": 0.57,
+      "5_7_#default#": 0.16
+    },
     "paper": {
       "dimensions": {
-        "height": 1120,
-        "width": 800,
-        "x": -40,
-        "y": 120
+        "height": 1165,
+        "width": 730,
+        "x": 270,
+        "y": -200
       }
     }
   }
@@ -270,10 +363,5 @@ inputs: []
 outputs:
 - contextPath: CTS.EventID
   type: string
-  description: Event ID
 - contextPath: CTS.OccuredTime
-  type: unknown
-  description: Event Time
-fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
+  type: date

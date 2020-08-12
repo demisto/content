@@ -97,7 +97,6 @@ def item_to_incident(item):
                 'Confidence': item.get('faereconfidence'),
                 'Severity': item.get('faereseverity')}
     }
-
     return incident
 
 
@@ -138,14 +137,12 @@ def fetch_incidents():
     demisto.incidents(incidents)
     demisto.setLastRun(last_run)
 
-
 def poll_blobs():
     """Check if one or more blobs from provided event_id is ready for download
     """
     event_id = demisto.args().get('event_id')
     cntext = dict()
-    cntext['CTS.Blob.ID'] = event_id
-    cntext['CTS.FetchBlob'] = False
+    cntext['ID'] = event_id
     if demisto.args().get('timestamp'):
         timestamp = dateutil.parser.parse(demisto.args().get('timestamp'))
         now = dateutil.parser.parse(datetime.utcnow().isoformat())
@@ -157,11 +154,11 @@ def poll_blobs():
         #  https://xsoar.pan.dev/docs/playbooks/generic-polling
         wait_delta = timedelta(minutes=3)
         if diff < wait_delta:
-            cntext['CTS.Blob.Status'] = "hold"
+            cntext['Status'] = "hold"
             return_results([
                 {
                     'Type': entryTypes['note'],
-                    'EntryContext': cntext,
+                    'EntryContext': {'CTS.Blobs(val.ID && val.ID == obj.ID)': cntext},
                     'HumanReadable': '### CTS blob delayed\n'
                                      + 'The download has been delayed for '
                                      + str(wait_delta.seconds - diff.seconds)
@@ -170,14 +167,13 @@ def poll_blobs():
                     'ContentsFormat': formats['json']
                 }])
         else:
-            cntext['CTS.Blob.Status'] = "release"
+            cntext['Status'] = "release"
             result_blobs = http_request('GET', '/artifacts/blobs/%s' % event_id)
             if 'blobs' in result_blobs and len(result_blobs['blobs']) > 0:
-                cntext['CTS.FetchBlob'] = True
                 return_results([
                     {
                         'Type': entryTypes['note'],
-                        'EntryContext': cntext,
+                        'EntryContext': {'CTS.Blobs(val.ID && val.ID == obj.ID)': cntext},
                         'Contents': cntext,
                         'ContentsFormat': formats['json']
                     }])
@@ -185,11 +181,11 @@ def poll_blobs():
                 return_results([
                     {
                         'Type': entryTypes['note'],
-                        'EntryContext': cntext,
+                        'EntryContext': {'CTS.Blobs(val.ID && val.ID == obj.ID)': cntext},
                         'Contents': cntext,
                         'ContentsFormat': formats['json']
                     }])
-            return_results('ok')
+            #return_results('ok')
 
 
 def fetch_blobs():
