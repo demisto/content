@@ -376,7 +376,7 @@
             "integrations": "Cortex XDR - IOC",
             "playbookID": "Cortex XDR - IOC - Test",
             "fromversion": "5.5.0",
-            "timeout": 1000
+            "timeout": 1200
         },
         {
             "integrations": "Cloaken",
@@ -3168,6 +3168,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "AWS - Security Hub": "Issue 24926",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
         "Infocyte": "Proxy issues",
