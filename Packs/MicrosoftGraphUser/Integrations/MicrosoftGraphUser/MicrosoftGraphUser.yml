@@ -49,12 +49,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Terminates a user's session from all Office 365 applications, and
-      prevents sign in.
-
-      Permissions:
-      - User.ReadWrite (Delegated & Application)
-      "
+    description: |-
+      Terminates a user's session from all Office 365 applications, and prevents sign in.
+      Permissions: - User.ReadWrite (Delegated & Application)
     execution: false
     name: msgraph-user-terminate-session
   - arguments:
@@ -82,10 +79,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Updates the properties of a user object.
-
-    Permissions:
-    - User.ReadWrite (Delegated & Application)"
+    description: |-
+      Updates the properties of a user object.
+      Permissions: - User.ReadWrite (Delegated & Application)
     execution: false
     name: msgraph-user-update
     outputs:
@@ -130,11 +126,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Deletes an existing user.
-
-    Permissions:
-    - Directory.AccessAsUser.All (Delegated)
-    - User.ReadWrite.All (Application)"
+    description: |-
+      Deletes an existing user.
+      Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application)
     execution: true
     name: msgraph-user-delete
   - arguments:
@@ -187,10 +181,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: "Creates a new user.
-
-    Permissions:
-    - User.ReadWrite.All (Delegated & Application)"
+    description: |-
+      Creates a new user.
+      Permissions: - User.ReadWrite.All (Delegated & Application)
     execution: false
     name: msgraph-user-create
     outputs:
@@ -236,13 +229,9 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: "Deprecated. This command only returns a single page.
-    Use the msgraph-user-list command instead, which gets newly created, updated, or
-    deleted users without performing a full read of the entire user collection.
-
-    Permissions:
-    - User.Read (Delegated)
-    - User.Read.All (Application)"
+    description: |-
+      Deprecated. This command only returns a single page. Use the msgraph-user-list command instead, which gets newly created, updated, or deleted users without performing a full read of the entire user collection.
+      Permissions: - User.Read (Delegated) - User.Read.All (Application)
     execution: false
     name: msgraph-user-get-delta
     outputs:
@@ -294,12 +283,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: "Retrieves the properties and relationships of a user object. For more
-      information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
-
-      Permissions:
-    - User.Read (Delegated)
-    - User.Read.All (Application)"
+    description: |-
+      Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+      Permissions: - User.Read (Delegated) - User.Read.All (Application)
     execution: false
     name: msgraph-user-get
     outputs:
@@ -338,8 +324,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'A CSV list of properties by which to filter the results, for
-        example: "displayName,jobTitle,mobilePhone"'
+      description: 'A CSV list of properties by which to filter the results, for example:
+        "displayName,jobTitle,mobilePhone"'
       isArray: false
       name: properties
       required: false
@@ -351,11 +337,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: "Retrieves a list of user objects.
-
-    Permissions:
-    - User.ReadBasic.All (Delegated)
-    - User.Read.All (Application)"
+    description: |-
+      Retrieves a list of user objects.
+      Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
     execution: false
     name: msgraph-user-list
     outputs:
@@ -393,22 +377,32 @@ script:
       description: User's principal name.
       type: Unknown
     - contextPath: MSGraphUser.NextPage
-      description: A token to pass to the next list command to retrieve additional results.
+      description: A token to pass to the next list command to retrieve additional
+        results.
       type: String
   - arguments:
-    - name: user
-      required: true
+    - default: false
       description: The user for which to search direct reports.
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the direct reports for a user. Direct reports are the people
+      who have that user configured as their manager.
+    execution: false
     name: msgraph-direct-reports
     outputs:
     - contextPath: MSGraphUserDirectReports.Manager
       description: The manager's user principal name (UPN).
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.@Odata.Type
-      description: A string value that can be used to classify user types in your directory, such as "Member" and "Guest".
+      description: A string value that can be used to classify user types in your
+        directory, such as "Member" and "Guest".
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.DisplayName
-      description: The name displayed in the address book for the user. This is usually the combination of the user's first name, middle initial and last name.
+      description: The name displayed in the address book for the user. This is usually
+        the combination of the user's first name, middle initial and last name.
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.GivenName
       description: The given name (first name) of the user.
@@ -429,23 +423,69 @@ script:
       description: The office location in the user's place of business.
       type: Unknown
     - contextPath: MSGraphUserDirectReports.Reports.PreferredLanguage
-      description: 'The preferred language for the user. Should follow ISO 639-1 Code; for example: en-US.'
+      description: 'The preferred language for the user. Should follow ISO 639-1 Code;
+        for example: en-US.'
       type: Unknown
     - contextPath: MSGraphUserDirectReports.Reports.Surname
       description: The user's surname (family name or last name).
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.UserPrincipalName
-      description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
+      description: The user principal name (UPN) of the user. The UPN is an Internet-style
+        login name for the user based on the Internet standard RFC 822. By convention,
+        this should map to the user's email name. The general format is alias@domain,
+        where domain must be present in the tenant’s collection of verified domains.
+        This property is required when a user is created. The verified domains for
+        the tenant can be accessed from the verifiedDomains property of organization.
       type: String
-    description: Retrieves the direct reports for a user. Direct reports are the people
-        who have that user configured as their manager.
-  dockerimage: demisto/crypto:1.0.0.7634
+  - arguments:
+    - default: false
+      description: User ID or userPrincipalName to update password for.
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    - default: false
+      description: The new password.
+      isArray: false
+      name: password
+      required: true
+      secret: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether the password will be changed on the next sign in.
+      isArray: false
+      name: force_change_password_next_sign_in
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to change the password with MFA.
+      isArray: false
+      name: force_change_password_with_mfa
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Changes the user password.
+      Permissions: Directory.AccessAsUser.All(Delegated)
+    execution: true
+    name: msgraph-user-change-password
+  dockerimage: demisto/crypto:1.0.0.10277
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Microsoft Graph - Test
