@@ -2,10 +2,12 @@ id: 3635efba-6320-42ed-84fa-4795a30c7308
 version: -1
 name: Handle TD events
 description: Playbook to enrich TD events
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
+    description: Start handling TD event
     taskid: 63914051-5b27-4452-879a-c1c3945cf3e2
     type: start
     task:
@@ -66,12 +68,14 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 45c2dcbd-94f6-4b58-8e71-ee49e86ba625
+    taskid: 2684ab4b-b770-4e5e-88c6-fe5b11d203d5
     type: condition
     task:
-      id: 45c2dcbd-94f6-4b58-8e71-ee49e86ba625
+      id: 2684ab4b-b770-4e5e-88c6-fe5b11d203d5
       version: -1
       name: Check if the download was successful
+      description: Check if the incident has blobs or not to make decision if we should
+        continue to process the incident.
       type: condition
       iscommand: false
       brand: ""
@@ -313,10 +317,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 524f4afa-45e5-43ba-8b69-bae32a2afcb0
+    taskid: 0915fdfa-9560-472a-884e-6efd2d2f5e5f
     type: regular
     task:
-      id: 524f4afa-45e5-43ba-8b69-bae32a2afcb0
+      id: 0915fdfa-9560-472a-884e-6efd2d2f5e5f
       version: -1
       name: Enable GenericPolling by polling for blobs
       description: Check if blobs is available
