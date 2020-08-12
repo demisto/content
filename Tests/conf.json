@@ -7,6 +7,11 @@
             "playbookID": "AWS-securityhub Test"
         },
         {
+            "integrations": "Microsoft Advanced Threat Analytics",
+            "playbookID": "Microsoft Advanced Threat Analytics - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Humio",
             "playbookID": "Humio-Test",
             "fromversion": "5.0.0"

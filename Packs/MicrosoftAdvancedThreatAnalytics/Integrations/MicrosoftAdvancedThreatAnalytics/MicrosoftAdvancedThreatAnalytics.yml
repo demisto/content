@@ -1,0 +1,518 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Microsoft Advanced Threat Analytics
+  version: -1
+configuration:
+- display: ATA Center URL (e.g. https://atacenter.contoso.com)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: Open
+  display: Fetch suspicious activity with status
+  name: activity_status
+  options:
+  - Open
+  - Closed
+  - Suppressed
+  required: false
+  type: 16
+- additionalinfo: Comma-separated list of types of suspcious activities to fetch (e.g.
+    HoneytokenActivitySuspiciousActivity)
+  display: Fetch suspicious activity with type (leave empty to fetch all)
+  name: activity_type
+  required: false
+  type: 0
+- defaultvalue: Low
+  display: Minimum severity of suspicious activity to fetch
+  name: min_severity
+  options:
+  - Low
+  - Medium
+  - High
+  required: true
+  type: 15
+- defaultvalue: 3 days
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Manage suspicious activities, monitoring alerts and entities on Microsoft
+  ATA.
+display: Microsoft Advanced Threat Analytics
+name: Microsoft Advanced Threat Analytics
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Identifier of suspicious activity to retrieve (if provided, all
+        other arguments will be ignored).
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Retrieve suspicious activities with the specified status (comma-seperated
+        values suuported).
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - Closed
+      - Suppressed
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Retrieve suspicious activities with the specified severity (comma-seperated
+        values suuported).
+      isArray: false
+      name: severity
+      predefined:
+      - Low
+      - High
+      - Medium
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve suspicious activities of the specified type (comma-seperated
+        values suuported).
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of suspicious activities to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |
+        Retrieve suspicious activities which occurred after the given time. Supported formats: ISO 8601 (e.g. 2020-07-28T10:00:00Z) and time period (e.g. 24 hours).
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: 'Retrieve suspicious activities which occurred before the given
+        time. Supported formats: ISO 8601 (e.g. 2020-07-28T10:00:00Z) and time period
+        (e.g. 24 hours).'
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves suspicious activities.
+    execution: false
+    name: ms-ata-suspicious-activities-list
+    outputs:
+    - contextPath: MicrosoftATA.SuspiciousActivity.DescriptionDetailFormatKeys
+      description: List of detailed description of the suspicious acitivity format
+        keys.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.DescriptionFormatKey
+      description: Suspicious activity format key description.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.DestinationComputerIds
+      description: List of identifiers of the destination computers.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.EndTime
+      description: End time of the suspicious activity.
+      type: Date
+    - contextPath: MicrosoftATA.SuspiciousActivity.ExclusionUniqueEntityId
+      description: Exclusion entity identifier of the suspicious activity.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.HasDetails
+      description: Whether the suspicious activity has further details to retrieve.
+      type: Boolean
+    - contextPath: MicrosoftATA.SuspiciousActivity.HasUnknownLdapResources
+      description: Whether the suspicious activity has unknown LDAP resources.
+      type: Boolean
+    - contextPath: MicrosoftATA.SuspiciousActivity.HasUnknownNtlmResources
+      description: Whether the suspicious activity has unknown NTLM resources.
+      type: Boolean
+    - contextPath: MicrosoftATA.SuspiciousActivity.HoneytokenAccountId
+      description: Account identifier of the Honeytoken suspicious activity.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.Id
+      description: Identifier of the suspicious activity.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.IsAdditionalDataAvailable
+      description: Whether the suspicious activity has additional data available.
+      type: Boolean
+    - contextPath: MicrosoftATA.SuspiciousActivity.NtlmDestinationComputerIds
+      description: List of identifiers of the NTLM destination computers.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.NtlmSourceComputerIds
+      description: List of identifiers of the NTLM source computers.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.ReasonKey
+      description: The suspicious activity reason key.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.RelatedActivityCount
+      description: Count of related suspicious activities.
+      type: Boolean
+    - contextPath: MicrosoftATA.SuspiciousActivity.RelatedUniqueEntityIds
+      description: Exclusion entity identifier of related suspicious activities.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.Severity
+      description: Severity of the suspicious activity.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.SourceComputerIds
+      description: List of identifiers of the source computers.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.StartTime
+      description: Start time of the suspicious activity.
+      type: Date
+    - contextPath: MicrosoftATA.SuspiciousActivity.Status
+      description: Status of the suspicious activity.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.StatusUpdateTime
+      description: Time in which the suspicious activity status was updated in.
+      type: Date
+    - contextPath: MicrosoftATA.SuspiciousActivity.SystemCreationTime
+      description: Time in which the suspicious activity was created in.
+      type: Date
+    - contextPath: MicrosoftATA.SuspiciousActivity.SystemUpdateTime
+      description: Time in which the suspicious activity was updated in.
+      type: Date
+    - contextPath: MicrosoftATA.SuspiciousActivity.TitleKey
+      description: The suspicious activity title key.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.Type
+      description: Type of the suspicious activity.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.WindowsEventId
+      description: Identifier of the suspicious activity windows event.
+      type: Boolean
+    - contextPath: MicrosoftATA.SuspiciousActivity.DetailsRecords.IsLogin
+      description: Whether the suspicious activity indicates a login.
+      type: Boolean
+    - contextPath: MicrosoftATA.SuspiciousActivity.DetailsRecords.IsSuccess
+      description: Whether the suspicious activity was successful.
+      type: Boolean
+    - contextPath: MicrosoftATA.SuspiciousActivity.DetailsRecords.IsTraffic
+      description: Whether the suspicious activity indicates a traffic.
+      type: Boolean
+    - contextPath: MicrosoftATA.SuspiciousActivity.DetailsRecords.ProtocolName
+      description: Protocol of the suspicious activity.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.DetailsRecords.ResourceIdentifier
+      description: Identifier of the suspicious activity source.
+      type: String
+    - contextPath: MicrosoftATA.SuspiciousActivity.DetailsRecords.SourceComputerId
+      description: Identifier of the suspicious activity source computer.
+      type: String
+  - arguments:
+    - default: false
+      description: Identifier of suspicious activity to update status of.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status to update to
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - Closed
+      - Suppressed
+      - Delete
+      required: true
+      secret: false
+    deprecated: false
+    description: Sets suspicious activity status.
+    execution: false
+    name: ms-ata-suspicious-activity-status-set
+  - deprecated: false
+    arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Retrieve monitoring alerts with the specified status (comma-seperated
+        values suuported).
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - Closed
+      - Suppressed
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Retrieve monitoring alerts with the specified severity (comma-seperated
+        values suuported).
+      isArray: false
+      name: severity
+      predefined:
+      - Low
+      - High
+      - Medium
+      required: false
+      secret: false
+    - default: false
+      description: Retrieve monitoring alerts of the specified type (comma-seperated
+        values suuported).
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of monitoring alerts to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |
+        Retrieve monitoring alerts which occurred after the given time. Supported formats: ISO 8601 (e.g. 2020-07-28T10:00:00Z) and time period (e.g. 24 hours).
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: 'Retrieve monitoring alerts which occurred before the given time.
+        Supported formats: ISO 8601 (e.g. 2020-07-28T10:00:00Z) and time period (e.g.
+        24 hours).'
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    description: Retrieves health alerts.
+    execution: false
+    name: ms-ata-monitoring-alerts-list
+    outputs:
+    - contextPath: MicrosoftATA.MonitoringAlert.DescriptionFormatKey
+      description: Monitoring alert format key description.
+      type: String
+    - contextPath: MicrosoftATA.MonitoringAlert.DomainSynchronizerNotAssignedDomainDnsNames
+      description: Monitoring alert domain synchronizer not assigned domain DNS names.
+      type: String
+    - contextPath: MicrosoftATA.MonitoringAlert.EndTime
+      description: End time of the monitoring alert.
+      type: Date
+    - contextPath: MicrosoftATA.MonitoringAlert.Id
+      description: Identifier of the monitoring alert.
+      type: String
+    - contextPath: MicrosoftATA.MonitoringAlert.NotificationTime
+      description: Notification time of the monitoring alert.
+      type: Date
+    - contextPath: MicrosoftATA.MonitoringAlert.Severity
+      description: Severity of the monitoring alert.
+      type: String
+    - contextPath: MicrosoftATA.MonitoringAlert.StartTime
+      description: Start time of the monitoring alert.
+      type: Date
+    - contextPath: MicrosoftATA.MonitoringAlert.Status
+      description: Status of the monitoring alert.
+      type: String
+    - contextPath: MicrosoftATA.MonitoringAlert.StatusUpdateTime
+      description: Status update time of the monitoring alert.
+      type: Date
+    - contextPath: MicrosoftATA.MonitoringAlert.TitleKey
+      description: The monitoring alert title key.
+      type: String
+    - contextPath: MicrosoftATA.MonitoringAlert.Type
+      description: Type of the monitoring alert.
+      type: String
+    - contextPath: MicrosoftATA.MonitoringAlert.WindowsEventId
+      description: Identifier of the monitoring alert windows event.
+      type: Boolean
+    - contextPath: MicrosoftATA.MonitoringAlert.AccountDomainName
+      description: Monitoring alert account domain name.
+      type: String
+    - contextPath: MicrosoftATA.MonitoringAlert.AccountName
+      description: Monitoring alert account name.
+      type: String
+    - contextPath: MicrosoftATA.MonitoringAlert.IsPasswordExpired
+      description: Whether the monitoring alert indicates that password has expired.
+      type: Boolean
+    - contextPath: MicrosoftATA.MonitoringAlert.PasswordExpiryTime
+      description: Password expiry time.
+      type: Date
+  - arguments:
+    - default: false
+      description: Identifier of distinct entity to retrieve (Can be retrieved by
+        running the command ms-ata-suspicious-activities-list from the output RelatedUniqueEntityIds).
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves information of distinct entity, such as computers and users.
+    execution: false
+    name: ms-ata-get-entity
+    outputs:
+    - contextPath: MicrosoftATA.Entity.BadPasswordTime
+      description: Time in which bad password was entered.
+      type: Date
+    - contextPath: MicrosoftATA.Entity.CanonicalName
+      description: Entity canonical name.
+      type: String
+    - contextPath: MicrosoftATA.Entity.CreationTime
+      description: Time in which the entity was created in.
+      type: Date
+    - contextPath: MicrosoftATA.Entity.Description
+      description: Entity description.
+      type: String
+    - contextPath: MicrosoftATA.Entity.DistinguishedName
+      description: Entity distinguished name.
+      type: String
+    - contextPath: MicrosoftATA.Entity.DnsName
+      description: Entity DNS name.
+      type: String
+    - contextPath: MicrosoftATA.Entity.DomainController.IsGlobalCatalog
+      description: Whether the entity is in the global catalog.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.DomainController.IsPrimary
+      description: Whether the entity is primary.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.DomainController.IsReadOnly
+      description: Whether the entity is read only.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.DomainId
+      description: Identifier of the entity domain.
+      type: String
+    - contextPath: MicrosoftATA.Entity.ExpiryTime
+      description: Expiration time of the entity.
+      type: Date
+    - contextPath: MicrosoftATA.Entity.Id
+      description: Identifer of the entity.
+      type: String
+    - contextPath: MicrosoftATA.Entity.IpAddress
+      description: Entity IP address.
+      type: String
+    - contextPath: MicrosoftATA.Entity.IsDelegationEnabled
+      description: Whether the entity is delegation enabled.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsDeleted
+      description: Whether the entity is deleted.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsDesEncryptionOnly
+      description: Whether the entity is Data Encryption Standard only.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsDisabled
+      description: Whether the entity is disabled.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsDomainController
+      description: Whether the entity is domain controller.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsExpired
+      description: Whether the entity is expired.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsHoneytoken
+      description: Whether the entity is related to Honeytoken activity.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsLocked
+      description: Whether the entity is locked.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsNew
+      description: Whether the entity is new.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsNotDelegatable
+      description: Whether the entity is non-delegatable.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsPartial
+      description: Whether the entity is partial.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsPasswordExpired
+      description: Whether the entity password is expired.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsSensitive
+      description: Whether the entity is sensitive.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsServer
+      description: Whether the entity is a server.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.IsSmartcardRequired
+      description: Whether a smart card is required for the entity.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.OperatingSystemDisplayName
+      description: The entity OS name,
+      type: String
+    - contextPath: MicrosoftATA.Entity.SamName
+      description: Entitiy Security Account Manager name.
+      type: String
+    - contextPath: MicrosoftATA.Entity.Sid
+      description: Entity security identifier.
+      type: String
+    - contextPath: MicrosoftATA.Entity.Spns
+      description: Entity Search Service Principal Names.
+      type: String
+    - contextPath: MicrosoftATA.Entity.SystemCreationTime
+      description: System creation time of the entity.
+      type: Date
+    - contextPath: MicrosoftATA.Entity.SystemDisplayName
+      description: System display name of the entity.
+      type: String
+    - contextPath: MicrosoftATA.Entity.Type
+      description: Type of the entity.
+      type: String
+    - contextPath: MicrosoftATA.Entity.UpnName
+      description: Entity User Principal Name.
+      type: String
+    - contextPath: MicrosoftATA.Entity.Profile.IsBehaviorChanged
+      description: Whether the entity profile behavior changed.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.Profile.OpenSuspiciousActivityCount
+      description: Number of entity profile suspicious activities.
+      type: Boolean
+    - contextPath: MicrosoftATA.Entity.Profile.SuspiciousActivitySeverityToCountMapping.High
+      description: Number of entity profile suspicious activities with High severity.
+      type: Number
+    - contextPath: MicrosoftATA.Entity.Profile.SuspiciousActivitySeverityToCountMapping.Low
+      description: Number of entity profile suspicious activities with Low severity.
+      type: Number
+    - contextPath: MicrosoftATA.Entity.Profile.SuspiciousActivitySeverityToCountMapping.Medium
+      description: Number of entity profile suspicious activities with Medium severity.
+      type: Number
+    - contextPath: MicrosoftATA.Entity.Profile.Type
+      description: Type of the entity profile.
+      type: String
+    - contextPath: MicrosoftATA.Entity.Profile.UpdateTime
+      description: Update time of the entity profile.
+      type: Date
+  dockerimage: demisto/ntlm:1.0.0.10567
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+defaultclassifier: Microsoft Advanced Threat Analytics
+defaultmapperin: Microsoft Advanced Threat Analytics-mapper
+tests:
+  - Microsoft Advanced Threat Analytics - Test
