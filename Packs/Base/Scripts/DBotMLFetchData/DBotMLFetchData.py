@@ -60,6 +60,8 @@ FETCH_DATA_VERSION = '1.0'
 LAST_EXECUTION_LIST_NAME = 'FETCH_DATA_ML_LAST_EXECUTION'
 MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 500
 MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
+FROM_DATA_FIRST_EXECUTION = '90 days ago'
+FROM_DATA_PERIODIC_EXECUTION = '30 days ago'
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 IMG_FORMATS = ['.jpeg', '.gif', '.bmp', '.png', '.jfif', '.tiff', '.eps', '.indd', '.jpg']
@@ -649,7 +651,7 @@ def return_json_entry(obj):
 def get_args_based_on_last_execution():
     lst = demisto.executeCommand('getList', {'listName': LAST_EXECUTION_LIST_NAME})
     if isError(lst):  # if first execution
-        return {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION}
+        return {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION, 'fromDate': FROM_DATA_FIRST_EXECUTION}
     else:
         last_execution_datetime = datetime.strptime(lst[0]['Contents'], DATETIME_FORMAT)
         try:
@@ -657,7 +659,7 @@ def get_args_based_on_last_execution():
         except Exception:
             query = None  # type: ignore
         finally:
-            res = {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION}
+            res = {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION, 'fromDate': FROM_DATA_PERIODIC_EXECUTION}
             if query is not None:
                 res['query'] = query  # type: ignore
             return res
@@ -671,22 +673,26 @@ def update_last_execution_time():
 
 
 def determine_incidents_args(input_args, default_args):
+    get_incidents_by_query_args = {}
     if 'query' in input_args:
-        input_args['query'] = '({}) and (status:Closed)'.format(input_args['query'])
+        get_incidents_by_query_args['query'] = '({}) and (status:Closed)'.format(input_args['query'])
     elif 'query' in default_args:
-        input_args['query'] = '({}) and (status:Closed)'.format(default_args['query'])
+        get_incidents_by_query_args['query'] = '({}) and (status:Closed)'.format(default_args['query'])
     else:
-        input_args['query'] = '(status:Closed)'
-    if 'limit' in default_args and 'limit' not in input_args:
-        input_args['limit'] = default_args['limit']
-    return input_args
+        get_incidents_by_query_args['query'] = 'status:Closed'
+    for arg in ['limit', 'fromDate']:
+        if arg in input_args:
+            get_incidents_by_query_args[arg] = input_args[arg]
+        elif arg in default_args:
+            get_incidents_by_query_args[arg] = default_args[arg]
+    return get_incidents_by_query_args
 
 
 def main():
     input_args = demisto.args()
     default_args = get_args_based_on_last_execution()
-    input_args = determine_incidents_args(input_args, default_args)
-    incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', input_args)
+    get_incidents_by_query_args = determine_incidents_args(input_args, default_args)
+    incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_by_query_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents = json.loads(incidents_query_res[-1]['Contents'])
