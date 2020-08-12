@@ -3019,7 +3019,6 @@
         "hashIncidentFields-test": "Issue 26850",
         "MISP V2 Test": "Issue 26905",
         "Mail Sender (New) Test": "Issue 25602",
-        "TAXII_Feed_Test": "Issue 22423",
         "Recorded Future Test": "Issue 26741",
         "CirclIntegrationTest": "Issue 25600",
         "Luminate-TestPlaybook": "Issue 27016",
@@ -3257,7 +3256,8 @@
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
-        "GoogleKubernetesEngine": "SDK"
+        "GoogleKubernetesEngine": "SDK",
+        "TAXIIFeed": "Cannot use proxy"
     },
     "parallel_integrations": [
         "SNDBOX",
