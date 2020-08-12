@@ -372,6 +372,40 @@ class Client(BaseClient):
 
         return raw_indicators, relationships, stix_entities
 
+    def fetch_all_reports_from_api(self) -> Tuple[List, Dict, Dict]:
+        raw_indicators = list()  # type: List
+
+        headers = {
+            'Accept': 'application/vnd.oasis.stix+json; version=2.1',
+            'X-App-Name': 'content.xsoar.cortex.paloaltonetworks.v1.0',
+            'Authorization': f'Bearer {self.get_access_token()}'
+        }
+
+        query_url = '/collections/reports/objects?length=100'
+        while True:
+            response = self._http_request(
+                method='GET',
+                url_suffix=query_url,
+                headers=headers,
+                timeout=self._polling_timeout,
+                resp_type='response'
+            )
+
+            if response.status_code == 204:
+                demisto.info(f'{INTEGRATION_NAME} info - '
+                             f'API Status Code: {response.status_code} No Content Available for this timeframe.')
+                return [], {}, {}
+
+            if response.status_code != 200:
+                demisto.debug(f'{INTEGRATION_NAME} debug - '
+                              f'API Status Code: {response.status_code} Error Reason: {response.text}')
+                return [], {}, {}
+
+            if response.status_code == 200:
+                objects_fetched = response.json().get('objects')
+
+        return raw_indicators
+
     def build_iterator(self) -> List:
         self.get_access_token()
 
@@ -380,6 +414,7 @@ class Client(BaseClient):
 
         indicators = stix_processor.process_indicators()
         stix_indicators = stix_processor.process_stix_entities()
+
         return indicators + stix_indicators
 
 
