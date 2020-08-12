@@ -17,10 +17,11 @@ class STIX21Processor:
     https://oasis-open.github.io/cti-documentation/stix/intro.html
     """
 
-    def __init__(self, raw_indicators: List, relationships: Dict, entities: Dict):
+    def __init__(self, raw_indicators: List, relationships: Dict, entities: Dict, reports: List):
         self.raw_indicators = raw_indicators
         self.relationships = relationships
         self.entities = entities
+        self.reports = reports
 
         self.type_to_processor = {
             'tool': self.process_tool,
@@ -372,8 +373,8 @@ class Client(BaseClient):
 
         return raw_indicators, relationships, stix_entities
 
-    def fetch_all_reports_from_api(self) -> Tuple[List, Dict, Dict]:
-        raw_indicators = list()  # type: List
+    def fetch_all_reports_from_api(self) -> List:
+        raw_reports = list()  # type: List
 
         headers = {
             'Accept': 'application/vnd.oasis.stix+json; version=2.1',
@@ -391,29 +392,32 @@ class Client(BaseClient):
                 resp_type='response'
             )
 
-            if response.status_code == 204:
-                demisto.info(f'{INTEGRATION_NAME} info - '
-                             f'API Status Code: {response.status_code} No Content Available for this timeframe.')
-                return [], {}, {}
-
             if response.status_code != 200:
                 demisto.debug(f'{INTEGRATION_NAME} debug - '
                               f'API Status Code: {response.status_code} Error Reason: {response.text}')
-                return [], {}, {}
+                return []
 
             if response.status_code == 200:
-                objects_fetched = response.json().get('objects')
+                raw_reports += [report for report in response.json().get('objects')]
 
-        return raw_indicators
+                try:
+                    query_url = response.links['next']['url']
+                    query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
+                except KeyError:
+                    break
+
+        return raw_reports
 
     def build_iterator(self) -> List:
         self.get_access_token()
 
         raw_indicators, relationships, stix_entities = self.fetch_all_indicators_from_api()
-        stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities)
+        raw_reports = self.fetch_all_reports_from_api()
+        stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports)
 
         indicators = stix_processor.process_indicators()
         stix_indicators = stix_processor.process_stix_entities()
+        reports = list()
 
         return indicators + stix_indicators
 
