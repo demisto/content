@@ -484,7 +484,7 @@ jobs:
                 name: Zip Content Packs From GCS
                 command: |
                   if [[ $CIRCLE_BRANCH != master ]] && [[ $CIRCLE_BRANCH != 20\.* ]] && [[ $CIRCLE_BRANCH != 21\.* ]]; then
-                    echo "Skipping packs download to artifact on non master branch"
+                    echo "Skipping packs download to artifact on non master or release branch"
                     exit 0
                   fi
 
