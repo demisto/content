@@ -11,6 +11,7 @@ tasks:
     taskid: 63914051-5b27-4452-879a-c1c3945cf3e2
     type: start
     task:
+      description: Start handling TD event
       id: 63914051-5b27-4452-879a-c1c3945cf3e2
       version: -1
       name: ""
@@ -118,6 +119,7 @@ tasks:
     type: title
     task:
       id: 39e6347e-f6b2-4968-86e4-a69433f4ebf3
+      description: Completed handling TD event
       version: -1
       name: Done
       type: title
@@ -204,6 +206,7 @@ tasks:
       id: 168345ab-fa81-4cc4-8ab7-55671c8fec7a
       version: -1
       name: PCAP Analysis
+      description: Sub playbook to analyse PCAP
       playbookName: PCAP Analysis
       type: playbook
       iscommand: false
@@ -368,5 +371,7 @@ inputs: []
 outputs:
 - contextPath: CTS.EventID
   type: string
+  description: CTS EventID aka alert / sha
 - contextPath: CTS.OccuredTime
   type: date
+  description: Timestamp when incident was registered
