@@ -144,12 +144,12 @@ def fetch_incidents():
 def poll_blobs():
     """Check if one or more blobs from provided event_id is ready for download
     """
-    event_id = demisto.getArg('event_id')
+    event_id = demisto.args().get('event_id')
     cntext = dict()
     cntext['CTS.Blob.ID'] = event_id
     cntext['CTS.FetchBlob'] = False
-    if demisto.getArg('timestamp'):
-        timestamp = dateutil.parser.parse(demisto.getArg('timestamp'))
+    if demisto.args().get('timestamp'):
+        timestamp = dateutil.parser.parse(demisto.args().get('timestamp'))
         now = dateutil.parser.parse(datetime.utcnow().isoformat())
         diff = now.replace(tzinfo=timezone.utc) - timestamp.replace(tzinfo=timezone.utc)
 
@@ -197,7 +197,7 @@ def poll_blobs():
 def fetch_blobs():
     """Download one or more blobs from provided event_id
     """
-    event_id = demisto.getArg('event_id')
+    event_id = demisto.args().get('event_id')
     blob_list = list()
     result_blobs = http_request('GET', '/artifacts/blobs/%s' % event_id)
     if 'blobs' in result_blobs and len(result_blobs['blobs']) > 0:
