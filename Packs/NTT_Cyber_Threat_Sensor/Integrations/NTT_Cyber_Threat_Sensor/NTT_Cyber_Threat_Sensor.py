@@ -104,7 +104,6 @@ def fetch_incidents():
     """Fetch incidents from the API
     """
     data = dict()
-
     last_run = demisto.getLastRun()
 
     if last_run and 'timestamp' in last_run:
@@ -137,6 +136,7 @@ def fetch_incidents():
     demisto.incidents(incidents)
     demisto.setLastRun(last_run)
 
+
 def poll_blobs():
     """Check if one or more blobs from provided event_id is ready for download
     """
@@ -159,10 +159,10 @@ def poll_blobs():
                 {
                     'Type': entryTypes['note'],
                     'EntryContext': {'CTS.Blobs(val.ID && val.ID == obj.ID)': cntext},
-                    'HumanReadable': '### CTS blob delayed\n'
+                    'HumanReadable': 'CTS blob delayed\n'
                                      + 'The download has been delayed for '
                                      + str(wait_delta.seconds - diff.seconds)
-                                     + ' seconds.',
+                                     + ' seconds',
                     'Contents': cntext,
                     'ContentsFormat': formats['json']
                 }])
@@ -174,6 +174,7 @@ def poll_blobs():
                     {
                         'Type': entryTypes['note'],
                         'EntryContext': {'CTS.Blobs(val.ID && val.ID == obj.ID)': cntext},
+                        'HumanReadable': 'CTS blob(s) was found and has been sceduled for download',
                         'Contents': cntext,
                         'ContentsFormat': formats['json']
                     }])
@@ -182,10 +183,10 @@ def poll_blobs():
                     {
                         'Type': entryTypes['note'],
                         'EntryContext': {'CTS.Blobs(val.ID && val.ID == obj.ID)': cntext},
+                        'HumanReadable': 'CTS blob(s) was not found',
                         'Contents': cntext,
                         'ContentsFormat': formats['json']
                     }])
-            #return_results('ok')
 
 
 def fetch_blobs():
@@ -205,7 +206,7 @@ def fetch_blobs():
             {
                 'Type': entryTypes['note'],
                 'EntryContext': ec,
-                'HumanReadable': '### CTS blob(s) downloaded:\n' + str(blob_list),
+                'HumanReadable': 'CTS blob(s) downloaded:\n' + str(blob_list),
                 'Contents': ec,
                 'ContentsFormat': formats['json']
             }])
@@ -215,7 +216,7 @@ def fetch_blobs():
             {
                 'Type': entryTypes['note'],
                 'EntryContext': ec,
-                'HumanReadable': '### CTS blob(s) was not found',
+                'HumanReadable': 'CTS blob(s) was not found',
                 'Contents': ec,
                 'ContentsFormat': formats['json']
             }])
