@@ -20,7 +20,7 @@ type: python
 subtype: python2
 tags:
 - Vectra
-comment: The health configuration can be used to retrieve system health statistics
+comment: Deprecated. The health configuration can be used to retrieve system health statistics
   such as subnet counts, traffic bandwidth, headend and sensor information
 system: true
 args:

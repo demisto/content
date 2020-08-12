@@ -24,7 +24,7 @@ type: python
 subtype: python2
 tags:
 - epo
-comment: Check latest version of the DAT AV signature update.
+comment: Deprecated. Check latest version of the DAT AV signature update.
 system: true
 deprecated: true
 scripttarget: 0

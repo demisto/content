@@ -65,7 +65,7 @@ tags:
 - threat-intel
 - virustotal
 - xfe
-comment: Get reputation for IPs in the incident or given raw text
+comment: Deprecated. Get reputation for IPs in the incident or given raw text
 system: true
 deprecated: true
 args:

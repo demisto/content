@@ -48,7 +48,7 @@ tags:
 - server
 - analytics
 - exabeam
-comment: This script is deprecated. Use the Exabeam integration instead.
+comment: Deprecated. This script is deprecated. Use the Exabeam integration instead.
 system: true
 deprecated: true
 args:

@@ -29,7 +29,7 @@ args:
   name: emailBody
   required: false
   secret: false
-comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
+comment: Deprecated. This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
 commonfields:
   id: DBotPredictPhishingLabel
   version: -1

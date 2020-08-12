@@ -34,7 +34,7 @@ type: python
 subtype: python2
 tags:
 - lightcyber
-comment: This script is deprecated. LightCyber Magna is no longer available.
+comment: Deprecated. This script is deprecated. LightCyber Magna is no longer available.
 args:
 - name: name
   default: true

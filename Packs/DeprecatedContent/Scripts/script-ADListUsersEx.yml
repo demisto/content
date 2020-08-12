@@ -12,7 +12,7 @@ type: python
 subtype: python2
 tags:
 - active directory
-comment: Retrieve the list of User objects stored in Active Directory and include
+comment: Deprecated. Retrieve the list of User objects stored in Active Directory and include
   an extended list of attributes and information about each user. Use the "attributes"
   argument to include additional specific attributes in the results.
 system: true

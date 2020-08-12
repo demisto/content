@@ -56,7 +56,7 @@ subtype: python2
 args: []
 tags:
 - infra
-comment: Inserts incident info and labels into context for use inside playbooks.
+comment: Deprecated. Inserts incident info and labels into context for use inside playbooks.
 system: true
 deprecated: true
 scripttarget: 0

@@ -12,7 +12,7 @@ type: javascript
 tags:
 - panorama
 - firewall
-comment: Commit configuration to panorama
+comment: Deprecated. Commit configuration to panorama
 system: true
 deprecated: true
 scripttarget: 0

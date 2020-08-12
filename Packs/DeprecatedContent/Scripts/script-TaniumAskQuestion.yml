@@ -102,7 +102,7 @@ script: |-
 type: javascript
 tags:
 - tanium
-comment: Send a request for a formatted result of a saved question. To receive the
+comment: Deprecated. Send a request for a formatted result of a saved question. To receive the
   most up to date data, run the same command twice. See https://kb.tanium.com/SOAP
   for more information
 system: true

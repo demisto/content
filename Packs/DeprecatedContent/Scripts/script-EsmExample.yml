@@ -16,7 +16,7 @@ tags:
 - nitro
 - siem
 - example
-comment: Example of using McAfee ESM (Nitro) with advanced filters
+comment: Deprecated. Example of using McAfee ESM (Nitro) with advanced filters
 system: true
 deprecated: true
 args:

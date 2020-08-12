@@ -15,7 +15,7 @@ type: javascript
 tags:
 - server
 - management
-comment: Close an investigation
+comment: Deprecated. Close an investigation
 system: true
 args:
 - name: reason

@@ -46,7 +46,7 @@ type: python
 subtype: python2
 tags:
 - active directory
-comment: Use Active Directory to get common groups between supplied users.
+comment: Deprecated. Use Active Directory to get common groups between supplied users.
 system: true
 args:
 - name: name

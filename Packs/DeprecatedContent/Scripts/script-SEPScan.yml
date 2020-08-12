@@ -40,7 +40,7 @@ type: javascript
 tags:
 - sep
 - symantec
-comment: Scans ip/hostname with Symantec Endpoint Protection. DEPRECATED - this automation is deprecated as it was replaced by `sep-scan-endpoint` command in 'Symantec Endpoint Protection V2' integration.
+comment: Deprecated. Scans ip/hostname with Symantec Endpoint Protection. DEPRECATED - this automation is deprecated as it was replaced by `sep-scan-endpoint` command in 'Symantec Endpoint Protection V2' integration.
 enabled: true
 args:
 - name: scanType

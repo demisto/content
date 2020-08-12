@@ -135,7 +135,7 @@ script: |
 type: javascript
 tags:
 - tanium
-comment: Approve all pending actions using the specified package names.
+comment: Deprecated. Approve all pending actions using the specified package names.
 args:
 - name: approvedpackages
   description: "Names of packages to approve"

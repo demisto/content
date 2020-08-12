@@ -76,7 +76,7 @@ script: |-
 type: javascript
 tags:
 - tanium
-comment: Execute an action, optionally with parameters, and filtering - based on an
+comment: Deprecated. Execute an action, optionally with parameters, and filtering - based on an
   existing package. See https://kb.tanium.com/SOAP for more information
 args:
 - name: packageName

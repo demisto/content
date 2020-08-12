@@ -66,7 +66,7 @@ type: python
 subtype: python2
 tags:
 - epo
-comment: Trigger a Server Task in specific ePO servers to pull latest signatures from update server
+comment: Deprecated. Trigger a Server Task in specific ePO servers to pull latest signatures from update server
 system: true
 deprecated: true
 args:

@@ -74,7 +74,7 @@ tags:
 - virustotal
 - xfe
 - wildfire
-comment: Get reputation for any hash or file in the incident details
+comment: Deprecated. Get reputation for any hash or file in the incident details
 system: true
 args:
 - name: fileNames

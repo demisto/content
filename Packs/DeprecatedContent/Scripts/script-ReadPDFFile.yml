@@ -145,7 +145,7 @@ subtype: python2
 tags:
 - Utility
 - ingestion
-comment: Load the contents and metadata of a PDF file into context.
+comment: Deprecated. Load the contents and metadata of a PDF file into context.
 enabled: true
 args:
 - name: entryID

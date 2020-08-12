@@ -24,8 +24,7 @@ type: python
 subtype: python2
 tags:
 - crowdstrike
-comment: |
-  List the number devices that match each IOC in query - limited to sha256, sha1, md5 and domain types
+comment: Deprecated. List the number devices that match each IOC in query - limited to sha256, sha1, md5 and domain types
 system: true
 deprecated: true
 args:

@@ -18,7 +18,7 @@ type: python
 subtype: python2
 tags:
 - RSA NetWitness Security Analytics
-comment: Update information for NetWitness SA incidents.
+comment: Deprecated. Update information for NetWitness SA incidents.
 system: true
 args:
 - name: idList

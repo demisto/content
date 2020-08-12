@@ -23,7 +23,7 @@ type: python
 subtype: python2
 tags:
 - nessus
-comment: Launch an existing scan.
+comment: Deprecated. Launch an existing scan.
 system: true
 args:
 - name: scanId

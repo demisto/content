@@ -25,7 +25,7 @@ type: python
 subtype: python2
 tags:
 - google apps
-comment: Fetch info on specific user
+comment: Deprecated. Fetch info on specific user
 system: true
 args:
 - name: userKey

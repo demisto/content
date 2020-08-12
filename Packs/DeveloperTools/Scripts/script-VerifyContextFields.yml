@@ -20,7 +20,7 @@ script: |
 type: javascript
 tags:
 - Utility
-comment: Verify fields are in context (use VerifyContext instead)
+comment: Deprecated. Verify fields are in context (use VerifyContext instead)
 enabled: true
 args:
 - name: field1

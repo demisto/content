@@ -57,7 +57,7 @@ tags:
 - threat-intel
 - xfe
 - virustotal
-comment: Check the URLs in the incident, or raw text provided as argument, for malicious
+comment: Deprecated. Check the URLs in the incident, or raw text provided as argument, for malicious
   URLs
 system: true
 deprecated: true

@@ -30,8 +30,7 @@ tags:
 - response
 - email
 - server
-comment: |-
-  Deprecated - please use the send-mail command instead
+comment: Deprecated. please use the send-mail command instead
 
   Send an email with the specified parameters.
   Attachments are provided as a comma-separated list of entry IDs.
