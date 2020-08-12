@@ -4240,7 +4240,7 @@ def handle_incoming_error_in_mirror(incident_data, error):
             error_entries.append({
                 'Type': EntryType.NOTE,
                 'Contents': "",
-                'HumanReadable': "An error occurred while mirroring incoming data:  {0}".format(
+                'HumanReadable': "An error occurred while mirroring incoming data: {0}".format(
                     integration_cache.get('in_mirror_error')),
                 'ReadableContentsFormat': EntryFormat.TEXT,
                 'ContentsFormat': EntryFormat.TEXT,
