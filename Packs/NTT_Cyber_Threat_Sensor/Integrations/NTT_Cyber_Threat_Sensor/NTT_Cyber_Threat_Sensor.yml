@@ -50,38 +50,6 @@ script:
   script: '-'
   type: python
   commands:
-  - name: fetch_incidents
-    arguments: []
-    outputs:
-    - contextPath: CTS.DeviceName
-      description: Name of detecting device
-      type: string
-    - contextPath: CTS.Confidence
-      description: Confidence level
-      type: string
-    - contextPath: CTS.Severity
-      description: Severity level
-      type: string
-    - contextPath: CTS.ShortDescription
-      description: Short description of incident
-      type: string
-    - contextPath: CTS.ARAId
-      description: Id of this Active Response API
-      type: string
-    - contextPath: CTS.ARADetails
-      description: Details of the recommended actions
-    - contextPath: CTS.Signature
-      description: Signature name of detection
-    - contextPath: CTS.OccuredTime
-      description: Date and time of occurrence or detection
-    - contextPath: CTS.DeviceId
-      description: Id of detecting device
-    - contextPath: CTS.TenantId
-      description: Id of the tenant
-    - contextPath: CTS.EventID
-      description: Id of the event
-      type: string
-    description: Retrieve incidents since last poll
   - name: poll-blobs
     arguments:
     - name: event_id
