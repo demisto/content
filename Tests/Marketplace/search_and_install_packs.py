@@ -271,7 +271,7 @@ def install_all_content_packs(client, host, prints_manager, thread_index=0):
     install_packs(client, host, prints_manager, thread_index, all_packs)
 
 
-def upload_zipped_packs(client, host, prints_manager, thread_index, test_pack_path):
+def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
     """ Install packs from zip file.
 
         Args:
@@ -279,13 +279,12 @@ def upload_zipped_packs(client, host, prints_manager, thread_index, test_pack_pa
             host (str): The server URL.
             prints_manager (ParallelPrintsManager): Print manager object.
             thread_index (int): the index (for prints_manager).
-            packs_zip_path (str): path to pack zip.
+            pack_path (str): path to pack zip.
         """
     header_params = {
         'Content-Type': 'multipart/form-data'
     }
-    test_pack_path = f'{test_pack_path}/test_pack.zip'
-    file_path = os.path.abspath(test_pack_path)
+    file_path = os.path.abspath(pack_path)
     files = {'file': file_path}
 
     message = 'Making "POST" request to server {} - to install all packs from file {}'.format(host, test_pack_path)

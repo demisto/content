@@ -31,6 +31,8 @@ from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs, upload_zipped_packs
 
+from Tests.tools import update_server_configuration
+
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
 
@@ -44,7 +46,7 @@ class Running(IntEnum):
 class SimpleSSH(SSHClient):
     logging.getLogger("paramiko").setLevel(logging.WARNING)
 
-    def __init__(self, host=None, user='ec2-user', port=22, key_file_path='~/.ssh/id_rsa'):
+    def __init__(self, host, user='ec2-user', port=22, key_file_path='~/.ssh/id_rsa'):
         self.is_local_running = Build.local_running
         if self.is_local_running in [Running.NOT_LOCAL_RUNNING, Running.WITH_OTHER_SERVER]:
             super().__init__()
@@ -791,45 +793,6 @@ def set_docker_hardening_for_build(client, prints_manager):
     return update_server_configuration(client, server_configuration, error_msg)
 
 
-def update_server_configuration(client, server_configuration, error_msg):
-    """updates server configuration
-
-    Args:
-        client (demisto_client): The configured client to use.
-        server_configuration (dict): The server configuration to be added
-        error_msg (str): The error message
-
-    Returns:
-        response_data: The response data
-        status_code: The response status code
-    """
-    system_conf_response = demisto_client.generic_request_func(
-        self=client,
-        path='/system/config',
-        method='GET'
-    )
-    system_conf = ast.literal_eval(system_conf_response[0]).get('sysConf', {})
-    system_conf.update(server_configuration)
-    data = {
-        'data': system_conf,
-        'version': -1
-    }
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                                        method='POST', body=data)
-
-    try:
-        result_object = ast.literal_eval(response_data)
-    except ValueError as err:
-        print_error('failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
-        return
-
-    if status_code >= 300 or status_code < 200:
-        message = result_object.get('message', '')
-        msg = f'{error_msg} {status_code}\n{message}'
-        print_error(msg)
-    return response_data, status_code
-
-
 def get_env_conf():
     if Build.local_running == Running.NOT_LOCAL_RUNNING:
         return get_json_file(Build.env_results_path)
@@ -885,13 +848,18 @@ def configure_servers_and_restart(build, prints_manager):
 
             try:
                 print('Restarting servers to apply server config ...')
+
+                # copy from .demisto_bashrc stop_server && start_server
                 local_command = 'pgrep -f demisto > xargs kill -9 && server && go mod tidy && go mod vendor && go install -mod=vendor && $GOPATH/bin/server -public ~/dev/demisto/web-client/dist/ -conf conf_for_systemtests -insecure -loglevel debug'
                 command = local_command if Build.local_running == Running.WITH_LOCAL_SERVER else 'sudo systemctl restart demisto'
                 SimpleSSH(host=server.replace('https://', '').replace('http://', ''), key_file_path=Build.key_file_path, user='ec2-user').exec_command(command)
             except Exception as error:
-                print_error(f'New SSH restart demisto failed with error: {str(error)}')
-                print(error.__traceback__)
-                old_way_to_restart_demisto(server)
+                if Build.local_running == Running.WITH_LOCAL_SERVER:
+                    input('restart your server and then press enter.')
+                else:
+                    print_error(f'New SSH restart demisto failed with error: {str(error)}')
+                    print(error.__traceback__)
+                    old_way_to_restart_demisto(server)
 
         prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
         prints_manager.execute_thread_prints(0)
@@ -943,7 +911,7 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
         #  END CHANGE ON LOCAL RUN  #
 
 
-def get_new(git_sha1, prints_manager):
+def get_changed_integrations(git_sha1, prints_manager):
     new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
     new_integrations_names, modified_integrations_names = [], []
 
@@ -975,18 +943,7 @@ def get_pack_ids_to_install():
         #  END CHANGE ON LOCAL RUN  #
 
 
-def install_playbook(client, playbook_path, host, prints_manager, thread_index):
-    try:
-        status_code = client.import_playbook_with_http_info(playbook_path)[1]
-    except Exception as error:
-        prints_manager.add_print_job(f'\nan error occurred when trying to install {playbook_path} in {host} {str(error)}',
-                                     print_error, thread_index)
-    else:
-        if status_code != 200:
-            prints_manager.add_print_job(f'\nan error occurred when trying to install {playbook_path} in {host}', print_error, thread_index)
-
-
-def nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs, test_pack_path=None):
+def nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs, pack_path=None):
     threads_list = []
 
     # For each server url we install pack/ packs
@@ -996,8 +953,8 @@ def nightly_install_packs(build, threads_print_manager, install_method=install_a
         kwargs = {'client': client, 'host': server_url,
                   'prints_manager': threads_print_manager,
                   'thread_index': thread_index}
-        if test_pack_path:
-            kwargs['test_pack_path'] = test_pack_path
+        if pack_path:
+            kwargs['test_pack_path'] = pack_path
         t = Thread(target=install_method,
                    kwargs=kwargs)
         threads_list.append(t)
@@ -1008,7 +965,7 @@ def install_nightly_pack(build, prints_manager):
     threads_print_manager = ParallelPrintsManager(len(build.servers))
     nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
     create_nightly_test_pack()
-    nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs, test_pack_path=Build.test_pack_target)
+    nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs, pack_path=f'{Build.test_pack_target}/test_pack.zip')
 
     prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0, include_timestamp=True)
     prints_manager.execute_thread_prints(0)
@@ -1160,12 +1117,14 @@ def create_nightly_test_pack():
 
 
 def test_files(content_path):
-    packs_root, packs, _ = next(os.walk(f'{content_path}/Packs')) # lgtm [py/unguarded-next-in-generator]
+    packs_root = f'{content_path}/Packs'
+    packs = filter(lambda x: x.is_dir(), os.scandir(packs_root))
     for pack_dir in packs:
         if pack_dir in SKIPPED_PACKS:
             continue
-        if os.path.isdir(f'{packs_root}/{pack_dir}/TestPlaybooks'):
-            playbooks_root, _, playbooks = next(os.walk(f'{packs_root}/{pack_dir}/TestPlaybooks')) # lgtm [py/unguarded-next-in-generator]
+        playbooks_root = f'{pack_dir.path}/TestPlaybooks'
+        if os.path.isdir(playbooks_root):
+            playbooks = filter(lambda x: x.is_file(), os.scandir(playbooks_root))
             for playbook in playbooks:
                 yield os.path.join(playbooks_root, playbook), playbook
 
@@ -1204,21 +1163,20 @@ def test_pack_metadata():
 
 
 def test_pack_zip(content_path, target):
-    open(f'{target}/test_pack.zip', 'w').close()
-    zip_file = zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED)
-    zip_file.writestr(f'test_pack/metadata.json', test_pack_metadata())
-    for test_path, test in test_files(content_path):
-        if not test_path.endswith('.yml'):
-            continue
-        with open(test_path, 'r') as test_file:
-            if not (test.startswith('playbook-') or test.startswith('script-')):
-                test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
-                test_file.seek(0)
-                test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
-            else:
-                test_target = f'test_pack/TestPlaybooks/{test}'
-            zip_file.writestr(test_target, test_file.read())
-    zip_file.close()
+    with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        zip_file.writestr(f'test_pack/metadata.json', test_pack_metadata())
+        for test_path, test in test_files(content_path):
+            if not test_path.endswith('.yml'):
+                continue
+            test = test.name
+            with open(test_path, 'r') as test_file:
+                if not (test.startswith('playbook-') or test.startswith('script-')):
+                    test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
+                    test_file.seek(0)
+                    test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
+                else:
+                    test_target = f'test_pack/TestPlaybooks/{test}'
+                zip_file.writestr(test_target, test_file.read())
 
 
 def main():
@@ -1237,7 +1195,7 @@ def main():
         installed_content_packs_successfully = True
 
     tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly)
-    new_integrations, modified_integrations = get_new(build.git_sha1, prints_manager)
+    new_integrations, modified_integrations = get_changed_integrations(build.git_sha1, prints_manager)
     all_module_instances, brand_new_integrations = configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
     if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
         successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, prints_manager, pre_update=True)
