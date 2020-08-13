@@ -641,7 +641,7 @@ class ObservationToSecurityQueryMapper(object):
         observed_file_categories = self._observation_data.get("fileCategories")
         if observed_file_categories:
             categories = [
-                c.get("category").upper()
+                CODE42_FILE_TYPE_MAPPER.get(c.get("category"), "UNCATEGORIZED")
                 for c in observed_file_categories
                 if c.get("isSignificant") and c.get("category")
             ]
