@@ -1,6 +1,6 @@
 commonfields:
   id: AMP
-  version: 1.0.1
+  version: -1
 name: AMP
 display: AMP
 category: Endpoint
@@ -513,8 +513,6 @@ script:
       description: connector GUID.
     description: Performs a feature availability request on a computer. Can also be
       used as a course-grained isolation status request.
-  runonce: false
-fromversion: 5.0.0
+system: true
 tests:
-- No tests (auto formatted)
-
+  - No test - missing instace
