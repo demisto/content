@@ -4086,7 +4086,7 @@ class TextWidget(BaseWidget):
     :rtype: ``None``
     """
     def __init__(self, text):
-        # type: (str) -> TextWidget
+        # type: (str) -> None
         self.text = text
 
     def to_display(self):
@@ -4114,7 +4114,7 @@ class TrendWidget(BaseWidget):
     :rtype: ``None``
     """
     def __init__(self, current_number, previous_number):
-        # type: (int, int) -> TrendWidget
+        # type: (int, int) -> None
         self.current_number = current_number
         self.previous_number = previous_number
 
@@ -4135,7 +4135,7 @@ class NumberWidget(BaseWidget):
     :rtype: ``None``
     """
     def __init__(self, number):
-        # type: (int) -> NumberWidget
+        # type: (int) -> None
         self.number = number
 
     def to_display(self):
@@ -4152,7 +4152,7 @@ class BarColumnPieWidget(BaseWidget):
     :rtype: ``None``
     """
     def __init__(self, categories=None):
-        # type: (dict) -> BarColumnPieWidget
+        # type: (dict) -> None
         self.categories = categories if categories else []
 
     def add_category(self, name, number):
@@ -4186,8 +4186,8 @@ class LineWidget(BaseWidget):
     :rtype: ``None``
     """
     def __init__(self, categories=None):
-        # type: (dict) -> LineWidget
-        self.categories = categories if categories else []
+        # type: (list) -> None
+        self.categories = categories if categories else []  # type: List[dict]
 
     def add_category(self, name, number, group):
         """Add a category to widget.
@@ -4217,7 +4217,7 @@ class LineWidget(BaseWidget):
 
     def to_display(self):
         processed_names = []
-        processed_categories = []
+        processed_categories = []  # type: List[dict]
         for cat in self.categories:
             if cat['name'] in processed_names:
                 for processed_category in processed_categories:
@@ -4243,7 +4243,7 @@ class TableOrListWidget(BaseWidget):
     :rtype: ``None``
     """
     def __init__(self, data=None):
-        # type: (Any) -> TableOrListWidget
+        # type: (Any) -> None
         self.data = data if data else []
         if not isinstance(self.data, list):
             self.data = [data]
