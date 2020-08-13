@@ -637,27 +637,31 @@ def import_ioc_without_approval(file_id, classification="private", confidence=No
         # entry id of uploaded file to war room
         file_info = demisto.getFilePath(file_id)
     except Exception:
-        return_error(F"Entry {file_id} does not contain a file.")
+        raise DemistoException(F"Entry {file_id} does not contain a file.")
 
     if allow_unresolved:
         allow_unresolved = allow_unresolved == 'yes'
     uploaded_file = open(file_info['path'], 'rb')
     tmp_dir = mkdtemp()
-    with open(os.path.join(tmp_dir, file_info['name']), 'w') as f:
-        enriched_upload_json = json.load(uploaded_file)
-        enriched_upload_json['meta'] = assign_params(
-            classification=classification,
-            confidence=confidence,
-            allow_unresolved=allow_unresolved,
-        )
-        json.dump(enriched_upload_json, f)
-        files = {'file': (file_info['name'], uploaded_file)}
+    output_file_path = os.path.join(tmp_dir, file_info['name'])
+    try:
+        with open(output_file_path, 'w') as f:
+            enriched_upload_json = json.load(uploaded_file)
+            enriched_upload_json['meta'] = assign_params(
+                classification=classification,
+                confidence=confidence,
+                allow_unresolved=allow_unresolved,
+            )
+            json.dump(enriched_upload_json, f)
+    except json.JSONDecodeError:
+        raise DemistoException(F"Entry {file_id} does not contain a valid json file.")
+    if uploaded_file:
+        uploaded_file.close()
+    with open(output_file_path, 'r') as f:
+        files = {'file': (file_info['name'], f)}
         params = build_params()
 
         res = http_request("POST", "v1/intelligence/import/", params=params, files=files)
-    # closing the opened file if exist
-    if uploaded_file:
-        uploaded_file.close()
     # checking that response contains success key
     if res.get('success', False):
         imported_id = res.get('import_session_id', '')
