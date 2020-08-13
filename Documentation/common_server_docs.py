@@ -160,14 +160,14 @@ def create_py_documentation(path, origin, language):
                     print('Processing {}'.format(a))
 
                     if inspect.isclass(ns.get(a)):
-                        y["argList"] = list(inspect.getargspec(ns.get(a).__init__))[0] \
+                        y["argList"] = list(inspect.getfullargspec(ns.get(a).__init__))[0] \
                             if PY_IRREGULAR_FUNCS.get(a, None) is None \
                             else PY_IRREGULAR_FUNCS[a]["argList"]
 
                         # init will contains self, so remove the self from the arg list
                         y["argList"].remove('self')
                     else:
-                        y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if PY_IRREGULAR_FUNCS.get(a, None) is None \
+                        y["argList"] = list(inspect.getfullargspec(ns.get(a)))[0] if PY_IRREGULAR_FUNCS.get(a, None) is None \
                             else PY_IRREGULAR_FUNCS[a]["argList"]
 
                     x.append(y)
