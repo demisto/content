@@ -267,8 +267,8 @@ def test_module():
 COMMANDS = {
     'test-module': test_module,
     'fetch-incidents': fetch_incidents,
-    'NTT-CybertThreatSensor-FetchBlobs': fetch_blobs,
-    'NTT-CybertThreatSensor-PollBlobs': poll_blobs
+    'ntt-cyber-threat-sensor-fetch-blobs': fetch_blobs,
+    'ntt-cyber-threat-sensor-poll-blobs': poll_blobs
 }
 
 

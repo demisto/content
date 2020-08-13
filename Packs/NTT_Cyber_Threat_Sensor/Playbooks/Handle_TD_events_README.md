@@ -4,8 +4,8 @@ Playbook to enrich TD events
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
 * PCAP Analysis
+* GenericPolling
 
 ### Integrations
 * NTT Cyber Threat Sensor
@@ -14,8 +14,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* NTT-CybertThreatSensor-FetchBlobs
-* NTT-CybertThreatSensor-PollBlobs
+* ntt-cyber-threat-sensor-fetch-blobs
+* ntt-cyber-threat-sensor-poll-blobs
 
 ## Playbook Inputs
 ---

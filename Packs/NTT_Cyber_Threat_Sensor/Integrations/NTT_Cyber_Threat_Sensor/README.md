@@ -1,5 +1,5 @@
 Retrieve alerts and recommendations from NTT CTS
-This integration was integrated and tested with version xx of NTT Cyber Threat Sensor
+This integration was integrated and tested with version 1.0 of NTT Cyber Threat Sensor
 ## Configure NTT Cyber Threat Sensor on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -21,14 +21,14 @@ This integration was integrated and tested with version xx of NTT Cyber Threat S
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### NTT-CybertThreatSensor-PollBlobs
+### ntt-cyber-threat-sensor-poll-blobs
 ***
 Check if blobs is available
 
 
 #### Base Command
 
-`NTT-CybertThreatSensor-PollBlobs`
+`ntt-cyber-threat-sensor-poll-blobs`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,7 +47,7 @@ Check if blobs is available
 
 
 #### Command Example
-```!NTT-CybertThreatSensor-PollBlobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7 timestamp=2020-08-12T07:29:01.464841```
+```!ntt-cyber-threat-sensor-poll-blobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7 timestamp=2020-08-12T07:29:01.464841```
 
 #### Context Example
 ```
@@ -65,14 +65,14 @@ Check if blobs is available
 
 >CTS blob(s) was found and has been sceduled for download
 
-### NTT-CybertThreatSensor-FetchBlobs
+### ntt-cyber-threat-sensor-fetch-blobs
 ***
 Collecting blobs, most commonly pcap from an incident
 
 
 #### Base Command
 
-`NTT-CybertThreatSensor-FetchBlobs`
+`ntt-cyber-threat-sensor-fetch-blobs`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -98,7 +98,7 @@ Collecting blobs, most commonly pcap from an incident
 
 
 #### Command Example
-```!NTT-CybertThreatSensor-FetchBlobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7```
+```!ntt-cyber-threat-sensor-fetch-blobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7```
 
 #### Context Example
 ```
@@ -110,7 +110,7 @@ Collecting blobs, most commonly pcap from an incident
         ]
     },
     "File": {
-        "EntryID": "215@b969e30d-f6de-490a-8f35-81a8939b5b97",
+        "EntryID": "226@b969e30d-f6de-490a-8f35-81a8939b5b97",
         "Extension": "pcap",
         "Info": "application/vnd.tcpdump.pcap",
         "MD5": "f6362d15102678983db75e7b764d973f",

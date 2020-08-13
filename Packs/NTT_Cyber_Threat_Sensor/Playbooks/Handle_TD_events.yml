@@ -41,7 +41,7 @@ tasks:
       version: -1
       name: Fetch PCAP
       description: Collecting blobs, most commonly pcap from an incident
-      script: '|||NTT-CybertThreatSensor-FetchBlobs'
+      script: '|||ntt-cyber-threat-sensor-fetch-blobs'
       type: regular
       iscommand: true
       brand: ""
@@ -174,7 +174,7 @@ tasks:
       PollingCommandArgName:
         simple: event_id
       PollingCommandName:
-        simple: NTT-CybertThreatSensor-PollBlobs 
+        simple: ntt-cyber-threat-sensor-poll-blobs
       Timeout:
         simple: "5"
       dt:
@@ -326,7 +326,7 @@ tasks:
       version: -1
       name: Enable GenericPolling by polling for blobs
       description: Check if blobs is available
-      script: NTT Cyber Threat Sensor|||NTT-CybertThreatSensor-PollBlobs
+      script: NTT Cyber Threat Sensor|||ntt-cyber-threat-sensor-poll-blobs
       type: regular
       iscommand: true
       brand: NTT Cyber Threat Sensor
