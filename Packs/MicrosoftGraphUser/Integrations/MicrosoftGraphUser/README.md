@@ -50,6 +50,7 @@ For more details about the authentication used in this integration, see <a href=
 <li><a href="#get-new-updated-or-deleted-user-information" target="_self">Get new, updated, or deleted user information: msgraph-user-get-delta</a></li>
 <li><a href="#get-user-object-information" target="_self">Get user object information: msgraph-user-get</a></li>
 <li><a href="#get-a-list-of-user-objects" target="_self">Get a list of user objects: msgraph-user-list</a></li>
+<li><a href="#change-user-password" target="_self">Changes the user password: msgraph-user-change-password</a></li>
 </ol>
 </div>
 <div class="cl-preview-section">
@@ -1120,4 +1121,56 @@ For more details about the authentication used in this integration, see <a href=
 <p> </p>
 <div class="cl-preview-section">
 <p><img src="https://user-images.githubusercontent.com/37335599/56651529-e92f6800-6691-11e9-8bd1-8779a59cf51d.png" alt="Screen Shot 2019-04-24 at 12 13 05"></p>
+</div>
+<div class="cl-preview-section">
+<h3 id="change-user-password">9. Changes the user password</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Changes the user password. Permissions: Directory.AccessAsUser.All(Delegated)</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-7">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>msgraph-user-change-password</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-7">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 748px;">
+<thead>
+<tr>
+<th style="width: 139px;"><strong>Argument Name</strong></th>
+<th style="width: 530px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 139px;">password</td>
+<td style="width: 530px;">The new password.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+<tr>
+<td style="width: 139px;">force_change_password_next_sign_in</td>
+<td style="width: 530px;">Whether the password will be changed on the next sign in.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 139px;">force_change_password_with_mfa</td>
+<td style="width: 530px;">Whether to change the password with MFA.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-3">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>user: {user_id} password was changed successfully.</p>
+</div>
+</div>
 </div>

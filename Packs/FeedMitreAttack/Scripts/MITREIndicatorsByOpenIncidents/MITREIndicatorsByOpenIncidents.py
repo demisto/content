@@ -1,37 +1,18 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-res = demisto.executeCommand("demisto-api-post",
-                             {
-                                 "uri": "statistics/widgets/query",
-                                 "body":
-                                     json.dumps(
-                                         {"dataType": "indicators",
-                                          "widgetType": "bar",
-                                          "query": "type:\"MITRE ATT\u0026CK\" and investigationsCount:\u003e0",
-                                          "params": {
-                                              "groupBy": [
-                                                  "name"
-                                              ],
-                                              "keys": [
-                                                  "sum|investigationsCount"
-                                              ]
-                                          }
-                                          })
-                             })
+res = demisto.searchIndicators(query='type:"MITRE ATT&CK" and investigationsCount:>0')
+
 
 indicators = []
-for v in res[0]['Contents']['response']:
-    value = v["name"]
-    indicator_res = demisto.executeCommand("getIndicator", {"value": value})[0]['Contents']
-    for ind in indicator_res:
-        indicators.append({
-            'Value': ind['value'],
-            'Name': ind['CustomFields']['mitrename'],
-            'Phase Name': ind['CustomFields']['mitrekillchainphases'][0]['phase_name'],
-            'Description': ind['CustomFields']['mitredescription'],
+for ind in res['iocs']:
+    indicators.append({
+        'Value': dict_safe_get(ind, ['value']),
+        'Name': dict_safe_get(ind, ['CustomFields', 'mitrename']),
+        'Phase Name': dict_safe_get(ind, ['CustomFields', 'mitrekillchainphases', 0, 'phase_name']),
+        'Description': dict_safe_get(ind, ['CustomFields', 'mitredescription']),
 
-        })
+    })
 
 temp = tableToMarkdown('MITRE ATT&CK techniques by open Incidents', indicators,
                        headers=['Value', 'Name', 'Phase Name', 'Description'])
