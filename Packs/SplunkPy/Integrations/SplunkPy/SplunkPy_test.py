@@ -1,6 +1,7 @@
 from copy import deepcopy
 import pytest
 import SplunkPy as splunk
+import demistomock as demisto
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
@@ -73,6 +74,57 @@ RAW_WITH_MESSAGE = '{"@timestamp":"2019-10-15T13:30:08.578-04:00","message":"{"T
                    '"autopay\/payroll\/v1\/employer-details"}","TXID":"3AF-D30-ABCDEF","ADP-MessageID":' \
                    '"a1d57ed2-1fe6-4800-be7a-26cd89bf686d","SESSIONID":"stY46PpweFToT5JX04CZGMeCvP8=","ORGOID":' \
                    '"G2SY6MR3ATKA232T","AOID":"G2N2TJETBRAAXAAA","MSGID":"a1d57ed2-1fe6-0000-be7a-26cd89bf686d"}'
+
+SAMPLE_RESPONSE = [{
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-04T05:45:16.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+}]
 
 EXPECTED = {
     "action": "allowed",
@@ -361,3 +413,20 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     output = splunk.get_kv_store_config(Name())
     expected_output = '{}{}'.format(START_OUTPUT, expected_output)
     assert output == expected_output
+
+
+def test_fetch_incidents(mocker):
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    splunk.fetch_incidents(service)
+    incidents = demisto.incidents.call_args[0][0]
+    assert demisto.incidents.call_count == 1
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
+                                   "Recurring Malware Infection - Rule"

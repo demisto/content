@@ -1,6 +1,9 @@
 from datetime import datetime
 from unittest.mock import patch
 from dateutil.parser import parse
+import requests
+import unittest
+from unittest import mock
 
 """MOCKED RESPONSES"""
 
@@ -317,6 +320,177 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
     }
 ])
 
+MOCK_ES7_SCHEMA_INPUT = {
+    "bytes": {
+        "type": "long"
+    },
+    "clientip": {
+        "type": "ip"
+    }
+}
+
+MOCK_ES7_SCHEMA_OUTPUT = {
+    "bytes": "type: long",
+    "clientip": "type: ip"
+}
+
+MOC_ES7_SERVER_RESPONSE = {
+    "kibana_sample_data_logs": {
+        "mappings": {
+            "properties": {
+                "@timestamp": {
+                    "type": "alias",
+                    "path": "timestamp"
+                },
+                "agent": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "bytes": {
+                    "type": "long"
+                },
+                "clientip": {
+                    "type": "ip"
+                },
+                "event": {
+                    "properties": {
+                        "dataset": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "extension": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "geo": {
+                    "properties": {
+                        "coordinates": {
+                            "type": "geo_point"
+                        },
+                        "dest": {
+                            "type": "keyword"
+                        },
+                        "src": {
+                            "type": "keyword"
+                        },
+                        "srcdest": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "host": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "index": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "ip": {
+                    "type": "ip"
+                },
+                "machine": {
+                    "properties": {
+                        "os": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {
+                                    "type": "keyword",
+                                    "ignore_above": 256
+                                }
+                            }
+                        },
+                        "ram": {
+                            "type": "long"
+                        }
+                    }
+                },
+                "memory": {
+                    "type": "double"
+                },
+                "message": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "phpmemory": {
+                    "type": "long"
+                },
+                "referer": {
+                    "type": "keyword"
+                },
+                "request": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "response": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "tags": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "timestamp": {
+                    "type": "date"
+                },
+                "url": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+                },
+                "utc_time": {
+                    "type": "date"
+                }
+            }
+        }
+    }
+}
+
 
 def test_context_creation_es7():
     from Elasticsearch_v2 import results_to_context, get_total_results
@@ -415,6 +589,7 @@ def test_format_to_iso():
 
 @patch("Elasticsearch_v2.USERNAME", "mock")
 @patch("Elasticsearch_v2.PASSWORD", "demisto")
+@patch("Elasticsearch_v2.FETCH_INDEX", "customer")
 def test_elasticsearch_builder_called_with_username_password(mocker):
     from elasticsearch import Elasticsearch
     from Elasticsearch_v2 import elasticsearch_builder
@@ -431,3 +606,52 @@ def test_elasticsearch_builder_called_with_no_creds(mocker):
     elasticsearch_builder()
     assert es_mock.call_args[1].get('http_auth') is None
     assert es_mock.call_args[1].get('api_key') is None
+
+
+def test_elasticsearch_parse_subtree():
+    from Elasticsearch_v2 import parse_subtree
+    sub_tree = parse_subtree(MOCK_ES7_SCHEMA_INPUT)
+    assert str(sub_tree) == str(MOCK_ES7_SCHEMA_OUTPUT)
+
+
+# This is the class we want to test
+'''
+The get-mapping-fields command perform a GET /<index name>/_mapping http command
+for e.g http://elasticserver.com/customers/_mapping the output is then formatted and arranged by the parse-tree function
+The test created a mock response.
+'''
+
+
+class GetMapping:
+    def fetch_json(self, url):
+        response = requests.get(url)
+        return response.json()
+
+
+# This method will be used by the mock to replace requests.get
+@patch("Elasticsearch_v2.FETCH_INDEX", "customer")
+def mocked_requests_get(*args, **kwargs):
+    class MockResponse:
+        def __init__(self, json_data, status_code):
+            self.json_data = json_data
+            self.status_code = status_code
+
+        def json(self):
+            return self.json_data
+
+    if args[0] == 'http://someurl.com/' + 'index' + '/_mapping':
+        return MockResponse(MOC_ES7_SERVER_RESPONSE, 200)
+    else:
+        return MockResponse(None, 404)
+
+
+# Our test case class
+class GetMappingFields(unittest.TestCase):
+
+    # We patch 'requests.get' with our own method. The mock object is passed in to our test case method.
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_fetch(self, mock_get):
+        # Assert requests.get calls
+        gmf = GetMapping()
+        server_response = gmf.fetch_json('http://someurl.com/' + 'index' + '/_mapping')
+        self.assertEqual(server_response, MOC_ES7_SERVER_RESPONSE)

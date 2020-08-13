@@ -3551,7 +3551,11 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                         for indiv_msg in msgs:
                             msg = indiv_msg.get_payload()
                             attachment_file_name = indiv_msg.get_filename()
-                            msg_info = base64.b64decode(msg).decode('utf-8')
+                            try:
+                                # In some cases the body content is empty and cannot be decoded.
+                                msg_info = base64.b64decode(msg).decode('utf-8')
+                            except TypeError:
+                                msg_info = str(msg)
                             attached_emails.append(msg_info)
                             if attachment_file_name is None:
                                 attachment_file_name = "unknown_file_name{}".format(i)
@@ -3651,7 +3655,6 @@ def main():
         return_error('Minimum max_depth is 1, the script will parse just the top email')
 
     parse_only_headers = demisto.args().get('parse_only_headers', 'false').lower() == 'true'
-
     try:
         result = demisto.executeCommand('getFilePath', {'id': entry_id})
         if is_error(result):
@@ -3659,7 +3662,6 @@ def main():
 
         file_path = result[0]['Contents']['path']
         file_name = result[0]['Contents']['name']
-
         result = demisto.executeCommand('getEntry', {'id': entry_id})
         if is_error(result):
             return_error(get_error(result))
