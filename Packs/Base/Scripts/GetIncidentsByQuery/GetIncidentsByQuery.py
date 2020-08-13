@@ -2,9 +2,10 @@ import pickle
 import re
 import uuid
 from datetime import datetime, timedelta
-from dateutil import parser
 
+import demistomock as demisto
 from CommonServerPython import *
+from dateutil import parser
 
 PREFIXES_TO_REMOVE = ['incident.']
 
@@ -150,6 +151,7 @@ def main():
         return_error("Invalid output format: %s" % output_format)
     entry = fileResult(file_name, data_encoded)
     entry['Contents'] = incident_list
+    entry['ContentsFormat'] = formats['json']
     entry['HumanReadable'] = "Fetched %d incidents successfully by the query: %s" % (len(incident_list), query)
     entry['EntryContext'] = {
         'GetIncidentsByQuery': {
