@@ -1,0 +1,5 @@
+!get-user scim={"id":"ade744de1b6e5010e9e2a9722a4bcbe0"} using=ServiceNowITAdmin
+!create-user scim={"name":{"familyName":"test","givenName":"demisto"},"emails":[{"type":"work","primary":true,"value":"testdemistouser13Aug@paloaltonetworks.com"}],"userName":"testXoar13Aug@paloaltonetworks.com"} using=ServiceNowITAdmin
+!enable-user scim={"id":"ade744de1b6e5010e9e2a9722a4bcbe0"} using=ServiceNowITAdmin
+!disable-user scim={"id":"ade744de1b6e5010e9e2a9722a4bcbe0"} using=ServiceNowITAdmin
+!update-user oldScim={"id":"ade744de1b6e5010e9e2a9722a4bcbe0"} newScim={"name":{"familyName":"test","givenName":"demistouser"},"emails":[{"type":"work","primary":true,"value":"testdemistouser99@paloaltonetworks.com"}]} using=ServiceNowITAdmin

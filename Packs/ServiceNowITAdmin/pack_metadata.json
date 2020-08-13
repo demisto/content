@@ -1,0 +1,16 @@
+{
+    "name": "ServiceNowITAdmin",
+    "description": "IAM Integration for ServiceNow. This handles user account auto-provisioning to ServiceNow",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Shweta",
+    "url": "https://github.com/sonaaru/content.git",
+    "email": "shweta14.jain@nttdata.com",
+    "created": "2020-08-10T11:07:04Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
