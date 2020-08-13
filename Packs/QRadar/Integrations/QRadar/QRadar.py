@@ -533,7 +533,7 @@ def fetch_incidents():
                 # set fetch upper limit
                 lim_offense = get_offenses(_range='0-0')
                 if not lim_offense:
-                    raise Exception(
+                    raise DemistoException(
                         "No offenses could be fetched, please make sure there are offenses available for this user.")
                 lim_id = lim_offense[0]['id']  # if there's no id, raise exception
             if lim_id >= end_offense_id:  # increment the search until we reach limit
