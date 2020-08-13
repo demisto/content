@@ -14,7 +14,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * AddEvidence
 
 ### Commands
-* fetch-blobs
+* NTT-CybertThreatSensor-FetchBlobs
 
 ## Playbook Inputs
 ---

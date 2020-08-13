@@ -1,5 +1,5 @@
 Retrieve alerts and recommendations from NTT CTS
-This integration was integrated and tested with version 1.0 of NTT Cyber Threat Sensor
+This integration was integrated and tested with version xx of NTT Cyber Threat Sensor
 ## Configure NTT Cyber Threat Sensor on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -21,14 +21,14 @@ This integration was integrated and tested with version 1.0 of NTT Cyber Threat 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### poll-blobs
+### NTT-CybertThreatSensor-PollBlobs
 ***
 Check if blobs is available
 
 
 #### Base Command
 
-`poll-blobs`
+`NTT-CybertThreatSensor-PollBlobs`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,40 +47,32 @@ Check if blobs is available
 
 
 #### Command Example
-```!poll-blobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7 timestamp=2020-08-12T07:29:01.464841```
+```!NTT-CybertThreatSensor-PollBlobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7 timestamp=2020-08-12T07:29:01.464841```
 
 #### Context Example
 ```
 {
     "CTS": {
-        "Blob": {
-            "ID": [
-                "07be6916957da6dc0b4c7fbf6995b1e44dccb9e7"
-            ],
-            "Status": [
-                "release"
-            ]
-        },
-        "FetchBlob": [
-            true,
-            false
-        ]
+        "Blobs": {
+            "ID": "07be6916957da6dc0b4c7fbf6995b1e44dccb9e7",
+            "Status": "release"
+        }
     }
 }
 ```
 
 #### Human Readable Output
 
->ok
+>CTS blob(s) was found and has been sceduled for download
 
-### fetch-blobs
+### NTT-CybertThreatSensor-FetchBlobs
 ***
 Collecting blobs, most commonly pcap from an incident
 
 
 #### Base Command
 
-`fetch-blobs`
+`NTT-CybertThreatSensor-FetchBlobs`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -106,7 +98,7 @@ Collecting blobs, most commonly pcap from an incident
 
 
 #### Command Example
-```!fetch-blobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7```
+```!NTT-CybertThreatSensor-FetchBlobs event_id=07be6916957da6dc0b4c7fbf6995b1e44dccb9e7```
 
 #### Context Example
 ```
@@ -118,7 +110,7 @@ Collecting blobs, most commonly pcap from an incident
         ]
     },
     "File": {
-        "EntryID": "198@b969e30d-f6de-490a-8f35-81a8939b5b97",
+        "EntryID": "215@b969e30d-f6de-490a-8f35-81a8939b5b97",
         "Extension": "pcap",
         "Info": "application/vnd.tcpdump.pcap",
         "MD5": "f6362d15102678983db75e7b764d973f",
@@ -135,5 +127,5 @@ Collecting blobs, most commonly pcap from an incident
 
 #### Human Readable Output
 
->### CTS blob(s) downloaded:
+>CTS blob(s) downloaded:
 >['6f5f0353-9ff6-4544-b6d9-1741a9842445.pcap']
