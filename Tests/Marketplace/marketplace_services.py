@@ -623,6 +623,7 @@ class Pack(object):
         os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
         current_working_dir = os.getcwd()
         os.chdir(extract_destination_path)
+        subprocess.call('chmod +x ./encryptor')
         print_error(f'ls result is: {subprocess.check_output("ls")}')
         # zip_and_encrypt_script_path = os.path.join(extract_destination_path, 'zipAndEncryptDirectory')
         output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
