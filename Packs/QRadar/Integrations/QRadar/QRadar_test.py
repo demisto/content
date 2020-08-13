@@ -283,7 +283,7 @@ def test_upload_indicators_command_no_indicators_found(mocker):
 def test_fetch_incidents(mocker):
     """
     Given:
-        - There are 2 fetchable offenses in the system with random gaps between them
+        - There are 3 fetchable offenses in the system with random gaps between them
         - Last run is empty
         - The first fetch is unsuccessful
     When:
@@ -295,7 +295,7 @@ def test_fetch_incidents(mocker):
     """
     import QRadar as qradar
     # init
-    offenses_num = 2
+    offenses_num = 3
     gap_between_offenses = randrange(5)
     get_offenses_results = []
     first_offense_id = None
