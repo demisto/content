@@ -39,6 +39,7 @@ def options_handler():
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
+    parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
 
@@ -683,7 +684,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
     return testing_status
 
 
-def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number):
+def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number, is_private):
     """Sets custom marketplace GCP bucket based on branch name and build number
 
     Args:
@@ -705,12 +706,19 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
     server_configuration = {
         'content.pack.verify': 'false',
         'marketplace.initial.sync.delay': '0',
-        'content.pack.ignore.missing.warnings.contentpack': 'true',
-        'marketplace.bootstrap.bypass.url':
-            'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
-                branch_name, ci_build_number)
-
+        'content.pack.ignore.missing.warnings.contentpack': 'https://xsoar-premium-content-team-gateway.demisto.works'
     }
+    if is_private:
+        server_configuration['marketplace.bootstrap.bypass.url'] = 'https://storage.googleapis.com/marketplace-ci-build'
+        server_configuration['marketplace.gcp.path'] = 'content/builds/{}/{}/content/packs'.format(branch_name,
+                                                                                                   ci_build_number)
+        server_configuration['jobs.marketplacepacks.schedule'] = '1m'
+        server_configuration['marketplace.premium.gateway.service.url'] = '1m'
+    else:
+        server_configuration['marketplace.bootstrap.bypass.url'] = \
+            'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(branch_name,
+                                                                                              ci_build_number)
+
     error_msg = "Failed to set GCP bucket server config - with status code "
     return update_server_configuration(client, server_configuration, error_msg)
 
@@ -772,6 +780,7 @@ def main():
     secret_conf_path = options.secret
     branch_name = options.branch
     ci_build_number = options.build_number
+    is_private = options.is_private
 
     servers = determine_servers_urls(ami_env)
     server_numeric_version = get_server_numeric_version(ami_env)
@@ -790,7 +799,7 @@ def main():
                                               verify_ssl=False)
             set_docker_hardening_for_build(client, prints_manager)
             if LooseVersion(server_numeric_version) >= LooseVersion('6.0.0'):
-                set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number)
+                set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number, is_private)
             restart_server(server, prints_manager)
         prints_manager.add_print_job('Done restarting servers', print_color, 0, LOG_COLORS.GREEN)
 
