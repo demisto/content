@@ -132,7 +132,7 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     md += 'Scan ID: **' + str(vt_response.get('scan_id')) + '**\n'
     md += 'Scan date: **' + str(vt_response.get('scan_date')) + '**\n'
     md += 'Detections / Total: **' + str(positives) + '/' + str(vt_response.get('total')) + '**\n'
-    md += 'Resource: [' + str(vt_response.get('resource')) + '](' + str(vt_response.get('resource')) + ')\n'
+    md += 'Resource: ' + str(vt_response.get('resource')) + '\n'
     md += 'VT Link: [' + str(vt_response.get('permalink')) + '](' + str(vt_response.get('permalink')) + ')\n'
     dbotScore = 0
 
@@ -674,7 +674,7 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
     md += 'Scan ID: **' + str(response.get('scan_id', '')) + '**\n'
     md += 'Scan date: **' + str(response.get('scan_date', '')) + '**\n'
     md += 'Detections / Total: **' + str(positives) + '/' + str(response.get('total', '')) + '**\n'
-    md += 'Resource: [' + str(response.get('resource')) + '](' + str(response.get('resource')) + ')\n'
+    md += 'Resource: ' + str(response.get('resource')) + '\n'
     md += 'VT Link: [' + str(response.get('permalink')) + '](' + str(response.get('permalink')) + ')\n'
     dbotScore = 0
     ec_url = {}
