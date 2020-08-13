@@ -495,8 +495,7 @@ tasks:
       id: 60d10a58-cb8c-4fa9-8f9c-b6caf57bbb24
       version: -1
       name: Set detected IPs
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -543,8 +542,7 @@ tasks:
       id: ddbf993a-2930-4958-89bd-3fbeb535c1cc
       version: -1
       name: Set detected users
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -980,8 +978,7 @@ tasks:
       id: bbc9bcbd-fbd1-4c23-8fea-a582c9ea7a4b
       version: -1
       name: Set detected IPs
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1028,8 +1025,7 @@ tasks:
       id: 940cb3ab-a2ab-462f-8b23-e4d5d84bd262
       version: -1
       name: Set detected users
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1401,8 +1397,7 @@ tasks:
       id: 38938eae-d197-4b34-8ad1-835b8ac3c77f
       version: -1
       name: Set detected IPs
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1449,8 +1444,7 @@ tasks:
       id: 02bdd4c9-a777-4aac-8309-87825430c2aa
       version: -1
       name: Set detected users
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1500,8 +1494,7 @@ tasks:
       id: 8ca7216e-47f5-4f0a-8104-e8d3b486d356
       version: -1
       name: Set detected IPs
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1607,8 +1600,7 @@ tasks:
       id: f57f5c5b-d440-4847-85cf-996b9bbbaad7
       version: -1
       name: Set detected IPs
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1736,7 +1728,7 @@ tasks:
       id: f3a9c2a6-45f0-421c-8cb4-71042f5f134a
       version: -1
       name: Set detected IPs
-      description: Sets a value into the context with the given context key.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1885,8 +1877,7 @@ tasks:
       id: 059eba21-9993-490a-8c2a-8e1a08aaca2c
       version: -1
       name: Set detected IPs
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1960,7 +1951,7 @@ tasks:
       id: 20ea7647-9e20-42ca-8452-1631b2c9d24e
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2238,8 +2229,7 @@ tasks:
       id: f6eaa5f8-c04a-4a24-8ed5-6c76ee2c8f39
       version: -1
       name: Set detected IPs
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2286,8 +2276,7 @@ tasks:
       id: ed78b99c-85e3-4659-87dc-9440b3d2dfbf
       version: -1
       name: Set detected users
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2543,8 +2532,7 @@ tasks:
       id: aebbada3-8599-4fab-868d-d30c1792cdf9
       version: -1
       name: Set detected users
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2591,8 +2579,7 @@ tasks:
       id: 13f7fc7e-1933-456d-8153-eedac64f8e2a
       version: -1
       name: Set detected IPs
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2905,8 +2892,7 @@ tasks:
       id: 81e6910a-e975-4c4e-8a56-e1e696fe617d
       version: -1
       name: Set detected IP addresses as internal
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2956,8 +2942,7 @@ tasks:
       id: 5c171b1f-1edc-4404-831d-f029dcd9e57f
       version: -1
       name: Set detected IP addresses as external
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3007,8 +2992,7 @@ tasks:
       id: 8636b5c9-c31e-465b-87ab-d36980dc2b49
       version: -1
       name: Set detected IPs
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3055,8 +3039,7 @@ tasks:
       id: 5def5f66-3f4a-4f80-8fbe-d2897f117050
       version: -1
       name: Set detected users
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3105,8 +3088,7 @@ tasks:
       id: 41a69d1b-1b4b-45fb-871f-089026fa2888
       version: -1
       name: Set detected hosts
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3153,8 +3135,7 @@ tasks:
       id: 84a23cb9-81d6-439a-84ee-a260e82ad5a8
       version: -1
       name: Set detected hosts
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3201,8 +3182,7 @@ tasks:
       id: 0a357f18-a20e-4707-8655-c6f1abf070bf
       version: -1
       name: Set detected hosts
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3249,8 +3229,7 @@ tasks:
       id: ed9a77e6-32a8-4ee4-89bc-2e66f6bd0698
       version: -1
       name: Set detected hosts
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3480,8 +3459,7 @@ tasks:
       id: b36c2d2e-e655-42cd-882e-1b94360f88a8
       version: -1
       name: Set detected host names as internal
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3531,8 +3509,7 @@ tasks:
       id: 38f7b2e5-2e9f-4497-88b0-deb234b95eed
       version: -1
       name: Set detected host names as external
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3619,8 +3596,7 @@ tasks:
       id: 9c90d795-19b6-42a6-8dc4-5792e7af2e0e
       version: -1
       name: Set detected host names as internal
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3738,3 +3714,5 @@ outputs:
 - contextPath: PANWHunting.DetectedExternalHosts
   description: External host names detected based on fields and inputs in your search.
   type: string
+tests:
+- No tests
