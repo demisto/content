@@ -29,7 +29,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 2020-01-01T00:00:00Z
+- defaultvalue: 7 days
   display: First fetch time
   name: first_fetch
   required: false
@@ -210,7 +210,7 @@ script:
     description: IoT list devices command
     execution: false
     outputs:
-    - contextPath: PaloAltoNetworksIoT.Devices
+    - contextPath: PaloAltoNetworksIoT.DeviceList
       description: List of devices
       type: unknown
   - name: iot-security-list-alerts

@@ -190,7 +190,7 @@ def test_iot_list_devices(requests_mock):
     }
     outputs = iot_list_devices(client, args).outputs
 
-    assert len(outputs['devices']) == 2
+    assert len(outputs) == 2
 
 
 def test_iot_resolve_alert(requests_mock):
@@ -215,12 +215,12 @@ def test_iot_resolve_alert(requests_mock):
         'reason': 'test',
         'reason_type': 'Issue Mitigated'
     }
-    outputs = json.loads(iot_resolve_alert(client, args).readable_output)
+    outputs = iot_resolve_alert(client, args).readable_output
 
     assert adapter.call_count == 1
     assert adapter.called
     assert adapter.last_request.json() == {'reason': 'test', 'reason_type': ['Issue Mitigated'], 'resolved': 'yes'}
-    assert outputs == mock_response
+    assert outputs == 'Alert 123 was resolved successfully'
 
 
 def test_iot_resolve_vuln(requests_mock):
@@ -246,7 +246,7 @@ def test_iot_resolve_vuln(requests_mock):
         'full_name': 'vuln_full_name',
         'reason': 'test',
     }
-    outputs = json.loads(iot_resolve_vuln(client, args).readable_output)
+    outputs = iot_resolve_vuln(client, args).readable_output
 
     assert adapter.call_count == 1
     assert adapter.called
@@ -256,4 +256,4 @@ def test_iot_resolve_vuln(requests_mock):
         'action': 'mitigate',
         'full_name': 'vuln_full_name'
     }
-    assert outputs == mock_response
+    assert outputs == 'Vulnerability 123 was resolved successfully'

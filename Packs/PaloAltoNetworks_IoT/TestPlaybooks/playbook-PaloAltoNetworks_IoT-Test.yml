@@ -190,7 +190,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: PaloAltoNetworksIoT.Devices
+              simple: PaloAltoNetworksIoT.DeviceList
             iscontext: true
     view: |-
       {

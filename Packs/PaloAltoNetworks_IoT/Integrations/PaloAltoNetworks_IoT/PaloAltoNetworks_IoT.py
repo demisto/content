@@ -254,14 +254,18 @@ def iot_list_devices(client, args):
     pagelength = args.get('limit', client.max_fetch)
     result = client.list_devices(offset, pagelength)
 
-    outputs = {
-        'devices': result
-    }
+    if not result:
+        return CommandResults(
+            readable_output='### No devices found',
+            outputs_prefix="",
+            outputs_key_field="",
+            outputs=None
+        )
 
     return CommandResults(
-        outputs_prefix="PaloAltoNetworksIoT.Devices",
+        outputs_prefix="PaloAltoNetworksIoT.DeviceList",
         outputs_key_field='deviceid',
-        outputs=outputs
+        outputs=result
     )
 
 
@@ -283,14 +287,18 @@ def iot_list_alerts(client, args):
     pagelength = min(int(args.get('limit', client.max_fetch)), PAGELENGTH)
     result = client.list_alerts(stime, offset, pagelength, 'desc')
 
-    outputs = {
-        'alerts': result
-    }
+    if not result:
+        return CommandResults(
+            readable_output='### No alerts found',
+            outputs_prefix="",
+            outputs_key_field="",
+            outputs=None
+        )
 
     return CommandResults(
         outputs_prefix="PaloAltoNetworksIoT.Alerts",
         outputs_key_field="id",
-        outputs=outputs
+        outputs=result
     )
 
 
@@ -312,14 +320,18 @@ def iot_list_vulns(client, args):
     pagelength = min(int(args.get('limit', client.max_fetch)), PAGELENGTH)
     result = client.list_vulns(stime, offset, pagelength)
 
-    outputs = {
-        'vulns': result
-    }
+    if not result:
+        return CommandResults(
+            readable_output='### No vulnerabilities found',
+            outputs_prefix="",
+            outputs_key_field="",
+            outputs=None
+        )
 
     return CommandResults(
         outputs_prefix="PaloAltoNetworksIoT.Vulns",
         outputs_key_field="zb_ticketid",
-        outputs=outputs
+        outputs=result
     )
 
 
@@ -338,10 +350,10 @@ def iot_resolve_alert(client, args):
     reason = args.get('reason', 'resolved by XSOAR')
     reason_type = args.get('reason_type', 'No Action Needed')
 
-    result = client.resolve_alert(alert_id, reason, reason_type)
+    client.resolve_alert(alert_id, reason, reason_type)
 
     return CommandResults(
-        readable_output=f'{json.dumps(result)}',
+        readable_output=f'Alert {alert_id} was resolved successfully',
         outputs_prefix="",
         outputs_key_field="",
         outputs=None
@@ -363,10 +375,10 @@ def iot_resolve_vuln(client, args):
     full_name = args.get('full_name')
     reason = args.get('reason', 'resolved by XSOAR')
 
-    result = client.resolve_vuln(vuln_id, full_name, reason)
+    client.resolve_vuln(vuln_id, full_name, reason)
 
     return CommandResults(
-        readable_output=f'{json.dumps(result)}',
+        readable_output=f'Vulnerability {vuln_id} was resolved successfully',
         outputs_prefix="",
         outputs_key_field="",
         outputs=None
@@ -502,18 +514,30 @@ def main():
     tenant_id = demisto.params()['tenant_id']
     access_key_id = demisto.params()['access_key_id']
     secret_access_key = demisto.params()['secret_access_key']
-    api_timeout = int(demisto.params().get('api_timeout', '60'))
 
-    ff = arg_to_timestamp(
-        arg=demisto.params().get('first_fetch'),
-        arg_name='First fetch time',
-        required=False
-    )
+    api_timeout = 60
+    try:
+        api_timeout = int(demisto.params().get('api_timeout', '60'))
+    except ValueError:
+        return_error('API timeout needs to be an integer')
+
     first_fetch = '-1'
-    if ff:
-        first_fetch = datetime.fromtimestamp(ff).astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+    try:
+        ff = arg_to_timestamp(
+            arg=demisto.params().get('first_fetch'),
+            arg_name='First fetch time',
+            required=False
+        )
+        if ff:
+            first_fetch = datetime.fromtimestamp(ff).astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+    except ValueError as e:
+        return_error(f'First fetch time is in a wrong format. Error: {str(e)}')
 
-    max_fetch = int(demisto.params().get('max_fetch', '10'))
+    max_fetch = 10
+    try:
+        max_fetch = int(demisto.params().get('max_fetch', '10'))
+    except ValueError:
+        return_error('Maximum number of incidents per fetch needs to be an integer')
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/pub/v4.0')
