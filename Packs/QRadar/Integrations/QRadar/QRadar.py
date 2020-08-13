@@ -662,7 +662,7 @@ def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
 
 # Helper method: Enriches the source addresses ids dictionary with the source addresses values corresponding to the ids
 def enrich_source_addresses_dict(src_adrs):
-    batch_size = demisto.params().get('enrich_size', 100)
+    batch_size = demisto.params().get('enrich_size') or 100
     for b in batch(list(src_adrs.values()), batch_size=int(batch_size)):
         src_ids_str = ','.join(map(str, b))
         demisto.debug('QRadarMsg - Enriching source addresses: {}'.format(src_ids_str))
@@ -676,7 +676,7 @@ def enrich_source_addresses_dict(src_adrs):
 # Helper method: Enriches the destination addresses ids dictionary with the source addresses values corresponding to
 # the ids
 def enrich_destination_addresses_dict(dst_adrs):
-    batch_size = demisto.params().get('enrich_size', 100)
+    batch_size = demisto.params().get('enrich_size') or 100
     for b in batch(list(dst_adrs.values()), batch_size=int(batch_size)):
         dst_ids_str = ','.join(map(str, b))
         demisto.debug('QRadarMsg - Enriching destination addresses: {}'.format(dst_ids_str))
