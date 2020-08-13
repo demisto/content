@@ -1,17 +1,17 @@
 {
-	"TypeName": "ipRep",
-	"kind": "indicatorsDetails",
-	"layout": {
-		"TypeName": "",
-		"id": "ipRep",
-		"kind": "indicatorsDetails",
-		"modified": "2020-07-02T10:12:52.396985+03:00",
-		"name": "",
-		"system": false,
-		"tabs": [
+    "TypeName": "ipRep",
+    "kind": "indicatorsDetails",
+    "layout": {
+        "TypeName": "",
+        "id": "ipRep",
+        "kind": "indicatorsDetails",
+        "modified": "2020-07-13T10:33:42.696079861Z",
+        "name": "",
+        "system": false,
+        "tabs": [
 			{
 				"id": "main",
-				"name": "Info",
+				"name": "Summary",
 				"sections": [
 					{
 						"displayType": "ROW",
@@ -19,7 +19,7 @@
 						"hideName": false,
 						"i": "main-b52548e0-a09d-11e9-8956-390f602b039a",
 						"isVisible": true,
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -66,11 +66,11 @@
 							}
 						],
 						"displayType": "ROW",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "main-c1f3f0d0-a09d-11e9-8956-390f602b039a",
 						"isVisible": true,
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -81,7 +81,7 @@
 						"type": "relatedIncidents",
 						"w": 2,
 						"x": 0,
-						"y": 3
+						"y": 9
 					},
 					{
 						"displayType": "ROW",
@@ -93,67 +93,68 @@
 							{
 								"endCol": 2,
 								"fieldId": "indicatortype",
-								"height": 24,
+								"height": 22,
 								"id": "f6eb5bc0-a09d-11e9-8956-390f602b039a",
 								"index": 0,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "asn",
-								"height": 24,
-								"id": "1745f790-ac60-11e9-8443-17259235cee7",
-								"index": 1,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "geocountry",
-								"height": 24,
-								"id": "1b89e2d0-ac60-11e9-8443-17259235cee7",
-								"index": 2,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "geolocation",
-								"height": 24,
-								"id": "1e590860-ac60-11e9-8443-17259235cee7",
-								"index": 3,
+								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "internal",
-								"height": 24,
+								"height": 22,
 								"id": "299ca380-ac60-11e9-8443-17259235cee7",
-								"index": 4,
+								"index": 1,
+								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "hostname",
-								"height": 24,
+								"height": 22,
 								"id": "21d0f110-ac60-11e9-8443-17259235cee7",
-								"index": 5,
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "geocountry",
+								"height": 22,
+								"id": "1b89e2d0-ac60-11e9-8443-17259235cee7",
+								"index": 3,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "comment",
-								"height": 48,
+								"height": 22,
 								"id": "0b9dd200-a09e-11e9-8956-390f602b039a",
-								"index": 6,
+								"index": 4,
 								"listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "aggregatedreliability",
-								"height": 24,
-								"id": "b49a3ba0-6f8d-11ea-aeac-6dbd1bcce63e",
-								"index": 7,
+								"fieldId": "geolocation",
+								"height": 22,
+								"id": "1e590860-ac60-11e9-8443-17259235cee7",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asn",
+								"height": 22,
+								"id": "1745f790-ac60-11e9-8443-17259235cee7",
+								"index": 5,
+								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
@@ -169,11 +170,11 @@
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 6,
 						"hideName": false,
 						"i": "main-8bd4f460-a875-11e9-8523-e5faf0ec1f6b",
 						"isVisible": true,
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -184,15 +185,15 @@
 						"readOnly": true,
 						"static": false,
 						"type": "dynamicIndicator",
-						"w": 3,
+						"w": 1,
 						"x": 0,
-						"y": 8
+						"y": 3
 					},
 					{
 						"h": 1,
 						"hideName": true,
 						"i": "main-9cfd13c0-3d54-11ea-8f80-71a50769e869",
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -208,7 +209,7 @@
 						"h": 1,
 						"hideName": true,
 						"i": "main-a42a8a60-3d54-11ea-8f80-71a50769e869",
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -223,7 +224,7 @@
 					{
 						"h": 3,
 						"i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -232,8 +233,8 @@
 						"static": false,
 						"type": "indicatorTimeline",
 						"w": 1,
-						"x": 2,
-						"y": 2
+						"x": 1,
+						"y": 6
 					},
 					{
 						"columns": [
@@ -257,39 +258,13 @@
 							},
 							{
 								"displayed": true,
-								"isDefault": true,
-								"key": "expiration",
-								"width": 150
-							},
-							{
-								"displayed": true,
-								"key": "Feed Original Severity",
-								"width": 200
-							},
-							{
-								"displayed": true,
-								"key": "Feed Threat Types",
-								"width": 200
-							},
-							{
-								"displayed": true,
-								"key": "First Seen By Feed",
-								"width": 200
-							},
-							{
-								"displayed": true,
-								"key": "Last Seen By Feed",
-								"width": 200
-							},
-							{
-								"displayed": true,
-								"key": "Sub Feed",
+								"key": "Tags",
 								"width": 200
 							}
 						],
 						"h": 2,
 						"i": "main-d7576e80-3d54-11ea-8f80-71a50769e869",
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -297,14 +272,14 @@
 						"name": "Sources",
 						"static": false,
 						"type": "sources",
-						"w": 2,
-						"x": 0,
-						"y": 5
+						"w": 1,
+						"x": 1,
+						"y": 4
 					},
 					{
 						"h": 3,
 						"i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
-						"items": [],
+						"items": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -314,70 +289,132 @@
 						"type": "comments",
 						"w": 1,
 						"x": 2,
-						"y": 5
+						"y": 6
 					},
 					{
-						"displayType": "ROW",
+						"displayType": "CARD",
 						"h": 2,
-						"hideItemTitleOnlyOne": true,
+						"hideItemTitleOnlyOne": false,
 						"hideName": false,
 						"i": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
 						"items": [
 							{
 								"endCol": 2,
 								"fieldId": "tags",
-								"height": 24,
+								"height": 53,
 								"id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"args": {
+									"field": {
+										"simple": "tags"
+									}
+								},
+								"endCol": 1,
+								"fieldId": "",
+								"height": 53,
+								"id": "f1f63340-aa49-11ea-9e46-5ff91c1cf9b7",
+								"index": 1,
+								"name": "Add tags",
+								"scriptId": "Builtin|||appendIndicatorField",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "trafficlightprotocol",
+								"height": 53,
+								"id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"field": {
+										"simple": "tags"
+									}
+								},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "fb499720-aa49-11ea-9e46-5ff91c1cf9b7",
+								"index": 1,
+								"listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+								"name": "Remove tags",
+								"scriptId": "Builtin|||removeIndicatorField",
+								"sectionItemType": "button",
+								"startCol": 1
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Tags",
+						"name": "Tags and TLP",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": false,
+						"i": "main-d59381d0-aa49-11ea-9e46-5ff91c1cf9b7",
+						"items": [
+							{
+								"args": {},
+								"endCol": 1,
+								"fieldId": "",
+								"height": 44,
+								"id": "e3595b00-aa49-11ea-9e46-5ff91c1cf9b7",
+								"index": 0,
+								"name": "Enrich indicator",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "012a4ae0-bf71-11ea-b085-3f354e53d3e6",
+								"index": 1,
+								"name": "Expire indicator",
+								"scriptId": "Builtin|||expireIndicators",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Actions",
 						"static": false,
 						"w": 1,
 						"x": 2,
 						"y": 0
 					},
 					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "main-690fe3d0-6f4f-11ea-a717-9facf5f245ed",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Custom Details",
-						"static": false,
-						"type": "customDetails",
-						"w": 1,
-						"x": 0,
-						"y": 10
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "main-6aabb980-6f4f-11ea-a717-9facf5f245ed",
+						"description": "Highest Reliability",
+						"displayType": "ROW",
+						"h": 1,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "main-190c74d0-aa4a-11ea-9e46-5ff91c1cf9b7",
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "threatcategory",
-								"height": 24,
-								"id": "1cf1e851-4e74-11ea-8bf6-67db400d7da5",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "threatcategoryconfidence",
-								"height": 24,
-								"id": "1cf1e870-4e74-11ea-8bf6-67db400d7da5",
+								"fieldId": "aggregatedreliability",
+								"height": 53,
+								"id": "2a3fd670-aa4a-11ea-9e46-5ff91c1cf9b7",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -387,24 +424,80 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Extended Details",
+						"name": "Highest Reliability",
 						"static": false,
-						"type": "extendedDetails",
-						"w": 2,
+						"w": 1,
 						"x": 1,
-						"y": 10
+						"y": 3
+					},
+					{
+						"description": "By Virus Total",
+						"h": 3,
+						"i": "main-0aacc440-aa58-11ea-bd12-1b3bf8ce73f5",
+						"items": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Community score",
+						"query": "PositiveDetectionsVSDetectionEngines",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamicIndicator",
+						"w": 1,
+						"x": 2,
+						"y": 9
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 1,
+						"hideName": false,
+						"i": "main-b915e930-b6dd-11ea-842d-c3903a6d3bd1",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "assigneduser",
+								"height": 53,
+								"id": "c78c26a0-b6dd-11ea-842d-c3903a6d3bd1",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "assignedrole",
+								"height": 53,
+								"id": "c5ba4cd0-b6dd-11ea-842d-c3903a6d3bd1",
+								"index": 0,
+								"listId": "main-b915e930-b6dd-11ea-842d-c3903a6d3bd1",
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Assignee",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 3
 					},
 					{
 						"displayType": "ROW",
 						"h": 2,
+						"hideItemTitleOnlyOne": true,
 						"hideName": false,
-						"i": "main-2ba6ff20-bc33-11ea-9755-ebbaf4d3af4d",
+						"i": "main-8330a970-d0d4-11ea-937a-6f8841d9fed1",
 						"items": [
 							{
-								"endCol": 6,
+								"endCol": 2,
 								"fieldId": "feedrelatedindicators",
-								"height": 106,
-								"id": "49099460-bc33-11ea-9755-ebbaf4d3af4d",
+								"height": 22,
+								"id": "89128d40-d0d4-11ea-937a-6f8841d9fed1",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -416,18 +509,59 @@
 						"moved": false,
 						"name": "Feed Related Indicators",
 						"static": false,
-						"w": 3,
+						"w": 1,
+						"x": 2,
+						"y": 4
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "lkddep3o3f",
+				"name": "Additional Details",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 9,
+						"i": "lkddep3o3f-27940e50-ba17-11ea-96e1-0b84fdedf11e",
+						"items": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Extended Details",
+						"static": false,
+						"type": "extendedDetails",
+						"w": 2,
 						"x": 0,
-						"y": 12
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 9,
+						"i": "lkddep3o3f-28a72c00-ba17-11ea-96e1-0b84fdedf11e",
+						"items": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Custom Details",
+						"static": false,
+						"type": "customDetails",
+						"w": 1,
+						"x": 2,
+						"y": 0
 					}
 				],
 				"type": "custom"
 			}
 		],
-		"typeId": "ipRep",
-		"version": -1
-	},
-	"typeId": "ipRep",
-	"version": -1,
-	"fromversion": "5.5.0"
+        "typeId": "ipRep",
+        "version": -1
+    },
+    "typeId": "ipRep",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "toVersion": "5.9.9"
 }

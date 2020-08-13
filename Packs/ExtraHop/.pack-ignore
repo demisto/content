@@ -12,3 +12,6 @@ ignore=IF107
 
 [file:incidentfield-ExtraHop_Detection_Participants.json]
 ignore=IF107
+
+[file:ExtraHop]
+ignore=PA116

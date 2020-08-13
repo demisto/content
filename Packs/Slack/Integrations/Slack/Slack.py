@@ -672,7 +672,6 @@ def check_for_answers():
             answer = res.json()
         except Exception:
             demisto.info(f'Slack - Could not parse response for entitlement {entitlement!r}: {res.content!r}')
-            pass
         if not answer:
             continue
         payload_json: str = answer.get('payload', '')
@@ -1362,7 +1361,6 @@ def slack_send():
                 default_response = parsed_message.get('default_response')
             except Exception:
                 demisto.info('Slack - could not parse JSON from entitlement blocks.')
-                pass
     elif message:
         entitlement_match = re.search(ENTITLEMENT_REGEX, message)
         if entitlement_match:
@@ -1375,7 +1373,6 @@ def slack_send():
                 default_response = parsed_message.get('default_response')
             except Exception:
                 demisto.info('Slack - could not parse JSON from entitlement message.')
-                pass
 
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks)
 

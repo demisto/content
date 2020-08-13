@@ -8,9 +8,9 @@
 	"disabled": false,
 	"hours": 0,
 	"hoursR": 0,
-	"id": "Zimperium event",
+	"id": "Zimperium Event",
 	"locked": false,
-	"name": "Zimperium event",
+	"name": "Zimperium Event",
 	"playbookId": "Zimperium Incident Enrichment",
 	"preProcessingScript": "",
 	"readonly": false,
@@ -20,5 +20,6 @@
 	"version": -1,
 	"weeks": 0,
 	"weeksR": 0,
-	"fromVersion": "5.0.0"
+	"fromVersion": "5.0.0",
+	"layout": "Zimperium Event"
 }

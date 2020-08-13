@@ -1,22 +1,21 @@
 id: test-Expanse
 version: -1
 name: test-Expanse
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: 31d12d41-c218-408e-80ac-caf9a823db30
+  "0":
+    id: "0"
+    taskid: c55fa98d-534d-4859-893a-2c48c574eb9a
     type: start
     task:
-      id: 31d12d41-c218-408e-80ac-caf9a823db30
+      id: c55fa98d-534d-4859-893a-2c48c574eb9a
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -28,25 +27,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
-    taskid: d9aff32f-1ba2-409d-8875-4dd8c951709e
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 675ad61c-dfe5-4fbf-8cca-6973e64f10a1
     type: regular
     task:
-      id: d9aff32f-1ba2-409d-8875-4dd8c951709e
+      id: 675ad61c-dfe5-4fbf-8cca-6973e64f10a1
       version: -1
       name: DeleteContext
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       all:
-        simple: 'yes'
+        simple: "yes"
     separatecontext: false
     view: |-
       {
@@ -58,22 +58,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '2':
-    id: '2'
-    taskid: 1b16e009-077f-416d-8544-f0dde8ed4b16
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ea981fa9-7255-4b58-867e-d350b97071ce
     type: regular
     task:
-      id: 1b16e009-077f-416d-8544-f0dde8ed4b16
+      id: ea981fa9-7255-4b58-867e-d350b97071ce
       version: -1
       name: ip
       script: '|||ip'
       type: regular
       iscommand: true
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       ip:
         simple: ${inputs.ip}
@@ -88,24 +89,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '3':
-    id: '3'
-    taskid: b1b5b666-3a30-423b-86c6-7a5b8df677c4
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 012d4b49-2a91-49ba-8485-5f7a17b2add0
     type: condition
     task:
-      id: b1b5b666-3a30-423b-86c6-7a5b8df677c4
+      id: 012d4b49-2a91-49ba-8485-5f7a17b2add0
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      'yes':
-      - '4'
+      "yes":
+      - "4"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -137,22 +139,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '4':
-    id: '4'
-    taskid: 3a27360d-52ea-4c9f-814e-3b2942d6f946
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ed5450ed-4522-4ffc-8b04-94a0b67b368d
     type: regular
     task:
-      id: 3a27360d-52ea-4c9f-814e-3b2942d6f946
+      id: ed5450ed-4522-4ffc-8b04-94a0b67b368d
       version: -1
       name: domain
       script: '|||domain'
       type: regular
       iscommand: true
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
+      - "5"
     scriptarguments:
       domain:
         simple: ${inputs.domain}
@@ -167,24 +170,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '5':
-    id: '5'
-    taskid: 9f97c120-600e-4a5b-8014-11c25eb16fdd
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1d5f0b1e-2f36-45ec-847a-094582ecb43e
     type: condition
     task:
-      id: 9f97c120-600e-4a5b-8014-11c25eb16fdd
+      id: 1d5f0b1e-2f36-45ec-847a-094582ecb43e
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      'yes':
-      - '6'
+      "yes":
+      - "7"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -216,35 +220,113 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '6':
-    id: '6'
-    taskid: 35e0c4f0-c81c-4108-8b09-49676c5be0ee
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: d41d8474-170a-448d-864d-54b90868b1b3
     type: title
     task:
-      id: 35e0c4f0-c81c-4108-8b09-49676c5be0ee
+      id: d41d8474-170a-448d-864d-54b90868b1b3
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1200
+          "y": 1590
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: aa2f5d92-1b67-4c54-89ea-d67aaec93703
+    type: regular
+    task:
+      id: aa2f5d92-1b67-4c54-89ea-d67aaec93703
+      version: -1
+      name: expanse-get-domains-for-certificate
+      script: Expanse|||expanse-get-domains-for-certificate
+      type: regular
+      iscommand: true
+      brand: Expanse
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      common_name:
+        simple: ${inputs.common_name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: cd773799-3ec9-4468-8416-9f9b390b94d9
+    type: condition
+    task:
+      id: cd773799-3ec9-4468-8416-9f9b390b94d9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Expanse
+                accessor: IPDomains.TotalDomainCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Expanse
+                accessor: IPDomains.DomainList.[0].assetType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1215,
+        "height": 1605,
         "width": 380,
         "x": 50,
         "y": 50
@@ -257,11 +339,19 @@ inputs:
     simple: 74.142.119.130
   required: false
   description: 'IP address '
+  playbookInputQuery: null
 - key: domain
   value:
     simple: atlas.enron.com
   required: false
   description: domain
+  playbookInputQuery: null
+- key: common_name
+  value:
+    simple: 'shack.com'
+  required: false
+  description: A partial certificate common name
+  playbookInputQuery: null
 outputs: []
-description: ''
+description: ""
 fromversion: 5.0.0

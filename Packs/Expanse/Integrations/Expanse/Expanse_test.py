@@ -1,10 +1,11 @@
-from Expanse import main
+import Expanse
 import demistomock as demisto
 import json
 
 TEST_IP = "12.4.49.74"
 TEST_API_KEY = "123456789123456789"
 TEST_DOMAIN = "base2.pets.com"
+TEST_PAGE_LIMIT = 1
 
 
 def http_request_mock(method, endpoint, params=None, token=False):
@@ -31,6 +32,12 @@ def http_request_mock(method, endpoint, params=None, token=False):
     elif endpoint == 'exposures/ip-ports':
         r = MOCK_EXPOSURES_RESPONSE
 
+    elif endpoint == 'assets/certificates/Jr8RiLR4OfFslz9VmELI9g==':
+        r = MOCK_CERTIFICATE_DETAIL_RESPONSE
+
+    elif endpoint == 'assets/ips':
+        r = MOCK_IPS_RESONSE
+
     return r
 
 
@@ -48,7 +55,7 @@ def test_fetch_incidents(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     r = json.loads(results[0]['Contents'])
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
@@ -64,7 +71,7 @@ def test_fetch_incidents_with_behavior(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     r = json.loads(results[0]['Contents'])
     assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
@@ -77,7 +84,7 @@ def test_ip(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='ip')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['Contents']['search'] == TEST_IP
     assert results[0]['EntryContext']['DBotScore']['Type'] == 'ip'
@@ -91,7 +98,7 @@ def test_ip_missing_values(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock_missing)
     mocker.patch.object(demisto, 'command', return_value='ip')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['EntryContext']['IP(val.Address == obj.Address)']['Geo'].get('Location') is None
 
@@ -101,7 +108,7 @@ def test_domain(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='domain')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['Contents']['domain'] == TEST_DOMAIN
     assert results[0]['EntryContext']['DBotScore']['Type'] == 'url'
@@ -113,7 +120,7 @@ def test_certificate(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='expanse-get-certificate')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['EntryContext']['Expanse.Certificate(val.SearchTerm == obj.SearchTerm)']['CommonName'] == TEST_DOMAIN
 
@@ -123,7 +130,7 @@ def test_behavior(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='expanse-get-behavior')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['EntryContext']['Expanse.Behavior(val.SearchTerm == obj.SearchTerm)']['SearchTerm'] == TEST_IP
     assert results[0]['EntryContext']['Expanse.Behavior(val.SearchTerm == obj.SearchTerm)']['ExternalAddresses'] \
@@ -135,16 +142,93 @@ def test_exposures(mocker):
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='expanse-get-exposures')
     mocker.patch.object(demisto, 'results')
-    main()
+    Expanse.main()
     results = demisto.results.call_args[0]
     assert results[0]['EntryContext']['Expanse.Exposures(val.SearchTerm == obj.SearchTerm)']['SearchTerm'] == TEST_IP
     assert results[0]['EntryContext']['Expanse.Exposures(val.SearchTerm == obj.SearchTerm)']['WarningExposureCount'] \
         == 1
 
 
+def test_domains_by_certificate(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'common_name': TEST_DOMAIN})
+    mocker.patch('Expanse.http_request', side_effect=http_request_mock)
+    mocker.patch.object(demisto, 'command', return_value='expanse-get-domains-for-certificate')
+    mocker.patch.object(demisto, 'results')
+    Expanse.main()
+    results = demisto.results.call_args[0]
+    assert results[0]['EntryContext']['Expanse.IPDomains(val.SearchTerm == obj.SearchTerm)']['TotalDomainCount'] == 1
+
+
+def test_fetch_incidents_command_cache(mocker):
+    mocker.patch("Expanse.PAGE_LIMIT", TEST_PAGE_LIMIT)
+    mocker.patch('Expanse.do_auth')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"incidents": [MOCK_INCIDENT]})
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'results')
+    Expanse.fetch_incidents_command()
+    results = demisto.results.call_args[0]
+    r = json.loads(results[0]['Contents'])
+    assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
+    assert demisto.setIntegrationContext.call_args[0][0]['incidents'] is None
+    assert demisto.setLastRun.call_args[0][0]['complete_for_today'] is True
+
+
+def test_fetch_incidents_command_cache_continue(mocker):
+    mocker.patch("Expanse.PAGE_LIMIT", TEST_PAGE_LIMIT)
+    mocker.patch('Expanse.do_auth')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"incidents": [MOCK_INCIDENT] * 2})
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'results')
+    Expanse.fetch_incidents_command()
+    results = demisto.results.call_args[0]
+    r = json.loads(results[0]['Contents'])
+    assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
+    assert len(demisto.setIntegrationContext.call_args[0][0]['incidents']) == 1
+    assert demisto.setLastRun.call_args[0][0]['complete_for_today'] is False
+
+
+def test_fetch_incidents_command_new_cache(mocker):
+    mocker.patch("Expanse.PAGE_LIMIT", TEST_PAGE_LIMIT + 1)
+    mocker.patch('Expanse.do_auth')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"incidents": None})
+    mocker.patch('Expanse.http_request', side_effect=http_request_mock)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'results')
+    Expanse.fetch_incidents_command()
+    results = demisto.results.call_args[0]
+    r = json.loads(results[0]['Contents'])
+    assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
+    assert demisto.setIntegrationContext.call_args[0][0]['incidents'] is None
+    assert demisto.setLastRun.call_args[0][0]['complete_for_today'] is True
+
+
+def test_fetch_incidents_command_new_cache_continue(mocker):
+    mocker.patch("Expanse.PAGE_LIMIT", TEST_PAGE_LIMIT)
+    mocker.patch('Expanse.do_auth')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"incidents": None})
+    mocker.patch('Expanse.http_request', side_effect=http_request_mock)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'results')
+    Expanse.fetch_incidents_command()
+    results = demisto.results.call_args[0]
+    r = json.loads(results[0]['Contents'])
+    assert r[0]['name'] == "NTP_SERVER on 203.215.173.113:123/UDP"
+    assert len(demisto.setIntegrationContext.call_args[0][0]['incidents']) == 1
+    assert demisto.setLastRun.call_args[0][0]['complete_for_today'] is False
+
+
 MOCK_TOKEN_RESPONSE = {
     'token': '123456789abcdefg'
 }
+
 MOCK_IP_RESPONSE = {
     "data": [
         {
@@ -746,8 +830,46 @@ MOCK_EVENTS = {
                 'remediationStatuses': []
             },
             'id': 'b4a1e2e6-165a-31a5-9e6a-af286adc3dcd'
+        },
+        {
+            'eventType': 'ON_PREM_EXPOSURE_APPEARANCE',
+            'eventTime': '2020-02-05T00:00:00Z',
+            'businessUnit': {
+                'id': 'a1f0f39b-f358-3c8c-947b-926887871b88',
+                'name': 'VanDelay Import-Export'
+            },
+            'payload': {
+                '_type': 'ExposurePayload',
+                'id': 'aaaabbbb-4d55-3fdb-9155-4927eab91218',
+                'exposureType': 'RDP_SERVER',
+                'ip': '203.215.173.113',
+                'port': 3389,
+                'portProtocol': 'TCP',
+                'exposureId': '6bedf636-5b6a-3b47-82a5-92b511c0649b',
+                'domainName': None,
+                'scanned': '2020-02-05T00:00:00Z',
+                'geolocation': {
+                    'latitude': 33.7,
+                    'longitude': 73.17,
+                    'city': 'ISLAMABAD',
+                    'regionCode': '',
+                    'countryCode':
+                        'PK'
+                },
+                'configuration': {
+                    '_type': 'RdpServerConfiguration',
+                    'nativeRdpProtocol': True
+                },
+                'severity': 'CRITICAL',
+                'tags': {
+                    'ipRange': ['untagged']
+                },
+                'providers': ['InternallyHosted'],
+                'certificatePem': None,
+                'remediationStatuses': []
+            },
+            'id': 'aaaabbbb-165a-31a5-9e6a-af286adc3dcd'
         }
-
     ]
 }
 MOCK_BEHAVIOR = {
@@ -1105,4 +1227,157 @@ MOCK_EXPOSURES_RESPONSE = {
             "snooze": []
         }
     }]
+}
+
+MOCK_CERTIFICATE_DETAIL_RESPONSE = {
+    "id": "1079d791-79f6-3122-a965-980471a244e8",
+    "tenant": {
+        "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+        "name": "VanDelay Industries",
+        "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+    },
+    "businessUnits": [
+        {
+            "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+            "name": "VanDelay Industries",
+            "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+        }
+    ],
+    "dateAdded": "2019-11-21T09:15:02.271281Z",
+    "firstObserved": None,
+    "lastObserved": None,
+    "providers": [
+        {
+            "id": "Unknown",
+            "name": "None"
+        }
+    ],
+    "certificate": {
+        "md5Hash": "Jr8RiLR4OfFslz9VmELI9g==",
+        "id": "26bf1188-b478-39f1-ac97-3f559842c8f6",
+        "issuer": "C=GB,ST=Greater Manchester,L=Salford,O=COMODO CA Limited,CN=COMODO RSA \
+        Organization Validation Secure Server CA",
+        "issuerAlternativeNames": "",
+        "issuerCountry": "GB",
+        "issuerEmail": None,
+        "issuerLocality": "Salford",
+        "issuerName": "COMODO RSA Organization Validation Secure Server CA",
+        "issuerOrg": "COMODO CA Limited",
+        "issuerOrgUnit": None,
+        "issuerState": "Greater Manchester",
+        "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0/zl9UD5ylG59/MtZpU0NWT3zrT5uRFUU2FgOoiZOZ9MklZqm+HHV+e3lTHrx+\
+        5JlAccfS8lkVdvJIrOAGe9Py5S2Ir6rCUmJMrWCpmEXE5clrifMjg1PA4ueVlcYkNnNK5oHhGMa6WhVXQlA9YK2e9i4KMdqXA1WzPRpvgz32oARBSHv3KWl5W\
+        JacbFj9seobIyGcqeyZEQaIJoE0tbLRi2qy0KShLf9+Uc7mQnNFwD8Y8Zqo96zE65c5+NctwKteYMs2XMFXtJ5sknALFrwbvsYZfUxXn/glgSU+v5jQUcyCNr\
+        GcevhZHW3D9Ia2mymbfKfszUVMRl/Fpi3EmxHwIDAQAB",
+        "publicKeyAlgorithm": "RSA",
+        "publicKeyRsaExponent": 65537,
+        "signatureAlgorithm": "SHA256withRSA",
+        "subject": "C=US,PostalCode=60179,ST=Illinois,L=Hoffman Estates,O=Sears Brands LLC,OU=eCommerce Development,OU=Multi-Domain \
+        SSL,CN=base2.pets.com",
+        "subjectAlternativeNames": "base3.pets.com,base4.pets.com",
+        "subjectCountry": "US",
+        "subjectEmail": None,
+        "subjectLocality": "Hoffman Estates",
+        "subjectName": "base2.pets.com",
+        "subjectOrg": "Sears Brands LLC",
+        "subjectOrgUnit": "eCommerce Development,Multi-Domain SSL",
+        "subjectState": "Illinois",
+        "serialNumber": "145397449086924134621453997645674717378",
+        "validNotBefore": "2016-03-22T00:00:00Z",
+        "validNotAfter": "2018-03-22T23:59:59Z",
+        "version": "3",
+        "publicKeyBits": 2048,
+        "pemSha256": "8OLAalY9ZOgYCD6yQJWyGNXZrWl9bugv-S3AGlIQi84=",
+        "pemSha1": "DN3fXmU-IR3C6l1CTISAlgpvGFA=",
+        "publicKeyModulus": "d3fce5f540f9ca51b9f7f32d6695343564f7ceb4f9b911545361603a8899399f4c92566a9be1c757e7b79531ebc7ee4994071c7\
+        d2f2591576f248ace0067bd3f2e52d88afaac252624cad60a99845c4e5c96b89f3238353c0e2e79595c62436734ae681e118c6ba5a155742503d60ad9ef6\
+        2e0a31da970355b33d1a6f833df6a00441487bf729697958969c6c58fdb1ea1b23219ca9ec99110688268134b5b2d18b6ab2d0a4a12dff7e51cee6427345\
+        c03f18f19aa8f7acc4eb9739f8d72dc0ab5e60cb365cc157b49e6c92700b16bc1bbec6197d4c579ff82581253ebf98d051cc8236b19c7af8591d6dc3f486\
+        b69b299b7ca7eccd454c465fc5a62dc49b11f",
+        "publicKeySpki": "U_pBSH73cx7BWHRuE3UZvYkONJ8s694ziYTHbLVgtis="
+    },
+    "commonName": "base2.pets.com",
+    "properties": [
+        "EXPIRED"
+    ],
+    "hasLinkedCloudResources": False,
+    "certificateAdvertisementStatus": [
+        "NO_CERTIFICATE_ADVERTISEMENT"
+    ],
+    "serviceStatus": [
+        "NO_ACTIVE_SERVICE",
+        "NO_ACTIVE_CLOUD_SERVICE",
+        "NO_ACTIVE_ON_PREM_SERVICE"
+    ],
+    "details": {
+        "recentIps": [
+            {
+                "ip": "12.4.49.74",
+                "domain": None,
+                "type": "CERTIFICATE_SIGHTING",
+                "assetType": "CERTIFICATE",
+                "assetKey": "Jr8RiLR4OfFslz9VmELI9g==",
+                "provider": {
+                    "id": "AWS",
+                    "name": "Amazon Web Services"
+                },
+                "lastObserved": "2020-06-23T03:41:18Z",
+                "tenant": {
+                    "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+                    "name": "VanDelay Industries",
+                    "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+                },
+                "businessUnits": [
+                    {
+                        "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+                        "name": "VanDelay Industries",
+                        "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+                    }
+                ],
+                "commonName": "base2.pets.com"
+            }
+        ],
+        "cloudResources": []
+    }
+}
+
+MOCK_IPS_RESONSE = {
+    "data": [
+        {
+            "ip": "12.4.49.74",
+            "domain": "base2.pets.com",
+            "type": "DOMAIN_RESOLUTION",
+            "assetType": "DOMAIN",
+            "assetKey": "base2.pets.com",
+            "provider": {
+                "id": "AWS",
+                "name": "Amazon Web Services"
+            },
+            "lastObserved": "2020-06-16T05:40:54.572Z",
+            "tenant": {
+                "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+                "name": "VanDelay Industries",
+                "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+            },
+            "businessUnits": [
+                {
+                    "id": "a1f0f39b-f358-3c8c-947b-926887871b88",
+                    "name": "VanDelay Import-Export",
+                    "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+                }
+            ],
+            "commonName": None
+        }
+    ]
+}
+
+MOCK_INCIDENT = {
+    'name': "NTP_SERVER on 203.215.173.113:123/UDP",
+    'occurred': "2020-06-26T00:00:00Z",
+    'rawJSON': {},
+    'type': 'Expanse Appearance',
+    'CustomFields': {
+        'expanserawjsonevent': {}
+    },
+    'severity': 2
 }
