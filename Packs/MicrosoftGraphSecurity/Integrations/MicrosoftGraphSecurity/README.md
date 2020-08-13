@@ -549,3 +549,6 @@ For more details about the authentication used in this integration, see <a href=
 <p> </p>
 <h2>Troubleshooting</h2>
 <p>If not all expected alerts were returned, it is possible that partial content was returned from Microsoft Graph. If so, the response headers will be printed to Demisto logs, and you can find more details under the Warning header. For more information, see the <a href="https://docs.microsoft.com/en-us/graph/api/resources/security-error-codes?view=graph-rest-1.0" target="_blank" rel="noopener">Microsoft Graph documentation</a>.</p>
+
+<h2>Known Limitations</h2>
+<p>Microsoft does not support updating alerts with Office 365 Security and Compliance set as provider.</p>
