@@ -3,7 +3,7 @@ version: -1
 name: IP Enrichment - Generic
 fromversion: 3.6.0
 description: |-
-  Enrich IP using one or more integrations.
+  Deprecated. Enrich IP using one or more integrations.
 
   IP enrichment includes:
   * Resolve IP to Hostname (DNS)
@@ -12,6 +12,7 @@ description: |-
   * IP reputation
   * For internal addresses, get host information
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"

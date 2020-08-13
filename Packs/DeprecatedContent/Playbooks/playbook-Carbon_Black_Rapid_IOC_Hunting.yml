@@ -3,8 +3,9 @@ fromversion: 2.5.0
 system: true
 version: -1
 name: Carbon Black Rapid IOC Hunting
-description: DEPRECATED. Use "Search Endpoints By Hash - Carbon Black Response V2" playbook instead. Hunt for malicious indicators using Carbon Black
+description: Deprecated. Use "Search Endpoints By Hash - Carbon Black Response V2" playbook instead. Hunt for malicious indicators using Carbon Black
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"

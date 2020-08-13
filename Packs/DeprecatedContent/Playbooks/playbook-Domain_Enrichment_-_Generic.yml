@@ -3,12 +3,12 @@ version: -1
 name: Domain Enrichment - Generic
 fromversion: 3.6.0
 description: |-
-  DEPRECATED. Use "Domain Enrichment - Generic v2" playbook instead. Enrich Domain using one or more integrations.
-
+  Deprecated. Use "Domain Enrichment - Generic v2" playbook instead. Enrich Domain using one or more integrations.
   Domain enrichment includes:
   * Domain reputation
   * Threat information
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"

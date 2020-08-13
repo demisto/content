@@ -1,12 +1,13 @@
 id: Hunt Extracted Hashes
 version: -1
 name: Hunt Extracted Hashes
-description: "Deprecated. Use the Hunt Extracted Hashes V2 playbook instead. This playbook extracts IOCs from the incident details and attached\
+description: Deprecated. Use the Hunt Extracted Hashes V2 playbook instead. This playbook extracts IOCs from the incident details and attached\
   \ files using regular expressions and then hunts for hashes on endpoints in the organization\
   \ using available tools.\nThe playbook supports multiple types of attachments. For\
   \ the full supported attachments list, refer to \"Extract Indicators From\
-  \ File - Generic v2\"."
+  \ File - Generic v2\".
 starttaskid: '0'
+hidden: true
 tasks:
   '0':
     id: '0'

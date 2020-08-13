@@ -3,7 +3,7 @@ version: -1
 name: URL Enrichment - Generic
 fromversion: 3.6.0
 description: |-
-  DEPRECATED. Use "URL Enrichment - Generic v2" playbook instead. Enrich URL using one or more integrations.
+  Deprecated. Use "URL Enrichment - Generic v2" playbook instead. Enrich URL using one or more integrations.
 
   URL enrichment includes:
   * Verify URL SSL
@@ -11,6 +11,7 @@ description: |-
   * URL reputaiton
   * Take URL screenshot
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"

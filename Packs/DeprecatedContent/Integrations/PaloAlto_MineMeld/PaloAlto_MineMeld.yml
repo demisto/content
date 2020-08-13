@@ -23,9 +23,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: MineMeld streamlines the aggregation, enforcement and sharing of threat
+description: Deprecated. MineMeld streamlines the aggregation, enforcement and sharing of threat
   intelligence.
-display: Palo Alto Networks MineMeld
+deprecated: true
+display: Deprecated. Palo Alto Networks MineMeld
 name: Palo Alto Minemeld
 script:
   commands:
