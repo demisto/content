@@ -315,8 +315,11 @@ class Client(BaseClient):
 
         return auth_token
 
-    def fetch_all_indicators_from_api(self) -> Tuple[List, Dict, Dict]:
+    def fetch_all_indicators_from_api(self, limit: int) -> Tuple[List, Dict, Dict]:
         """Collects raw data of indicators and their relationships from the feed.
+
+        Args:
+            limit (int): Amount of indicators to fetch. -1 means no limit.
 
         Returns:
             Tuple[List, Dict, Dict].
@@ -334,7 +337,11 @@ class Client(BaseClient):
             'Authorization': f'Bearer {self.get_access_token()}'
         }
 
-        query_url = '/collections/indicators/objects?length=1000'
+        if limit == -1:
+            query_url = '/collections/indicators/objects?length=1000'
+        else:
+            query_url = f'/collections/indicators/objects?length={limit}'
+
         while True:
             response = self._http_request(
                 method='GET',
@@ -372,8 +379,11 @@ class Client(BaseClient):
 
         return raw_indicators, relationships, stix_entities
 
-    def fetch_all_reports_from_api(self) -> List:
+    def fetch_all_reports_from_api(self, limit: int) -> List:
         """Collects reports raw data from the feed.
+
+        Args:
+            limit (int): Amount of reports to fetch. -1 means no limit.
 
         Returns:
             List. List of STIX 2.1 reports objects.
@@ -386,7 +396,11 @@ class Client(BaseClient):
             'Authorization': f'Bearer {self.get_access_token()}'
         }
 
-        query_url = '/collections/reports/objects?length=100'
+        if limit == -1:
+            query_url = '/collections/reports/objects?length=100'
+        else:
+            query_url = f'/collections/reports/objects?length={limit}'
+
         while True:
             response = self._http_request(
                 method='GET',
@@ -412,11 +426,11 @@ class Client(BaseClient):
 
         return raw_reports
 
-    def build_iterator(self) -> List:
+    def build_iterator(self, limit: int) -> List:
         self.get_access_token()
 
-        raw_indicators, relationships, stix_entities = self.fetch_all_indicators_from_api()
-        raw_reports = self.fetch_all_reports_from_api()
+        raw_indicators, relationships, stix_entities = self.fetch_all_indicators_from_api(limit)
+        raw_reports = self.fetch_all_reports_from_api(limit)
 
         stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports)
 
@@ -465,12 +479,9 @@ def fetch_indicators_command(client: Client, feedTags: list, limit: int = -1):
             Dict. Data to be entered to context.
             Dict. The raw data of the indicators.
     """
-    iterator = client.build_iterator()
+    iterator = client.build_iterator(limit)
     indicators = []
     raw_response = []
-
-    if limit != -1:
-        iterator = iterator[:limit]
 
     for indicator in iterator:
         indicators.append({
