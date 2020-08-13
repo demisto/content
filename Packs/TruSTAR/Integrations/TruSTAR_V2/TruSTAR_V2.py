@@ -862,7 +862,7 @@ class TrustarClient:
         args = {'priority_event_score': priority_event_score,
                 'normalized_indicator_score': normalized_indicator_score,
                 'status': status,
-                # 'page_size': limit,
+                'page_size': limit,
                 'from_time': Utils.date_to_unix(from_time) if from_time else None,
                 'to_time': Utils.date_to_unix(to_time) if to_time else None}
         response = self.client.get_phishing_indicators_page(**args)
@@ -890,7 +890,7 @@ class TrustarClient:
         """
         args = {'priority_event_score': priority_event_score,
                 'status': status,
-                # 'page_size': limit,
+                'page_size': limit,
                 'from_time': Utils.date_to_unix(from_time) if from_time else None,
                 'to_time': Utils.date_to_unix(to_time) if to_time else None}
         response = self.client.get_phishing_submissions_page(**args)
