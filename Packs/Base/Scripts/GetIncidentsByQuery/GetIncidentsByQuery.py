@@ -2,10 +2,9 @@ import pickle
 import re
 import uuid
 from datetime import datetime, timedelta
-
-from CommonServerPython import *    
-
 from dateutil import parser
+
+from CommonServerPython import *
 
 PREFIXES_TO_REMOVE = ['incident.']
 
