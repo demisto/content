@@ -906,8 +906,6 @@ script:
       - dynusergroup_name
       - ingestion_time
       - record_size
-      - source_device_host
-      - dest_device_host
       required: false
       secret: false
     - default: false
@@ -1965,7 +1963,7 @@ script:
     - contextPath: CDL.Logging.URL.DestDeviceHost
       description: Hostname of the device session destination.
       type: String
-  dockerimage: demisto/python_pancloud_v2:1.0.0.10260
+  dockerimage: demisto/python_pancloud_v2:1.0.0.10370
   feed: false
   isfetch: true
   longRunning: false
