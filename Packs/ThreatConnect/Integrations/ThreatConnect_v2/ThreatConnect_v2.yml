@@ -2044,6 +2044,52 @@ script:
       required: true
       description: Indicator Value
     description: Get Owner for Indicator
+  - name: tc-download-report
+    arguments:
+      - name: group_type
+        required: true
+        auto: PREDEFINED
+        predefined:
+        - adversaries
+        - campaigns
+        - emails
+        - incidents
+        - signatures
+        - threats
+        descriptin: The group type.
+      - name: group_id
+        required: true
+    output:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
   dockerimage: demisto/threatconnect-py3-sdk:1.0.0.8854
   runonce: false
   subtype: python3
