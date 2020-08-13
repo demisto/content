@@ -1373,7 +1373,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-        description: ""
       index: {}
       key: {}
       keysToKeep: {}

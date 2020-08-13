@@ -2045,6 +2045,7 @@ script:
       description: Indicator Value
     description: Get Owner for Indicator
   - name: tc-download-report
+    description: Download group report (PDF).
     arguments:
       - name: group_type
         required: true
@@ -2056,10 +2057,11 @@ script:
         - incidents
         - signatures
         - threats
-        descriptin: The group type.
+        description: The group type.
       - name: group_id
         required: true
-    output:
+        description: The group ID.
+    outputs:
     - contextPath: File.Size
       description: The size of the file.
       type: Number
@@ -2090,7 +2092,7 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.8854
+  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.10664
   runonce: false
   subtype: python3
 fromversion: '5.0.0'
