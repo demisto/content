@@ -27,6 +27,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
+    from typing import Optional, List
 except Exception:
     pass
 
@@ -2565,9 +2566,10 @@ class CommandResults:
     :param outputs_prefix: should be identical to the prefix in the yml contextPath in yml file. for example:
             CortexXDR.Incident
 
-    :type outputs_key_field: ``str``
+    :type outputs_key_field: ``str`` or ``list[str]``
     :param outputs_key_field: primary key field in the main object. If the command returns Incidents, and of the
-            properties of Incident is incident_id, then outputs_key_field='incident_id'
+            properties of Incident is incident_id, then outputs_key_field='incident_id'. If object has multiple
+            unique keys, then list of strings is supported outputs_key_field=['id1', 'id2']
 
     :type outputs: ``list`` or ``dict``
     :param outputs: the data to be returned and will be set to context
@@ -2588,14 +2590,27 @@ class CommandResults:
     """
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None):
-        # type: (str, str, object, list, str, object) -> None
+        # type: (str, object, object, list, str, object) -> None
         if raw_response is None:
             raw_response = outputs
 
         self.indicators = indicators
 
         self.outputs_prefix = outputs_prefix
+
+        # this is public field, it is used by a lot of unit tests, so I don't change it
         self.outputs_key_field = outputs_key_field
+
+        self._outputs_key_field = None  # type: Optional[List[str]]
+        if not outputs_key_field:
+            self._outputs_key_field = None
+        elif isinstance(outputs_key_field, STRING_TYPES):
+            self._outputs_key_field = [outputs_key_field]
+        elif isinstance(outputs_key_field, list):
+            self._outputs_key_field = outputs_key_field
+        else:
+            raise TypeError('outputs_key_field must be of type str or list')
+
         self.outputs = outputs
 
         self.raw_response = raw_response
@@ -2626,9 +2641,11 @@ class CommandResults:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
-            if self.outputs_prefix and self.outputs_key_field:
+            if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
-                outputs_key = '{0}(val.{1} == obj.{1})'.format(self.outputs_prefix, self.outputs_key_field)
+                formatted_outputs_key = ' && '.join(['val.{0} == obj.{0}'.format(key_field)
+                                                     for key_field in self._outputs_key_field])
+                outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
                 outputs_key = '{}'.format(self.outputs_prefix)
@@ -2636,9 +2653,13 @@ class CommandResults:
             else:
                 outputs = self.outputs  # type: ignore[assignment]
 
+        content_format = EntryFormat.JSON
+        if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
+            content_format = EntryFormat.TEXT
+
         return_entry = {
             'Type': EntryType.NOTE,
-            'ContentsFormat': EntryFormat.JSON,
+            'ContentsFormat': content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs
@@ -3594,7 +3615,8 @@ if 'requests' in sys.modules:
         def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
-                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False, **kwargs):
+                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                          error_handler=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -3681,6 +3703,10 @@ if 'requests' in sys.modules:
                 whether we should raise an exception, or return a response,
                 if status falls in ``status_forcelist`` range and retries have
                 been exhausted.
+
+            :type error_handler ``callable``
+            :param error_handler: Given an error entery, the error handler outputs the
+                new formatted error message.
             """
             try:
                 # Replace params if supplied
@@ -3704,16 +3730,19 @@ if 'requests' in sys.modules:
                 )
                 # Handle error responses gracefully
                 if not self._is_status_code_valid(res, ok_codes):
-                    err_msg = 'Error in API call [{}] - {}' \
-                        .format(res.status_code, res.reason)
-                    try:
-                        # Try to parse json error response
-                        error_entry = res.json()
-                        err_msg += '\n{}'.format(json.dumps(error_entry))
-                        raise DemistoException(err_msg)
-                    except ValueError:
-                        err_msg += '\n{}'.format(res.text)
-                        raise DemistoException(err_msg)
+                    if error_handler:
+                        error_handler(res)
+                    else:
+                        err_msg = 'Error in API call [{}] - {}' \
+                            .format(res.status_code, res.reason)
+                        try:
+                            # Try to parse json error response
+                            error_entry = res.json()
+                            err_msg += '\n{}'.format(json.dumps(error_entry))
+                            raise DemistoException(err_msg)
+                        except ValueError:
+                            err_msg += '\n{}'.format(res.text)
+                            raise DemistoException(err_msg)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:

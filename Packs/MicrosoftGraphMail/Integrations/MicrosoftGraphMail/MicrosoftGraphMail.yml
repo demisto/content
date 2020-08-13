@@ -81,7 +81,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: An OData query.
+      description: An OData query. See REDAME for OData usage examples.
       isArray: false
       name: odata
       required: false
@@ -191,7 +191,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: OData.
+      description: An OData query. See REDAME for OData usage examples.
       isArray: false
       name: odata
       required: false
@@ -1018,7 +1018,7 @@ script:
     description: Sends a draft email using Microsoft Graph.
     execution: false
     name: msgraph-mail-send-draft
-  dockerimage: demisto/crypto:1.0.0.10043
+  dockerimage: demisto/crypto:1.0.0.10277
   feed: false
   isfetch: true
   longRunning: false

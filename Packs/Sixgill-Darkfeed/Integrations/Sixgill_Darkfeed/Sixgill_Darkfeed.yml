@@ -78,12 +78,25 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: ''
+  defaultvalue: true
+  hidden: true
+  name: feedIncremental
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
   required: false
-description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses straight into the Demisto platform.
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
+  Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses
+  straight into the Demisto platform.
 display: Sixgill DarkFeed™ Threat Intelligence
 name: Sixgill_Darkfeed
 script:
@@ -101,7 +114,7 @@ script:
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.7092
+  dockerimage: demisto/sixgill:1.0.0.10254
   feed: true
   isfetch: false
   longRunning: false
@@ -110,5 +123,3 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
-tests:
-  - No tests
