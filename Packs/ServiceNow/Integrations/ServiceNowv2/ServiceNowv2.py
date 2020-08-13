@@ -100,8 +100,8 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
     or ``None`` if required is ``False.
 
     Args:
-        arg:
-        arg_name: argument to convert.
+        arg: argument to convert
+        arg_name: argument name.
         required: throws exception if ``True`` and argument provided is None
 
     Returns:
@@ -1987,19 +1987,6 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> Union[List[
     ticket['caller_id'] = user_email
     if ticket['caller_id'] == user_email:
         pass
-
-    original_ticket = result['result']
-
-    if original_ticket.get('resolved_by') != '':
-        demisto.info(f'ticket is closed: {original_ticket}')
-        entries.append({
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': f'From ServiceNow: {original_ticket.get("close_notes")}'
-            },
-            'ContentsFormat': EntryFormat.JSON
-        })
 
     demisto.debug(f'Pull result is {ticket} + {entries}')
     return [ticket] + entries

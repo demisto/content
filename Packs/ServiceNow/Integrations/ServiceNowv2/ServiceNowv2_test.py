@@ -281,7 +281,7 @@ def test_incident_name_is_initialized(mocker, requests_mock):
     )
     with pytest.raises(ValueError) as e:
         main()
-        assert str(e.value) == 'The field [number] does not exist in the ticket.'
+    assert str(e.value) == 'The field [number] does not exist in the ticket.'
 
 
 def test_not_authenticated_retry_positive(requests_mock, mocker):
@@ -459,3 +459,26 @@ def test_get_mapping_fields():
                     ticket_type='incident', get_attachments=False, incident_name='description')
     res = get_mapping_fields_command(client)
     assert EXPECTED_MAPPING in res.extract_mapping()
+
+
+def test_get_remote_data():
+    """
+    Given:
+        -  ServiceNow client
+        -  arguments: id and LastUpdate(set to lower then the modification time).
+        -  ServiceNow ticket
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket was updated.
+    """
+
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    args = {'id': 1, 'lastUpdate': 0}
+
+    raw_ticket = RESPONSE_TICKET
+
