@@ -906,6 +906,8 @@ script:
       - dynusergroup_name
       - ingestion_time
       - record_size
+      - source_device_host
+      - dest_device_host
       required: false
       secret: false
     - default: false
@@ -1097,6 +1099,12 @@ script:
       type: String
     - contextPath: CDL.Logging.Traffic.Tunnel
       description: Type of tunnel.
+      type: String
+    - contextPath: CDL.Logging.Traffic.SourceDeviceHost
+      description: Hostname of the device from which the session originated.
+      type: String
+    - contextPath: CDL.Logging.Traffic.DestDeviceHost
+      description: Hostname of the device session destination.
       type: String
   - arguments:
     - default: false
@@ -1335,6 +1343,8 @@ script:
       - dynusergroup_name
       - ingestion_time
       - record_size
+      - source_device_host
+      - dest_device_host
       required: false
       secret: false
     - default: false
@@ -1533,6 +1543,12 @@ script:
     - contextPath: CDL.Logging.Threat.SourcePort
       description: Source port utilized by the session.
       type: Number
+    - contextPath: CDL.Logging.Threat.SourceDeviceHost
+      description: Hostname of the device from which the session originated.
+      type: String
+    - contextPath: CDL.Logging.Threat.DestDeviceHost
+      description: Hostname of the device session destination.
+      type: String
   - arguments:
     - default: false
       description: A source IP address or an array of IP addresses for which to search.
@@ -1751,6 +1767,8 @@ script:
       - dynusergroup_name
       - ingestion_time
       - record_size
+      - source_device_host
+      - dest_device_host
       required: false
       secret: false
     - default: false
@@ -1940,6 +1958,12 @@ script:
       type: String
     - contextPath: CDL.Logging.URL.TechnologyOfApp
       description: The networking technology used by the identified application.
+      type: String
+    - contextPath: CDL.Logging.URL.SourceDeviceHost
+      description: Hostname of the device from which the session originated.
+      type: String
+    - contextPath: CDL.Logging.URL.DestDeviceHost
+      description: Hostname of the device session destination.
       type: String
   dockerimage: demisto/python_pancloud_v2:1.0.0.10260
   feed: false

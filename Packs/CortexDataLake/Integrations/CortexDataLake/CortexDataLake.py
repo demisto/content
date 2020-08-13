@@ -266,7 +266,9 @@ def traffic_context_transformer(row_content: dict) -> dict:
         'ToZone': row_content.get('to_zone'),
         'URLCategory': row_content.get('url_category', {}).get('value'),
         'SourcePort': row_content.get('source_port'),
-        'Tunnel': row_content.get('tunnel', {}).get('value')
+        'Tunnel': row_content.get('tunnel', {}).get('value'),
+        'SourceDeviceHost': row_content.get('source_device_host'),
+        'DestDeviceHost': row_content.get('dest_device_host')
     }
 
 
@@ -322,7 +324,9 @@ def threat_context_transformer(row_content: dict) -> dict:
         'URLDomain': row_content.get('url_domain'),
         'URLCategory': row_content.get('url_category', {}).get('value'),
         'SourcePort': row_content.get('source_port'),
-        'FileSHA256': row_content.get('file_sha_256')
+        'FileSHA256': row_content.get('file_sha_256'),
+        'SourceDeviceHost': row_content.get('source_device_host'),
+        'DestDeviceHost': row_content.get('dest_device_host')
     }
 
 
@@ -376,6 +380,8 @@ def url_context_transformer(row_content: dict) -> dict:
         'DstUser': row_content.get('dest_user'),
         'DstUserInfo': row_content.get('dest_user_info'),
         'TechnologyOfApp': row_content.get('technology_of_app'),
+        'SourceDeviceHost': row_content.get('source_device_host'),
+        'DestDeviceHost': row_content.get('dest_device_host')
     }
 
 
