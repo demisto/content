@@ -36,6 +36,7 @@ tasks:
     id: "1"
     taskid: 9a686168-d95c-4d07-874f-62fdc89e1a86
     type: regular
+    description: Collecting blobs, most commonly pcap from an incident
     task:
       id: 9a686168-d95c-4d07-874f-62fdc89e1a86
       version: -1
