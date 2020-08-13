@@ -13,8 +13,13 @@ API_URL = 'https://api.intelligence.fireeye.com'
 
 
 class STIX21Processor:
-    """
-    https://oasis-open.github.io/cti-documentation/stix/intro.html
+    """Processing class for STIX 2.1 objects.
+
+    Args:
+        raw_indicators (List): List of STIX 2.1 indicators objects.
+        relationships (Dict): Dict of `id: STIX 2.1 relationship object`.
+        entities (Dict): Dict of `id: STIX 2.1 entity object`.
+        reports (List): List of STIX 2.1 reports objects.
     """
 
     def __init__(self, raw_indicators: List, relationships: Dict, entities: Dict, reports: List):
@@ -81,7 +86,6 @@ class STIX21Processor:
                 values.append(value.strip().replace("'", '').replace('[', '').replace(']', ''))
             return indicator_types, values, {}
         except:
-            return_error(indicator_pattern_value)
             return [], [], {}
 
     def process_indicator(self, raw_data):
