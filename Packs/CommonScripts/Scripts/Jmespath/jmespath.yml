@@ -1,0 +1,26 @@
+commonfields:
+  id: jmespath
+  version: -1
+name: jmespath
+script: ''
+type: python
+tags:
+- transformer
+- general
+comment: Performs a JMESPath search on an input JSON format, when using a transformer.
+enabled: true
+args:
+- name: expression
+  required: true
+  description: Jmespath expression
+- name: value
+  required: true
+  description: Original input value
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/jmespath:1.0.0.10459
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
