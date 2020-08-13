@@ -46,16 +46,16 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Choose what to fetch - incidents or detections
+- additionalinfo: Choose what to fetch - incidents or detections or both
   defaultvalue: detections
   display: Choose what to fetch
   hidden: false
   name: fetch_incidents_or_detections
   options:
-  - detections
-  - incidents
+  - Detections
+  - Incidents
   required: false
-  type: 15
+  type: 16
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API),
   enables fetching and resolving detections, searching devices, getting behaviors
   by ID, containing hosts, and lifting host containment.

@@ -264,7 +264,7 @@ def incident_to_incident_context(incident):
         """
     incident = {
         'name': 'Incident ID: ' + str(incident.get('incident_id')),
-        'occurred': str(incident.get('modified_timestamp')),
+        'occurred': incident.get('hosts')[0].get('modified_timestamp'),
         'rawJSON': json.dumps(incident)
     }
     return incident
@@ -1156,7 +1156,8 @@ def fetch_incidents():
         Fetches incident using the detections API
         :return: Fetched detections in incident format
     """
-    if demisto.params().get('fetch_incidents_or_detections') != 'incidents':
+    incidents = []  # type:List
+    if 'detections' in demisto.params().get('fetch_incidents_or_detections'):
 
         last_run = demisto.getLastRun()
         # Get the last fetch time, if exists
@@ -1178,7 +1179,6 @@ def fetch_incidents():
 
         else:
             detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch), 'resources')
-        incidents = []  # type:List
 
         if detections_ids:
 
@@ -1222,9 +1222,7 @@ def fetch_incidents():
 
             demisto.setLastRun({'first_behavior_time': last_fetch, 'last_detection_id': last_detection_id})
 
-        return incidents
-
-    else:
+    if 'incidents' in demisto.params().get('fetch_incidents_or_detections'):
 
         last_run = demisto.getLastRun()
 
@@ -1245,7 +1243,6 @@ def fetch_incidents():
 
         else:
             incidents_ids = demisto.get(get_fetch_incidents(last_created_timestamp=last_fetch), 'resources')
-        incidents = []  # type:List
 
         if incidents_ids:
 
