@@ -3,8 +3,6 @@ import re
 import uuid
 from datetime import datetime, timedelta
 
-import demistomock as demisto
-from CommonServerPython import *
 from dateutil import parser
 
 PREFIXES_TO_REMOVE = ['incident.']
