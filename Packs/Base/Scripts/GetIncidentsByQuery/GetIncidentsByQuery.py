@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timedelta
 from dateutil import parser
 
-from CommonServerPython import *
+from CommonServerPython import *    
 
 PREFIXES_TO_REMOVE = ['incident.']
 
@@ -150,6 +150,7 @@ def main():
         return_error("Invalid output format: %s" % output_format)
     entry = fileResult(file_name, data_encoded)
     entry['Contents'] = incident_list
+    entry['ContentsFormat'] = formats['json']
     entry['HumanReadable'] = "Fetched %d incidents successfully by the query: %s" % (len(incident_list), query)
     entry['EntryContext'] = {
         'GetIncidentsByQuery': {
