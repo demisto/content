@@ -291,7 +291,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "10"
     scriptarguments:
       limit:
         simple: "1"
@@ -305,44 +305,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: d10674ed-741a-4e49-8aeb-edc94080f5cf
-    type: condition
-    task:
-      id: d10674ed-741a-4e49-8aeb-edc94080f5cf
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: hasLength
-          left:
-            value:
-              simple: PaloAltoNetworksIoT.Vulns
-            iscontext: true
-          right:
-            value:
-              simple: "1"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
         }
       }
     note: false
@@ -377,7 +339,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1595
         }
       }
     note: false
@@ -412,7 +374,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1770
         }
       }
     note: false
@@ -436,7 +398,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -449,7 +411,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 1960,
         "width": 380,
         "x": 50,
         "y": 50
