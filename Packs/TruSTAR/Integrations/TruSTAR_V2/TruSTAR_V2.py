@@ -21,11 +21,6 @@ class Utils(object):
     """
 
     @staticmethod
-    def encode_cursor(page_size, page_number):
-        cursor = '{' + '"pageSize":{},"pageNumber":{}'.format(page_size, page_number) + '}'
-        return base64.b64encode(cursor.encode()).decode()
-
-    @staticmethod
     def normalize_time(timestamp):
         ''' Converts unix epoch time to GMT '''
         if isinstance(timestamp, str):
