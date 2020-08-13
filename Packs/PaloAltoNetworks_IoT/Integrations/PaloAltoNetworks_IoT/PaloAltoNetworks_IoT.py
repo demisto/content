@@ -256,10 +256,7 @@ def iot_list_devices(client, args):
 
     if not result:
         return CommandResults(
-            readable_output='### No devices found',
-            outputs_prefix="",
-            outputs_key_field="",
-            outputs=None
+            readable_output='### No devices found'
         )
 
     return CommandResults(
@@ -289,10 +286,7 @@ def iot_list_alerts(client, args):
 
     if not result:
         return CommandResults(
-            readable_output='### No alerts found',
-            outputs_prefix="",
-            outputs_key_field="",
-            outputs=None
+            readable_output='### No alerts found'
         )
 
     return CommandResults(
@@ -322,10 +316,7 @@ def iot_list_vulns(client, args):
 
     if not result:
         return CommandResults(
-            readable_output='### No vulnerabilities found',
-            outputs_prefix="",
-            outputs_key_field="",
-            outputs=None
+            readable_output='### No vulnerabilities found'
         )
 
     return CommandResults(
@@ -353,10 +344,7 @@ def iot_resolve_alert(client, args):
     client.resolve_alert(alert_id, reason, reason_type)
 
     return CommandResults(
-        readable_output=f'Alert {alert_id} was resolved successfully',
-        outputs_prefix="",
-        outputs_key_field="",
-        outputs=None
+        readable_output=f'Alert {alert_id} was resolved successfully'
     )
 
 
@@ -378,10 +366,7 @@ def iot_resolve_vuln(client, args):
     client.resolve_vuln(vuln_id, full_name, reason)
 
     return CommandResults(
-        readable_output=f'Vulnerability {vuln_id} was resolved successfully',
-        outputs_prefix="",
-        outputs_key_field="",
-        outputs=None
+        readable_output=f'Vulnerability {vuln_id} was resolved successfully'
     )
 
 
