@@ -2141,8 +2141,7 @@ COMMANDS = {
     'tc-get-associated-groups': get_group_associated,
     'tc-associate-group-to-group': associate_group_to_group,
     'tc-get-indicator-owners': tc_get_indicator_owners,
-
-    'tc-download-report': tc_download_report
+    'tc-download-report': tc_download_report,
 }
 
 
