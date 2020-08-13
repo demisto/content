@@ -906,6 +906,8 @@ script:
       - dynusergroup_name
       - ingestion_time
       - record_size
+      - source_device_host
+      - dest_device_host
       required: false
       secret: false
     - default: false
