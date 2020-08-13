@@ -639,6 +639,8 @@ class TrustarClient:
 
         :return: Entry Context with Found reports.
         """
+        from_time = Utils.date_to_unix(from_time) if from_time else from_time
+        to_time = Utils.date_to_unix(to_time) if to_time else to_time
         response = self.client.search_reports_page(
             search_term=search_term,
             enclave_ids=enclave_ids,
@@ -856,6 +858,7 @@ class TrustarClient:
         :param from_time: Start of the polling window.
         :param to_time: End of the polling window.
         :param status: Status of the phishing indicatror.
+        :param limit: Limit of results to return. Default is 25.
 
         :return: Entry Context with Phishing Indicators found.
         """
@@ -885,6 +888,7 @@ class TrustarClient:
         :param from_time: Start of polling window.
         :param to_time: End of polling window.
         :param status: List of phishing submission status to restrict the search to.
+        :param limit: Limit of results to return. Default is 25.
 
         :return: Entry Context with all phishing submissions found.
         """
