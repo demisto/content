@@ -58,6 +58,10 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 * Token - Tenant ID
 * Key - Application (Client) Secret
 
+### Required Permissions for self deployed Azure Application:
+#### Exchange
+* **full_access_as_app** - Application
+
 ## Fetched Incidents Data
 
 The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email, Demisto fetches information about the attached email and downloads all of its attachments (if there are any) as files.
