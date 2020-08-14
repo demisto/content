@@ -262,12 +262,12 @@ def incident_to_incident_context(incident):
             :return: Incident context representation of a incident
             :rtype ``dict``
         """
-    incident = {
+    incident_context = {
         'name': 'Incident ID: ' + str(incident.get('incident_id')),
         'occurred': incident.get('hosts')[0].get('modified_timestamp'),
         'rawJSON': json.dumps(incident)
     }
-    return incident
+    return incident_context
 
 
 def severity_string_to_int(severity):
