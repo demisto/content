@@ -68,11 +68,15 @@ class Client(BaseClient):
                         'value': actor.get('name'),
                         'service': 'List Actors Feed'
                     },
-                    'fields': {'tags': feed_tags, 'actor': actor.get('name'), 'region': actor.get('region'),
-                               'actor_capability': actor.get('capability'), 'geo_country': actor.get('origins'),
-                               'description': actor.get('short_description'), 'alias': actor.get('known_as'),
-                               'creation_date': actor.get('created_date'), 'actor_motivation': actor.get('motivations'),
-                               'updated_date': actor.get('last_modified_date'),
+                    'fields': {'tags': feed_tags, 'stixid': actor.get('id'), 'stixaliases': actor.get('known_as'),
+                               'stixdescription': actor.get('short_description'),
+                               'stixprimarymotivation': actor.get('motivations'),
+                               'creationdate': actor.get('created_date'),
+                               'updateddate': actor.get('last_modified_date'),
+                               'geocountry': actor.get('origins'),
+                               'region': actor.get('region'),
+
+                               'actor_capability': actor.get('capability'),
                                'actor_target_country': actor.get('target_countries'),
                                'actor_target_industry': actor.get('target_industries')}
                 }
