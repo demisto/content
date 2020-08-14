@@ -538,11 +538,6 @@ def _create_exposure_filter(exposure_arg):
     return ExposureType.is_in(exposure_arg)
 
 
-def _create_category_filter(file_type):
-    category_value = _get_file_category_value(file_type.get("category"))
-    return FileCategory.eq(category_value)
-
-
 def _get_file_category_value(key):
     return CODE42_FILE_CATEGORY_MAPPER.get(key, "UNCATEGORIZED")
 
