@@ -1,4 +1,4 @@
-id: Handle TD events
+id: 3635efba-6320-42ed-84fa-4795a30c7308
 version: -1
 name: Handle TD events
 description: Playbook to enrich TD events
@@ -79,7 +79,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "no":
       - "7"
       "yes":
       - "11"
