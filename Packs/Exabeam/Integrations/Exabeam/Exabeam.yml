@@ -1,105 +1,71 @@
-category: Analytics & SIEM
 commonfields:
-  id: Exabeam
+  id: Exabeam_fetch_incidents_v3
   version: -1
-configuration:
-- display: Server URL (e.g https://100.24.16.156:8484) # disable-secrets-detection
-  name: url
-  required: true
-  type: 0
-- display: Username
-  name: credentials
-  required: true
-  type: 9
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
+name: Exabeam_fetch_incidents_v3
+display: Exabeam_fetch_incidents_v3
+category: Analytics & SIEM
 description: The Exabeam Security Management Platform provides end-to-end detection,
   User Event Behavioral Analytics, and SOAR.
-display: Exabeam
-name: Exabeam
+configuration:
+- display: Server URL (e.g https://100.24.16.156:8484)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: First fetch time period
+  name: fetch_time_period
+  defaultvalue: 7 days
+  type: 0
+  required: true
+  additionalinfo: The time period for which to fetch incidents, such as 3 months,
+    2 days, 4 hours, 1 year, and so on.
+- display: Maximum Number  to Fetch
+  name: maximum_fetch
+  defaultvalue: "100"
+  type: 0
+  required: false
+  additionalinfo: Applies to both Users and Assets discretely.
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
+  script: ''
+  type: python
   commands:
-  - arguments:
-    - default: false
-      description: The time period for which to fetch notable users, such as 3 months,
-        2 days, 4 hours, 1 year, and so on.
-      isArray: true
-      name: time_period
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: The maximum number of returned results.
-      isArray: false
-      name: limit
-      required: true
-      secret: false
+  - name: get-notable-users
     deprecated: true
-    description: Returns notable users in a period of time.
-    execution: false
-    name: get-notable-users
-    outputs:
-    - contextPath: Exabeam.User.RiskScore
-      description: The risk score of the notable user.
-      type: Number
-    - contextPath: Exabeam.User.UserFullName
-      description: The full name of the user.
-      type: String
-    - contextPath: Exabeam.User.AverageRiskScore
-      description: The average risk score of the user.
-      type: Number
-    - contextPath: Exabeam.User.FirstSeen
-      description: The date the user was first seen.
-      type: Date
-    - contextPath: Exabeam.User.NotableSessionIds
-      description: The ID of the notable session.
-      type: String
-    - contextPath: Exabeam.User.AccountsNumber
-      description: The number of accounts.
-      type: Number
-    - contextPath: Exabeam.User.LastSeen
-      description: The date the user was last seen.
-      type: Date
-    - contextPath: Exabeam.User.Location
-      description: The location of the user.
-      type: String
-    - contextPath: Exabeam.User.UserName
-      description: The name of the user.
-      type: String
-    - contextPath: Exabeam.User.Labels
-      description: The labels of the user.
-      type: String
-    - contextPath: Exabeam.User.LastActivityType
-      description: The last activity type of the user.
-      type: String
-    - contextPath: Exabeam.User.NotableUser
-      description: Whether the user is a notable user.
-      type: Boolean
-  - arguments:
-    - default: false
+    arguments:
+    - name: time_period
+      required: true
       description: The time period for which to fetch notable users, such as 3 months,
         2 days, 4 hours, 1 year, and so on.
       isArray: true
-      name: time_period
+    - name: limit
       required: true
-      secret: false
-    - default: false
-      defaultValue: '10'
       description: The maximum number of returned results.
-      isArray: false
-      name: limit
-      required: true
-      secret: false
-    deprecated: false
-    description: Returns notable users in a period of time.
-    execution: false
-    name: exabeam-get-notable-users
+      defaultValue: "10"
     outputs:
     - contextPath: Exabeam.User.RiskScore
       description: The risk score of the notable user.
@@ -137,10 +103,59 @@ script:
     - contextPath: Exabeam.User.NotableUser
       description: Whether the user is a notable user.
       type: Boolean
-  - deprecated: true
-    description: Returns all watchlist IDs and titles.
-    execution: false
-    name: get-watchlists
+    description: Returns notable users in a period of time.
+  - name: exabeam-get-notable-users
+    arguments:
+    - name: time_period
+      required: true
+      description: The time period for which to fetch notable users, such as 3 months,
+        2 days, 4 hours, 1 year, and so on.
+      isArray: true
+    - name: limit
+      required: true
+      description: The maximum number of returned results.
+      defaultValue: "10"
+    outputs:
+    - contextPath: Exabeam.User.RiskScore
+      description: The risk score of the notable user.
+      type: Number
+    - contextPath: Exabeam.User.UserFullName
+      description: The full name of the user.
+      type: String
+    - contextPath: Exabeam.User.AverageRiskScore
+      description: The average risk score of the user.
+      type: Number
+    - contextPath: Exabeam.User.FirstSeen
+      description: The date the user was first seen.
+      type: Date
+    - contextPath: Exabeam.User.NotableSessionIds
+      description: The ID of the notable session.
+      type: String
+    - contextPath: Exabeam.User.AccountsNumber
+      description: The number of accounts.
+      type: Number
+    - contextPath: Exabeam.User.LastSeen
+      description: The date the user was last seen.
+      type: Date
+    - contextPath: Exabeam.User.Location
+      description: The location of the user.
+      type: String
+    - contextPath: Exabeam.User.UserName
+      description: The name of the user.
+      type: String
+    - contextPath: Exabeam.User.Labels
+      description: The labels of the user.
+      type: String
+    - contextPath: Exabeam.User.LastActivityType
+      description: The last activity type of the user.
+      type: String
+    - contextPath: Exabeam.User.NotableUser
+      description: Whether the user is a notable user.
+      type: Boolean
+    description: Returns notable users in a period of time.
+  - name: get-watchlists
+    deprecated: true
+    arguments: []
     outputs:
     - contextPath: Exabeam.Watchlist.Category
       description: The watchlist category.
@@ -151,10 +166,9 @@ script:
     - contextPath: Exabeam.Watchlist.WatchlistID
       description: The watchlist ID.
       type: String
-  - deprecated: false
     description: Returns all watchlist IDs and titles.
-    execution: false
-    name: exabeam-get-watchlists
+  - name: exabeam-get-watchlists
+    arguments: []
     outputs:
     - contextPath: Exabeam.Watchlist.Category
       description: The watchlist category.
@@ -165,33 +179,28 @@ script:
     - contextPath: Exabeam.Watchlist.WatchlistID
       description: The watchlist ID.
       type: String
-  - deprecated: true
-    description: Returns all peer groups.
-    execution: false
-    name: get-peer-groups
+    description: Returns all watchlist IDs and titles.
+  - name: get-peer-groups
+    deprecated: true
+    arguments: []
     outputs:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
       type: String
-  - deprecated: false
     description: Returns all peer groups.
-    execution: false
-    name: exabeam-get-peer-groups
+  - name: exabeam-get-peer-groups
+    arguments: []
     outputs:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
       type: String
-  - arguments:
-    - default: false
+    description: Returns all peer groups.
+  - name: get-user-info
+    deprecated: true
+    arguments:
+    - name: username
+      required: true
       description: The username of the user to fetch.
-      isArray: false
-      name: username
-      required: true
-      secret: false
-    deprecated: true
-    description: Returns user information data for the username.
-    execution: false
-    name: get-user-info
     outputs:
     - contextPath: Exabeam.User.RiskScore
       description: The risk score of the user.
@@ -232,17 +241,12 @@ script:
     - contextPath: Exabeam.User.AccountNames
       description: The account name of the user.
       type: String
-  - arguments:
-    - default: false
-      description: The username of the user to fetch.
-      isArray: false
-      name: username
-      required: true
-      secret: false
-    deprecated: false
     description: Returns user information data for the username.
-    execution: false
-    name: exabeam-get-user-info
+  - name: exabeam-get-user-info
+    arguments:
+    - name: username
+      required: true
+      description: The username of the user to fetch.
     outputs:
     - contextPath: Exabeam.User.RiskScore
       description: The risk score of the user.
@@ -283,93 +287,32 @@ script:
     - contextPath: Exabeam.User.AccountNames
       description: The account name of the user.
       type: String
-  - deprecated: true
-    description: Returns all labels of the user.
-    execution: false
-    name: get-user-labels
-    outputs:
-    - contextPath: Exabeam.UserLabel.Label
-      description: The label of the user.
-      type: String
-  - deprecated: false
-    description: Returns all labels of the user.
-    execution: false
-    name: exabeam-get-user-labels
-    outputs:
-    - contextPath: Exabeam.UserLabel.Label
-      description: The label of the user.
-      type: String
-  - arguments:
-    - default: false
-      description: The username for which to fetch data.
-      isArray: false
-      name: username
-      required: true
-      secret: false
-    - default: false
-      description: The Start time of the time range. For example, 2018-08-01T11:50:16).
-      isArray: false
-      name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The end time of the time range. For example, 2018-08-01T11:50:16.
-      isArray: false
-      name: end_time
-      required: false
-      secret: false
+    description: Returns user information data for the username.
+  - name: get-user-labels
     deprecated: true
-    description: Returns sessions for the given username and time range.
-    execution: false
-    name: get-user-sessions
+    arguments: []
     outputs:
-    - contextPath: Exabeam.User.Session.EndTime
-      description: The end time of the session.
-      type: Date
-    - contextPath: Exabeam.User.Session.InitialRiskScore
-      description: The initial risk score of the session.
-      type: Number
-    - contextPath: Exabeam.User.Session.Label
-      description: The label of the session.
+    - contextPath: Exabeam.UserLabel.Label
+      description: The label of the user.
       type: String
-    - contextPath: Exabeam.User.Session.LoginHost
-      description: The login host.
+    description: Returns all labels of the user.
+  - name: exabeam-get-user-labels
+    arguments: []
+    outputs:
+    - contextPath: Exabeam.UserLabel.Label
+      description: The label of the user.
       type: String
-    - contextPath: Exabeam.User.Session.RiskScore
-      description: The risk score of the session.
-      type: Number
-    - contextPath: Exabeam.User.Session.SessionID
-      description: The ID of the session.
-      type: String
-    - contextPath: Exabeam.User.Session.StartTime
-      description: The start time of the session.
-      type: Date
-    - contextPath: Exabeam.User.Username
-      description: The username of the session.
-      type: String
-  - arguments:
-    - default: false
+    description: Returns all labels of the user.
+  - name: get-user-sessions
+    deprecated: true
+    arguments:
+    - name: username
+      required: true
       description: The username for which to fetch data.
-      isArray: false
-      name: username
-      required: true
-      secret: false
-    - default: false
+    - name: start_time
       description: The Start time of the time range. For example, 2018-08-01T11:50:16).
-      isArray: false
-      name: start_time
-      required: false
-      secret: false
-    - default: false
+    - name: end_time
       description: The end time of the time range. For example, 2018-08-01T11:50:16.
-      isArray: false
-      name: end_time
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns sessions for the given username and time range.
-    execution: false
-    name: exabeam-get-user-sessions
     outputs:
     - contextPath: Exabeam.User.Session.EndTime
       description: The end time of the session.
@@ -395,28 +338,53 @@ script:
     - contextPath: Exabeam.User.Username
       description: The username of the session.
       type: String
-  - arguments:
-    - default: false
-      description: The watchlist ID.
-      isArray: false
-      name: watchlist_id
+    description: Returns sessions for the given username and time range.
+  - name: exabeam-get-user-sessions
+    arguments:
+    - name: username
       required: true
-      secret: false
-    deprecated: false
+      description: The username for which to fetch data.
+    - name: start_time
+      description: The Start time of the time range. For example, 2018-08-01T11:50:16).
+    - name: end_time
+      description: The end time of the time range. For example, 2018-08-01T11:50:16.
+    outputs:
+    - contextPath: Exabeam.User.Session.EndTime
+      description: The end time of the session.
+      type: Date
+    - contextPath: Exabeam.User.Session.InitialRiskScore
+      description: The initial risk score of the session.
+      type: Number
+    - contextPath: Exabeam.User.Session.Label
+      description: The label of the session.
+      type: String
+    - contextPath: Exabeam.User.Session.LoginHost
+      description: The login host.
+      type: String
+    - contextPath: Exabeam.User.Session.RiskScore
+      description: The risk score of the session.
+      type: Number
+    - contextPath: Exabeam.User.Session.SessionID
+      description: The ID of the session.
+      type: String
+    - contextPath: Exabeam.User.Session.StartTime
+      description: The start time of the session.
+      type: Date
+    - contextPath: Exabeam.User.Username
+      description: The username of the session.
+      type: String
+    description: Returns sessions for the given username and time range.
+  - name: exabeam-delete-watchlist
+    arguments:
+    - name: watchlist_id
+      required: true
+      description: The watchlist ID.
     description: Deletes a watchlist.
-    execution: false
-    name: exabeam-delete-watchlist
-  - arguments:
-    - default: false
-      description: The name of the asset.
-      isArray: false
-      name: asset_name
+  - name: exabeam-get-asset-data
+    arguments:
+    - name: asset_name
       required: true
-      secret: false
-    deprecated: false
-    description: Returns asset data.
-    execution: false
-    name: exabeam-get-asset-data
+      description: The name of the asset.
     outputs:
     - contextPath: Exabeam.Asset.HostName
       description: The host name of the asset.
@@ -433,13 +401,78 @@ script:
     - contextPath: Exabeam.Asset.LastSeen
       description: The date the asset was last seen.
       type: String
+    description: Returns asset data.
+  - name: exabeam-get-notable-assets
+    arguments:
+    - name: time_period
+    - name: limit
+    description: Get notable assets in a period of time.
+  - name: exabeam-get-notable-session-details
+    arguments:
+    - name: sessionid
+      required: true
+    outputs:
+    - {}
+    description: Get session info by ID
+  - name: exabeam-get-notable-sequence-details
+    arguments:
+    - name: sequenceid
+    description: Get info for asset sequence header.
+  - name: exabeam-get-sequence-eventtypes
+    arguments:
+    - name: sequenceid
+      required: true
+    description: Get sequence event types and counts.
+  - name: exabeam-get-sequence-triggeredrules
+    arguments:
+    - name: sequenceid
+      required: true
+    description: Get details for asset sequence triggered rules.
+  - name: exabeam-get-sequence-securityalerts
+    arguments:
+    - name: sequenceid
+      required: true
+    description: Get all security alerts for a sequence
+  - name: exabeam-get-asset-header
+    arguments:
+    - name: assetid
+      required: true
+    - name: maxUsers
+      required: true
+    description: Get asset data for asset sequence header
+  - name: exabeam-get-asset-securityalerts
+    arguments:
+    - name: assetid
+      required: true
+    - name: sortby
+      required: true
+    - name: sortorder
+      required: true
+    - name: maxresults
+      required: true
+    description: Get all security alerts for an asset
+  - name: exabeam-get-watchlist-byID
+    arguments:
+    - name: watchlistid
+      required: true
+    - name: maxresults
+      required: true
+    - name: time_period
+      required: true
+    description: Get watchlist by ID
+  - name: exabeam-add-watchlist-item
+    arguments:
+    - name: watchlistid
+      required: true
+    - name: watchuntildays
+    - name: items
+      required: true
+      isArray: true
+    - name: category
+      required: true
+    description: Add items to watchlist
   dockerimage: demisto/python3:3.7.4.1900
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  isfetch: true
   runonce: false
-  script: '-'
   subtype: python3
-  type: python
-tests:
-- Exabeam - Test
+sourcemoduleid: Exabeam
