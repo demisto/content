@@ -11,6 +11,7 @@ This integration was integrated and tested with version xx of DeHashed
 | credentials | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
+| email_dbot_score | Email Severity: The DBot reputation for compromised emails \(SUSPICIOUS or MALICIOUS\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -65,5 +66,48 @@ Performs a search to check if information is compromised.
 
 
 #### Human Readable Output
+
+
+### email
+***
+Checks if an email address was compromised.
+
+
+#### Base Command
+
+`email`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email | The email address to check. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DeHashed.Search.Id | String | ID of the object. | 
+| DeHashed.Search.Email | String | Email address of the object. | 
+| DeHashed.Search.Username | String | Username of the object. | 
+| DeHashed.Search.Password | String | Password of the object. | 
+| DeHashed.Search.HashedPassword | String | Hashed password of the object. | 
+| DeHashed.Search.Name | String | Name of the object. | 
+| DeHashed.Search.Vin | Number | Vehicle identification of the object. | 
+| DeHashed.Search.Address | String | Address of the object. | 
+| DeHashed.Search.IpDddress | Number | IP address of the object. | 
+| DeHashed.Search.Phone | Number | Phone number of the object. | 
+| DeHashed.Search.ObtainedFrom | String | Source of the object. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+
+
+#### Command Example
+!email email=or-gal@gmail.com
+
+#### Human Readable Output
+
 
 

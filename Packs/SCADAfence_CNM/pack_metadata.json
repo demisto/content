@@ -1,16 +1,19 @@
 {
-  "name": "SCADAfence CNM",
-  "description": "Fetching data from CNM",
-  "support": "partner",
-  "currentVersion": "1.0.0",
-  "author": "SCADAfence CNM",
-  "url": "",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Network Security"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "SCADAfence CNM",
+    "description": "Fetching data from CNM",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "SCADAfence CNM",
+    "url": "",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "AlexzxelA"
+    ]
 }

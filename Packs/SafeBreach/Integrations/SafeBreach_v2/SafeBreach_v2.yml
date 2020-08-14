@@ -21,7 +21,7 @@ configuration:
   name: apiKey
   required: true
   type: 4
-- defaultvalue: Endpoint,Web
+- defaultvalue: Network Access,Network Inspection,Endpoint,Email,Web,Data Leak
   display: Insight Category
   hidden: false
   name: insightCategory
@@ -34,7 +34,7 @@ configuration:
   - Data Leak
   required: false
   type: 16
-- defaultvalue: Hash,Domain
+- defaultvalue: Hash,Domain,URI,Command,Port,Protocol
   display: Insight Data Type
   hidden: false
   name: insightDataType
@@ -47,32 +47,42 @@ configuration:
   - Protocol
   required: false
   type: 16
-- additionalinfo: The maximum number of indicators to generate. The default is 1000.
-  defaultvalue: '1000'
-  display: Indicators Limit
+- additionalinfo: Non-Behavioral Indicator from this integration instance will be marked with this reputation
+  display: Non Behavioral Indicator Reputation
+  name: nonBehavioralReputation
   hidden: false
-  name: indicatorLimit
-  required: false
-  type: 0
-- defaultvalue: 'true'
-  display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
   defaultvalue: Bad
-  display: Indicator Reputation
-  name: feedReputation
   options:
   - None
   - Good
   - Suspicious
   - Bad
   required: false
-  type: 18
+  type: 15
+- additionalinfo: Behavioral Indicator from this integration instance will be marked with this reputation
+  display: Behavioral Reputation
+  hidden: false
+  name: behavioralReputation
+  defaultvalue: Suspicious
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 15
+- additionalinfo: The maximum number of indicators to generate. The default is 1000.
+  display: Indicators Limit
+  hidden: false
+  name: indicatorLimit
+  required: false
+  type: 0
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+  defaultvalue: 'true'
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -84,8 +94,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- defaultvalue: never
-  name: feedExpirationPolicy
+- name: feedExpirationPolicy
   options:
   - never
   - interval
@@ -94,8 +103,7 @@ configuration:
   required: false
   type: 17
   display: ''
-- defaultvalue: '1440'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
@@ -106,8 +114,7 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- defaultvalue: '20160'
-  name: feedExpirationInterval
+- name: feedExpirationInterval
   required: false
   type: 1
   display: ''
@@ -119,6 +126,23 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  display: Indicator Reputation
+  hidden: true
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 description: SafeBreach automatically executes thousands of breach methods from its
   extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations
   are automatically correlated with network, endpoint, and SIEM solutions providing
@@ -146,8 +170,8 @@ script:
       description: Insight unique ID number.
       type: Number
     - contextPath: SafeBreach.Insight.DataType
-      description: Insight data type. Options are Hash, Domain, URI, Command, Port, or 
-        Protocol.
+      description: Insight data type. Options are Hash, Domain, URI, Command, Port,
+        or Protocol.
       type: String
     - contextPath: SafeBreach.Insight.Category
       description: Security control category name.
@@ -185,6 +209,20 @@ script:
     - contextPath: SafeBreach.Insight.AttacksCount
       description: List of all insight related SafeBreach attack IDs.
       type: Number
+    - contextPath: SafeBreach.Insight.AffectedTargets
+      description: List of the affected targets including name, IP and number of the
+        remediation points
+      type: Unknown
+    - contextPath: SafeBreach.Insight.RemediationAction
+      description: Description of an action to take for the remediation
+      type: String
+    - contextPath: SafeBreach.Insight.ResultsLink
+      description: Link to the SafeBreach platform Results page filtered for the relevant
+        simulation results
+      type: String
+    - contextPath: SafeBreach.Insight.AttackIds
+      description: SafeBreach Attack Ids
+      type: Unknown
   - arguments:
     - default: false
       description: The ID of the insight for which to fetch remediation data.
@@ -260,15 +298,19 @@ script:
     - contextPath: DBotScore.Score
       description: 3 (Bad). The score of the indicator.
       type: Number
+    - contextPath: SafeBreach.Insight.RemediationData.Splunk
+      description: Remediation data in a form of a Splunk query
+      type: String
   - arguments:
     - default: false
-      description: The ID of the insight to rerun.
-      isArray: false
-      name: insightId
-      required: true
+      description: Array of insight IDs to rerun.
+      isArray: true
+      name: insightIds
+      required: false
       secret: false
     deprecated: false
-    description: Reruns a specific SafeBreach Insight related simulations in your environment.
+    description: Reruns a specific SafeBreach Insight related simulations in your
+      environment.
     execution: false
     name: safebreach-rerun-insight
     outputs:
@@ -301,7 +343,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      defaultValue: 1000
+      defaultValue: '1000'
       description: The maximum number of indicators to generate. The default is 1000.
       isArray: false
       name: limit
@@ -378,7 +420,8 @@ script:
       description: ID of the simulation result.
       type: String
     - contextPath: SafeBreach.Simulation.FinalStatus
-      description: Simulation final status. Options are Missed, Detected, Stopped, Prevented, or Inconsistent.
+      description: Simulation final status. Options are Missed, Detected, Stopped,
+        Prevented, or Inconsistent.
       type: String
     - contextPath: SafeBreach.Simulation.Result
       description: Indicates whether the simulation was blocked.
@@ -408,8 +451,8 @@ script:
       description: Description of the attack flow.
       type: String
     - contextPath: SafeBreach.Simulation.Attack.Phase
-      description: The phase of the attack. Option are Infiltration, Exfiltration ,Lateral Movement, or Host
-        Level.
+      description: The phase of the attack. Option are Infiltration, Exfiltration
+        ,Lateral Movement, or Host Level.
       type: String
     - contextPath: SafeBreach.Simulation.Attack.Type
       description: The type of the attack. For example, Real C2 Communication, Malware
@@ -524,7 +567,7 @@ script:
     - contextPath: SafeBreach.Test.ScheduledTime
       description: Time when the test was triggered.
       type: Datetime
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.5.10289
   feed: true
   isfetch: false
   longRunning: false
@@ -533,6 +576,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
-  - No tests
+- No tests
+fromversion: 5.5.0

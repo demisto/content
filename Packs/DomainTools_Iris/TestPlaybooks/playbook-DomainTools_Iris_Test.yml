@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 60826e03-b62f-4e1b-887e-62765b25bd61
+    taskid: 1209a22b-1c61-4986-8186-9b3833bd555a
     type: start
     task:
-      id: 60826e03-b62f-4e1b-887e-62765b25bd61
+      id: 1209a22b-1c61-4986-8186-9b3833bd555a
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: d8b3c8f5-25ce-4fdf-84cd-29a305880652
+    taskid: 74f3d295-1153-4905-8b05-a9f9242252d4
     type: regular
     task:
-      id: d8b3c8f5-25ce-4fdf-84cd-29a305880652
+      id: 74f3d295-1153-4905-8b05-a9f9242252d4
       version: -1
       name: Profile Domain
       description: Get a complete profile of the domain provided.
@@ -92,17 +92,16 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 6db36223-dd4c-4874-8534-c795c8574d45
+    taskid: 8e3df2c4-9332-434a-8e6a-0939d1a43eda
     type: regular
     task:
-      id: 6db36223-dd4c-4874-8534-c795c8574d45
+      id: 8e3df2c4-9332-434a-8e6a-0939d1a43eda
       version: -1
       name: Get Threat Profile for Domain
       script: DomainTools Iris|||domaintoolsiris-threat-profile
       type: regular
       iscommand: true
       brand: DomainTools Iris
-      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -122,10 +121,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: f32f1059-6abe-47e7-80bc-916e0c5ff8a4
+    taskid: 4baa4207-6438-4ee7-8ee1-4bf990cbfbd2
     type: title
     task:
-      id: f32f1059-6abe-47e7-80bc-916e0c5ff8a4
+      id: 4baa4207-6438-4ee7-8ee1-4bf990cbfbd2
       version: -1
       name: Done
       description: End of playbook
@@ -145,13 +144,13 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 4b918569-c912-4923-8484-5de58c1341a1
+    taskid: 1545122f-5da8-49f7-8014-fa0df9c1bc63
     type: playbook
     task:
-      id: 4b918569-c912-4923-8484-5de58c1341a1
+      id: 1545122f-5da8-49f7-8014-fa0df9c1bc63
       version: -1
       name: Indicator Pivoting - DomainTools Iris
-      description: Pivots are used to gather data that shares a common attribute with
+      description: Pivots are used to gather data that share a common attribute with
         a domain. For instance, pivoting on an IP Address will give you back all domains
         related to that IP address.
       playbookName: Indicator Pivoting - DomainTools Iris
@@ -221,10 +220,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: bd788c2d-b124-47d3-8405-c554d879ce95
+    taskid: 5a7c211d-38f2-44ee-8634-8fd071ef230b
     type: condition
     task:
-      id: bd788c2d-b124-47d3-8405-c554d879ce95
+      id: 5a7c211d-38f2-44ee-8634-8fd071ef230b
       version: -1
       name: Did Pivoted Domains get added to context?
       type: condition
@@ -254,8 +253,8 @@ tasks:
           right:
             value:
               complex:
-                root: DomainTools
-                accessor: PivotedDomains.Name
+                root: DomainTools.PivotedDomains.Hosting.RedirectsTo
+                accessor: value
             iscontext: true
     view: |-
       {

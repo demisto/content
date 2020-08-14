@@ -1289,7 +1289,7 @@ script:
     - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
       description: The tracking code Google Analytics.
       type: Number
-  dockerimage: demisto/python3:3.7.4.2728
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: false
   longRunning: false
   longRunningPort: false
