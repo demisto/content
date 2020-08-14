@@ -1,0 +1,603 @@
+id: playbook-Zoom_IT_Admin
+version: 8
+name: playbook-Zoom_IT_Admin
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6c0b8d8b-d549-4d36-854f-4f04a649c0ec
+    type: start
+    task:
+      id: 6c0b8d8b-d549-4d36-854f-4f04a649c0ec
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: fb68184c-04ab-47a1-8e8d-8984f0b5d5f8
+    type: regular
+    task:
+      id: fb68184c-04ab-47a1-8e8d-8984f0b5d5f8
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3571f261-ba9a-4b57-80d3-5c0d8742f0d0
+    type: regular
+    task:
+      id: 3571f261-ba9a-4b57-80d3-5c0d8742f0d0
+      version: -1
+      name: create-user
+      description: Create a new user in zoom account
+      script: Zoom IT Admin|||create-user
+      type: regular
+      iscommand: true
+      brand: Zoom IT Admin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: ${scim}
+      using:
+        simple: ${appInstanceName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f40ee55a-15eb-44a8-87da-d19c134bbfce
+    type: condition
+    task:
+      id: f40ee55a-15eb-44a8-87da-d19c134bbfce
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CreateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CreateUser.errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "409"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: bca73ef1-41ee-4078-82e4-8f14bd12a914
+    type: regular
+    task:
+      id: bca73ef1-41ee-4078-82e4-8f14bd12a914
+      version: -1
+      name: update-user
+      description: Update information on a user?s Zoom
+      script: Zoom IT Admin|||update-user
+      type: regular
+      iscommand: true
+      brand: Zoom IT Admin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      customMapping: {}
+      newScim:
+        simple: ${scim}
+      oldScim:
+        simple: '{"id":"wRj-ffDKSTWTtR-NtqhVYg"}'
+      using:
+        simple: ${appInstanceName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 3c17d965-eeac-42fe-8b74-5c2fb2a7d166
+    type: condition
+    task:
+      id: 3c17d965-eeac-42fe-8b74-5c2fb2a7d166
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UpdateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UpdateUser.errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "404"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: fec7544e-65ea-498d-83ce-f21239eb4dc5
+    type: regular
+    task:
+      id: fec7544e-65ea-498d-83ce-f21239eb4dc5
+      version: -1
+      name: enable-user
+      description: Enables a Zoom account
+      script: Zoom IT Admin|||enable-user
+      type: regular
+      iscommand: true
+      brand: Zoom IT Admin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: '{"id":"wRj-ffDKSTWTtR-NtqhVYg"}'
+      using:
+        simple: ${appInstanceName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 59059d87-3d08-4dd9-8b0c-c99b5114264e
+    type: condition
+    task:
+      id: 59059d87-3d08-4dd9-8b0c-c99b5114264e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EnableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EnableUser.errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "404"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 1ea1755b-4d9f-49a1-81c2-d78d249dd22a
+    type: regular
+    task:
+      id: 1ea1755b-4d9f-49a1-81c2-d78d249dd22a
+      version: -1
+      name: disable-user
+      description: Disables a Zoom account
+      script: Zoom IT Admin|||disable-user
+      type: regular
+      iscommand: true
+      brand: Zoom IT Admin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: '{"id":"wRj-ffDKSTWTtR-NtqhVYg"}'
+      using:
+        simple: ${appInstanceName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2ad954f0-b204-49e9-876f-89c4dcffc47a
+    type: condition
+    task:
+      id: 2ad954f0-b204-49e9-876f-89c4dcffc47a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "404"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 77ef0bfa-0f95-4532-8a8b-2d2ccb86df74
+    type: regular
+    task:
+      id: 77ef0bfa-0f95-4532-8a8b-2d2ccb86df74
+      version: -1
+      name: get-user
+      description: Gets the details of a user
+      script: Zoom IT Admin|||get-user
+      type: regular
+      iscommand: true
+      brand: Zoom IT Admin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      scim:
+        simple: '{"id":"wRj-ffDKSTWTtR-NtqhVYg"}'
+      using:
+        simple: ${appInstanceName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: dbc2c960-13b0-40cc-8e69-7ed0f26857a7
+    type: condition
+    task:
+      id: dbc2c960-13b0-40cc-8e69-7ed0f26857a7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GetUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GetUser.errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "404"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: f2793842-e0df-4898-8baf-cca1ac5cfa52
+    type: title
+    task:
+      id: f2793842-e0df-4898-8baf-cca1ac5cfa52
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: d70ee92e-d7fe-4fd1-8d35-82f019d43153
+    type: regular
+    task:
+      id: d70ee92e-d7fe-4fd1-8d35-82f019d43153
+      version: -1
+      name: Set Instance Name
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append: {}
+      key:
+        simple: appInstanceName
+      stringify: {}
+      value:
+        simple: ZoomITAdmin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 6ad7ceeb-d2fd-4545-8631-7193a3690bb6
+    type: regular
+    task:
+      id: 6ad7ceeb-d2fd-4545-8631-7193a3690bb6
+      version: -1
+      name: Set scim data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: scim
+      stringify: {}
+      value:
+        simple: |-
+          {
+             "userName":"Xoar.test000000@paloaltonetworks.com",
+             "name":{
+                "familyName":"Xoar00000",
+                "givenName":"cotex00000"
+             },
+             "emails":[
+                {
+                   "value":"xoar00000@paloaltonetworks.com",
+                   "type":"work",
+                   "primary":true
+                }
+             ]
+          }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2715,
+        "width": 380,
+        "x": 50,
+        "y": -250
+      }
+    }
+  }
+inputs: []
+outputs: []
+

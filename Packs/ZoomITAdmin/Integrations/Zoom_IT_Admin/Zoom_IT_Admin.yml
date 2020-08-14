@@ -1,0 +1,195 @@
+commonfields:
+  id: Zoom IT Admin
+  version: -1
+name: Zoom IT Admin
+display: Zoom IT Admin
+category: Messaging
+description: Zoom integration to manage Zoom users
+configuration:
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: API Secret
+  name: apiSecret
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: create-user
+    arguments:
+    - name: scim
+      required: true
+      description: SCIM formatted data
+    - name: customMapping
+      description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+    outputs:
+    - contextPath: CreateUser
+      type: boolean
+    - contextPath: CreateUser.active
+      type: boolean
+    - contextPath: CreateUser.brand
+      type: string
+    - contextPath: CreateUser.details
+      type: unknown
+    - contextPath: CreateUser.email
+      type: string
+    - contextPath: CreateUser.errorCode
+      type: number
+    - contextPath: CreateUser.errorMessage
+      type: string
+    - contextPath: CreateUser.id
+      type: string
+    - contextPath: CreateUser.instanceName
+      type: string
+    - contextPath: CreateUser.success
+      type: boolean
+    - contextPath: CreateUser.username
+      type: string
+    description: Create a new user in zoom account
+    execution: true
+  - name: update-user
+    arguments:
+    - name: oldScim
+      required: true
+      description: The old SCIM data to update
+    - name: newScim
+      required: true
+      description: The new SCIM data to update with
+    - name: customMapping
+      description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+    outputs:
+    - contextPath: UpdateUser
+      type: unknown
+    - contextPath: UpdateUser.brand
+      type: string
+    - contextPath: UpdateUser.details
+      type: Unknown
+    - contextPath: UpdateUser.email
+      type: string
+    - contextPath: UpdateUser.errorCode
+      type: number
+    - contextPath: UpdateUser.errorMessage
+      type: string
+    - contextPath: UpdateUser.id
+      type: string
+    - contextPath: UpdateUser.instanceName
+      type: string
+    - contextPath: UpdateUser.success
+      type: boolean
+    - contextPath: UpdateUser.username
+      type: string
+    - contextPath: UpdateUser.active
+      type: boolean
+    description: Update information on a user’s Zoom
+    execution: true
+  - name: enable-user
+    arguments:
+    - name: scim
+      required: true
+      description: SCIM formatted data
+    outputs:
+    - contextPath: EnableUser
+      type: unknown
+    - contextPath: EnableUser.active
+      type: boolean
+    - contextPath: EnableUser.brand
+      type: string
+    - contextPath: EnableUser.details
+      type: unknown
+    - contextPath: EnableUser.email
+      type: string
+    - contextPath: EnableUser.errorCode
+      type: number
+    - contextPath: EnableUser.errorMessage
+      type: string
+    - contextPath: EnableUser.id
+      type: string
+    - contextPath: EnableUser.instanceName
+      type: string
+    - contextPath: EnableUser.success
+      type: boolean
+    - contextPath: EnableUser.username
+      type: string
+    description: Enables a Zoom account
+    execution: true
+  - name: disable-user
+    arguments:
+    - name: scim
+      required: true
+      description: SCIM formatted data
+    outputs:
+    - contextPath: DisableUser
+      type: unknown
+    - contextPath: DisableUser.active
+      type: boolean
+    - contextPath: DisableUser.brand
+      type: string
+    - contextPath: DisableUser.details
+      type: Unknown
+    - contextPath: DisableUser.email
+      type: string
+    - contextPath: DisableUser.errorCode
+      type: number
+    - contextPath: DisableUser.errorMessage
+      type: string
+    - contextPath: DisableUser.id
+      type: string
+    - contextPath: DisableUser.instanceName
+      type: string
+    - contextPath: DisableUser.success
+      type: boolean
+    - contextPath: DisableUser.username
+      type: string
+    description: Disables a Zoom account
+    execution: true
+  - name: get-user
+    arguments:
+    - name: scim
+      required: true
+      description: SCIM formatted data
+    outputs:
+    - contextPath: GetUser
+      type: unknown
+    - contextPath: GetUser.active
+      type: boolean
+    - contextPath: GetUser.brand
+      type: string
+    - contextPath: GetUser.details
+      type: Unknown
+    - contextPath: GetUser.email
+      type: string
+    - contextPath: GetUser.errorCode
+      type: number
+    - contextPath: GetUser.errorMessage
+      type: string
+    - contextPath: GetUser.id
+      type: string
+    - contextPath: GetUser.instanceName
+      type: string
+    - contextPath: GetUser.success
+      type: boolean
+    - contextPath: GetUser.username
+      type: string
+    description: Gets the details of a user
+  dockerimage: demisto/pyjwt3:1.0.0.1284
+  runonce: false
+  subtype: python3
+sourcemoduleid: Zoom v2
+
