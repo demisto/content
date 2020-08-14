@@ -1,10 +1,7 @@
 ''' IMPORTS '''
-from CommonServerPython import requests, BaseClient, encode_string_results, json, tableToMarkdown, LOG, \
-    return_outputs, return_error
 import traceback
 import jwt
 import datetime
-import demistomock as demisto
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
