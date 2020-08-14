@@ -884,7 +884,7 @@ script:
   - name: test-module
     arguments: []
     description: test module
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.5.10455
   runonce: false
   subtype: python3
 fromversion: 5.0.0

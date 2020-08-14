@@ -1,7 +1,8 @@
 id: testplaybook-Atlassian_Cloud_IT_Admin
-version: 15
+version: -1
 name: testplaybook-Atlassian_Cloud_IT_Admin
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
@@ -615,4 +616,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
 
