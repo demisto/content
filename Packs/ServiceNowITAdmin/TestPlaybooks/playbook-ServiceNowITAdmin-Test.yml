@@ -237,6 +237,7 @@ tasks:
       id: c68e7a91-8d86-4afe-8f00-18be4fc7e46d
       version: -1
       name: update-user
+      description: Update a user
       script: ServiceNow IT Admin|||update-user
       type: regular
       iscommand: true
@@ -320,6 +321,7 @@ tasks:
       id: 15e24433-851a-4f4e-8c0f-e7175c4aa15b
       version: -1
       name: enable-user
+      description: Enable a disabled user
       script: ServiceNow IT Admin|||enable-user
       type: regular
       iscommand: true
@@ -403,6 +405,7 @@ tasks:
       id: a20396de-be1e-4772-838e-795e3cc91892
       version: -1
       name: disable-user
+      description: Disable a user
       script: ServiceNow IT Admin|||disable-user
       type: regular
       iscommand: true
