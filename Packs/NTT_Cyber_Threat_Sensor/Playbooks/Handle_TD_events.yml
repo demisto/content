@@ -1,4 +1,4 @@
-id: 3635efba-6320-42ed-84fa-4795a30c7308
+id: Handle TD events
 version: -1
 name: Handle TD events
 description: Playbook to enrich TD events
@@ -6,7 +6,6 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    description: Start handling TD event
     taskid: 63914051-5b27-4452-879a-c1c3945cf3e2
     type: start
     task:
@@ -36,7 +35,6 @@ tasks:
     id: "1"
     taskid: 9a686168-d95c-4d07-874f-62fdc89e1a86
     type: regular
-    description: Collecting blobs, most commonly pcap from an incident
     task:
       id: 9a686168-d95c-4d07-874f-62fdc89e1a86
       version: -1
