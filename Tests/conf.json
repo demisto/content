@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
 	{
+            "integrations": "Atlassian Cloud IT Admin",
+            "playbookID": "testplaybook-Atlassian_Cloud_IT_Admin"
+        },
+        {
             "integrations": "Humio",
             "playbookID": "Humio-Test",
             "fromversion": "5.0.0"
