@@ -1,0 +1,208 @@
+id: Integration for AWX Demo Playbook
+version: -1
+name: Integration for AWX Demo Playbook
+description: Demo Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0895d582-8cff-4176-8b18-4436ea96ef0e
+    type: start
+    task:
+      id: 0895d582-8cff-4176-8b18-4436ea96ef0e
+      version: -1
+      name: Run AWX Playbook?
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 88c68064-d233-4514-8bf4-c5054924f7c8
+    type: regular
+    task:
+      id: 88c68064-d233-4514-8bf4-c5054924f7c8
+      version: -1
+      name: awx-launch-template
+      description: Run a Job or Workflow template
+      script: IntegrationForAWX|||awx-launch-template
+      type: regular
+      iscommand: true
+      brand: IntegrationForAWX
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      asynchronous: {}
+      extra_vars: {}
+      template_id:
+        simple: ${IntegrationForAWX.query.job_templates.results.[0].id}
+      timeout: {}
+      type:
+        simple: job
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 3dd06bb4-94dd-47f0-8910-25f23757bad4
+    type: regular
+    task:
+      id: 3dd06bb4-94dd-47f0-8910-25f23757bad4
+      version: -1
+      name: Get Job Template
+      description: Query the AWX API
+      script: IntegrationForAWX|||awx-query
+      type: regular
+      iscommand: true
+      brand: IntegrationForAWX
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      path:
+        simple: job_templates
+      query:
+        simple: '{"name": "xSoar Demo - Fix"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 5f4d80d9-e6f7-4218-85db-3dd228c911e3
+    type: condition
+    task:
+      id: 5f4d80d9-e6f7-4218-85db-3dd228c911e3
+      version: -1
+      name: Run AWX Job?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "No":
+      - "8"
+      "Yes":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 82f27d6f-c3c0-43a6-8430-e95cac3f146c
+    type: title
+    task:
+      id: 82f27d6f-c3c0-43a6-8430-e95cac3f146c
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 69e02b60-9f43-4337-89bf-814a7011579f
+    type: regular
+    task:
+      id: 69e02b60-9f43-4337-89bf-814a7011579f
+      version: -1
+      name: Manually remediate  the incident
+      description: "Review the incident to determine if the account activity is malicious.\n\
+        \nIf malicious, consider the following:\n* Quarantine the account/ endpoint\
+        \ \n* Revoke the account password\n* Query the account/ IPs logs in the SIEM\n\
+        * Block the external IPs in the firewall/ proxy\n* Check the account's privileges\
+        \ and change if needed"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 865,
+        "width": 890,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 1.0.0

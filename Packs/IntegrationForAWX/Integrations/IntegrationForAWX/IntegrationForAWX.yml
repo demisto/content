@@ -1,0 +1,148 @@
+category: Utilities
+commonfields:
+  id: IntegrationForAWX
+  version: -1
+configuration:
+- defaultvalue: https://awx.my.example.net
+  display: Server URL (e.g. https://awx.my.example.net:8443)
+  name: url
+  required: true
+  type: 0
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Verify SSL certificate
+  name: ssl_verify
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: Integration for AWX
+display: IntegrationForAWX
+name: IntegrationForAWX
+script:
+  commands:
+  - arguments:
+    - name: job_id
+      description: Job Id use to query
+      required: true
+    deprecated: false
+    description: Query the AWX API for the jobs stdout
+    execution: false
+    name: awx-stdout
+    outputs:
+      - contextPath: IntegrationForAWX.jobout.result
+        description: Result of the Job
+        type: Unknown
+  - arguments:
+    - name: query
+      description: dictionary use to query
+    - name: path
+      description: path in the api
+      required: true
+    deprecated: false
+    description: Query the AWX API
+    execution: false
+    name: awx-query
+    outputs:
+      - contextPath: IntegrationForAWX.query.results
+        description: Result of the query
+        type: Unknown
+  - arguments:
+      - auto: PREDEFINED
+        defaultValue: job
+        description: What type of template is this
+        name: type
+        predefined:
+        - job
+        - workflow
+        required: true
+      - name: template_id
+        description: template id
+        required: true
+      - name: extra_vars
+        description: additional variables to send with template
+      - auto: PREDEFINED
+        defaultValue: "False"
+        description: Async
+        name: asynchronous
+        predefined:
+        - "True"
+        - "False"
+        required: false
+      - default: true
+        defaultValue: "300"
+        description: how long to wait for the playbook to finish
+        name: timeout
+    deprecated: false
+    description: Run a Job or Workflow template
+    execution: false
+    name: awx-launch-template
+    outputs:
+      - contextPath: IntegrationForAWX.template.id
+        description: Id of Template Job run
+        type: String
+      - contextPath: IntegrationForAWX.template.type
+        description: Type of Template run
+        type: String
+      - contextPath: IntegrationForAWX.template.status
+        description: Status of Template run
+        type: String
+  - arguments:
+      - name: inventory_id
+        description: Id of the Ansible Inventory
+        required: true
+      - name: credential_id
+        description: Credentials used to log into systems
+        required: true
+      - name: module_name
+        description: Name of the module to run
+        required: true
+      - name: module_args
+        description: additional variables to send with the module
+      - name: limit
+        description: Ansible syntax to limit inventory scope
+        required: true
+      - name: extra_vars
+        description: additional variables to send with template
+      - auto: PREDEFINED
+        defaultValue: "False"
+        description: Async
+        name: asynchronous
+        predefined:
+        - "True"
+        - "False"
+        required: false
+      - default: true
+        defaultValue: "300"
+        description: how long to wait for the playbook to finish
+        name: timeout
+    deprecated: false
+    description: Run a ad-hoc command through Awx
+    execution: false
+    name: awx-launch-adhoc
+    outputs:
+      - contextPath: IntegrationForAWX.adhoc.id
+        description: Id of Template Job run
+        type: String
+      - contextPath: IntegrationForAWX.adhoc.module
+        description: Type of Template run
+        type: String
+      - contextPath: IntegrationForAWX.adhoc.status
+        description: Status of Template run
+        type: String
+  dockerimage: demisto/python3:3.8.5.10455
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

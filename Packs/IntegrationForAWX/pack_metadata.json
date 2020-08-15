@@ -1,0 +1,19 @@
+{
+    "name": "Integration for Ansible AWX",
+    "description": "Integration with Ansible AWX",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Daniel T. Prince",
+    "url": "",
+    "email": "",
+    "created": "2020-08-13T19:19:50Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [
+        "Ansible"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
