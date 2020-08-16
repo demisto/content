@@ -23,8 +23,8 @@ There are no inputs for this script.
 | FailedInstances.category | The category of the failed integration instance. | string |
 | FailedInstances.information | The error information of the failed integration instance. | string |
 | FailedInstances.status | Status of the instance. | string |
-| InstancesCount.FailedCount | The number of failed instances. | number |
-| InstancesCount.SuccessCount | The number of working instances. | number |
+| InstancesCount.FailedCount | The number of failed instances. | string |
+| InstancesCount.SuccessCount | The number of working instances. | string |
 | InstancesCount.TotalCount | The number of total enabled instances. | string |
 | SuccessInstances.brand | Brand of succeeded integration instance. | string |
 | SuccessInstances.category | Category of succeeded integration instance. | string |

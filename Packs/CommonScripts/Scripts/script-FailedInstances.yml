@@ -97,13 +97,13 @@ outputs:
   type: string
 - contextPath: InstancesCount.FailedCount
   description: The number of failed instances.
-  type: number
+  type: string
 - contextPath: InstancesCount.SuccessCount
   description: The number of working instances.
-  type: number
+  type: string
 - contextPath: InstancesCount.TotalCount
   description: The number of total enabled instances.
-  type: number
+  type: string
 - contextPath: SuccessInstances.brand
   description: Brand of succeeded integration instance.
   type: string
