@@ -618,10 +618,6 @@ script:
       be used.'
     execution: false
     name: threatstream-import-indicator-with-approval
-    outputs:
-    - contextPath: ThreatStream.Import.ImportID
-      description: The ID of the imported data.
-      type: String
   - arguments:
     - default: false
       defaultValue: '50'

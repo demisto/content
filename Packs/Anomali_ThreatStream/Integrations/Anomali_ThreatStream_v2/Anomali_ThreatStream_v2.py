@@ -662,13 +662,7 @@ def import_ioc_without_approval(file_id, classification="private", confidence=No
         params = build_params()
 
         res = http_request("PATCH", "v1/intelligence/", params=params, files=files)
-    # checking that response contains success key
-    if res.get('success', False):
-        imported_id = res.get('import_session_id', '')
-        ec = {'ThreatStream.Import.ImportID': imported_id}
-        return_outputs(F"The data was imported successfully. The ID of imported job is: {imported_id}", ec, res)
-    else:
-        return_outputs("The data was not imported. Check if valid arguments were passed", None)
+    return_outputs(F"The data was imported successfully.", {}, res)
 
 
 def get_model_list(model, limit="50"):
