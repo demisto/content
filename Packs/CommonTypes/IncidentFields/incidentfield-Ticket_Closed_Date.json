@@ -11,7 +11,7 @@
 	"description": "",
 	"editForm": true,
 	"fieldCalcScript": "",
-	"fromServerVersion": "",
+	"fromVersion": "5.0.0",
 	"group": 0,
 	"hidden": false,
 	"id": "incident_ticketcloseddate",

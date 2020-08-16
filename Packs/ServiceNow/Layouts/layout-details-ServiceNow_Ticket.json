@@ -1,5 +1,14 @@
 {
- "detailsV2": {
+ "TypeName": "ServiceNow Ticket",
+ "kind": "details",
+ "fromVersion": "5.0.0",
+ "layout": {
+  "TypeName": "",
+  "id": "ServiceNow Ticket",
+  "kind": "details",
+  "modified": "2020-03-24T09:49:43.322651779Z",
+  "name": "",
+  "system": false,
   "tabs": [
    {
     "id": "caseinfoid",
@@ -671,12 +680,12 @@
     "name": "Canvas",
     "type": "canvas"
    }
-  ]
+  ],
+  "typeId": "ServiceNow Ticket",
+  "version": -1
  },
- "fromVersion": "6.0.0",
- "group": "incident",
- "id": "ServiceNow Ticket",
- "name": "ServiceNow Ticket",
+ "typeId": "ServiceNow Ticket",
  "version": -1,
+ "toVersion": "5.9.9",
  "description": ""
 }

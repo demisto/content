@@ -1845,7 +1845,7 @@ def fetch_incidents(client: Client) -> list:
     return incidents
 
 
-def test_module(client: Client, *_):
+def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
@@ -1992,7 +1992,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> Union[List[
     return [ticket] + entries
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
     """
     This command pushes local changes to the remote system.
     Args:
@@ -2002,6 +2002,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
             args['entries']: the entries to send to the remote system
             args['incident_changed']: boolean telling us if the local incident indeed changed or not
             args['remote_incident_id']: the remote incident id
+        params:
+            entry_tags: the tags to pass to the entries (to separate between comments and work_notes)
 
     Returns: The remote incident id - ticket_id
 
@@ -2010,6 +2012,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     if parsed_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
+    entry_tags = params.get('entry_tags', 'work_notes,comments').split(",")
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
     if parsed_args.incident_changed:
@@ -2034,7 +2037,12 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
                 client.upload_file(ticket_id, entry.get('id'), file_name, ticket_type)
             else:
                 # Mirroring comment and work notes as entries
-                key = 'comments'
+                tags = entry.get('tags', [])
+                key = ''
+                if entry_tags[0] in tags:
+                    key = 'work_notes'
+                elif entry_tags[1] in tags:
+                    key = 'comments'
                 user = entry.get('user', 'dbot')
                 text = f"({user}): {str(entry.get('contents', ''))}"
                 client.add_comment(ticket_id, ticket_type, key, text)
@@ -2132,7 +2140,7 @@ def main():
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, demisto.args()))
         elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, demisto.args()))
+            return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
         elif command in commands:

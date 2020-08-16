@@ -72,6 +72,12 @@ configuration:
   name: insecure
   required: false
   type: 8
+- defaultvalue: work_notes,comments
+  display: Entry Tags
+  hidden: false
+  name: entry_tags
+  required: false
+  type: 0
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize
   the way you manage and deliver services to your users.
 display: ServiceNow v2
@@ -224,8 +230,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket urgency. You can either select from the predefined options
-        or enter another value. For example, "Urgent" or "5".'
+      description: Ticket urgency. You can either select from the predefined options
+        or enter another value. For example, "Urgent" or "5".
       isArray: false
       name: urgency
       predefined:
@@ -236,8 +242,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket severity. You can either select from the predefined options
-        or enter another value. For example, "Urgent" or "5".'
+      description: Ticket severity. You can either select from the predefined options
+        or enter another value. For example, "Urgent" or "5".
       isArray: false
       name: severity
       predefined:
@@ -714,8 +720,8 @@ script:
       isArray: false
       name: input_display_value
       predefined:
-        - 'false'
-        - 'true'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     deprecated: false
@@ -787,8 +793,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket urgency. You can either select from the predefined options
-        or enter another value. For example, "Urgent" or "5".'
+      description: Ticket urgency. You can either select from the predefined options
+        or enter another value. For example, "Urgent" or "5".
       isArray: false
       name: urgency
       predefined:
@@ -799,8 +805,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Ticket severity. You can either select from the predefined options
-        or enter another value. For example, "Urgent" or "5".'
+      description: Ticket severity. You can either select from the predefined options
+        or enter another value. For example, "Urgent" or "5".
       isArray: false
       name: severity
       predefined:
@@ -1546,8 +1552,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma-separated list of table fields to display and output to
-        the context. For example, name,tag,company. ID field is added by default.'
+      description: Comma-separated list of table fields to display and output to the
+        context. For example, name,tag,company. ID field is added by default.
       isArray: false
       name: fields
       required: false
@@ -1602,8 +1608,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Comma-separated list of table fields to display and output to
-        the context. For example, name,tag,company. ID field is added by default.'
+      description: Comma-separated list of table fields to display and output to the
+        context. For example, name,tag,company. ID field is added by default.
       isArray: true
       name: fields
       required: false
@@ -1673,8 +1679,8 @@ script:
       isArray: false
       name: input_display_value
       predefined:
-        - 'false'
-        - 'true'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     deprecated: false
@@ -2279,8 +2285,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get remote data from a remote incident. This method
-      does not update the current incident, and should be used for debugging purposes.
+    description: Get remote data from a remote incident. This method does not update
+      the current incident, and should be used for debugging purposes.
     execution: false
     name: get-remote-data
   dockerimage: demisto/python3:3.8.3.9324

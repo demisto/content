@@ -619,7 +619,7 @@
 				},
 				"dbotMirrorTags": {
 					"complex": null,
-					"simple": ".='ForServiceNow'"
+					"simple": ".=['ForServiceNow','comments','work_notes']"
 				},
 				"details": {
 					"complex": null,

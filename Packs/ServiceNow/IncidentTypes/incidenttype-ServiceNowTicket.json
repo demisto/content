@@ -5,7 +5,7 @@
 	"sortValues": null,
 	"packID": "",
 	"itemVersion": "",
-	"fromVersion": "6.0.0",
+	"fromVersion": "5.0.0",
 	"toServerVersion": "",
 	"vcShouldIgnore": false,
 	"vcShouldKeepItemLegacyProdMachine": false,
@@ -28,5 +28,6 @@
 	"preProcessingScript": "",
 	"closureScript": "",
 	"disabled": false,
-	"reputationCalc": 0
+	"reputationCalc": 0,
+	"layout": "ServiceNow Ticket"
 }
