@@ -4241,7 +4241,7 @@ def handle_incoming_error_in_mirror(incident_data, error):
 
     # setup new error if needed
     if integration_cache.get('in_mirror_error') is None or integration_cache.get('in_mirror_error') != error:
-        demisto.debug("Error in incoming mirror for XDR incident {0}: {1}".format(incident_data.get('id'), error))
+        demisto.debug("Error in incoming mirror for incident {0}: {1}".format(incident_data.get('id'), error))
         integration_cache['in_mirror_error'] = error
         integration_cache['in_error_printed'] = False
 
@@ -4325,3 +4325,25 @@ def reset_incoming_and_outgoing_mirror_errors(incident_data):
         incident_data['out_mirror_error'] = ''
 
     demisto.setIntegrationContext(integration_cache)
+
+
+def setup_outgoing_mirror_error(incident_id, error):
+    """Setup outgoing mirror error to be printed in handle outgoing error method.
+
+    :type incident_id: ``str``
+    :param incident_id: the mirrored incident id that had an outgoing error.
+
+    :type error: ``str``
+    :param error: the outgoing error message.
+
+    :return: the mirrored incident id that had an outgoing error.
+    :rtype: ``str``
+    """
+    integration_cache = demisto.getIntegrationContext()
+    if integration_cache.get('out_mirror_error') is None or integration_cache.get('out_mirror_error') != error:
+        demisto.debug("Error in outgoing mirror for incident {0}: {1}".format(incident_id, error))
+        integration_cache['out_mirror_error'] = error
+        integration_cache['out_error_printed'] = False
+
+    demisto.setIntegrationContext(integration_cache)
+    return incident_id
