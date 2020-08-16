@@ -3274,7 +3274,8 @@
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
         "GoogleKubernetesEngine": "SDK",
-        "TAXIIFeed": "Cannot use proxy"
+        "TAXIIFeed": "Cannot use proxy",
+        "QRadar": "Playbooks has parallel steps which are causing inconsistent results"
     },
     "parallel_integrations": [
         "SNDBOX",
