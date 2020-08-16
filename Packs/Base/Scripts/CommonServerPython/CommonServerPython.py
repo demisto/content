@@ -4152,8 +4152,8 @@ class BarColumnPieWidget(BaseWidget):
     :rtype: ``None``
     """
     def __init__(self, categories=None):
-        # type: (dict) -> None
-        self.categories = categories if categories else []
+        # type: (list) -> None
+        self.categories = categories if categories else []  # type: List[dict]
 
     def add_category(self, name, number):
         """Add a category to widget.
