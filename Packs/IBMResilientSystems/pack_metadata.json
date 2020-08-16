@@ -1,16 +1,16 @@
 {
-  "name": "IBM Resilient Systems",
-  "description": "Case management that enables visibility across your tools for continual IR improvement",
-  "support": "xsoar",
-  "currentVersion": "1.0.1",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-22T14:48:14Z",
-  "categories": [
-    "Case Management"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "IBM Resilient Systems",
+    "description": "Case management that enables visibility across your tools for continual IR improvement",
+    "support": "xsoar",
+    "currentVersion": "1.0.3",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-22T14:48:14Z",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }
