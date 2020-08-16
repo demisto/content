@@ -459,7 +459,9 @@ def build_summary_table_hr(packs_input_list, include_pack_status=False):
         table[1] = f'{table[1]} :- |'
 
     for index, pack in enumerate(packs_input_list):
-        pack_status_message = PackStatus[pack.status].value
+        if include_pack_status:
+            pack_status_message = PackStatus[pack.status].value
+
         row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
             else [index, pack.name, pack.display_name, pack.latest_version]
 
@@ -609,6 +611,11 @@ def print_packs_summary(packs_list):
         print_error(failed_packs_table)
         sys.exit(1)
 
+    successful_packs_table = build_summary_table_hr(successful_packs)
+    pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
+        f'Uploaded packs:\n{successful_packs_table}'
+    add_pr_comment(pr_comment)
+
 
 def option_handler():
     """Validates and parses script arguments.
@@ -690,7 +697,14 @@ def handle_github_response(response):
 
 
 def main():
-    add_pr_comment('test')
+    successful_packs = [Pack('Test pack1', 'Packs/TestPack1'), Pack('Test pack2', 'Packs/TestPack2')]
+    successful_packs[0].display_name = 'Test pack1'
+    successful_packs[1].display_name = 'Test pack2'
+
+    successful_packs_table = build_summary_table_hr(successful_packs)
+    pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
+        f'Uploaded packs:\n{successful_packs_table}'
+    add_pr_comment(pr_comment)
     sys.exit()
 
     option = option_handler()
