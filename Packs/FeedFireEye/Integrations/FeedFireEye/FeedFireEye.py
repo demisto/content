@@ -447,7 +447,7 @@ class Client(BaseClient):
 
 def test_module(client: Client):
     client.build_iterator(limit=10)
-    return 'ok'
+    return 'ok', {}, {}
 
 
 def get_indicators_command(client: Client, feedTags: list):

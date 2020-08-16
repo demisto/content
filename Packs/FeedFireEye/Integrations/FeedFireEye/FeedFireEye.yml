@@ -61,7 +61,7 @@ configuration:
   required: false
   type: 8
   defaultvalue: "true"
-- display: Credentials
+- display: Public Key
   name: credentials
   required: false
   type: 9
