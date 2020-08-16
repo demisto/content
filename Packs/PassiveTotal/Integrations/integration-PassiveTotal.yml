@@ -36,11 +36,6 @@ configuration:
   defaultvalue: malware,blacklist,phishing,typo-squatting
   type: 0
   required: true
-- display: Whether the enrichment commands return verbose response or not.
-  name: verboseEnrichment
-  defaultvalue: "false"
-  type: 8
-  required: false
 script:
   script: |-
     // Use pt-enrichment for IP, URL and domain enrichment
@@ -92,8 +87,6 @@ script:
     if (tags === undefined) {
         tags = 'malware,blacklist,phishing,typo-squatting';
     }
-
-    var verboseEnrichment = params.verboseEnrichment
 
     var doReq = function(method, path, parameters, body) {
         var result = http(
@@ -210,8 +203,6 @@ script:
             return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-enrichment':
             var md = '## PassiveTotal Metadata Enrichment for: ' + args.query + '\n';
-            md += objToMd(jsonRes);
-            var context = {};
             var mal = false;
             if (jsonRes.classification === 'malicious') {
                 mal = true;
@@ -226,6 +217,17 @@ script:
                     }
                 }
             }
+            jsonKeys = Object.keys(jsonRes);
+            if (jsonKeys.length > 20) {
+                limit = 20;
+            } else {
+                limit = jsonKeys.length;
+            }
+            var jsonMd = {};
+            for (var i=0; i<limit; i++) {
+                    jsonMd[jsonKeys[i]] = jsonRes[jsonKeys[i]];
+            }
+            md += objToMd(jsonMd);
             if (mal) {
                 if (jsonRes.queryType === 'domain') {
                     addMalicious(context, outputPaths.domain, {
@@ -252,11 +254,7 @@ script:
                     };
                 }
             }
-            if (verboseEnrichment === false) {
-                var fullResult = [{Type: entryTypes.note, Contents: context, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
-            } else {
-                var fullResult = [{Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
-            }
+            var fullResult = [{Type: entryTypes.note, Contents: jsonMd, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
 
             if (jsonRes.queryType === 'ip' && jsonRes.latitude && jsonRes.longitude) {
                 fullResult.push({Type: entryTypes.map, Contents: {lat: jsonRes.latitude, lng: jsonRes.longitude}, ContentsFormat: formats.json});
