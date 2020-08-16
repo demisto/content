@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 
 
@@ -23,17 +24,17 @@ def add_descriptions(file_path, output_path):
 
 def main(argv):
     if len(argv) < 2:
-        print "Please provide <source playbook path>, <destination playbook path>"
+        print("Please provide <source playbook path>, <destination playbook path>")
         sys.exit(1)
 
     source_path = argv[0]
     destination_path = argv[1]
 
-    print "Starting..."
+    print("Starting...")
 
     add_descriptions(source_path, destination_path)
 
-    print "Finished"
+    print("Finished")
 
 
 if __name__ == "__main__":
