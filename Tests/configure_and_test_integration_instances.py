@@ -758,7 +758,8 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
         'content.pack.ignore.missing.warnings.contentpack': 'true'
     }
     if not is_nightly:
-        server_configuration['marketplace.bootstrap.bypass.url'] = 'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
+        server_configuration['marketplace.bootstrap.bypass.url'] = \
+            'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
                 branch_name, ci_build_number)
     error_msg = "Failed to set GCP bucket server config - with status code "
     return update_server_configuration(client, server_configuration, error_msg)
@@ -843,7 +844,8 @@ def configure_servers_and_restart(build, prints_manager):
                                               verify_ssl=False)
             set_docker_hardening_for_build(client, prints_manager)
             if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
-                set_marketplace_gcp_bucket_for_build(client, prints_manager, build.branch_name, build.ci_build_number, build.is_nightly)
+                set_marketplace_gcp_bucket_for_build(client, prints_manager, build.branch_name,
+                                                     build.ci_build_number, build.is_nightly)
 
             if Build.run_environment == Running.WITH_LOCAL_SERVER:
                 input('restart your server and then press enter.')
@@ -967,7 +969,8 @@ def install_nightly_pack(build, prints_manager):
     threads_print_manager = ParallelPrintsManager(len(build.servers))
     nightly_install_packs(build, threads_print_manager, install_method=install_all_content_packs)
     create_nightly_test_pack()
-    nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs, pack_path=f'{Build.test_pack_target}/test_pack.zip')
+    nightly_install_packs(build, threads_print_manager, install_method=upload_zipped_packs,
+                          pack_path=f'{Build.test_pack_target}/test_pack.zip')
 
     prints_manager.add_print_job('Sleeping for 45 seconds...', print_warning, 0, include_timestamp=True)
     prints_manager.execute_thread_prints(0)
@@ -1105,9 +1108,6 @@ def update_content_till_v6(build: Build):
 
 
 def disable_instances(build: Build, all_module_instances, prints_manager):
-    # for server_url in build.servers:
-    #     client = demisto_client.configure(base_url=server_url, username=build.username, password=build.password, verify_ssl=False)
-    #     __disable_integrations_instances(client, all_module_instances, prints_manager)
     client = demisto_client.configure(base_url=build.servers[0], username=build.username, password=build.password,
                                       verify_ssl=False)
     __disable_integrations_instances(client, all_module_instances, prints_manager)
@@ -1174,7 +1174,7 @@ def test_pack_metadata():
 
 def test_pack_zip(content_path, target):
     with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
-        zip_file.writestr(f'test_pack/metadata.json', test_pack_metadata())
+        zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
         for test_path, test in test_files(content_path):
             if not test_path.endswith('.yml'):
                 continue
@@ -1206,7 +1206,8 @@ def main():
 
     tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly)
     new_integrations, modified_integrations = get_changed_integrations(build.git_sha1, prints_manager)
-    all_module_instances, brand_new_integrations = configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
+    all_module_instances, brand_new_integrations = \
+        configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
     if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
         successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, prints_manager, pre_update=True)
         update_content_till_v6(build)
