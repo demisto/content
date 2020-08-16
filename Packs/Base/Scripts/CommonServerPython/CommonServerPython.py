@@ -27,7 +27,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, List
+    from typing import Optional, List, Any
 except Exception:
     pass
 
@@ -4145,7 +4145,7 @@ class NumberWidget(BaseWidget):
 class BarColumnPieWidget(BaseWidget):
     """Bar/Column/Pie Widget representation
 
-    :type categories: ``Any``
+    :type categories: ``list``
     :param categories: a list of categories to display(Better use the add_category function to populate the data.
 
     :return: No data returned
