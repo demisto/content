@@ -1,3 +1,4 @@
+import uuid
 from itertools import combinations
 
 import dateutil
@@ -687,8 +688,27 @@ def determine_incidents_args(input_args, default_args):
     return get_incidents_by_query_args
 
 
+def set_incidents_fields_names(input_args):
+    global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_HTML_FIELD, EMAIL_HEADERS_FIELD, \
+        EMAIL_ATTACHMENT_FIELD
+    EMAIL_BODY_FIELD = input_args.get('emailBody', EMAIL_BODY_FIELD)
+    EMAIL_SUBJECT_FIELD = input_args.get('emailSubject', EMAIL_SUBJECT_FIELD)
+    EMAIL_HTML_FIELD = input_args.get('emailBodyHTML', EMAIL_HTML_FIELD)
+    EMAIL_HEADERS_FIELD = input_args.get('emailHeaders', EMAIL_HEADERS_FIELD)
+    EMAIL_ATTACHMENT_FIELD = input_args.get('emailAttachments', EMAIL_ATTACHMENT_FIELD)
+
+
+def return_file_entry(res, num_of_incidents):
+    file_name = str(uuid.uuid4())
+    entry = fileResult(file_name, json.dumps(res))
+    entry['Contents'] = res
+    entry['HumanReadable'] = 'Fetched features from {} incidents'.format(num_of_incidents)
+    entry["ContentsFormat"]: formats["json"]
+    demisto.results(entry)
+
 def main():
     input_args = demisto.args()
+    set_incidents_fields_names(input_args)
     default_args = get_args_based_on_last_execution()
     get_incidents_by_query_args = determine_incidents_args(input_args, default_args)
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_by_query_args)
@@ -710,7 +730,11 @@ def main():
             compressed_hr_data = data_str
         res = {'PayloadVersion': FETCH_DATA_VERSION, 'PayloadData': compressed_hr_data,
                'Execution Time': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}
-        return_json_entry(res)
+        return_file = input_args.get('toFile', 'False').strip() == 'True'
+        if return_file:
+            return_file_entry(res, len(incidents))
+        else:
+            return_json_entry(res)
     update_last_execution_time()
 
 
