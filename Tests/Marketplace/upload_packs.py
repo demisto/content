@@ -448,6 +448,29 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
     return table
 
 
+def build_summary_table_hr(packs_input_list, include_pack_status=False):
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
+
+    table = ['|', '|']
+
+    for key in table_fields:
+        table[0] = f'{table[0]} {key} |'
+        table[1] = f'{table[1]} :- |'
+
+    for index, pack in enumerate(packs_input_list):
+        pack_status_message = PackStatus[pack.status].value
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version]
+
+        row_hr = '|'
+        for _value in row:
+            row_hr = f'{row_hr} {_value}|'
+        table.append(row_hr)
+
+    return '\n'.join(table)
+
+
 def load_json(file_path):
     """ Reads and loads json file.
 
@@ -655,7 +678,7 @@ def add_pr_comment(comment):
 
 def handle_github_response(response):
     res_dict = response.json()
-    if not res_dict.ok:
+    if not res_dict.get('ok'):
         print_warning('Add pull request comment failed: {}'.
                       format(res_dict.get('message')))
     return res_dict
@@ -663,6 +686,8 @@ def handle_github_response(response):
 
 def main():
     add_pr_comment('test')
+    sys.exit()
+
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path
