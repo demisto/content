@@ -33,6 +33,22 @@ class Client(BaseClient):
         self.first_fetch = first_fetch
         self.max_fetch = min(max_fetch, PAGELENGTH)
 
+    def _http_request(self, **kwargs):
+        try:
+            return super()._http_request(**kwargs)
+        except DemistoException as error:
+            error_message = error.args[0]
+            if '[404]' in error_message:
+                ind = error_message.find('Not Found')
+                new_message = error_message[:ind] + '\nValidate your server url address'
+                raise DemistoException(new_message)
+            elif '[403]' in error_message:
+                ind = error_message.find('Forbidden')
+                new_message = error_message[:ind] + '\nValidate your Tenant ID, Access Key ID or Secret Access Key '
+                raise DemistoException(new_message)
+            else:
+                raise error
+
     def get_device(self, id):
         """
         Get a device from IoT security portal by device ID
@@ -188,13 +204,13 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
         date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
         if date is None:
             # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
+            raise ValueError(f'Invalid date: {arg}')
 
         return int(date.replace(tzinfo=timezone.utc).timestamp())
     if isinstance(arg, (int, float)):
         # Convert to int if the input is a float
         return int(arg)
-    raise ValueError(f'Invalid date: "{arg_name}"')
+    raise ValueError(f'Invalid date: "{arg}"')
 
 
 def test_module(client):
@@ -207,9 +223,10 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    client.list_devices(0, 1)
     if demisto.params().get('isFetch'):
         fetch_incidents(client, last_run=demisto.getLastRun(), is_test=True)
+    else:
+        client.list_devices(0, 1)
     return 'ok'
 
 
