@@ -1710,9 +1710,9 @@ def parse_incident_from_item(item):
 
                 # save the attachment
                 if attachment.item.mime_content:
-                    attached_email = email.message_from_string(
-                        attachment.item.mime_content
-                    )
+                    mime_content = attachment.item.mime_content
+                    attached_email = email.message_from_bytes(mime_content) if isinstance(mime_content, bytes) \
+                        else email.message_from_string(mime_content)
                     if attachment.item.headers:
                         attached_email_headers = [
                             (h, " ".join(map(str.strip, v.split("\r\n"))))
