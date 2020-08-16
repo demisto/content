@@ -370,8 +370,8 @@ tasks:
     task:
       id: d7a17411-eeaf-42c9-8876-8983a01d526a
       version: -1
-      name: Search in Cortex threat logs
-      description: Searches the Cortex panw.threat table, which is the threat logs
+      name: Search in Cortex Data Lake threat logs
+      description: Searches the Cortex Data Lake Threat table, which is the threat logs
         table for PAN-OS/Panorama.
       script: '|||cdl-query-threat-logs'
       type: regular
@@ -429,8 +429,8 @@ tasks:
     task:
       id: dfdcd4ea-d29d-4f46-874f-de63890673b1
       version: -1
-      name: Is IP address detected in Cortex threat logs?
-      description: Is the IP address detected in Cortex threat logs?
+      name: Is IP address detected in Cortex Data Lake threat logs?
+      description: Is the IP address detected in Cortex Data Lake threat logs?
       type: condition
       iscommand: false
       brand: ""
@@ -590,8 +590,8 @@ tasks:
     task:
       id: 57ddc9f1-376e-4658-86d9-db5638d0de0a
       version: -1
-      name: Search in Cortex Traffic logs
-      description: Searches the Cortex firewall.traffic table. Traffic logs contain
+      name: Search in Cortex Data Lake Traffic logs
+      description: Searches the Cortex Data Lake traffic table. Traffic logs contain
         entries for the end of each network session
       script: '|||cdl-query-traffic-logs'
       type: regular
@@ -647,8 +647,8 @@ tasks:
     task:
       id: c99f4352-e1a8-4d7e-8c19-3c216fa0a81f
       version: -1
-      name: Is IP detected in Cortex traffic logs?
-      description: Is the IP address detected in Cortex traffic logs?
+      name: Is IP detected in Cortex Data Lake traffic logs?
+      description: Is the IP address detected in Cortex Data Lake traffic logs?
       type: condition
       iscommand: false
       brand: ""
@@ -809,8 +809,8 @@ tasks:
     task:
       id: 9574ea38-cbc0-47ff-8cfd-b9c6ab4c8eff
       version: -1
-      name: Search for the hash in Cortex Threat logs
-      description: Searches the Cortex panw.threat table, which is the threat logs
+      name: Search for the hash in Cortex Data Lake Threat logs
+      description: Searches the Cortex Data Lake threat table, which is the threat logs
         table for PAN-OS/Panorama.
       script: '|||cdl-query-threat-logs'
       type: regular
@@ -859,8 +859,8 @@ tasks:
     task:
       id: d15d25fe-3b36-468b-8dfb-ad65419f700b
       version: -1
-      name: Is hash detected by Cortex Threat logs?
-      description: Is the hash detected by Cortex Threat logs?
+      name: Is hash detected by Cortex Data Lake Threat logs?
+      description: Is the hash detected by Cortex Data Lake Threat logs?
       type: condition
       iscommand: false
       brand: ""
@@ -928,8 +928,8 @@ tasks:
     task:
       id: 32f59534-bc77-42f4-8c10-d4e2dffde9f3
       version: -1
-      name: Search domain in Cortex URL logs
-      description: Searches the URL log table.
+      name: Search domain in Cortex Data Lake URL logs
+      description: Searches the Cortex Data Lake URL log table.
       script: '|||cdl-query-url-logs'
       type: regular
       iscommand: true
@@ -1689,8 +1689,8 @@ tasks:
     task:
       id: 61c46324-3bf4-4bbe-810a-1b8619d74ba6
       version: -1
-      name: Is domain detected by Cortex URL logs?
-      description: Is the domain detected by Cortex Threat logs?
+      name: Is domain detected by Cortex Data Lake URL logs?
+      description: Is the domain detected by Cortex Data Lake URL logs?
       type: condition
       iscommand: false
       brand: ""
@@ -1768,7 +1768,7 @@ tasks:
     task:
       id: 3a493326-906a-43e6-85dc-d8a0c428818c
       version: -1
-      name: Cortex IP searches
+      name: Cortex Data Lake IP searches
       type: title
       iscommand: false
       brand: ""
@@ -1849,7 +1849,7 @@ tasks:
     task:
       id: 99bd8837-39bf-484e-867d-d55a6dce53e0
       version: -1
-      name: Cortex domain search
+      name: Cortex Data Lake domain search
       type: title
       iscommand: false
       brand: ""
@@ -2349,7 +2349,7 @@ tasks:
     task:
       id: c35b5e37-813f-472e-8ec8-ee41b091b463
       version: -1
-      name: Cortex hash search
+      name: Cortex Data Lake hash search
       type: title
       iscommand: false
       brand: ""
