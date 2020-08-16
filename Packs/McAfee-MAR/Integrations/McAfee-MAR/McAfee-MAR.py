@@ -94,6 +94,7 @@ def create_entry(header, contents, table, context={}, headers=None):
 
 def translate_dict(d, translator):
     res = {}
+
     for key, value in d.iteritems():
         new_key = translator.get(key, key)
         res[new_key] = value
