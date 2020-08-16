@@ -27,7 +27,7 @@
   "associatedTypes": [
     "IP",
     "IPv6",
-    "Threat Actor"
+    "STIX Threat Actor"
   ],
   "caseInsensitive": true,
   "columns": null,

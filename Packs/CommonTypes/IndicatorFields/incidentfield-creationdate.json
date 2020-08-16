@@ -26,7 +26,7 @@
   "shouldPublish": false,
   "associatedTypes": [
     "Domain",
-    "Threat Actor"
+    "STIX Threat Actor"
   ],
   "caseInsensitive": true,
   "columns": null,
