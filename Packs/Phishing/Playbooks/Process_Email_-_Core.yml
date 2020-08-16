@@ -734,7 +734,7 @@ tasks:
       version: -1
       name: Save incident files separately from email attachments
       description: Saves the files that were initially involved with the incident
-        in a separate context key, so that they can be told apart later on from email
+        in a separate context key so that they are available separate from email
         attachment files.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -1137,7 +1137,7 @@ inputs:
       root: incident
       accessor: labels.Email
   required: false
-  description: The receiving email address
+  description: The receiving email address.
 - key: Email/cc
   value:
     complex:
@@ -1151,14 +1151,14 @@ inputs:
       root: incident
       accessor: labels.Email/from
   required: false
-  description: The originator of the email
+  description: The originator of the email.
 - key: Email/subject
   value:
     complex:
       root: incident
       accessor: labels.Email/subject
   required: false
-  description: The email’s subject
+  description: The email’s subject.
 - key: Email/text
   value:
     complex:
@@ -1179,7 +1179,7 @@ inputs:
       root: incident
       accessor: labels.Email/headers
   required: false
-  description: The email’s headers
+  description: The email’s headers.
 - key: Email/format
   value:
     complex:
@@ -1189,37 +1189,37 @@ inputs:
   description: The email’s format
 outputs:
 - contextPath: Email.HTML
-  description: Email 'html' body, if exists
+  description: Email 'html' body, if exists.
   type: string
 - contextPath: Email
-  description: Email object
+  description: Email object.
   type: unknown
 - contextPath: Email.CC
-  description: Email 'cc' addresses
+  description: Email 'cc' addresses.
   type: string
 - contextPath: Email.From
-  description: Email 'from' sender
+  description: Email 'from' sender.
   type: string
 - contextPath: Email.Subject
-  description: Email subject
+  description: Email subject.
   type: string
 - contextPath: Email.To
-  description: Email 'to' addresses
+  description: Email 'to' addresses.
   type: string
 - contextPath: Email.Text
-  description: Email 'text' body, if exists
+  description: Email 'text' body, if exists.
   type: string
 - contextPath: Email.Headers
-  description: The full email headers as a single string
+  description: The full email headers as a single string.
   type: string
 - contextPath: Email.Attachments
-  description: The list of attachment names in the email
+  description: The list of attachment names in the email.
   type: string
 - contextPath: Email.Format
-  description: The format of the email, if available
+  description: The format of the email, if available.
   type: string
 - contextPath: File
-  description: The File object
+  description: The File object.
   type: unknown
 fromversion: 4.5.0
 tests:
