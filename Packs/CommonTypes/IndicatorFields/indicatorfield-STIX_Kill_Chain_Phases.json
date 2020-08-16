@@ -1,9 +1,9 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Attack Pattern",
-		"Malware",
-		"Tool"
+		"STIX Attack Pattern",
+		"STIX Malware",
+		"STIX Tool"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
