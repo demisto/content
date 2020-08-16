@@ -839,10 +839,6 @@ jobs:
             - run:
                 name: Upload Packs To Marketplace Storage
                 command: |
-                  if [[ $CIRCLE_BRANCH != master ]]; then
-                    echo "Skipping packs uploading on non master branch"
-                    exit 0
-                  fi
 
                   EXTRACT_FOLDER=$(mktemp -d)
                   PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
