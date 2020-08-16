@@ -18,6 +18,9 @@ class TestNormalCommands:
     """
     The test class checks the following normal_commands:
         * ews-find-folders
+        * ews-expand-group
+        * ews-get-searchable-mailboxes
+        * ews-expand-group
     """
 
     class MockClient:
