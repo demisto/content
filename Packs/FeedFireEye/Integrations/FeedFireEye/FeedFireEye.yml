@@ -112,5 +112,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - No test
+  - playbook-FeedFireEye_test
 fromversion: 5.5.0

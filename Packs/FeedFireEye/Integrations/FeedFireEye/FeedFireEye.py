@@ -79,13 +79,13 @@ class STIX21Processor:
                 else:
                     try:
                         key, value = indicator_value.split(':value=')
-                    except Exception as e:
+                    except Exception:
                         continue
 
                 indicator_types.append(key.strip().replace("'", '').replace('[', '').replace(']', ''))
                 values.append(value.strip().replace("'", '').replace('[', '').replace(']', ''))
             return indicator_types, values, {}
-        except Exception as e:
+        except Exception:
             return [], [], {}
 
     def process_indicator(self, raw_data):
@@ -361,21 +361,23 @@ class Client(BaseClient):
                               f'API Status Code: {response.status_code} Error Reason: {response.text}')
                 return [], {}, {}
 
-            if response.status_code == 200:
-                objects_fetched = response.json().get('objects')
+            objects_fetched = response.json().get('objects')
+            for obj in objects_fetched:
+                if obj.get('type') == 'indicator':
+                    raw_indicators.append(obj)
+                elif obj.get('type') == 'relationship':
+                    relationships[obj.get('id')] = obj
+                else:
+                    stix_entities[obj.get('id')] = obj
 
-                for obj in objects_fetched:
-                    if obj.get('type') == 'indicator':
-                        raw_indicators.append(obj)
-                    elif obj.get('type') == 'relationship':
-                        relationships[obj.get('id')] = obj
-                    else:
-                        stix_entities[obj.get('id')] = obj
-                try:
-                    query_url = response.links['next']['url']
-                    query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
-                except KeyError:
-                    break
+            if limit != -1:
+                break
+
+            try:
+                query_url = response.links['next']['url']
+                query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
+            except KeyError:
+                break
 
         return raw_indicators, relationships, stix_entities
 
@@ -415,14 +417,16 @@ class Client(BaseClient):
                               f'API Status Code: {response.status_code} Error Reason: {response.text}')
                 return []
 
-            if response.status_code == 200:
-                raw_reports += [report for report in response.json().get('objects')]
+            raw_reports += [report for report in response.json().get('objects')]
 
-                try:
-                    query_url = response.links['next']['url']
-                    query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
-                except KeyError:
-                    break
+            if limit != -1:
+                break
+
+            try:
+                query_url = response.links['next']['url']
+                query_url = query_url.split('https://api.intelligence.fireeye.com')[1]
+            except KeyError:
+                break
 
         return raw_reports
 
@@ -464,7 +468,7 @@ def get_indicators_command(client: Client, feedTags: list):
     human_readable = tableToMarkdown('Indicators from FireEye Feed:', indicators,
                                      headers=['value', 'type', 'rawJSON'], removeNull=True)
 
-    return human_readable, {}, {'raw_response': raw_response}
+    return human_readable, {}, indicators
 
 
 def fetch_indicators_command(client: Client, feedTags: list, limit: int = -1):
