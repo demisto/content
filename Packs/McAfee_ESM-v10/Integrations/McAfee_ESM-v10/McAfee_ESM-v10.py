@@ -582,8 +582,7 @@ class NitroESM(object):
         if organization is not None:
             case['orgId'] = self.organization_name_to_id(organization)
 
-        demisto.debug("Check content of notes " + str(case['notes']))
-
+        del case['history']
         del case['notes']
 
         cmd = 'caseEditCase'
