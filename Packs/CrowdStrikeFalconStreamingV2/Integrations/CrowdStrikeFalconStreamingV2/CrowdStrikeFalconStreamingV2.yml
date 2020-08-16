@@ -47,6 +47,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: 1 hour
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
 - additionalinfo: Because this is a push-based streaming integration, it cannot fetch sample events in
     the mapping wizard. In order to view sample events, you need to enable events storage and
     run the crowdstrike-falcon-streaming-get-sample-events command.
@@ -81,6 +86,9 @@ script:
   script: ''
   subtype: python3
   type: python
+  isFetchSamples: true
 fromversion: 5.0.0
 tests:
   - No test
+defaultclassifier: crowdstrike-streaming-api
+defaultmapperin: crowdstrike-streaming-api-mapper

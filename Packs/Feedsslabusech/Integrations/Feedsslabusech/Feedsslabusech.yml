@@ -14,7 +14,7 @@ configuration:
   name: feed
   required: false
   type: 8
-  defaultvalue: true
+  defaultvalue: 'true'
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Bad
@@ -82,6 +82,12 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
 description: The SSL IP Blacklist contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and
   identified as being associated with a malicious SSL certificate.
 display: abuse.ch SSL Blacklist Feed
@@ -106,7 +112,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: sslbl-get-indicators
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.5.10289
   feed: true
   isfetch: false
   longRunning: false

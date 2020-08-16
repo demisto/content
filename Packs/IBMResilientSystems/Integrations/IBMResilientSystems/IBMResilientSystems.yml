@@ -9,7 +9,7 @@ configuration:
   type: 0
 - display: Credentials
   name: credentials
-  required: true
+  required: false
   type: 9
 - display: Organization name
   name: org
@@ -33,9 +33,18 @@ configuration:
   type: 13
 - display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
   name: fetch_time
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
+- display: API key ID
+  hidden: false
+  name: api_key_id
+  required: false
+  type: 9
+- display: API key secret
+  hidden: false
+  name: api_key_secret
+  required: false
+  type: 9
 description: Case management that enables visibility across your tools for continual
   IR improvement
 display: IBM Resilient Systems
@@ -585,7 +594,7 @@ script:
     - contextPath: Resilient.Incidents.Tasks.Status
       description: Task status (Open/Closed)
       type: string
-  dockerimage: demisto/resilient:1.0.0.7764
+  dockerimage: demisto/resilient:1.0.0.9895
   feed: false
   isfetch: true
   longRunning: false

@@ -943,7 +943,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+      - "56"
     scriptarguments:
       append:
         simple: "true"
@@ -962,7 +962,7 @@ tasks:
       {
         "position": {
           "x": -4480,
-          "y": 2635
+          "y": 2360
         }
       }
     note: false
@@ -1508,7 +1508,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "60"
+      - "68"
     scriptarguments:
       append:
         simple: "true"
@@ -1522,7 +1522,7 @@ tasks:
       {
         "position": {
           "x": -980,
-          "y": 2655
+          "y": 2405
         }
       }
     note: false
