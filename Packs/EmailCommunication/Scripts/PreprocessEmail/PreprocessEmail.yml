@@ -1,11 +1,13 @@
 args:
 - default: false
   defaultValue: ${incident.attachment}
+  description: Attachments
   isArray: true
   name: attachments
   required: false
   secret: false
 - default: false
+  description: Files
   isArray: false
   name: files
   required: false
@@ -16,7 +18,7 @@ comment: |-
 
   For more information about the preprocessing rules, please refer to: https://demisto.developers.paloaltonetworks.com/docs/incidents/incident-pre-processing
 commonfields:
-  id: 55dd00a9-4782-4eed-ba57-c638ce09050f
+  id: PreprocessEmail
   version: -1
 enabled: false
 name: PreprocessEmail
@@ -28,3 +30,6 @@ tags:
 - ' preProcessing'
 timeout: '0'
 type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

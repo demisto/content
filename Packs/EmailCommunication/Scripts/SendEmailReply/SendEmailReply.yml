@@ -22,7 +22,7 @@ args:
   secret: false
 comment: Send email reply
 commonfields:
-  id: c5c0d8b8-050e-4457-9463-df5dcb37c2d5
+  id: SendEmailReply
   version: -1
 enabled: false
 name: SendEmailReply
@@ -31,3 +31,6 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

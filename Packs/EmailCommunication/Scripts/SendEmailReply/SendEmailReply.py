@@ -1,5 +1,4 @@
 from CommonServerPython import *
-import sys
 import json
 import ast
 
@@ -20,18 +19,18 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
         entry_id_list: The files entry ids list.
         additional_header: The additional header.
     """
-
     email_reply = send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
                                     reply_html_body, entry_id_list, additional_header)
 
     status = email_reply[0].get('Contents', '')
     if status != FAIL_STATUS_MSG and status:
-        success_msg = f'Mail sent successfully. To:{email_to}'
+        msg = 'Mail sent successfully. To: {}'.format(email_to)
         if email_cc:
-            success_msg += f' Cc: {email_cc}'
-        demisto.results(success_msg)
+            msg += f' Cc: {email_cc}'
     else:
-        demisto.results(f'You had an error sending the mail: {status}')
+        msg = f'An error occurred while trying to send the mail: {status}'
+
+    return msg
 
 
 def send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
@@ -51,12 +50,12 @@ def send_mail_request(incident_id, email_subject, email_to, reply_body, service_
 
 
 def get_email_cc(current_cc=None, additional_cc=None):
-    """Get current email cc and additional cc and combined them together.
+    """Get current email cc and additional cc and combines them together.
     Args:
         current_cc: Current email cc.
         additional_cc: Additional email cc.
     Returns:
-        Email's cc
+        str. Email's cc
     """
 
     if current_cc:
@@ -76,12 +75,12 @@ def get_entry_id_list(incident_id, attachments, files):
         attachments (list): The attachments of the email.
         files (list): The uploaded files in the context.
     Returns:
-        Attachments entries ids list.
+        list. Attachments entries ids list.
     """
     entry_id_list = []
     if attachments and files:
         for attachment in attachments:
-            attachment_name = attachment['name']
+            attachment_name = attachment.get('name', '')
             file_data = create_file_data_json(attachment)
             demisto.executeCommand("demisto-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data})
             if not isinstance(files, list):
@@ -98,7 +97,7 @@ def create_file_data_json(attachment):
     Args:
         attachment (dict): The attachments of the email.
     Returns:
-        Attachment data.
+        dict. Attachment data.
     """
     attachment_name = attachment['name']
     attachment_path = attachment['path']
@@ -127,12 +126,12 @@ def create_file_data_json(attachment):
 
 
 def get_reply_body(notes, incident_id):
-    """Get attachment and create a json with its data.
+    """ Get the notes and the incident id and return the reply body
     Args:
         notes (dict): The notes of the email.
         incident_id (str): The incident id.
     Returns:
-        Attachment data.
+        The reply body and the html body.
     """
     reply_body = ''
     if notes:
@@ -149,7 +148,6 @@ def get_reply_body(notes, incident_id):
 
     else:
         return_error("Please add a note")
-        sys.exit(1)
 
     try:
         res = demisto.executeCommand("mdToHtml", {"contextKey": "replyhtmlbody", "text": reply_body})
@@ -162,7 +160,7 @@ def get_reply_body(notes, incident_id):
 def get_email_recipients(email_to, email_from, service_mail):
     """Get the email recipient.
     Args:
-        email_to (list): The email receiver.
+        email_to (str): The email receiver.
         email_from (str): The email's sender.
         service_mail (str): The mail listener.
     Returns:
@@ -199,8 +197,10 @@ def main():
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, reply_html_body = get_reply_body(notes, incident_id)
         entry_id_list = get_entry_id_list(incident_id, attachments, files)
-        send_reply(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc, reply_html_body,
-                   entry_id_list, additional_header)
+        result = send_reply(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc,
+                            reply_html_body,
+                            entry_id_list, additional_header)
+        demisto.results(result)
     except Exception as error:
         return_error(str(error), error)
 
