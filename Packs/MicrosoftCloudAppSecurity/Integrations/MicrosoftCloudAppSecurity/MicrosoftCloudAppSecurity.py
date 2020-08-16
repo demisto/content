@@ -220,6 +220,8 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comm
         request_data['filters'] = filters
     elif custom_filter:
         request_data = json.loads(custom_filter)
+    else:
+        return_error("Error: You must enter at least one of these arguments: alert ID, custom filter.")
     return request_data
 
 
@@ -228,11 +230,17 @@ def test_module(client):
         client.list_alerts(url_suffix='/alerts/', request_data={})
         if demisto.params().get('isFetch'):
             client.list_incidents(filters={}, limit=1)
+            if demisto.params().get('custom_filter'):
+                custom_filter = demisto.params().get('custom_filter')
+                try:
+                    json.loads(custom_filter)
+                except ValueError:
+                    return_error('Custom Filter Error: Your custom filter format is incorrect, please try again.')
     except Exception as e:
         if 'No connection' in str(e):
             return 'Connection Error: The URL you entered is probably incorrect, please try again.'
         if 'Invalid token' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+            return 'Authorization Error: make sure API Key is correctly set.'
         return str(e)
     return 'ok'
 
@@ -315,7 +323,7 @@ def bulk_resolve_alert_command(client, args):
     comment = args.get('comment')
     request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comment)
     resolve_alerts = client.resolve_bulk_alerts(request_data)
-    number_of_resolved_alerts = resolve_alerts['dismissed']
+    number_of_resolved_alerts = resolve_alerts['resolved']
     return CommandResults(
         readable_output=f'{number_of_resolved_alerts} alerts resolved',
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
@@ -428,7 +436,7 @@ def users_accounts_to_human_readable(users_accounts):
     for entity in users_accounts:
         readable_output = assign_params(display_name=entity.get('displayName'), last_seen=entity.get('lastSeen'),
                                         is_admin=entity.get('isAdmin'), is_external=entity.get('isExternal'),
-                                        email=entity.get('email'), identifier=entity.get('username'))
+                                        email=entity.get('email'), identifier=json.loads(entity.get('username')))
         users_accounts_readable_outputs.append(readable_output)
 
     headers = ['display_name', 'last_seen', 'is_admin', 'is_external', 'email', 'identifier']

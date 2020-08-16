@@ -27,7 +27,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: 'Incident severity. Valid values are: Low, Medium, High, All.'
+- display: Incident severity
   hidden: false
   name: severity
   options:
@@ -48,8 +48,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- display: 'Incident resolution status. Valid values are: Open, Dismissed, Resolved,
-    All.'
+- display: Incident resolution status
   hidden: false
   name: resolution_status
   options:
@@ -59,8 +58,8 @@ configuration:
   - All
   required: false
   type: 16
-- additionalinfo: 'Filter that you create yourself. If you use custom_filter, other
-    filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+- additionalinfo: 'Filter that you create yourself. If you use this custom filter,
+    other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters'
   display: Custom Filter
   hidden: false
   name: custom_filter
@@ -78,13 +77,14 @@ script:
       description: |-
         Multiple alerts matching the specified filters.
         The alert_id should appear similar to "55af7415f8a0a7a29eef2e1f".
+        Mandatory, unless you use custom filter.
       isArray: true
       name: alert_ids
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other
-        filters will not work. The filter template can be found here: https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: 'Filter that you create yourself. If you use this custom filter,
+        other filters will not work. The filter template can be found here: https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
       isArray: false
       name: custom_filter
       required: false
@@ -108,14 +108,14 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of records returned by the request.
+      description: The maximum number of records returned to the user.
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The severity of the alert. Valid values are: Low, Medium, High.'
+      description: The severity of the alert.
       isArray: false
       name: severity
       predefined:
@@ -126,8 +126,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter by alert resolution status. Valid values are: Open, Dismissed,
-        Resolved.'
+      description: Filter by alert resolution status.
       isArray: false
       name: resolution_status
       predefined:
@@ -137,8 +136,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other
-        filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+      description: 'Filter that you create yourself. If you use this custom filter,
+        other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
       isArray: false
       name: custom_filter
       required: false
@@ -282,13 +281,14 @@ script:
       description: |-
         Multiple alerts matching the specified filters.
         Alert_id should be like this template - "1234567890abcdefg".
+        Mandatory, unless you use custom filter.
       isArray: true
       name: alert_ids
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other
-        filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: 'Filter that you create yourself. If you use this custom filter,
+        other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
       isArray: false
       name: custom_filter
       required: false
@@ -313,7 +313,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of records returned by the request.
+      description: Maximum number of records returned to the user.
       isArray: false
       name: limit
       required: false
@@ -375,8 +375,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other
-        filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: 'Filter that you create yourself. If you use this custom filter,
+        other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
       isArray: false
       name: custom_filter
       required: false
@@ -536,7 +536,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum number of records returned by the request.
+      description: Maximum number of records returned to the user.
       isArray: false
       name: limit
       required: false
@@ -589,8 +589,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other
-        filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: 'Filter that you create yourself. If you use this custom filter,
+        other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
       isArray: false
       name: custom_filter
       required: false
@@ -696,7 +696,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of records returned by the request.
+      description: Maximum number of records returned to the user.
       isArray: false
       name: limit
       predefined:
@@ -748,8 +748,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter that you create yourself. If you use custom_filter, other
-        filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
+      description: 'Filter that you create yourself. If you use this custom filter,
+        other filters will not work. The filter template can be found at: https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.'
       isArray: false
       name: custom_filter
       required: false
