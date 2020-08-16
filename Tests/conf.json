@@ -1878,7 +1878,6 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Rasterize"
             ]
@@ -1890,7 +1889,6 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Rasterize"
             ]
