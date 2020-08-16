@@ -112,7 +112,7 @@ script:
             throw 'Failed to reach ' + url + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
         return JSON.parse(res.Body);
-    }
+    is}
 
     var sendRequestWithToken = function(method, url, args, returnPlainResponse) {
         var headers = {};
@@ -129,7 +129,7 @@ script:
                 {
                     Method: 'POST',
                     Headers: headers,
-                    Body: JSON.stringify(data),
+                    Body: JSON.stringify(data)
                 },
                 insecure,
                 proxy
