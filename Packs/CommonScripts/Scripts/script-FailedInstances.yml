@@ -76,24 +76,24 @@ script: |
   };
 type: javascript
 tags: []
-comment: Executes test for all integration instances available and returns a detailed
-  table about failed integration instances
+comment: Executes a test for all integration instances available and returns detailed
+  information about succeeded and failed integration instances.
 enabled: true
 outputs:
 - contextPath: FailedInstances.instance
-  description: Name of failed integration instance
+  description: The name of the failed integration instance.
   type: string
 - contextPath: FailedInstances.brand
-  description: Brand of failed integration instance
+  description: The brand name of the failed integration instance.
   type: string
 - contextPath: FailedInstances.category
-  description: Category of failed integration instance
+  description: The category of the failed integration instance.
   type: string
 - contextPath: FailedInstances.information
-  description: Error information about failed integration instance
+  description: Error information about the failed integration instance.
   type: string
 - contextPath: FailedInstances.status
-  description: Status of the instance.
+  description: The status of the instance.
   type: string
 - contextPath: InstancesCount.FailedCount
   description: The number of failed instances.
@@ -105,19 +105,19 @@ outputs:
   description: The number of total enabled instances.
   type: string
 - contextPath: SuccessInstances.brand
-  description: Brand of succeeded integration instance.
+  description: The brand name of the successful integration instance.
   type: string
 - contextPath: SuccessInstances.category
-  description: Category of succeeded integration instance.
+  description: The category of the successful integration instance.
   type: string
 - contextPath: SuccessInstances.information
-  description: succeeded.
+  description: Information that the integration instance was succesful.
   type: string
 - contextPath: SuccessInstances.instance
-  description: Name of succeeded integration instance
+  description: The name of the successful integration instance.
   type: string
 - contextPath: SuccessInstances.status
-  description: Status of the instance.
+  description: The status of the instance.
   type: string
 scripttarget: 0
 timeout: 10.8µs
