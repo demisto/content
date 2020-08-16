@@ -10,6 +10,7 @@ description: Deprecated. Integrations list -  Cortex (Traps, PAN-OS, Analytics)\
   \ for IP addresses and hosts related to that specific hash. \nThe output provided\
   \ by the playbook facilitates pivoting searches for possibly affected hosts, IP\
   \ addresses, or users.
+description: "Deprecated use Palo Alto Networks - Hunting And Threat Detection instead"
 starttaskid: '0'
 hidden: true
 tasks:
