@@ -26,7 +26,8 @@
   "shouldPublish": false,
   "associatedTypes": [
     "IP",
-    "IPv6"
+    "IPv6",
+    "Threat Actor"
   ],
   "caseInsensitive": true,
   "columns": null,
