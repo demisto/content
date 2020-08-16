@@ -730,7 +730,7 @@ def main():
         else:
             compressed_hr_data = data_str
         res = {'PayloadVersion': FETCH_DATA_VERSION, 'PayloadData': compressed_hr_data,
-               'Execution Time': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}
+               'ExecutionTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"), 'IsCompressed': compress}
         return_file = input_args.get('toFile', 'False').strip() == 'True'
         if return_file:
             return_file_entry(res, len(incidents))
