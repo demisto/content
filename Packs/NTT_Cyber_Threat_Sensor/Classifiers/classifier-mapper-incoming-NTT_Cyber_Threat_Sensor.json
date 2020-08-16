@@ -1,16 +1,11 @@
 {
-    "brandName": "NTT Cyber Threat Sensor",
-    "custom": true,
-    "defaultIncidentType": "TD Incident",
-    "id": "d949c227-bc57-46c1-8643-4a6b4a68d992",
-    "incidentSamples": [],
-    "instanceId": "3c4fe1f2-59bf-4c7e-877f-5a3488954676",
-    "instanceName": "NTT Cyber Threat Sensor EU1",
-    "isDefault": false,
-    "keyTypeMap": {
-        "TD": "TD Incident"
-    },
-    "mapping": {
+	"id": "NTT Cyber Threat Sensor - mapper",
+    "name": "NTT Cyber Threat Sensor - mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming NTT Cyber Threat Sensor fields.",
+	"version": -1,
+	"defaultIncidentType": "",
+	"mapping": {
         "TD Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
@@ -100,11 +95,5 @@
             }
         }
     },
-    "sortValues": null,
-    "transformer": {
-        "complex": null,
-        "simple": "event_type"
-    },
-    "unclassifiedCases": {},
-    "version": -1
+	"fromVersion": "6.0.0"
 }
