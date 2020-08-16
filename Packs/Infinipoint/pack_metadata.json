@@ -1,0 +1,15 @@
+{
+    "name": "Infinipoint",
+    "description": "Use the Infinipoint integration to retrieve security and policy incompliance events, vulnerabilities or incidents. Investigate and respond to events in real-time",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Infinipoint - ET",
+    "url": "",
+    "email": "support@infinipoint.io",
+    "created": "2020-06-07T11:55:44Z",
+    "categories": [],
+    "Infinipoint.Tags": [],
+    "useCases": [],
+    "keywords": [],
+    "tags": []
+}
