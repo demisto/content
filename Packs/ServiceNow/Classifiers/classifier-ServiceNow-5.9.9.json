@@ -1,17 +1,13 @@
 {
-	"brands": null,
+	"brandName": "ServiceNow",
+	"custom": true,
 	"defaultIncidentType": "ServiceNow Ticket",
-	"description": "Maps incoming ServiceNow incidents fields.",
-	"feed": false,
-	"fromVersion": "6.0.0",
-	"id": "ServiceNow-incoming-mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 37,
+	"id": "ServiceNow Classifier",
+	"incidentSamples": [],
+	"isDefault": false,
+    "keyTypeMap": {
+        "incident": "ServiceNow Ticket"
+    },
 	"mapping": {
 		"ServiceNow Ticket": {
 			"dontMapEventToLabels": false,
@@ -749,19 +745,13 @@
 			}
 		}
 	},
-	"name": "ServiceNow - Incoming Mapper",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
 	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "transformer": {
+        "complex": null,
+        "simple": "sys_class_name"
+    },
+	"unclassifiedCases": {},
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"toVersion": "5.9.9"
 }

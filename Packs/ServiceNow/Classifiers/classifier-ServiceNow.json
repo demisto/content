@@ -1,12 +1,12 @@
 {
-    "defaultIncidentType": "ServiceNowTicket",
+    "defaultIncidentType": "ServiceNow Ticket",
     "description": "Classifies ServiceNow tickets.",
     "feed": false,
     "id": "ServiceNow",
     "incidentSamples": null,
     "indicatorSamples": null,
     "keyTypeMap": {
-        "incident": "ServiceNowTicket"
+        "incident": "ServiceNow Ticket"
     },
     "name": "ServiceNow Classifier",
     "sortValues": null,

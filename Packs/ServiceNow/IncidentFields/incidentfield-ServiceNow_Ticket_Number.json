@@ -1,11 +1,11 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "ServiceNowTicket"
+        "ServiceNow Ticket"
     ],
     "breachScript": "",
     "caseInsensitive": true,
-    "cliName": "servicenowticketnumber",
+    "cliName": "ServiceNow Ticketnumber",
     "closeForm": false,
     "columns": null,
     "content": true,
@@ -15,7 +15,7 @@
     "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
-    "id": "incident_servicenowticketnumber",
+    "id": "incident_ServiceNow Ticketnumber",
     "isReadOnly": false,
     "locked": false,
     "name": "ServiceNow Ticket Number",

@@ -1,6 +1,6 @@
 {
 	"brands": null,
-	"defaultIncidentType": "ServiceNowTicket",
+	"defaultIncidentType": "ServiceNow Ticket",
 	"description": "Maps outgoing ServiceNow incident Fields.",
 	"feed": false,
 	"fromVersion": "6.0.0",
@@ -13,7 +13,7 @@
 	"locked": false,
 	"logicalVersion": 13,
 	"mapping": {
-		"ServiceNowTicket": {
+		"ServiceNow Ticket": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"category": {

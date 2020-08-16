@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "ServiceNowTicket"
+        "ServiceNow Ticket"
     ],
     "breachScript": "",
     "caseInsensitive": true,

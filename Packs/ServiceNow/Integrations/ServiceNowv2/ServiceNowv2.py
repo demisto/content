@@ -2022,11 +2022,11 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
         result = client.update(ticket_type, ticket_id, fields, {})
 
-        demisto.info(f'Ticket Update result {result}\n')
+        demisto.info(f'Ticket Update result {result}')
 
     entries = parsed_args.entries
     if entries:
-        demisto.debug(f'New entries {entries}\n')
+        demisto.debug(f'New entries {entries}')
 
         for entry in entries:
             demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
