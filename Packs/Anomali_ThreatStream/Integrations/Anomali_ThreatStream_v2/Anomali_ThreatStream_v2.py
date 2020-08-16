@@ -661,7 +661,7 @@ def import_ioc_without_approval(file_id, classification="private", confidence=No
         files = {'file': (file_info['name'], f)}
         params = build_params()
 
-        res = http_request("POST", "v1/intelligence/import/", params=params, files=files)
+        res = http_request("PATCH", "v1/intelligence/", params=params, files=files)
     # checking that response contains success key
     if res.get('success', False):
         imported_id = res.get('import_session_id', '')
