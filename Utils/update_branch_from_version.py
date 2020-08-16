@@ -68,7 +68,7 @@ def delete_json(file_path):
 
 def rewrite_json(file_path, json_content, new_from_version):
     # if there is no fromVersion in json or the fromVersion is lower than the new from version then update
-    if ('fromVersion' in json_content and parse_version(json_content.get('fromVersion')) < new_from_version) \
+    if ('fromVersion' in json_content and parse_version(json_content.get('fromVersion')) < parse_version(new_from_version)) \
             or ('fromVersion' not in json_content):
         json_content['toVersion'] = new_from_version
 
@@ -81,7 +81,7 @@ def rewrite_json(file_path, json_content, new_from_version):
 
 def rewrite_yml(file_path, yml_content, new_from_version):
     # if there is no fromVersion in json or the fromversion is lower than the new from version then update
-    if ('fromversion' in yml_content and parse_version(yml_content.get('fromversion')) < new_from_version) \
+    if ('fromversion' in yml_content and parse_version(yml_content.get('fromversion')) < parse_version(new_from_version)) \
             or ('fromversion' not in yml_content):
         yml_content['toversion'] = new_from_version
 
