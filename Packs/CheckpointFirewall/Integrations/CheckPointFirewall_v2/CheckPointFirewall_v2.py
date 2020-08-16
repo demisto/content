@@ -1,5 +1,6 @@
 from typing import Tuple
 import requests
+import time
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -44,7 +45,8 @@ class Client(BaseClient):
         response['objects'] = response.pop('objects-dictionary')
         return format_list_objects(response, 'AccessRule')
 
-    def checkpoint_add_rule_command(self, layer: str, position, name: str = None):
+    def checkpoint_add_rule_command(self, layer: str, position, action: str, name: str = None,
+                                    vpn: str = None, destination=None, service=None, source=None):
         """
         Add access rule object.
 
@@ -54,9 +56,17 @@ class Client(BaseClient):
                                   int - add rule at a specific position
                                   str - add rule at the position. vaild value: top, bottom
             name(str): rule name
+            action(str): Action settings. valid values are: Accept, Drop, Apply Layer, Ask and Info
+                         default value is Drop.
 
+            vpn(str): Communities or Directional. Valid values: Any, All_GwToGw.
+            destination(str or list): Collection of Network objects identified by the name or UID.
+            service(str or list): Collection of Network objects identified by the name or UID.
+            source(str or list): Collection of Network objects identified by the name or UID.
         """
-        body = {"layer": layer, "position": position, 'name': name}
+        body = {'layer': layer, 'position': position, 'name': name,
+                'action': action, 'destination': destination, 'service': service,
+                'source': source, 'vpn': vpn, }
         response = self._http_request(method='POST', url_suffix='add-access-rule',
                                       headers=self.headers, json_data=body)
         return format_add_object(response, 'AccessRule')
@@ -96,17 +106,17 @@ class Client(BaseClient):
                                       headers=self.headers, json_data=body)
         return format_update_object(response, 'AccessRule')
 
-    def checkpoint_delete_rule_command(self, identifier: str):
+    def checkpoint_delete_rule_command(self, identifier: str, layer: str):
         """
         Delete existing rule object using object name or uid.
 
         Args:
             identifier(str): uid, name or rule-number.
-
+            layer(str): Layer that the rule belongs to identified by the name or UID.
         """
         response = self._http_request(method='POST', url_suffix='delete-access-rule',
                                       headers=self.headers,
-                                      json_data={'name': identifier})
+                                      json_data={'name': identifier, 'layer': layer})
         return format_delete_object(response, 'AccessRule')
 
     def checkpoint_list_hosts_command(self, limit: int, offset: int):
@@ -228,7 +238,7 @@ class Client(BaseClient):
         return format_add_object(response, 'Group')
 
     def checkpoint_update_group_command(self, identifier: str, ignore_warnings: bool,
-                                        ignore_errors: bool,
+                                        ignore_errors: bool, members=None,
                                         new_name: str = None, comments: str = None):
         """
         Edit existing object using object name or uid.
@@ -237,13 +247,15 @@ class Client(BaseClient):
             identifier(str): uid or name.
             ignore_warnings(bool):Apply changes ignoring warnings.
             ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
-                                 a changes.
-                                 If ignore-warnings flag was omitted- warnings will also be ignored
+                                 a changes. If ignore-warnings flag was omitted- warnings will also
+                                 be ignored
+            members(object): Collection of Network objects identified by the name or UID.
             new_name(str): New name of the object.
             comments(str): Comments string.
         """
         body = {'name': identifier,
                 'new-name': new_name,
+                'members': members,
                 'comments': comments,
                 'ignore-warnings': ignore_warnings,
                 'ignore-errors': ignore_errors}
@@ -382,8 +394,7 @@ class Client(BaseClient):
 
         """
         response = self._http_request(method='POST', url_suffix='show-threat-indicator',
-                                      headers=self.headers,
-                                      json_data={'name': identifier})
+                                      headers=self.headers, json_data={'name': identifier})
 
         return format_get_object(response, 'ThreatIndicator')
 
@@ -430,8 +441,7 @@ class Client(BaseClient):
             identifier(str): uid or name.
         """
         response = self._http_request(method='POST', url_suffix='delete-threat-indicator',
-                                      headers=self.headers,
-                                      json_data={'name': identifier})
+                                      headers=self.headers, json_data={'name': identifier})
         return format_delete_object(response, 'ThreatIndicator')
 
     def checkpoint_list_application_sites_command(self, limit: int, offset: int):
@@ -519,6 +529,45 @@ class Client(BaseClient):
                                       headers=self.headers, json_data={'name': identifier})
         return format_delete_object(response, 'ApplicationSite')
 
+    def checkpoint_list_application_site_categories_command(self, limit: int, offset: int):
+        """
+        Show all application site categories.
+
+        Args:
+            limit(int): The maximal number of returned results.
+            offset(int): Number of the results to initially skip.
+        """
+
+        body = {'limit': limit,
+                'offset': offset}
+        response = self._http_request(method='POST', url_suffix='show-application-site-categories',
+                                      headers=self.headers, json_data=body)
+        return format_list_objects(response, 'ApplicationSiteCategory')
+
+    def checkpoint_get_application_site_category_command(self, identifier: str):
+        """
+        Retrieve application site category object using object name or uid.
+
+        Args:
+            identifier(str): application site category object name or UID.
+        """
+        response = self._http_request(method='POST', url_suffix='show-application-site-category',
+                                      headers=self.headers, json_data={'name': identifier})
+        return format_get_object(response, 'ApplicationSiteCategory')
+
+    def checkpoint_add_application_site_category_command(self, identifier: str):
+        """
+        Add application site objects.
+
+        Args:
+            identifier(str): Object name or uid. Must be unique in the domain.
+            new_name(str): New name of the object.
+        """
+        body = {"name": identifier}
+        response = self._http_request(method='POST', url_suffix='add-application-site-category',
+                                      headers=self.headers, json_data=body)
+        return format_add_object(response, 'ApplicationSiteCategory')
+
     def checkpoint_list_packages_command(self, limit: int, offset: int):
         """
         Retrieve all policy packages.
@@ -549,7 +598,7 @@ class Client(BaseClient):
         response = response.get('objects')
         return format_list_servers(response, 'Gateways')
 
-    def install_policy_command(self, policy_package: str, targets, access: bool):
+    def checkpoint_install_policy_command(self, policy_package: str, targets, access: bool):
         """
         installing policy.
 
@@ -571,7 +620,7 @@ class Client(BaseClient):
 
         return format_task_id(response, 'InstallPolicy')
 
-    def verify_policy_command(self, policy_package: str):
+    def checkpoint_verify_policy_command(self, policy_package: str):
         """
         Verifies the policy of the selected package.
 
@@ -582,6 +631,28 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='verify-policy',
                                       headers=self.headers, json_data=body)
         return format_task_id(response, 'VerifyPolicy')
+
+    def checkpoint_list_objects_command(self, limit: int, offset: int, filter_search: str,
+                                        ip_only: bool, object_type: str):
+        """
+        Retrieve data about objects.
+
+        Args:
+            limit(int): The maximal number of returned results.
+            offset(int): Number of the results to initially skip.
+            filter_search(str): Search expression to filter objects by. To use IP search only, set the
+                         "ip-only" parameter to true.
+            ip_only(bool): If using "filter", use this field to search objects by their IP address
+                           only, without involving the textual search. Default value is False.
+            object_type(str): The objects' type, e.g.: host, service-tcp, network, address-range.
+                       Default value is object.
+        """
+        body = {'limit': limit, 'offset': offset, 'filter': filter_search,
+                "ip-only": ip_only, 'type': object_type}
+
+        response = self._http_request(method='POST', url_suffix='v1.5/show-objects',
+                                      headers=self.headers, json_data=body)
+        return format_list_objects(response, 'Objects')
 
     def checkpoint_show_task_command(self, task_id):
         """
@@ -678,12 +749,10 @@ def format_list_objects(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
 
     for element in object_list:
         current_object_data = {'name': element.get('name'),
-                               'uid': element.get('uid')}
+                               'uid': element.get('uid'),
+                               'ipv4': element.get('ipv4-address')}
         if endpoint != 'AccessRule':
             current_object_data['type'] = element.get('type')
-        if endpoint == 'Host':
-            current_object_data['ipv4'] = element.get('ipv4-address')
-
         printable_result.append(current_object_data)
 
     outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': printable_result}
@@ -1118,12 +1187,21 @@ def main():
             'checkpoint-application-site-delete': client.checkpoint_delete_application_site_command,
 
             'checkpoint-show-task': client.checkpoint_show_task_command,
-            'checkpoint-install-policy': client.install_policy_command,
-            'checkpoint-verify-policy': client.verify_policy_command,
+            'checkpoint-show-objects': client.checkpoint_list_objects_command,
+            'checkpoint-install-policy': client.checkpoint_install_policy_command,
+            'checkpoint-verify-policy': client.checkpoint_verify_policy_command,
             'checkpoint-publish': client.checkpoint_publish_command,
 
             'checkpoint-packages-list': client.checkpoint_list_packages_command,
             'checkpoint-gateways-list': client.checkpoint_list_gateways_command,
+
+            'checkpoint-application-site-category-list':
+                client.checkpoint_list_application_site_categories_command,
+            'checkpoint-application-site-category-get':
+                client.checkpoint_get_application_site_category_command,
+            'checkpoint-application-site-category-add':
+                client.checkpoint_add_application_site_category_command,
+
         }
         if command in commands:
             readable_output, outputs, result = \

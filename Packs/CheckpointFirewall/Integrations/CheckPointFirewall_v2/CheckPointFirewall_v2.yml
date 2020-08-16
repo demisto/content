@@ -118,7 +118,7 @@ script:
       type: String
     - contextPath: CheckPoint.Host.last-modifier
       description: indicates the last user modified the object
-      type: Unknown
+      type: String
     - contextPath: CheckPoint.Host.groups-name
       description: Group object name linked to current host object.
       type: String
@@ -479,6 +479,12 @@ script:
       isArray: false
       name: session_id
       required: true
+      secret: false
+    - default: false
+      description: Collection of Network objects identified by the name or UID.
+      isArray: false
+      name: members
+      required: false
       secret: false
     deprecated: false
     description: update group object
@@ -1084,6 +1090,38 @@ script:
       description: Rule name.
       isArray: false
       name: name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: Drop
+      description: 'Action settings. valid values are: Accept, Drop, Apply Layer,
+        Ask and Info. default value is Drop.'
+      isArray: false
+      name: action
+      required: false
+      secret: false
+    - default: false
+      description: 'Communities or Directional. Valid values: Any, All_GwToGw.'
+      isArray: false
+      name: vpn
+      required: false
+      secret: false
+    - default: false
+      description: Collection of Network objects identified by the name or UID.
+      isArray: false
+      name: destination
+      required: false
+      secret: false
+    - default: false
+      description: Collection of Network objects identified by the name or UID.
+      isArray: false
+      name: service
+      required: false
+      secret: false
+    - default: false
+      description: Collection of Network objects identified by the name or UID.
+      isArray: false
+      name: source
       required: false
       secret: false
     - default: false
@@ -1733,6 +1771,212 @@ script:
     - contextPath: CheckPoint.Gateways.domain-type
       description: Doamin type
       type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximal number of returned results
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Number of the results to initially skip
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve all application site category.
+    execution: false
+    name: checkpoint-application-site-category-list
+    outputs:
+    - contextPath: CheckPoint.ApplicationSiteCategory.name
+      description: Name of the package
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.uid
+      description: UID of the package
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.type
+      description: Type of the package
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-name
+      description: Domain name
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-uid
+      description: Domain uid
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-type
+      description: Domain type
+      type: String
+  - arguments:
+    - default: false
+      description: Object name or uid. Must be unique in the domain.
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    - default: false
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Add new application site category
+    execution: false
+    name: checkpoint-application-site-category-add
+    outputs:
+    - contextPath: CheckPoint.ApplicationSiteCategory.name
+      description: object name
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.uid
+      description: object uid
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.type
+      description: object type
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.description
+      description: A description for the application.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-name
+      description: domain name
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-type
+      description: domain name
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.creator
+      description: Indicates the creator of the object
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.last-modifier
+      description: Indicates the last user modified this object
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.groups
+      description: Collection of group identifiers
+      type: Unknown
+  - arguments:
+    - default: false
+      description: application site category object name or UID.
+      isArray: false
+      name: identifier
+      required: true
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve application site category object using object name or uid.
+    execution: false
+    name: checkpoint-application-site-category-get
+    outputs:
+    - contextPath: CheckPoint.ApplicationSiteCategory.name
+      description: host name
+      type: Unknown
+    - contextPath: CheckPoint.ApplicationSiteCategory.uid
+      description: object uid
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.type
+      description: object type
+      type: Unknown
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-name
+      description: domain name
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-uid
+      description: domain uid
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.read-only
+      description: indicates if the object is read only
+      type: Boolean
+    - contextPath: CheckPoint.ApplicationSiteCategory.creator
+      description: indicates the creator of the object
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.last-modifier
+      description: indicates the last user modified the object
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximal number of returned results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Number of the results to initially skip.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Search expression to filter objects by. The provided text should
+        be exactly the same as it would be given in Smart Console. The logical operators
+        in the expression ('AND', 'OR') should be provided in capital letters. By
+        default, the search involves both a textual search and a IP search. To use
+        IP search only, set the "ip-only" parameter to true.
+      isArray: false
+      name: filter_search
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If using "filter", use this field to search objects by their IP
+        address only, without involving the textual search.
+      isArray: false
+      name: ip_only
+      predefined:
+      - 'true'
+      - ' false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: object
+      description: 'he objects'' type, e.g.: host, service-tcp, network, address-range.
+        Default value is object'
+      isArray: false
+      name: object_type
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Execute command with a specific session ID
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve data about objects.
+    execution: false
+    name: checkpoint-show-objects
+    outputs:
+    - contextPath: CheckPoint.Object.name
+      description: object name
+      type: String
+    - contextPath: CheckPoint.Object.uid
+      description: object uid
+      type: String
+    - contextPath: CheckPoint.Object.type
+      description: object type
+      type: String
+    - contextPath: CheckPoint.Object.ipv4
+      description: IP-v4 address of a spesific object
+      type: String
   dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: false
@@ -1743,3 +1987,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
