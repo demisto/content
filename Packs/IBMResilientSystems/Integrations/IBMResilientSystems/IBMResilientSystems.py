@@ -1059,7 +1059,7 @@ try:
     elif demisto.command() == 'rs-related-incidents':
         demisto.results(related_incidents_command(demisto.args()['incident-id']))
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise
