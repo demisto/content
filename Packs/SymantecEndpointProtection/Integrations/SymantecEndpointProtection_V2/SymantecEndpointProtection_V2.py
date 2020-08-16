@@ -155,7 +155,7 @@ def parse_response(resp):
             return resp
         try:
             return resp.json()
-        except Exception, ex:
+        except Exception as ex:
             return_error('Unable to parse response: {}'.format(ex))
     else:
         try:
@@ -836,5 +836,5 @@ try:
         move_client_to_group_command(token)
     if current_command == 'sep-identify-old-clients':
         old_clients_command(token)
-except Exception, ex:
+except Exception as ex:
     demisto.results('Cannot perform the command: {}. Error: {}'.format(current_command, ex))

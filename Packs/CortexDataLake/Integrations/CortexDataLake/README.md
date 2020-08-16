@@ -642,6 +642,8 @@ Searches the Cortex firewall.traffic table. Traffic logs contain entries for the
 | CDL.Logging.Traffic.URLCategory | String | The URL category. | 
 | CDL.Logging.Traffic.SourcePort | String | Source port utilized by the session. | 
 | CDL.Logging.Traffic.Tunnel | String | Type of tunnel. | 
+| CDL.Logging.Traffic.SourceDeviceHost | String | Hostname of the device from which the session originated. |
+| CDL.Logging.Traffic.DestDeviceHost | String | Hostname of the device session destination.
 
 
 ##### Command Example
@@ -774,6 +776,8 @@ Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS
 | CDL.Logging.Threat.Category | String | For the URL subtype, this identifies the URL Category. For the WildFire subtype, this identifies the verdict on the file. It is one of ‘malicious’, ‘phishing’, ‘grayware’, or ‘benign’; | 
 | CDL.Logging.Threat.Sport | String | Source port utilized by the session. | 
 | CDL.Logging.Threat.IsPhishing | Boolean | Detected enterprise credential submission by an end user. | 
+| CDL.Logging.Threat.SourceDeviceHost | String | Hostname of the device from which the session originated. |
+| CDL.Logging.Threat.DestDeviceHost | String | Hostname of the device session destination. |
 | IP.Address | String | IP address. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
@@ -919,6 +923,8 @@ header field. |
 | CDL.Logging.URL.DstUser | String | The username to which the network traffic was destined. | 
 | CDL.Logging.URL.DstUserInfo | String | The destination user info. | 
 | CDL.Logging.URL.TechnologyOfApp | String | The networking technology used by the identified application. | 
+| CDL.Logging.URL.SourceDeviceHost | String | Hostname of the device from which the session originated. |
+| CDL.Logging.URL.DestDeviceHost | String | Hostname of the device session destination. |
 
 
 #### Command Example

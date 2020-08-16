@@ -791,7 +791,7 @@ try:
     elif demisto.command():
         query_command()
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     return_error(e.message)
