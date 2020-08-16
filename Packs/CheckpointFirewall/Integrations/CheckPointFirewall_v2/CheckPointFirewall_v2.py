@@ -1,6 +1,5 @@
 from typing import Tuple
 import requests
-import time
 
 import demistomock as demisto
 from CommonServerPython import *
