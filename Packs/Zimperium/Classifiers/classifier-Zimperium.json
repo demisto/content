@@ -3,9 +3,9 @@
 	"name": "Zimperium - Classifier",
 	"type": "classification",
 	"description": "Classifies Zimperium incidents.",
-	"defaultIncidentType": "Zimperium event",
+	"defaultIncidentType": "Zimperium Event",
 	"keyTypeMap": {
-		"ZIPS_EVENT": "Zimperium event"
+		"ZIPS_EVENT": "Zimperium Event"
 	},
 	"transformer": {
 		"complex": null,
