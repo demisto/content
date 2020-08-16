@@ -38,7 +38,7 @@ SKIPPED_PACKS = ['NonSupported', 'ApiModules']
 
 
 class Running(IntEnum):
-    NOT_LOCAL_RUNNING = 0
+    CIRCLECI_RUN = 0
     WITH_OTHER_SERVER = 1
     WITH_LOCAL_SERVER = 2
 
@@ -47,20 +47,20 @@ class SimpleSSH(SSHClient):
     logging.getLogger("paramiko").setLevel(logging.WARNING)
 
     def __init__(self, host, user='ec2-user', port=22, key_file_path='~/.ssh/id_rsa'):
-        self.is_local_running = Build.local_running
-        if self.is_local_running in [Running.NOT_LOCAL_RUNNING, Running.WITH_OTHER_SERVER]:
+        self.run_environment = Build.run_environment
+        if self.run_environment in [Running.CIRCLECI_RUN, Running.WITH_OTHER_SERVER]:
             super().__init__()
             self.load_system_host_keys()
             self.set_missing_host_key_policy(AutoAddPolicy())
-            if self.is_local_running == Running.NOT_LOCAL_RUNNING:
+            if self.run_environment == Running.CIRCLECI_RUN:
                 self.connect(hostname=host, username=user, timeout=60.0)
-            elif self.is_local_running == Running.WITH_OTHER_SERVER:
+            elif self.run_environment == Running.WITH_OTHER_SERVER:
                 if key_file_path.startswith('~'):
                     key_file_path = key_file_path.replace('~', os.getenv('HOME'), 1)
                     self.connect(hostname=host, port=port, username=user, key_filename=key_file_path, timeout=60.0)
 
     def exec_command(self, command, *_other):
-        if self.is_local_running in [Running.NOT_LOCAL_RUNNING, Running.WITH_OTHER_SERVER]:
+        if self.run_environment in [Running.CIRCLECI_RUN, Running.WITH_OTHER_SERVER]:
             _, _stdout, _stderr = super(SimpleSSH, self).exec_command(command)
             return _stdout.read(), _stderr.read()
         else:
@@ -72,8 +72,9 @@ class Build:
     content_path = '{}/project'.format(os.getenv('HOME'))
     test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
     key_file_path = 'Use in case of running with non local server'
-    local_running = Running.NOT_LOCAL_RUNNING
+    run_environment = Running.CIRCLECI_RUN
     env_results_path = './env_results.json'
+    DEFAULT_SERVER_VERSION = '99.99.98'
     #  END CHANGE ON LOCAL RUN  #
 
     def __init__(self, options):
@@ -95,12 +96,10 @@ class Build:
     def get_servers(ami_env):
         env_conf = get_env_conf()
         servers = determine_servers_urls(env_conf, ami_env)
-        if Build.local_running == Running.NOT_LOCAL_RUNNING:
+        if Build.run_environment == Running.CIRCLECI_RUN:
             server_numeric_version = get_server_numeric_version(ami_env)
         else:
-            # START CHANGE ON LOCAL RUN #
-            server_numeric_version = '99.99.98'
-            #  END CHANGE ON LOCAL RUN  #
+            server_numeric_version = Build.DEFAULT_SERVER_VERSION
         return servers, server_numeric_version
 
 
@@ -794,16 +793,16 @@ def set_docker_hardening_for_build(client, prints_manager):
 
 
 def get_env_conf():
-    if Build.local_running == Running.NOT_LOCAL_RUNNING:
+    if Build.run_environment == Running.CIRCLECI_RUN:
         return get_json_file(Build.env_results_path)
 
-    elif Build.local_running == Running.WITH_LOCAL_SERVER:
+    elif Build.run_environment == Running.WITH_LOCAL_SERVER:
         # START CHANGE ON LOCAL RUN #
         return [{
             "InstanceDNS": "http://localhost:8080",
             "Role": "Demisto Marketplace"  # e.g. 'Demisto Marketplace'
         }]
-    elif Build.local_running == Running.WITH_OTHER_SERVER:
+    elif Build.run_environment == Running.WITH_OTHER_SERVER:
         return [{
             "InstanceDNS": "DNS NANE",  # without http prefix
             "Role": "DEMISTO EVN"  # e.g. 'Demisto Marketplace'
@@ -846,27 +845,30 @@ def configure_servers_and_restart(build, prints_manager):
             if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
                 set_marketplace_gcp_bucket_for_build(client, prints_manager, build.branch_name, build.ci_build_number, build.is_nightly)
 
-            try:
-                print('Restarting servers to apply server config ...')
-
-                # copy from .demisto_bashrc stop_server && start_server
-                local_command = 'pgrep -f demisto > xargs kill -9 && server && go mod tidy && go mod vendor && go install -mod=vendor && $GOPATH/bin/server -public ~/dev/demisto/web-client/dist/ -conf conf_for_systemtests -insecure -loglevel debug'
-                command = local_command if Build.local_running == Running.WITH_LOCAL_SERVER else 'sudo systemctl restart demisto'
-                SimpleSSH(host=server.replace('https://', '').replace('http://', ''), key_file_path=Build.key_file_path, user='ec2-user').exec_command(command)
-            except Exception as error:
-                if Build.local_running == Running.WITH_LOCAL_SERVER:
-                    input('restart your server and then press enter.')
-                else:
-                    print_error(f'New SSH restart demisto failed with error: {str(error)}')
-                    print(error.__traceback__)
-                    old_way_to_restart_demisto(server)
-
+            if Build.run_environment == Running.WITH_LOCAL_SERVER:
+                input('restart your server and then press enter.')
+            else:
+                restart_server(server)
         prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
         prints_manager.execute_thread_prints(0)
         sleep(60)
 
 
-def old_way_to_restart_demisto(server):
+def restart_server(server):
+    try:
+        print('Restarting servers to apply server config ...')
+
+        # copy from .demisto_bashrc stop_server && start_server
+        command = 'sudo systemctl restart demisto'
+        SimpleSSH(host=server.replace('https://', '').replace('http://', ''), key_file_path=Build.key_file_path,
+                  user='ec2-user').exec_command(command)
+    except Exception as error:
+        print_error(f'New SSH restart demisto failed with error: {str(error)}')
+        print(error.__traceback__)
+        restart_server_legacy(server)
+
+
+def restart_server_legacy(server):
     try:
         ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
                      '"sudo systemctl restart demisto"'
@@ -877,7 +879,7 @@ def old_way_to_restart_demisto(server):
 
 
 def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
-    if Build.local_running == Running.NOT_LOCAL_RUNNING:
+    if Build.run_environment == Running.CIRCLECI_RUN:
         filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
         if run_all_tests:
             # skip test button testing
@@ -931,7 +933,7 @@ def get_changed_integrations(git_sha1, prints_manager):
 
 
 def get_pack_ids_to_install():
-    if Build.local_running == Running.NOT_LOCAL_RUNNING:
+    if Build.run_environment == Running.CIRCLECI_RUN:
         with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
             pack_ids = packs_stream.readlines()
             return [pack_id.rstrip('\n') for pack_id in pack_ids]
@@ -954,7 +956,7 @@ def nightly_install_packs(build, threads_print_manager, install_method=install_a
                   'prints_manager': threads_print_manager,
                   'thread_index': thread_index}
         if pack_path:
-            kwargs['test_pack_path'] = pack_path
+            kwargs['pack_path'] = pack_path
         t = Thread(target=install_method,
                    kwargs=kwargs)
         threads_list.append(t)

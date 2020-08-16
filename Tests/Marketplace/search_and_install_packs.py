@@ -287,7 +287,7 @@ def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
     file_path = os.path.abspath(pack_path)
     files = {'file': file_path}
 
-    message = 'Making "POST" request to server {} - to install all packs from file {}'.format(host, test_pack_path)
+    message = 'Making "POST" request to server {} - to install all packs from file {}'.format(host, pack_path)
     prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN)
     prints_manager.execute_thread_prints(thread_index)
 
@@ -298,7 +298,7 @@ def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
                                                                    header_params=header_params, files=files)
 
         if 200 <= status_code < 300:
-            message = 'All packs from {} were successfully installed!\n'.format(test_pack_path)
+            message = 'All packs from {} were successfully installed!\n'.format(pack_path)
             prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN)
             prints_manager.execute_thread_prints(thread_index)
         else:
