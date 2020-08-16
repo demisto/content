@@ -436,7 +436,7 @@ def users_accounts_to_human_readable(users_accounts):
     for entity in users_accounts:
         readable_output = assign_params(display_name=entity.get('displayName'), last_seen=entity.get('lastSeen'),
                                         is_admin=entity.get('isAdmin'), is_external=entity.get('isExternal'),
-                                        email=entity.get('email'), identifier=json.loads(entity.get('username')))
+                                        email=entity.get('email'))
         users_accounts_readable_outputs.append(readable_output)
 
     headers = ['display_name', 'last_seen', 'is_admin', 'is_external', 'email', 'identifier']
