@@ -27,12 +27,6 @@ def test_build_url_suffix(params, actors_filter, expected):
     assert res == expected
 
 
-@pytest.mark.parametrize(
-    "response, expected",
-    [
-        (indicators["list_data_cs"], indicators["expected_list"]),
-    ]
-)
-def test_create_indicators_from_response(response, expected):
+def test_create_indicators_from_response():
     res = Client.create_indicators_from_response(Client, indicators["list_data_cs"], {})
     assert res == indicators["expected_list"]
