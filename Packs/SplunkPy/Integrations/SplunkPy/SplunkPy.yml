@@ -505,13 +505,12 @@ script:
     name: splunk-kv-store-collection-data-list
     outputs:
     - contextPath: Splunk.KVstoreData
-      description: An array of collection names. Each collection name will have
-      an array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the data in the collection).
-      type: Unknown
+      description: "An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the data in the collection)."
+      type: String
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      description: The name of the Splunk application that contains the KV store collection. The default is search.
       isArray: false
       name: app_name
       required: true
@@ -585,8 +584,8 @@ script:
     outputs:
     - contextPath: Splunk.KVstoreData
       description: An array of collection names. Each collection name will have
-      an array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the data in the collection).
-      type: Unknown
+        an array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the data in the collection).
+      type: String
   - arguments:
     - default: true
       defaultValue: search

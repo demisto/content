@@ -24,12 +24,12 @@ VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
 FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
+LAST_RUN_WINDOW = int(demisto.params().get('fetch_interval', 1))
 REPLACE_WITH = '_'
 REPLACE_FLAG = params.get('replaceKeys', False)
 FETCH_TIME = demisto.params().get('fetch_time')
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
-FETCH_INTERVAL = int(demisto.params().get('fetch_interval', 1)) - 1
 
 
 class ResponseReaderWrapper(io.RawIOBase):
@@ -180,6 +180,9 @@ def severity_to_level(severity):
 
 
 def notable_to_incident(event):
+    inc_uuid = None
+    if demisto.get(event, '_bkt'):
+        inc_uuid = event['_bkt']
     incident = {}  # type: Dict[str,Any]
     rule_title = ''
     rule_name = ''
@@ -208,7 +211,7 @@ def notable_to_incident(event):
     if demisto.get(event, 'security_domain'):
         labels.append({'type': 'security_domain', 'value': event["security_domain"]})
     incident['labels'] = labels
-    return incident
+    return incident, inc_uuid
 
 
 def handler(proxy):
@@ -459,57 +462,64 @@ def fetch_incidents(service):
     last_run_object = demisto.getLastRun()
     last_run = last_run_object.get('time', '')
     search_offset = last_run_object.get('offset', 0)
-    fetch_interval = last_run_object.get('fetch_interval', 0)
+    previous_ids = last_run_object.get('prev_ids', [])
     incidents = []
-    if int(fetch_interval) == FETCH_INTERVAL:
-        current_time_for_fetch = datetime.utcnow()
-        dem_params = demisto.params()
-        if demisto.get(dem_params, 'timezone'):
-            timezone = dem_params['timezone']
-            current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
+    current_uuids = []
 
-        now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-        if demisto.get(dem_params, 'useSplunkTime'):
-            now = get_current_splunk_time(service)
-            current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
-            current_time_for_fetch = current_time_in_splunk
+    current_time_for_fetch = datetime.utcnow()
+    dem_params = demisto.params()
+    if demisto.get(dem_params, 'timezone'):
+        timezone = dem_params['timezone']
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
 
-        if len(last_run) == 0:
-            fetch_time_in_minutes = parse_time_to_minutes()
-            start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
-            last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    if demisto.get(dem_params, 'useSplunkTime'):
+        now = get_current_splunk_time(service)
+        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_for_fetch = current_time_in_splunk
 
-        earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "index_earliest")
-        latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "index_latest")
+    if len(last_run) == 0:
+        fetch_time_in_minutes = parse_time_to_minutes()
+        start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+        last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-        kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                          latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "index_earliest")
+    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "index_latest")
 
-        searchquery_oneshot = dem_params['fetchQuery']
+    # Handle last run time logic
+    lastrun_datetime = datetime.strptime(last_run, SPLUNK_TIME_FORMAT)
+    last_run_time_windowed_dt = lastrun_datetime - timedelta(minutes=LAST_RUN_WINDOW)
+    last_run_time_windowed = last_run_time_windowed_dt.strftime(SPLUNK_TIME_FORMAT)
 
-        if demisto.get(dem_params, 'extractFields'):
-            extractFields = dem_params['extractFields']
-            extra_raw_arr = extractFields.split(',')
-            for field in extra_raw_arr:
-                field_trimmed = field.strip()
-                searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run_time_windowed,
+                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
 
-        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
-        reader = results.ResultsReader(oneshotsearch_results)
-        for item in reader:
-            inc = notable_to_incident(item)
+    searchquery_oneshot = dem_params['fetchQuery']
+
+    if demisto.get(dem_params, 'extractFields'):
+        extractFields = dem_params['extractFields']
+        extra_raw_arr = extractFields.split(',')
+        for field in extra_raw_arr:
+            field_trimmed = field.strip()
+            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+    reader = results.ResultsReader(oneshotsearch_results)
+    for item in reader:
+        inc, inc_uuid = notable_to_incident(item)
+        if inc_uuid not in previous_ids:
             incidents.append(inc)
+        current_uuids.append(inc_uuid)
 
-        demisto.incidents(incidents)
-        fetch_interval = 0
-        if len(incidents) < FETCH_LIMIT:
-            demisto.setLastRun({'time': now, 'offset': 0, 'fetch_interval': fetch_interval})
-        else:
-            demisto.setLastRun({'time': last_run, 'fetch_interval': fetch_interval, 'offset': search_offset + FETCH_LIMIT})
+    demisto.incidents(incidents)
+    if len(incidents) < FETCH_LIMIT:
+        demisto.setLastRun({'time': now, 'offset': 0, 'prev_ids': current_uuids})
     else:
-        demisto.incidents(incidents)
-        fetch_interval += 1
-        demisto.setLastRun({'fetch_interval': fetch_interval, 'time': last_run})
+        demisto.setLastRun({
+            'time': last_run,
+            'offset': search_offset + FETCH_LIMIT,
+            'prev_ids': current_uuids
+        })
 
 
 def parse_time_to_minutes():
