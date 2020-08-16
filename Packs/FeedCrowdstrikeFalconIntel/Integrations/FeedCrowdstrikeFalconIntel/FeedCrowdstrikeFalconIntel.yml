@@ -83,8 +83,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Tags
-  hidden: false
+- additionalinfo: Supports CSV values.
+  display: Tags
   name: feedTags
   required: false
   type: 0
