@@ -81,12 +81,18 @@ script:
     var username = params.username;
     var password = params.password;
     var token;
+    var authProtocol = params.authType === "NTLM" ? [params.authType] : null;
+    var ntlmUsername = params.credentials ? params.credentials.identifier : null;
+    var ntlmPassword = params.credentials ? params.credentials.password : null;
 
     var sendRequest = function(method, url, args) {
         var res = http(
             url + (method === 'GET' ? encodeToURLQuery(args) : ''),
             {
                 Method: method,
+                Username: ntlmUsername,
+                Password: ntlmPassword,
+                AuthProtocol: authProtocol,
                 Body: method !== 'GET' ? JSON.stringify(args) : ''
             },
             insecure,
