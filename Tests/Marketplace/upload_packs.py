@@ -448,7 +448,17 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
     return table
 
 
-def build_summary_table_hr(packs_input_list, include_pack_status=False):
+def build_summary_table_md(packs_input_list, include_pack_status=False):
+    """Build markdown summary table from pack list
+
+    Args:
+        packs_input_list (list): list of Packs
+        include_pack_status (bool): whether pack includes status
+
+    Returns:
+        Markdown table: table with upload result of packs.
+
+    """
     table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
         else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
 
@@ -459,8 +469,7 @@ def build_summary_table_hr(packs_input_list, include_pack_status=False):
         table[1] = f'{table[1]} :- |'
 
     for index, pack in enumerate(packs_input_list):
-        if include_pack_status:
-            pack_status_message = PackStatus[pack.status].value
+        pack_status_message = PackStatus[pack.status].value if include_pack_status else ''
 
         row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
             else [index, pack.name, pack.display_name, pack.latest_version]
@@ -611,7 +620,8 @@ def print_packs_summary(packs_list):
         print_error(failed_packs_table)
         sys.exit(1)
 
-    successful_packs_table = build_summary_table_hr(successful_packs)
+    # when there is no failed packs, add the build summary to the pull request
+    successful_packs_table = build_summary_table_md(successful_packs)
     pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
         f'Uploaded packs:\n{successful_packs_table}'
     add_pr_comment(pr_comment)
@@ -660,6 +670,12 @@ def option_handler():
 
 
 def add_pr_comment(comment):
+    """Add comment to the pull request.
+
+    Args:
+        comment (string): The comment text.
+
+    """
     token = os.environ['CONTENT_GITHUB_TOKEN']
     branch_name = os.environ['CIRCLE_BRANCH']
     sha1 = os.environ['CIRCLE_SHA1']
@@ -697,16 +713,6 @@ def handle_github_response(response):
 
 
 def main():
-    successful_packs = [Pack('Test pack1', 'Packs/TestPack1'), Pack('Test pack2', 'Packs/TestPack2')]
-    successful_packs[0].display_name = 'Test pack1'
-    successful_packs[1].display_name = 'Test pack2'
-
-    successful_packs_table = build_summary_table_hr(successful_packs)
-    pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
-        f'Uploaded packs:\n{successful_packs_table}'
-    add_pr_comment(pr_comment)
-    sys.exit()
-
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path

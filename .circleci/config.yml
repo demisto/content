@@ -133,7 +133,6 @@ references:
         python --version
         python3 --version
         demisto-sdk --version
-        python3 ./Tests/Marketplace/upload_packs.py
 
   create_artifact: &create_artifact
     run:
