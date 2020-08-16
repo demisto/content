@@ -144,38 +144,18 @@ class Client(BaseClient):
         )
 
 
-def generate_specific_key_by_command_name(url_suffix):
-    service_key, instance_key, username_key = '', '', ''
-    if url_suffix == '/entities/':
-        service_key, instance_key, username_key = 'app', 'instance', 'entity'
-    elif url_suffix == '/files/':
-        service_key, instance_key, username_key = 'service', 'instance', 'owner.entity'
-    elif url_suffix == '/alerts/':
-        service_key, instance_key, username_key = 'entity.service', 'entity.instance', 'entity.entity'
-    elif url_suffix == '/activities/':
-        service_key, instance_key, username_key = 'service', 'instance', 'entity'
-    return service_key, instance_key, username_key
-
-
-def args_or_params_to_filter(arguments, url_suffix='', args_or_params='args'):
-    service_key, instance_key, username_key = generate_specific_key_by_command_name(url_suffix)
+def args_or_params_to_filter(arguments, args_or_params='args'):
     request_data: Dict[str, Any] = {}
     filters: Dict[str, Any] = {}
     for key, value in arguments.items():
         if key in ['skip', 'limit']:
             request_data[key] = int(value)
-        if key == 'service':
-            filters[service_key] = {'eq': int(value)}
-        if key == 'instance':
-            filters[instance_key] = {'eq': int(value)}
         if key == 'source':
             filters[key] = {'eq': SOURCE_TYPE_OPTIONS[value]}
         if key == 'ip_category':
             filters['ip.category'] = {'eq': IP_CATEGORY_OPTIONS[value]}
         if key == 'ip':
             filters['ip.address'] = {'eq': value}
-        if key == 'username':
-            filters[username_key] = {'eq': json.loads(value)}
         if key == 'taken_action':
             filters['activity.takenAction'] = {'eq': value}
         if key == 'severity' and value != 'All':
@@ -225,7 +205,7 @@ def build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, sp
     elif custom_filter:
         request_data = json.loads(custom_filter)
     else:
-        request_data = args_or_params_to_filter(arguments, url_suffix)
+        request_data = args_or_params_to_filter(arguments)
     return request_data, url_suffix
 
 
@@ -469,7 +449,7 @@ def list_users_accounts_command(client, args):
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.UsersAccounts',
-        outputs_key_field='username',
+        outputs_key_field='_id',
         outputs=users_accounts
     )
 
@@ -555,10 +535,9 @@ def main():
             if params.get('custom_filter'):
                 filters = json.loads(params.get('custom_filter'))
             else:
-                parameters = assign_params(severity=params.get('severity'), instance=params.get('instance'),
-                                           resolution_status=params.get('resolution_status'),
-                                           service=params.get('service'))
-                filters = args_or_params_to_filter(parameters, url_suffix="", args_or_params="params")
+                parameters = assign_params(severity=params.get('severity'),
+                                           resolution_status=params.get('resolution_status'))
+                filters = args_or_params_to_filter(parameters, args_or_params="params")
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,

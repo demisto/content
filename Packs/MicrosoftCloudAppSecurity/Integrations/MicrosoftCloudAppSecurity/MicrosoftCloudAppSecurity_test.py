@@ -8,41 +8,30 @@ def get_fetch_data():
         return json.loads(f.read())
 
 
-expected_filtered_alerts = {'filters': {'entity.service': {'eq': 111}, 'entity.instance': {'eq': 111},
-                            'severity': {'eq': 0}, 'resolutionStatus': {'eq': 0}, 'entity.entity': {'eq':
-                                        {'id': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2', 'saas': 11161, 'inst': 0}}},
+expected_filtered_alerts = {'filters': {'severity': {'eq': 0}, 'resolutionStatus': {'eq': 0}},
                             'skip': 5, 'limit': 10}
 response_alerts_data = {"service": "111", "instance": "111", "severity": "Low",
-                        "username": '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}',
                         "resolution_status": "Open", "skip": "5", "limit": "10"}
 
 
-expected_filtered_activities = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'ip.address':
-                                {'eq': '8.8.8.8'}, 'ip.category': {'eq': 1}, 'activity.takenAction': {'eq': 'block'},
-                                'source': {'eq': 0}}, 'skip': 5, 'limit': 10}
-response_activities_data = {"service": "111", "instance": "111", "ip": "8.8.8.8", "ip_category": "Corporate",
+expected_filtered_activities = {'filters': {'ip.address': {'eq': '8.8.8.8'}, 'ip.category': {'eq': 1},
+                                            'activity.takenAction': {'eq': 'block'}, 'source': {'eq': 0}},
+                                'skip': 5, 'limit': 10}
+response_activities_data = {"ip": "8.8.8.8", "ip_category": "Corporate",
                             'taken_action': 'block', 'source': 'Access_control', "skip": "5", "limit": "10"}
 
 
-expected_filtered_files = {'filters': {'service': {'eq': 111}, 'instance': {'eq': 111}, 'fileType': {'eq': 0},
-                           'quarantined': {'eq': True}, 'owner.entity':
-                                          {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161,
-                                                  "inst": 0}}, 'sharing': {'eq': 0}, 'extension': {'eq': 'png'}, },
-                           'skip': 5, 'limit': 10}
-response_files_data = {"service": "111", "instance": "111", "file_type": "Other", "username":
-                       '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}', "sharing": 'Private',
+expected_filtered_files = {'filters': {'fileType': {'eq': 0}, 'quarantined': {'eq': True}, 'sharing': {'eq': 0},
+                                       'extension': {'eq': 'png'}}, 'skip': 5, 'limit': 10}
+response_files_data = {"file_type": "Other", "sharing": 'Private',
                        'extension': 'png', 'quarantined': 'True', "skip": "5", "limit": "10"}
 
 
-expected_filtered_users_accounts = {'filters': {'app': {'eq': 111}, 'instance': {'eq': 111}, 'type': {'eq': 'user'},
-                                    'isExternal': {'eq': True}, 'status': {'eq': 0}, 'userGroups': {'eq': '1234'},
-                                                'isAdmin': {'eq': 'demisto'},
-                                                'entity': {'eq': {"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
-                                                                  "saas": 11161, "inst": 0}}}, 'skip': 5, 'limit': 10}
-response_users_accounts_data = {"service": "111", "instance": "111", "type": "user", "status": 'N/A', "username":
-                                '{"id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2", "saas": 11161, "inst": 0}',
-                                "group_id": '1234', 'is_admin': 'demisto', 'is_external': 'External', "skip": "5",
-                                "limit": "10"}
+expected_filtered_users_accounts = {'filters': {'type': {'eq': 'user'}, 'isExternal': {'eq': True}, 'status': {'eq': 0},
+                                                'userGroups': {'eq': '1234'}, 'isAdmin': {'eq': 'demisto'}},
+                                    'skip': 5, 'limit': 10}
+response_users_accounts_data = {"type": "user", "status": 'N/A', "group_id": '1234', 'is_admin': 'demisto',
+                                'is_external': 'External', "skip": "5", "limit": "10"}
 
 
 @pytest.mark.parametrize(
