@@ -1864,7 +1864,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}, True
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any]) -> Union[List[Dict[str, Any]], str]:
+def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -1988,6 +1988,18 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> Union[List[
     if ticket['caller_id'] == user_email:
         pass
 
+    if ticket.get('resolved_by'):
+        if params.get('close_incident'):
+            demisto.info(f'ticket is closed: {ticket}')
+            entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeReason': f'From ServiceNow: {ticket.get("close_notes")}'
+                },
+                'ContentsFormat': EntryFormat.JSON
+            })
+
     demisto.debug(f'Pull result is {ticket} + {entries}')
     return [ticket] + entries
 
@@ -2018,9 +2030,12 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
-
-        demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
-        result = client.update(ticket_type, ticket_id, fields, {})
+        if not params.get('close_ticket'):
+            update_fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
+            result = client.update(ticket_type, ticket_id, update_fields, {})
+        else:
+            demisto.info(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
+            result = client.update(ticket_type, ticket_id, fields, {})
 
         demisto.info(f'Ticket Update result {result}')
 
@@ -2138,7 +2153,7 @@ def main():
         elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
         elif command == 'get-remote-data':
-            return_results(get_remote_data_command(client, demisto.args()))
+            return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
         elif demisto.command() == 'get-mapping-fields':

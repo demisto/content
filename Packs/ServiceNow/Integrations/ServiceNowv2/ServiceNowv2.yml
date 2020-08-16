@@ -78,6 +78,18 @@ configuration:
   name: entry_tags
   required: false
   type: 0
+- defaultvalue: 'false'
+  display: Close XSOAR Incident
+  hidden: false
+  name: close_incident
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Close ServiceNow Ticket
+  hidden: false
+  name: close_ticket
+  required: false
+  type: 8
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize
   the way you manage and deliver services to your users.
 display: ServiceNow v2
@@ -2289,7 +2301,7 @@ script:
       the current incident, and should be used for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: true
   longRunning: false

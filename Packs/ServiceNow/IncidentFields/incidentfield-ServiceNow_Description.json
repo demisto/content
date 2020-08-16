@@ -29,7 +29,7 @@
     "system": false,
     "systemAssociatedTypes": null,
     "threshold": 72,
-    "type": "shortText",
+    "type": "longText",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
