@@ -3,6 +3,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": ["Mail Listener v2", "Mail Sender (New)"],
+            "playbookID": "Mail-Listener Test Playbook",
+            "fromversion": "5.0.0",
+            "instance_names": [
+                "Mail_Sender_(New)_STARTTLS"
+            ]
+        },
+        {
             "integrations": "AWS - Security Hub",
             "playbookID": "AWS-securityhub Test"
         },
@@ -1870,7 +1878,6 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Rasterize"
             ]
@@ -1882,7 +1889,6 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Rasterize"
             ]
@@ -3179,6 +3185,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "AWS - Security Hub": "Issue 24926",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
@@ -3269,7 +3276,8 @@
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
         "GoogleKubernetesEngine": "SDK",
-        "TAXIIFeed": "Cannot use proxy"
+        "TAXIIFeed": "Cannot use proxy",
+        "QRadar": "Playbooks has parallel steps which are causing inconsistent results"
     },
     "parallel_integrations": [
         "SNDBOX",
@@ -3316,7 +3324,8 @@
         "McAfee DXL",
         "GCP Whitelist Feed",
         "Cortex Data Lake",
-        "AWS - Security Hub"
+        "AWS - Security Hub",
+        "Mail Listener v2"
     ],
     "docker_thresholds": {
         
