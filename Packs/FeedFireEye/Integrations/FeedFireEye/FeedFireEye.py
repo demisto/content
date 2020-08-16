@@ -1,4 +1,4 @@
-from typing import Tuple, List, Dict
+from typing import Tuple, List, Dict, Any
 
 import urllib3
 from requests.auth import HTTPBasicAuth
@@ -79,13 +79,13 @@ class STIX21Processor:
                 else:
                     try:
                         key, value = indicator_value.split(':value=')
-                    except:
+                    except Exception as e:
                         continue
 
                 indicator_types.append(key.strip().replace("'", '').replace('[', '').replace(']', ''))
                 values.append(value.strip().replace("'", '').replace('[', '').replace(']', ''))
             return indicator_types, values, {}
-        except:
+        except Exception as e:
             return [], [], {}
 
     def process_indicator(self, raw_data):
@@ -146,7 +146,7 @@ class STIX21Processor:
 
     @staticmethod
     def process_malware(raw_data):
-        entity = dict()
+        entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Malware'
         entity['value'] = raw_data.get('name')
@@ -174,7 +174,7 @@ class STIX21Processor:
 
     @staticmethod
     def process_threat_actor(raw_data):
-        entity = dict()
+        entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Threat Actor'
         entity['value'] = raw_data.get('name')
@@ -207,7 +207,7 @@ class STIX21Processor:
 
     @staticmethod
     def process_report(raw_data):
-        report = dict()
+        report = dict()  # type: Dict[str, Any]
 
         report['type'] = 'STIX Report'
         report['value'] = raw_data.get('name')
@@ -442,7 +442,7 @@ class Client(BaseClient):
 
 
 def test_module(client: Client):
-    client.build_iterator()
+    client.build_iterator(limit=10)
     return 'ok'
 
 
