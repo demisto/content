@@ -570,7 +570,7 @@ script:
       secret: false
     - default: false
       defaultValue: The email to give to the user.
-      description: The email of the employee to create.
+      description: The email of the user to create.
       isArray: false
       name: email
       required: true
@@ -805,7 +805,7 @@ script:
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
       type: Unknown
-  dockerimage: demisto/py42:1.0.0.10082
+  dockerimage: demisto/py42:1.0.0.10664
   feed: false
   isfetch: true
   longRunning: false

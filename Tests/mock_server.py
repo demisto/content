@@ -259,6 +259,9 @@ class MITMProxy:
             self.empty_files.append(playbook_id)
         else:
             # Move to repo folder
+            prints_manager.add_print_job(
+                'Moving "{}" files to "{}" directory'.format(src_files, dst_folder), print, thread_index
+            )
             self.ami.call(['mkdir', '--parents', dst_folder])
             self.ami.call(['mv', src_files, dst_folder])
 
