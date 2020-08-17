@@ -230,10 +230,6 @@ def test_module():
 
     if TENANT_ID == '0000000-0000-0000-000000000' or TENANT_ID == '':
         errors.append('Incorrect tenant id')
-    if APIKEY == '<APIKEY>' or APIKEY == '':
-        errors.append('Incorrect API key')
-    if SOARTOKEN == '<SOARTOKEN>' or SOARTOKEN == '':
-        errors.append('Please set proper SOAR token')
     if str(DAYS_BACK).isdigit():
         if int(DAYS_BACK) <= 0 or int(DAYS_BACK) > 100:
             errors.append('DAYS_BACK must be in range > 0 and <= 100')

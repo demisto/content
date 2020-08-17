@@ -8,7 +8,7 @@ description: Retrieve alerts and recommendations from NTT CTS
 configuration:
 - display: 'The API key for accessing CTS over AWS '
   name: APIKEY
-  defaultvalue: <APIKEY>
+  defaultvalue: ""
   type: 4
   required: true
 - display: Tenant identification. UUID formatted string
@@ -28,7 +28,7 @@ configuration:
   required: true
 - display: The unique key for accessing the alerts and active response recommendations
   name: SOARTOKEN
-  defaultvalue: <SOARTOKEN>
+  defaultvalue: ""
   type: 4
   required: true
 - display: Fetch incidents
@@ -44,6 +44,10 @@ configuration:
   defaultvalue: https://cts.eu1.nttsecurity.io/v1
   type: 0
   required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 script:
   script: '-'
   type: python

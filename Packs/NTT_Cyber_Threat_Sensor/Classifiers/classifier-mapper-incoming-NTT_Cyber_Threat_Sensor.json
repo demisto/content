@@ -1,6 +1,6 @@
 {
 	"id": "NTT Cyber Threat Sensor - mapper",
-    "name": "NTT Cyber Threat Sensor - mapper",
+    "name": "NTT Cyber Threat Sensor - Incoming Mapper",
     "type": "mapping-incoming",
     "description": "Maps incoming NTT Cyber Threat Sensor fields.",
 	"version": -1,
