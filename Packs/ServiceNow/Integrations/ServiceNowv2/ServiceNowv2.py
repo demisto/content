@@ -1959,13 +1959,15 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         if last_update > entry_time:
             continue
 
+        comments_context = {'comments_and_work_notes': note.get('value')}
         entries.append({
             'Type': note.get('type'),
             'Category': note.get('category'),
             'Contents': note.get('value'),
             'ContentsFormat': note.get('format'),
             'Tags': note.get('tags'),
-            'Note': True
+            'Note': True,
+            'EntryContext': comments_context
         })
     # Parse user dict to email
     assigned_to = ticket.get('assigned_to', {})
