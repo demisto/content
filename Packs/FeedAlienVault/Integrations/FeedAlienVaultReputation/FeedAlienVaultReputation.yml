@@ -33,6 +33,17 @@ configuration:
     - E - Unreliable
     - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Traffic Light Protocol color for indicators fetched from feed.
+  defaultvalue: RED
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: true
+  type: 15
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
@@ -99,7 +110,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: alienvault-get-indicators
-  dockerimage: demisto/python3:3.8.5.10289
+  dockerimage: demisto/python3:3.8.5.10455
   feed: true
   isfetch: false
   longRunning: false

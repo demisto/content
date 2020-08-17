@@ -13,6 +13,7 @@ This integration can only fetch indicators from **active** collections. Active c
 | feed | The fetch indicators. | False |
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
+| tlp_color | Traffic Light Protocol color for indicators fetched from feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | True |
 | feedExpirationPolicy | The feed's expiration policy. | False |
 | feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | The feed fetch interval. | False |

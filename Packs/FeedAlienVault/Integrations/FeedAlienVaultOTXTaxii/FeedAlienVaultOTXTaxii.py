@@ -452,7 +452,7 @@ class StixDecode(object):
 """ Alien Vault OTX TAXII Client """
 
 
-class Client():
+class Client:
     """Client for AlienVault OTX Feed - gets indicator lists from collections using TAXII client
 
         Attributes:
@@ -463,7 +463,7 @@ class Client():
             all_collections(bool): Whether to run on all active collections.
         """
     def __init__(self, api_key: str, collection: str, insecure: bool = False, proxy: bool = False,
-                 all_collections: bool = False, tags: list = []):
+                 all_collections: bool = False, tags: list = [], tlp_color: str = 'RED'):
 
         taxii_client = cabby.create_client(discovery_path="https://otx.alienvault.com/taxii/discovery")
         taxii_client.set_auth(username=str(api_key), password="foo", verify_ssl=not insecure)
@@ -472,6 +472,7 @@ class Client():
 
         self.taxii_client = taxii_client
         self.tags = tags
+        self.tlp_color = tlp_color
 
         self.all_collections = all_collections
         if all_collections:
@@ -576,7 +577,7 @@ def get_indicators_command(client: Client, args: Dict):
     return human_readable, {}, indicator_list
 
 
-def parse_indicators(sub_indicator_list, full_indicator_list, tags):
+def parse_indicators(sub_indicator_list, full_indicator_list, tags, tlp_color):
     """Gets a decoded indicator list and returns a parsed version of the indicator with accordance with Demisto's
     Feed indicator standards.
 
@@ -584,6 +585,7 @@ def parse_indicators(sub_indicator_list, full_indicator_list, tags):
         tags(list): The tags to add to the indicator.
         sub_indicator_list(list): A list of STIXDecoded indicators
         full_indicator_list(list): A list of all the indicators fetched to this point - used to prevent duplications.
+        tlp_color(str): Traffic Light Protocol color.
 
     Returns:
         list,list. A list of parsed indicators and an updated list of all indicators polled
@@ -597,7 +599,8 @@ def parse_indicators(sub_indicator_list, full_indicator_list, tags):
         indicator['value'] = indicator['indicator']
         indicator['fields'] = {
             "description": indicator["stix_package_short_description"],
-            "tags": tags
+            "tags": tags,
+            'trafficlightprotocol': tlp_color
         }
 
         temp_copy = indicator.copy()
@@ -639,7 +642,7 @@ def fetch_indicators_command(client: Client, limit=None):
             # the only_indicator_list is a list containing only the indicators themselves.
             # it is used to prevent duplicated indicators from being created in the system.
             # this is because AlienVault OTX can return the same indicator several times from the same collection.
-            parsed_list, only_indicator_list = parse_indicators(res, only_indicator_list, client.tags)
+            parsed_list, only_indicator_list = parse_indicators(res, only_indicator_list, client.tags, client.tlp_color)
             indicator_list.extend(parsed_list)
             if limit is not None and limit <= len(indicator_list):
                 indicator_list = indicator_list[:limit]
@@ -651,8 +654,9 @@ def fetch_indicators_command(client: Client, limit=None):
 def main():
     params = demisto.params()
     tags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
     client = Client(params.get('api_key'), params.get('collections'), params.get('insecure'), params.get('proxy'),
-                    params.get('all_collections'), tags=tags)
+                    params.get('all_collections'), tags=tags, tlp_color=tlp_color)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
