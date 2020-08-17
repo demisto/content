@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import requests
@@ -6,7 +8,7 @@ from github.Repository import Repository
 from typing import List, Bool
 
 
-def get_master_commit_sha(repo: Repository) -> str:
+def get_master_commit_sha(repo: Repository) -> str:  # noqa: E999
     '''Return the sha commit of the master branch
 
     Args:
@@ -20,7 +22,7 @@ def get_master_commit_sha(repo: Repository) -> str:
     return commit_sha
 
 
-def get_branch_names_with_contrib(repo: Repository) -> List[str]:
+def get_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
     '''Return the list of branches that have the prefix of "contrib/"
 
     Args:
@@ -36,7 +38,7 @@ def get_branch_names_with_contrib(repo: Repository) -> List[str]:
     return branch_names
 
 
-def is_pr(branch_name: str) -> Bool:
+def is_pr(branch_name: str) -> Bool:  # noqa: E999
     '''Returns whether a branch has a PR for it
 
     Args:
