@@ -5,7 +5,6 @@
     "toVersion": "5.9.9",
     "layout": {
         "TypeName": "",
-        "commitMessage": "",
         "id": "TD Incident",
         "kind": "details",
         "modified": "2020-08-17T14:53:04.17230177Z",
@@ -365,7 +364,6 @@
             }
         ],
         "typeId": "TD Incident",
-        "vcShouldIgnore": false,
         "version": -1
     },
     "typeId": "TD Incident",
