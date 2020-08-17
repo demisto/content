@@ -1287,6 +1287,10 @@
 						"isVisible": true
 					},
 					{
+						"fieldId": "incident_emailcc",
+						"isVisible": true
+					},
+					{
 						"fieldId": "incident_reporteremailaddress",
 						"isVisible": true
 					},
@@ -1304,6 +1308,14 @@
 					},
 					{
 						"fieldId": "incident_emailauthenticitycheck",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_emailinreplyto",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_emailreturnpath",
 						"isVisible": true
 					}
 				],
@@ -1420,10 +1432,6 @@
 					},
 					{
 						"fieldId": "incident_emailbody",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_emailhtml",
 						"isVisible": true
 					},
 					{

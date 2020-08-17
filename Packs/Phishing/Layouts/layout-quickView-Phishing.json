@@ -31,10 +31,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_emailhtml",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_attachmentname",
 						"isVisible": true
 					},
