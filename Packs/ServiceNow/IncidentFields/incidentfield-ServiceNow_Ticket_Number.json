@@ -5,7 +5,7 @@
     ],
     "breachScript": "",
     "caseInsensitive": true,
-    "cliName": "ServiceNowTicketnumber",
+    "cliName": "servicenowticketnumber",
     "closeForm": false,
     "columns": null,
     "content": true,

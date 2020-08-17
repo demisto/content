@@ -103,6 +103,24 @@ class MsGraphClient:
             json_data=body,
             resp_type="text")
 
+    #  If successful, this method returns 204 No Content response code.
+    #  Using resp_type=text to avoid parsing error.
+    def password_change_user(self, user: str, password: str, force_change_password_next_sign_in: bool,
+                             force_change_password_with_mfa: bool):
+        body = {
+            "passwordProfile":
+                {
+                    "forceChangePasswordNextSignIn": force_change_password_next_sign_in,
+                    "forceChangePasswordNextSignInWithMfa": force_change_password_with_mfa,
+                    "password": password
+                }
+        }
+        self.ms_client.http_request(
+            method='PATCH',
+            url_suffix=f'users/{user}',
+            json_data=body,
+            resp_type="text")
+
     def get_delta(self, properties):
         users = self.ms_client.http_request(
             method='GET',
@@ -206,6 +224,17 @@ def update_user_command(client: MsGraphClient, args: Dict):
     return get_user_command(client, args)
 
 
+def change_password_user_command(client: MsGraphClient, args: Dict):
+    user = str(args.get('user'))
+    password = str(args.get('password'))
+    force_change_password_next_sign_in = args.get('force_change_password_next_sign_in', 'true') == 'true'
+    force_change_password_with_mfa = args.get('force_change_password_with_mfa', False) == 'true'
+
+    client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
+    human_readable = f'User {user} password was changed successfully.'
+    return human_readable, {}, {}
+
+
 def get_delta_command(client: MsGraphClient, args: Dict):
     properties = args.get('properties', '') + ',userPrincipalName'
     users_data = client.get_delta(properties)
@@ -279,6 +308,7 @@ def main():
         'msgraph-user-unblock': unblock_user_command,
         'msgraph-user-terminate-session': terminate_user_session_command,
         'msgraph-user-update': update_user_command,
+        'msgraph-user-change-password': change_password_user_command,
         'msgraph-user-delete': delete_user_command,
         'msgraph-user-create': create_user_command,
         'msgraph-user-get-delta': get_delta_command,

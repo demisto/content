@@ -1,16 +1,16 @@
 {
-  "name": "McAfee ESM v10 and v11",
-  "description": "Run queries and receive alarms from Intel Security ESM. Support version 10 and above.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Analytics & SIEM"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "McAfee ESM v10 and v11",
+    "description": "Run queries and receive alarms from Intel Security ESM. Support version 10 and above.",
+    "support": "xsoar",
+    "currentVersion": "1.0.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }
