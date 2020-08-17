@@ -830,7 +830,7 @@ def test_get_remote_data_command_should_update(requests_mock):
         'lastUpdate': 0
     }
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
-    expected_modified_incident = raw_incident['reply']['incident']
+    expected_modified_incident = raw_incident['reply']['incident'].copy()
     expected_modified_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
     expected_modified_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
     expected_modified_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
@@ -839,6 +839,7 @@ def test_get_remote_data_command_should_update(requests_mock):
     expected_modified_incident['assigned_user_pretty_name'] = ''
     expected_modified_incident['in_mirror_error'] = ''
     expected_modified_incident['out_mirror_error'] = ''
+    del expected_modified_incident['creation_time']
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)
@@ -859,7 +860,7 @@ def test_get_remote_data_command_should_not_update(requests_mock):
     Then
         - returns an empty dict
     """
-    from PaloAltoNetworks_XDR import get_remote_data_command, Client
+    from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1'
     )
@@ -868,10 +869,23 @@ def test_get_remote_data_command_should_not_update(requests_mock):
         'lastUpdate': '2020-07-31T00:00:00Z'
     }
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
+    expected_modified_incident = raw_incident['reply']['incident'].copy()
+    expected_modified_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
+    expected_modified_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
+    expected_modified_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
+    expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
+    expected_modified_incident['assigned_user_mail'] = None
+    expected_modified_incident['assigned_user_pretty_name'] = None
+    expected_modified_incident['in_mirror_error'] = ''
+    expected_modified_incident['out_mirror_error'] = ''
+    del expected_modified_incident['creation_time']
+    sort_all_list_incident_fields(expected_modified_incident)
+
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
 
     response = get_remote_data_command(client, args)
-    assert response == {}
+    assert response.mirrored_object == expected_modified_incident
+    assert response.entries == []
 
 
 def test_get_remote_data_command_should_close_issue(requests_mock):
@@ -898,7 +912,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock):
     raw_incident['reply']['incident']['status'] = 'resolved_threat_handled'
     raw_incident['reply']['incident']['resolve_comment'] = 'Handled'
 
-    expected_modified_incident = raw_incident['reply']['incident']
+    expected_modified_incident = raw_incident['reply']['incident'].copy()
     expected_modified_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
     expected_modified_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
     expected_modified_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
@@ -909,6 +923,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock):
     expected_modified_incident['closeNotes'] = 'Handled'
     expected_modified_incident['in_mirror_error'] = ''
     expected_modified_incident['out_mirror_error'] = ''
+    del expected_modified_incident['creation_time']
 
     expected_closing_entry = {
         'Type': 1,
@@ -955,16 +970,17 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
     raw_incident['reply']['incident']['assigned_user_mail'] = 'moo@demisto.com'
 
-    expected_modified_incident = raw_incident['reply']['incident']
+    expected_modified_incident = raw_incident['reply']['incident'].copy()
     expected_modified_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
     expected_modified_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
     expected_modified_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
     expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
     expected_modified_incident['assigned_user_mail'] = 'moo@demisto.com'
-    expected_modified_incident['assigned_user_pretty_name'] = ''
+    expected_modified_incident['assigned_user_pretty_name'] = None
     expected_modified_incident['owner'] = 'username'
     expected_modified_incident['in_mirror_error'] = ''
     expected_modified_incident['out_mirror_error'] = ''
+    del expected_modified_incident['creation_time']
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)

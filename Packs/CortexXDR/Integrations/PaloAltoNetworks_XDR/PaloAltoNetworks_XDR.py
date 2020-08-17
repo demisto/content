@@ -1772,11 +1772,14 @@ def get_remote_data_command(client, args):
                       f"modified time: {int(incident_data.get('modification_time'))}\n"
                       f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
 
+        sort_all_list_incident_fields(incident_data)
+
+        # deleting creation time as it keeps updating in the system
+        del incident_data['creation_time']
+
         if arg_to_timestamp(current_modified_time, 'modification_time') > \
                 arg_to_timestamp(remote_args.last_update, 'last_update'):
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
-
-            sort_all_list_incident_fields(incident_data)
 
             # handle unasignment
             if incident_data.get('assigned_user_mail') is None:
@@ -1802,7 +1805,11 @@ def get_remote_data_command(client, args):
             )
 
         else:
-            # no new data modified - checking for outgoing error
+            # no new data modified - resetting error if needed
+            reset_incoming_and_outgoing_mirror_errors(incident_data)
+
+            # checking for outgoing error
+            # if there is a new error entry print it
             outgoing_error_entry = handle_outgoing_error_in_mirror(incident_data)
             if outgoing_error_entry:
                 return GetRemoteDataResponse(
@@ -1811,7 +1818,10 @@ def get_remote_data_command(client, args):
                 )
 
             # no error, not updating the incident
-            return {}
+            return GetRemoteDataResponse(
+                mirrored_object=incident_data,
+                entries=[]
+            )
 
     except Exception as e:
         return handle_incoming_error_in_mirror({'incident_id': remote_args.remote_incident_id,
@@ -1867,10 +1877,7 @@ def update_remote_system_command(client, args):
             update_incident_command(client, update_args)
 
             # no outgoing mirror error
-            integration_cache = demisto.getIntegrationContext()
-            integration_cache['out_mirror_error'] = None
-            integration_cache['out_error_printed'] = False
-            demisto.setIntegrationContext(integration_cache)
+            clear_outgoing_mirror_error()
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '

@@ -13,10 +13,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 32fed714-e66e-4472-82c2-3404f0411159
+    taskid: 29a07149-9289-4966-8898-af2eb8911f17
     type: start
     task:
-      id: 32fed714-e66e-4472-82c2-3404f0411159
+      id: 29a07149-9289-4966-8898-af2eb8911f17
       version: -1
       name: ""
       iscommand: false
@@ -24,13 +24,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "40"
+      - "54"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": -685
+          "y": -825
         }
       }
     note: false
@@ -40,10 +40,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 57d2b28c-a17a-4f13-8318-d6e813eb9872
+    taskid: 59f99636-5884-42ea-81dd-dc0a4c2fae6d
     type: title
     task:
-      id: 57d2b28c-a17a-4f13-8318-d6e813eb9872
+      id: 59f99636-5884-42ea-81dd-dc0a4c2fae6d
       version: -1
       name: Loop on alert id - Alert enrichment
       type: title
@@ -68,10 +68,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 272882c6-f87e-434c-88ce-1240c4a889c6
+    taskid: 30265a93-3fbe-4632-824f-f154b1079bbb
     type: title
     task:
-      id: 272882c6-f87e-434c-88ce-1240c4a889c6
+      id: 30265a93-3fbe-4632-824f-f154b1079bbb
       version: -1
       name: Remediation
       type: title
@@ -96,10 +96,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 4b67ad30-ffbc-4fe8-8b6d-f19875f8ead7
+    taskid: d5a4c63f-ef6d-4168-8aa1-a14bd9467bef
     type: condition
     task:
-      id: 4b67ad30-ffbc-4fe8-8b6d-f19875f8ead7
+      id: d5a4c63f-ef6d-4168-8aa1-a14bd9467bef
       version: -1
       name: Are there new un-handled alerts?
       description: Check if there are new un-handled alerts.
@@ -142,10 +142,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 71a82ecc-7f86-4384-8257-e78fb76f466e
+    taskid: f638b500-210c-4760-8767-c07b9db62308
     type: playbook
     task:
-      id: 71a82ecc-7f86-4384-8257-e78fb76f466e
+      id: f638b500-210c-4760-8767-c07b9db62308
       version: -1
       name: Cortex XDR Alerts Handling
       playbookName: Cortex XDR Alerts Handling
@@ -186,10 +186,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 97bebbb3-dca5-4516-882f-d318cb8e1cb9
+    taskid: 590a15f7-ea21-4b06-8352-f34f3793a660
     type: title
     task:
-      id: 97bebbb3-dca5-4516-882f-d318cb8e1cb9
+      id: 590a15f7-ea21-4b06-8352-f34f3793a660
       version: -1
       name: Done
       type: title
@@ -211,10 +211,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: cb942697-898c-411c-87df-03f40b525ff5
+    taskid: d11912a8-74ee-4245-8d23-125d2487c422
     type: regular
     task:
-      id: cb942697-898c-411c-87df-03f40b525ff5
+      id: d11912a8-74ee-4245-8d23-125d2487c422
       version: -1
       name: Cortex XDR - close incident
       description: Updates one or more fields of a specified incident. Missing fields
@@ -254,10 +254,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: d148decf-e833-4217-8117-bc95437fae54
+    taskid: 5bfdd0f6-c3aa-4f03-8690-6dceaf771046
     type: regular
     task:
-      id: d148decf-e833-4217-8117-bc95437fae54
+      id: 5bfdd0f6-c3aa-4f03-8690-6dceaf771046
       version: -1
       name: Close investigation
       description: Closes the incident.
@@ -294,10 +294,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: ae2a0244-4655-414d-8923-ac7d115bcbaf
+    taskid: 2a061181-13dc-46de-89f5-b16f1a9d7fcc
     type: title
     task:
-      id: ae2a0244-4655-414d-8923-ac7d115bcbaf
+      id: 2a061181-13dc-46de-89f5-b16f1a9d7fcc
       version: -1
       name: Investigation
       type: title
@@ -322,10 +322,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 5f4dc38f-0363-443f-85f4-5bab6f7fa039
+    taskid: aa02ed9d-5c68-460e-8c06-313d2f961c78
     type: playbook
     task:
-      id: 5f4dc38f-0363-443f-85f4-5bab6f7fa039
+      id: aa02ed9d-5c68-460e-8c06-313d2f961c78
       version: -1
       name: Calculate Severity - Generic v2
       description: |-
@@ -391,10 +391,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 3c23eccd-6dcf-4d7b-8af8-979b3987710f
+    taskid: ee301a91-0391-4b5e-890c-0488494c9275
     type: regular
     task:
-      id: 3c23eccd-6dcf-4d7b-8af8-979b3987710f
+      id: ee301a91-0391-4b5e-890c-0488494c9275
       version: -1
       name: Manual malware analysis and forensics
       description: Manual malware analysis and forensics by the analyst.
@@ -419,10 +419,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: aa4c0270-342c-4a45-8139-744fe8031b12
+    taskid: 1a52d2f9-00df-4ac9-8df5-364ebb3c3bfb
     type: condition
     task:
-      id: aa4c0270-342c-4a45-8139-744fe8031b12
+      id: 1a52d2f9-00df-4ac9-8df5-364ebb3c3bfb
       version: -1
       name: Auto remediation?
       description: Should the playbook perform auto-remediation or manual remediation?
@@ -460,10 +460,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: acde242d-801a-439c-8310-f9b2b18365b3
+    taskid: 5cc3c0c3-389e-4381-8c99-4b27e0d4720a
     type: regular
     task:
-      id: acde242d-801a-439c-8310-f9b2b18365b3
+      id: 5cc3c0c3-389e-4381-8c99-4b27e0d4720a
       version: -1
       name: Manual remediation
       description: Manual remediation by the analyst.
@@ -488,10 +488,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 65ba9f2c-123a-45e4-8fd7-c121c8771d67
+    taskid: 67436aaa-e13c-402c-8d98-b7cec813216f
     type: condition
     task:
-      id: 65ba9f2c-123a-45e4-8fd7-c121c8771d67
+      id: 67436aaa-e13c-402c-8d98-b7cec813216f
       version: -1
       name: Continue investigation?
       description: Continue investigation?
@@ -518,10 +518,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 5ae8c57e-e751-4d54-84a2-b51d48060b5a
+    taskid: 27f0840d-6786-4b67-88d8-1245163d56ae
     type: regular
     task:
-      id: 5ae8c57e-e751-4d54-84a2-b51d48060b5a
+      id: 27f0840d-6786-4b67-88d8-1245163d56ae
       version: -1
       name: Manual - continue investigation for new alerts
       description: Manual - continue investigation for new alerts.
@@ -546,10 +546,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 04d770d5-a6df-4254-82df-cec71ae49a85
+    taskid: d58909ea-e787-496c-81ea-1db784cf8c5b
     type: playbook
     task:
-      id: 04d770d5-a6df-4254-82df-cec71ae49a85
+      id: d58909ea-e787-496c-81ea-1db784cf8c5b
       version: -1
       name: Block Indicators - Generic v2
       description: |+
@@ -714,10 +714,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: e9bdaf78-306c-463f-8229-90e86d485a40
+    taskid: 368cbfdc-c9c0-41e4-8af9-b37972d8b1a3
     type: condition
     task:
-      id: e9bdaf78-306c-463f-8229-90e86d485a40
+      id: 368cbfdc-c9c0-41e4-8af9-b37972d8b1a3
       version: -1
       name: Hunt for related IOCs?
       description: Run hunting playbook to find related IOCs?
@@ -758,10 +758,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: e318312d-7dfd-4abb-8764-9428c3cc5178
+    taskid: f548cabe-46a5-48ed-8c91-098bbef16b1a
     type: playbook
     task:
-      id: e318312d-7dfd-4abb-8764-9428c3cc5178
+      id: f548cabe-46a5-48ed-8c91-098bbef16b1a
       version: -1
       name: PANW - Hunting and threat detection by indicator type V2
       description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is
@@ -876,10 +876,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 7dc2b6e3-7baa-4d8c-8f60-d3d03207a344
+    taskid: 4cc0c7d1-1f1b-42be-8ebc-03ee672403a1
     type: playbook
     task:
-      id: 7dc2b6e3-7baa-4d8c-8f60-d3d03207a344
+      id: 4cc0c7d1-1f1b-42be-8ebc-03ee672403a1
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -969,10 +969,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 1edf2861-dac0-4563-8ce3-7b55d810efbe
+    taskid: c7a5e65b-d89d-4118-811d-074228d66ee0
     type: regular
     task:
-      id: 1edf2861-dac0-4563-8ce3-7b55d810efbe
+      id: c7a5e65b-d89d-4118-811d-074228d66ee0
       version: -1
       name: Count XDR alerts
       description: Sets a value in context with the given context key.
@@ -1007,10 +1007,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 7d8525b9-dc35-430b-80f8-a9245491d7c3
+    taskid: b1d89a7b-6fb1-49bf-815c-1d87183bc192
     type: condition
     task:
-      id: 7d8525b9-dc35-430b-80f8-a9245491d7c3
+      id: b1d89a7b-6fb1-49bf-815c-1d87183bc192
       version: -1
       name: Continue to Remediation or close as false positive?
       description: Continue to Remediation or close the investigation as false positive?
@@ -1037,10 +1037,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: a6944a7e-83bf-4492-82f2-03de98559d46
+    taskid: 455a9fae-3bd2-460c-894d-220833e10e87
     type: regular
     task:
-      id: a6944a7e-83bf-4492-82f2-03de98559d46
+      id: 455a9fae-3bd2-460c-894d-220833e10e87
       version: -1
       name: Close XDR incident as false positive
       description: Updates one or more fields of a specified incident. Missing fields
@@ -1077,10 +1077,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 1bd4508c-d9ca-4e17-8b9d-12f28b86b907
+    taskid: ac2adbd8-c546-44dc-87b0-6d77167d52d6
     type: regular
     task:
-      id: 1bd4508c-d9ca-4e17-8b9d-12f28b86b907
+      id: ac2adbd8-c546-44dc-87b0-6d77167d52d6
       version: -1
       name: Find similar incidents
       description: |-
@@ -1124,10 +1124,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 9b27b19e-efdf-4a40-88d9-755418a60413
+    taskid: a5e9a294-6e71-4c28-8795-9acdce69cf1f
     type: condition
     task:
-      id: 9b27b19e-efdf-4a40-88d9-755418a60413
+      id: a5e9a294-6e71-4c28-8795-9acdce69cf1f
       version: -1
       name: Link similar incidents?
       description: Link similar incidents?
@@ -1168,10 +1168,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: f12b97db-bc7d-4994-853a-d1f398f5f871
+    taskid: 424508c4-04d7-48f4-86a5-6ffc14ad979c
     type: regular
     task:
-      id: f12b97db-bc7d-4994-853a-d1f398f5f871
+      id: 424508c4-04d7-48f4-86a5-6ffc14ad979c
       version: -1
       name: Link similar incidents
       description: Link two or more incidents
@@ -1207,10 +1207,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: c2aec0c1-f71e-4491-8e12-76532a7a67d4
+    taskid: 10fc9a0a-2ffc-4ac8-86b5-e8476ecca92b
     type: condition
     task:
-      id: c2aec0c1-f71e-4491-8e12-76532a7a67d4
+      id: 10fc9a0a-2ffc-4ac8-86b5-e8476ecca92b
       version: -1
       name: Similar incidents found?
       description: Were any similar incidents found?
@@ -1251,10 +1251,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: be51922a-ec94-4123-83ba-08aa886294af
+    taskid: 7b258004-dd56-40e1-8a0e-f3936bca8b8c
     type: condition
     task:
-      id: be51922a-ec94-4123-83ba-08aa886294af
+      id: 7b258004-dd56-40e1-8a0e-f3936bca8b8c
       version: -1
       name: Close as duplicate?
       description: Close the incident as duplicate?
@@ -1281,10 +1281,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 6c90a02a-b03d-429f-818a-898941090b59
+    taskid: 7f6c7e4f-fa14-4e90-8119-88f3da7c17f1
     type: regular
     task:
-      id: 6c90a02a-b03d-429f-818a-898941090b59
+      id: 7f6c7e4f-fa14-4e90-8119-88f3da7c17f1
       version: -1
       name: Resolve XDR incident as duplicate
       description: Updates one or more fields of a specified incident. Missing fields
@@ -1324,10 +1324,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 57acc01c-fda3-4450-8956-50d777319742
+    taskid: 6aec53c9-ae46-4724-88ca-2a2b5d8d802c
     type: title
     task:
-      id: 57acc01c-fda3-4450-8956-50d777319742
+      id: 6aec53c9-ae46-4724-88ca-2a2b5d8d802c
       version: -1
       name: Close as duplicate
       type: title
@@ -1352,10 +1352,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 688ae526-42f4-42a0-861a-cc33cafe7398
+    taskid: b826a6b1-44b1-4112-8e6d-3b5ffeb62e8a
     type: title
     task:
-      id: 688ae526-42f4-42a0-861a-cc33cafe7398
+      id: b826a6b1-44b1-4112-8e6d-3b5ffeb62e8a
       version: -1
       name: False Positive
       type: title
@@ -1380,10 +1380,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 083bf155-a250-456f-8431-311055e94da1
+    taskid: 163ea9b1-f46f-48b4-840b-f237435e21f0
     type: regular
     task:
-      id: 083bf155-a250-456f-8431-311055e94da1
+      id: 163ea9b1-f46f-48b4-840b-f237435e21f0
       version: -1
       name: Close investigation - false positive
       description: Closes the incident.
@@ -1420,10 +1420,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: 0c969fc5-e156-408c-87ae-abae0e606640
+    taskid: c596cad2-63bc-40a7-81d9-a433c6e61c7f
     type: regular
     task:
-      id: 0c969fc5-e156-408c-87ae-abae0e606640
+      id: c596cad2-63bc-40a7-81d9-a433c6e61c7f
       version: -1
       name: Close investigation- duplicate
       description: Closes the incident.
@@ -1460,10 +1460,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: 5a87bb98-42ec-4ecd-8e5c-d0630ac22d1a
+    taskid: ffeb4a77-e22f-41d5-832b-be3517a2030e
     type: regular
     task:
-      id: 5a87bb98-42ec-4ecd-8e5c-d0630ac22d1a
+      id: ffeb4a77-e22f-41d5-832b-be3517a2030e
       version: -1
       name: Manually block ports used for exploitation on the scanned host.
       description: Manually block ports used for exploitation on the scanned host.
@@ -1488,10 +1488,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: e8adae33-103d-479c-876f-b2a2e17010f1
+    taskid: 9d233d09-dcc2-482e-818a-fa793cd2812e
     type: condition
     task:
-      id: e8adae33-103d-479c-876f-b2a2e17010f1
+      id: 9d233d09-dcc2-482e-818a-fa793cd2812e
       version: -1
       name: Was there a port scan alert investigated?
       description: Was there a port scan alert investigated as a part of the incident?
@@ -1527,10 +1527,10 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: a76df66b-2002-4b7f-8f9f-828eeab133aa
+    taskid: bf25090c-f375-406a-8749-2cedbb910376
     type: condition
     task:
-      id: a76df66b-2002-4b7f-8f9f-828eeab133aa
+      id: bf25090c-f375-406a-8749-2cedbb910376
       version: -1
       name: Block ports?
       description: Is port blocking required?
@@ -1568,6 +1568,41 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "54":
+    id: "54"
+    taskid: f4b305cc-0181-4181-8c19-6b88598ebb57
+    type: regular
+    task:
+      id: f4b305cc-0181-4181-8c19-6b88598ebb57
+      version: -1
+      name: Cortex XDR - get incident extra data
+      description: Returns additional data for the specified incident, for example,
+        related alerts, file artifacts, network artifacts, and so on.
+      script: Cortex XDR - IR|||xdr-get-incident-extra-data
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      alerts_limit: {}
+      incident_id:
+        complex:
+          root: inputs.incident_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -1585,21 +1620,25 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4950,
+        "height": 5090,
         "width": 1650,
         "x": -240,
-        "y": -685
+        "y": -825
       }
     }
   }
 inputs:
 - key: incident_id
-  value: {}
+  value:
+    complex:
+      root: incident
+      accessor: xdrincidentid
   required: false
   description: Incident ID.
   playbookInputQuery: null
 - key: similarIncidentFields
-  value: {}
+  value:
+    simple: xdrdescription
   required: false
   description: A comma-separated list of similar incident fields keys.
   playbookInputQuery: null

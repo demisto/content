@@ -4347,3 +4347,15 @@ def setup_outgoing_mirror_error(incident_id, error):
 
     demisto.setIntegrationContext(integration_cache)
     return incident_id
+
+
+def clear_outgoing_mirror_error():
+    """clear any existing outgoing error data in integration cache.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    integration_cache = demisto.getIntegrationContext()
+    integration_cache['out_mirror_error'] = None
+    integration_cache['out_error_printed'] = False
+    demisto.setIntegrationContext(integration_cache)
