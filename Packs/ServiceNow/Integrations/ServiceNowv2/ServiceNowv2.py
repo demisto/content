@@ -1870,12 +1870,10 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     Args:
         client: XSOAR client to use
         args:
-            ``args['id']`` incident id to retrieve
-            ``args['lastUpdate']`` when was the last time we retrieved data
+            id: incident id to retrieve
+            lastUpdate: when was the last time we retrieved data
 
-    Returns: List[Dict[str, Any]]`` first entry is the incident (which can be completely empty) and others are
-             the new entries.
-
+    Returns: List[Dict[str, Any]]`` first entry is the incident (which can be completely empty) and the new entries.
     """
 
     ticket_id = args.get('id')
@@ -1929,7 +1927,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 required=False
             )
 
-        file_entries = client.get_ticket_attachment_entries(result.get('result').get('sys_id', ''))
+        file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
         if file_entries:
             for file_ in file_entries:
                 if file_.get('File') == attachment.get('file_name'):
@@ -1962,35 +1960,31 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             continue
 
         entries.append({
-            'Type': 1,
-            'Category': 'chat',
-            'ContentsFormat': 'text',
+            'Type': note.get('type'),
+            'Category': note.get('category'),
             'Contents': note.get('value'),
+            'ContentsFormat': note.get('format'),
+            'Tags': note.get('tags'),
             'Note': True
         })
-
     # Parse user dict to email
-    assigned_to = ticket.get('assigned_to')
-    caller = ticket.get('caller_id')
+    assigned_to = ticket.get('assigned_to', {})
+    caller = ticket.get('caller_id', {})
     if assigned_to:
-        result = client.get('sys_user', assigned_to.get('value'))
-    user = result.get('result', {})
-    user_email = user.get('email')
-    ticket['assigned_to'] = user_email
-    if ticket['assigned_to'] == user_email:
-        pass
+        user_result = client.get('sys_user', assigned_to.get('value'))
+        user = user_result.get('result', {})
+        user_email = user.get('email')
+        ticket['assigned_to'] = user_email
 
     if caller:
-        result = client.get('sys_user', caller.get('value'))
-    user = result.get('result', {})
-    user_email = user.get('email')
-    ticket['caller_id'] = user_email
-    if ticket['caller_id'] == user_email:
-        pass
+        user_result = client.get('sys_user', caller.get('value'))
+        user = user_result.get('result', {})
+        user_email = user.get('email')
+        ticket['caller_id'] = user_email
 
     if ticket.get('resolved_by'):
         if params.get('close_incident'):
-            demisto.info(f'ticket is closed: {ticket}')
+            demisto.debug(f'ticket is closed: {ticket}')
             entries.append({
                 'Type': EntryType.NOTE,
                 'Contents': {
@@ -2000,7 +1994,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'ContentsFormat': EntryFormat.JSON
             })
 
-    demisto.debug(f'Pull result is {ticket} + {entries}')
+    demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
 
 

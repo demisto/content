@@ -37,7 +37,7 @@ RESPONSE_TICKET_MIRROR = {'result': [{
     'cmdb_ci': {'link': 'demisto.com', 'value': 'test'}, 'delivery_plan': '', 'impact': '2', 'active': 'true',
     'work_notes_list': '', 'business_service': '', 'priority': '4', 'sys_domain_path': '/', 'rfc': '',
     'time_worked': '', 'expected_start': '', 'opened_at': '2019-09-05 00:41:01', 'business_duration': '',
-    'group_list': '', 'work_end': '', 'caller_id': {'link': 'demisto.com', 'value': 'test'},
+    'group_list': '', 'work_end': '', 'caller_id': '',
     'reopened_time': '', 'resolved_at': '', 'approval_set': '', 'subcategory': '', 'work_notes': '',
     'short_description': 'Trouble getting to Oregon mail server', 'close_code': '', 'correlation_display': '',
     'delivery_task': '', 'work_start': '', 'assignment_group': {'link': 'demisto.com', 'value': 'test'},
@@ -52,6 +52,16 @@ RESPONSE_TICKET_MIRROR = {'result': [{
     'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
     }]
 }
+
+RESPONSE_GET_ATTACHMENT = {'result': [{
+    'size_bytes': '17', 'file_name': 'test.txt', 'sys_mod_count': '1', 'average_image_color': '', 'image_width': '',
+    'sys_updated_on': '2020-08-16 17:54:16', 'sys_tags': '', 'table_name': 'incident',
+    'sys_id': 'd722a127dbe6101053482fb74896195d', 'image_height': '', 'sys_updated_by': 'system',
+    'download_link': 'https://dev59633.service-now.com/api/now/attachment/d722a127dbe6101053482fb74896195d/file',
+    'content_type': 'text/plain', 'sys_created_on': '2020-08-16 17:54:15', 'size_compressed': '35',
+    'compressed': 'true', 'state': 'available', 'table_sys_id': 'e6b06163dbe6101053482fb74896194e',
+    'chunk_size_bytes': '700000', 'hash': '1669594220a92d73d62727293e988b4213b5b4829de36c3afe43c9b4f3ddf35e',
+    'sys_created_by': 'admin'}]}
 
 
 RESPONSE_MULTIPLE_TICKET = [
@@ -2974,3 +2984,12 @@ RESPONSE_FETCH_ATTACHMENTS_TICKET = {
 RESPONSE_FETCH_ATTACHMENTS_FILE = [
     {'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'wireframe', 'FileID': 'file_id'}
 ]
+
+MIRROR_COMMENTS_RESPONSE = {'result': [{
+    'sys_id': '549fc0bfdbaa101053482fb748961941', 'sys_created_on': '2020-08-17 06:31:49', 'name': 'incident',
+    'element_id': '9bf0f1afdbe6101053482fb748961908', 'sys_tags': '', 'value': 'This is a comment',
+    'sys_created_by': 'admin', 'element': 'comments'}]}
+
+RESPONSE_MIRROR_FILE_ENTRY = [
+    {'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'test.txt',
+     'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'}]
