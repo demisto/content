@@ -35,7 +35,7 @@ def http_request(method, url, headers):
 
         res.raise_for_status()
 
-    except Exception, e:
+    except Exception as e:
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
@@ -689,7 +689,7 @@ try:
     if demisto_command == 'file':
         file_command(max_array_size)
 
-except Exception, e:
+except Exception as e:
     demisto.results({
         'Type': entryTypes['error'],
         'ContentsFormat': formats['text'],
