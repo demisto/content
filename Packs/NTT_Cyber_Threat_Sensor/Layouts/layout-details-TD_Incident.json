@@ -8,7 +8,7 @@
         "commitMessage": "",
         "id": "TD Incident",
         "kind": "details",
-        "modified": "2020-08-17T14:19:18.411068002Z",
+        "modified": "2020-08-17T14:53:04.17230177Z",
         "name": "",
         "prevKind": "details",
         "prevTypeId": "TD Incident",
@@ -296,11 +296,11 @@
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "FAERE Description",
-                                "height": 44,
+                                "endCol": 6,
+                                "fieldId": "faeredesc",
+                                "height": 106,
                                 "id": "c8e1f500-e092-11ea-8a9e-8301457fb7b1",
-                                "index": 1,
+                                "index": 0,
                                 "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
