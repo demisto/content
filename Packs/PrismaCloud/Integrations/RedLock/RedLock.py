@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import demistomock as demisto
 import requests
 
 from CommonServerPython import *
@@ -428,6 +428,9 @@ def fetch_incidents():
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     last_run_object = demisto.getLastRun()
     last_run = last_run_object and last_run_object['time']
+    response = req('GET', 'alert/rule', None, None)
+    rules = ([rule.get('name') for rule in response])
+    demisto.info(f"Alert rules for the user: \n{rules}\n")
     if not last_run:
         last_run = now - 24 * 60 * 60 * 1000
     payload = {'timeRange': {
