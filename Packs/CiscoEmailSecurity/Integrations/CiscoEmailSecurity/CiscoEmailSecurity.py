@@ -24,13 +24,10 @@ HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 class Client(BaseClient):
 
-    def list_report(self) -> Dict[str, Any]:
+    def list_report(self, url_suffix) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix='/api/v2.0/reporting/',
-            params={
-
-            }
+            url_suffix=url_suffix
         )
 
     def get_domain_reputation(self, domain: str) -> Dict[str, Any]:
@@ -1080,24 +1077,119 @@ def scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_report_command(client: Client, args: Dict[str, Any]) -> Union[Dict[str, Any], CommandResults]:
-    url_suffix = '/alerts/'
-    alert_id = args.get('alert_id')
-    custom_filter = args.get('custom_filter')
+def build_url_params_for_list_report(args):
+    start_date = args.get('start_date')
+    end_date = args.get('end_date')
+    device_type = args.get('device_type')
+    url_params = f'?startDate={start_date}&endDate={end_date}&device_type={device_type}'
+
     arguments = assign_params(**args)
-    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, alert_id)
-    alerts_response_data = client.list_alerts(url_suffix, request_data)
-    list_alert = alerts_response_data.get('data') if alerts_response_data.get('data') else [alerts_response_data]
-    alerts = arrange_alerts_by_incident_type(list_alert)
-    alerts = arrange_alerts_descriptions(alerts)
-    alerts = set_alerts_is_open(alerts)
-    human_readable = alerts_to_human_readable(alerts)
+
+    for key, value in arguments.items():
+        if key == 'offset':
+            limit = arguments.get('limit')
+            url_params += f'&{key}={value}&limit={limit}'
+
+        if key == 'filter_key':
+            filter_operator = arguments.get('filter_operator')
+            filter_value = arguments.get('filter_value')
+            url_params += f'&filterBy={value}&filter_operator={filter_operator}&filter_value{filter_value}'
+
+        if key == 'device_group':
+            url_params += f'&{key}={value}'
+        if key == 'device_name':
+            url_params += f'&{key}={value}'
+
+    return url_params
+
+
+def list_report_command(client: Client, args: Dict[str, Any]):
+    url_suffix = '/api/v2.0/reporting'
+    url_params = build_url_params_for_list_report(args)
+    url_to_search_with = url_suffix + url_params
+    report_response_data = client.list_report(url_to_search_with)
     return CommandResults(
-        readable_output=human_readable,
+        readable_output='human_readable',
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
         outputs_key_field='_id',
-        outputs=alerts
+        outputs=report_response_data
     )
+
+
+def build_url_params_for_list_messages(args):
+    start_date = args.get('start_date')
+    end_date = args.get('end_date')
+    url_params = f'?startDate={start_date}&endDate={end_date}'
+
+    arguments = assign_params(**args)
+
+    for key, value in arguments.items():
+        if key == 'offset':
+            limit = arguments.get('limit')
+            url_params += f'&{key}={value}&limit={limit}'
+
+        if key == 'attachment_name_value':
+            attachment_name_operator = arguments.get('attachment_name_operator', 'is')
+            url_params += f'&attachmentNameOperator={attachment_name_operator}&attachmentNameValue={value}'
+
+        if key == 'recipient_filter_value':
+            recipient_operator = arguments.get('recipient_filter_operator', 'is')
+            url_params += f'&envelopeRecipientfilterOperator={recipient_operator}&envelopeRecipientfilterValue={value}'
+
+        if key == 'sender_filter_value':
+            sender_filter_operator = arguments.get('sender_filter_operator')
+            url_params += f'&envelopeSenderfilterOperator={sender_filter_operator}&envelopeSenderfilterValue={value}'
+
+        if key == 'subject_filter_value':
+            subject_filter_operator = arguments.get('subject_filter_operator')
+            url_params += f'&subjectfilterOperator={subject_filter_operator}&subjectfilterValue={value}'
+
+        if key == 'domain_name_value':
+            domain_name_operator = arguments.get('domain_name_operator')
+            url_params += f'&domainNameOperator={domain_name_operator}&domainNameValue={value}'
+
+        if key == 'file_hash':
+            url_params += f'&fileSha256={value}'
+        if key == 'message_id':
+            url_params += f'&messageIdHeader={value}'
+        if key == 'cisco_message_id':
+            url_params += f'&ciscoMid={value}'
+        if key == 'sender_ip':
+            url_params += f'&senderIp={value}'
+        if key == 'message_direction':
+            url_params += f'&messageDirection={value}'
+        if key == 'spam_positive':
+            url_params += f'&spamPositive={value}'
+        if key == 'quarantined_as_spam':
+            url_params += f'&quarantinedAsSpam={value}'
+        if key == 'quarantine_status':
+            url_params += f'&quarantineStatus={value}'
+        if key == 'url_reputation':
+            url_params += f'&urlReputation={value}'
+        if key == 'virus_positive':
+            url_params += f'&virusPositive={value}'
+        if key == 'contained_malicious_urls':
+            url_params += f'&containedMaliciousUrls={value}'
+        if key == 'contained_neutral_urls':
+            url_params += f'&containedNeutralUrls={value}'
+        if key == 'macro_file_types_detected':
+            url_params += f'&macroFileTypesDetected={value}'
+
+    return url_params
+
+
+def list_messages_command(client, args):
+    url_suffix = '/esa/api/v2.0/message-tracking/messages'
+    url_params = build_url_params_for_list_messages(args)
+    url_to_search_with = url_suffix + url_params
+    report_response_data = client.list_report(url_to_search_with)
+    return CommandResults(
+        readable_output='human_readable',
+        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+        outputs_key_field='_id',
+        outputs=report_response_data
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -1166,6 +1258,8 @@ def main() -> None:
 
         elif demisto.command() == 'cisco-email-security-report-get':
             return_results(list_report_command(client, args))
+        elif demisto.command() == 'cisco-email-security-messages-search':
+            return_results(list_messages_command(client, args))
 
     # Log exceptions and return errors
     except Exception as e:
