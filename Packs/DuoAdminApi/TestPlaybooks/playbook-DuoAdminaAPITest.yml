@@ -2,7 +2,7 @@ id: DuoAdmin API test playbook
 version: -1
 name: DuoAdmin API test playbook
 starttaskid: "0"
-description: Test playbook for DuoAdmin Integration
+description: Test playbook for DuoAdmin Integration.
 tasks:
   "0":
     id: "0"
