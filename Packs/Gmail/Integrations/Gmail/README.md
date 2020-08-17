@@ -102,7 +102,7 @@
 <ol>
           <li>
             Access the
-            <a href="http://admin.google.com/%C2%A0" target="_blank" rel="noopener">Google Administrator Console</a>.
+            <a href="http://admin.google.com/" target="_blank" rel="noopener">Google Administrator Console</a>.
           </li>
           <li>
             Enter a client name (the Unique ID) and paste the following

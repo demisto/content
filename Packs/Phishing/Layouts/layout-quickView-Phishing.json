@@ -1,208 +1,211 @@
 {
-	"typeId": "Phishing",
-	"kind": "quickView",
-	"layout": {
-		"id": "Phishing",
-		"version": -1,
-		"modified": "2018-12-18T09:27:21.43610162Z",
-		"name": "",
-		"sections": [
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Basic Information",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_type",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_severity",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_owner",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_dbotstatus",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_sourcebrand",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_sourceinstance",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_playbookid",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_detectionsla",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_remediationsla",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_phase",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_roles",
-						"isVisible": true
-					}
-				],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Timeline Information",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_dbotcreated",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_occurred",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_dbotduedate",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_dbotmodified",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_dbottotaltime",
-						"isVisible": true
-					}
-				],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Custom Fields",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_detectionsla",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_remediationsla",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_timetoassignment",
-						"isVisible": true
-					}
-				],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			},
-			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Labels",
-				"type": "labels",
-				"isVisible": true,
-				"readOnly": true,
-				"fields": [
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_labels",
-						"isVisible": true
-					}
-				],
-				"description": "",
-				"query": null,
-				"queryType": ""
-			}
-		]
-	}
+    "typeId": "Phishing",
+    "kind": "quickView",
+    "layout": {
+        "id": "Phishing",
+        "version": -1,
+        "modified": "2018-12-18T09:27:21.43610162Z",
+        "name": "",
+        "sections": [
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Basic Information",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
+                "fields": [
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_dbotstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_sourcebrand",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_sourceinstance",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_detectionsla",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_remediationsla",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    }
+                ],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Timeline Information",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
+                "fields": [
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_dbotcreated",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_dbotduedate",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_dbotmodified",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_dbottotaltime",
+                        "isVisible": true
+                    }
+                ],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Custom Fields",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
+                "fields": [
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_detectionsla",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_remediationsla",
+                        "isVisible": true
+                    },
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_timetoassignment",
+                        "isVisible": true
+                    }
+                ],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Labels",
+                "type": "labels",
+                "isVisible": true,
+                "readOnly": true,
+                "fields": [
+                    {
+                        "id": "",
+                        "version": 0,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    }
+                ],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            }
+        ]
+    },
+    "toVersion": "5.9.9",
+    "version": -1,
+    "fromVersion": "4.1.0"
 }

@@ -1,6 +1,5 @@
-import pytest
-
 import demistomock as demisto
+import pytest
 
 integration_params = {
     'url': 'https://localhost',
@@ -68,3 +67,27 @@ def test_fetch_incidents_no_incidents(mocker):
     mocker.patch('JiraV2.run_query', return_value={})
     incidents = fetch_incidents('status=Open AND labels=lies', id_offset=1)
     assert incidents == []
+
+
+def test_module(mocker):
+    """
+    Given
+    - Jira test module
+
+    When
+    - Sending HTTP request and getting the user details
+
+    Then
+    - Verify test module returns ok
+    """
+    from JiraV2 import test_module as module
+    user_data = {
+        "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=1234", "accountId": "1234",
+        "emailAddress": "admin@demistodev.com", "displayName": "test", "active": True,
+        "timeZone": "Asia/Jerusalem", "locale": "en_US", "groups": {"size": 1, "items": []},
+        "applicationRoles": {"size": 1, "items": []}, "expand": "groups,applicationRoles"
+    }
+    mocker.patch('JiraV2.jira_req', return_value=user_data)
+    mocker.patch('JiraV2.run_query', return_value={})
+    result = module()
+    assert result == 'ok'

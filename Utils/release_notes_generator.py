@@ -69,11 +69,16 @@ def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
         type_id = data.get('typeId', '')
         return f'{type_id} - {layout_kind}', ''
 
-    name = data.get('name', '')
+    name = data.get('name', entity_path)
     if 'integrations' in entity_path.lower() and data.get('display'):
         name = data.get('display')
 
-    if not name:
+    if 'classifiers' in entity_path.lower():
+        name = data.get('name')
+        if not name:
+            name = data.get('brandName')
+
+    if name == entity_path:
         print_error(f'missing name for {entity_path}')
 
     # script entities has "comment" instead of "description"
@@ -110,7 +115,10 @@ def construct_entities_block(entities_data: dict):
     for entity_type, entities_description in sorted(entities_data.items()):
         release_notes += f'#### {entity_type}\n'
         for name, description in entities_description.items():
-            release_notes += f'##### {name}  \n{description}\n'
+            if entity_type in ('Connections', 'IncidentTypes', 'IndicatorTypes', 'Layouts', 'IncidentFields'):
+                release_notes += f'- **{name}**\n'
+            else:
+                release_notes += f'##### {name}  \n{description}\n'
 
     return release_notes
 
