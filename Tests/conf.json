@@ -3035,6 +3035,7 @@
         "SepioPrimeAPI-Test": "Issue 27240",
         "Trend Micro Apex - Test": "Issue 27280",
         "Cortex Data Lake Test": "Issue 24346",
+        "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
         "Cisco ASA - Test Playbook": "Issue 25741",
