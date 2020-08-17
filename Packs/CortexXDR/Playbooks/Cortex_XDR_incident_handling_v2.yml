@@ -190,6 +190,7 @@ tasks:
       xdr_incident_markdown_field: {}
       xdr_network_artifacts: {}
       xdr_url: {}
+    reputationcalc: 2
     results:
     - XDRSyncScriptTaskID
     separatecontext: false
