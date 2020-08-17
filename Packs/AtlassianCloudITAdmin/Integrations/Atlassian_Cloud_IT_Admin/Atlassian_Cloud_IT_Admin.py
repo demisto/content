@@ -4,9 +4,8 @@ from CommonServerPython import *
 ''' IMPORTS '''
 
 import json
-import traceback
-
 import requests
+import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -14,8 +13,8 @@ requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
 SCIM_EXTENSION_SCHEMA = "urn:scim:schemas:extension:custom:1.0:user"
 USER_NOT_FOUND = "User not found"
-USER_ENABLED = "User Enabled"
 USER_DISABLED = "User disabled"
+USER_ENABLED = "User enabled"
 CUSTOM_MAPPING_CREATE = demisto.params().get('customMappingCreateUser')
 CUSTOM_MAPPING_UPDATE = demisto.params().get('customMappingUpdateUser')
 
@@ -521,29 +520,16 @@ def enablee_disable_user_command(client, args, is_active):
     if not user_id:
         raise Exception('You must provide either the id of the user')
 
-    data = {
-        "Operations": [
-            {
-                "op": "replace",
-                "value":
-                {
-                    "active": is_active
-                }
-            }
-        ]
-    }
+    data = {"Operations": [{"op": "replace", "value": {"active": is_active}}]}
 
     res = client.enable_disable_user(user_id, data)
 
     if res.status_code == 200:
-        if is_active:
-            details = USER_ENABLED
-        else:
-            details = USER_DISABLED
+        msg = USER_ENABLED if is_active else USER_DISABLED
         generic_iam_context = OutputContext(success=True,
                                             iden=user_id,
-                                            details=details,
-                                            active=False)
+                                            details=msg,
+                                            active=is_active)
     else:
         generic_iam_context = OutputContext(success=False,
                                             iden=user_id,
@@ -556,7 +542,8 @@ def enablee_disable_user_command(client, args, is_active):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown(name='Disable Atlassian User:',
+    name = 'Enable Atlassian User:' if is_active else 'Disable Atlassian User:'
+    readable_output = tableToMarkdown(name=name,
                                       t=generic_iam_context.data,
                                       headers=["brand", "instanceName", "success", "active", "id",
                                                "username", "email",
