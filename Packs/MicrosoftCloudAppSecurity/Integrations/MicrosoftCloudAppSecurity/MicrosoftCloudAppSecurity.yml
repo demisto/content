@@ -42,7 +42,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: Date example - "3 days"
+- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   display: First fetch time
   hidden: false
   name: first_fetch
@@ -250,10 +250,12 @@ script:
       description: The ID of the reason (policy) that explains why the alert was triggered.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.label
-      description: The label of the reason (policy) that explains why the alert was triggered.
+      description: The label of the reason (policy) that explains why the alert was
+        triggered.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.policyType
-      description: The policy type of the reason (policy) that explains why the alert was triggered.
+      description: The policy type of the reason (policy) that explains why the alert
+        was triggered.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.threatScore
       description: The threat score of the alert.
