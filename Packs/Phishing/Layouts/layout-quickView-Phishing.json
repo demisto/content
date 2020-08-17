@@ -86,7 +86,7 @@
 				"type": ""
 			},
 			{
-				"description": "",
+				"description": "Information about Service Level Agreements (SLAs).",
 				"fields": [
 					{
 						"fieldId": "incident_detectionsla",
@@ -102,7 +102,7 @@
 					}
 				],
 				"isVisible": true,
-				"name": "Custom Fields",
+				"name": "SLA",
 				"query": null,
 				"queryType": "",
 				"readOnly": false,
