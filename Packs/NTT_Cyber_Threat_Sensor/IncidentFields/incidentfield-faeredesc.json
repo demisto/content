@@ -11,7 +11,7 @@
     "ownerOnly": false,
     "placeholder": "",
     "description": "",
-    "cliName": "FAERE Description",
+    "cliName": "faeredescription",
     "type": "html",
     "closeForm": false,
     "editForm": true,

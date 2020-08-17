@@ -10,10 +10,6 @@
         "kind": "details",
         "modified": "2020-08-17T14:53:04.17230177Z",
         "name": "",
-        "prevKind": "details",
-        "prevTypeId": "TD Incident",
-        "shouldCommit": false,
-        "sortValues": null,
         "system": false,
         "tabs": [
             {
@@ -297,7 +293,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "FAERE Description",
+                                "fieldId": "faeredescription",
                                 "height": 106,
                                 "id": "c8e1f500-e092-11ea-8a9e-8301457fb7b1",
                                 "index": 0,
