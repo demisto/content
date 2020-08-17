@@ -9,7 +9,7 @@ Please refer to ServiceNow documentation for additional information. We especial
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
 ## Use cases
-1. Get, update, create, delete ServiceNow tickets, in addition to adding links/comments and uploading files to them.
+1. Get, update, create, and delete ServiceNow tickets, as well as add links/comments or upload files to the tickets.
 2. Fetch newly created incidents.
 3. Get, update, create, delete records from any ServiceNow table.
 ## Wrapper Scripts
@@ -32,7 +32,7 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 | credentials | Username | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
-| ticket_type | Default ticket type for running ticket commands and fetching incidents | False |
+| ticket_type | Default ticket type on which to run ticket commands and fetch incidents | False |
 | api_version | ServiceNow API Version \(e.g. 'v1'\) | False |
 | isFetch | Fetch incidents | False |
 | sysparm_query | The query to use when fetching incidents | False |
