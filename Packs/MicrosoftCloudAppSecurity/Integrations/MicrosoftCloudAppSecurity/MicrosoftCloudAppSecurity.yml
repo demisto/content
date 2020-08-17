@@ -77,7 +77,7 @@ script:
       description: |-
         Multiple alerts matching the specified filters.
         The alert_id should appear similar to "55af7415f8a0a7a29eef2e1f".
-        Mandatory, unless you use custom filter.
+        Mandatory, unless you use a custom filter.
       isArray: true
       name: alert_ids
       required: false
@@ -247,13 +247,13 @@ script:
       description: The description of the alert.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.id
-      description: The ID of the reason (policy) that the alert was triggered.
+      description: The ID of the reason (policy) that explains why the alert was triggered.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.label
-      description: The label of the reason (policy) that the alert was triggered.
+      description: The label of the reason (policy) that explains why the alert was triggered.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.policy.policyType
-      description: The policy type of the reason (policy) that the alert was triggered.
+      description: The policy type of the reason (policy) that explains why the alert was triggered.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.threatScore
       description: The threat score of the alert.
@@ -268,7 +268,7 @@ script:
       description: The severity value of the alert.
       type: Number
     - contextPath: MicrosoftCloudAppSecurity.Alerts.handledByUser
-      description: The user who handle the alert
+      description: The user who handle the alert.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Alerts.comment
       description: The comment relating to the alert.
@@ -280,8 +280,8 @@ script:
     - default: false
       description: |-
         Multiple alerts matching the specified filters.
-        Alert_id should be like this template - "1234567890abcdefg".
-        Mandatory, unless you use custom filter.
+        Alert_id should appear similar to - "1234567890abcdefg".
+        Mandatory, unless you use a custom filter.
       isArray: true
       name: alert_ids
       required: false
@@ -294,7 +294,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comment about why the alerts were dismissed.
+      description: Comment describing why the alerts were dismissed.
       isArray: false
       name: comment
       required: false
@@ -388,7 +388,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Command for list of activities matching the specified filters.
+    description: Command for the list of activities matching the specified filters.
     execution: false
     name: microsoft-cas-activities-list
     outputs:
@@ -450,13 +450,13 @@ script:
       description: The name of the operating system in which the activity occurred.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.operatingSystem.family
-      description: The family of the operating system in which the activity occurred
+      description: The family of the operating system in which the activity occurred.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.type
       description: The type of the system in which the activity occurred.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.typeName
-      description: The type of name of the system in which the activity occurred.
+      description: The type of the name of the system in which the activity occurred.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Activities.userAgent.version
       description: The version of the system in which the activity occurred.
@@ -519,7 +519,7 @@ script:
       description: Whether the entity was resolved.
       type: Boolean
     - contextPath: MicrosoftCloudAppSecurity.Activities.description
-      description: The description of the activity
+      description: The description of the activity.
       type: String
     - contextPath: MicrosoftCloudAppSecurity.Activities.genericEventType
       description: The generic event type of the activity.
