@@ -1670,7 +1670,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         # if there is only body and no attachments to the mail , we would like to send it without attaching every part
         message = MIMEText(body, 'plain', 'utf-8')  # type: ignore
     else:
-        message = MIMEMultipart()  # type: ignore
+        message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
 
     message['to'] = header(','.join(emailto))
     message['cc'] = header(','.join(cc))
