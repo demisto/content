@@ -1,0 +1,42 @@
+{
+    "input_records": [{
+        "Name": "name",
+        "BMCServiceDesk__Priority_ID__c": "priority",
+        "BMCServiceDesk__queueName__c": "queue",
+        "BMCServiceDesk__Status_ID__c": "status",
+        "BMCServiceDesk__Client_Name__c": "client",
+        "BMCServiceDesk__incidentDescription__c": "description",
+        "BMCServiceDesk__FKOpenBy__r": {
+            "Name": "staff"
+        }
+    }],
+    "expected_records": [{
+        "Staff": "staff",
+        "Priority": "priority",
+        "Description": "description",
+        "Status": "status",
+        "Queue": "queue",
+        "ClientID": "client",
+        "Number": "name"
+    }],
+    "input_args": {
+        "last_fetch_time": "10 hours",
+        "service_request_number": "abc",
+        "maximum_service_request": "23"
+    },
+    "actual_response": {
+        "records": [
+            {
+                "Name": "name",
+                "BMCServiceDesk__Priority_ID__c": "priority",
+                "BMCServiceDesk__queueName__c": "queue",
+                "BMCServiceDesk__Status_ID__c": "status",
+                "BMCServiceDesk__Client_Name__c": "client",
+                "BMCServiceDesk__incidentDescription__c": "description",
+                "BMCServiceDesk__FKOpenBy__r": {
+                    "Name": "staff"
+                }
+            }
+        ]
+    }
+}

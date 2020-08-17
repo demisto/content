@@ -18,12 +18,12 @@ configuration:
   required: true
   type: 4
 - additionalinfo: Incidents will be fetched based on selected type.
-  defaultvalue: Service Request
+  defaultvalue: BMC Remedyforce Service Request
   display: Type
   name: type
   options:
-  - Incident
-  - Service Request
+  - BMC Remedyforce Incident
+  - BMC Remedyforce Service Request
   required: false
   type: 15
 - additionalinfo: Incidents will be fetched having this category.
@@ -58,9 +58,7 @@ configuration:
   name: max_incidents
   required: false
   type: 0
-- additionalinfo: Notes of fetched incident or service request will be fetched and
-    displayed in the "BMC Helix Remedyforce" tab if custom incident type "Bmc Remedyforce"
-    is chosen.
+- additionalinfo: Fetch notes of the BMC Remedyforce Service Request or BMC Remedyforce Incident.
   display: Fetch Note(s)
   name: fetch_note
   required: false
@@ -98,6 +96,12 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- display: First Fetch Timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: firstFetchTimestamp
+  defaultvalue: 10 minutes
+  type: 0
+  required: false
 description: BMC Helix Remedyforce integration allows customers to create/update service
   requests and incidents. It also allows to update status, resolve service requests
   and incidents with customer notes. This integration exposes standard ticketing capabilities
@@ -737,7 +741,7 @@ script:
       secret: false
     deprecated: false
     description: This command helps to get status details for incidents and service
-      requests. Status is used to display the progress of the service request through
+      requests. Status is used to display the progress of the service request or incident through
       its stages of opening to closure.
     execution: false
     name: bmc-remedy-status-details-get
@@ -913,7 +917,7 @@ script:
       description: Company name of the user.
       type: String
     - contextPath: BmcRemedyforce.User.Division
-      description: Divsion of the user.
+      description: Division of the user.
       type: String
     - contextPath: BmcRemedyforce.User.Department
       description: Department name of the user.
@@ -970,7 +974,214 @@ script:
     - contextPath: BmcRemedyforce.Broadcast.Impact
       description: Broadcast impact.
       type: String
-  dockerimage: demisto/python3:3.8.3.9324
+  - arguments:
+    - default: false
+      description: 'The time range to consider for getting the incident. Use the format "<number>
+        <time unit>". Example: 12 hours, 7 days, 3 months, 1 year.'
+      isArray: false
+      name: last_fetch_time
+      required: false
+      secret: false
+    - default: false
+      description: The unique number of the incident whose details user wants to get.
+      isArray: false
+      name: incident_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of the incidents user wants to get.
+      isArray: false
+      name: maximum_incident
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get details of incidents.
+    execution: false
+    name: bmc-remedy-incident-get
+    outputs:
+    - contextPath: BmcRemedyforce.Incident.Id
+      description: Incident Id.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Number
+      description: Incident number.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Priority
+      description: Incident priority.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Description
+      description: Incident description.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.ClientID
+      description: Incident client Id.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Status
+      description: Incident status.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.dueDateTime
+      description: Incident due datetime.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Staff
+      description: Incident staff.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Queue
+      description: Incident queue.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Category
+      description: Incident category.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Urgency
+      description: Incident urgency.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.ClientAccount
+      description: Incident client account.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Broadcast
+      description: Incident broadcast.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.closeDateTime
+      description: Incident close datetime.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.CreatedDate
+      description: Incident created date.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.LastModifiedDate
+      description: Incident last modified date.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.openDateTime
+      description: Incident open datetime.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.outageTo
+      description: Incident outage end.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.outageFrom
+      description: Incident outage start.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Resolution
+      description: Incident resolution.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.respondedDateTime
+      description: Incident responded datetime.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Service
+      description: Incident service.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.ServiceOffering
+      description: Incident service offering.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Template
+      description: Incident template.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Type
+      description: Incident type.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Impact
+      description: Incident impact.
+      type: String
+    - contextPath: BmcRemedyforce.Incident.Asset
+      description: Incident asset.
+      type: String
+  - arguments:
+    - default: false
+      description: The unique number of the service request whose details user wants
+        to get.
+      isArray: false
+      name: service_request_number
+      required: false
+      secret: false
+    - default: false
+      description: 'The time range to consider for getting the service request. Use
+        the format "<number> <time unit>". Example: 12 hours, 7 days, 3 months, 1
+        year.'
+      isArray: false
+      name: last_fetch_time
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of the service request user wants to get.
+      isArray: false
+      name: maximum_service_request
+      required: false
+      secret: false
+    deprecated: false
+    description: This command helps to get the service request details.
+    execution: false
+    name: bmc-remedy-service-request-get
+    outputs:
+    - contextPath: BmcRemedyforce.ServiceRequest.Id
+      description: Service Request Id.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Number
+      description: Service Request number.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Priority
+      description: Service Request priority.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Description
+      description: Service Request description.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.ClientID
+      description: Service Request client.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Status
+      description: Service Request status.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.DueDateTime
+      description: Service Request due datetime.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Staff
+      description: Service Request staff.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Queue
+      description: Service Request queue.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Category
+      description: Service Request category.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Urgency
+      description: Service Request urgency.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Broadcast
+      description: Service Request broadcast.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.closeDateTime
+      description: Service Request close datetime.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.CreatedDate
+      description: Service Request created date.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.LastUpdatedDate
+      description: Service Request last modified date.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.OpenDateTime
+      description: Service Request open datetime.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Resolution
+      description: Service Request resolution.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.ServiceOffering
+      description: Service Request service offering.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Template
+      description: Service Request template.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Impact
+      description: Service Request impact.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.BusinessService
+      description: Service Request business service.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.ServiceRequestDefinition
+      description: Service Request definition.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.ClientAccount
+      description: Account held by service request.
+      type: String
+    - contextPath: BmcRemedyforce.ServiceRequest.Type
+      description: Service Desk Type.
+      type: String
+  dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: true
   longRunning: false

@@ -24,7 +24,8 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Bmc Remedyforce"
+        "Bmc Remedyforce Incident",
+        "Bmc Remedyforce Service Request"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,

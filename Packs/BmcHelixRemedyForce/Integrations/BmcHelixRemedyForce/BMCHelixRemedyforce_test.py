@@ -16,8 +16,10 @@ from BMCHelixRemedyforce import bmc_remedy_impact_details_get_command, bmc_remed
     bmc_remedy_category_details_get_command, INCIDENT_CATEGORY_OBJECT, SERVICE_REQUEST_CATEGORY_OBJECT, \
     POSSIBLE_CATEGORY_TYPES, bmc_remedy_broadcast_details_get_command, URL_SUFFIX
 from BMCHelixRemedyforce import bmc_remedy_template_details_get_command, bmc_remedy_asset_details_get_command, \
-    bmc_remedy_account_details_get_command, bmc_remedy_urgency_details_get_command
-from BMCHelixRemedyforce import get_valid_arguments, bmc_remedy_update_service_request_command, DemistoException
+    bmc_remedy_account_details_get_command, bmc_remedy_urgency_details_get_command, get_service_request_details
+
+from BMCHelixRemedyforce import get_valid_arguments, bmc_remedy_update_service_request_command, DemistoException, \
+    prepare_outputs_for_get_service_request, bmc_remedy_service_request_get_command
 
 INCIDENT_TEST_DATA_FILE = './TestData/incident_data.json'
 
@@ -27,25 +29,16 @@ def prepare_expected_response_for_fetch_incidents():
     Prepares expected incidents list from response.
     :return: raw response, incident list.
     """
-    from BMCHelixRemedyforce import remove_empty_elements
+    from BMCHelixRemedyforce import remove_empty_elements, prepare_date_or_markdown_fields_for_fetch_incidents
     with open('./TestData/fetch_incident_response.json') as f:
         expected_response = json.load(f)
+    incidents = expected_response['records'][0]
+    prepare_date_or_markdown_fields_for_fetch_incidents(incidents)
+    incidents['Bmc Severity'] = 4
     # expected incidents.
     expected_incidents = [{
         'name': 'SR19657',
-        'severity': 4,
-        'rawJSON': json.dumps(remove_empty_elements(expected_response['records'][0])),
-        'CustomFields': {'bmcremedyforcecategory': 'category', 'bmcremedyforceid': 'id',
-                         'bmcremedyforcestatus': 'status',
-                         'bmcremedyforcetype': 'Service Request',
-                         'bmcremedyforceclientname': 'client name',
-                         'bmcremedyforcecreateddate': '2020-07-08T12:31:56+00:00',
-                         'bmcremedyforcelastmodifieddate': '2020-07-08T13:30:09+00:00',
-                         'bmcremedyforcedescription': 'Description',
-                         'bmcremedyforcetemplate': 'name',
-                         'bmcremedyforceattachments': '**No entries.**\n',
-                         'bmcremedyforcenotes': '**No entries.**\n'
-                         }
+        'rawJSON': json.dumps(remove_empty_elements(incidents)),
     }]
     return expected_response, expected_incidents
 
@@ -135,6 +128,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         dummy_categories = json.load(f)
     with open("TestData/dummy_broadcasts.json", encoding='utf-8') as f:
         dummy_broadcasts = json.load(f)
+    with open("TestData/get_service_request.json", encoding='utf-8') as f:
+        get_service_request_response = json.load(f)
     incorrect_args = data["incorrect_args"]
     correct_args = data["correct_args"]
     valid_session_id = 'SOME_VALID_SESSION_ID'
@@ -553,11 +548,13 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         with pytest.raises(ValueError):
             assert get_request_timeout()
 
+    @patch('BMCHelixRemedyforce.get_service_request_details')
     @patch('demistomock.command')
     @patch('BMCHelixRemedyforce.Client.http_request')
     @patch('BMCHelixRemedyforce.return_results')
     @patch('demistomock.params')
-    def test_main_success(self, mocker_params, mocker_return_results, mocker_http_request, mocker_command):
+    def test_main_success(self, mocker_params, mocker_return_results,
+                          mocker_http_request, mocker_command, mocker_sr_results):
         """
         Given working service integration
         When test-module is called from main()
@@ -570,6 +567,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :return: None
         """
 
+        mocker_sr_results.return_value = {}
         mocker_http_request.return_value = None
         mocker_return_results.return_value = None
 
@@ -578,7 +576,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         mocker_params.return_value = {
             'request_timeout': 50,
             'credentials': {},
-            'url': 'some_base_url'
+            'url': 'some_base_url',
+            'firstFetchTimestamp': '10 hours'
         }
 
         from BMCHelixRemedyforce import main
@@ -749,7 +748,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         }
         fields = 'BMCServiceDesk__Category_ID__c=\'category\' and BMCServiceDesk__Impact_Id__c=\'impact\' and '
         start_time = 1594250101000
-        fetch_type = ('false', 'No')
+        fetch_type = ('true', 'Yes')
         assert prepare_query_for_fetch_incidents(params, start_time) == SALESFORCE_QUERIES[
             'FETCH_INCIDENT_QUERY'].format(
             fields, *fetch_type, timestamp_to_datestring(start_time), '10')
@@ -785,10 +784,11 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             timestamp_to_datestring(start_time))
         assert prepare_query_for_fetch_incidents(params, start_time) == expected_query
 
+    @patch('BMCHelixRemedyforce.get_service_request_details')
     @patch('BMCHelixRemedyforce.get_attachments_for_incident')
     @patch('demistomock.params')
     @patch('BMCHelixRemedyforce.Client.http_request')
-    def test_fetch_incidents(self, http_request, demisto_params_url, mocker_get_attachments):
+    def test_fetch_incidents(self, http_request, demisto_params_url, mocker_get_attachments, mocker_sr_details):
         """
         Tests the fetch-incidents command.
 
@@ -798,6 +798,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         """
         from BMCHelixRemedyforce import fetch_incidents
 
+        mocker_sr_details.return_value = {}
         expected_response, expected_incidents = prepare_expected_response_for_fetch_incidents()
 
         params = {
@@ -832,6 +833,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         assert incidents == expected_incidents
 
+    @patch('BMCHelixRemedyforce.get_service_request_details')
     @patch('BMCHelixRemedyforce.get_attachments_for_incident')
     @patch('demistomock.getLastRun')
     @patch('demistomock.setLastRun')
@@ -858,9 +860,10 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             'request_timeout': 50,
             'credentials': {},
             'url': 'some_base_url',
-            'type': 'Incident'
+            'type': 'Incident',
+            'firstFetchTimestamp': '10 hours'
         }
-
+        args[7].return_value = {}
         args[6].return_value = []
 
         args[5].return_value = {'start_time': 1594250101000}
@@ -2599,3 +2602,186 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         result2 = BMCHelixRemedyforce.get_notes_for_incident(self.client, '')
         assert result2 == []
         assert BMCHelixRemedyforce.process_notes_record.call_count == 1
+
+    @patch('BMCHelixRemedyforce.Client.http_request')
+    def test_get_service_request_details(self, mock_http_res):
+        """
+        When get_service_request_details method is called
+        Then return value should be as expected
+
+        :param mock_http_res: mocker object for Client.http_request
+        :return: None
+        """
+        resp1 = {
+            "Success": True,
+            "Result": {
+                "Answers": [
+                    {
+                        "QuestionText": "question1",
+                        "Text": "answer1"
+                    },
+                    {
+                        "QuestionText": "question2",
+                        "Text": "answer2"
+                    }
+                ]
+            }
+        }
+        mock_http_res.return_value = resp1
+        actual_response = get_service_request_details(self.client, "abc")
+        assert actual_response == {
+            "question1": "answer1",
+            "question2": "answer2"
+        }
+
+    @patch('BMCHelixRemedyforce.Client.http_request')
+    def test_bmc_remedy_incident_get_command_success(self, mock_http_res):
+        """
+        Given valid param command will run successful.
+
+        :param mock_http_res: mocker object for Client.http_request
+        :return: None
+        """
+        import BMCHelixRemedyforce
+        BMCHelixRemedyforce.create_output_for_incident = MagicMock(
+            side_effect=BMCHelixRemedyforce.create_output_for_incident)
+
+        with open("TestData/fetch_incident_response.json", encoding='utf-8') as f:
+            expected_res = json.load(f)
+
+        mock_http_res.return_value = expected_res
+        args = {
+            "time": "1 day",
+            "incident_number": '123'
+        }
+
+        result = BMCHelixRemedyforce.bmc_remedy_incident_get_command(self.client, args)
+        assert result.raw_response == expected_res
+        assert BMCHelixRemedyforce.create_output_for_incident.call_count == 1
+
+        args = {}
+        result = BMCHelixRemedyforce.bmc_remedy_incident_get_command(self.client, args)
+        assert result.raw_response == expected_res
+        assert len(result.outputs) == 1
+        assert BMCHelixRemedyforce.create_output_for_incident.call_count == 2
+
+    @patch('BMCHelixRemedyforce.Client.http_request')
+    def test_bmc_remedy_incident_get_command_no_incident_found(self, mock_http_res):
+        """
+        Given valid param command will run with message.
+
+        :param mock_http_res: mocker object for Client.http_request
+        :return: None
+        """
+        import BMCHelixRemedyforce
+        mock_http_res.return_value = {}
+        args = {
+            "time": "2 months",
+            "incident_number": '321',
+            "maximum_incident ": '50'
+        }
+        result = BMCHelixRemedyforce.bmc_remedy_incident_get_command(self.client, args)
+        assert result == HR_MESSAGES['NO_INCIDENT_DETAILS_FOUND']
+
+    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch("requests.Session.request")
+    def test_bmc_remedy_incident_get_command_unauthorized_without_params(self, req_obj, mocker_get_session_id):
+        """
+        Testcase for bmc_remedy_incident_get_command method without passing impact name argument incase of
+        getting error response from rest API like 401 - Unauthorized.
+
+        :param req_obj: mocker object for making http request call
+        :param mocker_get_session_id: mocker object for getting valid session id
+        """
+        import BMCHelixRemedyforce
+        mocker_get_session_id.return_value = self.valid_session_id
+        resp1 = Response()
+        resp1.status_code = 401
+        req_obj.return_value = resp1
+        args = {}
+        try:
+            BMCHelixRemedyforce.bmc_remedy_incident_get_command(self.client, args)
+        except Exception as e:
+            assert str(e) == "{}".format(MESSAGES["AUTHENTICATION_ERROR"])
+
+    def test_bmc_remedy_incident_get_command_invalid_maximum_service_request(self):
+        """
+        Testcase for bmc_remedy_incident_get_command method to fetch a service request with
+        given arguments and verify exception when invalid maximum_service_request is given.
+
+        """
+        from BMCHelixRemedyforce import bmc_remedy_incident_get_command
+        args = {
+            "maximum_incident": 'aaa'
+        }
+        try:
+            bmc_remedy_incident_get_command(self.client, args)
+        except ValueError as e:
+            assert str(e) == MESSAGES["MAX_INCIDENT_LIMIT"].format('maximum_incident')
+        args = {
+            "maximum_incident": '501'
+        }
+        try:
+            bmc_remedy_incident_get_command(self.client, args)
+        except ValueError as e:
+            assert str(e) == MESSAGES["MAX_INCIDENT_LIMIT"].format('maximum_incident')
+
+    def test_prepare_outputs_for_get_service_request(self):
+        """
+        Testcase of prepare_outputs_for_get_service_request method
+        and verify context and human readable outputs.
+        """
+        outputs, hr_outputs = prepare_outputs_for_get_service_request(
+            self.get_service_request_response["input_records"])
+        assert outputs == self.get_service_request_response["expected_records"]
+        assert hr_outputs == self.get_service_request_response["expected_records"]
+
+    @patch('BMCHelixRemedyforce.Client.http_request')
+    def test_bmc_remedy_service_request_get_command(self, mock_http_res):
+        """
+        Testcase for bmc_remedy_service_request_get_command method to fetch a service request with
+        given arguments.
+
+        :param mock_http_res: mocker object for making http request call
+        """
+        mock_http_res.return_value = self.get_service_request_response["actual_response"]
+        input_args = self.get_service_request_response["input_args"]
+        actual_result = bmc_remedy_service_request_get_command(self.client, input_args)
+        assert actual_result.outputs_prefix == OUTPUT_PREFIX['SERVICE_REQUEST']
+        assert actual_result.outputs_key_field == 'Number'
+        assert actual_result.outputs == self.get_service_request_response["expected_records"]
+        assert actual_result.raw_response == self.get_service_request_response["actual_response"]
+
+    def test_bmc_remedy_service_request_get_command_invalid_maximum_service_request(self):
+        """
+        Testcase for bmc_remedy_service_request_get_command method to fetch a service request with
+        given arguments and verify exception when invalid maximum_service_request is given.
+
+        :param mock_http_res: mocker object for making http request call
+        """
+        input_args = self.get_service_request_response["input_args"]
+        input_args["maximum_service_request"] = "abc"
+        try:
+            bmc_remedy_service_request_get_command(self.client, input_args)
+        except ValueError as e:
+            assert str(e) == MESSAGES["MAX_INCIDENT_LIMIT"].format('maximum_service_request')
+        input_args["maximum_service_request"] = "1000"
+        try:
+            bmc_remedy_service_request_get_command(self.client, input_args)
+        except ValueError as e:
+            assert str(e) == MESSAGES["MAX_INCIDENT_LIMIT"].format('maximum_service_request')
+
+    @patch('BMCHelixRemedyforce.Client.http_request')
+    def test_bmc_remedy_service_request_get_command_exception(self, mock_http_res):
+        """
+        Testcase for bmc_remedy_service_request_get_command method to fetch a service request with
+        given arguments.
+
+        :param mock_http_res: mocker object for making http request call
+        """
+        mock_http_res.side_effect = DemistoException()
+        input_args = self.get_service_request_response["input_args"]
+        try:
+            bmc_remedy_service_request_get_command(self.client, input_args)
+        except Exception as e:
+            assert str(e) == MESSAGES['UNEXPECTED_ERROR']

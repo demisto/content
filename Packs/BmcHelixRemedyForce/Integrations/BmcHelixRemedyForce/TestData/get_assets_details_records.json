@@ -5,7 +5,7 @@
         {
             "attributes": {
                 "type": "BMCServiceDesk__BMC_BaseElement__c",
-                "url": "/services/data/v48.0/sobjects/BMCServiceDesk__BMC_BaseElement__c/a0K2x000000GiMgEAK"
+                "url": "url"
             },
             "Id": "a0K2x000000GiMgEAK",
             "Name": "AMPEDCLIENT02-INST_2014_9_19_1_2_52_6711001",

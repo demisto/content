@@ -12,10 +12,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 50ef8772-70ac-4afa-8913-3cb509cf9358
+    taskid: e7998933-962a-4079-8aae-e484cef8805e
     type: start
     task:
-      id: 50ef8772-70ac-4afa-8913-3cb509cf9358
+      id: e7998933-962a-4079-8aae-e484cef8805e
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: c8df57cf-dfc1-4488-8e5b-98e410351062
+    taskid: f321167e-d99c-406d-8107-693c4fcf1c66
     type: regular
     task:
-      id: c8df57cf-dfc1-4488-8e5b-98e410351062
+      id: f321167e-d99c-406d-8107-693c4fcf1c66
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -70,10 +70,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: b608fb4b-fc5f-4d69-89f0-5279ae2906bd
+    taskid: a56a743f-8e4d-471f-8c35-18b52b53598d
     type: regular
     task:
-      id: b608fb4b-fc5f-4d69-89f0-5279ae2906bd
+      id: a56a743f-8e4d-471f-8c35-18b52b53598d
       version: -1
       name: bmc-remedy-service-request-definition-get
       script: '|||bmc-remedy-service-request-definition-get'
@@ -98,10 +98,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 7bb72552-7999-4b02-827e-4187d29af857
+    taskid: a6d25cce-7ecf-4d22-8143-b4592cd75979
     type: condition
     task:
-      id: 7bb72552-7999-4b02-827e-4187d29af857
+      id: a6d25cce-7ecf-4d22-8143-b4592cd75979
       version: -1
       name: Verify Outputs
       type: condition
@@ -143,10 +143,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 187bd05a-222e-4a26-83bb-d08f3cda8ac0
+    taskid: 891f4fe0-2d15-4d31-86d1-81c175399ab0
     type: regular
     task:
-      id: 187bd05a-222e-4a26-83bb-d08f3cda8ac0
+      id: 891f4fe0-2d15-4d31-86d1-81c175399ab0
       version: -1
       name: bmc-remedy-note-create
       script: '|||bmc-remedy-note-create'
@@ -192,10 +192,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: ef3ee965-5d4f-4122-8edf-4c6287ffc425
+    taskid: 753b3f46-0de2-4d25-8348-c6584211ae7f
     type: condition
     task:
-      id: ef3ee965-5d4f-4122-8edf-4c6287ffc425
+      id: 753b3f46-0de2-4d25-8348-c6584211ae7f
       version: -1
       name: Verify Outputs
       type: condition
@@ -242,10 +242,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 8a76068f-ef36-49b6-8848-2a7b4411322b
+    taskid: fd4b93d1-a521-4de3-8e74-af4d8e7a3a2e
     type: regular
     task:
-      id: 8a76068f-ef36-49b6-8848-2a7b4411322b
+      id: fd4b93d1-a521-4de3-8e74-af4d8e7a3a2e
       version: -1
       name: bmc-remedy-service-request-update
       script: '|||bmc-remedy-service-request-update'
@@ -296,10 +296,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 149522f7-5441-45f2-8d2f-9385be00e4db
+    taskid: e94f1d35-3f8d-44e6-88e9-2002cc73c2d3
     type: condition
     task:
-      id: 149522f7-5441-45f2-8d2f-9385be00e4db
+      id: e94f1d35-3f8d-44e6-88e9-2002cc73c2d3
       version: -1
       name: Verify Outputs
       type: condition
@@ -307,7 +307,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "36"
+      - "38"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -336,10 +336,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 527de527-8abe-47bd-8443-29ff95bd142c
+    taskid: 71f5b993-ac97-4ab3-89b6-e7b7786f14d9
     type: regular
     task:
-      id: 527de527-8abe-47bd-8443-29ff95bd142c
+      id: 71f5b993-ac97-4ab3-89b6-e7b7786f14d9
       version: -1
       name: bmc-remedy-service-request-create
       script: '|||bmc-remedy-service-request-create'
@@ -397,10 +397,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 47113ab1-49ac-4e03-8552-8abfbcad2c12
+    taskid: 593f3bf7-a8e0-4c5d-8b50-081e5ddf09e1
     type: condition
     task:
-      id: 47113ab1-49ac-4e03-8552-8abfbcad2c12
+      id: 593f3bf7-a8e0-4c5d-8b50-081e5ddf09e1
       version: -1
       name: Verify Outputs
       type: condition
@@ -437,10 +437,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 149ea079-1915-461e-8ada-08f76260ed68
+    taskid: 04af41db-2c9a-409c-8e80-da8eda299cef
     type: regular
     task:
-      id: 149ea079-1915-461e-8ada-08f76260ed68
+      id: 04af41db-2c9a-409c-8e80-da8eda299cef
       version: -1
       name: bmc-remedy-template-details-get
       script: '|||bmc-remedy-template-details-get'
@@ -465,10 +465,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: cfe16efa-138c-4569-8990-b4b779854832
+    taskid: 76c6051e-8a41-4425-8d0f-1743f348a8ed
     type: condition
     task:
-      id: cfe16efa-138c-4569-8990-b4b779854832
+      id: 76c6051e-8a41-4425-8d0f-1743f348a8ed
       version: -1
       name: Verify Outputs
       type: condition
@@ -505,10 +505,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: c2586f0f-6930-4ff8-8256-bd0f305a7e12
+    taskid: fa5bcc15-4999-4e75-88d4-4b6ac08a9f1a
     type: regular
     task:
-      id: c2586f0f-6930-4ff8-8256-bd0f305a7e12
+      id: fa5bcc15-4999-4e75-88d4-4b6ac08a9f1a
       version: -1
       name: bmc-remedy-impact-details-get
       script: '|||bmc-remedy-impact-details-get'
@@ -533,10 +533,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 63b3f7b4-d4bf-4732-852e-82b70b1d5555
+    taskid: ab44c050-cf21-4074-84f0-b6cdded9a991
     type: condition
     task:
-      id: 63b3f7b4-d4bf-4732-852e-82b70b1d5555
+      id: ab44c050-cf21-4074-84f0-b6cdded9a991
       version: -1
       name: Verify Outputs
       type: condition
@@ -573,10 +573,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: d1e066bb-8f4d-48fa-8b52-024d6ce5dac2
+    taskid: 07f5fb53-2bfa-4eab-858b-b56a768fddd6
     type: regular
     task:
-      id: d1e066bb-8f4d-48fa-8b52-024d6ce5dac2
+      id: 07f5fb53-2bfa-4eab-858b-b56a768fddd6
       version: -1
       name: bmc-remedy-service-offering-details-get
       script: '|||bmc-remedy-service-offering-details-get'
@@ -601,10 +601,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: f0a97ee1-6a22-413f-8a28-ac055c0ea6a7
+    taskid: d7187af2-3fbf-47b4-8bdf-9443ae918eb6
     type: condition
     task:
-      id: f0a97ee1-6a22-413f-8a28-ac055c0ea6a7
+      id: d7187af2-3fbf-47b4-8bdf-9443ae918eb6
       version: -1
       name: Verify Outputs
       type: condition
@@ -641,10 +641,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: a2faa40d-cf43-4573-8a38-350a2f95f3a1
+    taskid: 3e716d23-bc76-432c-847c-19a6ca96b011
     type: regular
     task:
-      id: a2faa40d-cf43-4573-8a38-350a2f95f3a1
+      id: 3e716d23-bc76-432c-847c-19a6ca96b011
       version: -1
       name: bmc-remedy-incident-create
       script: '|||bmc-remedy-incident-create'
@@ -698,10 +698,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 7b42a3f4-70e9-48d8-8574-ccad85333301
+    taskid: 11d87205-73e8-4cd9-8188-693b4ac98ceb
     type: condition
     task:
-      id: 7b42a3f4-70e9-48d8-8574-ccad85333301
+      id: 11d87205-73e8-4cd9-8188-693b4ac98ceb
       version: -1
       name: Verify Outputs
       type: condition
@@ -743,10 +743,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: bab1a296-9eb5-4b5f-8fb3-c77c87452de1
+    taskid: 6e92c2f5-60f9-448c-811e-aebef85faa7c
     type: regular
     task:
-      id: bab1a296-9eb5-4b5f-8fb3-c77c87452de1
+      id: 6e92c2f5-60f9-448c-811e-aebef85faa7c
       version: -1
       name: bmc-remedy-incident-update
       script: '|||bmc-remedy-incident-update'
@@ -798,10 +798,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 95666325-99da-4b0e-860f-7450e8def881
+    taskid: 450d5555-e174-423a-8f36-03b445121eec
     type: condition
     task:
-      id: 95666325-99da-4b0e-860f-7450e8def881
+      id: 450d5555-e174-423a-8f36-03b445121eec
       version: -1
       name: Verify Outputs
       type: condition
@@ -838,10 +838,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 8dd2a893-bcf4-4e9c-8637-2efda11fa85c
+    taskid: c32a8e53-b9c3-4c6a-8651-fda5effff2cd
     type: regular
     task:
-      id: 8dd2a893-bcf4-4e9c-8637-2efda11fa85c
+      id: c32a8e53-b9c3-4c6a-8651-fda5effff2cd
       version: -1
       name: bmc-remedy-asset-details-get
       script: '|||bmc-remedy-asset-details-get'
@@ -869,10 +869,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: fb4d57f7-c718-4723-81f1-2932800ca978
+    taskid: bfc1575d-41f7-4ddf-80fd-ed16d65f0671
     type: condition
     task:
-      id: fb4d57f7-c718-4723-81f1-2932800ca978
+      id: bfc1575d-41f7-4ddf-80fd-ed16d65f0671
       version: -1
       name: Verify Outputs
       type: condition
@@ -919,10 +919,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: ffcaa3a0-574f-43eb-8f84-4c0045cd563a
+    taskid: d3716595-c9ab-40b3-8e79-d5071119ebbf
     type: regular
     task:
-      id: ffcaa3a0-574f-43eb-8f84-4c0045cd563a
+      id: d3716595-c9ab-40b3-8e79-d5071119ebbf
       version: -1
       name: bmc-remedy-account-details-get
       script: '|||bmc-remedy-account-details-get'
@@ -947,10 +947,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 2c030aea-cc0c-44c3-8064-31f106c832f7
+    taskid: c167359f-1ed6-460e-85ce-880f12f2e452
     type: condition
     task:
-      id: 2c030aea-cc0c-44c3-8064-31f106c832f7
+      id: c167359f-1ed6-460e-85ce-880f12f2e452
       version: -1
       name: Verify Outputs
       type: condition
@@ -987,10 +987,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 4dc3bbc3-dbd3-4bfb-856d-2d6b87c840d5
+    taskid: 85498eb8-1645-40f2-852a-72417d39e25b
     type: regular
     task:
-      id: 4dc3bbc3-dbd3-4bfb-856d-2d6b87c840d5
+      id: 85498eb8-1645-40f2-852a-72417d39e25b
       version: -1
       name: bmc-remedy-status-details-get
       script: '|||bmc-remedy-status-details-get'
@@ -1015,10 +1015,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 66d95f94-451e-499c-8581-3e9895d33b40
+    taskid: 8ba39350-6d83-4504-8b19-cbb276ba17f2
     type: condition
     task:
-      id: 66d95f94-451e-499c-8581-3e9895d33b40
+      id: 8ba39350-6d83-4504-8b19-cbb276ba17f2
       version: -1
       name: Verify Outputs
       type: condition
@@ -1055,10 +1055,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 97253e30-1148-4edd-8ed0-37e6fe4e4fad
+    taskid: 06424534-2299-4b41-8fe4-9ba8c69db381
     type: regular
     task:
-      id: 97253e30-1148-4edd-8ed0-37e6fe4e4fad
+      id: 06424534-2299-4b41-8fe4-9ba8c69db381
       version: -1
       name: bmc-remedy-urgency-details-get
       script: '|||bmc-remedy-urgency-details-get'
@@ -1083,10 +1083,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: aeaa1911-c17f-4a41-88da-47f5ae883ee0
+    taskid: f4aaf479-130e-4baa-811f-e96bf64f5b19
     type: condition
     task:
-      id: aeaa1911-c17f-4a41-88da-47f5ae883ee0
+      id: f4aaf479-130e-4baa-811f-e96bf64f5b19
       version: -1
       name: Verify Outputs
       type: condition
@@ -1123,10 +1123,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 7fa1dc0e-8ab6-4cc9-886a-74502124de0d
+    taskid: f251fac7-a9de-48bf-809b-735d4dec88c7
     type: regular
     task:
-      id: 7fa1dc0e-8ab6-4cc9-886a-74502124de0d
+      id: f251fac7-a9de-48bf-809b-735d4dec88c7
       version: -1
       name: bmc-remedy-category-details-get
       script: '|||bmc-remedy-category-details-get'
@@ -1151,10 +1151,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 0021ef18-a4a1-4017-84f3-4db9c7646195
+    taskid: 18b8ef27-a0ef-45f8-806c-a9887d8dac31
     type: condition
     task:
-      id: 0021ef18-a4a1-4017-84f3-4db9c7646195
+      id: 18b8ef27-a0ef-45f8-806c-a9887d8dac31
       version: -1
       name: Verify Outputs
       type: condition
@@ -1191,10 +1191,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 817bdfd2-cb56-44ab-85a0-9c6bab301395
+    taskid: 57d1c22d-99a0-4705-8ada-4dd708b79edd
     type: regular
     task:
-      id: 817bdfd2-cb56-44ab-85a0-9c6bab301395
+      id: 57d1c22d-99a0-4705-8ada-4dd708b79edd
       version: -1
       name: bmc-remedy-queue-details-get
       script: '|||bmc-remedy-queue-details-get'
@@ -1219,10 +1219,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: b41c0af3-a157-46ad-8338-a4d55897a8e6
+    taskid: 43a6cff9-39ce-4101-8f4a-91affb4351f8
     type: condition
     task:
-      id: b41c0af3-a157-46ad-8338-a4d55897a8e6
+      id: 43a6cff9-39ce-4101-8f4a-91affb4351f8
       version: -1
       name: Verify Outputs
       type: condition
@@ -1259,10 +1259,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 48177cd0-d2c9-46f6-8c75-ee0194c44e90
+    taskid: 5dfa74a3-be02-4562-871d-3e9a7d808887
     type: regular
     task:
-      id: 48177cd0-d2c9-46f6-8c75-ee0194c44e90
+      id: 5dfa74a3-be02-4562-871d-3e9a7d808887
       version: -1
       name: bmc-remedy-user-details-get
       script: '|||bmc-remedy-user-details-get'
@@ -1287,10 +1287,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 1d68263f-b33b-4803-8d3a-8b0556d726e7
+    taskid: 47b25c81-fba4-4c3f-8ec3-8cbb911f8d93
     type: condition
     task:
-      id: 1d68263f-b33b-4803-8d3a-8b0556d726e7
+      id: 47b25c81-fba4-4c3f-8ec3-8cbb911f8d93
       version: -1
       name: Verify Outputs
       type: condition
@@ -1332,10 +1332,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: ca8338db-bfeb-4509-8b57-f9317381da5d
+    taskid: 0d100e87-3453-493f-81b1-e14c1787619a
     type: regular
     task:
-      id: ca8338db-bfeb-4509-8b57-f9317381da5d
+      id: 0d100e87-3453-493f-81b1-e14c1787619a
       version: -1
       name: bmc-remedy-broadcast-details-get
       script: '|||bmc-remedy-broadcast-details-get'
@@ -1360,10 +1360,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 846594ac-bd92-4799-80c9-cb8763e0e5a4
+    taskid: b601e9b5-dda4-4088-88c7-26e0ab0bd978
     type: condition
     task:
-      id: 846594ac-bd92-4799-80c9-cb8763e0e5a4
+      id: b601e9b5-dda4-4088-88c7-26e0ab0bd978
       version: -1
       name: Verify Outputs
       type: condition
@@ -1409,10 +1409,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: c20232de-d191-4528-8c77-a1a304c335db
+    taskid: 7c2083ab-45e6-430d-83bd-2ba5836b79f7
     type: title
     task:
-      id: c20232de-d191-4528-8c77-a1a304c335db
+      id: 7c2083ab-45e6-430d-83bd-2ba5836b79f7
       version: -1
       name: Test Done
       type: title
@@ -1424,7 +1424,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 7500
         }
       }
     note: false
@@ -1434,10 +1434,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: c1a3cc74-0cac-48df-8bb2-d50fecae082f
+    taskid: 8a07e843-958d-44d4-83e7-e3233913f001
     type: regular
     task:
-      id: c1a3cc74-0cac-48df-8bb2-d50fecae082f
+      id: 8a07e843-958d-44d4-83e7-e3233913f001
       version: -1
       name: Decrease context level of BmcRemedyforce.ServiceRequestDefinition
       description: Checks if the specified value exists in context. If the value exists,
@@ -1471,12 +1471,248 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "38":
+    id: "38"
+    taskid: 03c9eaf5-61cb-459a-81c2-84ed0e7a0981
+    type: regular
+    task:
+      id: 03c9eaf5-61cb-459a-81c2-84ed0e7a0981
+      version: -1
+      name: FetchFromInstance
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      add_to_context:
+        simple: "true"
+      brand_name: {}
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name:
+        simple: BMCHelixRemedyforce_instance_1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: a2ac1d85-61c9-4828-8d8e-fac8f8ec0466
+    type: condition
+    task:
+      id: a2ac1d85-61c9-4828-8d8e-fac8f8ec0466
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FetchedIncidents
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FetchedIncidents.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: fd3e08cd-ade5-4a25-890b-2124f457cd5d
+    type: regular
+    task:
+      id: fd3e08cd-ade5-4a25-890b-2124f457cd5d
+      version: -1
+      name: bmc-remedy-incident-get
+      description: This command helps to get details of incidents.
+      script: '|||bmc-remedy-incident-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      incident_number: {}
+      last_fetch_time:
+        simple: 10 minutes
+      maximum_incident: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: cbc85bca-6fc2-4dfa-8328-4ae533da7e25
+    type: condition
+    task:
+      id: cbc85bca-6fc2-4dfa-8328-4ae533da7e25
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: BmcRemedyforce
+                accessor: Incident.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: BmcRemedyforce
+                accessor: Incident.Number
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: b9860ea3-d5f1-4069-8c54-1e49d85a06be
+    type: regular
+    task:
+      id: b9860ea3-d5f1-4069-8c54-1e49d85a06be
+      version: -1
+      name: bmc-remedy-service-request-get
+      description: This command helps to get the service request details.
+      script: '|||bmc-remedy-service-request-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      last_fetch_time:
+        simple: 10 minutes
+      maximum_service_request: {}
+      service_request_number: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 1ef87b01-51fd-435a-8f2b-0d46147411da
+    type: condition
+    task:
+      id: 1ef87b01-51fd-435a-8f2b-0d46147411da
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: BmcRemedyforce
+                accessor: ServiceRequest.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: BmcRemedyforce
+                accessor: ServiceRequest.Number
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "7_38_yes": 0.9
+    },
     "paper": {
       "dimensions": {
-        "height": 6510,
+        "height": 7515,
         "width": 380,
         "x": 50,
         "y": 50

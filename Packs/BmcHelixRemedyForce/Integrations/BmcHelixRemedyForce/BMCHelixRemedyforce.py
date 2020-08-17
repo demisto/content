@@ -1,7 +1,7 @@
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS
-from datetime import timezone, datetime
+from datetime import datetime
 from typing import Dict, Callable, Any, List, Tuple, Union
 from requests import Response
 from requests.exceptions import MissingSchema, InvalidSchema
@@ -32,6 +32,7 @@ FIELD_DELIMITER = ";"
 VALUE_DELIMITER = "="
 VALIDATE_JSON = r"(\w+=[^;=]+;( )?)*\w+=[^;=]+"
 DATE_AND_TIME = 'Date & Time [UTC]'
+HEADER_SECTION_TYPE = 'header section'
 
 MESSAGES: Dict[str, str] = {
     'AUTHENTICATION_ERROR': 'Unauthenticated. Check the configured Username and Password instance parameters.',
@@ -78,7 +79,8 @@ MESSAGES: Dict[str, str] = {
     'EMPTY_REQUIRED_ARGUMENT': '\'{}\' can not be empty.',
     'DATE_PARSE_ERROR': 'Cannot parse datetime for field - {}. Expected format is yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or '
                         'yyyy-MM-ddTHH:mm:ss.SSSZ.',
-    'DATE_VALIDATION_ERROR': '{} must be later than the {}.'
+    'DATE_VALIDATION_ERROR': '{} must be later than the {}.',
+    'MAX_INCIDENT_LIMIT': 'Values allowed for {} is 1 to 500.'
 }
 
 POSSIBLE_CATEGORY_TYPES = ["All", "Service Request", "Incident"]
@@ -100,7 +102,9 @@ HR_MESSAGES: Dict[str, str] = {
     'NO_ASSETS_FOUND': 'No asset(s) found for the given argument(s).',
     'NO_BROADCAST_DETAILS_FOUND': 'No broadcast details found for the given argument(s).',
     'NOT_FOUND_FOR_ARGUMENTS': 'No {} found for the given argument(s).',
-    'NOT_FOUND_SERVICE_REQUEST_DEF': 'No records found for service_request_definition_name "{}".'
+    'NOT_FOUND_SERVICE_REQUEST_DEF': 'No records found for service_request_definition_name "{}".',
+    'NO_INCIDENT_DETAILS_FOUND': 'No incident(s) for the given argument(s).',
+    'NO_SERVICE_REQUEST_DETAILS_FOUND': 'No service request(s) found for the given argument(s).'
 }
 
 URL_SUFFIX: Dict[str, str] = {
@@ -173,8 +177,8 @@ SALESFORCE_QUERIES: Dict[str, str] = {
                             "BMCServiceDesk__Category_ID__c, BMCServiceDesk__Impact_Id__c,"
                             " BMCServiceDesk__Urgency_ID__c, BMCServiceDesk__Status_ID__c,"
                             " BMCServiceDesk__dueDateTime__c, BMCServiceDesk__queueName__c,"
-                            " BMCServiceDesk__Client_Account__c, BMCServiceDesk__Client_Name__c"
-                            " from BMCServiceDesk__Incident__c "
+                            " BMCServiceDesk__Client_Account__c, BMCServiceDesk__Client_Name__c,"
+                            " BMCServiceDesk__isServiceRequest__c from BMCServiceDesk__Incident__c "
                             "where {0} IsDeleted=false and BMCServiceDesk__inactive__c = false "
                             "and BMCServiceDesk__isServiceRequest__c = {1} and"
                             " BMCServiceDesk__ServiceRequest__c = \'{2}\' "
@@ -214,7 +218,45 @@ SALESFORCE_QUERIES: Dict[str, str] = {
     'GET_NOTES': 'select BMCServiceDesk__note__c, CreatedBy.Name, CreatedDate, '
                  'BMCServiceDesk__incidentId__c,Name,BMCServiceDesk__actionId__c, '
                  'BMCServiceDesk__description__c from BMCServiceDesk__IncidentHistory__c '
-                 'where BMCServiceDesk__incidentId__c=\'{}\' and IsDeleted=false'
+                 'where BMCServiceDesk__incidentId__c=\'{}\' and IsDeleted=false',
+    'GET_INCIDENTS': "select lastmodifieddate,BMCServiceDesk__FKOpenBy__r.name,"
+                     " BMCServiceDesk__outageto__c,BMCServiceDesk__outagefrom__c,"
+                     "BMCServiceDesk__FKbmc_baseelement__r.name,BMCServiceDesk__FKserviceoffering__r.name,"
+                     "BMCServiceDesk__FKBusinessservice__r.name,BMCServiceDesk__closedatetime__c,"
+                     "BMCServiceDesk__opendatetime__c, BMCServiceDesk__respondeddatetime__c,"
+                     " BMCServiceDesk__FKBroadcast__r.name,BMCServiceDesk__incidentResolution__c,"
+                     " BMCServiceDesk__FKRequestDefinition__r.name,"
+                     "BMCServiceDesk__FKTemplate__r.name,"
+                     "id,BMCServiceDesk__Priority_ID__c,"
+                     "BMCServiceDesk__Type__c,name, CreatedDate,"
+                     " BMCServiceDesk__incidentDescription__c,"
+                     "BMCServiceDesk__Category_ID__c, BMCServiceDesk__Impact_Id__c,"
+                     " BMCServiceDesk__Urgency_ID__c, BMCServiceDesk__Status_ID__c,"
+                     " BMCServiceDesk__dueDateTime__c, BMCServiceDesk__queueName__c,"
+                     " BMCServiceDesk__Client_Account__c, BMCServiceDesk__Client_Name__c"
+                     " from BMCServiceDesk__Incident__c "
+                     "where {} IsDeleted=false and BMCServiceDesk__inactive__c = false "
+                     "and BMCServiceDesk__isServiceRequest__c = {} and"
+                     " BMCServiceDesk__ServiceRequest__c = \'{}\' ORDER BY LastModifiedDate DESC NULLS LAST ",
+    'GET_SERVICE_REQUEST': "select lastmodifieddate,BMCServiceDesk__FKOpenBy__r.name,"
+                           " BMCServiceDesk__outageto__c,BMCServiceDesk__outagefrom__c,"
+                           "BMCServiceDesk__FKbmc_baseelement__r.name,BMCServiceDesk__FKserviceoffering__r.name,"
+                           "BMCServiceDesk__FKBusinessservice__r.name,BMCServiceDesk__closedatetime__c,"
+                           "BMCServiceDesk__opendatetime__c, BMCServiceDesk__respondeddatetime__c,"
+                           " BMCServiceDesk__FKBroadcast__r.name,BMCServiceDesk__incidentResolution__c,"
+                           " BMCServiceDesk__FKRequestDefinition__r.name,"
+                           "BMCServiceDesk__FKTemplate__r.name,"
+                           "id,BMCServiceDesk__Priority_ID__c,"
+                           "BMCServiceDesk__Type__c,name, CreatedDate,"
+                           " BMCServiceDesk__incidentDescription__c,"
+                           "BMCServiceDesk__Category_ID__c, BMCServiceDesk__Impact_Id__c,"
+                           " BMCServiceDesk__Urgency_ID__c, BMCServiceDesk__Status_ID__c,"
+                           " BMCServiceDesk__dueDateTime__c, BMCServiceDesk__queueName__c,"
+                           " BMCServiceDesk__Client_Account__c, BMCServiceDesk__Client_Name__c"
+                           " from BMCServiceDesk__Incident__c "
+                           "where {} IsDeleted=false and BMCServiceDesk__inactive__c = false "
+                           "and BMCServiceDesk__isServiceRequest__c = {} and"
+                           " BMCServiceDesk__ServiceRequest__c = \'{}\' ORDER BY LastModifiedDate DESC NULLS LAST "
 }
 
 # in seconds
@@ -267,7 +309,36 @@ MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS: Dict[str, str] = {
     'has_recurrence': 'BMCServiceDesk__HasRecurrence__c',
     'ci_tag': 'BMCServiceDesk__CITag__c',
     'class_name_object': 'BMCServiceDesk__ClassName__c',
-    'instance_type_object': 'BMCServiceDesk__InstanceType__c'
+    'instance_type_object': 'BMCServiceDesk__InstanceType__c',
+    'incident_priority': 'BMCServiceDesk__Priority_ID__c',
+    'incident_client_name': 'BMCServiceDesk__Client_Name__c'
+}
+FIELD_MAPPING_FOR_GET_INCIDENTS = {
+    'LastModifiedDate': 'LastUpdatedDate',
+    'BMCServiceDesk__FKOpenBy__r': 'Staff',
+    'BMCServiceDesk__FKServiceOffering__r': 'ServiceOffering',
+    'BMCServiceDesk__FKBusinessService__r': 'BusinessService',
+    'BMCServiceDesk__closeDateTime__c': 'closeDateTime',
+    'BMCServiceDesk__openDateTime__c': 'OpenDateTime',
+    'BMCServiceDesk__FKBroadcast__r': 'Broadcast',
+    'BMCServiceDesk__incidentResolution__c': 'Resolution',
+    'BMCServiceDesk__FKRequestDefinition__r': 'ServiceRequestDefinition',
+    'BMCServiceDesk__FKTemplate__r': 'Template',
+    'LastModifiedById': 'LastModifiedBy',
+    'Id': 'Id',
+    'BMCServiceDesk__Priority_ID__c': 'Priority',
+    'BMCServiceDesk__Type__c': 'Type',
+    'Name': 'Number',
+    'CreatedDate': 'CreatedDate',
+    'BMCServiceDesk__incidentDescription__c': 'Description',
+    'BMCServiceDesk__Category_ID__c': 'Category',
+    'BMCServiceDesk__Impact_Id__c': 'Impact',
+    'BMCServiceDesk__Urgency_ID__c': 'Urgency',
+    'BMCServiceDesk__Status_ID__c': 'Status',
+    'BMCServiceDesk__dueDateTime__c': 'DueDateTime',
+    'BMCServiceDesk__queueName__c': 'Queue',
+    'BMCServiceDesk__Client_Account__c': 'ClientAccount',
+    'BMCServiceDesk__Client_Name__c': 'ClientID'
 }
 INCIDENT_PREFIX = {
     'Incident': 'IN',
@@ -591,7 +662,7 @@ def prepare_query_for_fetch_incidents(params: Dict[str, str], start_time: int) -
     if not params.get('type', ''):
         raise ValueError(MESSAGES['PARAMETER_TYPE_EMPTY_ERROR'])
 
-    fetch_type = ('false', 'No') if params['type'] == 'Incident' else ('true', 'Yes')
+    fetch_type = ('false', 'No') if params['type'] == 'BMC Remedyforce Incident' else ('true', 'Yes')
 
     fields = ''
     for param_key, param_val in params.items():
@@ -611,53 +682,40 @@ def prepare_iso_date_string(date_string: str) -> str:
     :param date_string: String representing date.
     :return: string representing date in iso format.
     """
-    parsed_date = dateparser.parse(date_string)
-    return parsed_date.isoformat() if parsed_date else ''
+    if date_string:
+        parsed_date = dateparser.parse(date_string)
+        return parsed_date.isoformat() if parsed_date else ''
+    return ''
 
 
-def custom_fields_mapping_for_fetch_incidents(fields: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_date_or_markdown_fields_for_fetch_incidents(fields: Dict[str, Any]) -> None:
     """
-    Maps the Remedyforce incident or service request fields to the XSOAR custom fields.
+    Prepares the date and markdown fields for incident or service request.
 
     :param fields: fields received in response of incident or service requests.
-    :returns: Dictionary containing the custom XSOAR fields.
+    :returns: None
     """
-    custom_fields: Dict[str, Any] = {
-        'bmcremedyforcedescription': fields.get('BMCServiceDesk__incidentDescription__c', ''),
-        'bmcremedyforcecategory': fields.get('BMCServiceDesk__Category_ID__c', ''),
-        'bmcremedyforceid': fields.get('Id', ''),
-        'bmcremedyforcequeue': fields.get('BMCServiceDesk__queueName__c', ''),
-        'bmcremedyforcestatus': fields.get('BMCServiceDesk__Status_ID__c', ''),
-        'bmcremedyforceurgency': fields.get('BMCServiceDesk__Urgency_ID__c', ''),
-        'bmcremedyforceduedate': prepare_iso_date_string(fields.get('BMCServiceDesk__dueDateTime__c', '')),
-        'bmcremedyforceclientname': fields.get('BMCServiceDesk__Client_Name__c', ''),
-        'bmcremedyforceclientaccount': fields.get('BMCServiceDesk__Client_Account__c', ''),
-        'bmcremedyforcebroadcast': fields.get('BMCServiceDesk__FKBroadcast__r', {}).get('Name', ''),
-        'bmcremedyforcecloseddate': prepare_iso_date_string(fields.get('BMCServiceDesk__closeDateTime__c', '')),
-        'bmcremedyforceconfigurationitemasset': fields.get('BMCServiceDesk__FKBMC_BaseElement__r', {}).get('Name', ''),
-        'bmcremedyforcecreateddate': prepare_iso_date_string(fields.get('CreatedDate', '')),
-        'bmcremedyforcelastmodifieddate': prepare_iso_date_string(fields.get('LastModifiedDate', '')),
-        'bmcremedyforceopeneddate': prepare_iso_date_string(fields.get('BMCServiceDesk__openDateTime__c', '')),
-        'bmcremedyforceoutageend': prepare_iso_date_string(fields.get('BMCServiceDesk__outageTo__c', '')),
-        'bmcremedyforceoutagestart': prepare_iso_date_string(fields.get('BMCServiceDesk__outageFrom__c', '')),
-        'bmcremedyforcerequestdefinition': fields.get('BMCServiceDesk__FKRequestDefinition__r', {}).get('Name', ''),
-        'bmcremedyforceresolution': fields.get('BMCServiceDesk__incidentResolution__c', ''),
-        'bmcremedyforcerespondeddate': prepare_iso_date_string(fields.get('BMCServiceDesk__respondedDateTime__c', '')),
-        'bmcremedyforceservice': fields.get('BMCServiceDesk__FKBusinessService__r', {}).get('Name', ''),
-        'bmcremedyforceserviceoffering': fields.get('BMCServiceDesk__FKServiceOffering__r', {}).get('Name', ''),
-        'bmcremedyforcestaff': fields.get('BMCServiceDesk__FKOpenBy__r', {}).get('Name', ''),
-        'bmcremedyforcetemplate': fields.get('BMCServiceDesk__FKTemplate__r', {}).get('Name', ''),
-        'bmcremedyforcetype': fields.get('BMCServiceDesk__Type__c', ''),
-        'bmcremedyforceimpact': fields.get('BMCServiceDesk__Impact_Id__c', ''),
-        'bmcremedyforceattachments': tableToMarkdown('', fields.get('attachments', []),
-                                                     headers=['File', 'Download Link', DATE_AND_TIME, 'Created By']),
-        'bmcremedyforcenotes': tableToMarkdown('', fields.get('notes', []),
-                                               ['Incident History ID', 'Action~', DATE_AND_TIME, 'Sender',
-                                                'Description',
-                                                'Note'])
-    }
-    remove_nulls_from_dictionary(custom_fields)
-    return custom_fields
+
+    fields['BMCServiceDesk__closeDateTime__c'] = prepare_iso_date_string(
+        fields.get('BMCServiceDesk__closeDateTime__c', ''))
+    fields['BMCServiceDesk__dueDateTime__c'] = prepare_iso_date_string(
+        fields.get('BMCServiceDesk__dueDateTime__c', ''))
+    fields['CreatedDate'] = prepare_iso_date_string(fields.get('CreatedDate', ''))
+    fields['BmcLastModifiedDate'] = prepare_iso_date_string(fields.get('LastModifiedDate', ''))
+    fields['BMCServiceDesk__openDateTime__c'] = prepare_iso_date_string(
+        fields.get('BMCServiceDesk__openDateTime__c', ''))
+    fields['BMCServiceDesk__outageFrom__c'] = prepare_iso_date_string(fields.get('BMCServiceDesk__outageFrom__c', ''))
+    fields['BMCServiceDesk__outageTo__c'] = prepare_iso_date_string(fields.get('BMCServiceDesk__outageTo__c', ''))
+    fields['BMCServiceDesk__respondedDateTime__c'] = prepare_iso_date_string(
+        fields.get('BMCServiceDesk__respondedDateTime__c', ''))
+    fields['Attachments'] = tableToMarkdown('', fields.get('attachments', []),
+                                            headers=['File', 'Download Link', DATE_AND_TIME, 'Created By'])
+    fields['Notes'] = tableToMarkdown('', fields.get('notes', []),
+                                      ['Incident History ID', 'Action~', DATE_AND_TIME, 'Sender',
+                                       'Description',
+                                       'Note'])
+    fields['ServiceRequest'] = tableToMarkdown('', fields.get('service_request_details', {}))
+    remove_nulls_from_dictionary(fields)
 
 
 def validate_params_for_fetch_incidents(params: Dict[str, Any]) -> None:
@@ -691,18 +749,19 @@ def prepare_incident_for_fetch_incidents(record: Dict[str, Any], params: Dict[st
     """
     record = remove_empty_elements(record)
 
-    severity = record.get('BMCServiceDesk__Priority_ID__c', '0')
-
     name = record.get('Name', '')
     if record.get('BMCServiceDesk__Type__c', ''):
         name = '{0}{1}'.format(INCIDENT_PREFIX.get(record['BMCServiceDesk__Type__c'], ''),
                                record.get('Name', ''))
 
+    prepare_date_or_markdown_fields_for_fetch_incidents(record)
+
+    # Setting severity from priority
+    record['Bmc Severity'] = PRIORITY_TO_SEVERITY_MAP.get(record.get('BMCServiceDesk__Priority_ID__c', 0), 0)
+
     incident = {
         'name': name,
-        'severity': PRIORITY_TO_SEVERITY_MAP.get(severity, 0),
         'rawJSON': json.dumps(record),
-        'CustomFields': custom_fields_mapping_for_fetch_incidents(record),
         'details': json.dumps(record) if params.get('query', '') else ''
     }
 
@@ -1562,6 +1621,27 @@ def prepare_note_create_output(record: Dict) -> Dict:
     }
 
 
+def get_service_request_details(client, service_request_id):
+    """
+    Get service request details for given service_request_id
+    :param client: Instance of Client class.
+    :param service_request_id: service_request id
+    :return: Processed details of service request
+    """
+    service_request_details: Dict[str, str] = {}
+    if not service_request_id or len(service_request_id.strip()) < 1:
+        return service_request_details
+    response = client.http_request('GET', url_suffix="{}/{}".format(URL_SUFFIX["SERVICE_REQUEST"], service_request_id))
+    if response and response.get("Success") and response.get("Result"):
+        results = response["Result"]
+        if results.get("Answers"):
+            answers = results["Answers"]
+            for each_answer in answers:
+                if each_answer.get("Type") != HEADER_SECTION_TYPE:
+                    service_request_details[each_answer['QuestionText']] = each_answer['Text']
+    return service_request_details
+
+
 def process_attachment_record(record):
     """
     Processes single record of attachment to convert as per the custom incident layout
@@ -1647,6 +1727,80 @@ def get_notes_for_incident(client, incident_number):
     return notes
 
 
+def create_output_for_incident(result: list) -> list:
+    """
+    For creating hr and context of incident
+
+    :param result: list of raw data
+    :return: list
+    """
+    hr_output_list = []
+    for result_row in result:
+        result_row = remove_empty_elements(result_row)
+        hr_output_list.append({
+            'Number': result_row.get('Name', ''),
+            'Priority': result_row.get(MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS['incident_priority'], ''),
+            'Description': result_row.get(MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS["description"], ''),
+            'ClientID': result_row.get(MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS['incident_client_name'], ''),
+            'Status': result_row.get(MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS['status'], ''),
+            'Staff': result_row.get('BMCServiceDesk__FKOpenBy__r', {}).get('Name', ''),
+            'Queue': result_row.get(MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS['queue'], ''),
+            'Id': result_row.get('Id', ''),
+            'Category': result_row.get('BMCServiceDesk__Category_ID__c', ''),
+            'Urgency': result_row.get('BMCServiceDesk__Urgency_ID__c', ''),
+            'dueDateTime': result_row.get('BMCServiceDesk__dueDateTime__c', ''),
+            'ClientAccount': result_row.get('BMCServiceDesk__Client_Account__c', ''),
+            'Broadcast': result_row.get('BMCServiceDesk__FKBroadcast__r', {}).get('Name', ''),
+            'closeDateTime': result_row.get('BMCServiceDesk__closeDateTime__c', ''),
+            'Asset': result_row.get('BMCServiceDesk__FKBMC_BaseElement__r', {}).get('Name', ''),
+            'CreatedDate': result_row.get('CreatedDate', ''),
+            'LastModifiedDate': result_row.get('LastModifiedDate', ''),
+            'openDateTime': result_row.get('BMCServiceDesk__openDateTime__c', ''),
+            'outageTo': result_row.get('BMCServiceDesk__outageTo__c', ''),
+            'outageFrom': result_row.get('BMCServiceDesk__outageFrom__c', ''),
+            'Resolution': result_row.get('BMCServiceDesk__incidentResolution__c', ''),
+            'respondedDateTime': result_row.get('BMCServiceDesk__respondedDateTime__c', ''),
+            'Service': result_row.get('BMCServiceDesk__FKBusinessService__r', {}).get('Name', ''),
+            'ServiceOffering': result_row.get('BMCServiceDesk__FKServiceOffering__r', {}).get('Name', ''),
+            'Template': result_row.get('BMCServiceDesk__FKTemplate__r', {}).get('Name', ''),
+            'Type': result_row.get('BMCServiceDesk__Type__c', ''),
+            'Impact': result_row.get('BMCServiceDesk__Impact_Id__c', '')
+        })
+    return hr_output_list
+
+
+def prepare_outputs_for_get_service_request(records):
+    """
+    Prepares context output and human readable output for service_requests_get command.
+
+    :param records: List containing dictionaries of records.
+    :return: tuple containing context output and human readable output.
+    """
+    outputs: List[Dict] = []
+    hr_outputs: List[Dict] = []
+    for each_record in records:
+        context_dict: Dict[str, str] = {}
+        hr_dict: Dict[str, str] = {}
+        for each_field in FIELD_MAPPING_FOR_GET_INCIDENTS:
+            if each_record.get(each_field):
+                if isinstance(each_record[each_field], dict):
+                    context_dict[FIELD_MAPPING_FOR_GET_INCIDENTS[each_field]] = each_record[each_field]["Name"]
+                else:
+                    context_dict[FIELD_MAPPING_FOR_GET_INCIDENTS[each_field]] = each_record[each_field]
+        hr_dict['Number'] = each_record["Name"]
+        hr_dict['Priority'] = each_record["BMCServiceDesk__Priority_ID__c"]
+        hr_dict['Description'] = each_record["BMCServiceDesk__incidentDescription__c"]
+        hr_dict['ClientID'] = each_record["BMCServiceDesk__Client_Name__c"]
+        hr_dict['Status'] = each_record["BMCServiceDesk__Status_ID__c"]
+        hr_dict['Queue'] = each_record["BMCServiceDesk__queueName__c"]
+        if each_record.get("BMCServiceDesk__FKOpenBy__r"):
+            hr_dict['Staff'] = each_record["BMCServiceDesk__FKOpenBy__r"]["Name"]
+
+        hr_outputs.append(hr_dict)
+        outputs.append(context_dict)
+    return outputs, hr_outputs
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -1684,13 +1838,13 @@ def fetch_incidents(client: Client, params: Dict[str, Any], last_run: Dict[str, 
     incidents: List[Dict[str, Any]] = []
 
     query = prepare_query_for_fetch_incidents(params, start_time)
-
     response = client.http_request('GET', url_suffix=URL_SUFFIX['SALESFORCE_QUERY'], params={'q': query})
 
     for record in response.get('records', []):
-
         if record.get('Id'):
             record['attachments'] = get_attachments_for_incident(client, record.get('Id'))
+            if record.get('BMCServiceDesk__isServiceRequest__c'):
+                record["service_request_details"] = get_service_request_details(client, record.get('Id'))
 
         if params.get('fetch_note', False):
             record['notes'] = get_notes_for_incident(client, record.get('Name', ''))
@@ -2511,6 +2665,124 @@ def bmc_remedy_broadcast_details_get_command(client, args):
         return HR_MESSAGES["NO_BROADCAST_DETAILS_FOUND"]
 
 
+@logger
+def bmc_remedy_incident_get_command(client, args):
+    """
+    Gets Incident details.
+
+    :param client: Client instance
+    :param args: Command arguments
+    :return: CommandResults which returns detailed results to war room.
+    """
+    args = remove_extra_space_from_args(args)
+    incident_time = args.get('last_fetch_time')
+    incident_number = args.get('incident_number')
+    maximum_incident = args.get('maximum_incident')
+    query = ''
+    if incident_number:
+        incident_number = remove_prefix("IN", incident_number)
+        query = query + ' name=\'{}\'{}'.format(incident_number, SALESFORCE_QUERIES['QUERY_AND'])
+
+    if incident_time:
+        start_time, _ = parse_date_range(incident_time, date_format=DATE_FORMAT, utc=True)
+        query = query + 'LastModifiedDate > {}{}'.format(start_time, SALESFORCE_QUERIES['QUERY_AND'])
+    final_query = SALESFORCE_QUERIES.get('GET_INCIDENTS', '').format(query, 'false', 'No')
+    if maximum_incident:
+        try:
+            maximum_incident = int(maximum_incident)
+        except ValueError:
+            raise ValueError(MESSAGES['MAX_INCIDENT_LIMIT'].format('maximum_incident'))
+        if not (1 <= int(maximum_incident) <= 500):
+            raise ValueError(MESSAGES['MAX_INCIDENT_LIMIT'].format('maximum_incident'))
+        final_query = final_query + ' LIMIT {}'.format(maximum_incident)
+
+    try:
+        response = client.http_request('GET', url_suffix=URL_SUFFIX['SALESFORCE_QUERY'], params={'q': final_query})
+    except Exception as e:
+        raise DemistoException(str(e) if str(e) else MESSAGES['UNEXPECTED_ERROR'])
+    if response and response.get('records', ''):
+        records = response['records']
+
+        incident_result_output = create_output_for_incident(records)
+        incident_result_ec = createContext(data=incident_result_output, removeNull=True)
+
+        readable_output = tableToMarkdown(
+            HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('incident(s)',
+                                                              len(incident_result_output)),
+            incident_result_output,
+            headers=['Number', 'Priority', 'Description', 'ClientID', 'Status', 'Staff', 'Queue'],
+            removeNull=True, headerTransform=pascalToSpace)
+        return CommandResults(
+            outputs_prefix=OUTPUT_PREFIX['INCIDENT'],
+            outputs_key_field='Id',
+            outputs=incident_result_ec,
+            readable_output=readable_output,
+            raw_response=response
+        )
+    else:
+        return HR_MESSAGES["NO_INCIDENT_DETAILS_FOUND"]
+
+
+def bmc_remedy_service_request_get_command(client, args):
+    """
+    Get service request details.
+
+    :type client: ``object``
+    :param client: Instance of Client class.
+
+    :type args: ``dict``
+    :param args: The command arguments provided by user.
+
+    :raises DemistoException: If exception will occur during http calls.
+    :raises ValueError: If value of 'maximum_service_request' parameter will be invalid.
+    """
+    args = remove_extra_space_from_args(args)
+    query = ""
+    service_request_number = args.get("service_request_number")
+    from_time = args.get("last_fetch_time")
+    maximum_service_request = args.get("maximum_service_request")
+    if from_time:
+        start_time, _ = parse_date_range(from_time, date_format=DATE_FORMAT, utc=True)
+        query = "{} LastModifiedDate > {}{}".format(query, start_time, SALESFORCE_QUERIES["QUERY_AND"])
+    if service_request_number:
+        service_request_number = remove_prefix("sr", service_request_number.strip())
+        query = "{}name=\'{}\'{}".format(query, service_request_number, SALESFORCE_QUERIES["QUERY_AND"])
+    final_query = SALESFORCE_QUERIES['GET_SERVICE_REQUEST'].format(query, 'true', 'Yes')
+    if maximum_service_request:
+        try:
+            maximum_service_request = int(maximum_service_request)
+        except ValueError:
+            raise ValueError(MESSAGES["MAX_INCIDENT_LIMIT"].format('maximum_service_request'))
+        if not (1 <= maximum_service_request <= 500):
+            raise ValueError(MESSAGES["MAX_INCIDENT_LIMIT"].format('maximum_service_request'))
+        final_query = '{} LIMIT {}'.format(final_query, maximum_service_request)
+    try:
+        response = client.http_request('GET', url_suffix=URL_SUFFIX['SALESFORCE_QUERY'], params={'q': final_query})
+    except Exception as e:
+        raise DemistoException(str(e) if str(e) else MESSAGES['UNEXPECTED_ERROR'])
+
+    if response and response.get('records'):
+        records = response['records']
+        outputs, hr_outputs = prepare_outputs_for_get_service_request(records)
+        custom_ec = createContext(hr_outputs, removeNull=True)
+        markdown_message = HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format(
+            'service request(s)', len(records))
+        readable_output = tableToMarkdown(
+            markdown_message,
+            custom_ec,
+            headers=['Number', 'Priority', 'Description', 'ClientID', 'Status', 'Staff', 'Queue'],
+            removeNull=True, headerTransform=pascalToSpace)
+        return CommandResults(
+            outputs_prefix=OUTPUT_PREFIX['SERVICE_REQUEST'],
+            outputs_key_field='Number',
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response
+        )
+    else:
+        return HR_MESSAGES["NO_SERVICE_REQUEST_DETAILS_FOUND"]
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2530,7 +2802,9 @@ def main():
         'bmc-remedy-status-details-get': bmc_remedy_status_details_get_command,
         'bmc-remedy-urgency-details-get': bmc_remedy_urgency_details_get_command,
         'bmc-remedy-category-details-get': bmc_remedy_category_details_get_command,
-        'bmc-remedy-broadcast-details-get': bmc_remedy_broadcast_details_get_command
+        'bmc-remedy-broadcast-details-get': bmc_remedy_broadcast_details_get_command,
+        'bmc-remedy-incident-get': bmc_remedy_incident_get_command,
+        'bmc-remedy-service-request-get': bmc_remedy_service_request_get_command
     }
 
     commands_without_return_result: Dict[str, Callable] = {
@@ -2540,7 +2814,6 @@ def main():
         "bmc-remedy-incident-update": bmc_remedy_incident_update_command
     }
     command = demisto.command()
-
     LOG(f'Command being called is {command}')
     try:
 
@@ -2562,8 +2835,12 @@ def main():
 
         # Validating params for fetch-incidents.
         validate_params_for_fetch_incidents(demisto.params())
-        # Setting first fetch.
-        first_fetch = date_to_timestamp(datetime.now(timezone.utc) - timedelta(minutes=10))
+
+        # Get first fetch time from integration params.
+        first_fetch_time = demisto.params().get('firstFetchTimestamp')
+
+        # getting numeric value from string representation
+        start_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
 
         client = Client(
             base_url=base_url,
@@ -2572,7 +2849,6 @@ def main():
             username=username,
             password=password,
             request_timeout=request_timeout)
-
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             test_module(client)
@@ -2581,7 +2857,7 @@ def main():
                 client=client,
                 params=demisto.params(),
                 last_run=demisto.getLastRun(),
-                first_fetch=first_fetch
+                first_fetch=date_to_timestamp(start_time, date_format=DATE_FORMAT)
             )
 
             # saves next_run for the time fetch-incidents is invoked.

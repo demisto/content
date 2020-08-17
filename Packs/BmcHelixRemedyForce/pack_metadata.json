@@ -1,6 +1,6 @@
 {
-    "name": "BmcHelixRemedyForce",
-    "description": "Integration of BmcHelixRemedyForce with Demisto",
+    "name": "Bmc Helix Remedyforce",
+    "description": "Integration of BmcHelixRemedyforce with Cortex XSOAR. BMC Helix Remedyforce integration allows customers to create/update service\n  requests and incidents. It also allows to update status, resolve service requests\n  and incidents with customer notes. This integration exposes standard ticketing capabilities\n  that can be utilized as part of automation & orchestration.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

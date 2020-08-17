@@ -1,11 +1,11 @@
 {
-    "TypeName": "Bmc Remedyforce",
+    "TypeName": "Bmc Remedyforce Service Request",
     "kind": "details",
     "layout": {
         "TypeName": "",
-        "id": "Bmc Remedyforce",
+        "id": "Bmc Remedyforce Service Request",
         "kind": "details",
-        "modified": "2020-07-29T18:02:37.98255144+05:30",
+        "modified": "2020-08-13T17:02:52.786294812+05:30",
         "name": "",
         "system": false,
         "tabs": [
@@ -335,45 +335,8 @@
             {
                 "hidden": false,
                 "id": "7plqqlsm0f",
-                "name": "BMC Helix Remedyforce",
+                "name": "Bmc Remedyforce Service Request",
                 "sections": [
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "7plqqlsm0f-c1b08bf0-c816-11ea-84c3-a533a3774767",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "bmcremedyforceclientname",
-                                "height": 53,
-                                "id": "e62a29a0-c816-11ea-84c3-a533a3774767",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "bmcremedyforceclientaccount",
-                                "height": 53,
-                                "id": "e7318780-c816-11ea-84c3-a533a3774767",
-                                "index": 1,
-                                "listId": "7plqqlsm0f-c1b08bf0-c816-11ea-84c3-a533a3774767",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Client Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 1
-                    },
                     {
                         "displayType": "CARD",
                         "h": 2,
@@ -381,117 +344,108 @@
                         "i": "7plqqlsm0f-ef735450-c816-11ea-84c3-a533a3774767",
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "bmcremedyforcetemplate",
+                                "fieldId": "bmcremedyforcerequestdefinition",
                                 "height": 53,
-                                "id": "05b236f0-c817-11ea-84c3-a533a3774767",
+                                "id": "d6e08700-dc98-11ea-ab5e-e947164f92ff",
                                 "index": 0,
+                                "listId": "7plqqlsm0f-ef735450-c816-11ea-84c3-a533a3774767",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "bmcremedyforcecategory",
+                                "fieldId": "bmcremedyforceclientname",
                                 "height": 53,
-                                "id": "0b22bb50-c817-11ea-84c3-a533a3774767",
-                                "index": 1,
+                                "id": "997eb8a0-dc98-11ea-ab5e-e947164f92ff",
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "bmcremedyforcedescription",
-                                "height": 106,
-                                "id": "0f8ca520-c817-11ea-84c3-a533a3774767",
+                                "fieldId": "bmcremedyforcecategory",
+                                "height": 53,
+                                "id": "b92104b0-dc98-11ea-ab5e-e947164f92ff",
                                 "index": 3,
                                 "listId": "7plqqlsm0f-ef735450-c816-11ea-84c3-a533a3774767",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "bmcremedyforcerequestdefinition",
+                                "fieldId": "bmcremedyforceid",
                                 "height": 53,
-                                "id": "1e3f2840-c817-11ea-84c3-a533a3774767",
+                                "id": "a366a720-c81a-11ea-84c3-a533a3774767",
                                 "index": 0,
+                                "listId": "7plqqlsm0f-ef735450-c816-11ea-84c3-a533a3774767",
                                 "sectionItemType": "field",
                                 "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "bmcremedyforcebroadcast",
-                                "height": 53,
-                                "id": "22c41420-c817-11ea-84c3-a533a3774767",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "bmcremedyforceresolution",
-                                "height": 22,
-                                "id": "25bc6c90-c817-11ea-84c3-a533a3774767",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Incident Details",
-                        "static": false,
-                        "w": 2,
-                        "x": 1,
-                        "y": 1
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "7plqqlsm0f-f284b300-c816-11ea-84c3-a533a3774767",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "bmcremedyforceimpact",
-                                "height": 53,
-                                "id": "3a2b7bc0-c818-11ea-84c3-a533a3774767",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "bmcremedyforceurgency",
+                                "endCol": 4,
+                                "fieldId": "bmcremedyforceclientaccount",
                                 "height": 53,
-                                "id": "955aa490-c817-11ea-84c3-a533a3774767",
+                                "id": "e7318780-c816-11ea-84c3-a533a3774767",
                                 "index": 1,
-                                "listId": "7plqqlsm0f-f284b300-c816-11ea-84c3-a533a3774767",
+                                "listId": "7plqqlsm0f-ef735450-c816-11ea-84c3-a533a3774767",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 2
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "bmcremedyforcestatus",
-                                "height": 22,
-                                "id": "d55d0710-c81a-11ea-84c3-a533a3774767",
+                                "height": 53,
+                                "id": "be888860-dc98-11ea-ab5e-e947164f92ff",
                                 "index": 2,
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "bmcremedyforceimpact",
+                                "height": 53,
+                                "id": "c89d4070-dc98-11ea-ab5e-e947164f92ff",
+                                "index": 0,
+                                "listId": "7plqqlsm0f-ef735450-c816-11ea-84c3-a533a3774767",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "bmcremedyforceurgency",
+                                "height": 53,
+                                "id": "cc3ad990-dc98-11ea-ab5e-e947164f92ff",
+                                "index": 1,
+                                "listId": "7plqqlsm0f-ef735450-c816-11ea-84c3-a533a3774767",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "bmcremedyforcedescription",
+                                "height": 22,
+                                "id": "6d245280-dc9b-11ea-ab5e-e947164f92ff",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 4
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Status and Priority Details",
+                        "name": "General Service Request Information",
                         "static": false,
-                        "w": 1,
+                        "w": 3,
                         "x": 0,
-                        "y": 3
+                        "y": 0
                     },
                     {
                         "displayType": "CARD",
@@ -518,42 +472,33 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "bmcremedyforceduedate",
-                                "height": 53,
-                                "id": "12f42830-c819-11ea-84c3-a533a3774767",
-                                "index": 1,
-                                "listId": "7plqqlsm0f-5a155820-c818-11ea-84c3-a533a3774767",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "bmcremedyforcelastmodifieddate",
-                                "height": 22,
+                                "height": 53,
                                 "id": "ec57b510-c819-11ea-84c3-a533a3774767",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "bmcremedyforcerespondeddate",
+                                "fieldId": "bmcremedyforceduedate",
                                 "height": 53,
-                                "id": "7d7150d0-c818-11ea-84c3-a533a3774767",
+                                "id": "12f42830-c819-11ea-84c3-a533a3774767",
                                 "index": 0,
                                 "listId": "7plqqlsm0f-5a155820-c818-11ea-84c3-a533a3774767",
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "bmcremedyforcecloseddate",
+                                "fieldId": "bmcremedyforcecreateddate",
                                 "height": 53,
-                                "id": "93f5a0e0-c818-11ea-84c3-a533a3774767",
+                                "id": "34469870-c81d-11ea-84c3-a533a3774767",
                                 "index": 1,
+                                "listId": "7plqqlsm0f-7b18f700-c81a-11ea-84c3-a533a3774767",
                                 "sectionItemType": "field",
                                 "startCol": 2
                             }
@@ -566,80 +511,7 @@
                         "static": false,
                         "w": 2,
                         "x": 1,
-                        "y": 3
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "7plqqlsm0f-21e7d300-c819-11ea-84c3-a533a3774767",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "bmcremedyforceduedatetime",
-                                "height": 53,
-                                "id": "8b0c4970-c818-11ea-84c3-a533a3774767",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "bmcremedyforceservice",
-                                "height": 53,
-                                "id": "656cace0-c819-11ea-84c3-a533a3774767",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "bmcremedyforceconfigurationitemasset",
-                                "height": 53,
-                                "id": "ed160160-c82c-11ea-8035-537ea0957796",
-                                "index": 1,
-                                "listId": "7plqqlsm0f-21e7d300-c819-11ea-84c3-a533a3774767",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "bmcremedyforceoutageend",
-                                "height": 53,
-                                "id": "70566830-c819-11ea-84c3-a533a3774767",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "bmcremedyforceserviceoffering",
-                                "height": 53,
-                                "id": "76e750b0-c819-11ea-84c3-a533a3774767",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "bmcremedyforceoutagestart",
-                                "height": 53,
-                                "id": "7c986080-c819-11ea-84c3-a533a3774767",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Service, Configuration Item and Asset Details",
-                        "static": false,
-                        "w": 2,
-                        "x": 1,
-                        "y": 5
+                        "y": 2
                     },
                     {
                         "displayType": "CARD",
@@ -683,55 +555,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 5
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "7plqqlsm0f-7b18f700-c81a-11ea-84c3-a533a3774767",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "bmcremedyforceid",
-                                "height": 53,
-                                "id": "a366a720-c81a-11ea-84c3-a533a3774767",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "bmcremedyforcetype",
-                                "height": 53,
-                                "id": "c12d2e50-c81a-11ea-84c3-a533a3774767",
-                                "index": 0,
-                                "listId": "7plqqlsm0f-7b18f700-c81a-11ea-84c3-a533a3774767",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "bmcremedyforcecreateddate",
-                                "height": 53,
-                                "id": "34469870-c81d-11ea-84c3-a533a3774767",
-                                "index": 1,
-                                "listId": "7plqqlsm0f-7b18f700-c81a-11ea-84c3-a533a3774767",
-                                "sectionItemType": "field",
-                                "startCol": 4
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Incident / Service Request Information",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 0
+                        "y": 2
                     },
                     {
                         "description": "",
@@ -760,7 +584,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 9
+                        "y": 6
                     },
                     {
                         "description": "",
@@ -789,16 +613,43 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 7
+                        "y": 4
+                    },
+                    {
+                        "description": "",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "7plqqlsm0f-7fc35630-dd58-11ea-97d3-f3b8c3081536",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "bmcremedyforceservicerequest",
+                                "height": 44,
+                                "id": "9f090350-dd58-11ea-97d3-f3b8c3081536",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Service Request Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 8
                     }
                 ],
                 "type": "custom"
             }
         ],
-        "typeId": "Bmc Remedyforce",
+        "typeId": "Bmc Remedyforce Service Request",
         "version": -1
     },
-    "typeId": "Bmc Remedyforce",
+    "typeId": "Bmc Remedyforce Service Request",
     "version": -1,
     "fromVersion": "5.0.0",
     "toVersion": "5.9.9"

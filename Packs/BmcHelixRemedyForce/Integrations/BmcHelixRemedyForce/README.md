@@ -1,9 +1,9 @@
 BMC Helix Remedyforce integration allows customers to create/update service requests and incidents. It also allows to update status, resolve service requests and incidents with customer notes. This integration exposes standard ticketing capabilities that can be utilized as part of automation & orchestration.
-This integration was integrated and tested with version xx of BMCHelixRemedyforce
-## Configure BMCHelixRemedyforce on Cortex XSOAR
+This integration was integrated and tested with version 202002.79 of BMC Helix Remedyforce.
+## Configure BMC Helix Remedyforce on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for **BMCHelixRemedyforce**.
+2. Search for **BMC Helix Remedyforce**.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -25,6 +25,8 @@ This integration was integrated and tested with version xx of BMCHelixRemedyforc
 | proxy | Use system proxy settings | False |
 | request_timeout | HTTP\(S\) Request Timeout \(in seconds\) | True |
 | isFetch | Fetch incidents | False |
+| firstFetchTimestamp | First Fetch Timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -626,7 +628,7 @@ This command helps to get account details for incidents and service requests.
 
 ### bmc-remedy-status-details-get
 ***
-This command helps to get status details for incidents and service requests. Status is used to display the progress of the service request through its stages of opening to closure.
+This command helps to get status details for incidents and service requests. Status is used to display the progress of the service request or incident through its stages of opening to closure.
 
 
 #### Base Command
@@ -846,7 +848,7 @@ This command helps to get user details for incidents and service requests. It ac
 | BmcRemedyforce.User.Phone | String | Phone number of the user. | 
 | BmcRemedyforce.User.Account | String | Account name of the user. | 
 | BmcRemedyforce.User.CompanyName | String | Company name of the user. | 
-| BmcRemedyforce.User.Division | String | Divsion of the user. | 
+| BmcRemedyforce.User.Division | String | Division of the user. | 
 | BmcRemedyforce.User.Department | String | Department name of the user. | 
 | BmcRemedyforce.User.Title | String | Title of the user. | 
 | BmcRemedyforce.User.IsStaff | Boolean | Shows whether the user belongs to the staff or not. | 
@@ -950,4 +952,176 @@ This command helps to get broadcast details for incidents. Broadcast enables use
 >|Id|Name|Priority|Urgency|Impact|Category|Status|
 >|---|---|---|---|---|---|---|
 >| a1v2w000000IaP7AAK | BES Server is down completely | 1 | HIGH | HIGH | Telecommunication | OPENED |
+
+
+### bmc-remedy-incident-get
+***
+This command helps to get details of incidents.
+
+
+#### Base Command
+
+`bmc-remedy-incident-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| last_fetch_time | The time range to consider for getting the incident. Use the format "&lt;number&gt; &lt;time unit&gt;". Example: 12 hours, 7 days, 3 months, 1 year. | Optional | 
+| incident_number | The unique number of the incident whose details user wants to get. | Optional | 
+| maximum_incident | The maximum number of the incidents user wants to get. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| BmcRemedyforce.Incident.Id | String | Incident Id. | 
+| BmcRemedyforce.Incident.Number | String | Incident number. | 
+| BmcRemedyforce.Incident.Priority | String | Incident priority. | 
+| BmcRemedyforce.Incident.Description | String | Incident description. | 
+| BmcRemedyforce.Incident.ClientID | String | Incident client Id. | 
+| BmcRemedyforce.Incident.Status | String | Incident status. | 
+| BmcRemedyforce.Incident.dueDateTime | String | Incident due datetime. | 
+| BmcRemedyforce.Incident.Staff | String | Incident staff. | 
+| BmcRemedyforce.Incident.Queue | String | Incident queue. | 
+| BmcRemedyforce.Incident.Category | String | Incident category. | 
+| BmcRemedyforce.Incident.Urgency | String | Incident urgency. | 
+| BmcRemedyforce.Incident.ClientAccount | String | Incident client account. | 
+| BmcRemedyforce.Incident.Broadcast | String | Incident broadcast. | 
+| BmcRemedyforce.Incident.closeDateTime | String | Incident close datetime. | 
+| BmcRemedyforce.Incident.CreatedDate | String | Incident created date. | 
+| BmcRemedyforce.Incident.LastModifiedDate | String | Incident last modified date. | 
+| BmcRemedyforce.Incident.openDateTime | String | Incident open datetime. | 
+| BmcRemedyforce.Incident.outageTo | String | Incident outage end. | 
+| BmcRemedyforce.Incident.outageFrom | String | Incident outage start. | 
+| BmcRemedyforce.Incident.Resolution | String | Incident resolution. | 
+| BmcRemedyforce.Incident.respondedDateTime | String | Incident responded datetime. | 
+| BmcRemedyforce.Incident.Service | String | Incident service. | 
+| BmcRemedyforce.Incident.ServiceOffering | String | Incident service offering. | 
+| BmcRemedyforce.Incident.Template | String | Incident template. | 
+| BmcRemedyforce.Incident.Type | String | Incident type. | 
+| BmcRemedyforce.Incident.Impact | String | Incident impact. | 
+| BmcRemedyforce.Incident.Asset | String | Incident asset. | 
+
+
+#### Command Example
+```!bmc-remedy-incident-get last_fetch_time="1 hours" maximum_incident=2  ```
+
+#### Context Example
+```
+{
+    "BmcRemedyforce": {
+        "Incident": {
+            "Category": "Human Resources",
+            "ClientID": "Clinet ID",
+            "CreatedDate": "2020-08-14T12:47:58.000+0000",
+            "Id": "a2U2w00000096QEEAY",
+            "Impact": "LOW",
+            "LastModifiedDate": "2020-08-14T15:18:07.000+0000",
+            "Number": "00000059",
+            "Priority": "5",
+            "Service": "Client Services",
+            "Staff": "Staff Name",
+            "Status": "OPENED",
+            "Template": "Benefits Question - SR",
+            "Type": "Incident",
+            "Urgency": "LOW",
+            "dueDateTime": "2020-08-17T20:47:58.000+0000",
+            "openDateTime": "2020-08-14T12:47:58.000+0000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Total retrieved incident(s): 1
+>|Number|Priority|Client ID|Status|Staff|
+>|---|---|---|---|---|
+>| 00000059 | 5 | Client ID | OPENED | Staff Name |
+
+
+### bmc-remedy-service-request-get
+***
+This command helps to get the service request details.
+
+
+#### Base Command
+
+`bmc-remedy-service-request-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| service_request_number | The unique number of the service request whose details user wants to get. | Optional | 
+| last_fetch_time | The time range to consider for getting the service request. Use the format "&lt;number&gt; &lt;time unit&gt;". Example: 12 hours, 7 days, 3 months, 1 year. | Optional | 
+| maximum_service_request | The maximum number of the service request user wants to get. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| BmcRemedyforce.ServiceRequest.Id | String | Service Request Id. | 
+| BmcRemedyforce.ServiceRequest.Number | String | Service Request number. | 
+| BmcRemedyforce.ServiceRequest.Priority | String | Service Request priority. | 
+| BmcRemedyforce.ServiceRequest.Description | String | Service Request description. | 
+| BmcRemedyforce.ServiceRequest.ClientID | String | Service Request client. | 
+| BmcRemedyforce.ServiceRequest.Status | String | Service Request status. | 
+| BmcRemedyforce.ServiceRequest.DueDateTime | String | Service Request due datetime. | 
+| BmcRemedyforce.ServiceRequest.Staff | String | Service Request staff. | 
+| BmcRemedyforce.ServiceRequest.Queue | String | Service Request queue. | 
+| BmcRemedyforce.ServiceRequest.Category | String | Service Request category. | 
+| BmcRemedyforce.ServiceRequest.Urgency | String | Service Request urgency. | 
+| BmcRemedyforce.ServiceRequest.Broadcast | String | Service Request broadcast. | 
+| BmcRemedyforce.ServiceRequest.closeDateTime | String | Service Request close datetime. | 
+| BmcRemedyforce.ServiceRequest.CreatedDate | String | Service Request created date. | 
+| BmcRemedyforce.ServiceRequest.LastUpdatedDate | String | Service Request last modified date. | 
+| BmcRemedyforce.ServiceRequest.OpenDateTime | String | Service Request open datetime. | 
+| BmcRemedyforce.ServiceRequest.Resolution | String | Service Request resolution. | 
+| BmcRemedyforce.ServiceRequest.ServiceOffering | String | Service Request service offering. | 
+| BmcRemedyforce.ServiceRequest.Template | String | Service Request template. | 
+| BmcRemedyforce.ServiceRequest.Impact | String | Service Request impact. | 
+| BmcRemedyforce.ServiceRequest.BusinessService | String | Service Request business service. | 
+| BmcRemedyforce.ServiceRequest.ServiceRequestDefinition | String | Service Request definition. | 
+| BmcRemedyforce.ServiceRequest.ClientAccount | String | Account held by service request. | 
+| BmcRemedyforce.ServiceRequest.Type | String | Service Desk Type. | 
+
+
+#### Command Example
+```!bmc-remedy-service-request-get last_fetch_time="1 hours" maximum_service_request=2```
+
+#### Context Example
+```
+{
+    "BmcRemedyforce": {
+        "ServiceRequest": {
+            "BusinessService": "Printing Services",
+            "Category": "File & Print",
+            "CreatedDate": "2020-08-14T13:32:17.000+0000",
+            "DueDateTime": "2020-08-17T21:32:16.000+0000",
+            "Id": "a2U2w00000096yCEAQ",
+            "Impact": "LOW",
+            "LastUpdatedDate": "2020-08-14T14:28:12.000+0000",
+            "Number": "00000929",
+            "OpenDateTime": "2020-08-14T13:32:16.000+0000",
+            "Priority": "5",
+            "Queue": "Incident Queue",
+            "ServiceOffering": "Printer Configuration",
+            "ServiceRequestDefinition": "Setup Printer",
+            "Status": "OPENED",
+            "Template": "Printer Setup - SR",
+            "Type": "Service Request",
+            "Urgency": "LOW"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Total retrieved service request(s): 1
+>|Number|Priority|Status|Queue|
+>|---|---|---|---|
+>| 00000929 | 5 | OPENED | Incident Queue |
 
