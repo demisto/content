@@ -1,11 +1,11 @@
 {
     "name": "QueryAI",
-    "description": "Democratizing cybersecurity with \"AI Analyst\" product, providing answers and insights from IT log data.",
+    "description": "Access your data where it lives.",
     "support": "developer",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1",
     "author": "Query.AI",
     "url": "https://github.com/query-ai",
-    "email": "app@query.ai",
+    "email": "support@query.ai",
     "created": "2020-07-28T20:25:41Z",
     "categories": [
         "Data Enrichment & Threat Intelligence",
@@ -18,5 +18,9 @@
         "Analyst Assistive-AI"
     ],
     "useCases": [],
-    "keywords": []
+    "keywords": [
+        "query",
+        "ai",
+        "query.ai"
+    ]
 }
