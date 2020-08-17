@@ -1,7 +1,7 @@
 id: GitHubITAdmin-Test
 name: GitHubITAdmin-Test
 version: -1
-fromversion: 5.0.0
+fromversion: 5.0.0                                            <
 starttaskid: "0"
 description: ''
 tasks:
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": 65
         }
       }
     note: false
@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 225
         }
       }
     note: false
@@ -66,31 +66,29 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 000a8528-ecf2-4a8c-8d05-7ad1003c3da5
+    taskid: b954630c-b65a-4d54-8f7b-7f2e8275d5bb
     type: regular
     task:
-      id: 000a8528-ecf2-4a8c-8d05-7ad1003c3da5
+      id: b954630c-b65a-4d54-8f7b-7f2e8275d5bb
       version: -1
       name: get-user
-      script: '|||get-user'
+      description: Get a user detail
+      script: GitHub IT Admin|||get-user
       type: regular
       iscommand: true
-      brand: ""
-      description: ''
+      brand: GitHub IT Admin
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
       scim:
         simple: ${scim}
-      using:
-        simple: ${appInstanceName}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1100
         }
       }
     note: false
@@ -139,7 +137,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 925
         }
       }
     note: false
@@ -149,10 +147,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: abc603e8-6082-4a5e-8679-c7fa4b2251bf
+    taskid: 8727dd15-0677-405a-89a8-b407ee3c6e37
     type: regular
     task:
-      id: abc603e8-6082-4a5e-8679-c7fa4b2251bf
+      id: 8727dd15-0677-405a-89a8-b407ee3c6e37
       version: -1
       name: create-user
       description: Creates a user
@@ -175,7 +173,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 750
         }
       }
     note: false
@@ -197,7 +195,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "6"
+      - "15"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -224,7 +222,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1275
         }
       }
     note: false
@@ -234,17 +232,17 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 5c2c22c6-82c4-43ba-801a-2c503b3d1210
+    taskid: 7cc95e97-e450-4c6c-84dc-0a3036366c7d
     type: regular
     task:
-      id: 5c2c22c6-82c4-43ba-801a-2c503b3d1210
+      id: 7cc95e97-e450-4c6c-84dc-0a3036366c7d
       version: -1
       name: update-user
-      script: '|||update-user'
+      description: Update a user
+      script: GitHub IT Admin|||update-user
       type: regular
       iscommand: true
-      brand: ""
-      description: ''
+      brand: GitHub IT Admin
     nexttasks:
       '#none#':
       - "7"
@@ -254,15 +252,13 @@ tasks:
       newScim:
         simple: ${scim}
       oldScim:
-        simple: '{"id": "0c18ac18-cb5f-11ea-9654-b75cb25ce61b"}'
-      using:
-        simple: ${appInstanceName}
+        simple: '{"id": "${id}"}'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1625
         }
       }
     note: false
@@ -311,7 +307,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1800
         }
       }
     note: false
@@ -321,33 +317,31 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 70be6714-cc77-40b4-8ef6-d1d491556cd4
+    taskid: f1f1d71c-eaa6-4e5c-8c8e-9d19e8692cc3
     type: regular
     task:
-      id: 70be6714-cc77-40b4-8ef6-d1d491556cd4
+      id: f1f1d71c-eaa6-4e5c-8c8e-9d19e8692cc3
       version: -1
       name: disable-user
-      script: '|||disable-user'
+      description: Disable a user
+      script: GitHub IT Admin|||disable-user
       type: regular
       iscommand: true
-      brand: ""
-      description: ''
+      brand: GitHub IT Admin
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
       customMapping: {}
       scim:
-        simple: '{"id": "32503b92-c139-11ea-8197-f64f219e86de"}'
+        simple: '{"id": "${id}"}'
       user_id: {}
-      using:
-        simple: ${appInstanceName}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1975
         }
       }
     note: false
@@ -357,10 +351,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 3b27dc1c-8d4a-42c0-8b75-0d3a317e841f
+    taskid: 13e27dc6-31af-4262-83ed-a2f76643fdfc
     type: condition
     task:
-      id: 3b27dc1c-8d4a-42c0-8b75-0d3a317e841f
+      id: 13e27dc6-31af-4262-83ed-a2f76643fdfc
       version: -1
       name: Verify Outputs
       type: condition
@@ -396,7 +390,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2150
         }
       }
     note: false
@@ -415,13 +409,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2140
+          "y": 2325
         }
       }
     note: false
@@ -457,7 +450,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 400
         }
       }
     note: false
@@ -507,7 +500,44 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 593a1d89-f8d9-4a75-86a4-ee8cfea23adc
+    type: regular
+    task:
+      id: 593a1d89-f8d9-4a75-86a4-ee8cfea23adc
+      version: -1
+      name: Set id for Update
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: id
+      stringify:
+        simple: "true"
+      value:
+        simple: ${GetUser.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
         }
       }
     note: false
@@ -520,10 +550,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2155,
+        "height": 2325,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": 65
       }
     }
   }
