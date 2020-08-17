@@ -154,7 +154,8 @@ class Client(BaseClient):
         response = self.http_request('GET', url_suffix='/uba/api/assets/notable', params=params)
         return response
 
-    def get_context_tables(self, tableNameLike: str = None, sortBy: str = None, order: str = None, pageSize: int = 10, pageNumber: int = 1) -> Dict:
+    def get_context_tables(self, tableNameLike: str = None, sortBy: str = None, order: str = None, pageSize: int = 10,
+                           pageNumber: int = 1) -> Dict:
         """
         Args:
             tableNameLike: Context table name "like" pattern
@@ -174,10 +175,11 @@ class Client(BaseClient):
             'pageSize': pageSize,
             'pageNumber': pageNumber,
         }
-        response = self.http_request('GET', url_suffix=f'/api/setup/contextTables', params=params)
+        response = self.http_request('GET', url_suffix='/api/setup/contextTables', params=params)
         return response
 
-    def get_context_table_records(self, contextTableName: str, pageSize: int = 50, pageNumber: int = 1, sortBy: str = None, order: str = None, keyword: str = None) -> Dict:
+    def get_context_table_records(self, contextTableName: str, pageSize: int = 50, pageNumber: int = 1,
+                                  sortBy: str = None, order: str = None, keyword: str = None) -> Dict:
         """
         Args:
             contextTableName: The table name to retrieve records from
@@ -304,7 +306,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_asset_securityalerts_request(self, assetid: str = None, sortby: str = None, sortorder: int = 0, maxresults: int = 0) -> Dict:
+    def get_asset_securityalerts_request(self, assetid: str = None, sortby: str = None, sortorder=0,
+                                         maxresults=0) -> Dict:
 
         params = {
             'sortBy': sortby,
@@ -316,7 +319,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_asset_header_data_request(self, assetid: str = None, maxusers: int = 0) -> Dict:
+    def get_asset_header_data_request(self, assetid: str = None, maxusers=0) -> Dict:
 
         params = {
             'maxNumberOfUsers': maxusers
@@ -325,7 +328,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_watchlist_byID_request(self, watchlistid: str, maxresults: int, unit: str, num: int) -> Dict:
+    def get_watchlist_byID_request(self, watchlistid, maxresults, unit: str, num) -> Dict:
 
         params = {
             'numberOfResults': maxresults,
@@ -337,7 +340,7 @@ class Client(BaseClient):
 
         return response
 
-    def add_watchlist_item_request(self, watchlistid: str, items: List, watchuntil: int, category: str) -> Dict:
+    def add_watchlist_item_request(self, watchlistid, items, watchuntil, category) -> Dict:
 
         params = {
             'items': items,
@@ -494,7 +497,7 @@ def get_notable_assets(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     for asset in assets:
         asset_ = asset.get('asset', {})
-        #asset_info = asset_.get('info', {})
+        # asset_info = asset_.get('info', {})
         contents = contents_append_notable_asset_info(contents, asset, asset_)
 
     entry_context = {'Exabeam.Host(val.HostName && val.HostName === obj.HostName)': contents}
@@ -852,7 +855,7 @@ def get_watchlist_byID(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     results = client.get_watchlist_byID_request(watchlistid, maxresults, api_unit, num)
 
     if not results:
-        raise Exception(f'The watchlist {watchlist} has no data. Please verify that the asset is valid.')
+        raise Exception(f'The watchlist {watchlistid} has no data. Please verify that the asset is valid.')
 
     raw_data = results
     entry_context = {'Exabeam.Watchlist(val.watchlistId && val.watchlistId === obj.watchlistId)': {
@@ -873,12 +876,12 @@ def add_watchlist_item(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if not results:
         raise Exception(f'Failed to add items {items} to watchlist {watchlistid}')
 
-    return results, {}, results
+    return "Added", {}, results
 
 
 def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
 
-    limit: int = int(params.get('maximum_fetch'))
+    limit = params.get('maximum_fetch')
     time_period: str = params.get('fetch_time_period', '')
     time_ = time_period.split(' ')
     if not len(time_) == 2:
@@ -892,19 +895,19 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
     if api_unit not in {'d', 'y', 'M', 'h'}:
         raise Exception('The time unit is incorrect - can be hours, days, months, years.')
 
-    #last_run = demisto.getLastRun()
+    # last_run = demisto.getLastRun()
 
     if last_run:
         # if 'last_id_timestamp' in last_run:
-            #last_id_timestamp = int(last_run.get('last_id_timestamp'))
+        #     last_id_timestamp = int(last_run.get('last_id_timestamp'))
         # if 'last_day_timestamp' in last_run:
-            #last_day_timestamp = int(last_run.get('last_day_timestamp'))
+        #     last_day_timestamp = int(last_run.get('last_day_timestamp'))
         api_unit = "d"
         num = "1"
     else:
         last_run = dict()
-        #last_id_timestamp = 0
-        #last_day_timestamp = 0
+        # last_id_timestamp = 0
+        # last_day_timestamp = 0
 
     previous_notable_users = last_run.get('previous_notable_users', '').split(',')
     current_notable_users = []
@@ -919,8 +922,8 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
     validatedUsers = list()
     validatedAssets = list()
 
-    #user_timestamps = [last_id_timestamp]
-    #asset_timestamps = [last_day_timestamp]
+    # user_timestamps = [last_id_timestamp]
+    # asset_timestamps = [last_day_timestamp]
 
     users = user_results.get('users', [])
     assets = asset_results.get('assets', [])
@@ -931,7 +934,8 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
 
     for user in users:
         for sessionID in user.get('notableSessionIds', []):
-            # session_id_time = int(sessionID.split("-")[1])#Assuming notable ID format remains     <username>-YYYYMMDDHHmmSS (guest-20200610154908)
+            # session_id_time = int(sessionID.split("-")[1])#Assuming notable ID format remains
+            # <username>-YYYYMMDDHHmmSS (guest-20200610154908)
             # if session_id_time > last_id_timestamp:
             if sessionID not in previous_notable_users:
                 validatedUsers.append(user)
@@ -945,24 +949,24 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
                 })
             current_notable_users.append(sessionID)
 
-    #user_timestamps = sorted(user_timestamps, reverse=True)
-    #last_run['last_id_timestamp'] = str(user_timestamps[0])
+    # user_timestamps = sorted(user_timestamps, reverse=True)
+    # last_run['last_id_timestamp'] = str(user_timestamps[0])
 
     for asset in assets:
-        #highest_risk_seq_day = int(asset['highestRiskSequence']['day'])
+        # highest_risk_seq_day = int(asset['highestRiskSequence']['day'])
         # if highest_risk_seq_day > last_day_timestamp:
         if asset['highestRiskSequence']['id'] not in previous_notable_assets:
             validatedAssets.append(asset)
             asset['type'] = 'asset'  # Added to make mapping easier
-           # asset_timestamps.append(highest_risk_seq_day)
+            # asset_timestamps.append(highest_risk_seq_day)
             incidents.append({
                 "name": f"Exabeam Notable Asset - {asset['asset']['hostName']}",
                 "rawJSON": json.dumps(asset)
             })
         current_notable_assets.append(asset['highestRiskSequence']['id'])
 
-    #asset_timsetamps = sorted(asset_timestamps,reverse=True)
-    #last_run['last_day_timestamp'] = str(asset_timestamps[0])
+    # asset_timsetamps = sorted(asset_timestamps,reverse=True)
+    # last_run['last_day_timestamp'] = str(asset_timestamps[0])
 
     previous_assets = str(','.join(current_notable_assets))
     previous_users = str(','.join(current_notable_users))
