@@ -1609,7 +1609,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: demisto/python3:3.8.5.10455
   subtype: python3
   type: python
   isFetchSamples: true

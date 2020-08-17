@@ -8,7 +8,7 @@ import urllib3
 import traceback
 from urllib import parse
 from copy import deepcopy
-from queue import Queue, Empty
+from queue import SimpleQueue, Empty
 from threading import Thread, RLock
 
 import requests
@@ -20,6 +20,7 @@ urllib3.disable_warnings()
 """ GLOBAL VARS """
 WORKERS_NUM = 8
 EVENTS_INTERVAL_SECS = 15
+EVENTS_FAILURE_LIMIT = 3
 SYNC_CONTEXT = True
 
 """ Header names transformation maps """
@@ -704,11 +705,11 @@ def offense_enrichment_worker(
                 )
             except Exception as e:
                 print_debug_msg(
-                    f"(5) Failed events fetch for offense {offense['id']}: {str(e)}"
+                    f"(0) Failed events fetch for offense {offense['id']}: {str(e)}"
                 )
             time.sleep(1)
     except Exception as e:
-        print_debug_msg(f"(0) Worker stopped working, encountered error: {str(e)}")
+        print_debug_msg(f"(1) Worker stopped working, encountered error: {str(e)}")
 
 
 def perform_offense_enrichment(
@@ -727,44 +728,64 @@ def perform_offense_enrichment(
     )
     events_query = {"headers": "", "query_expression": query_expression}
     print_debug_msg(
-        f'(1) Starting events fetch for offense {offense["id"]}. Query: {query_expression}'
+        f'(2) Starting events fetch for offense {offense["id"]}. Query: {query_expression}'
     )
-    raw_search = client.search(events_query)
-    search_res_events = deepcopy(raw_search)
-    search_res_events = filter_dict_non_intersection_key_to_value(
-        replace_keys(search_res_events, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP
-    )
-    search_id = search_res_events.get("ID")
-    query_status = search_res_events.get("Status")
-    i = 1
-    while not (
-        query_status == "COMPLETED"
-        or query_status == "ERROR"
-        or query_status == "CANCELED"
-    ):
-        # print status debug every minute
-        if i >= 60:
-            print_debug_msg(
-                f'(2) Still fetching offense {offense["id"]} events, search_id: {search_id}'
-            )
-        raw_search = client.get_search(search_id)
-        search_res_query = deepcopy(raw_search)
-        search_res_query = filter_dict_non_intersection_key_to_value(
-            replace_keys(search_res_query, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP
-        )
-        query_status = search_res_query.get("Status")
-        # prepare next run
-        i = i % 60 + EVENTS_INTERVAL_SECS
-        time.sleep(EVENTS_INTERVAL_SECS)
-        if query_status == "COMPLETED":
-            print_debug_msg(
-                f'(3) Events fetched successfully for offense {offense["id"]}'
-            )
-            raw_search_results = client.get_search_results(search_id)
-            offense["events"] = raw_search_results.get("events", [])
-    print_debug_msg(f"(4) Enriched offense: {offense['id']} successfully.")
-    enriched_offenses_queue.put(offense)
-    counter.increment()
+    try:
+        query_status = ''
+        failures = 0
+        search_created_successfully = False
+        while not search_created_successfully and failures <= EVENTS_FAILURE_LIMIT:
+            try:
+                raw_search = client.search(events_query)
+                search_res_events = deepcopy(raw_search)
+                search_res_events = filter_dict_non_intersection_key_to_value(
+                    replace_keys(search_res_events, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP
+                )
+                search_id = search_res_events.get("ID")
+                query_status = search_res_events.get("Status")
+                search_created_successfully = True
+            except Exception:
+                failures += 1
+
+        if failures >= EVENTS_FAILURE_LIMIT:
+            raise DemistoException(f"Unable to create search for offense: {offense['id']}.")
+        i = 1
+        failures = 0
+        while not (
+            query_status == "COMPLETED"
+            or query_status == "ERROR"
+            or query_status == "CANCELED"
+            or failures >= EVENTS_FAILURE_LIMIT
+        ):
+            try:
+                # print status debug every minute (or after)
+                if i >= 60:
+                    print_debug_msg(
+                        f'(3) Still fetching offense {offense["id"]} events, search_id: {search_id}'
+                    )
+                raw_search = client.get_search(search_id)
+                search_res_query = deepcopy(raw_search)
+                search_res_query = filter_dict_non_intersection_key_to_value(
+                    replace_keys(search_res_query, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP
+                )
+                query_status = search_res_query.get("Status")
+                # prepare next run
+                i = i % 60 + EVENTS_INTERVAL_SECS
+                time.sleep(EVENTS_INTERVAL_SECS)
+                failures = 0  # failures are relevant only if subsequent
+                if query_status == "COMPLETED":
+                    print_debug_msg(
+                        f'(4) Events fetched successfully for offense {offense["id"]}'
+                    )
+                    raw_search_results = client.get_search_results(search_id)
+                    offense["events"] = raw_search_results.get("events", [])
+            except Exception as e:
+                print_debug_msg(f'(5) Failed fetching event for offense {offense["id"]}: {str(e)}')
+                failures += 1
+    finally:
+        enriched_offenses_queue.put(offense, block=False)
+        counter.increment()
+        print_debug_msg(f"(6) Enriched offense: {offense['id']} successfully.")
 
 
 def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich):
@@ -799,12 +820,12 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich
             offense_id,
             lim_id,
         ) = seek_fetchable_offenses(client, offense_id, lim_id, user_query)
-    print_debug_msg(f"(6) Fetched {fetch_query}successfully")
+    print_debug_msg(f"(7) Fetched {fetch_query}successfully")
 
     if full_enrich and raw_offenses:
-        print_debug_msg(f"(7) Enriching {fetch_query}")
+        print_debug_msg(f"(8) Enriching {fetch_query}")
         enrich_offense_res_with_source_and_destination_address(client, raw_offenses)
-        print_debug_msg(f"(8) Enriched {fetch_query}successfully")
+        print_debug_msg(f"(9) Enriched {fetch_query}successfully")
 
     return raw_offenses
 
@@ -817,7 +838,7 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, lim_id, user
         end_offense_id,
         "AND ({})".format(user_query) if user_query else "",
     )
-    print_debug_msg(f"(9) Fetching {fetch_query}")
+    print_debug_msg(f"(10) Fetching {fetch_query}")
     raw_offenses = client.get_offenses(
         _range="0-{0}".format(client.offenses_per_fetch - 1), _filter=fetch_query
     )
@@ -876,7 +897,7 @@ def fetch_incidents_long_running_events(
 
     for offense in raw_offenses:
         offense_id = max(offense_id, offense["id"])
-        raw_offenses_queue.put(offense)
+        raw_offenses_queue.put(offense, block=False)
     new_incidents_samples = []
     while counter.value != len(raw_offenses):
         incidents_sample = try_create_incidents(enriched_offenses_queue, last_run)
@@ -908,12 +929,13 @@ def try_create_incidents(enriched_offenses_queue, last_run):
                 incidents_batch_for_sample.append(create_incident_from_offense(offense))
 
         if len(incidents_batch) > 0:
-            print_debug_msg(f"(10) Creating {len(incidents_batch)} incidents.")
-            for incident in incidents_batch:
-                print_debug_msg(f'(11) Creating incident {incident["name"]}')
-            demisto.createIncidents(incidents_batch)
+            print_debug_msg(f"(11) Creating {len(incidents_batch)} incidents.")
+            for b in batch(incidents_batch, 1):
+                for incident in b:
+                    print_debug_msg(f'(12) Creating incident {incident["name"]}')
+                demisto.createIncidents(b)
     except Exception as e:
-        print_debug_msg(f"(12) Incident Creation failed. error: {type(e)}: {str(e)}")
+        print_debug_msg(f"(13) Incident Creation failed. error: {type(e)}: {str(e)}")
     return incidents_batch_for_sample
 
 
@@ -1526,7 +1548,7 @@ def update_reference_set_value_command(
     client: QRadarClient, value=None, date_value=None, ref_name=None, source=None
 ):
     """
-        The function creates or updates values in QRadar reference set
+    Creates or updates values in QRadar reference set
     """
     values = argToList(value)
     if date_value == "True":
@@ -1613,10 +1635,10 @@ def upload_indicators_command(
     page=None,
 ):
     """
-        The function finds indicators according to user query and updates QRadar reference set
+    Finds indicators according to user query and updates QRadar reference set
 
-        Returns:
-            (string, dict). Human readable and the raw response
+    Returns:
+        (string, dict). Human readable and the raw response
     """
     try:
         limit = int(limit)
@@ -1641,13 +1663,9 @@ def upload_indicators_command(
             query, limit, page
         )
         if len(indicators_values_list) == 0:
-            return (
-                "No indicators found, Reference set {0} didn't change".format(ref_name),
-                {},
-                {},
-            )
+            return f"No indicators found, Reference set {ref_name} didn't change"
         else:
-            raw_response = client.upload_indicators_list_request(
+            client.upload_indicators_list_request(
                 ref_name, indicators_values_list
             )
             ref_set_data = client.get_ref_set(ref_name)
@@ -1668,16 +1686,12 @@ def upload_indicators_command(
             ) + tableToMarkdown(
                 "Indicators list", indicators_data_list, headers=indicator_headers
             )
-            return hr, {}, raw_response
+            return hr
 
     # Gets an error if the user tried to add indicators that dont match to the reference set type
     except Exception as e:
         if "1005" in str(e):
-            return (
-                "You tried to add indicators that dont match to reference set type",
-                {},
-                {},
-            )
+            return "You tried to add indicators that dont match to reference set type"
         raise e
 
 
@@ -1726,8 +1740,8 @@ def get_indicators_list(indicator_query, limit, page):
 
 
 def fetch_loop_with_events(client: QRadarClient, user_query, full_enrich):
-    raw_offenses_queue = Queue()  # type: ignore[var-annotated]
-    enriched_offenses_queue = Queue()  # type: ignore[var-annotated]
+    raw_offenses_queue = SimpleQueue()  # type: ignore[var-annotated]
+    enriched_offenses_queue = SimpleQueue()  # type: ignore[var-annotated]
     counter = AtomicCounter()
 
     workers_count = WORKERS_NUM
@@ -1741,7 +1755,7 @@ def fetch_loop_with_events(client: QRadarClient, user_query, full_enrich):
         worker.start()
 
     while True:
-        print_debug_msg(f"(15) Starting fetch loop with events.")
+        print_debug_msg(f"(14) Starting fetch loop with events.")
         fetch_incidents_long_running_events(
             client,
             raw_offenses_queue,
@@ -1760,7 +1774,7 @@ def fetch_loop_no_events(client: QRadarClient, user_query, full_enrich):
 
 
 def long_running_main(client: QRadarClient, user_query, full_enrich, fetch_mode):
-    print_debug_msg(f'(16) Starting fetch with "{fetch_mode}"')
+    print_debug_msg(f'(15) Starting fetch with "{fetch_mode}"')
     if fetch_mode in (FetchMode.all_events, FetchMode.correlations_only):
         fetch_loop_with_events(client, user_query, full_enrich)
     elif fetch_mode == FetchMode.no_events:
@@ -1820,7 +1834,6 @@ def main():
         }
         if command in commands:
             args = demisto.args()
-            # TODO: Normalize standard output
             demisto.results(commands[command](client, **args))
         elif command == "fetch-incidents":
             fetch_incidents_long_running_samples(
