@@ -24,10 +24,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 86bb5257-980a-47e8-8e4d-81b36c63727c
+    taskid: 7d51f851-1442-42dd-8bec-541c94a1bb98
     type: start
     task:
-      id: 86bb5257-980a-47e8-8e4d-81b36c63727c
+      id: 7d51f851-1442-42dd-8bec-541c94a1bb98
       version: -1
       name: ""
       iscommand: false
@@ -51,10 +51,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 46eba840-46ec-47d2-88b4-8cd7c938d870
+    taskid: 247ea8ec-c655-4282-8e91-56b62d715272
     type: regular
     task:
-      id: 46eba840-46ec-47d2-88b4-8cd7c938d870
+      id: 247ea8ec-c655-4282-8e91-56b62d715272
       version: -1
       name: endace-create-search
       description: Create a search task on EndaceProbe. Search is issued against all
@@ -102,10 +102,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 9836efc2-1212-4371-8b90-94b5415a2828
+    taskid: 451a8bd3-22cc-4777-8bbe-290eb8212896
     type: playbook
     task:
-      id: 9836efc2-1212-4371-8b90-94b5415a2828
+      id: 451a8bd3-22cc-4777-8bbe-290eb8212896
       version: -1
       name: GenericPolling
       description: |-
@@ -158,10 +158,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 256a93b6-16d2-460d-8a84-94aca1fa0a8a
+    taskid: 5d344cf7-6846-42ce-8e20-594f366cb134
     type: condition
     task:
-      id: 256a93b6-16d2-460d-8a84-94aca1fa0a8a
+      id: 5d344cf7-6846-42ce-8e20-594f366cb134
       version: -1
       name: is Search Progess  = 100%?
       description: Check whether the values provided in arguments are equal. If either
@@ -200,10 +200,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 8fb50cf5-9161-403e-8687-532b9e4cb386
+    taskid: 84efbeb5-8d4a-4481-835e-0a1e05e8654b
     type: condition
     task:
-      id: 8fb50cf5-9161-403e-8687-532b9e4cb386
+      id: 84efbeb5-8d4a-4481-835e-0a1e05e8654b
       version: -1
       name: Matched bytes > 0?
       description: |-
@@ -250,10 +250,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: cc44aaaa-5209-43ba-8f55-7b179d219444
+    taskid: 7d16de5e-2376-439b-802c-c21676308f1d
     type: regular
     task:
-      id: cc44aaaa-5209-43ba-8f55-7b179d219444
+      id: 7d16de5e-2376-439b-802c-c21676308f1d
       version: -1
       name: endace-create-archive
       description: Create an archive task to archive packets of interest on EndaceProbe.
@@ -304,10 +304,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: c404904e-50bc-4db7-8b7f-95abe4965b9b
+    taskid: 4c34de6c-d657-4f5f-86ac-467167c95aba
     type: playbook
     task:
-      id: c404904e-50bc-4db7-8b7f-95abe4965b9b
+      id: 4c34de6c-d657-4f5f-86ac-467167c95aba
       version: -1
       name: GenericPolling
       description: |-
@@ -360,10 +360,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 208c3f7f-8149-4133-8997-4288243db350
+    taskid: 3e098c0d-8321-45ab-827c-da25c8d3bfd6
     type: regular
     task:
-      id: 208c3f7f-8149-4133-8997-4288243db350
+      id: 3e098c0d-8321-45ab-827c-da25c8d3bfd6
       version: -1
       name: endace-get-archive-status
       description: get status of archived task
@@ -392,10 +392,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 03e80187-fe89-46af-80f9-7bc4ee4cd887
+    taskid: 2337ceb2-3174-4052-82df-b0a93725a242
     type: condition
     task:
-      id: 03e80187-fe89-46af-80f9-7bc4ee4cd887
+      id: 2337ceb2-3174-4052-82df-b0a93725a242
       version: -1
       name: Is Archived Finished ?
       description: Check whether the values provided in arguments are equal. If either
@@ -431,10 +431,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: f53475ae-afb4-446a-88e8-9dde1b016201
+    taskid: 9f6f660e-d570-46c1-897c-5710b15b5d4a
     type: condition
     task:
-      id: f53475ae-afb4-446a-88e8-9dde1b016201
+      id: 9f6f660e-d570-46c1-897c-5710b15b5d4a
       version: -1
       name: is PCAP file size under set download threshold?
       description: |-
@@ -478,10 +478,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: e559ce78-1cb0-42b3-845a-7b9c1c16f051
+    taskid: 88d43aac-b375-40ed-81d0-eea47615d8d6
     type: regular
     task:
-      id: e559ce78-1cb0-42b3-845a-7b9c1c16f051
+      id: 88d43aac-b375-40ed-81d0-eea47615d8d6
       version: -1
       name: endace-download-pcap
       description: Download a copy of the PCAP file from EndaceProbe if PCAP file
@@ -514,10 +514,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 6c880246-23b0-49e4-8afd-4cff0150312f
+    taskid: f1b8f55d-9186-49b1-87cb-6c3b42d4ef33
     type: title
     task:
-      id: 6c880246-23b0-49e4-8afd-4cff0150312f
+      id: f1b8f55d-9186-49b1-87cb-6c3b42d4ef33
       version: -1
       name: end
       type: title
@@ -539,15 +539,14 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: e70b9d0e-79dc-412a-8d5d-e756948c8c5d
+    taskid: d6fe75bf-ebb0-4a20-83ec-5d51ab692d88
     type: condition
     task:
-      id: e70b9d0e-79dc-412a-8d5d-e756948c8c5d
+      id: d6fe75bf-ebb0-4a20-83ec-5d51ab692d88
       version: -1
       name: 'Delete Archived File on EndaceProbe ? '
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
+      description: Check if a given value is true. Will return 'no' otherwise
+      scriptName: IsTrue
       type: condition
       iscommand: false
       brand: ""
@@ -557,12 +556,8 @@ tasks:
       "yes":
       - "23"
     scriptarguments:
-      left:
+      value:
         simple: ${inputs.delete_archive}
-      right:
-        simple: "1"
-    results:
-    - AreValuesEqual
     separatecontext: false
     view: |-
       {
@@ -578,10 +573,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: a1fd34cf-99fe-49cd-8a8c-d4263f30c67b
+    taskid: f969920e-7542-4887-8457-89466614dd9b
     type: regular
     task:
-      id: a1fd34cf-99fe-49cd-8a8c-d4263f30c67b
+      id: f969920e-7542-4887-8457-89466614dd9b
       version: -1
       name: endace-delete-archived-file
       description: Delete an archived file from EndaceProbe.
@@ -610,10 +605,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 6b551379-f457-4df7-8c6e-6c619d55a56b
+    taskid: d8897d46-203a-45ca-8150-3065bb49091c
     type: regular
     task:
-      id: 6b551379-f457-4df7-8c6e-6c619d55a56b
+      id: d8897d46-203a-45ca-8150-3065bb49091c
       version: -1
       name: AddEvidence
       description: |
@@ -647,10 +642,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 31192f62-406b-43ed-80f7-8819c675e295
+    taskid: aaa5aed1-4f53-4ade-8fe9-c7517ea31b21
     type: regular
     task:
-      id: 31192f62-406b-43ed-80f7-8819c675e295
+      id: aaa5aed1-4f53-4ade-8fe9-c7517ea31b21
       version: -1
       name: AddEvidence
       description: |
@@ -684,10 +679,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 5fa86b9d-0009-4302-8448-de30918eb544
+    taskid: d18cb759-8cdd-4f20-8109-acd9217e2099
     type: regular
     task:
-      id: 5fa86b9d-0009-4302-8448-de30918eb544
+      id: d18cb759-8cdd-4f20-8109-acd9217e2099
       version: -1
       name: AddEvidence
       description: |
@@ -721,10 +716,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: d6bc1305-b64a-40e4-8e61-a3165432b724
+    taskid: 623a3290-6a0b-49e2-8346-9fa70fb8490a
     type: regular
     task:
-      id: d6bc1305-b64a-40e4-8e61-a3165432b724
+      id: 623a3290-6a0b-49e2-8346-9fa70fb8490a
       version: -1
       name: Adding Endace Pivot to Vision Link to all datasources
       description: Sets a value into the context with the given context key
@@ -768,10 +763,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 78d6647e-a93e-4443-86c8-f59b2515954a
+    taskid: 1d1c419d-bcf7-41d2-8a1d-f4f7973ad65f
     type: regular
     task:
-      id: 78d6647e-a93e-4443-86c8-f59b2515954a
+      id: 1d1c419d-bcf7-41d2-8a1d-f4f7973ad65f
       version: -1
       name: Print to War Room
       description: Prints text to war room (Markdown supported)
@@ -800,10 +795,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 1a5666ad-568c-47cd-865e-9f278d0519d5
+    taskid: 08ba4842-df74-4474-892d-438718a96e21
     type: regular
     task:
-      id: 1a5666ad-568c-47cd-865e-9f278d0519d5
+      id: 08ba4842-df74-4474-892d-438718a96e21
       version: -1
       name: AddEvidence
       description: |
@@ -926,13 +921,14 @@ inputs:
   description: Name of the archive file. For example, archive_filename could be an
     event ID. To keep archive filename unique, value of epoch seconds at the time
     of execution of the command is appended to this filename argument. For example
-    - if the event id is someid, then archive_filename is someid-<epochtime>.
+    - if the event id is someid, then archive_filename is someid-epochtime.
   playbookInputQuery:
 - key: delete_archive
   value: {}
   required: true
-  description: 'Delete archived file 0: Don''t delete archived file. 1: Delete archived
-    file. By default archived files on EndaceProbe won''t be deleted'
+  description: 'false/true. if set to false archived file created by this playbook
+    is retained on EndaceProbe. Value of true deletes the archived file. Once deleted
+    this archived file is not available for future investigation. '
   playbookInputQuery:
 - key: download_threshold
   value: {}
@@ -953,4 +949,4 @@ outputs:
   type: string
 fromversion: 5.0.0
 tests:
-- No tests
+- No tests (auto formatted)

@@ -151,7 +151,6 @@ class EndaceWebSession(object):
 
     @staticmethod
     def fetch_csrf_token(input_text, pattern):
-        import re
         """
         Fetch CSRF Token from the given input html tag by applying the pattern passed
         :param input_text:

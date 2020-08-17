@@ -23,17 +23,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Endace
 
 ### Scripts
+* IsGreaterThan
+* IsTrue
+* Set
 * AreValuesEqual
 * Print
 * AddEvidence
-* IsGreaterThan
-* Set
 
 ### Commands
-* endace-get-archive-status
-* endace-create-search
 * endace-create-archive
+* endace-create-search
 * endace-delete-archived-file
+* endace-get-archive-status
 * endace-download-pcap
 
 ## Playbook Inputs
@@ -51,8 +52,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | src_port_list | List of comma delimited Source Port addresses to search with a maximum of 10 Port addresses per search. |  | Optional |
 | dest_port_list | List of comma delimited Destination Port addresses to search with a maximum of 10 Port addresses per search. |  | Optional |
 | protocol | IANA defined IP Protocol Name or Number. For example \- either use TCP or tcp or 6 for tcp protocol |  | Optional |
-| archive_filename | Name of the archive file. For example, archive\_filename could be an event ID. To keep archive filename unique, value of epoch seconds at the time of execution of the command is appended to this filename argument. For example \- if the event id is someid, then archive\_filename is someid\-&lt;epochtime&gt;. |  | Required |
-| delete_archive | Delete archived file 0: Don't delete archived file. 1: Delete archived file. By default archived files on EndaceProbe won't be deleted |  | Required |
+| archive_filename | Name of the archive file. For example, archive\_filename could be an event ID. To keep archive filename unique, value of epoch seconds at the time of execution of the command is appended to this filename argument. For example \- if the event id is someid, then archive\_filename is someid\-epochtime. |  | Required |
+| delete_archive | false/true. if set to false archived file created by this playbook is retained on EndaceProbe. Value of true deletes the archived file. Once deleted this archived file is not available for future investigation.  |  | Required |
 | download_threshold | PCAP file download size limit in MegaBytes. For example for 10MB, value is 10. Minimum value is 1\(MB\). |  | Required |
 
 ## Playbook Outputs
@@ -66,4 +67,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Endace Search Archive Download PCAP v2](https://raw.githubusercontent.com/demisto/content/6076f09ff5093102f383da8c11dfce0b12331d82/Packs/Endace/doc_imgs/playbook_Endace_Search_Archive_Download_PCAP_v2.png)
+![Endace Search Archive Download PCAP v2](https://raw.githubusercontent.com/demisto/content/495a2da87de9d6a64d87d48876f2033139431197/Packs/Endace/doc_imgs/playbook_Endace_Search_Archive_Download_PCAP_v2.png)

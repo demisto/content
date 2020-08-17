@@ -3,8 +3,10 @@ commonfields:
   id: Endace
   version: -1
 configuration:
-- additionalinfo: FQDN/IP address of EndaceProbe or Endace Investigation Manager
-  display: EndaceProbe URL (e.g. https://<fqdn/ip[:port]>)
+- additionalinfo: 'FQDN/IP address of EndaceProbe or Endace Investigation Manager.
+    Port is the https port configured on EndaceProbe. Example: https://ep.example.com
+    or https://ep.example.com:3443'
+  display: EndaceProbe URL (e.g. https://<fqdn/ip>[:port])
   name: applianceurl
   required: true
   type: 0
@@ -47,7 +49,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: UTC EndTime in ISO 8601 format  as in 2020-04-08T15:46:30
+      description: UTC EndTime in ISO 8601 format as in 2020-04-08T15:46:30
       isArray: false
       name: end
       required: false
@@ -205,13 +207,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: UTC Start Time in ISO 8601 format  as in 2020-04-08T15:46:30
+      description: UTC Start Time in ISO 8601 format as in 2020-04-08T15:46:30
       isArray: false
       name: start
       required: false
       secret: false
     - default: false
-      description: UTC End Time in ISO 8601 format  as in 2020-04-08T15:46:30
+      description: UTC End Time in ISO 8601 format as in 2020-04-08T15:46:30
       isArray: false
       name: end
       required: false
@@ -299,7 +301,7 @@ script:
       description: Name of the archive file. For example, archive_filename could be
         an event ID. To keep archive filename unique, value of epoch seconds at the
         time of execution of the command is appended to this filename argument. For
-        example - if the event id is 123456789, then archive_filename is 123456789-<epochtime>.
+        example - if the event id is 123456789, then archive_filename is 123456789-epochtime.
       isArray: false
       name: archive_filename
       required: true
@@ -442,7 +444,7 @@ script:
     - contextPath: Endace.ArchivedFile.Delete.Error
       description: Delete Error
       type: String
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: false
   longRunning: false
