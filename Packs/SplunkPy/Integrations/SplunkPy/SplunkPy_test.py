@@ -157,6 +157,12 @@ POSITIVE = {
 }
 
 
+RAW_JSON = '{"Test": "success"}'
+
+
+RAW_JSON_OUTPUT = {"Test": "success"}
+
+
 def test_raw_to_dict():
     actual_raw = DICT_RAW_RESPONSE
     response = splunk.rawToDict(actual_raw)
@@ -174,6 +180,7 @@ def test_raw_to_dict():
     assert empty == {}
     assert URL_TESTING_OUT == url_test
     assert POSITIVE == character_check
+    assert splunk.rawToDict(RAW_JSON) == RAW_JSON_OUTPUT
 
 
 data_test_replace_keys = [

@@ -76,27 +76,30 @@ def get_current_splunk_time(splunk_service):
 
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
-    if 'message' in raw:
-        raw = raw.replace('"', '').strip('{').strip('}')
-        key_val_arr = raw.split(",")
-        for key_val in key_val_arr:
-            single_key_val = key_val.split(":")
-            if len(single_key_val) > 1:
-                val = single_key_val[1]
-                key = single_key_val[0].strip()
+    try:
+        result = json.loads(raw)
+    except ValueError:
+        if 'message' in raw:
+            raw = raw.replace('"', '').strip('{').strip('}')
+            key_val_arr = raw.split(",")
+            for key_val in key_val_arr:
+                single_key_val = key_val.split(":")
+                if len(single_key_val) > 1:
+                    val = single_key_val[1]
+                    key = single_key_val[0].strip()
 
-                if key in result.keys():
-                    result[key] = result[key] + "," + val
-                else:
-                    result[key] = val
+                    if key in result.keys():
+                        result[key] = result[key] + "," + val
+                    else:
+                        result[key] = val
 
-    else:
-        raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
-        for key_val in raw_response:
-            key_value = key_val.replace('"', '').strip()
-            if '=' in key_value:
-                key_and_val = key_value.split('=', 1)
-                result[key_and_val[0]] = key_and_val[1]
+        else:
+            raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
+            for key_val in raw_response:
+                key_value = key_val.replace('"', '').strip()
+                if '=' in key_value:
+                    key_and_val = key_value.split('=', 1)
+                    result[key_and_val[0]] = key_and_val[1]
 
     if REPLACE_FLAG:
         result = replace_keys(result)
