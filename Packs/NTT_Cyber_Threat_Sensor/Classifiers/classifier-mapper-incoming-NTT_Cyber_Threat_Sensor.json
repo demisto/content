@@ -18,7 +18,7 @@
                     },
                     "simple": ""
                 },
-                "GraphPlot": {
+                "Graph Plot": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -47,7 +47,7 @@
                     },
                     "simple": ""
                 },
-                "faeredesc": {
+                "FAERE Description": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -82,7 +82,7 @@
                 },
                 "shortdesc": {
                     "complex": null,
-                    "simple": "faeredesc"
+                    "simple": "FAERE Description"
                 },
                 "sourceBrand": {
                     "complex": null,
