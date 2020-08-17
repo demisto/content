@@ -71,19 +71,23 @@ def override_make_request(self, method, uri, body, headers):
 # Utility Methods
 
 def create_api_call():
-    if USE_SSL:
-        client = duo_client.Admin(
-            ikey=INTEGRATION_KEY,
-            skey=SECRET_KEY,
-            host=HOST,
-        )
-    else:
-        client = duo_client.Admin(
-            ikey=INTEGRATION_KEY,
-            skey=SECRET_KEY,
-            host=HOST,
-            ca_certs='DISABLE'
-        )
+    try:
+        if USE_SSL:
+            client = duo_client.Admin(
+                ikey=INTEGRATION_KEY,
+                skey=SECRET_KEY,
+                host=HOST,
+            )
+        else:
+            client = duo_client.Admin(
+                ikey=INTEGRATION_KEY,
+                skey=SECRET_KEY,
+                host=HOST,
+                ca_certs='DISABLE'
+            )
+    except Exception as e:
+        demisto.error("Error creating duo admin client: {}".format(e))
+
     try:
         client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body, headers)
 
@@ -195,12 +199,15 @@ def test_instance():
                 demisto.results('Invalid secret key in request credentials')
 
             else:
+                demisto.results("Error!!!!!!!!! {}".format(e))
                 demisto.results(e.__getattribute__('data')['message'])
 
         elif hasattr(e, 'strerror'):
+            demisto.results("Error222222222222!!!!!!!!! {}".format(e))
             demisto.results(e.__getattribute__('strerror'))
 
         else:
+            demisto.results("Error333333333333!!!!!!!!! {}".format(e))
             demisto.results('Unknown error: ' + str(e))
 
 
