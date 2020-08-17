@@ -2294,7 +2294,7 @@ script:
       description: Retrieve entries that were created after lastUpdate.
       isArray: false
       name: lastUpdate
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Get remote data from a remote incident. This method does not update

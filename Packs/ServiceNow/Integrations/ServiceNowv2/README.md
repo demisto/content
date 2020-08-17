@@ -41,6 +41,11 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 | timestamp_field | Timestamp field to filter by \(e.g., \`opened\_at\`\) This is how the filter is applied to the query: "ORDERBYopened\_at^opened\_at&gt;\[Last Run\]". To prevent duplicate incidents, this field is mandatory for fetching incidents. | False |
 | incidentType | Incident type | False |
 | get_attachments | Get incident attachments | False |
+| proxy | Use system proxy settings | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| entry_tags | Entry Tags | False |
+| close_incident | Close XSOAR Incident | False |
+| close_ticket | Close ServiceNow Ticket | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Fetch Incidents
@@ -1821,6 +1826,45 @@ Documents a route to a queue. Requires an installation of the Advanced Work Assi
 | ServiceNow.WorkItem.DocumentID | String | Unique ID of the document to be routed to the queue. | 
 | ServiceNow.WorkItem.QueueID | String | Unique ID of the queue on which to route a document. | 
 | ServiceNow.WorkItem.DisplayName | String | Name of the document to be routed by this work item, for example: case record. | 
+
+
+### get-mapping-fields
+***
+Returns the list of fields for an incident type. This command is for debugging purposes.
+
+
+#### Base Command
+
+`get-mapping-fields`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+
+
+### get-remote-data
+***
+Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+
+
+#### Base Command
+
+`get-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ticket ID. | Required | 
+| lastUpdate | Retrieve entries that were created after lastUpdate. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
 
 
 
