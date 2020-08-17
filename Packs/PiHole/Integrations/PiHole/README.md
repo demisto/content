@@ -1,5 +1,5 @@
 Pi-hole is a network-level advertisement and Internet tracker blocking application which acts as a DNS sinkhole and optionally a DHCP server, intended for use on a private network.
-This integration was integrated and tested with version xx of PiHole
+This integration was integrated and tested with version FTL5.2 of PiHole
 ## Configure PiHole on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -326,11 +326,6 @@ Data needed for generating the Top Clients list
                 "192.168.0.1": 497,
                 "192.168.0.2": 5964,
                 "192.168.0.3": 338,
-                "192.168.0.4": 656,
-                "192.168.0.5": 4083,
-                "192.168.0.6": 2769,
-                "192.168.0.7": 1047,
-                "192.168.0.8": 1566,
                 "mymachine.local|192.168.0.20": 1627,
                 "localhost.localdomain|127.0.0.1": 336
             }
@@ -344,7 +339,7 @@ Data needed for generating the Top Clients list
 >### Results
 >|top_sources|
 >|---|
->| 192.168.0.2: 5964<br/>192.168.0.5: 4083<br/>192.168.0.6: 2769<br/>mymachine.local\|192.168.0.20: 1627<br/>192.168.0.8: 1566<br/>192.168.0.7: 1047<br/>192.168.0.4: 656<br/>192.168.0.1: 497<br/>192.168.0.3: 338<br/>localhost.localdomain\|127.0.0.1: 336 |
+>| 192.168.0.2: 5964<br/>mymachine.local\|192.168.0.20: 1627<br/>192.168.0.1: 497<br/>192.168.0.3: 338<br/>localhost.localdomain\|127.0.0.1: 336 |
 
 
 ### pihole-get-forward-destinations
@@ -377,7 +372,7 @@ Shows number of queries that have been forwarded and the target
     "PiHole": {
         "ForwardDestinations": {
             "forward_destinations": {
-                "1.0.0.3": 24.77,
+                "1.1.1.2": 24.77,
                 "1.1.1.3": 25.42,
                 "blocklist|blocklist": 2.39,
                 "cache|cache": 47.48
