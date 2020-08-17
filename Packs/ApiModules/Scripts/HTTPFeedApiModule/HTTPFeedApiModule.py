@@ -20,7 +20,8 @@ class Client(BaseClient):
     def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, encoding: str = None, indicator_type: str = '',
                  indicator: str = '', fields: str = '{}', feed_url_to_config: dict = None, polling_timeout: int = 20,
-                 headers: dict = None, proxy: bool = False, custom_fields_mapping: dict = None, **kwargs):
+                 headers: dict = None, proxy: bool = False, custom_fields_mapping: dict = None, tlp_color: str = 'RED',
+                 **kwargs):
         """Implements class for miners of plain text feeds over HTTP.
         **Config parameters**
         :param: url: URL of the feed.
@@ -94,6 +95,7 @@ class Client(BaseClient):
             whitespace is used as indicator::
                 url: https://ransomwaretracker.abuse.ch/downloads/CW_C2_URLBL.txt
                 ignore_regex: '^#'
+        :param tlp_color: Traffic Light Protocol color.
         """
         super().__init__(base_url=url, verify=not insecure, proxy=proxy)
         try:
@@ -108,6 +110,7 @@ class Client(BaseClient):
             credentials = {}
         self.username = None
         self.password = None
+        self.tlp_color = tlp_color
 
         username = credentials.get('identifier', '')
         if username.startswith('_header:'):
@@ -269,6 +272,7 @@ def get_indicator_fields(line, url, feed_tags: list, client: Client):
     :param url: The feed URL
     :param client: The client
     :param feed_tags: The indicator tags.
+    :param tlp_color: Traffic Light Protocol color.
     :return: The indicator
     """
     attributes = None
@@ -325,6 +329,7 @@ def get_indicator_fields(line, url, feed_tags: list, client: Client):
         attributes['value'] = value = extracted_indicator
         attributes['type'] = feed_config.get('indicator_type', client.indicator_type)
         attributes['tags'] = feed_tags
+        attributes['trafficlightprotocol'] = client.tlp_color
     return attributes, value
 
 
@@ -432,6 +437,7 @@ def feed_main(feed_name, params=None, prefix=''):
             args['feed_name'] = feed_name
             if feed_tags:
                 args['feedTags'] = feed_tags
+            args['tlp_color'] = params.get('tlp_color')
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:

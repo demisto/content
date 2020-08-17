@@ -13,6 +13,6 @@ tags:
 - server
 timeout: 0s
 type: python
-dockerimage: demisto/jmespath:1.0.0.6980
+dockerimage: demisto/jmespath:1.0.0.10664
 dependson: {
   }

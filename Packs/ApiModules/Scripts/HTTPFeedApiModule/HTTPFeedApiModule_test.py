@@ -221,6 +221,7 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
             'asndrop_country': 'US',
             'asndrop_org': 'LAKSH CYBERSECURITY AND DEFENSE LLC',
             'tags': tags.split(','),
+            'trafficlightprotocol': 'RED',
             'type': indicator_type,
             'value': 'AS397539'
         },

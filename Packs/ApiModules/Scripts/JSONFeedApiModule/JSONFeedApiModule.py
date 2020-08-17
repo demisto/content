@@ -13,7 +13,8 @@ class Client:
     def __init__(self, url: str = '', credentials: dict = None,
                  feed_name_to_config: Dict[str, dict] = None, source_name: str = 'JSON',
                  extractor: str = '', indicator: str = 'indicator',
-                 insecure: bool = False, cert_file: str = None, key_file: str = None, headers: dict = None, **_):
+                 insecure: bool = False, cert_file: str = None, key_file: str = None, headers: dict = None,
+                 tlp_color: str = 'RED', **_):
         """
         Implements class for miners of JSON feeds over http/https.
         :param url: URL of the feed.
@@ -30,6 +31,8 @@ class Client:
         :param: headers: Header parameters are optional to specify a user-agent or an api-token
         Example: headers = {'user-agent': 'my-app/0.0.1'} or Authorization: Bearer
         (curl -H "Authorization: Bearer " "https://api-url.com/api/v1/iocs?first_seen_since=2016-1-1")
+        :param tlp_color: Traffic Light Protocol color.
+
          Example:
             Example feed config:
             'AMAZON': {
@@ -70,6 +73,7 @@ class Client:
                     self.auth = (username, password)
 
         self.cert = (cert_file, key_file) if cert_file and key_file else None
+        self.tlp_color = tlp_color
 
     def build_iterator(self, **kwargs) -> List:
         results = []
@@ -100,7 +104,7 @@ def test_module(client, params) -> str:
     return 'ok'
 
 
-def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool, **kwargs)\
+def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool, **kwargs) \
         -> Union[Dict, List[Dict]]:
     """
     Fetches the indicators from client.
@@ -125,7 +129,12 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                 if not current_indicator_type:
                     continue
 
-                indicator = {'value': indicator_value, 'type': current_indicator_type, 'fields': {'tags': feedTags}}
+                indicator = {'value': indicator_value, 'type': current_indicator_type,
+                             'fields': {
+                                 'tags': feedTags,
+                                 'trafficlightprotocol': client.tlp_color
+                             }
+                             }
 
                 attributes = {'source_name': service_name, 'value': indicator_value,
                               'type': current_indicator_type}

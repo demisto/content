@@ -20,7 +20,7 @@ class Client(BaseClient):
                  insecure: bool = False, credentials: dict = None, ignore_regex: str = None, encoding: str = 'latin-1',
                  delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
-                 feedTags: Optional[str] = None, **kwargs):
+                 feedTags: Optional[str] = None, tlp_color: str = 'RED', **kwargs):
         """
         :param url: URL of the feed.
         :param feed_url_to_config: for each URL, a configuration of the feed that contains
@@ -61,8 +61,10 @@ class Client(BaseClient):
             <https://docs.python.org/2/library/csv.html#dialects-and-formatting-parameters>`. Default False
         :param polling_timeout: timeout of the polling request in seconds. Default: 20
         :param proxy: Sets whether use proxy when sending requests
+        :param tlp_color: Traffic Light Protocol color.
         """
         self.tags: List[str] = argToList(feedTags)
+        self.tlp_color = tlp_color
         if not credentials:
             credentials = {}
 
@@ -272,6 +274,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                         'fields': create_fields_mapping(raw_json, mapping) if mapping else {}
                     }
                     indicator['fields']['tags'] = client.tags
+                    indicator['fields']['trafficlightprotocol'] = client.tlp_color
                     indicators.append(indicator)
     return indicators
 

@@ -72,6 +72,7 @@ class Taxii2FeedClient:
         password: Optional[str] = None,
         field_map: Optional[dict] = None,
         tags: Optional[list] = None,
+        tlp_color: str = 'RED',
         limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
     ):
         """
@@ -86,6 +87,7 @@ class Taxii2FeedClient:
         :param field_map: map used to create fields entry ({field_name: field_value})
         :param tags: custom tags to be added to the created indicator
         :param limit_per_request: Limit the objects requested per poll request
+        :param tlp_color: Traffic Light Protocol color
         """
         self._conn = None
         self.server = None
@@ -121,6 +123,7 @@ class Taxii2FeedClient:
 
         self.field_map = field_map if field_map else {}
         self.tags = tags if tags else []
+        self.tlp_color = tlp_color
         self.indicator_regexes = [
             re.compile(INDICATOR_EQUALS_VAL_PATTERN),
             re.compile(HASHES_EQUALS_VAL_PATTERN),
@@ -481,6 +484,7 @@ class Taxii2FeedClient:
                 tags.append(field_tag)
 
         fields["tags"] = tags
+        fields["trafficlightprotocol"] = self.tlp_color
         indicator["fields"] = fields
         return indicator
 
