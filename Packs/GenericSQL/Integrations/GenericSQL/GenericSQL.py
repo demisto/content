@@ -107,7 +107,8 @@ class Client:
                 cache[cache_key] = engine
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
-            engine = sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection, poolclass=sqlalchemy.pool.NullPool)
+            engine = sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection,
+                                              poolclass=sqlalchemy.pool.NullPool)
         return engine.connect()
 
     def sql_query_execute_request(self, sql_query: str, bind_vars: Any) -> Tuple[Dict, List]:
@@ -212,22 +213,26 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
 
 # list of loggers we should set to debug when running in debug_mode
 # taken from: https://docs.sqlalchemy.org/en/13/core/engines.html#configuring-logging
-DEBUG_LOGGERS = [
+SQL_LOGGERS = [
     'sqlalchemy.engine',
     'sqlalchemy.pool',
     'sqlalchemy.dialects',
+    'py.warnings',  # SQLAlchemy issues many warnings such as from Oracle Dialect
 ]
 
 
 def main():
     sql_loggers: list = []  # saves the debug loggers
     try:
-        if is_debug_mode():
-            for lgr_name in DEBUG_LOGGERS:
-                lgr = logging.getLogger(lgr_name)
-                sql_loggers.append(lgr)
-                demisto.debug(f'setting DEBUG for logger: {repr(lgr)}')
-                lgr.setLevel(logging.DEBUG)
+        logging.captureWarnings(True)
+        for lgr_name in SQL_LOGGERS:
+            lgr = logging.getLogger(lgr_name)
+            level = logging.ERROR
+            if is_debug_mode():
+                level = logging.DEBUG
+                sql_loggers.append(lgr)  # in debug mode we save the logger to revert back
+                demisto.debug(f'setting {logging.getLevelName(level)} for logger: {repr(lgr)}')
+            lgr.setLevel(level)
         params = demisto.params()
         dialect = params.get('dialect')
         port = params.get('port')
@@ -251,6 +256,7 @@ def main():
         commands: Dict[str, Callable[[Client, Dict[str, str], str], Tuple[str, Dict[Any, Any], List[Any]]]] = {
             'test-module': test_module,
             'query': sql_query_execute,
+            'pgsql-query': sql_query_execute,
             'sql-command': sql_query_execute
         }
         if command in commands:
@@ -267,8 +273,8 @@ def main():
             demisto.error(f'Failed clossing connection: {str(ex)}')
         if sql_loggers:
             for lgr in sql_loggers:
-                demisto.debug(f'setting WARN for logger: {repr(lgr)}')
-                lgr.setLevel(logging.WARN)
+                demisto.debug(f'setting back ERROR for logger: {repr(lgr)}')
+                lgr.setLevel(logging.ERROR)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

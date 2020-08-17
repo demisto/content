@@ -15,9 +15,9 @@ A few sentences describing the overall goals of the pull request's commits.
 Paste here any images that will help the reviewer
 
 ## Minimum version of Demisto
-- [ ] 4.5.0
 - [ ] 5.0.0
 - [ ] 5.5.0
+- [ ] 6.0.0
 
 ## Does it break backward compatibility?
    - [ ] Yes

@@ -1,18 +1,21 @@
 {
-  "name": "Expanse",
-  "description": "The Expanse App for Demisto leverages the Expander API to retrieve network exposures and create incidents in Demisto.",
-  "support": "partner",
-  "currentVersion": "1.0.1",
-  "author": "Expanse",
-  "url": "https://www.expanse.co/",
-  "email": "help@expanseinc.com",
-  "created": "2020-03-09T16:04:45Z",
-  "categories": [
-    "Data Enrichment & Threat Intelligence"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": [
-    "Expanse"
-  ]
+    "name": "Expanse",
+    "description": "The Expanse App for Demisto leverages the Expander API to retrieve network exposures and create incidents in Demisto.",
+    "support": "partner",
+    "currentVersion": "1.1.0",
+    "author": "Expanse",
+    "url": "https://www.expanse.co/",
+    "email": "help@expanseinc.com",
+    "created": "2020-03-09T16:04:45Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Expanse"
+    ],
+    "githubUser": [
+        "andrew-expanse"
+    ]
 }

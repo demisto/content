@@ -3,7 +3,7 @@ version: -1
 name: DeDup incidents
 fromversion: "3.5.0"
 description: |
-  Check for duplicate incidents for the current incident, and close it if any duplicate has found.
+  DEPRECATED. Check for duplicate incidents for the current incident, and close it if any duplicate has found.
 starttaskid: "0"
 tasks:
   "0":
@@ -196,4 +196,4 @@ outputs:
 - contextPath: isSimilarIncidentFound
   description: Is similar incident found? (true\false)
 tests:
-  - test_similar_incidents
+  - No tests

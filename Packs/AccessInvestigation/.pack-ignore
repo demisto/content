@@ -1,2 +1,5 @@
 [file:Access_Investigation_-_Generic.yml]
 ignore=BA101
+
+[file:AccessInvestigation]
+ignore=PA116

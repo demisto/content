@@ -1,5 +1,5 @@
 Use the LockPath KeyLight integration to manage GRC tickets in the Keylight platform.
-This integration was integrated and tested with version xx of Lockpath KeyLight v2
+This integration was integrated and tested with version 5.5.018.10 of Lockpath KeyLight.
 ## Configure Lockpath KeyLight v2 on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

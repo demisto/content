@@ -58,7 +58,7 @@ def http_request(method, url_suffix, params=None):
             else:
                 error_str = 'Request failed, status: ' + str(res.status_code) + ', details: ' + res.text
             return_error(error_str)
-    except Exception, e:
+    except Exception as e:
         LOG(e.message)
         return_error(e.message)
     return res.text
@@ -1756,7 +1756,7 @@ try:
     elif demisto.command() == 'recorded-future-get-alerts':
         get_alerts_command()
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     return_error(e.message)
