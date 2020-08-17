@@ -297,7 +297,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "faeredesc",
+                                "fieldId": "FAERE Description",
                                 "height": 106,
                                 "id": "c8e1f500-e092-11ea-8a9e-8301457fb7b1",
                                 "index": 0,
