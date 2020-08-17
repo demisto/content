@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Analytics & SIEM
 commonfields:
   id: Query.AI
   version: -1
