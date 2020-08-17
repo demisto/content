@@ -1,5 +1,3 @@
-args:
-- name: test
 comment: Uses the ssh integration to grab the host server logs
 commonfields:
   id: ServerLogs
