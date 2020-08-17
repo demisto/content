@@ -199,7 +199,6 @@ def test_instance():
                 demisto.results('Invalid secret key in request credentials')
 
             else:
-                demisto.results("Error!!!!!!!!! {}".format(e))
                 demisto.results(e.__getattribute__('data')['message'])
 
         elif hasattr(e, 'strerror'):
@@ -207,7 +206,6 @@ def test_instance():
             demisto.results(e.__getattribute__('strerror'))
 
         else:
-            demisto.results("Error333333333333!!!!!!!!! {}".format(e))
             demisto.results('Unknown error: ' + str(e))
 
 
@@ -341,6 +339,7 @@ def delete_u2f_token(token_id):
 try:
     admin_api = create_api_call()
     set_proxy()
+    demisto.results("proxy is set to: {}".format(USE_PROXY))
 
     if demisto.command() == 'test-module':
         test_instance()
