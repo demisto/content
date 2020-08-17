@@ -17,27 +17,23 @@ configuration:
   required: false
 - display: Username/API Key
   name: Username
-  defaultvalue: ""
   type: 0
   required: true
 - display: API Secret
   name: APIKey
-  defaultvalue: ""
   type: 4
   required: true
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Tags to signify this is a malicious domain
   name: tags
-  defaultvalue: "malware,blacklist,phishing,typo-squatting"
+  defaultvalue: malware,blacklist,phishing,typo-squatting
   type: 0
   required: true
 script:
@@ -207,8 +203,6 @@ script:
             return {Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md};
         case 'pt-enrichment':
             var md = '## PassiveTotal Metadata Enrichment for: ' + args.query + '\n';
-            md += objToMd(jsonRes);
-            var context = {};
             var mal = false;
             if (jsonRes.classification === 'malicious') {
                 mal = true;
@@ -223,6 +217,17 @@ script:
                     }
                 }
             }
+            jsonKeys = Object.keys(jsonRes);
+            if (jsonKeys.length > 20) {
+                limit = 20;
+            } else {
+                limit = jsonKeys.length;
+            }
+            var jsonMd = {};
+            for (var i=0; i<limit; i++) {
+                    jsonMd[jsonKeys[i]] = jsonRes[jsonKeys[i]];
+            }
+            md += objToMd(jsonMd);
             if (mal) {
                 if (jsonRes.queryType === 'domain') {
                     addMalicious(context, outputPaths.domain, {
@@ -249,7 +254,8 @@ script:
                     };
                 }
             }
-            var fullResult = [{Type: entryTypes.note, Contents: jsonRes, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
+            var fullResult = [{Type: entryTypes.note, Contents: jsonMd, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context}];
+
             if (jsonRes.queryType === 'ip' && jsonRes.latitude && jsonRes.longitude) {
                 fullResult.push({Type: entryTypes.map, Contents: {lat: jsonRes.latitude, lng: jsonRes.longitude}, ContentsFormat: formats.json});
             }
@@ -520,13 +526,9 @@ script:
       default: true
       description: The data to get malware for
     - name: samples
-      required: false
-      default: false
       description: The number of malware samples to return
       defaultValue: "10"
     - name: threshold
-      required: false
-      default: false
       description: Above this number of samples we will consider this to be malicious
       defaultValue: "10"
     outputs:
@@ -568,13 +570,13 @@ script:
       default: true
       description: The URL to check reputation for
     - name: samples
+      deprecated: true
       description: The number of malware samples to return
       defaultValue: "10"
-      deprecated: true
     - name: threshold
+      deprecated: true
       description: Above this number of samples we will consider this to be malicious
       defaultValue: "10"
-      deprecated: true
     outputs:
     - contextPath: IP.Address
       description: IP address
@@ -665,7 +667,7 @@ script:
     - name: compact_record
       description: Compress the WHOIS record into a deduplicated format - true or
         false
-      defaultValue: true
+      defaultValue: "true"
     outputs:
     - contextPath: passivetotal.whois.email
       description: Contact email for the queried domain
@@ -703,7 +705,6 @@ script:
       description: Query value to use in your request
     - name: direction
       required: true
-      default: false
       description: Relationship direction - parents, children.
       defaultValue: children
     description: Get host pairs based on dependent requests observed in web crawls
