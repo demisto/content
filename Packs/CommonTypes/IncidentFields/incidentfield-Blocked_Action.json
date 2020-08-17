@@ -3,7 +3,8 @@
 	"associatedTypes": [
 		"Traps",
 		"Malware",
-		"Brute Force"
+		"Brute Force",
+		"Trend Micro CAS Event"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

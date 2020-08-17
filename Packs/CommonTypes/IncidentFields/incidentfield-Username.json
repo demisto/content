@@ -3,7 +3,8 @@
 	"associatedToAll": false,
 	"associatedTypes": [
 		"Impossible Traveler",
-		"Brute Force"
+		"Brute Force",
+		"Trend Micro CAS Event"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
