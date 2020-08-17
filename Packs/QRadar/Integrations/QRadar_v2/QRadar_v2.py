@@ -9,7 +9,7 @@ import traceback
 from urllib import parse
 from copy import deepcopy
 from queue import Queue, Empty
-from threading import Thread, Lock
+from threading import Thread, RLock
 
 import requests
 from requests.exceptions import HTTPError, ConnectionError
@@ -145,7 +145,7 @@ class AtomicCounter(object):
     def __init__(self, initial=0):
         """Initialize a new atomic counter to given initial value"""
         self._value = initial
-        self._lock = Lock()
+        self._lock = RLock()
 
     def increment(self, num=1):
         """Atomically increment the counter by num and return the new value"""
@@ -762,7 +762,7 @@ def perform_offense_enrichment(
             )
             raw_search_results = client.get_search_results(search_id)
             offense["events"] = raw_search_results.get("events", [])
-    print_debug_msg(f"(4) Enriched offense: {offense['id']}. Full Details: {offense}")
+    print_debug_msg(f"(4) Enriched offense: {offense['id']} successfully.")
     enriched_offenses_queue.put(offense)
     counter.increment()
 
@@ -1553,8 +1553,6 @@ def delete_reference_set_value_command(
 ):
     if date_value == "True":
         value = date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
-    else:
-        value = value
     raw_ref = client.delete_reference_set_value(ref_name, value)
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
     enrich_reference_set_result(ref)

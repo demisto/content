@@ -1,6 +1,5 @@
 import pytest
 import demistomock as demisto
-import copy
 
 
 @pytest.fixture(autouse=True)
