@@ -1,0 +1,215 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 9205d663-ae43-4b98-8d92-06f5022a2786
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Demo Playbook
+id: Integration for AWX Demo Playbook
+inputs: []
+name: Integration for AWX Demo Playbook
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 710d7849-a1a0-4c68-838e-fa1216918e7f
+      iscommand: false
+      name: Run AWX Playbook?
+      version: -1
+      description: ''
+    taskid: 710d7849-a1a0-4c68-838e-fa1216918e7f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asynchronous: {}
+      extra_vars: {}
+      template_id:
+        simple: ${IntegrationForAWX.query.job_templates.results.[0].id}
+      timeout: {}
+      type:
+        simple: job
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: IntegrationForAWX
+      description: Run a Job or Workflow template
+      id: 0ff30368-eb7a-4296-88ae-50bb77ed5b93
+      iscommand: true
+      name: awx-launch-template
+      script: IntegrationForAWX|||awx-launch-template
+      type: regular
+      version: -1
+    taskid: 0ff30368-eb7a-4296-88ae-50bb77ed5b93
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 660
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      path:
+        simple: job_templates
+      query:
+        simple: '{"name": "xSoar Demo - Fix"}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: IntegrationForAWX
+      description: Query the AWX API
+      id: fc599351-e751-4096-8467-a4cb3762ecb0
+      iscommand: true
+      name: Get Job Template
+      script: IntegrationForAWX|||awx-query
+      type: regular
+      version: -1
+    taskid: fc599351-e751-4096-8467-a4cb3762ecb0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 490
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      "No":
+      - "8"
+      "Yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9dcf3025-dc69-409b-8797-3dc06b372e16
+      iscommand: false
+      name: Run AWX Job?
+      type: condition
+      version: -1
+    taskid: 9dcf3025-dc69-409b-8797-3dc06b372e16
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b802de0c-1b1b-49f2-896f-1dd9fe434c8f
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: b802de0c-1b1b-49f2-896f-1dd9fe434c8f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 850
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Review the incident to determine if the account activity is malicious.\n\
+        \nIf malicious, consider the following:\n* Quarantine the account/ endpoint\
+        \ \n* Revoke the account password\n* Query the account/ IPs logs in the SIEM\n\
+        * Block the external IPs in the firewall/ proxy\n* Check the account's privileges\
+        \ and change if needed"
+      id: 17879f15-6328-4e3a-8521-af9b33cc092a
+      iscommand: false
+      name: Manually remediate  the incident
+      type: regular
+      version: -1
+    taskid: 17879f15-6328-4e3a-8521-af9b33cc092a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 865,
+        "width": 890,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

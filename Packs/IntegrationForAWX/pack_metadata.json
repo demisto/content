@@ -1,0 +1,14 @@
+{
+    "name": "IntegrationForAWX",
+    "description": "Integration for AWX\n - Create Incidents on jobs that have changes in them\n - Run a Job Template\n - Run an ad-hoc module against a server\n - Query the API to get additional data from the AWX system",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Daniel T. Prince",
+    "url": "",
+    "email": "",
+    "created": "2020-08-18T22:18:38Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

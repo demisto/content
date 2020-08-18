@@ -1,0 +1,139 @@
+category: Utilities
+commonfields:
+  id: IntegrationForAWX
+  version: -1
+configuration:
+- defaultvalue: https://awx.my.example.net
+  display: Server URL (e.g. https://awx.my.example.net:8443)
+  name: url
+  required: true
+  type: 0
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Verify SSL certificate
+  name: ssl_verify
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: Integration for AWX
+display: IntegrationForAWX (Community Contribution)
+name: IntegrationForAWX
+script:
+  commands:
+  - arguments:
+    - description: Job Id use to query
+      name: job_id
+      required: true
+    description: Query the AWX API for the jobs stdout
+    name: awx-stdout
+    outputs:
+    - contextPath: IntegrationForAWX.jobout.result
+      description: Result of the Job
+      type: Unknown
+  - arguments:
+    - description: dictionary use to query
+      name: query
+    - description: path in the api
+      name: path
+      required: true
+    description: Query the AWX API
+    name: awx-query
+    outputs:
+    - contextPath: IntegrationForAWX.query.results
+      description: Result of the query
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: job
+      description: What type of template is this
+      name: type
+      predefined:
+      - job
+      - workflow
+      required: true
+    - description: template id
+      name: template_id
+      required: true
+    - description: additional variables to send with template
+      name: extra_vars
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Async
+      name: asynchronous
+      predefined:
+      - "True"
+      - "False"
+    - default: true
+      defaultValue: "300"
+      description: how long to wait for the playbook to finish
+      name: timeout
+    description: Run a Job or Workflow template
+    name: awx-launch-template
+    outputs:
+    - contextPath: IntegrationForAWX.template.id
+      description: Id of Template Job run
+      type: String
+    - contextPath: IntegrationForAWX.template.type
+      description: Type of Template run
+      type: String
+    - contextPath: IntegrationForAWX.template.status
+      description: Status of Template run
+      type: String
+  - arguments:
+    - description: Id of the Ansible Inventory
+      name: inventory_id
+      required: true
+    - description: Credentials used to log into systems
+      name: credential_id
+      required: true
+    - description: Name of the module to run
+      name: module_name
+      required: true
+    - description: additional variables to send with the module
+      name: module_args
+    - description: Ansible syntax to limit inventory scope
+      name: limit
+      required: true
+    - description: additional variables to send with template
+      name: extra_vars
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Async
+      name: asynchronous
+      predefined:
+      - "True"
+      - "False"
+    - default: true
+      defaultValue: "300"
+      description: how long to wait for the playbook to finish
+      name: timeout
+    description: Run a ad-hoc command through Awx
+    name: awx-launch-adhoc
+    outputs:
+    - contextPath: IntegrationForAWX.adhoc.id
+      description: Id of Template Job run
+      type: String
+    - contextPath: IntegrationForAWX.adhoc.module
+      description: Type of Template run
+      type: String
+    - contextPath: IntegrationForAWX.adhoc.status
+      description: Status of Template run
+      type: String
+  dockerimage: demisto/python3:3.8.5.10455
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
