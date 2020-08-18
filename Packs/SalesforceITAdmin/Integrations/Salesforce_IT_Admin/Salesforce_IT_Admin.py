@@ -1100,6 +1100,9 @@ def main():
 
     # get the service API url
     base_url = params.get('url')
+    # checks for '/' at the end url, if it is not available add it
+    if base_url[-1] != '/':
+        base_url += '/'
 
     client_id = params.get('client_id')
     client_secret = params.get('client_secret')
