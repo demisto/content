@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FeedThreatConnect
+  id: ThreatConnect Feed
   version: -1
 configuration:
 - defaultvalue: https://api.threatconnect.com
