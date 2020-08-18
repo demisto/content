@@ -24,6 +24,38 @@ HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 class Client(BaseClient):
 
+    def __init__(self, params):
+        self._client_id = params.get('client_id')
+        self._client_secret = params.get('client_secret')
+        super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
+                         ok_codes=tuple(), proxy=params.get('proxy', False))
+        self._token = self._generate_token()
+        self._headers = {'Authorization': 'Bearer ' + self._token}
+
+    @staticmethod
+    def _error_handler(error_entry: dict) -> str:
+        errors = error_entry.get("errors", [])
+        return '\n' + '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
+
+    def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
+                     files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
+
+        return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                     json_data=json_data, params=params, data=data, files=files, timeout=timeout,
+                                     ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
+
+    def _generate_token(self) -> str:
+        """Generate an Access token using the user name and password
+        :return: valid token
+        """
+        body = {
+            'client_id': self._client_id,
+            'client_secret': self._client_secret
+        }
+        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
+        return token_res.get('access_token')
+
+
     def list_report(self, url_suffix) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
