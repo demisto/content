@@ -137,4 +137,4 @@ The base URL would be of the [Query.AI Proxy](https://proxy.query.ai:443) . Repl
 
 ## Support
 
-For any other assistance or feedback, feel free to [contact us](support@query.ai).
+For any other assistance or feedback, feel free to [contact us](mailto:support@query.ai).
