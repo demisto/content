@@ -1,10 +1,10 @@
 {
     "name": "QueryAI",
-    "description": "Access your data where it lives.",
+    "description": "Query.AI is a decentralized data access and analysis technology that simplifies security investigations across disparate platforms without data duplication.",
     "support": "developer",
     "currentVersion": "1",
     "author": "Query.AI",
-    "url": "https://github.com/query-ai",
+    "url": "https://www.query.ai",
     "email": "support@query.ai",
     "created": "2020-07-28T20:25:41Z",
     "categories": [
@@ -12,6 +12,8 @@
     ],
     "tags": [
         "Virtual SIEM",
+        "Security Analytics",
+        "Ask question get answer",
         "Threat Hunting",
         "Incident Response",
         "Analyst Assistive-AI"
