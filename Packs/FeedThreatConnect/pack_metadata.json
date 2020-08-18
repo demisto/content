@@ -1,5 +1,5 @@
 {
-    "name": "Feed ThreatConnect",
+    "name": "ThreatConnect Feed",
     "description": "ThreatConnect indicators feed for Demisto TIM.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
