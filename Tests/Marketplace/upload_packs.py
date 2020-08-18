@@ -622,12 +622,16 @@ def print_packs_summary(packs_list):
 
     # when there is no failed packs, add the build summary to the pull request
     successful_packs_table = build_summary_table_md(successful_packs)
-    bucket_path = os.environ['BUCKET_FULL_TARGET_PATH']
+
+    build_num = os.environ['CIRCLE_BUILD_NUM']
+    branch_name = os.environ['CIRCLE_BRANCH']
+
+    bucket_path = f'https://console.cloud.google.com/storage/browser/' \
+                  f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
 
     pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
         f'Uploaded packs:\n{successful_packs_table}\n\n' \
-        f'Browse to the build bucket with this address:\n' \
-        f'https://console.cloud.google.com/storage/browser/{bucket_path}'
+        f'Browse to the build bucket with this address:\n{bucket_path}'
 
     add_pr_comment(pr_comment)
 
