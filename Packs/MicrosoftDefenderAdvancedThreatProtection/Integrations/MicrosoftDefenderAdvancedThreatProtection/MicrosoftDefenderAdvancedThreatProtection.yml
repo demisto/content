@@ -2436,7 +2436,7 @@ script:
     deprecated: false
     description: Creates a file indicator
     execution: false
-    name: microsoft-atp-indicator-create-file
+    name: microsoft-atp-file-indicator-create
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -2646,7 +2646,7 @@ script:
       secret: false
     deprecated: false
     execution: false
-    name: microsoft-atp-indicator-create-network
+    name: microsoft-atp-network-indicator-create
   dockerimage: demisto/crypto:1.0.0.8854
   feed: false
   isfetch: true

@@ -1,5 +1,5 @@
-from typing import Optional, Dict, Tuple, List
-
+from typing import Optional, Dict, Tuple
+from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
 
@@ -556,7 +556,7 @@ class MsClient:
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
     def list_indicators(self, indicator_id: Optional[str] = None) -> Dict:
-        """
+        """Lists indicators. if indicator_id supplied, will get only that indicator.
 
         Args:
             indicator_id: if provided, will get only this specific id.
@@ -564,17 +564,41 @@ class MsClient:
         Returns:
             json of a response.
         """
-        cmd_url = 'beta/security/tiIndicators'
+        base = 'https://graph.microsoft.com'
+        cmd_url = urljoin(base, 'beta/security/tiIndicators')
         if indicator_id is not None:
             cmd_url = urljoin(cmd_url, indicator_id)
         params = {'$filter': 'targetProduct eq \'Microsoft Defender ATP\''}
-        return self.ms_client.http_request('GET', url_suffix=cmd_url, params=params)
+        self.ms_client.scope = 'https://graph.microsoft.com/.default'
+        return self.ms_client.http_request('GET', full_url=cmd_url, params=params, url_suffix=None)
 
-    def create_indicator(self, body) -> Dict:
+    def create_indicator(self, body: Dict) -> Dict:
+        """Creates indicator from the given body.
+
+        Args:
+            body: Body represents an indicator.
+
+        Returns:
+            A response from the API.
+        """
         cmd_url = 'beta/security/tiIndicators'
         return self.ms_client.http_request('POST', cmd_url, json_data=body)
 
-    def update_indicator(self, indicator_id, expiration_date_time, description, severity):
+    def update_indicator(
+            self, indicator_id: str, expiration_date_time: Optional[str],
+            description: Optional[str], severity: Optional[str]
+    ):
+        """Updates a given indicator
+
+        Args:
+            indicator_id: ID of the indicator to update
+            expiration_date_time: Expiration time of the indicator
+            description: A Brief description of the indicator
+            severity: The severity of the indicator
+
+        Returns:
+            A response from the API.
+        """
         cmd_url = 'bet/security/tiIndicators'
         body = assign_params(
             indicator_id=indicator_id,
@@ -1838,7 +1862,7 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
         return 'No indicators found', None, None
 
 
-def get_future_time(expiration_time):
+def get_future_time(expiration_time) -> str:
     start, end = parse_date_range(
         expiration_time
     )
@@ -1846,7 +1870,7 @@ def get_future_time(expiration_time):
     return future_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict):
+def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) -> Dict:
     """Adds required arguments to indicator (arguments that must be in every create call).
 
     Args:
@@ -1948,7 +1972,7 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Op
     return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
 
 
-def create_network_indicator_command(client, args):
+def create_network_indicator_command(client, args) -> Tuple[str, Dict]:
     """
 
     Args:
@@ -2022,8 +2046,7 @@ def update_indicator_command(client: MsClient, args: dict) -> str:
             assert 0 <= severity <= 5, 'The severity argument must be between 0 and 5'
         except ValueError:
             raise DemistoException('The severity argument must be an integer.')
-    indicator_id = args.get('indicator_id')
-    indicator_id = indicator_id
+    indicator_id = args.get('indicator_id', '')
     expiration_date_time = args.get('expiration_date_time')
     description = args.get('description')
     if description is not None:
@@ -2034,7 +2057,7 @@ def update_indicator_command(client: MsClient, args: dict) -> str:
         indicator_id=indicator_id, expiration_date_time=expiration_date_time,
         description=description, severity=severity
     )
-    return f'Indicator ID: {indicator_id}'
+    return f'Indicator ID: {indicator_id} was updated successfully.'
 
 
 def main():
@@ -2054,13 +2077,11 @@ def main():
     command = demisto.command()
     args = demisto.args()
     LOG(f'command is {command}')
-
     try:
         client = MsClient(
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch)
-
         if command == 'test-module':
             test_module(client)
 
@@ -2163,19 +2184,20 @@ def main():
         elif command == 'microsoft-atp-add-remove-machine-tag':
             return_outputs(*add_remove_machine_tag_command(client, args))
 
-        elif command in ('microsoft-atp-list-indicators', 'microsoft-atp-get-indicator-by-id'):
+        elif command in ('microsoft-atp-indicators-list', 'microsoft-atp-get-indicator-by-id'):
             return_outputs(*list_indicators_command(client, args))
-        elif command == 'microsoft-atp-indicator-create-file':
+        elif command == 'microsoft-atp-file-indicator-create':
             return_outputs(*create_file_indicator_command(client, args))
-        elif command == 'microsoft-atp-indicator-create-network':
+        elif command == 'microsoft-atp-network-indicator-create':
             return_outputs(*create_network_indicator_command(client, args))
-        elif command == 'microsoft-atp-indicator-update':
-            return_outputs(*update_indicator_command(client, args))
+        elif command == 'microsoft-atp-indicator-upd ate':
+            return_outputs(update_indicator_command(client, args))
     except Exception as err:
         return_error(str(err))
 
 
 from MicrosoftApiModule import *  # noqa: E402
+
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
