@@ -12,6 +12,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 GROUP_TYPES = {0: 'Filter-based group', 1: 'Action group', 2: 'Action policy pair group', 3: 'Ad hoc group',
                4: 'Manual group'}
 DEMISTO_API_ACTION_NAME = 'via Demisto API'
+DEFAULT_COMPLETION_PERCANTAGE = "95"
 
 
 class Client(BaseClient):
@@ -146,7 +147,7 @@ class Client(BaseClient):
         res = self.do_request('POST', 'questions', question_body)
         return res.get('data').get('id'), res
 
-    def parse_question_results(self, result):
+    def parse_question_results(self, result, completion_percantage):
         results_sets = result.get('data').get('result_sets')[0]
         estimated_total = results_sets.get('estimated_total')
         mr_tested = results_sets.get('mr_tested')
@@ -156,7 +157,7 @@ class Client(BaseClient):
 
         percantage = mr_tested / estimated_total * 100
 
-        if percantage < 95:
+        if percantage < completion_percantage:
             return None
         if results_sets.get('row_count') == 0:
             return []
@@ -668,9 +669,13 @@ def get_question_metadata(client, data_args):
 
 def get_question_result(client, data_args):
     id_ = data_args.get('question-id')
+    completion_percantage = int(data_args.get('completion-percantage', DEFAULT_COMPLETION_PERCANTAGE))
+    if completion_percantage > 100 or completion_percantage < 1:
+        raise ValueError('completion-percentage argument is invalid, Please enter number between 1 to 100')
+
     res = client.do_request('GET', 'result_data/question/' + str(id_))
 
-    rows = client.parse_question_results(res)
+    rows = client.parse_question_results(res, completion_percantage)
 
     if rows is None:
         context = {'QuestionID': id_, 'Status': 'Pending'}
@@ -721,10 +726,13 @@ def get_saved_question_metadata(client, data_args):
 
 def get_saved_question_result(client, data_args):
     id_ = data_args.get('question-id')
+    completion_percantage = int(data_args.get('completion-percantage', DEFAULT_COMPLETION_PERCANTAGE))
+    if completion_percantage > 100 or completion_percantage < 1:
+        raise ValueError('complete-percantage argument is invalid, Please enter number between 1 to 100')
 
     res = client.do_request('GET', 'result_data/saved_question/' + str(id_))
 
-    rows = client.parse_question_results(res)
+    rows = client.parse_question_results(res, completion_percantage)
     if rows is None:
         context = {'SavedQuestionID': id_, 'Status': 'Pending'}
         return f'Question is still executing, Question id: {str(id_)}',\

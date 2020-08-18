@@ -283,7 +283,7 @@ def test_create_action_body_with_parameters(requests_mock):
 
 def test_parse_question_results():
     client = Client(BASE_URL, 'username', 'password', 'domain')
-    results = client.parse_question_results(QUESTION_RESULTS_RAW)
+    results = client.parse_question_results(QUESTION_RESULTS_RAW, 95)
     assert results == QUESTION_RESULTS
 
 
