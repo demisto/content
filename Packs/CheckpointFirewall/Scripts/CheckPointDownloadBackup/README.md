@@ -1,4 +1,4 @@
-Downloads the Check Point policy backup to the Cortex XSOAR War Room.
+Download CheckPoint policy backup to the Cortex XSOAR War Room.
 
 ## Script Data
 ---
@@ -14,7 +14,7 @@ Downloads the Check Point policy backup to the Cortex XSOAR War Room.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| devices | List of RemoteAccess instances of the checkpoint firewall appliances to back up |
+| device | RemoteAccess instance of the checkpoint firewall appliances to back up |
 
 ## Outputs
 ---

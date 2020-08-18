@@ -1,8 +1,8 @@
 args:
 - default: false
-  description: List of RemoteAccess instances of the Check Point firewall appliances to back up.
+  description: RemoteAccess instance of the CheckPoint firewall appliances to back up.
   isArray: false
-  name: devices
+  name: device
   required: true
   secret: false
 comment: Downloads the Check Point policy backup to the Cortex XSOAR War Room.
