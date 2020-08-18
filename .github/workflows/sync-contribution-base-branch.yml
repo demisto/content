@@ -20,7 +20,7 @@ jobs:
           pip install pipenv
       - name: Sync Base Branch to Master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
         run: |
           echo "Updating contribution base branches (contrib/*)"
           cd Utils/contribution_sync
