@@ -304,6 +304,7 @@ script:
       name: spam_positive
       predefined:
       - 'True'
+      - 'False'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -313,6 +314,7 @@ script:
       name: quarantined_as_spam
       predefined:
       - 'True'
+      - 'False'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -335,8 +337,8 @@ script:
       isArray: false
       name: url_reputation
       predefined:
-      - Malicious'
-      - '''Suspicious'''
+      - Malicious
+      - Suspicious
       required: false
       secret: false
     - auto: PREDEFINED
@@ -346,6 +348,7 @@ script:
       name: virus_positive
       predefined:
       - 'True'
+      - 'False'
       required: false
       secret: false
     - default: false
@@ -371,6 +374,7 @@ script:
       name: contained_malicious_urls
       predefined:
       - 'True'
+      - 'False'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -380,6 +384,7 @@ script:
       name: contained_neutral_urls
       predefined:
       - 'True'
+      - 'False'
       required: false
       secret: false
     - default: false
@@ -394,6 +399,167 @@ script:
     description: Cisco Email Security search messages.
     execution: false
     name: cisco-email-security-messages-search
+  - arguments:
+    - default: false
+      description: Date from which the search begins. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      isArray: false
+      name: start_date
+      required: true
+      secret: false
+    - default: false
+      description: Date the search ends. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      isArray: false
+      name: end_date
+      required: true
+      secret: false
+    - default: false
+      description: Cisco message ID to filter with.
+      isArray: false
+      name: icid
+      required: true
+      secret: false
+    - default: false
+      description: Message ID to filter with.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    - default: false
+      description: Appliance serial number to filter with.
+      isArray: false
+      name: appliance_serial_number
+      required: false
+      secret: false
+    deprecated: false
+    description: Cisco Email Security get details on a message
+    execution: false
+    name: cisco-email-security-message-details-get
+  - arguments:
+    - default: false
+      description: Date from which the search begins. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      isArray: false
+      name: start_date
+      required: true
+      secret: false
+    - default: false
+      description: Date the search ends. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      isArray: false
+      name: end_date
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Specify the number of records to retrieve.
+        If you use a limit you should also use a offset.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Specify an offset value to retrieve a subset of records starting with the offset value.
+        If you use a offset you should also use a limit.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Address to filter with.
+      isArray: false
+      name: from_address
+      required: false
+      secret: false
+    - default: false
+      description: Address to filter with.
+      isArray: false
+      name: to_address
+      required: false
+      secret: false
+    - default: false
+      description: Subject to filter with.
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Address order filtering.
+      isArray: false
+      name: from_address_order_dir
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Address order filtering.
+      isArray: false
+      name: to_address_order_dir
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Subject order filtering.
+      isArray: false
+      name: subject_order_dir
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - default: false
+      description: Recipient value to filter with.
+      isArray: false
+      name: recipient_value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Recipient operator to filter with.
+      isArray: false
+      name: recipient_operator
+      predefined:
+      - is
+      - begins_with
+      - contains
+      required: false
+      secret: false
+    - default: false
+      description: Filter value to filter with.
+      isArray: false
+      name: filter_value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter operator to filter with.
+      isArray: false
+      name: filter_operator
+      predefined:
+      - is
+      - begins_with
+      - contains
+      required: false
+      secret: false
+    deprecated: false
+    description: Cisco Email Security search spam quarantine
+    execution: false
+    name: cisco-email-security-spam-quarantine-search
+  - arguments:
+    - default: false
+      description: Message ID to filter with.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Cisco Email Security get details for quarantine message
+    execution: false
+    name: cisco-email-security-spam-quarantine-message-details-get
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
