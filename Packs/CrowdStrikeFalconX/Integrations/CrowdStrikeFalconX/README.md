@@ -19,7 +19,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### cs-fx-upload-file
 ***
 Uploads a file for sandbox analysis.
-Notice that the file identifier (sha) can be changed as seen in the example below.
+Notice that the file identifier (SHA) can be changed as shown in the example below.
 
 #### Base Command
 
@@ -69,7 +69,7 @@ Notice that the file identifier (sha) can be changed as seen in the example belo
 ### cs-fx-submit-uploaded-file
 ***
 Submits a sample SHA256 hash for sandbox analysis.
-Notice that the file identifiers, sha and id are not the same.
+Notice that the file identifiers, SHA and ID are not the same.
 
 
 #### Base Command
