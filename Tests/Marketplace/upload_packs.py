@@ -680,18 +680,12 @@ def add_pr_comment(comment):
     branch_name = os.environ['CIRCLE_BRANCH']
     sha1 = os.environ['CIRCLE_SHA1']
 
-    print('branch_name = ' + branch_name)
-    print('sha1 = ' + sha1)
-
-    query = '?q={}+repo:demisto/content+org:demisto+is:pr+is:open+head:{}+is:open'.format(sha1, branch_name)
+    query = f'?q={sha1}+repo:demisto/content+is:pr+is:open+head:{branch_name}+is:open'
     url = 'https://api.github.com/search/issues'
     headers = {'Authorization': 'Bearer ' + token}
     try:
-        print('reuest url = ' + url + query)
-        print(url + query)
         res = requests.get(url + query, headers=headers, verify=False)
         res = handle_github_response(res)
-        print(res)
         if res and res.get('total_count', 0) == 1:
             issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
             if issue_url:
