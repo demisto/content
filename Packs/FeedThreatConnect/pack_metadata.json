@@ -1,6 +1,6 @@
 {
     "name": "ThreatConnect Feed",
-    "description": "ThreatConnect indicators feed for Demisto TIM.",
+    "description": "ThreatConnect indicators feed for Cortex XSOAR TIM.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
