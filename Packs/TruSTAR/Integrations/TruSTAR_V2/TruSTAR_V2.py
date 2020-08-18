@@ -19,7 +19,6 @@ class Utils(object):
     """
     Class with some utility methods.
     """
-
     @staticmethod
     def normalize_time(timestamp):
         ''' Converts unix epoch time to GMT '''
