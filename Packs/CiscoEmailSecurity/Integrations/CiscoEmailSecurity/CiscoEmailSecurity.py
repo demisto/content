@@ -12,30 +12,19 @@ from typing import Any, Dict, Tuple, List, Optional, Union, cast
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
-
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 50
-HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
-
-''' CLIENT CLASS '''
-
-
 class Client(BaseClient):
 
     def __init__(self, params):
         self._client_id = params.get('client_id')
         self._client_secret = params.get('client_secret')
-        super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
+        super().__init__(base_url=params.get('base_url'), verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))
-        self._token = self._generate_token()
-        self._headers = {'Authorization': 'Bearer ' + self._token}
+        self._token_jwt = self._generate_jwt_token()
+        self._token_base64 = self._generate_base64_token()
+        self._headers = {'Authorization': 'Bearer ' + self._token_jwt}
 
-    @staticmethod
-    def _error_handler(error_entry: dict) -> str:
-        errors = error_entry.get("errors", [])
-        return '\n' + '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
+        # Authorization base64 If jwtToken does not work
+        # self._headers = {'Authorization': 'Basic ' + self._token_base64}
 
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
                      files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
@@ -44,16 +33,21 @@ class Client(BaseClient):
                                      json_data=json_data, params=params, data=data, files=files, timeout=timeout,
                                      ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
 
-    def _generate_token(self) -> str:
+    def _generate_jwt_token(self) -> str:
         """Generate an Access token using the user name and password
         :return: valid token
         """
         body = {
-            'client_id': self._client_id,
-            'client_secret': self._client_secret
+            'userName': self._client_id,
+            'passphrase': self._client_secret
         }
-        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
-        return token_res.get('access_token')
+        token_res = self.http_request('POST', '/esa/api/v2.0/login', data=body, auth=(self._client_id, self._client_secret))
+        return token_res.get('data').get('jwtToken')
+
+    def _generate_base64_token(self) -> str:
+        basic_authorization_to_encode = f'{self._client_id}:{self._client_secret}'
+        basic_authorization = base64.b64encode(basic_authorization_to_encode.encode('ascii')).decode('utf-8')
+        return basic_authorization
 
 
     def list_report(self, url_suffix) -> Dict[str, Any]:
@@ -86,183 +80,17 @@ class Client(BaseClient):
             url_suffix=url_suffix
         )
 
-''' HELPER FUNCTIONS '''
 
-
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
-    """Converts an XSOAR argument to a Python int
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
-    if the input is invalid. If the input is None, it will throw a ValueError
-    if required is ``True``, or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
-        returns an ``int`` if arg can be converted
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
-
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-    if isinstance(arg, str):
-        if arg.isdigit():
-            return int(arg)
-        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
-    if isinstance(arg, int):
-        return arg
-    raise ValueError(f'Invalid number: "{arg_name}"')
-
-
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
-    """Converts an XSOAR argument to a timestamp (seconds from epoch)
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
-    since epoch). It will throw a ValueError if the input is invalid.
-    If the input is None, it will throw a ValueError if required is ``True``,
-    or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :return:
-        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[int]``
-    """
-
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-
-    if isinstance(arg, str) and arg.isdigit():
-        # timestamp is a str containing digits - we just convert it to int
-        return int(arg)
-    if isinstance(arg, str):
-        # we use dateparser to handle strings either in ISO8601 format, or
-        # relative time stamps.
-        # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-        if date is None:
-            # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
-
-        return int(date.timestamp())
-    if isinstance(arg, (int, float)):
-        # Convert to int if the input is a float
-        return int(arg)
-    raise ValueError(f'Invalid date: "{arg_name}"')
-
-
-''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client, first_fetch_time: int) -> str:
+def test_module(client: Client, suffix_url: str) -> str:
 
     try:
-        client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None, severity=None)
+        client.list_report(suffix_url)
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
     return 'ok'
-
-
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], alert_status: Optional[str],
-                    min_severity: str, alert_type: Optional[str]
-                    ) -> Tuple[Dict[str, int], List[dict]]:
-
-    # Get the last fetch time, if exists
-    # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch', None)
-    # Handle first fetch time
-    if last_fetch is None:
-        # if missing, use what provided via first_fetch_time
-        last_fetch = first_fetch_time
-    else:
-        # otherwise use the stored last fetch
-        last_fetch = int(last_fetch)
-
-    # for type checking, making sure that latest_created_time is int
-    latest_created_time = cast(int, last_fetch)
-
-    # Initialize an empty list of incidents to return
-    # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
-
-    # Get the CSV list of severities from min_severity
-    severity = ','.join(HELLOWORLD_SEVERITIES[HELLOWORLD_SEVERITIES.index(min_severity):])
-
-    alerts = client.search_alerts(
-        alert_type=alert_type,
-        alert_status=alert_status,
-        max_results=max_results,
-        start_time=last_fetch,
-        severity=severity
-    )
-
-    for alert in alerts:
-        # If no created_time set is as epoch (0). We use time in ms so we must
-        # convert it from the HelloWorld API response
-        incident_created_time = int(alert.get('created', '0'))
-        incident_created_time_ms = incident_created_time * 1000
-
-        # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch:
-            if incident_created_time <= last_fetch:
-                continue
-
-        # If no name is present it will throw an exception
-        incident_name = alert['name']
-
-        incident = {
-            'name': incident_name,
-            # 'details': alert['name'],
-            'occurred': timestamp_to_datestring(incident_created_time_ms),
-            'rawJSON': json.dumps(alert),
-            # 'type': 'Hello World Alert',  # Map to a specific XSOAR incident Type
-            'severity': convert_to_demisto_severity(alert.get('severity', 'Low')),
-            # 'CustomFields': {  # Map specific XSOAR Custom Fields
-            #     'helloworldid': alert.get('alert_id'),
-            #     'helloworldstatus': alert.get('alert_status'),
-            #     'helloworldtype': alert.get('alert_type')
-            # }
-        }
-
-        incidents.append(incident)
-
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
-
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': latest_created_time}
-    return next_run, incidents
 
 
 def build_url_params_for_list_report(args):
@@ -495,65 +323,13 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
 
-    user_name = params.get('user_name')
-    user_password = params.get('user_password')
-    basic_authorization_to_encode = f'{user_name}:{user_password}'
-    basic_authorization = base64.b64encode(basic_authorization_to_encode.encode('ascii')).decode('utf-8')
-
-    base_url = params.get('url')
-
-    verify_certificate = not params.get('insecure', False)
-
-    first_fetch_time = arg_to_timestamp(
-        arg=params.get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
-    assert isinstance(first_fetch_time, int)
-
-    proxy = params.get('proxy', False)
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        headers = {
-            'Authorization': f'Basic {basic_authorization}'
-        }
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        client = Client(params)
 
         if demisto.command() == 'test-module':
-            result = test_module(client, first_fetch_time)
+            result = test_module(client,'/api/v2.0/reporting')
             return_results(result)
-
-        elif demisto.command() == 'fetch-incidents':
-            alert_status = params.get('alert_status', None)
-            alert_type = params.get('alert_type', None)
-            min_severity = params.get('min_severity', None)
-
-            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
-            max_results = arg_to_int(
-                arg=demisto.params().get('max_fetch'),
-                arg_name='max_fetch',
-                required=False
-            )
-            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-                max_results = MAX_INCIDENTS_TO_FETCH
-
-            next_run, incidents = fetch_incidents(
-                client=client,
-                max_results=max_results,
-                last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_time,
-                alert_status=alert_status,
-                min_severity=min_severity,
-                alert_type=alert_type
-            )
-
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
 
         elif demisto.command() == 'cisco-email-security-report-get':
             return_results(list_report_command(client, args))
