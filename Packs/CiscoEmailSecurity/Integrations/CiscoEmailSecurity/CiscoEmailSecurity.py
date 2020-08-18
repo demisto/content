@@ -1088,7 +1088,7 @@ def build_url_params_for_list_report(args):
     for key, value in arguments.items():
         if key == 'offset':
             limit = arguments.get('limit')
-            url_params += f'&{key}={value}&limit={limit}'
+            url_params += f'&{key}={int(value)}&limit={int(limit)}'
 
         if key == 'filter_key':
             filter_operator = arguments.get('filter_operator')
