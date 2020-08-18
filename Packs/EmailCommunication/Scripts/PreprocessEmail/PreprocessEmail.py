@@ -95,13 +95,14 @@ def main():
         demisto.results(False)
 
     except (IndexError, ValueError) as e:
+        # True - For creating new incident
         demisto.results(True)
-        return_error(f"PreprocessEmail script has failed - {e}")
+        return_error(f"Upon encountering an issue the PreprocessEmail script opens a new incident {e}")
 
-    #
     except DemistoException as e:
+        # True - For creating new incident
         demisto.results(True)
-        return_error(f"PreprocessEmail script has failed - {e}")
+        return_error(f"Upon encountering an issue the PreprocessEmail script opens a new incident- {e}")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -6,11 +6,11 @@ def util_open_file(path):
 def test_set_email_reply():
     """Unit test
         Given
-        - email author, email recipients and email cc.
+        - Email author, email recipients and email cc.
         When
-        - setting the email reply.
+        - Setting the email reply.
         Then
-        - validate that the email reply is in the correct format.
+        - Validate that the email reply is in the correct format.
         """
     from PreprocessEmail import set_email_reply
     expected_result = util_open_file('test_data/email_reply.txt')

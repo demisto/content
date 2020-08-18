@@ -15,11 +15,11 @@ def util_load_json(path):
 def test_send_reply(mocker):
     """Unit test
         Given
-        - Raw response of an email reply
+        - Raw response of an email reply.
         When
-        - mock the send_mail_request result while the result is a successful reply with email recipients and cc.
+        - The result is a successful reply with email recipients and cc.
         Then
-        - validate that the successful message is returned.
+        - Validate that the successful message is returned.
         """
     from SendEmailReply import send_reply
     email_reply_response = util_load_json('test_data/email_reply.json')
@@ -38,11 +38,10 @@ def test_send_reply(mocker):
 def test_get_email_recipients(email_to, email_from, service_mail, excepted):
     """Unit test
         Given
-        - single email recipient, single email author, service mail
-        - multiple email recipients, single email author, service mail
+        - Single email recipient, single email author, service mail.
+        - Multiple email recipients, single email author, service mail.
         When
-        - single email recipient
-        - email recipient list
+        - Getting the email recipients.
         Then
         - validate that the correct email recipients are returned.
         """
@@ -55,11 +54,11 @@ def test_get_email_recipients(email_to, email_from, service_mail, excepted):
 def test_create_file_data_json():
     """Unit test
         Given
-        - raw response of an attachment in email reply.
+        - Raw response of an attachment in email reply.
         When
         - There is an attachment in the email reply.
         Then
-        - validate that the file data is in the right json format.
+        - Validate that the file data is in the right json format.
         """
     from SendEmailReply import create_file_data_json
     attachment_response = util_load_json('test_data/attachment_example.json')
@@ -78,12 +77,10 @@ def test_get_email_cc(current_cc, additional_cc, excepted):
     """Unit test
         Given
         - multiple current email cc and multiple additional email cc.
-        - single current email cc and empty additional email cc
-        - empty current email cc and empty additional email cc
+        - single current email cc and empty additional email cc.
+        - empty current email cc and empty additional email cc.
         When
-        - There are multiple email cc
-        - There is single email cc
-        - There arent any email cc
+        - Getting email cc.
         Then
         - validate that the correct email cc are being returned.
         """
