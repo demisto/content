@@ -98,8 +98,8 @@ class Client:
     """Object represnt a client for ThreatConnect actions"""
 
     def __init__(self):
-        # Must suspress stdout due worng handling docker loop excutor.
-        with susspress_stdout():
+        # Must suppress stdout due to wrong handling docker loop executor.
+        with suppress_stdout():
             from tcex import TcEx
         self._client = TcEx(config={
             "api_access_id": demisto.getParam("api_access_id"),
