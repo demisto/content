@@ -478,7 +478,7 @@ script:
       Permissions: Directory.AccessAsUser.All(Delegated)
     execution: true
     name: msgraph-user-change-password
-  dockerimage: demisto/crypto:1.0.0.10277
+  dockerimage: demisto/crypto:1.0.0.10743
   feed: false
   isfetch: false
   longRunning: false
