@@ -1,14 +1,15 @@
 id: McAfeeESMTest
-version: -1
+version: 21
+vcShouldKeepItemLegacyProdMachine: false
 name: McAfeeESMTest
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5985abd4-2661-4077-8f90-65dda191f955
+    taskid: 57bb28a0-4e94-40dd-8d67-e7f0abb325e3
     type: start
     task:
-      id: 5985abd4-2661-4077-8f90-65dda191f955
+      id: 57bb28a0-4e94-40dd-8d67-e7f0abb325e3
       version: -1
       name: ""
       iscommand: false
@@ -18,6 +19,7 @@ tasks:
       - "28"
       - "32"
       - "33"
+      - "40"
     separatecontext: false
     view: |-
       {
@@ -29,12 +31,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 308e35ee-825b-4990-8ed8-60ffc89013e6
+    taskid: 6130643a-70be-4340-8013-b172626d560e
     type: regular
     task:
-      id: 308e35ee-825b-4990-8ed8-60ffc89013e6
+      id: 6130643a-70be-4340-8013-b172626d560e
       version: -1
       name: esm-add-case
       description: Add a case to the system
@@ -63,12 +67,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 3ae4d425-f495-4933-83c9-1743b219cf71
+    taskid: 6cf243ff-81e6-4c63-8d86-814d414a2bc5
     type: regular
     task:
-      id: 3ae4d425-f495-4933-83c9-1743b219cf71
+      id: 6cf243ff-81e6-4c63-8d86-814d414a2bc5
       version: -1
       name: Clear Context
       scriptName: DeleteContext
@@ -103,12 +109,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 5b144d8b-8570-4b8f-8b64-d9ee85136bef
+    taskid: 248ec9a5-4f2c-4160-8dd9-a7693a42b98d
     type: regular
     task:
-      id: 5b144d8b-8570-4b8f-8b64-d9ee85136bef
+      id: 248ec9a5-4f2c-4160-8dd9-a7693a42b98d
       version: -1
       name: Edit severity, organization and summary
       script: '|||esm-edit-case'
@@ -147,12 +155,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: cf5f24bd-5ac7-4d32-84fb-a6fb79eda330
+    taskid: 694fc969-5ef4-464f-869f-a4abc757a5de
     type: regular
     task:
-      id: cf5f24bd-5ac7-4d32-84fb-a6fb79eda330
+      id: 694fc969-5ef4-464f-869f-a4abc757a5de
       version: -1
       name: Get case info after event assignment
       script: '|||esm-get-case-detail'
@@ -184,12 +194,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 5ed048f9-e4cb-4749-8ef8-c6f970e635c0
+    taskid: a4943f19-8657-4b19-82ed-ff145c74b443
     type: regular
     task:
-      id: 5ed048f9-e4cb-4749-8ef8-c6f970e635c0
+      id: a4943f19-8657-4b19-82ed-ff145c74b443
       version: -1
       name: Add new case with all parameters.
       script: '|||esm-add-case'
@@ -221,12 +233,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: d88b9072-9c2a-4301-8672-3bd1517a8db6
+    taskid: 63bb1ded-78f0-4ea8-82d9-9bcd66876758
     type: regular
     task:
-      id: d88b9072-9c2a-4301-8672-3bd1517a8db6
+      id: 63bb1ded-78f0-4ea8-82d9-9bcd66876758
       version: -1
       name: Edit the user name of last case to default
       script: '|||esm-edit-case'
@@ -257,12 +271,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: cf9dae43-8c4c-41c6-8247-711a819694e0
+    taskid: 1fda74b7-c737-4ac9-811e-f2082d9fd51f
     type: regular
     task:
-      id: cf9dae43-8c4c-41c6-8247-711a819694e0
+      id: 1fda74b7-c737-4ac9-811e-f2082d9fd51f
       version: -1
       name: Change case status name from Research to Development
       script: '|||esm-edit-case-status'
@@ -289,12 +305,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: ab491efa-5956-40bf-8b5c-492222572987
+    taskid: 6cb5f410-747d-4423-8ca9-572a9d8244a3
     type: regular
     task:
-      id: ab491efa-5956-40bf-8b5c-492222572987
+      id: 6cb5f410-747d-4423-8ca9-572a9d8244a3
       version: -1
       name: Remove additional case status
       script: '|||esm-delete-case-status'
@@ -318,12 +336,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 59ba0557-874b-45f9-8260-1cde3ebba3d3
+    taskid: 4f4c3d57-d7d0-4686-8db4-f0aa22694b32
     type: regular
     task:
-      id: 59ba0557-874b-45f9-8260-1cde3ebba3d3
+      id: 4f4c3d57-d7d0-4686-8db4-f0aa22694b32
       version: -1
       name: Set show case pane of new case status
       script: '|||esm-add-case-status'
@@ -349,12 +369,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: f48b645d-18b9-4d5d-84b5-b391e8c4e034
+    taskid: 9a085c80-0a07-4d21-82ba-206afd878a4d
     type: regular
     task:
-      id: f48b645d-18b9-4d5d-84b5-b391e8c4e034
+      id: 9a085c80-0a07-4d21-82ba-206afd878a4d
       version: -1
       name: Change case status optional parameter
       script: '|||esm-edit-case-status'
@@ -382,12 +404,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: b9bd2237-14eb-4cfe-8ceb-09af44759de4
+    taskid: 2ea46678-fd9a-4219-867b-b91655cd97ba
     type: regular
     task:
-      id: b9bd2237-14eb-4cfe-8ceb-09af44759de4
+      id: 2ea46678-fd9a-4219-867b-b91655cd97ba
       version: -1
       name: Remove additional case status2
       script: '|||esm-delete-case-status'
@@ -411,12 +435,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: d51965c9-43bc-44af-8a99-c4becd316916
+    taskid: 31c79bd1-4bde-4611-8226-39913cc011eb
     type: title
     task:
-      id: d51965c9-43bc-44af-8a99-c4becd316916
+      id: 31c79bd1-4bde-4611-8226-39913cc011eb
       version: -1
       name: All listing commands
       type: title
@@ -438,12 +464,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 7d222eac-395c-47ec-88f4-db036d572bbd
+    taskid: d29d0573-bd90-4811-80ff-42a9f2a18ab5
     type: regular
     task:
-      id: 7d222eac-395c-47ec-88f4-db036d572bbd
+      id: d29d0573-bd90-4811-80ff-42a9f2a18ab5
       version: -1
       name: Get status cases
       script: '|||esm-get-case-statuses'
@@ -464,12 +492,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: 40e5d7d2-1ea1-417f-8110-c78fff946029
+    taskid: 9d458853-4f76-4249-896c-ca50341ce349
     type: regular
     task:
-      id: 40e5d7d2-1ea1-417f-8110-c78fff946029
+      id: 9d458853-4f76-4249-896c-ca50341ce349
       version: -1
       name: Get users
       script: '|||esm-get-user-list'
@@ -490,12 +520,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 6047d94f-2aa4-4313-8712-6cd570b5706c
+    taskid: 3cdeceab-5702-4570-8f84-1d66f4fcc508
     type: regular
     task:
-      id: 6047d94f-2aa4-4313-8712-6cd570b5706c
+      id: 3cdeceab-5702-4570-8f84-1d66f4fcc508
       version: -1
       name: Get organizations
       script: '|||esm-get-organization-list'
@@ -516,12 +548,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: ef0596aa-cc23-4d2b-8376-e4a1909a7333
+    taskid: 676b361d-55e5-4323-812c-4c3b2d7e4779
     type: regular
     task:
-      id: ef0596aa-cc23-4d2b-8376-e4a1909a7333
+      id: 676b361d-55e5-4323-812c-4c3b2d7e4779
       version: -1
       name: Close Case
       script: '|||esm-edit-case'
@@ -558,12 +592,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: 59b77a71-31e8-445a-84b8-f8502ea9a3fa
+    taskid: 188130af-8933-4e7c-81af-1ee1e90b0665
     type: regular
     task:
-      id: 59b77a71-31e8-445a-84b8-f8502ea9a3fa
+      id: 188130af-8933-4e7c-81af-1ee1e90b0665
       version: -1
       name: Search by fields
       script: '|||esm-search'
@@ -596,12 +632,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: e4c94277-90dc-4b83-8553-202cdf791a0c
+    taskid: 132109be-5118-4128-8cf7-af430aa0d817
     type: regular
     task:
-      id: e4c94277-90dc-4b83-8553-202cdf791a0c
+      id: 132109be-5118-4128-8cf7-af430aa0d817
       version: -1
       name: Add a new case status named with timestamp
       script: '|||esm-add-case-status'
@@ -626,12 +664,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: 363dde45-3b64-4ef4-8ebf-2b4830341f9a
+    taskid: 68a29457-1ed8-48cd-826e-f3d342e72309
     type: regular
     task:
-      id: 363dde45-3b64-4ef4-8ebf-2b4830341f9a
+      id: 68a29457-1ed8-48cd-826e-f3d342e72309
       version: -1
       name: Setup
       scriptName: GetTime
@@ -660,12 +700,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: 042fcf01-2e7f-47c9-8c7f-6e570b018375
+    taskid: 0562444e-2849-40a9-8669-ec62c66899d5
     type: regular
     task:
-      id: 042fcf01-2e7f-47c9-8c7f-6e570b018375
+      id: 0562444e-2849-40a9-8669-ec62c66899d5
       version: -1
       name: Fetch Alarms
       script: '|||esm-fetch-alarms'
@@ -692,12 +734,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
-    taskid: 62f6307a-b8f5-4cae-8aec-4a465bb872b7
+    taskid: d708db1e-74d8-42dd-87f8-36cc9e4517ae
     type: title
     task:
-      id: 62f6307a-b8f5-4cae-8aec-4a465bb872b7
+      id: d708db1e-74d8-42dd-87f8-36cc9e4517ae
       version: -1
       name: Case Management
       type: title
@@ -717,12 +761,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
-    taskid: 392e98ab-9297-4248-88f7-8a76953ae881
+    taskid: 1fdbcb41-74fa-4d4c-857d-aee8977a4b8d
     type: title
     task:
-      id: 392e98ab-9297-4248-88f7-8a76953ae881
+      id: 1fdbcb41-74fa-4d4c-857d-aee8977a4b8d
       version: -1
       name: Alarm Management
       type: title
@@ -742,12 +788,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
-    taskid: 0d0d5658-85a3-4310-85db-0da3f51d9668
+    taskid: 783e8c94-f71d-46bd-823a-28102d06f251
     type: condition
     task:
-      id: 0d0d5658-85a3-4310-85db-0da3f51d9668
+      id: 783e8c94-f71d-46bd-823a-28102d06f251
       version: -1
       name: Check if we got results
       type: condition
@@ -781,12 +829,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "35":
     id: "35"
-    taskid: 1f3e40a9-f6fb-47ee-8287-407ed886738a
+    taskid: 25529471-891d-4a74-84ac-ff3712fb3326
     type: regular
     task:
-      id: 1f3e40a9-f6fb-47ee-8287-407ed886738a
+      id: 25529471-891d-4a74-84ac-ff3712fb3326
       version: -1
       name: 'Get Event list of alarm '
       script: '|||esm-list-alarm-events'
@@ -802,7 +852,7 @@ tasks:
           root: Alarm
           accessor: ID
           transformers:
-          - operator: GetFirstObject
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -814,12 +864,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
-    taskid: 528e4d17-1a54-441c-8be6-5cfeb8f0ea8b
+    taskid: 4e64f07b-884c-495d-803a-b94366f2225b
     type: regular
     task:
-      id: 528e4d17-1a54-441c-8be6-5cfeb8f0ea8b
+      id: 4e64f07b-884c-495d-803a-b94366f2225b
       version: -1
       name: Get specific event details
       script: '|||esm-get-alarm-event-details'
@@ -845,12 +897,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "37":
     id: "37"
-    taskid: 2d666b32-9a98-4e65-84b2-f385d009fd16
+    taskid: 505face7-8bc6-4ee7-8d69-a13af4796d5b
     type: title
     task:
-      id: 2d666b32-9a98-4e65-84b2-f385d009fd16
+      id: 505face7-8bc6-4ee7-8d69-a13af4796d5b
       version: -1
       name: Done
       type: title
@@ -867,12 +921,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "38":
     id: "38"
-    taskid: ee474fc6-a791-447b-8dcf-2eff1c323ae4
+    taskid: 72802c6f-dcbe-4651-810c-ea305502c58f
     type: regular
     task:
-      id: ee474fc6-a791-447b-8dcf-2eff1c323ae4
+      id: 72802c6f-dcbe-4651-810c-ea305502c58f
       version: -1
       name: Validate event details context
       scriptName: VerifyContext
@@ -898,12 +954,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "39":
     id: "39"
-    taskid: 028ccce3-d5f1-4238-8310-4f7cafe28997
+    taskid: ed0de1eb-0005-48b4-8639-d972ca48fa15
     type: condition
     task:
-      id: 028ccce3-d5f1-4238-8310-4f7cafe28997
+      id: ed0de1eb-0005-48b4-8639-d972ca48fa15
       version: -1
       name: Check if we got results
       type: condition
@@ -937,13 +995,188 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 8c6ff1d2-f8ae-4414-86f5-038f43a5d95c
+    type: title
+    task:
+      id: 8c6ff1d2-f8ae-4414-86f5-038f43a5d95c
+      version: -1
+      name: Watchlist Management
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 3fe8247f-cea6-4c5d-8191-3c7327d0681f
+    type: regular
+    task:
+      id: 3fe8247f-cea6-4c5d-8191-3c7327d0681f
+      version: -1
+      name: Get watchlists
+      description: Gets the names of the watchlists
+      script: '|||esm-get-watchlists'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 3553a4c4-d91a-4593-8e82-46d97b79a9b5
+    type: condition
+    task:
+      id: 3553a4c4-d91a-4593-8e82-46d97b79a9b5
+      version: -1
+      name: Check if we got results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: EsmWatchlist
+                accessor: ID
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: a1971772-e822-4cfc-8134-e063075103e9
+    type: regular
+    task:
+      id: a1971772-e822-4cfc-8134-e063075103e9
+      version: -1
+      name: Add value to watchlist
+      description: 'Add values to an existing watchlist. '
+      script: '|||esm-add-watchlist-values'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      id:
+        complex:
+          root: EsmWatchlist
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+      values:
+        simple: 194.90.1.5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: b04d667c-fc8e-482e-8e0c-569ffde96670
+    type: regular
+    task:
+      id: b04d667c-fc8e-482e-8e0c-569ffde96670
+      version: -1
+      name: Remove value from watchlist
+      description: 'Remove values from an existing watchlist. '
+      script: '|||esm-remove-watchlist-values'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      id:
+        complex:
+          root: EsmWatchlist
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+      values:
+        simple: 194.90.1.5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 3155,
-        "width": 2232.5,
+        "width": 2810,
         "x": 50,
         "y": 50
       }

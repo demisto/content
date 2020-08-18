@@ -23,7 +23,7 @@
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Version: (one of 10.0, 10.1, 10.2, 10.3)</strong></li>
 <li><strong>ESM time format, e.g., %Y/%m/%d %H:%M:%S. Select “auto-discovery” to extract the format automatically.</strong></li>
-<li>__McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 =&gt; then insert 3) __</li>
+<li><strong>McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 =&gt; then insert 3) </strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
@@ -56,6 +56,9 @@
 <li><a href="#delete-triggered-alarms" target="_self">Delete triggered alarms: esm-delete-alarms</a></li>
 <li><a href="#get-details-for-a-triggered-alarm" target="_self">Get details for a triggered alarm: esm-get-alarm-event-details</a></li>
 <li><a href="#get-an-event-list-related-to-an-alarm" target="_self">Get an event list related to an alarm: esm-list-alarm-events</a></li>
+<li><a href="#get-a-list-of-user-created-watchlists" target="_self">Get a list of user created watchlists: esm-get-watchlists</a></li>
+<li><a href="#add-value-to-existing-watchlist" target="_self">Add value to existing watchlist: esm-add-watchlist-values</a></li>
+<li><a href="#remove-value-from-existing-watchlist" target="_self">Remove value from existing watchlist: esm-remove-watchlist-values</a></li>
 </ol>
 </div>
 <div class="cl-preview-section">
@@ -3254,3 +3257,274 @@
 </table>
 </div>
 </div>
+<h3 id="get-a-list-of-user-created-watchlists">20. Get a list of user created watchlists.</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Gets the names of the watchlists.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-18">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>esm-get-watchlists</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-18">Input</h5>
+</div>
+<div class="cl-preview-section">
+<p>There are no input arguments for this command.</p>
+</div>
+<div class="cl-preview-section">
+<div class="cl-preview-section">
+<h5 id="context-output-18">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 320px;"><strong>Path</strong></th>
+<th style="width: 92px;"><strong>Type</strong></th>
+<th style="width: 328px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 320px;">EsmWatchlist.ID</td>
+<td style="width: 92px;">string</td>
+<td style="width: 328px;">The Id of the watchlist</td>
+</tr>
+<tr>
+<td style="width: 320px;">EsmWatchlist.Type</td>
+<td style="width: 92px;">string</td>
+<td style="width: 328px;">The type of the watchlist</td>
+</tr>
+<tr>
+<td style="width: 320px;">EsmWatchlist.ValuesNumber</td>
+<td style="width: 92px;">number</td>
+<td style="width: 328px;">The number of values in the watchlist</td>
+</tr>
+<tr>
+<td style="width: 320px;">EsmWatchlist.IsDynamic</td>
+<td style="width: 92px;">boolean</td>
+<td style="width: 328px;">Is the watchlist dynamic</td>
+</tr>
+<tr>
+<td style="width: 320px;">EsmWatchlist.IsActive</td>
+<td style="width: 92px;">boolean</td>
+<td style="width: 328px;">Is the watchlist active</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="command-example-18">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>!esm-get-watchlists</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-example-10">Context Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>{
+    "EsmWatchlist": [
+        {
+            "ID": 3,
+            "IsActive": true,
+            "IsDynamic": false,
+            "Name": "Approved Addresses Watchlist",
+            "Type": "IPAddress",
+            "ValuesNumber": 16
+        },
+        {
+            "ID": 4,
+            "IsActive": true,
+            "IsDynamic": false,
+            "Name": "VIP Users Watchlist",
+            "Type": "UserIDSrc",
+            "ValuesNumber": 3
+        },
+        {
+            "ID": 5,
+            "IsActive": true,
+            "IsDynamic": false,
+            "Name": "Bad Hash Watchlist",
+            "Type": "Filename",
+            "ValuesNumber": 5
+        }
+    ]
+}
+</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-17">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<h3 id="watchlists-1">Watchlists:</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Type</th>
+<th>ValuesNumber</th>
+<th>IsDynamic</th>
+<th>IsActive</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>IPAddress</td>
+<td>16</td>
+<td>false</td>
+<td>true</td>
+</tr>
+<tr>
+<td>4</td>
+<td>UserIDSrc</td>
+<td>3</td>
+<td>false</td>
+<td>true</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Filename</td>
+<td>5</td>
+<td>false</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<h3 id="add-value-to-existing-watchlist">21. Add value to existing watchlist</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Adds values to an existing watchlist.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-16">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>esm-add-watchlist-value</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-16">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 187px;"><strong>Argument Name</strong></th>
+<th style="width: 452px;"><strong>Description</strong></th>
+<th style="width: 101px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 187px;">id</td>
+<td style="width: 452px;">
+ID of the watchlist we want to add values to. ID can be retrieved with the "esm-get-watchlists" command.</td>
+<td style="width: 101px;">Required</td>
+</tr>
+<tr>
+<td style="width: 187px;">values</td>
+<td style="width: 452px;">
+Coma separated values of the data we want to add to the watchlist. Example: "1.1.1.1,2.2.2.2". Please add the correct type of values to correct watchlist type.</td>
+<td style="width: 101px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output-16">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>There is no context output for this command.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="command-example-16">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>!esm-add-watchlist-values id=3 values=192.190.1.5,212.89.134.12</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-15">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>Watchlist Id:3 successfully updated with 1 values.</p>
+</div>
+<div class="cl-preview-section">
+<h3 id="remove-value-from-existing-watchlist">22. Remove value from existing watchlist</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Remove values from an existing watchlist.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-16">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>esm-remove-watchlist-value</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-16">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 187px;"><strong>Argument Name</strong></th>
+<th style="width: 452px;"><strong>Description</strong></th>
+<th style="width: 101px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 187px;">id</td>
+<td style="width: 452px;">
+ID of the watchlist we want to remove values from. ID can be retrieved with the "esm-get-watchlists" command.</td>
+<td style="width: 101px;">Required</td>
+</tr>
+<tr>
+<td style="width: 187px;">values</td>
+<td style="width: 452px;">
+Coma separated values of the data we want to remove from the watchlist. Example: "1.1.1.1,2.2.2.2". Please remove the correct type of values from correct watchlist type.</td>
+<td style="width: 101px;">Required</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output-16">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>There is no context output for this command.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="command-example-16">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>!esm-remove-watchlist-values id=3 values=192.190.1.5</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-15">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>1 values were successfully removed from Watchlist Id:3.</p>
+</div>
+<div class="cl-preview-section">
+
