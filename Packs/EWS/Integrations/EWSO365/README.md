@@ -4,8 +4,6 @@ The EWS O365 integration implants EWS leading services. The integration allows g
 
 ## EWS O365 Playbook
 
-*   Office 365 Search and Delete
-*   Search And Delete Emails - EWS
 *   Get Original Email - EWS
 *   Process Email - EWS
 
