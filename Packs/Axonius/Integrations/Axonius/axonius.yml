@@ -2,32 +2,33 @@ name: Axonius
 display: Axonius
 description: This is the Axonius integration
 category: Data Enrichment & Threat Intelligence
+tests:
+- No tests
 commonfields:
   id: Axonius
-  version: 1.0
+  version: -1
 configuration:
-- defaultvalue: https://axoniusinstance.net
+- name: ax_url
   display: Server URL (e.g. https://example.net)
-  name: ax_url
   required: true
   type: 0
-- display: Axonius API Key
-  name: ax_key
+- name: ax_key
+  display: Axonius API Key
   required: true
-  type: 9
-- display: Axonius API Secret
-  name: ax_secret
+  type: 0
+- name: ax_secret
+  display: Axonius API Secret
   required: true
-  type: 9
-- display: Trust any certificate (not secure)
-  name: insecure
+  type: 4
+- name: insecure
+  display: Trust any certificate (not secure)
   required: false
   type: 8
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/axonius:1.0.0.10677
   runonce: false
   commands:
   - name: axonius-get-devices-by-savedquery
@@ -36,5 +37,66 @@ script:
     - name: saved_query_name
       required: true
       description: The name of the saved query
-
+    outputs:
+    - contextPath: Axonius.Devices.adapter_list_length
+      type: Number
+      description: The number of adapters with information about the asset
+    - contextPath: Axonius.Devices.adapters
+      type: String
+      description: The specific adapter names with asset information
+    - contextPath: Axonius.Devices.internal_axon_id
+      type: String
+      description: The internal unique Axonius identifier for the asset
+    - contextPath: Axonius.Devices.hostname
+      type: String
+      description: The hostnames of the assset
+    - contextPath: Axonius.Devices.name
+      type: String
+      description: The names of the asset
+    - contextPath: Axonius.Devices.last_seen
+      type: Date
+      description: Last seen date/time of the asset
+    - contextPath: Axonius.Devices.network_interfaces_macs
+      type: String
+      description: The MAC addresses of the asset
+    - contextPath: Axonius.Devices.network_interfaces_ips
+      type: String
+      description: The IP addresses of the asset
+    - contextPath: Axonius.Devices.os_type
+      type: String
+      description: The OS type (Windows, Linux, iOS,...)
+    - contextPath: Axonius.Devices.labels
+      type: String
+      description: Tags assigned to the asset
+  - name: axonius-get-users-by-savedquery
+    description: Gather user info by saved query
+    arguments:
+    - name: saved_query_name
+      required: true
+      description: The name of the saved query
+    outputs:
+    - contextPath: Axonius.Users.adapter_list_length
+      type: Number
+      description: The number of adapters with information about the asset
+    - contextPath: Axonius.Users.adapters
+      type: String
+      description: The specific adapter names with asset information
+    - contextPath: Axonius.Users.internal_axon_id
+      type: String
+      description: The internal unique Axonius identifier for the asset
+    - contextPath: Axonius.Users.username
+      type: String
+      description: Username of the asset
+    - contextPath: Axonius.Users.mail
+      type: String
+      description: Email address of the asset
+    - contextPath: Axonius.Users.is_admin
+      type: Boolean
+      description: If the asset has admin privileges
+    - contextPath: Axonius.Users.last_seen
+      type: Date
+      description: Last seen date/time of the asset
+    - contextPath: Axonius.Users.labels
+      type: String
+      description: Tags assigned to the asset
 
