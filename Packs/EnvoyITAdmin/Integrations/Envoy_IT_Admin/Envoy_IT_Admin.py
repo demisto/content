@@ -584,6 +584,9 @@ def main():
 
     # get the service API url
     base_url = params.get('url')
+    # checks for '/' at the end url, if it is not available add it
+    if base_url[-1] != '/':
+        base_url += '/'
     # get the service token  which is mendatory
     token = params.get('token')
 
