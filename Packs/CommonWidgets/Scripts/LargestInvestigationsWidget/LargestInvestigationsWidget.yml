@@ -2,13 +2,13 @@ args:
 - default: false
   description: The date whose month is the last month we want to fetch the incidents.
   isArray: false
-  name: toDate
+  name: to
   required: false
   secret: false
 - default: false
   description: The date whose month is the first month we want to fetch the incidents.
   isArray: false
-  name: fromDate
+  name: from
   required: false
   secret: false
 comment: Create widget for the largest investigations

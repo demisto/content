@@ -63,7 +63,8 @@ def get_extra_data_from_investigations(investigations):
 
 def main():
     try:
-        raw_output = demisto.executeCommand('LargestInvestigationsWidget', args={})
+        raw_output = demisto.executeCommand('LargestInvestigationsWidget', args={'from': demisto.args().get('from'),
+                                                                                 'to': demisto.args().get('to')})
         investigations = raw_output[0].get('Contents').get('data')
         demisto.results(get_extra_data_from_investigations(investigations))
     except Exception:

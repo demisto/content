@@ -1,3 +1,16 @@
+args:
+- default: false
+  description: The date whose month is the last month we want to fetch the incidents.
+  isArray: false
+  name: to
+  required: false
+  secret: false
+- default: false
+  description: The date whose month is the first month we want to fetch the incidents.
+  isArray: false
+  name: from
+  required: false
+  secret: false
 comment: Create widget for the largest investigations
 commonfields:
   id: LargestInputsAndOuputsInIncidents
@@ -12,4 +25,3 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.8.5.10455
-

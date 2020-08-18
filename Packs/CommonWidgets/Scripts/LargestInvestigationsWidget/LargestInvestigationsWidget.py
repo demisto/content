@@ -1,5 +1,5 @@
 import traceback
-from typing import List
+from typing import List, Dict
 from operator import itemgetter
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
@@ -43,12 +43,23 @@ def get_month_db_from_date(date):
     return month + year
 
 
+def get_time_object(timestring):
+    if timestring is None:
+        return datetime.now()
+
+    date_object = parse(timestring)
+    if date_object.year == 1:
+        return datetime.now()
+    else:
+        return date_object
+
+
 def get_month_database_names():
     db_names = set()
-    from_date = parse(demisto.args().get('fromDate')) if demisto.args().get('fromDate') else datetime.now()
-    to_date = parse(demisto.args().get('toDate')) if demisto.args().get('toDate') else datetime.now()
+    to_date = get_time_object(demisto.args().get('to'))
+    from_date = get_time_object(demisto.args().get('from'))
     current = from_date
-    while current < to_date:
+    while current.timestamp() < to_date.timestamp():
         db_names.add(get_month_db_from_date(current))
         current = current + relativedelta(months=1)
 
@@ -58,7 +69,7 @@ def get_month_database_names():
 
 def main():
     try:
-        investigations = {}
+        investigations: Dict = {}
         for db_name in get_month_database_names():
             raw_output = demisto.executeCommand('getDBStatistics', args={"filter": db_name})
             get_investigations(raw_output, investigations, db_name)
