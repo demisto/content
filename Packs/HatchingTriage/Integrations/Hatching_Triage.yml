@@ -34,6 +34,7 @@ script:
     deprecated: false
     execution: false
     name: triage-query-samples
+    description: Get a list of all samples either private or public
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -149,6 +150,7 @@ script:
       secret: false
     deprecated: false
     execution: false
+    description: Get the static analysis of a sample
     name: triage-get-static-report
   - arguments:
     - default: false
@@ -163,6 +165,7 @@ script:
       secret: false
     deprecated: false
     execution: false
+    description: Retrieves the generated Triage Report for a single task
     name: triage-get-report-triage
   - arguments:
     - default: false
@@ -197,6 +200,7 @@ script:
       secret: false
     deprecated: false
     execution: false
+    description: Retrieves the output of the kernel monitor
     name: triage-get-kernel-monitor
   - arguments:
     - default: false
@@ -212,6 +216,7 @@ script:
     deprecated: false
     execution: false
     name: triage-get-pcap
+    description: Retrieves the PCAP of the analysis for further manual analysis
   - arguments:
     - default: false
       isArray: false
@@ -231,6 +236,7 @@ script:
     deprecated: false
     execution: false
     name: triage-get-dumped-files
+    description: Retrieves files dumped by the sample. The names can be found under the "dumped" section from the triage report output
   - arguments:
     - default: false
       isArray: false
@@ -240,6 +246,7 @@ script:
     deprecated: false
     execution: false
     name: triage-get-users
+    description: Return all users within the company as a paginated list. Returns a single user if a userID is provided
   - arguments:
     - default: false
       isArray: false
@@ -278,6 +285,7 @@ script:
     deprecated: false
     execution: false
     name: triage-create-user
+    description: Creates a new user and returns it. The user will become a member of the company the requesting user is a member of
   - arguments:
     - default: false
       isArray: false
@@ -287,6 +295,7 @@ script:
     deprecated: false
     execution: false
     name: triage-delete-user
+    description: Delete a user and all associated data, invalidating any sessions and removing their API keys. Any samples submitted by this user are kept
   - arguments:
     - default: false
       isArray: false
@@ -302,6 +311,7 @@ script:
     deprecated: false
     execution: false
     name: triage-create-api-key
+    description: Creates a new key can be used to make API calls on behalf of the specified user. The user should have been granted the access_api permission beforehand
   - arguments:
     - default: false
       isArray: false
@@ -311,6 +321,7 @@ script:
     deprecated: false
     execution: false
     name: triage-get-api-key
+    description: Lists all API keys that the user has.
   - arguments:
     - default: false
       isArray: false
@@ -325,6 +336,7 @@ script:
     deprecated: false
     execution: false
     name: triage-delete-api-key
+    description: Delete the user's API key with the specified name
   - arguments:
     - default: false
       isArray: false
@@ -334,6 +346,7 @@ script:
     deprecated: false
     execution: false
     name: triage-get-profiles
+    description: List all profiles that your company has
   - arguments:
     - default: false
       isArray: false
@@ -363,6 +376,7 @@ script:
     deprecated: false
     execution: false
     name: triage-create-profile
+    description: Create a new profile
   - arguments:
     - default: false
       isArray: false
@@ -396,6 +410,7 @@ script:
     deprecated: false
     execution: false
     name: triage-delete-profile
+    description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID
   dockerimage: demisto/python3:3.8.2.6981
   feed: false
   isfetch: false
