@@ -2,9 +2,9 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-	{
-            "integrations": "Atlassian Cloud IT Admin",
-            "playbookID": "testplaybook-Atlassian_Cloud_IT_Admin"
+        {
+            "integrations": "AWS - Security Hub",
+            "playbookID": "AWS-securityhub Test"
         },
         {
             "integrations": "Humio",
