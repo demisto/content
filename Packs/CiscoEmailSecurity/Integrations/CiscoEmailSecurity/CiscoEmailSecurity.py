@@ -15,8 +15,8 @@ urllib3.disable_warnings()
 class Client(BaseClient):
 
     def __init__(self, params):
-        self._client_id = params.get('client_id')
-        self._client_secret = params.get('client_secret')
+        self.username = params.get('client_id')
+        self.password = params.get('client_secret')
         super().__init__(base_url=params.get('base_url'), verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))
         self._token_jwt = self._generate_jwt_token()
@@ -38,14 +38,14 @@ class Client(BaseClient):
         :return: valid token
         """
         body = {
-            'userName': self._client_id,
-            'passphrase': self._client_secret
+            'userName': self.username,
+            'passphrase': self.password
         }
-        token_res = self.http_request('POST', '/esa/api/v2.0/login', data=body, auth=(self._client_id, self._client_secret))
+        token_res = self.http_request('POST', '/esa/api/v2.0/login', data=body, auth=(self.username, self.password))
         return token_res.get('data').get('jwtToken')
 
     def _generate_base64_token(self) -> str:
-        basic_authorization_to_encode = f'{self._client_id}:{self._client_secret}'
+        basic_authorization_to_encode = f'{self.username}:{self.password}'
         basic_authorization = base64.b64encode(basic_authorization_to_encode.encode('ascii')).decode('utf-8')
         return basic_authorization
 
@@ -229,7 +229,7 @@ def build_url_params_for_get_details(args):
     end_date = args.get('end_date')
     message_id = args.get('message_id')
     icid = args.get('icid')
-    url_params = f'?startDate={start_date}&endDate={end_date}&mid={message_id}&icid={icid}
+    url_params = f'?startDate={start_date}&endDate={end_date}&mid={message_id}&icid={icid}'
 
     if args.get('appliance_serial_number'):
         appliance_serial_number = args.get('appliance_serial_number')
