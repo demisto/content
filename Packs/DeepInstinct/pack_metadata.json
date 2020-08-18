@@ -1,6 +1,6 @@
 {
     "name": "DeepInstinct",
-    "description": "At Deep Instinct, we prevent what others can’t find.",
+    "description": "At Deep Instinct, we prevent what others can't find.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Deep Instinct",
@@ -9,10 +9,11 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [
-        "DeepInstinct"
-    ],
+    "tags": [],
     "created": "2020-04-13T09:41:59Z",
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "githubUser": [
+        "asiadeepinstinct"
+    ]
 }

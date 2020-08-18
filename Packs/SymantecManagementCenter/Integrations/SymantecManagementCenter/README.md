@@ -59,6 +59,7 @@
 <li><a href="#get-a-list-of-tenants" target="_self">Get a list of tenants: symantec-mc-list-tenants</a></li>
 <li><a href="#add-content-to-a-policy" target="_self">Add content to a policy: symantec-mc-add-policy-content</a></li>
 <li><a href="#delete-policy-content" target="_self">Delete policy content: symantec-mc-delete-policy-content</a></li>
+<li><a href="#update-policy-content" target="_self">Update policy content: symantec-mc-update-policy-content</a></li>
 </ol>
 </div>
 <div class="cl-preview-section">
@@ -2370,6 +2371,113 @@
 <div class="cl-preview-section">
 <p>Successfully deleted content from the policy</p>
 </div>
+
+<div class="cl-preview-section">
+<h3 id="delete-policy-content">14. Update policy content</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Updates content in a policy in Symantec MC.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-12">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>symantec-mc-update-policy-content</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-12">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 146px;"><strong>Argument Name</strong></th>
+<th style="width: 523px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 146px;">uuid</td>
+<td style="width: 523px;">Policy UUID. Run the symantec-mc-list-policies command to get the UUID.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 146px;">name</td>
+<td style="width: 523px;">The policy name to update content in.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 146px;">content_type</td>
+<td style="width: 523px;">Policy content type.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+<tr>
+<td style="width: 146px;">change_description</td>
+<td style="width: 523px;">Description of the policy change.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+<tr>
+<td style="width: 146px;">schema_version</td>
+<td style="width: 523px;">The version of the schema for this content. This value will correspond to the format of the content. Run the symantec-mc-get-policy command to get the schema version.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 146px;">ip</td>
+<td style="width: 523px;">CSV list of IP addresses to update, for example: “1.2.3.4, 8.8.8.8”.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 146px;">url</td>
+<td style="width: 523px;">CSV list of URLs to update, for example: “www.google.com, www.github.com”.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 146px;">category</td>
+<td style="width: 523px;">CSV list of category names to update, for example: “Job Search/Careers, Content Servers”.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td>enabled</td>
+<td>Relevant for URL and IP.</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>description</td>
+<td>Content description.</td>
+<td>Optional</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+</div>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-output-12">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>There is no context output for this command.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="command-example-12">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>symantec-mc-update-policy-content uuid="0D264052-9628-4872-8C07-E04A8B95F602" content_type="LOCAL_CATEGORY_DB" change_description="test" ip="2.2.2.2,4.4.4.4" description="updated comment"</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="context-example-12">Context Example</h5>
+</div>
+<div class="cl-preview-section">
+<p>No context output</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-12">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>Successfully updated content in the policy</p>
+</div>
 <div class="cl-preview-section">
 <h2 id="additional-information">Additional Information</h2>
 </div>
@@ -2382,6 +2490,7 @@
 <li>URL List</li>
 <li>IP List</li>
 <li>Category List</li>
+<li>Local Database Category List</li>
 </ul>
 <p>The API does not support running requests in parallel. An error will be thrown.</p>
 </div>

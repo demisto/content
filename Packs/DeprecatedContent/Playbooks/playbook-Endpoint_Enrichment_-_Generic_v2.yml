@@ -3,7 +3,7 @@ version: -1
 fromversion: 4.1.0
 name: Endpoint Enrichment - Generic v2
 description: |-
-  Enrich an endpoint by hostname using one or more integrations.
+  DEPRECATED. Use "Endpoint Enrichment - Generic v2.1" playbook instead. Enrich an endpoint by hostname using one or more integrations.
   Currently, the following integrations are supported:
   - Active Directory
   - McAfee ePolicy Orchestrator

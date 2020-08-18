@@ -27,4 +27,5 @@ args:
   defaultValue: "false"
 scripttarget: 0
 runonce: false
+comment: ''
 runas: DBotWeakRole

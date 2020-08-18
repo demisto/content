@@ -1121,7 +1121,7 @@
 <td style="width: 449px;">Maliciousness confidence level</td>
 </tr>
 <tr>
-<td style="width: 229px;"><a href="http://domain.name/">Domain.Name</a></td>
+<td style="width: 229px;">Domain.Name</td>
 <td style="width: 62px;">String</td>
 <td style="width: 449px;">Domain name that was tested</td>
 </tr>
@@ -1198,7 +1198,7 @@
 <h5 id="human-readable-output-5">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<h3 id="eclecticiq-domain-reputation---gooc.om">EclecticIQ Domain reputation - <a href="http://gooc.om/">gooc.om</a>
+<h3 id="eclecticiq-domain-reputation---gooc.om">EclecticIQ Domain reputation - gooc.om
 </h3>
 </div>
 <div class="cl-preview-section">
@@ -1217,7 +1217,7 @@
 <tr>
 <td>74</td>
 <td>unknown</td>
-<td><a href="http://gooc.om/">gooc.om</a></td>
+<td>gooc.om</td>
 <td>2018-11-21T13:34:38.964435+00:00</td>
 <td>2018-11-21T13:34:38.964435+00:00</td>
 </tr>

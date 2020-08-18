@@ -58,6 +58,16 @@ def test_url_command(mocker):
                      mocker=mocker)
 
 
+def test_url_command_with_urlClassificationsWithSecurityAlert(mocker):
+    """url"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.url_lookup,
+                     args={'url': 'www.demisto22.com'},
+                     response_path='test_data/responses/url_with_urlClassificationsWithSecurityAlert.json',
+                     expected_result_path='test_data/results/url_with_urlClassificationsWithSecurityAlert.json',
+                     mocker=mocker)
+
+
 def test_ip_command(mocker):
     """ip"""
     import Zscaler
@@ -134,6 +144,8 @@ test_data = [
     ('https://madeup.fake.com/css?family=blah:1,2,3', 'false', ['https://madeup.fake.com/css?family=blah:1,2,3'])
 ]
 # disable-secrets-detection-end
+
+
 @pytest.mark.parametrize('url,multiple,expected_data', test_data)
 def test_url_multiple_arg(url, multiple, expected_data):
     '''Scenario: Submit a URL with commas in it

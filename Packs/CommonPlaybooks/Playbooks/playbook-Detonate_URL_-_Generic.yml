@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6b297ce6-c5e2-4f24-8dcb-41070c90a3fb
+    taskid: ab416b1d-600a-47a5-89dc-64d0f0002db6
     type: start
     task:
-      id: 6b297ce6-c5e2-4f24-8dcb-41070c90a3fb
+      id: ab416b1d-600a-47a5-89dc-64d0f0002db6
       version: -1
       name: ""
       description: Playbook start point
@@ -24,6 +24,8 @@ tasks:
       - "15"
       - "16"
       - "17"
+      - "18"
+      - "19"
     separatecontext: false
     view: |-
       {
@@ -39,10 +41,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 1fc0bb86-45c3-41ae-878e-df4ef11c1962
+    taskid: 91ee56ee-91ac-4199-89fe-50ad796c6b02
     type: title
     task:
-      id: 1fc0bb86-45c3-41ae-878e-df4ef11c1962
+      id: 91ee56ee-91ac-4199-89fe-50ad796c6b02
       version: -1
       name: Done
       description: Done
@@ -64,10 +66,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: dafc8370-20e5-4a82-8bb7-d06bc0105799
+    taskid: 754e447b-20d7-4ab6-8713-97409910d090
     type: playbook
     task:
-      id: dafc8370-20e5-4a82-8bb7-d06bc0105799
+      id: 754e447b-20d7-4ab6-8713-97409910d090
       version: -1
       name: Detonate URL - ThreatGrid
       description: Detonate one or more URLs using the Threat Grid integration. This
@@ -100,10 +102,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 0fa1d1eb-6f40-4f31-8a6b-ba7e9fd57fc6
+    taskid: 237ce1af-7984-4df7-8eea-e6577bf59c4a
     type: playbook
     task:
-      id: 0fa1d1eb-6f40-4f31-8a6b-ba7e9fd57fc6
+      id: 237ce1af-7984-4df7-8eea-e6577bf59c4a
       version: -1
       name: Detonate URL - McAfee ATD
       description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
@@ -135,10 +137,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 89907712-1aa5-43fb-8728-d9773dd75f5f
+    taskid: 22124bae-451b-432b-88e6-1a9affb9ee16
     type: playbook
     task:
-      id: 89907712-1aa5-43fb-8728-d9773dd75f5f
+      id: 22124bae-451b-432b-88e6-1a9affb9ee16
       version: -1
       name: Detonate URL - JoeSecurity
       description: |-
@@ -171,10 +173,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: bf259681-c0d3-4b7f-8bd6-0ece1323359a
+    taskid: a6e1e56f-f5da-4648-8b0c-a7e8d6122535
     type: playbook
     task:
-      id: bf259681-c0d3-4b7f-8bd6-0ece1323359a
+      id: a6e1e56f-f5da-4648-8b0c-a7e8d6122535
       version: -1
       name: Detonate URL - CrowdStrike
       description: Detonate one or more files using the Wildfire integration. This
@@ -207,10 +209,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 2ae02fff-51ea-4dad-894f-22d5612dece0
+    taskid: 481f79ec-f360-4b69-8881-98b67f23eedb
     type: playbook
     task:
-      id: 2ae02fff-51ea-4dad-894f-22d5612dece0
+      id: 481f79ec-f360-4b69-8881-98b67f23eedb
       version: -1
       name: Detonate URL - Lastline v2
       description: Detonates a URL using the Lastline sandbox integration.
@@ -241,10 +243,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 5d7f87a9-26e8-4bc9-824c-4ebbf69f6956
+    taskid: 72dc0cac-36d3-49eb-8fb8-3e583202df61
     type: playbook
     task:
-      id: 5d7f87a9-26e8-4bc9-824c-4ebbf69f6956
+      id: 72dc0cac-36d3-49eb-8fb8-3e583202df61
       version: -1
       name: Detonate URL - Cuckoo
       description: Detonates a file using Cuckoo sandbox
@@ -275,10 +277,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 0890fbf7-9411-4a55-83de-96ce4d71210f
+    taskid: 527c7883-aab3-4641-87a1-296c5bc10806
     type: playbook
     task:
-      id: 0890fbf7-9411-4a55-83de-96ce4d71210f
+      id: 527c7883-aab3-4641-87a1-296c5bc10806
       version: -1
       name: Detonate URL - ANYRUN
       description: Detonates a URL using ANYRUN sandbox
@@ -307,6 +309,82 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+  "18":
+    id: "18"
+    taskid: ae8130db-d640-476c-8509-caa0a3318d69
+    type: playbook
+    task:
+      id: ae8130db-d640-476c-8509-caa0a3318d69
+      version: -1
+      name: Detonate URL - Group-IB TDS Polygon
+      playbookName: Detonate URL - Group-IB TDS Polygon
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "60"
+      url:
+        simple: ${URL.Data}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 07706e7e-800f-408e-8dfa-184841b701f4
+    type: playbook
+    task:
+      id: 07706e7e-800f-408e-8dfa-184841b701f4
+      version: -1
+      name: Detonate URL - CrowdStrike Falcon X
+      playbookName: Detonate URL - CrowdStrike Falcon X
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: |-
+        'Detonate one or more URLs using the CrowdStrike Falcon Sandbox integration.'
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 3070,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
 system: true
 view: |-
   {
@@ -314,8 +392,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 2960,
-        "x": 50,
+        "width": 3840,
+        "x": -390,
         "y": 50
       }
     }
@@ -658,6 +736,6 @@ outputs:
 - contextPath: ANYRUN.Task.Status
   description: Task analysis status.
   type: String
-fromversion: 4.0.0
+fromversion: 5.0.0
 tests:
 - Detonate URL - Generic Test

@@ -1,14 +1,17 @@
 {
-  "name": "Pentera",
-  "description": "An Integration with Pentera by Pcysys",
-  "support": "partner",
-  "currentVersion": "1.0.0",
-  "author": "Pcysys",
-  "url": "",
-  "email": "support@pcysys.com",
-  "created": "2020-03-10T08:37:18Z",
-  "categories": [],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Pentera",
+    "description": "An Integration with Pentera by Pcysys",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "Pcysys",
+    "url": "",
+    "email": "support@pcysys.com",
+    "created": "2020-03-10T08:37:18Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "TalPcysys"
+    ]
 }

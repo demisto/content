@@ -1,0 +1,1041 @@
+{
+	"id": "ExtraHop Detection",
+	"group": "incident",
+	"name": "ExtraHop Detection",
+	"description": "",
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"close": {
+        "sections": [
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Basic Information",
+				"type": "",
+				"isVisible": true,
+				"readOnly": false,
+				"fields": [
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_closereason",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_closenotes",
+						"isVisible": true
+					}
+				],
+				"description": "",
+				"query": null,
+				"queryType": ""
+			}
+		]
+    },
+    "details": {
+        "sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_type",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_severity",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_owner",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbotstatus",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_sourcebrand",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_sourceinstance",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_phase",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_roles",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_category",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_extrahophostname",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionurl",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionticketed",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_occurred",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionendtime",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionupdatetime",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_riskscore",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionid",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Detection Details",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_details",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Details",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_participants",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Detection Participants",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Work Plan",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "workplan",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Incident Files",
+				"query": {
+					"categories": [
+						"attachments"
+					],
+					"lastId": "",
+					"pageSize": 100,
+					"tags": [],
+					"users": []
+				},
+				"queryType": "warRoomFilter",
+				"readOnly": true,
+				"type": "invTimeline",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Linked Incidents",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "linkedIncidents",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_dbotcreated",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_occurred",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbotduedate",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbotmodified",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbottotaltime",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Timeline Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Incident Timeline",
+				"query": {
+					"categories": [
+						"incidentInfo"
+					],
+					"lastId": "",
+					"pageSize": 100,
+					"tags": [],
+					"users": []
+				},
+				"queryType": "warRoomFilter",
+				"readOnly": true,
+				"type": "invTimeline",
+				"version": 0
+			}
+		]
+    },
+    "edit": {
+        "sections": [
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Basic Information",
+				"type": "",
+				"isVisible": true,
+				"readOnly": false,
+				"fields": [
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_name",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_reminder",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_roles",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_labels",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_attachment",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_details",
+						"isVisible": true
+					}
+				],
+				"description": "",
+				"query": null,
+				"queryType": ""
+			},
+			{
+				"id": "",
+				"version": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Detection Details",
+				"type": "",
+				"isVisible": true,
+				"readOnly": false,
+				"fields": [
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_extrahophostname",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_detectionurl",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_detectionid",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_riskscore",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_participants",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_detectionupdatetime",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_detectionendtime",
+						"isVisible": true
+					}
+				],
+				"description": "",
+				"query": null,
+				"queryType": ""
+			}
+		]
+    },
+    "mobile": {
+        "sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_type",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_severity",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_owner",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbotstatus",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_sourcebrand",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_sourceinstance",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_phase",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_roles",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_category",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_extrahophostname",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionurl",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionticketed",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_occurred",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionupdatetime",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionendtime",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_riskscore",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionid",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Detection Details",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_details",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Details",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_dbotcreated",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_occurred",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbotduedate",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbotmodified",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbottotaltime",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Timeline Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_labels",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Labels",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "labels",
+				"version": 0
+			}
+		]
+    },
+    "quickView": {
+        "sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_type",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_severity",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_owner",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbotstatus",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_sourcebrand",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_sourceinstance",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_phase",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_roles",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_category",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_extrahophostname",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionurl",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionticketed",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_occurred",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionupdatetime",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionendtime",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_riskscore",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_detectionid",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Detection Details",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_details",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Details",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_participants",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Detection Participants",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_dbotcreated",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_occurred",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbotduedate",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbotmodified",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_dbottotaltime",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Timeline Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_labels",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Labels",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "labels",
+				"version": 0
+			}
+		]
+    }
+}

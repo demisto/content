@@ -2,7 +2,7 @@ id: account_enrichment_-_generic
 version: -1
 name: Account Enrichment - Generic
 fromversion: "3.5.0"
-description: Enrich Accounts using one or more integrations
+description: DEPRECATED. Use "Account Enrichment - Generic v2.1" playbook instead. Enrich Accounts using one or more integrations
 starttaskid: "0"
 tasks:
   "0":

@@ -364,8 +364,8 @@ class Utils():
         return domains
 
     @staticmethod
-    def get_unique_list(l):
-        return list(set(l))
+    def get_unique_list(lst):
+        return list(set(lst))
 
     @staticmethod
     def get_email_name(email):

@@ -18,12 +18,10 @@ configuration:
   required: true
 - display: API ID
   name: id
-  defaultvalue: ""
   type: 0
   required: true
 - display: API Key
   name: key
-  defaultvalue: ""
   type: 4
   required: true
 - display: Use system proxy settings
@@ -828,6 +826,8 @@ script:
       - sha1
       - md5
       - domain
+      - ipv4
+      - ipv6
       description: The type of indicator from the list of supported indicator types.
     - name: value
       required: true
@@ -869,6 +869,7 @@ script:
     description: Retrieves the details of a process, according to process ID, that
       is running or that previously ran.
   - name: cs-resolve-detection
+    deprecated: true
     arguments:
     - name: ids
       required: true
@@ -992,10 +993,10 @@ script:
     - contextPath: CrowdStrikeHost.Detections.behaviors.technique
       description: Technique of the behavior
       type: string
-    description: Sets the state of a detection in Falcon Host. You can obtain detection
-      IDs from the Falcon Host UI or from the Falcon Streaming API.
+    description: Deprecated. Use the cs-falcon-resolve-detection command from the CrowdStrike Falcon integration instead.
     execution: true
   - name: cs-detection-search
+    deprecated: true
     arguments:
     - name: query
       description: Free text search filter
@@ -1005,10 +1006,9 @@ script:
     - contextPath: CrowdStrikeHost.Detections.detection_id
       description: IDs of the related detections
       type: string
-    description: String search through all Crowdstrike Detection fields.  For example,
-      provide a sensor ID to search for all detections that contain that sensor ID
-      (and any other fields that would happen to contain it)
+    description: Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike Falcon integration instead.
   - name: cs-detection-details
+    deprecated: true
     arguments:
     - name: detection_id
       required: true
@@ -1120,7 +1120,7 @@ script:
     - contextPath: CrowdStrikeHost.Detections.behaviors.technique
       description: Technique of the behavior
       type: string
-    description: Fetches details of a Crowdstrike Detection using the detection ID
+    description: Deprecated. Use the cs-falcon-search-detection command from the CrowdStrike Falcon integration instead.
   - name: cs-threatgraph-summary
     arguments:
     - name: ctg_id

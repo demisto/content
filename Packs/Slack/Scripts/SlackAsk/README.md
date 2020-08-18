@@ -38,13 +38,28 @@ reflect the answer back to Demisto.</p>
       <td>Required</td>
     </tr>
     <tr>
+      <td>option1</td>
+      <td>The first reply option. The default is "Yes" with a green button. To change the color of the button, add the pound sign (#) followed by the name of the new color (green, red, or black). The default color is "green". For example, "Yes#green".</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>option2</td>
+      <td>The second reply option. The default is "No" with a red button. To change the button color, add the pound sign (#) followed by the name of the new color (green, red, or black). The default color is "red". For example, "No#red".</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>task</td>
+      <td>The task number to close with the reply. If empty, then no playbook tasks will be closed.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
       <td>replyEntriesTag</td>
       <td>Tag to add to email reply entries.</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>responseType</td>
-      <td>How the user should response to the question. Default is "buttons".</td>
+      <td>How the user should respond to the question. Default is "buttons".</td>
       <td>Optional</td>
     </tr>
     <tr>

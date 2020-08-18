@@ -30,13 +30,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 720,
+          "y": -290
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: db7aa259-3956-4937-833f-ef14ba111aae
@@ -109,7 +111,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 720,
           "y": 2590
         }
       }
@@ -134,7 +136,7 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "2"
+      - "27"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -169,8 +171,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 210
+          "x": 720,
+          "y": -130
         }
       }
     note: false
@@ -512,10 +514,10 @@ tasks:
       description: Creates a new managed policy for your AWS account.  This operation
         creates a policy version with a version identifier of v1 and sets v1 as the
         policy's default version.
-      script: AWS - IAM--DEV|||aws-iam-create-policy
+      script: '|||aws-iam-create-policy'
       type: regular
       iscommand: true
-      brand: AWS - IAM--DEV
+      brand: ""
     nexttasks:
       '#none#':
       - "18"
@@ -563,10 +565,10 @@ tasks:
       version: -1
       name: Attach Logs policy to IAM Role
       description: Attaches the specified managed policy to the specified IAM Entity.
-      script: AWS - IAM--DEV|||aws-iam-attach-policy
+      script: '|||aws-iam-attach-policy'
       type: regular
       iscommand: true
-      brand: AWS - IAM--DEV
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
@@ -749,6 +751,132 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: adf3a25b-7cd5-4bfb-805b-f83adedb0f12
+    type: condition
+    task:
+      id: adf3a25b-7cd5-4bfb-805b-f83adedb0f12
+      version: -1
+      name: Is AWS - CloudTrail integration enabled?
+      description: |2-
+
+        Verifies that AWS - CloudTrail integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - CloudTrail
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: AWS - CloudTrail
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 615b41ff-714f-465c-8ec2-4d9e953c3f35
+    type: condition
+    task:
+      id: 615b41ff-714f-465c-8ec2-4d9e953c3f35
+      version: -1
+      name: Is AWS - IAM integration enabled?
+      description: |2-
+
+        Verifies that AWS - IAM integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - IAM
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: AWS - IAM
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -756,15 +884,18 @@ view: |-
       "24_7_#default#": 0.55,
       "26_15_no": 0.28,
       "26_8_yes": 0.51,
-      "4_2_yes": 0.54,
+      "27_28_yes": 0.56,
+      "27_3_#default#": 0.1,
+      "28_2_yes": 0.56,
+      "28_3_#default#": 0.14,
       "4_3_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 2605,
-        "width": 1020,
+        "height": 2945,
+        "width": 1290,
         "x": -190,
-        "y": 50
+        "y": -290
       }
     }
   }

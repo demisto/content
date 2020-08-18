@@ -473,7 +473,7 @@ def get_tickets_list_command(client, args) -> Tuple[str, dict, dict]:
     context = parse_response(raw_response)
     for response in context:
         response['IsDeleted'] = False
-    human_readable_markdown = tableToMarkdown(f'Quest Kace Tickets', context, removeNull=True,
+    human_readable_markdown = tableToMarkdown('Quest Kace Tickets', context, removeNull=True,
                                               headers=['ID', 'Title', 'Created', 'Modified', 'HdQueueID', 'DueDate'])
     context = {
         'QuestKace.Ticket(val.ID === obj.ID)': context
@@ -530,7 +530,7 @@ def create_ticket_command(client, args) -> Tuple[str, dict, dict]:
     data = json.dumps(temp_data)
     response = client.create_ticket_request(data)
     if response.get('Result') != 'Success':
-        raise DemistoException(f'Error while adding a new ticket.')
+        raise DemistoException('Error while adding a new ticket.')
     try:
         id = response.get('IDs')[0]
     except Exception as e:
@@ -621,7 +621,7 @@ def update_ticket_command(client, args) -> Tuple[str, dict, dict]:
 
     response = client.update_ticket_request(ticket_id, data)
     if response.get('Result') != 'Success':
-        raise DemistoException(f'Error while updating the ticket.')
+        raise DemistoException('Error while updating the ticket.')
     client.update_token()
     res = client.ticket_by_id_request(ticket_id)
     ticket = res.get('Tickets')
@@ -650,11 +650,11 @@ def delete_ticket_command(client, args) -> Tuple[str, dict, dict]:
                 old_context = old_context[0]
             old_context['IsDeleted'] = True
             context = {
-                f'QuestKace.Ticket(val.ID === obj.ID)': old_context
+                'QuestKace.Ticket(val.ID === obj.ID)': old_context
             }
         return f'Ticket was deleted successfully. Ticket number {ticket_id}', context, {}
     else:
-        raise DemistoException(f'Error while deleting the ticket.')
+        raise DemistoException('Error while deleting the ticket.')
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_shaping: str, last_run: Dict, fetch_limit: str,
