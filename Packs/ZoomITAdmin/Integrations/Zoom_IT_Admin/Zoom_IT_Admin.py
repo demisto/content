@@ -2,6 +2,8 @@
 import traceback
 import jwt
 import datetime
+import requests
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
