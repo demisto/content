@@ -697,7 +697,7 @@ script:
     - contextPath: PassiveTotal.HostPair.child
       description: The hostname of the child of the host pair.
       type: String
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: false
   longRunning: false

@@ -1,5 +1,5 @@
 Analyze and understand threat infrastructure from a variety of sources-passive DNS, active DNS, WHOIS, SSL certificates and more-without devoting resources to time-intensive manual threat research and analysis.
-This integration was integrated and tested with enterprise version of PassiveTotal v2
+This integration was integrated and tested with enterprise version of PassiveTotal v2.
 ## Configure PassiveTotal v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -117,20 +117,14 @@ Gets WHOIS information records based on field matching queries.
 
 
 #### Command Example
-```!pt-whois-search field=email query=domains@riskiq.com```
+```!pt-whois-search field=domain query=riskiq.com```
 
 #### Context Example
 ```
 {
     "DBotScore": [
         {
-            "Indicator": "someone@riskiq.com",
-            "Score": 0,
-            "Type": "domain",
-            "Vendor": "PassiveTotal"
-        },
-        {
-            "Indicator": "domains@riskiq.com",
+            "Indicator": "riskiq.com",
             "Score": 0,
             "Type": "domain",
             "Vendor": "PassiveTotal"
@@ -146,61 +140,7 @@ Gets WHOIS information records based on field matching queries.
             },
             "CreationDate": "2006-01-11T16:00:00.000-0800",
             "ExpirationDate": "2017-01-11T16:00:00.000-0800",
-            "Name": "someone@riskiq.com",
-            "NameServers": [
-                "luke.ns.cloudflare.com",
-                "serena.ns.cloudflare.com"
-            ],
-            "Organization": "RiskIQ, Inc.",
-            "Registrant": {
-                "Country": "us",
-                "Email": "domains@riskiq.com",
-                "Name": "Risk IQ",
-                "Phone": "18884154447"
-            },
-            "Registrar": {
-                "AbuseEmail": null,
-                "AbusePhone": null,
-                "Name": "GODADDY.COM, LLC"
-            },
-            "UpdatedDate": "2014-12-08T16:00:00.000-0800",
-            "WHOIS": {
-                "Admin": {
-                    "Country": "us",
-                    "Email": "domains@riskiq.com",
-                    "Name": "Risk IQ",
-                    "Phone": "18884154447"
-                },
-                "CreationDate": "2006-01-11T16:00:00.000-0800",
-                "ExpirationDate": "2017-01-11T16:00:00.000-0800",
-                "NameServers": [
-                    "luke.ns.cloudflare.com",
-                    "serena.ns.cloudflare.com"
-                ],
-                "Registrant": {
-                    "Country": "us",
-                    "Email": "domains@riskiq.com",
-                    "Name": "Risk IQ",
-                    "Phone": "18884154447"
-                },
-                "Registrar": {
-                    "AbuseEmail": null,
-                    "AbusePhone": null,
-                    "Name": "GODADDY.COM, LLC"
-                },
-                "UpdatedDate": "2014-12-08T16:00:00.000-0800"
-            }
-        },
-        {
-            "Admin": {
-                "Country": "us",
-                "Email": "domains@riskiq.com",
-                "Name": "Risk IQ",
-                "Phone": "18884154447"
-            },
-            "CreationDate": "2006-01-11T16:00:00.000-0800",
-            "ExpirationDate": "2017-01-11T16:00:00.000-0800",
-            "Name": "domains@riskiq.com",
+            "Name": "riskiq.com",
             "NameServers": [
                 "luke.ns.cloudflare.com",
                 "serena.ns.cloudflare.com"
@@ -258,7 +198,7 @@ Gets WHOIS information records based on field matching queries.
             "adminStreet": "22 Battery Street\n10th Floor",
             "adminTelephone": "18884154447",
             "contactEmail": "domains@riskiq.com",
-            "domain": "domains@riskiq.com",
+            "domain": "riskiq.com",
             "expiresAt": "2017-01-11T16:00:00.000-0800",
             "lastLoadedAt": "2016-09-27T09:40:31.180-0700",
             "name": "Risk IQ",
@@ -301,8 +241,7 @@ Gets WHOIS information records based on field matching queries.
 >### Associated Domains
 >|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| someone@riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.102-0700 |
->| domains@riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
+>| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
 
 
 ### pt-get-components
@@ -742,7 +681,7 @@ Retrieves the passive DNS results from active account sources.
 
 >### Total Retrieved Record(s): 5
 >### PDNS detail(s)
->|Resolve|Resolve Type|Record Type|Collected (GMT)|First Seen (GMT)|Last Seen (GMT)|Source|Record Hash|
+>|Resolve|Resolve Type|Record Type|Collected (GMT)|First (GMT)|Last (GMT)|Source|Record Hash|
 >|---|---|---|---|---|---|---|---|
 >| furth.com.ar | domain | CNAME | 2020-06-17 12:26:33 | 2010-12-15 09:10:10 | 2020-06-17 05:26:33 | riskiq, pingly | abf781b2484ea79d521cffb0745b71319d4db1158f71bb019b41077f8e55b035 |
 >| 77.81.241.5 | ip | A | 2020-06-17 12:26:33 | 2020-05-29 03:57:44 | 2020-06-17 05:26:33 | riskiq, pingly | d7183564ca617e173fc26aeff66a38bb5c1b9089e56819851183860b9a37ccca |
@@ -867,7 +806,7 @@ Retrieves SSL certificates for a given field value.
 
 >### Total Retrieved Record(s): 2
 >### SSL certificate(s)
->|Sha1|Serial Number|Issued (GMT)|Expires (GMT)|SSL Version|First Seen (GMT)|Last Seen (GMT)|Issuer Common Name|Subject Common Name|Subject Alternative Names|Issuer Organization Name|Subject Organization Name|Subject Locality Name|Subject State/Province Name|Issuer Country|Subject Country|
+>|Sha1|Serial Number|Issued (GMT)|Expires (GMT)|SSL Version|First (GMT)|Last (GMT)|Issuer Common Name|Subject Common Name|Subject Alternative Names|Issuer Organization Name|Subject Organization Name|Subject Locality Name|Subject State/Province Name|Issuer Country|Subject Country|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 8848e868b190d0fdcb6f39c37b5382c87e0976b0 | 6995036355238373586 | Jan 15 13:15:00 2019 GMT | Apr 09 13:15:00 2019 GMT | 3 | 2019-01-15 13:40:31 | 2019-01-16 03:00:34 | Google Internet Authority G3 | www.google.com | www.google.com | Google Trust Services | Google LLC | Mountain View | California | US | US |
 >| 995b005f44be53bf3e5921901d79a98e54afd329 | 6995036355238373586 | Jan 15 13:15:00 2019 GMT | Apr 09 13:15:00 2019 GMT | 3 | 2019-01-25 22:34:01 | 2019-02-07 20:39:43 | Google Internet Authority G3 | www.google.com | www.google.com | Google Trust Services | Google LLC | Mountain View | California | US | US |

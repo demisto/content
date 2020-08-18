@@ -178,12 +178,14 @@ def get_host_attribute_context_data(records: List[Dict[str, Any]]) -> Tuple[list
             hostname = record.get('hostname')
             dbot_score = Common.DBotScore(indicator=hostname, indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME, score=Common.DBotScore.NONE)
-            standard_ec.append(Common.Domain(domain=hostname, dbot_score=dbot_score))
+            if auto_detect_indicator_type(hostname) == FeedIndicatorType.Domain:
+                standard_ec.append(Common.Domain(domain=hostname, dbot_score=dbot_score))
         elif record.get('address'):
             address = record.get('address')
             dbot_score = Common.DBotScore(indicator=address, indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME, score=Common.DBotScore.NONE)
-            standard_ec.append(Common.IP(ip=address, dbot_score=dbot_score))
+            if auto_detect_indicator_type(address) == FeedIndicatorType.IP:
+                standard_ec.append(Common.IP(ip=address, dbot_score=dbot_score))
 
     custom_ec = createContext(data=records, removeNull=True)
     return standard_ec, custom_ec
@@ -353,30 +355,31 @@ def get_context_for_whois_commands(domains: List[Dict[str, Any]]) -> Tuple[list,
     custom_context: List[Dict[str, Any]] = []
     for domain in domains:
         # set domain standard context
-        standard_context_domain = Common.Domain(
-            domain=domain.get('domain', ''),
-            creation_date=domain.get('registered', ''),
-            updated_date=domain.get('registryUpdatedAt', ''),
-            expiration_date=domain.get('expiresAt', ''),
-            name_servers=domain.get('nameServers', ''),
-            organization=domain.get('organization', ''),
-            admin_name=domain.get('admin', {}).get('name', ''),
-            admin_email=domain.get('admin', {}).get('email', ''),
-            admin_phone=domain.get('admin', {}).get('telephone', ''),
-            admin_country=domain.get('admin', {}).get('country', ''),
-            registrar_name=domain.get('registrar', ''),
-            registrant_email=domain.get('registrant', {}).get('email', ''),
-            registrant_name=domain.get('registrant', {}).get('name', ''),
-            registrant_phone=domain.get('registrant', {}).get('telephone', ''),
-            registrant_country=domain.get('registrant', {}).get('country', ''),
-            dbot_score=Common.DBotScore(
-                indicator=domain.get('domain', ''),
-                indicator_type=DBotScoreType.DOMAIN,
-                integration_name=INTEGRATION_NAME,
-                score=Common.DBotScore.NONE
+        if auto_detect_indicator_type(domain.get('domain', '')) == FeedIndicatorType.Domain:
+            standard_context_domain = Common.Domain(
+                domain=domain.get('domain', ''),
+                creation_date=domain.get('registered', ''),
+                updated_date=domain.get('registryUpdatedAt', ''),
+                expiration_date=domain.get('expiresAt', ''),
+                name_servers=domain.get('nameServers', ''),
+                organization=domain.get('organization', ''),
+                admin_name=domain.get('admin', {}).get('name', ''),
+                admin_email=domain.get('admin', {}).get('email', ''),
+                admin_phone=domain.get('admin', {}).get('telephone', ''),
+                admin_country=domain.get('admin', {}).get('country', ''),
+                registrar_name=domain.get('registrar', ''),
+                registrant_email=domain.get('registrant', {}).get('email', ''),
+                registrant_name=domain.get('registrant', {}).get('name', ''),
+                registrant_phone=domain.get('registrant', {}).get('telephone', ''),
+                registrant_country=domain.get('registrant', {}).get('country', ''),
+                dbot_score=Common.DBotScore(
+                    indicator=domain.get('domain', ''),
+                    indicator_type=DBotScoreType.DOMAIN,
+                    integration_name=INTEGRATION_NAME,
+                    score=Common.DBotScore.NONE
+                )
             )
-        )
-        standard_context_domain_list.append(standard_context_domain)
+            standard_context_domain_list.append(standard_context_domain)
 
         # set custom context for whois commands
         custom_context.append(
@@ -448,8 +451,8 @@ def prepare_human_readable_dict_for_ssl(results: List[Dict[str, Any]]) -> List[D
     :return: human-readable dict
     """
     return [{
-        'First Seen (GMT)': epochToTimestamp(result.get('firstSeen', '')) if result.get('firstSeen') else None,
-        'Last Seen (GMT)': epochToTimestamp(result.get('lastSeen', '')) if result.get('lastSeen') else None,
+        'First (GMT)': epochToTimestamp(result.get('firstSeen', '')) if result.get('firstSeen') else None,
+        'Last (GMT)': epochToTimestamp(result.get('lastSeen', '')) if result.get('lastSeen') else None,
         'SSL Version': result.get('sslVersion', 0),
         'Expires (GMT)': result.get('expirationDate', ''),
         'Issued (GMT)': result.get('issueDate', ''),
@@ -483,8 +486,8 @@ def prepare_human_readable_dict_for_pdns(results: List[Dict[str, Any]]) -> List[
     :return: human-readable dict
     """
     return [{
-        'First Seen (GMT)': result.get('firstSeen', ''),
-        'Last Seen (GMT)': result.get('lastSeen', ''),
+        'First (GMT)': result.get('firstSeen', ''),
+        'Last (GMT)': result.get('lastSeen', ''),
         'Source': ', '.join(result.get('source', [])),
         'Value': result.get('value', ''),
         'Collected (GMT)': result.get('collected', ''),
@@ -506,8 +509,8 @@ def get_ssl_cert_search_hr(results: List[Dict[str, Any]]) -> str:
 
     hr = '### Total Retrieved Record(s): ' + str(len(results)) + '\n'
     hr += tableToMarkdown('SSL certificate(s)', ssl_cert_search_hr,
-                          ['Sha1', 'Serial Number', 'Issued (GMT)', 'Expires (GMT)', 'SSL Version', 'First Seen (GMT)',
-                           'Last Seen (GMT)', 'Issuer Common Name', 'Subject Common Name', 'Subject Alternative Names',
+                          ['Sha1', 'Serial Number', 'Issued (GMT)', 'Expires (GMT)', 'SSL Version', 'First (GMT)',
+                           'Last (GMT)', 'Issuer Common Name', 'Subject Common Name', 'Subject Alternative Names',
                            'Issuer Organization Name', 'Subject Organization Name', 'Issuer Locality Name',
                            'Subject Locality Name', 'Issuer State/Province Name', 'Subject State/Province Name',
                            'Issuer Country', 'Subject Country', 'Issuer Street Address', 'Subject Street Address',
@@ -526,7 +529,7 @@ def get_pdns_details_hr(results: List[Dict[str, Any]], total_record: int) -> str
     """
     pdns_details_hr: List[Dict[str, Any]] = prepare_human_readable_dict_for_pdns(results)
 
-    table_headers = ['Resolve', 'Resolve Type', 'Record Type', 'Collected (GMT)', 'First Seen (GMT)', 'Last Seen (GMT)',
+    table_headers = ['Resolve', 'Resolve Type', 'Record Type', 'Collected (GMT)', 'First (GMT)', 'Last (GMT)',
                      'Source', 'Record Hash']
     hr = '### Total Retrieved Record(s): ' + str(total_record) + '\n'
     hr += tableToMarkdown('PDNS detail(s)', pdns_details_hr, table_headers, removeNull=True)
@@ -548,10 +551,12 @@ def create_pdns_standard_context(results: List[Dict[str, Any]]) -> List[Union[Co
 
         if 'domain' == resolve_type:
             dbot_score = Common.DBotScore(resolve, resolve_type, INTEGRATION_NAME, Common.DBotScore.NONE)
-            standard_ec.append(Common.Domain(resolve, dbot_score))
+            if auto_detect_indicator_type(resolve) == FeedIndicatorType.Domain:
+                standard_ec.append(Common.Domain(resolve, dbot_score))
         elif 'ip' == resolve_type:
             dbot_score = Common.DBotScore(resolve, resolve_type, INTEGRATION_NAME, Common.DBotScore.NONE)
-            standard_ec.append(Common.IP(resolve, dbot_score))
+            if auto_detect_indicator_type(resolve) == FeedIndicatorType.IP:
+                standard_ec.append(Common.IP(resolve, dbot_score))
 
     return standard_ec
 

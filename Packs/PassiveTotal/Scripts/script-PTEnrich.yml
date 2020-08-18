@@ -80,3 +80,4 @@ timeout: 0s
 tests:
 - No test
 fromversion: 4.1.0
+deprecated: true

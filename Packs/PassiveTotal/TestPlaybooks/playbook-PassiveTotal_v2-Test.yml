@@ -85,12 +85,12 @@ tasks:
       field:
         simple: domain
       query:
-        simple: domains@riskiq.com
+        simple: amazon.com
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 40,
+          "x": 50,
           "y": 410
         }
       }
@@ -1048,3 +1048,5 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+tests:
+- No tests
