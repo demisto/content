@@ -45,8 +45,8 @@ INDICATOR_MAPPING_NAMES = {
 #########
 
 @contextmanager
-def susspress_stdout():
-    """Disable stdout in begining and enable it in exit"""
+def suppress_stdout():
+    """Disable stdout in beginning and enable it in exit"""
     original_stdout = sys.stdout
     sys.stdout = open(os.devnull, 'w')
     yield
@@ -98,8 +98,8 @@ class Client:
     """Object represnt a client for ThreatConnect actions"""
 
     def __init__(self):
-        # Must suspress stdout due worng handling docker loop excutor.
-        with susspress_stdout():
+        # Must suppress stdout due to wrong handling docker loop executor.
+        with suppress_stdout():
             from tcex import TcEx
         self._client = TcEx(config={
             "api_access_id": demisto.getParam("api_access_id"),
@@ -175,7 +175,7 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:
 
 
 def get_indicators_command(client: Client) -> COMMAND_OUTPUT:
-    """ Get indicator form ThreatConnect, Able to change limit and offset by command arguments.
+    """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
 
     Args:
         client: ThreatConnect client.
@@ -207,7 +207,7 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
         dict: Operation raw response.
     """
     raw_response: Iterator[Any] = client.get_owners()
-    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
+    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Owners",
                                            t=list(raw_response))
 
     return readable_output, {}, list(raw_response)
@@ -231,7 +231,7 @@ def main():
             readable_output, outputs, raw_response = commands[command](client)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        raise Exception(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')
+        return_error(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
