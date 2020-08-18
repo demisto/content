@@ -565,6 +565,9 @@ def main():
     params = demisto.params()
 
     base_url = params.get('url')
+    # checks for '/' at the end url, if it is not available add it
+    if base_url[-1] != '/':
+        base_url += '/'
     token = params.get('token')
     directory_id = params.get('directoryId')
 

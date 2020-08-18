@@ -1,10 +1,10 @@
 {
     "name": "Atlassian Cloud IT Admin",
     "description": "Atlassian Cloud IT Admin",
-    "support": "partner",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
-    "author": "mukul",
-    "url": "",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-08-13T13:00:41Z",
     "categories": [
