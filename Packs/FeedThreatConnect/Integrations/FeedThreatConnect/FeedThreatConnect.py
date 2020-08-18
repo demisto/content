@@ -45,7 +45,7 @@ INDICATOR_MAPPING_NAMES = {
 #########
 
 @contextmanager
-def susspress_stdout():
+def suppress_stdout():
     """Disable stdout in begining and enable it in exit"""
     original_stdout = sys.stdout
     sys.stdout = open(os.devnull, 'w')
