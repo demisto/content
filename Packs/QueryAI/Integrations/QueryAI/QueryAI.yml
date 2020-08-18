@@ -3,7 +3,7 @@ commonfields:
   id: Query.AI
   version: -1
 configuration:
-- display: Proxy URL
+- display: Query.AI Proxy URL
   name: url
   required: true
   type: 0
@@ -11,7 +11,7 @@ configuration:
   name: email
   required: true
   type: 0
-- display: License Key
+- display: API Key
   name: license_key
   required: true
   type: 4
@@ -31,7 +31,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Access your data where it lives.
+description: Query.AI is a decentralized data access and analysis technology that simplifies security investigations across disparate platforms without data duplication.
 display: Query.AI
 name: Query.AI
 script:
