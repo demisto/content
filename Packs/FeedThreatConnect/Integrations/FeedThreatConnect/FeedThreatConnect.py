@@ -207,7 +207,7 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
         dict: Operation raw response.
     """
     raw_response: Iterator[Any] = client.get_owners()
-    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
+    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Owners",
                                            t=list(raw_response))
 
     return readable_output, {}, list(raw_response)
