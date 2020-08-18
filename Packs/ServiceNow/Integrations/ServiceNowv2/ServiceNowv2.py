@@ -2050,9 +2050,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
                 key = ''
-                if entry_tags[0] in tags:
+                if 'work_notes' in tags:
                     key = 'work_notes'
-                elif entry_tags[1] in tags:
+                elif 'comments' in tags:
                     key = 'comments'
                 user = entry.get('user', 'dbot')
                 text = f"({user}): {str(entry.get('contents', ''))}"

@@ -72,12 +72,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: work_notes,comments
-  display: Entry Tags
-  hidden: false
-  name: entry_tags
-  required: false
-  type: 0
 - defaultvalue: 'false'
   display: Close XSOAR Incident
   hidden: false

@@ -4,6 +4,7 @@
  "fromVersion": "5.0.0",
  "name": "ServiceNow Ticket",
  "prevName": "ServiceNow Ticket",
+ "description": "ServiceNow Ticket",
  "color": "#7C71F5",
  "layout": "ServiceNow Ticket",
  "system": false
