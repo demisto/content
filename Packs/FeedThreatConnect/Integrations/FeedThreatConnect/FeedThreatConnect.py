@@ -96,15 +96,14 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 
 class Client:
     """Object represnt a client for ThreatConnect actions"""
-
-    def __init__(self):
+    def __init__(self, access_key: str, secret_key: str, api_path: str):
         # Must suppress stdout due to wrong handling docker loop executor.
         with suppress_stdout():
             from tcex import TcEx
         self._client = TcEx(config={
-            "api_access_id": demisto.getParam("api_access_id"),
-            "api_secret_key": demisto.getParam("api_secret_key"),
-            "tc_api_path": demisto.getParam("tc_api_path"),
+            "api_access_id": access_key,
+            "api_secret_key": secret_key,
+            "tc_api_path": api_path,
         })
 
     def get_owners(self) -> Iterator[Any]:
@@ -214,7 +213,8 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
 
 
 def main():
-    client = Client()
+    client = Client(demisto.getParam("api_access_id"), demisto.getParam("api_secret_key"),
+                    demisto.getParam("tc_api_path"))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     commands = {
