@@ -189,7 +189,7 @@ def get_user_id(username):
 # Duo client return 2 different known structures of error messages
 def test_instance():
     try:
-        admin_api.get_info_summary()
+        admin_api.get_users()
         demisto.results('ok')
 
     except Exception as e:
@@ -339,7 +339,6 @@ def delete_u2f_token(token_id):
 try:
     admin_api = create_api_call()
     set_proxy()
-    demisto.results("proxy is set to: {}".format(USE_PROXY))
 
     if demisto.command() == 'test-module':
         test_instance()
