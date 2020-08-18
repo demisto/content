@@ -125,7 +125,7 @@ tasks:
     task:
       id: 4304f2b1-1c7e-43a4-8f3b-2e4c0f61c9c4
       version: -1
-      name: Is Genian NAC enabled?
+      name: Is Genians enabled?
       description: Verify that there is a valid instance of Genians enabled.
       type: condition
       iscommand: false
@@ -185,9 +185,9 @@ tasks:
     task:
       id: ddb19333-14f2-4337-87d5-257896a3e0a4
       version: -1
-      name: Block IP with Genian NAC
+      name: Block IP with Genian NAC of Genians
       description: Assigns a tag to the Node specified.
-      script: Genians|||genian-nac-assign-ip-tag
+      script: Genians|||genians-assign-ip-tag
       type: regular
       iscommand: true
       brand: Genians

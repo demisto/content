@@ -109,7 +109,7 @@ def assign_ip_tag_command():
                 'ReadableContentsFormat': formats['text'],
                 'HumanReadable': hr,
                 'EntryContext': {
-                    "genian.nac.tag.(val.Tag == obj.Tag)": assign_tag
+                    "genians.tag.(val.Tag == obj.Tag)": assign_tag
                 }
             })
         else:
@@ -154,7 +154,7 @@ def unassign_ip_tag_command():
                         'ReadableContentsFormat': formats['text'],
                         'HumanReadable': hr,
                         'EntryContext': {
-                            "genian.nac.tag.(val.Tag == obj.Tag)": unassign_tag
+                            "genians.tag.(val.Tag == obj.Tag)": unassign_tag
                         }
                     })
                 else:
@@ -172,9 +172,9 @@ def main():
 
         if demisto.command() == "test-module":
             demisto.results('ok')
-        elif demisto.command() == 'genian-nac-assign-ip-tag':
+        elif demisto.command() == 'genians-assign-ip-tag':
             demisto.results(assign_ip_tag_command())
-        elif demisto.command() == 'genian-nac-unassign-ip-tag':
+        elif demisto.command() == 'genians-unassign-ip-tag':
             demisto.results(unassign_ip_tag_command())
         else:
             raise NotImplementedError("Command {} was not implemented.".format(demisto.command()))

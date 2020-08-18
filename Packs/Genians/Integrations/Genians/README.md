@@ -76,8 +76,8 @@
 <h2>Commands</h2>
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
-<li><a href="#Post IP address to a tag" target="_self">Post IP address to a tag: genian-nac-assign-ip-tag</a></li>
-<li><a href="#Delete IP address from a tag" target="_self">Delete IP address from a tag: genian-nac-unassign-ip-tag</a></li>
+<li><a href="#Post IP address to a tag" target="_self">Post IP address to a tag: genians-assign-ip-tag</a></li>
+<li><a href="#Delete IP address from a tag" target="_self">Delete IP address from a tag: genians-unassign-ip-tag</a></li>
 </ol>
 </div>
 
@@ -85,7 +85,7 @@
 <h3 id="Post IP address to a tag">1. Post IP address to a tag</h3>
 <p>Assigns a tag to the Node specified.</p>
 <h5>Base Command</h5>
-<p><code>genian-nac-assign-ip-tag</code></p>
+<p><code>genians-assign-ip-tag</code></p>
 <h5>Input</h5>
 <table style="width: 745px;">
 <thead>
@@ -115,12 +115,12 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 325px;">genian.nac.tag.nodeId</td>
+<td style="width: 325px;">genians.tag.nodeId</td>
 <td style="width: 105px;">String</td>
 <td style="width: 310px;">nodeid of IP</td>
 </tr>
 <tr>
-<td style="width: 325px;">genian.nac.tag.Name</td>
+<td style="width: 325px;">genians.tag.Name</td>
 <td style="width: 105px;">String</td>
 <td style="width: 310px;">Tag name</td>
 </tr>
@@ -145,7 +145,7 @@
 <h3 id="Delete IP address from a tag">2. Delete IP address from a tag</h3>
 <p>Removes the tag(s) from the Node specified.</p>
 <h5>Base Command</h5>
-<p><code>genian-nac-unassign-ip-tag</code></p>
+<p><code>genians-unassign-ip-tag</code></p>
 <h5>Input</h5>
 <table style="width: 745px;">
 <thead>
@@ -175,12 +175,12 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 325px;">genian.nac.tag.nodeId</td>
+<td style="width: 325px;">genians.tag.nodeId</td>
 <td style="width: 105px;">String</td>
 <td style="width: 310px;">nodeid of IP</td>
 </tr>
 <tr>
-<td style="width: 325px;">genian.nac.tag.Name</td>
+<td style="width: 325px;">genians.tag.Name</td>
 <td style="width: 105px;">String</td>
 <td style="width: 310px;">Tag name</td>
 </tr>
