@@ -231,7 +231,7 @@ def main():
             readable_output, outputs, raw_response = commands[command](client)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        raise Exception(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')
+        return_error(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
