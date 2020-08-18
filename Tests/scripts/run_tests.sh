@@ -15,9 +15,9 @@ DEMISTO_API_KEY=$temp
 
 if [[ -z "${IS_PRIVATE}" ]];
 then
-    IS_PRIVATE_RUN=true
-else
     IS_PRIVATE_RUN=false
+else
+    IS_PRIVATE_RUN=true
 fi
 
 code_1=0
