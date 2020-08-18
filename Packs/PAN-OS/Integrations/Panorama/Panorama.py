@@ -4814,7 +4814,7 @@ def panorama_get_predefined_threats_list_command():
 
 def panorama_block_vulnerability():
     """
-    Ovverride a vulnerability signature such that it is in block mode
+    Override vulnerability signature such that it is in block mode
     """
     threatid = demisto.args().get('threat_id')
     vulnerability_profile = demisto.args().get('vulnerability_profile')
@@ -5411,6 +5411,55 @@ def panorama_show_location_ip_command():
     })
 
 
+def panorama_get_licence():
+    params = {
+        'type': 'op',
+        'cmd': '<request><license><info/></license></request>',
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result
+
+
+def panorama_get_licence_command():
+    """
+    Get information about PAN-OS available licenses and their statuses.
+    """
+    available_licences = []
+    result = panorama_get_licence()
+    if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
+        raise Exception(f'Failed to get the information about PAN-OS available licenses and their statuses.')
+
+    if 'response' in result and 'result' in result['response'] and 'entry' in result['response']['result']['licenses']:
+        entry = result['response']['result']['licenses']['entry']
+        for item in entry:
+            available_licences.append({
+                'Authcode': item.get('authcode'),
+                'Base-license-name': item.get('base-license-name'),
+                'Description': item.get('description'),
+                'Expired': item.get('expired'),
+                'Feature': item.get('feature'),
+                'Expires': item.get('expires'),
+                'Issued': item.get('issued'),
+                'Serial': item.get('serial')
+            })
+
+    headers = ['Authcode', 'Base-license-name', 'Description', 'Feature', 'Serial', 'Expired', 'Expires', 'Issued']
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('PAN-OS Available Instances', available_licences, headers, removeNull=True),
+        'EntryContext': {"Panorama.PANOS.License(val.Feature == obj.Feature)": available_licences}
+    })
+
+
 def main():
     LOG(f'Command being called is: {demisto.command()}')
 
@@ -5691,6 +5740,9 @@ def main():
 
         elif demisto.command() == 'panorama-show-location-ip':
             panorama_show_location_ip_command()
+
+        elif demisto.command() == 'panorama-get-licences':
+            panorama_get_licence_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

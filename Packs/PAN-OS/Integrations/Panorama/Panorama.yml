@@ -32,16 +32,16 @@ configuration:
   name: use_url_filtering
   required: false
   type: 8
-- display: URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious.
+- display: URL Filtering Additional suspicious categories. CSV list of categories
+    that will be considered suspicious.
   name: additional_suspicious
-  defaultvalue: ""
-  type: 12
   required: false
-- display: URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious.
+  type: 12
+- display: URL Filtering Additional malicious categories. CSV list of categories that
+    will be considered malicious.
   name: additional_malicious
-  defaultvalue: ""
-  type: 12
   required: false
+  type: 12
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -213,13 +213,19 @@ script:
     description: Run any command supported in the API.
     execution: false
     name: panorama
-
-  - name: panorama-get-predefined-threats-list
-    arguments:
-     - name: target
-       description: If specified, retrieves the predefined threats from a specific firewall managed by Panorama. 
+  - arguments:
+    - default: false
+      description: If specified, retrieves the predefined threats from a specific
+        firewall managed by Panorama.
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    deprecated: false
+    description: Get pre-defined threats list from a Firewall or Panorama and stores
+      as a JSON file in the context.
     execution: false
-    description: Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context.
+    name: panorama-get-predefined-threats-list
     outputs:
     - contextPath: File.Size
       description: File size.
@@ -248,7 +254,6 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: string
-
   - deprecated: false
     description: Commits a configuration to Palo Alto Firewall or Panorama, but does
       not validate if the commit was successful. Committing to Panorama does not push
@@ -607,20 +612,20 @@ script:
       description: Address group tags.
       type: String
   - arguments:
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      default: false
       description: Type of session reject
       isArray: false
       name: drop_mode
+      predefined:
+      - drop
+      - alert
+      - block-ip
+      - reset-both
+      - reset-client
+      - reset-server
       required: false
       secret: false
-      predefined:
-        - drop
-        - alert
-        - block-ip
-        - reset-both
-        - reset-client
-        - reset-server
     - default: false
       description: Name of vulnerability profile.
       isArray: false
@@ -642,7 +647,7 @@ script:
       description: ID of vulnerability that has been blocked/overridden.
       type: string
     - contextPath: Panorama.Vulnerability.NewAction
-      description: New action for vulnerability 
+      description: New action for vulnerability
       type: string
   - arguments:
     - default: false
@@ -3752,9 +3757,16 @@ script:
     execution: false
     name: panorama-device-reboot
   - arguments:
-    - name: ip_address
-      required: true
+    - default: false
       description: The IP address to perform the lookup on.
+      isArray: false
+      name: ip_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Show the IP location information.
+    execution: false
+    name: panorama-show-location-ip
     outputs:
     - contextPath: Panorama.Location.IP.country_code
       description: The IP location country code.
@@ -3768,8 +3780,35 @@ script:
     - contextPath: Panorama.Location.IP.Status
       description: Whether the IP address was found or not.
       type: String
-    description: Show the IP location information.
-    name: panorama-show-location-ip
+  - deprecated: false
+    description: Get information about PAN-OS available licenses and their statuses.
+    execution: false
+    name: panorama-get-licences
+    outputs:
+    - contextPath: Panorama.PANOS.License.Authcode
+      description: License authemtication code.
+      type: String
+    - contextPath: Panorama.PANOS.License.Base-license-name
+      description: Base License name.
+      type: String
+    - contextPath: Panorama.PANOS.License.Description
+      description: The License description.
+      type: String
+    - contextPath: Panorama.PANOS.License.Expired
+      description: Is the license expired.
+      type: String
+    - contextPath: Panorama.PANOS.License.Expires
+      description: When the license will be expired.
+      type: String
+    - contextPath: Panorama.PANOS.License.Feature
+      description: The license feature.
+      type: String
+    - contextPath: Panorama.PANOS.License.Issued
+      description: When the license was issued.
+      type: String
+    - contextPath: Panorama.PANOS.License.Serial
+      description: The license serial.
+      type: String
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false
