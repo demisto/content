@@ -1,11 +1,11 @@
+import demistomock as demisto
+from CommonServerPython import *
+
 ''' IMPORTS '''
 import traceback
 import jwt
-import datetime
 import requests
 
-import demistomock as demisto
-from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -258,7 +258,7 @@ def get_jwt(api_key, api_secret):
     """
     Encode the JWT token given the api ket and secret
     """
-    tt = datetime.datetime.now()
+    tt = datetime.now()
     expire_time = int(tt.strftime('%s')) + 5000
     payload = {
         'iss': api_key,
@@ -506,7 +506,6 @@ def main():
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
     # Log exceptions
     except Exception:
-        demisto.error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
         return_error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
 
 
