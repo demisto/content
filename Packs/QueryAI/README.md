@@ -2,14 +2,13 @@
 Query.AI is a decentralized data access and analysis technology that simplifies security investigations across disparate platforms, without data duplication.
 
 In order to use this integration you need the following:
-1. The URL of the proxy server (See Below)
-2. An email registered with Query.AI belonging to some Organization
-3. A valid Query.AI License Key
-4. Platform Connection Details of the platform alias you wish to connect to (This can be overridden while executing commands)
+1. The URL of Query.AI Proxy component (see below)
+2. An email registered with Query.AI belonging to your Organization
+3. The API key associated with above email
+4. Platform Connection Details of any platform integrated via Query.AI you wish to connect to (This can be overridden while executing commands)
 
 #### BASE_URL
-The base URL would generally be be [Query.AI Proxy](https://proxy.query.ai) or your server URL for on-prem users.
-**Don't forget to enter the port number along with the server URL. Eg.-[__https://your-server-name:port_number__]()** 
+The base URL would be of the [Query.AI Proxy](https://proxy.query.ai:443) . Replace with hostname and port of the Query.AI Proxy component running in your environment.
 
 <h2>Commands</h2>
 <p>
