@@ -1,11 +1,11 @@
 {
     "name": "GitHubITAdmin",
     "description": "GitHub Integration consists of a set of API endpoints that allow customers to automate provisioning of GitHub organization membership.",
-    "support": "partner",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
-    "author": "Shweta",
-    "url": "https://github.com/sonaaru/content.git",
-    "email": "shweta14.jain@nttdata.com",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
     "created": "2020-07-23T12:24:35Z",
     "categories": [
         "IT Services"
