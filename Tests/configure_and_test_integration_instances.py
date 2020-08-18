@@ -196,6 +196,8 @@ def get_new_and_modified_integration_files(git_sha1):
         (tuple): Returns a tuple of two lists, the file paths of the new integrations and modified integrations.
     """
     # get changed yaml files (filter only added and modified files)
+    tags = run_command('git tag').split('\n')
+    print_error(f'Tags are: {tags}')
     tag = get_last_release_version()
     file_validator = FilesValidator()
     change_log = run_command('git diff --name-status {}'.format(git_sha1))
