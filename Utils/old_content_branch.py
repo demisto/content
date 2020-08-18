@@ -90,6 +90,9 @@ def rewrite_yml(file_path, yml_content, new_to_version):
         elif yml_content.get('script').get('script') not in ('-', ''):
             yml_content['script']['script'] = FoldedScalarString(yml_content.get('script').get('script'))
 
+    # resetting the tests associated with each yml
+    yml_content['tests'] = ['No test']
+
     with open(file_path, mode='w', encoding='utf-8') as f:
         ryaml.dump(yml_content, f)
         print(f" - Updating {file_path}")

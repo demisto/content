@@ -9,8 +9,9 @@ import glob
 import git
 from datetime import datetime
 from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH
+from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
+    GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
+    get_packs_statistics_dataframe
 from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
 
 
@@ -251,18 +252,21 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_zip_name = os.path.basename(index_folder_path)
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
-    current_index_generation = None
     try:
         index_blob.reload()
         current_index_generation = index_blob.generation
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
-        index_blob.upload_from_filename(index_zip_path, if_generation_match=index_generation)
-        print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
+
+        if current_index_generation == index_generation:
+            index_blob.upload_from_filename(index_zip_path)
+            print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
+        else:
+            print_error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
+            print_error(f"Downloaded index generation: {index_generation}")
+            print_error(f"Current index generation: {current_index_generation}")
+            sys.exit(0)
     except Exception as e:
-        print_error(f"Failed in uploading {GCPConfig.INDEX_NAME}. "
-                    f"Mismatch in index file generation, additional info: {e}\n")
-        print_error(f"Downloaded index generation: {index_generation}")
-        print_error(f"Current index generation: {current_index_generation}")
+        print_error(f"Failed in uploading {GCPConfig.INDEX_NAME}, additional info: {e}\n")
         sys.exit(1)
     finally:
         shutil.rmtree(index_folder_path)
@@ -664,6 +668,10 @@ def main():
     check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
                               storage_bucket)
 
+    # google cloud bigquery client initialized
+    bq_client = init_bigquery_client(service_account)
+    packs_statistic_df = get_packs_statistics_dataframe(bq_client)
+
     if private_bucket_name:  # Add private packs to the index
         private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_packs = update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
@@ -705,7 +713,8 @@ def main():
                                            integration_images=integration_images, author_image=author_image,
                                            index_folder_path=index_folder_path,
                                            packs_dependencies_mapping=packs_dependencies_mapping,
-                                           build_number=build_number, commit_hash=current_commit_hash)
+                                           build_number=build_number, commit_hash=current_commit_hash,
+                                           packs_statistic_df=packs_statistic_df)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()

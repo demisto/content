@@ -1,8 +1,8 @@
 {
     "name": "PANW Comprehensive Investigation",
-    "description": "A pack for performing a comprehensive investigation using Palo Alto Networks products.",
+    "description": "Are you a Palo Alto Networks customer? We have just the content pack to help you orchestrate incident response across Palo Alto Networks products.",
     "support": "xsoar",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.3.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,5 +15,55 @@
         "Malware",
         "Hunting"
     ],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "Palo_Alto_Networks_WildFire": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks WildFire"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "Traps": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks Traps"
+        },
+        "DemistoRESTAPI": {
+            "mandatory": false,
+            "display_name": "Demisto REST API"
+        },
+        "PaloAltoNetworks_PAN_OS_EDL_Management": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks PAN-OS EDL Management"
+        },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "CortexXDR": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "Malware": {
+            "mandatory": true,
+            "display_name": "Malware"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        }
+    }
 }

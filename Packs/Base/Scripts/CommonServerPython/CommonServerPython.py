@@ -27,6 +27,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
+    from typing import Optional, List
 except Exception:
     pass
 
@@ -65,6 +66,8 @@ entryTypes = {
 class EntryType(object):
     """
     Enum: contains all the entry types (e.g. NOTE, ERROR, WARNING, FILE, etc.)
+    :return: None
+    :rtype: ``None``
     """
     NOTE = 1
     DOWNLOAD_AGENT = 2
@@ -78,6 +81,18 @@ class EntryType(object):
     WARNING = 11
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
+
+
+class IncidentStatus(object):
+    """
+    Enum: contains all the incidents status types (e.g. pending, active, done, archive)
+    :return: None
+    :rtype: ``None``
+    """
+    PENDING = 0
+    ACTIVE = 1
+    DONE = 2
+    ARCHIVE = 3
 
 
 # DEPRECATED - use EntryFormat enum instead
@@ -143,6 +158,7 @@ class DBotScoreType(object):
     DBotScoreType.FILE
     DBotScoreType.DOMAIN
     DBotScoreType.URL
+    DBotScoreType.CVE
     :return: None
     :rtype: ``None``
     """
@@ -2565,9 +2581,10 @@ class CommandResults:
     :param outputs_prefix: should be identical to the prefix in the yml contextPath in yml file. for example:
             CortexXDR.Incident
 
-    :type outputs_key_field: ``str``
+    :type outputs_key_field: ``str`` or ``list[str]``
     :param outputs_key_field: primary key field in the main object. If the command returns Incidents, and of the
-            properties of Incident is incident_id, then outputs_key_field='incident_id'
+            properties of Incident is incident_id, then outputs_key_field='incident_id'. If object has multiple
+            unique keys, then list of strings is supported outputs_key_field=['id1', 'id2']
 
     :type outputs: ``list`` or ``dict``
     :param outputs: the data to be returned and will be set to context
@@ -2588,14 +2605,27 @@ class CommandResults:
     """
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None):
-        # type: (str, str, object, list, str, object) -> None
+        # type: (str, object, object, list, str, object) -> None
         if raw_response is None:
             raw_response = outputs
 
         self.indicators = indicators
 
         self.outputs_prefix = outputs_prefix
+
+        # this is public field, it is used by a lot of unit tests, so I don't change it
         self.outputs_key_field = outputs_key_field
+
+        self._outputs_key_field = None  # type: Optional[List[str]]
+        if not outputs_key_field:
+            self._outputs_key_field = None
+        elif isinstance(outputs_key_field, STRING_TYPES):
+            self._outputs_key_field = [outputs_key_field]
+        elif isinstance(outputs_key_field, list):
+            self._outputs_key_field = outputs_key_field
+        else:
+            raise TypeError('outputs_key_field must be of type str or list')
+
         self.outputs = outputs
 
         self.raw_response = raw_response
@@ -2626,9 +2656,11 @@ class CommandResults:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
-            if self.outputs_prefix and self.outputs_key_field:
+            if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
-                outputs_key = '{0}(val.{1} == obj.{1})'.format(self.outputs_prefix, self.outputs_key_field)
+                formatted_outputs_key = ' && '.join(['val.{0} == obj.{0}'.format(key_field)
+                                                     for key_field in self._outputs_key_field])
+                outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
                 outputs_key = '{}'.format(self.outputs_prefix)
@@ -2636,9 +2668,13 @@ class CommandResults:
             else:
                 outputs = self.outputs  # type: ignore[assignment]
 
+        content_format = EntryFormat.JSON
+        if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
+            content_format = EntryFormat.TEXT
+
         return_entry = {
             'Type': EntryType.NOTE,
-            'ContentsFormat': EntryFormat.JSON,
+            'ContentsFormat': content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs
@@ -2664,6 +2700,14 @@ def return_results(results):
 
     if isinstance(results, CommandResults):
         demisto.results(results.to_context())
+        return
+
+    if isinstance(results, GetMappingFieldsResponse):
+        demisto.results(results.extract_mapping())
+        return
+
+    if isinstance(results, GetRemoteDataResponse):
+        demisto.results(results.extract_for_local())
         return
 
     demisto.results(results)
@@ -3594,7 +3638,8 @@ if 'requests' in sys.modules:
         def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
-                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False, **kwargs):
+                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                          error_handler=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -3681,6 +3726,10 @@ if 'requests' in sys.modules:
                 whether we should raise an exception, or return a response,
                 if status falls in ``status_forcelist`` range and retries have
                 been exhausted.
+
+            :type error_handler ``callable``
+            :param error_handler: Given an error entery, the error handler outputs the
+                new formatted error message.
             """
             try:
                 # Replace params if supplied
@@ -3704,16 +3753,19 @@ if 'requests' in sys.modules:
                 )
                 # Handle error responses gracefully
                 if not self._is_status_code_valid(res, ok_codes):
-                    err_msg = 'Error in API call [{}] - {}' \
-                        .format(res.status_code, res.reason)
-                    try:
-                        # Try to parse json error response
-                        error_entry = res.json()
-                        err_msg += '\n{}'.format(json.dumps(error_entry))
-                        raise DemistoException(err_msg)
-                    except ValueError:
-                        err_msg += '\n{}'.format(res.text)
-                        raise DemistoException(err_msg)
+                    if error_handler:
+                        error_handler(res)
+                    else:
+                        err_msg = 'Error in API call [{}] - {}' \
+                            .format(res.status_code, res.reason)
+                        try:
+                            # Try to parse json error response
+                            error_entry = res.json()
+                            err_msg += '\n{}'.format(json.dumps(error_entry))
+                            raise DemistoException(err_msg)
+                        except ValueError:
+                            err_msg += '\n{}'.format(res.text)
+                            raise DemistoException(err_msg)
 
                 is_response_empty_and_successful = (res.status_code == 204)
                 if is_response_empty_and_successful and return_empty_response:
@@ -4035,3 +4087,263 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 class DemistoException(Exception):
     pass
+
+
+class GetRemoteDataArgs:
+    """get-remote-data args parser
+    :type args: ``dict``
+    :param args: arguments for the command of the command.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, args):
+        self.remote_incident_id = args['id']
+        self.last_update = args['lastUpdate']
+
+
+class UpdateRemoteSystemArgs:
+    """update-remote-system args parser
+    :type args: ``dict``
+    :param args: arguments for the command of the command.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, args):
+        self.data = args.get('data')  # type: ignore
+        self.entries = args.get('entries')
+        self.incident_changed = args.get('incidentChanged')
+        self.remote_incident_id = args.get('remoteId')
+        self.inc_status = args.get('status')
+        self.delta = args.get('delta')
+
+
+class GetRemoteDataResponse:
+    """get-remote-data response parser
+    :type mirrored_object: ``dict``
+    :param mirrored_object: The object you are mirroring, in most cases the incident.
+
+    :type entries: ``list``
+    :param entries: The entries you want to add to the war room.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, mirrored_object, entries):
+        self.mirrored_object = mirrored_object
+        self.entries = entries
+
+    def extract_for_local(self):
+        """Extracts the response into the mirrored incident.
+
+        :return: List of details regarding the mirrored incident.
+        :rtype: ``list``
+        """
+        if self.mirrored_object:
+            demisto.info('Updating object {}'.format(self.mirrored_object["id"]))
+            return [self.mirrored_object] + self.entries
+
+
+class SchemeTypeMapping:
+    """Scheme type mappings builder.
+
+    :type type_name: ``str``
+    :param type_name: The name of the remote incident type.
+
+    :type fields: ``list``
+    :param fields: The list of fields to their description.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, type_name='', fields=None):
+        self.type_name = type_name
+        self.fields = fields if fields else []
+
+    def add_field(self, name, description=''):
+        """Adds a field to the incident type mapping.
+
+        :type name: ``str``
+        :param name: The name of the field.
+
+        :type description: ``str``
+        :param description: The description for that field.a
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        self.fields.append({
+            name: description
+        })
+
+    def extract_mapping(self):
+        """Extracts the mapping into XSOAR mapping screen.
+
+        :return: the mapping object for the current field.
+        :rtype: ``dict``
+        """
+        return {
+            self.type_name: self.fields
+        }
+
+
+class GetMappingFieldsResponse:
+    """Handler for the mapping fields object.
+
+    :type scheme_types_mapping: ``list``
+    :param scheme_types_mapping: List of all the mappings in the remote system.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, scheme_types_mapping=None):
+        self.scheme_types_mappings = scheme_types_mapping if scheme_types_mapping else []
+
+    def add_scheme_type(self, scheme_type_mapping):
+        """Add another incident type mapping.
+
+        :type scheme_type_mapping: ``dict``
+        :param scheme_type_mapping: mapping of a singular field.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        self.scheme_types_mappings.append(scheme_type_mapping)
+
+    def extract_mapping(self):
+        """Extracts the mapping into XSOAR mapping screen.
+
+        :return: the mapping object for the current field.
+        :rtype: ``dict``
+        """
+        all_mappings = []
+        for scheme_types_mapping in self.scheme_types_mappings:
+            all_mappings.append(scheme_types_mapping.extract_mapping())
+
+        return all_mappings
+
+
+def handle_incoming_error_in_mirror(incident_data, error):
+    """Handle incoming mirror error.
+
+    :type incident_data: ``dict``
+    :param incident_data: the incoming incident info.
+
+    :type error: ``str``
+    :param error: The incoming mirror error message.
+
+    :return: GetRemoteDataResponse that will include the incoming error information.
+    :rtype: ``GetRemoteDataResponse``
+    """
+    error_entries = []
+    integration_cache = demisto.getIntegrationContext()
+
+    # setup new error if needed
+    if integration_cache.get('in_mirror_error') is None or integration_cache.get('in_mirror_error') != error:
+        demisto.debug("Error in incoming mirror for incident {0}: {1}".format(incident_data.get('id'), error))
+        integration_cache['in_mirror_error'] = error
+        integration_cache['in_error_printed'] = False
+
+    # handle incoming error
+    if integration_cache.get('in_mirror_error'):
+        incident_data['in_mirror_error'] = integration_cache.get('in_mirror_error')
+
+        # check if error was printed
+        if not integration_cache.get('in_error_printed'):
+            # TODO: change this to an error type
+            error_entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': "",
+                'HumanReadable': "An error occurred while mirroring incoming data: {0}".format(
+                    integration_cache.get('in_mirror_error')),
+                'ReadableContentsFormat': EntryFormat.TEXT,
+                'ContentsFormat': EntryFormat.TEXT,
+            })
+            integration_cache['in_error_printed'] = True
+
+    demisto.setIntegrationContext(integration_cache)
+
+    # check for outgoing error
+    out_error_entry = handle_outgoing_error_in_mirror(incident_data)
+    if out_error_entry:
+        error_entries.append(out_error_entry)
+
+    return GetRemoteDataResponse(
+        mirrored_object=incident_data,
+        entries=error_entries
+    )
+
+
+def handle_outgoing_error_in_mirror(incident_data):
+    """Handle outgoing mirror error.
+
+    :type incident_data: ``dict``
+    :param incident_data: the incident info.
+
+    :return: An error entry if the current outgoing error was not printed, an empty dict otherwise.
+    :rtype: ``dict``
+    """
+    out_error_entry = {}
+    integration_cache = demisto.getIntegrationContext()
+
+    # handle incoming error
+    if integration_cache.get('out_mirror_error'):
+        incident_data['out_mirror_error'] = integration_cache.get('out_mirror_error')
+
+        # check if error was printed
+        if not integration_cache.get('out_error_printed'):
+            # TODO: change this to an error type
+            out_error_entry = {
+                'Type': EntryType.NOTE,
+                'Contents': "",
+                'HumanReadable': "An error occurred while mirroring outgoing data: {0}".format(
+                    integration_cache.get('out_mirror_error')),
+                'ReadableContentsFormat': EntryFormat.TEXT,
+                'ContentsFormat': EntryFormat.TEXT,
+            }
+            integration_cache['out_error_printed'] = integration_cache.get('out_mirror_error')
+            demisto.setIntegrationContext(integration_cache)
+
+    return out_error_entry
+
+
+def reset_incoming_and_outgoing_mirror_errors(incident_data):
+    """Handle incoming and outgoing mirror error reset.
+
+    :type incident_data: ``dict``
+    :param incident_data: the incident info.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    integration_cache = demisto.getIntegrationContext()
+    integration_cache['in_mirror_error'] = None
+    incident_data['in_mirror_error'] = ''
+
+    if integration_cache.get('out_mirror_error') is None:
+        incident_data['out_mirror_error'] = ''
+
+    demisto.setIntegrationContext(integration_cache)
+
+
+def setup_outgoing_mirror_error(incident_id, error):
+    """Setup outgoing mirror error to be printed in handle outgoing error method.
+
+    :type incident_id: ``str``
+    :param incident_id: the mirrored incident id that had an outgoing error.
+
+    :type error: ``str``
+    :param error: the outgoing error message.
+
+    :return: the mirrored incident id that had an outgoing error.
+    :rtype: ``str``
+    """
+    integration_cache = demisto.getIntegrationContext()
+    if integration_cache.get('out_mirror_error') is None or integration_cache.get('out_mirror_error') != error:
+        demisto.debug("Error in outgoing mirror for incident {0}: {1}".format(incident_id, error))
+        integration_cache['out_mirror_error'] = error
+        integration_cache['out_error_printed'] = False
+
+    demisto.setIntegrationContext(integration_cache)
+    return incident_id

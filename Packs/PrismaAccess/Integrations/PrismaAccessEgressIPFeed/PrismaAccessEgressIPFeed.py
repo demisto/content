@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple, Optional
 
 import urllib3
 
@@ -17,7 +17,8 @@ class Client(BaseClient):
     https://docs.paloaltonetworks.com/prisma/prisma-access/prisma-access-panorama-admin/prisma-access-overview/retrieve-ip-addresses-for-prisma-access
     """
 
-    def __init__(self, clientConfigs: list, api_key: str, insecure: bool = False, proxy: bool = False):
+    def __init__(self, clientConfigs: list, api_key: str, insecure: bool = False, proxy: bool = False,
+                 tags: Optional[list] = []):
         """
         Implements class for Prisma Access feed.
         :param clientConfigs: config data
@@ -25,6 +26,7 @@ class Client(BaseClient):
         :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
         self._apiKey = api_key
+        self.tags = [] if tags is None else tags
         super().__init__(base_url=clientConfigs, verify=not insecure, proxy=proxy)
 
     def build_iterator(self) -> List:
@@ -128,6 +130,7 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
         indicator_mapping_fields = {}
         indicator_mapping_fields['geocountry'] = item.get('zone', '')
         indicator_mapping_fields["description"] = 'IP from Prisma Access Egress API'
+        indicator_mapping_fields['tags'] = client.tags
         indicators.append({
             "value": value,
             "type": FeedIndicatorType.IP,
@@ -187,10 +190,12 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    param_api_key = demisto.params().get('api_key')
-    insecure = demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy')
-    baseURL = demisto.params().get('URL')
+    params = demisto.params()
+    param_api_key = params.get('api_key')
+    insecure = params.get('insecure', False)
+    proxy = params.get('proxy')
+    tags = argToList(params.get('feedTags'))
+    baseURL = params.get('URL')
     if baseURL[-1] != '/':
         baseURL += '/'
     feedURL = baseURL + PRISMA_ACCESS_EGRESS_V2_URI
@@ -206,7 +211,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(clientConfigs, param_api_key, insecure, proxy)
+        client = Client(clientConfigs, param_api_key, insecure, proxy, tags)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'prisma-access-get-indicators': get_indicators_command

@@ -25,7 +25,6 @@ from apiclient import discovery
 from oauth2client import service_account
 import itertools as it
 
-
 ''' GLOBAL VARS '''
 ADMIN_EMAIL = None
 PRIVATE_KEY_CONTENT = None
@@ -45,12 +44,12 @@ class TextExtractHtmlParser(HTMLParser):
         self._ignore = False
 
     def handle_starttag(self, tag, attrs):
-        if tag in ('p', 'br') and not self._ignore:
+        if tag in ('p', 'br') and not self._ignore:  # ignore
             self._texts.append('\n')
         elif tag in ('script', 'style'):
             self._ignore = True
 
-    def handle_startendtag(self, tag, attrs):
+    def handle_startendtag(self, tag, attrs):  # ignore
         if tag in ('br', 'tr') and not self._ignore:
             self._texts.append('\n')
 
@@ -108,6 +107,8 @@ def get_http_client_with_proxy():
         proxy_user=parsed_proxy.username,
         proxy_pass=parsed_proxy.password)
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
+
+
 # disable-secrets-detection-end
 
 
@@ -126,8 +127,8 @@ def get_credentials(additional_scopes=None, delegated_user=None):
     if additional_scopes is not None:
         scopes += additional_scopes
 
-    cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),  # type: ignore
-                                                                            scopes=scopes)
+    cred = service_account.ServiceAccountCredentials. \
+        from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT), scopes=scopes)  # type: ignore
 
     return cred.create_delegated(delegated_user)
 
@@ -210,8 +211,7 @@ def create_base_time(internal_date_timestamp, header_date):
         internal_date_timestamp = int(str(internal_date_timestamp)[:timestamp_len])
 
     utc, delta_in_seconds = localization_extract(header_date)
-    base_time = datetime.utcfromtimestamp(internal_date_timestamp) + \
-        timedelta(seconds=delta_in_seconds)
+    base_time = datetime.utcfromtimestamp(internal_date_timestamp) + timedelta(seconds=delta_in_seconds)
     base_time = str(base_time.strftime('%a, %d %b %Y %H:%M:%S')) + " " + utc
     return base_time
 
@@ -413,12 +413,8 @@ def users_to_entry(title, response, next_page_token=None):
     context = []
 
     for user_data in response:
-        username = user_data.get('name').get('givenName') if user_data.get('name') \
-            and 'givenName' in user_data.get('name') else None
-
-        display = user_data.get('name').get('fullName') if user_data.get('name') \
-            and 'fullName' in user_data.get('name') else None
-
+        username = dict_safe_get(user_data, ['name', 'givenName'])
+        display = dict_safe_get(user_data, ['name', 'fullName'])
         context.append({
             'Type': 'Google',
             'ID': user_data.get('id'),
@@ -483,7 +479,7 @@ def autoreply_to_entry(title, response, user_id):
     }
 
 
-def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, subject):
+def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject):
     gmail_context = []
     for mail_results_data in response:
         gmail_context.append({
@@ -1667,7 +1663,15 @@ def attachment_handler(message, attachments):
 
 def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
               transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
-    message = MIMEMultipart()
+    if htmlBody and not any([entry_ids, file_names, attach_cid, body]):
+        # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
+        message = MIMEText(htmlBody, 'html')  # type: ignore
+    elif body and not any([entry_ids, file_names, attach_cid, htmlBody]):
+        # if there is only body and no attachments to the mail , we would like to send it without attaching every part
+        message = MIMEText(body, 'plain', 'utf-8')  # type: ignore
+    else:
+        message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
+
     message['to'] = header(','.join(emailto))
     message['cc'] = header(','.join(cc))
     message['bcc'] = header(','.join(bcc))
@@ -1675,41 +1679,43 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
     message['subject'] = header(subject)
     message['reply-to'] = header(replyTo)
 
-    templateParams = template_params(templateParams)
-    if templateParams is not None:
-        if body is not None:
-            body = body.format(**templateParams)
+    # if there are any attachments to the mail
+    if entry_ids or file_names or attach_cid or (body and htmlBody):
+        templateParams = template_params(templateParams)
+        if templateParams is not None:
+            if body is not None:
+                body = body.format(**templateParams)
+
+            if htmlBody is not None:
+                htmlBody = htmlBody.format(**templateParams)
+
+        if additional_headers is not None and len(additional_headers) > 0:
+            for h in additional_headers:
+                header_name, header_value = h.split('=')
+                message[header_name] = header(header_value)
+
+        msg = MIMEText(body, 'plain', 'utf-8')
+        message.attach(msg)
+        htmlAttachments = []  # type: list
+        inlineAttachments = []  # type: list
 
         if htmlBody is not None:
-            htmlBody = htmlBody.format(**templateParams)
+            htmlBody, htmlAttachments = handle_html(htmlBody)
+            msg = MIMEText(htmlBody, 'html', 'utf-8')
+            message.attach(msg)
+            if attach_cid:
+                inlineAttachments = collect_inline_attachments(attach_cid)
 
-    if additional_headers is not None and len(additional_headers) > 0:
-        for h in additional_headers:
-            header_name_and_value = h.split('=')
-            message[header_name_and_value[0]] = header(header_name_and_value[1])
+        else:
+            # if not html body, cannot attach cids in message
+            transientFileCID = None
 
-    msg = MIMEText(body, 'plain', 'utf-8')
-    message.attach(msg)
-    htmlAttachments = []  # type: list
-    inlineAttachments = []  # type: list
+        attachments = collect_attachments(entry_ids, file_names)
+        manual_attachments = collect_manual_attachments()
+        transientAttachments = transient_attachments(transientFile, transientFileContent, transientFileCID)
 
-    if htmlBody is not None:
-        htmlBody, htmlAttachments = handle_html(htmlBody)
-        msg = MIMEText(htmlBody, 'html', 'utf-8')
-        message.attach(msg)
-        if attach_cid is not None and len(attach_cid) > 0:
-            inlineAttachments = collect_inline_attachments(attach_cid)
-
-    else:
-        # if not html body, cannot attach cids in message
-        transientFileCID = None
-
-    attachments = collect_attachments(entry_ids, file_names)
-    manual_attachments = collect_manual_attachments()
-    transientAttachments = transient_attachments(transientFile, transientFileContent, transientFileCID)
-
-    attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
-    attachment_handler(message, attachments)
+        attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
+        attachment_handler(message, attachments)
 
     encoded_message = base64.urlsafe_b64encode(message.as_string())
     command_args = {
@@ -1749,7 +1755,7 @@ def send_mail_command():
     result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
                        replyTo, file_names, attchCID, transientFile, transientFileContent,
                        transientFileCID, additional_headers, template_param)
-    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, htmlBody, body, subject)
+    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
 
 
 '''FETCH INCIDENTS'''
