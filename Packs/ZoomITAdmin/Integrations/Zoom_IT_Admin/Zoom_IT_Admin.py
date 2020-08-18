@@ -4,6 +4,8 @@ import jwt
 import datetime
 import requests
 
+import demistomock as demisto
+from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
