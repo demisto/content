@@ -2,7 +2,7 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-         {
+        {
             "integrations": "AWS - Security Hub",
             "playbookID": "AWS-securityhub Test"
         },
