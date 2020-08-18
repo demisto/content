@@ -321,7 +321,7 @@ def update_user_command(client, args):
     parsed_old_scim = map_scim(old_scim)
     user_id = parsed_old_scim.get('id')
 
-    if not (user_id):
+    if not user_id:
         raise Exception('You must provide id of the user')
 
     servicenow_user = client.build_servicenow_user_profile(args, new_scim, custom_mapping)
@@ -372,7 +372,7 @@ def disable_user_command(client, args):
     parsed_scim_data = map_scim(scim)
     user_id = parsed_scim_data.get('id')
 
-    if not (user_id):
+    if not user_id:
         raise Exception('You must provide sys id of the user')
 
     servicenow_user = {'active': False}
@@ -423,7 +423,7 @@ def enable_user_command(client, args):
     parsed_scim_data = map_scim(scim)
     user_id = parsed_scim_data.get('id')
 
-    if not (user_id):
+    if not user_id:
         raise Exception('You must provide sys id of the user')
 
     custom_mapping = demisto.params().get('customMappingUpdateUser')
@@ -507,7 +507,6 @@ def main():
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
     # Log exceptions
     except Exception:
-        demisto.error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
         return_error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
 
 
