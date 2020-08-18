@@ -582,6 +582,10 @@ class NitroESM(object):
         if organization is not None:
             case['orgId'] = self.organization_name_to_id(organization)
 
+        # due to error 400 from api - java.util.ArrayList` out of VALUE_STRING
+        del case['notes']
+        del case['history']
+
         cmd = 'caseEditCase'
         query = json.dumps({'caseDetail': case})
         self.cmdquery(cmd, query, no_answer=True)
