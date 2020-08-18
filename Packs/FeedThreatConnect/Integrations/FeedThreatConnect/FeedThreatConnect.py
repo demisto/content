@@ -175,7 +175,7 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:
 
 
 def get_indicators_command(client: Client) -> COMMAND_OUTPUT:
-    """ Get indicator form ThreatConnect, Able to change limit and offset by command arguments.
+    """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
 
     Args:
         client: ThreatConnect client.
