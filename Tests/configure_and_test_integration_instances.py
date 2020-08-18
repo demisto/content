@@ -825,7 +825,8 @@ def main():
 
     # get a list of brand new integrations that way we filter them out to only configure instances
     # after updating content
-    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
+    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(
+        git_sha1) if not is_private else [], []
     new_integrations_names, modified_integrations_names = [], []
 
     installed_content_packs_successfully = True
