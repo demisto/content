@@ -465,7 +465,9 @@ def main() -> None:
 
     user_name = params.get('user_name')
     user_password = params.get('user_password')
-    basic_authorization = f'{user_name}:{user_password}'
+    basic_authorization_to_encode = f'{user_name}:{user_password}'
+    basic_authorization = base64.b64encode(basic_authorization_to_encode.encode('ascii')).decode('utf-8')
+
     base_url = params.get('url')
 
     verify_certificate = not params.get('insecure', False)
@@ -482,7 +484,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         headers = {
-            'Authorization': base64.b64encode(basic_authorization.encode('ascii')).decode('utf-8')
+            'Authorization': f'Basic {basic_authorization}'
         }
         client = Client(
             base_url=base_url,
