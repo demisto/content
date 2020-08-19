@@ -34,7 +34,12 @@ Searches for all indicators that contain the given search term.
 | --- | --- | --- |
 | search_term | The term to search for (e.g. covid-19) | Optional | 
 | enclave_ids | Comma-separated list of enclave ids; only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. | Optional | 
-| limit | Limit of results to return. Max value possible is 1000. | Optional | 
+| from_time | Start of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
+| to_time | End of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
+| indicator_types | comma-separated indicator types to filter by. e.g. "URL, IP" | Optional | 
+| tags | Name (or list of names) of tag(s) to filter indicators by. Only indicators containing ALL of these tags will be returned. | Optional | 
+| excluded_tags | Indicators containing ANY of these tags will be excluded from the results. | Optional | 
+| limit | Limit of results to return. Max value possible is 1000. | Optional |  
 
 
 #### Context Output
@@ -2466,6 +2471,11 @@ Searches for all reports that contain the given search term.
 | --- | --- | --- |
 | search_term | The term to search for (e.g. covid-19) If empty, no search term will be applied. Otherwise, must be at least 3 characters. | Optional | 
 | enclave_ids | Comma-separated list of enclave ids; only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves) | Optional | 
+| from_time | Start of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
+| to_time | End of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
+| tags | Name (or list of names) of tag(s) to filter indicators by. Only indicators containing ALL of these tags will be returned. | Optional | 
+| excluded_tags | Indicators containing ANY of these tags will be excluded from the results. | Optional | 
+| limit | Limit of results to return. Max value possible is 1000. | Optional | 
 
 
 #### Context Output
@@ -2700,6 +2710,7 @@ Fetches all phishing submissions that fit the given criteria
 | from_time | Start of time window (defaults to 24 hours ago) (YYYY-MM-DD HH:MM:SS) | Optional | 
 | to_time | End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS) | Optional | 
 | status | A list of triage statuses for submissions (UNRESOLVED,CONFIRMED,IGNORED); only email submissions marked with at least one of these statuses will be returned | Optional | 
+| limit | Limit of results to return. Max value possible is 1000. | Optional | 
 
 
 #### Context Output
@@ -2777,6 +2788,7 @@ Get phishing indicators that match the given criteria.
 | from_time | Start of time window (defaults to 24 hours ago) (YYYY-MM-DD HH:MM:SS) | Optional | 
 | to_time | End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS) | Optional | 
 | status | A list of triage statuses for submissions; only email submissions marked with at least one of these statuses will be returned. Options are 'UNRESOLVED', 'CONFIRMED', 'IGNORED' | Optional | 
+| limit | Limit of results to return. Max value possible is 1000. | Optional | 
 
 
 #### Context Output
@@ -2816,3 +2828,48 @@ Get phishing indicators that match the given criteria.
 #### Human Readable Output
 
 >No phishing indicators were found.
+
+
+### trustar-redact-report
+***
+Redacts a report applying company's redaction terms and submits a new incident report. Then it receives the ID it has been assigned in TruSTAR’s system.
+
+
+#### Base Command
+
+`trustar-redact-report`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| title | Title of the report | Required | 
+| report_body | Text content of report | Required | 
+| enclave_ids | CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. | Optional | 
+| distribution_type | Distribution type of the report | Optional | 
+| external_url | URL for the external report that this originated from, if one exists. Limit 500 alphanumeric characters. Must be unique across all reports for a given company. | Optional | 
+| time_began | ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00. Default is current time. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TruSTAR.Report.title | string | Title of the report | 
+| TruSTAR.Report.reportBody | string | Body of the report | 
+| TruSTAR.Report.id | string | ID of the report | 
+
+
+#### Command Example
+
+You can submit in your report title or body any IOC that is included in your redaction library. In this example we are simulating how it would look if you'd put a url from your redaction library.
+
+```!trustar-redact-report title="REDACT_REPORT" report_body="Report with url: <url_from_your_redaction_library>" enclave_ids=<enclave_id>```
+
+
+#### Human Readable Output
+
+> ### TruSTAR report was successfully created
+> 
+> |distributionType|enclaveIds|id|reportBody|reportDeepLink|timeBegan|title|
+> |---|---|---|---|---|---|---|
+> | ENCLAVE | <enclave_id> | <report_id> | Report with url: < url > | https://station.trustar.co/constellation/reports/<report_id> | 2020-08-19T17:28:59.366548+00:00 | REDACT_REPORT |
