@@ -622,20 +622,25 @@ def main():
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
-    commands = {
-        'test-module': test_module,
-        f'{INTEGRATION_COMMAND_NAME}-rdata': dnsdb_rdata,
-        f'{INTEGRATION_COMMAND_NAME}-summarize-rdata': dnsdb_summarize_rdata,
-        f'{INTEGRATION_COMMAND_NAME}-rrset': dnsdb_rrset,
-        f'{INTEGRATION_COMMAND_NAME}-summarize-rrset': dnsdb_summarize_rrset,
-        f'{INTEGRATION_COMMAND_NAME}-rate-limit': dnsdb_rate_limit,
-    }
     try:
-        if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+        if command == f'{INTEGRATION_COMMAND_NAME}-rdata':
+            return_outputs(dnsdb_rdata(client, demisto.args()))
+
+        elif command == f'{INTEGRATION_COMMAND_NAME}-summarize-rdata':
+            return_outputs(dnsdb_summarize_rdata(client, demisto.args()))
+
+        elif command == f'{INTEGRATION_COMMAND_NAME}-rrset':
+            return_outputs(dnsdb_rrset(client, demisto.args()))
+
+        elif command == f'{INTEGRATION_COMMAND_NAME}-summarize-rrset':
+            return_outputs(dnsdb_summarize_rrset(client, demisto.args()))
+
+        elif command == f'{INTEGRATION_COMMAND_NAME}-rate-limit':
+            return_outputs(dnsdb_rate_limit(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg, error=e)
 
