@@ -41,6 +41,14 @@ investigations = {
 
 
 def test_get_investigations():
+    """
+    Given:
+        raw incidents info from getDBStatistics command.
+    When:
+        Running get_investigations.
+    Then:
+        check the resulting incidents are filtered and formatted correctly
+    """
     from GetLargestInvestigations import get_investigations
     inv: Dict = {}
     get_investigations(raw_incidents_data, inv)
@@ -48,6 +56,15 @@ def test_get_investigations():
 
 
 def test_parse_investigations_to_table():
+    """
+    Given:
+        A dict of investigations with their info.
+    When:
+        Running investigations_to_table.
+    Then:
+        check the result has the correct amount of outputs, that the incident names are in the correct
+        order (sorted by size) and that the date is formatted correctly.
+    """
     from GetLargestInvestigations import parse_investigations_to_table
     table = parse_investigations_to_table(investigations)
     assert table.get('total') == 2
@@ -58,6 +75,14 @@ def test_parse_investigations_to_table():
 
 
 def test_get_month_database_names(mocker):
+    """
+    Given:
+        from and to dates
+    When:
+        Running get_month_database_names.
+    Then:
+        the result is a set of all the months between from and to
+    """
     from GetLargestInvestigations import get_month_database_names
     mocker.patch.object(demisto, 'args', return_value={'to': '2020-08-20T14:28:23.382748Z',
                                                        'from': '2020-06-20T14:28:23.382748Z'})

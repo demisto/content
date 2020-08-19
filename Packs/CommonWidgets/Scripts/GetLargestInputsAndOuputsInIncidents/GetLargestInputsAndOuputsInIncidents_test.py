@@ -43,6 +43,14 @@ largest_output = {
 
 
 def test_get_largest_inputs_and_outputs():
+    """
+    Given:
+        a list of inputs and outputs
+    When:
+        Running get_largest_inputs_and_outputs.
+    Then:
+        the result a list with only the larges input and output
+    """
     from GetLargestInputsAndOuputsInIncidents import get_largest_inputs_and_outputs
     res = []
     get_largest_inputs_and_outputs(inputs_and_outputs, res, 1)
