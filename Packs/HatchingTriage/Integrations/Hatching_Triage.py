@@ -26,7 +26,7 @@ class Client(BaseClient):
 
 # Works
 def test_module(client: Client):
-    r = client.http_request('GET', 'users')
+    client.http_request('GET', 'users')
 
     return 'ok'
 
@@ -118,7 +118,7 @@ def get_sample_summary(client: Client, **args):
 # Works
 def delete_sample(client: Client, **args):
     sample_id=args.get('sample_id')
-    r = client.http_request('DELETE', f'samples/{sample_id}')
+    client.http_request('DELETE', f'samples/{sample_id}')
 
     return f'Sample {sample_id} successfully deleted'
 
@@ -139,7 +139,7 @@ def set_sample_profile(client: Client, **args):
         data.update({'profiles': [{'profile': args.get('profiles', '')}]})
     data = json.dumps(data)
 
-    r = client.http_request('POST', f'samples/{sample_id}/profile', data=data)
+    client.http_request('POST', f'samples/{sample_id}/profile', data=data)
 
     return f'Profile successfully set for sample {sample_id}'
 
@@ -183,53 +183,53 @@ def get_report_triage(client: Client, **args):
 
 
 # FAILING
-def get_sample_events(client: Client, **args):
-    '''
-    Need to test
-    '''
-    sample_id=args.get('sample_id')
-
-    # This will continue to have events available to pull until the status = reported / failed
-    while True:
-        r = client.http_request('GET', f'samples/{sample_id}/events')
-
-        results = CommandResults(
-            outputs_prefix = 'Triage.sample.events',
-            outputs_key_field = 'data',
-            outputs = r
-        )
-
-        # If status indicates completion, return to break the loop, else print to WarRoom and continue loop
-        if r.get('status') in ['reported', 'failed']:
-            return results
-        else:
-            return_results(results)
-            time.sleep(5)
+# def get_sample_events(client: Client, **args):
+#     '''
+#     Need to test
+#     '''
+#     sample_id=args.get('sample_id')
+#
+#     # This will continue to have events available to pull until the status = reported / failed
+#     while True:
+#         r = client.http_request('GET', f'samples/{sample_id}/events')
+#
+#         results = CommandResults(
+#             outputs_prefix = 'Triage.sample.events',
+#             outputs_key_field = 'data',
+#             outputs = r
+#         )
+#
+#         # If status indicates completion, return to break the loop, else print to WarRoom and continue loop
+#         if r.get('status') in ['reported', 'failed']:
+#             return results
+#         else:
+#             return_results(results)
+#             time.sleep(5)
 
 
 # FAILING
-# Can probably combine this wiith the above sample events
-def get_all_sample_events(client: Client, **args):
-    '''
-    Need to test
-    '''
-    sample_id=args.get('sample_id')
-
-    # This will continue to have events available to pull until the status = reported / failed
-    while True:
-        r = client.http_request('GET', f'samples/events')
-
-        results = CommandResults(
-            outputs_prefix = 'Triage.sample.events',
-            outputs_key_field = 'data',
-            outputs = r
-        )
-
-        # If status indicates completion, return to break the loop, else print to WarRoom and continue loop
-        if r.get('status') in ['reported', 'failed']:
-            return results
-        else:
-            return_results(results)
+# Can probably combine this with the above sample events
+# def get_all_sample_events(client: Client, **args):
+#     '''
+#     Need to test
+#     '''
+#     sample_id=args.get('sample_id')
+#
+#     # This will continue to have events available to pull until the status = reported / failed
+#     while True:
+#         r = client.http_request('GET', f'samples/events')
+#
+#         results = CommandResults(
+#             outputs_prefix = 'Triage.sample.events',
+#             outputs_key_field = 'data',
+#             outputs = r
+#         )
+#
+#         # If status indicates completion, return to break the loop, else print to WarRoom and continue loop
+#         if r.get('status') in ['reported', 'failed']:
+#             return results
+#         else:
+#             return_results(results)
 
 
 # Working
@@ -553,8 +553,8 @@ def main():
         'triage-set-sample-profile': set_sample_profile,
         'triage-get-static-report': get_static_report,
         'triage-get-report-triage': get_report_triage,
-        'triage-get-sample-events': get_sample_events,
-        'triage-get-all-sample-events': get_all_sample_events,
+        # 'triage-get-sample-events': get_sample_events,
+        # 'triage-get-all-sample-events': get_all_sample_events,
         'triage-get-kernel-monitor': get_kernel_monitor,
         'triage-get-pcap': get_pcap,
         'triage-get-dumped-files': get_dumped_files,
