@@ -4,7 +4,7 @@ commonfields:
 name: Genians
 display: Genians
 category: Network Security
-description: ip block
+description: Use the Genians integration to block IP using assign tag and unassign tag.
 detaileddescription: |-
   Generating and obtaining an API Token
   - You can generate an API Key in the Genian NAC web console.
