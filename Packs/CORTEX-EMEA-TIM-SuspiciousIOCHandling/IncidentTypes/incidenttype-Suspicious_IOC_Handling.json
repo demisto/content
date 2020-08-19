@@ -1,0 +1,31 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#fea743",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Suspicious IOC Handling",
+	"itemVersion": "",
+	"layout": "989f939e-0307-4059-8a72-4ce04a36b03d",
+	"locked": false,
+	"name": "Suspicious IOC Handling",
+	"packID": "4c45ebf8-749a-4837-84a2-0be40c6459c2",
+	"playbookId": "c98229ac-91e2-473c-894a-81e7a0d9e116",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 1,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

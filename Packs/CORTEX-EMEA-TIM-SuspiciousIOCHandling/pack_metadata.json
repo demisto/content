@@ -1,0 +1,14 @@
+{
+    "name": "CORTEX-EMEA-TIM-SuspiciousIOCHandling",
+    "description": "The principle is simple. \n\nFirst a job  researches IOCs according to the query given in input of the job. \nIf ELK hits are found, the job creates a new investigation. Please note here I'm using ELK because that's what my customer has but it should use a generic hunt playbook composed of subplaybooks to Hunt in Cortex CDL, ELK, Splunk, QRadar, etc. \nIn the new investigation an analyst is assigned where he/she can review IOCs and hits in ELK (or other). The analyst can then change the reputation of IOCs in three different ways:\n- one by one\n- fully-automated through playbook orchestration \n- fully-automated through action button (but it won't effect IOCs with reputation manually set)\n\nTo review IOCs with context we set the URL link to ELK in an indicator field where the IOC was found, I removed it from the pack here for anonymization purpose. \n\n/Sylvain",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Sylvain Meras (Cortex SE)",
+    "url": "",
+    "email": "",
+    "created": "2020-08-19T19:19:59Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

@@ -1,0 +1,617 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4c45ebf8-749a-4837-84a2-0be40c6459c2
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: c4568d94-8ffb-4f05-8df7-49eac271dca8
+inputs:
+- description: Indicator object resulting of an indicator research
+  key: indicator
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: CORTEX-EMEA - TIM - Hunt IOC in ELK
+outputs:
+- contextPath: TIM-HuntELK.hits
+  description: Set to true if at least an hit is found
+  type: unknown
+- contextPath: TIM-HuntELK.results
+  description: Contains the "_source" field from ELK result
+  type: unknown
+- contextPath: TIM-HuntELK.indicatorIDs
+  description: List of indicators ids found in ELK
+  type: unknown
+quiet: true
+sourceplaybookid: df6da261-ca62-4d50-8cc9-c039c63b07bd
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+      - "11"
+      - "12"
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 31068795-f44a-439d-8547-eaf27d984c28
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 31068795-f44a-439d-8547-eaf27d984c28
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SUSPICIOUS-IOC-ELK-HIT
+      indicatorsValues:
+        complex:
+          accessor: value
+          root: inputs.indicator
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      id: 7becec49-0681-4913-8fcb-d29772a7e480
+      iscommand: true
+      name: Tag IOC as being found (hit) in ELK (SUSPICIOUS-IOC-ELK-HIT)
+      script: Builtin|||appendIndicatorField
+      type: regular
+      version: -1
+    taskid: 7becec49-0681-4913-8fcb-d29772a7e480
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 59e70621-74ea-4fcf-89e7-b9acde9c5262
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 59e70621-74ea-4fcf-89e7-b9acde9c5262
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 1595
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Elasticsearch.Search.total.value
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "1"
+      label: "true"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "true":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ef430c98-025e-4f9f-86f7-74908f87ef3b
+      iscommand: false
+      name: Hit found?
+      type: condition
+      version: -1
+    taskid: ef430c98-025e-4f9f-86f7-74908f87ef3b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 720
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: value
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.indicator.indicator_type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: URL
+                root: inputs.indicator
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6b9f5fe4-3ffc-4b29-8994-b4eb4178d832
+      iscommand: false
+      name: Are there URL results?
+      type: condition
+      version: -1
+    taskid: 6b9f5fe4-3ffc-4b29-8994-b4eb4178d832
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: value
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.indicator.indicator_type
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: File
+                root: inputs.indicator
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 75210786-09d3-4584-84ba-1d8a8b20121f
+      iscommand: false
+      name: Are there Hash results?
+      type: condition
+      version: -1
+    taskid: 75210786-09d3-4584-84ba-1d8a8b20121f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 195
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: value
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.indicator.indicator_type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Domain
+                root: inputs.indicator
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a60f0c57-b580-4d9b-8731-e6e27d3a137d
+      iscommand: false
+      name: Are there Domain results?
+      type: condition
+      version: -1
+    taskid: a60f0c57-b580-4d9b-8731-e6e27d3a137d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 195
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: value
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.indicator.indicator_type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: IP
+                root: inputs.indicator
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8b811012-d70b-419e-85e9-2315dacf153f
+      iscommand: false
+      name: Are there IP results?
+      type: condition
+      version: -1
+    taskid: 8b811012-d70b-419e-85e9-2315dacf153f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 195
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Pensez à adapter la requete ELK selon le type d'indicateur.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 17c1c006-b2ca-437c-8434-590b89cb1bbe
+      iscommand: false
+      name: 'TODO: Adapt ELK Request'
+      script: Print
+      type: regular
+      version: -1
+    taskid: 17c1c006-b2ca-437c-8434-590b89cb1bbe
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 370
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 91360802-1ea9-4364-8741-3f0996814a62
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 91360802-1ea9-4364-8741-3f0996814a62
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 385
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: acd76bc8-28a2-4779-8817-22360e99c495
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: acd76bc8-28a2-4779-8817-22360e99c495
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 385
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      explain: {}
+      fields: {}
+      index:
+        simple: fireeye*
+      page: {}
+      query:
+        simple: 'alert.explanation.malware-detected.malware.sha256: ${inputs.indicator.value}'
+      size: {}
+      sort-field: {}
+      sort-order: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Queries an index.
+      id: b7a3ce33-2be7-4fee-86b9-4e2368dde33a
+      iscommand: true
+      name: Lookup for IOCs into ELK FireEye index
+      script: '|||es-search'
+      type: regular
+      version: -1
+    taskid: b7a3ce33-2be7-4fee-86b9-4e2368dde33a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 545
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: TIM-HuntELK.hits
+      stringify:
+        simple: "true"
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 93af5225-eb54-42b9-867c-e3c8d102fef6
+      iscommand: false
+      name: Set Context Data Output (TIM-HuntELK.hits)
+      script: Set
+      type: regular
+      version: -1
+    taskid: 93af5225-eb54-42b9-867c-e3c8d102fef6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 1070
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TIM-HuntELK.results
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          accessor: _source
+          root: Elasticsearch.Search.Results
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 44858fd6-145d-4ac3-8815-38a723aec2a4
+      iscommand: false
+      name: Set Context Data Output (TIM-HuntELK.results)
+      script: Set
+      type: regular
+      version: -1
+    taskid: 44858fd6-145d-4ac3-8815-38a723aec2a4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 1245
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TIM-HuntELK.indicatorIDs
+      stringify:
+        simple: "false"
+      value:
+        complex:
+          accessor: id
+          root: inputs.indicator
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 9548ce8f-6fb7-4cf8-88de-b8d134175ef9
+      iscommand: false
+      name: Set Context Data Output (TIM-HuntELK.indicatorIDs)
+      script: Set
+      type: regular
+      version: -1
+    taskid: 9548ce8f-6fb7-4cf8-88de-b8d134175ef9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 1420
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_15_#default#": 0.73,
+      "11_15_#default#": 0.86,
+      "7_3_true": 0.9,
+      "7_4_#default#": 0.38
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 1690,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
