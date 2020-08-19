@@ -38,9 +38,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.8.0"
+      CONTENT_VERSION: "20.8.1"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "3873a1828b5ca4d96582547682617f621a61a490" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "6bee490e79e851e5f23572ad65cd456022eea753" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -483,10 +483,15 @@ jobs:
             - run:
                 name: Zip Content Packs From GCS
                 command: |
+                  if [[ $CIRCLE_BRANCH != master ]] && [[ $CIRCLE_BRANCH != 20\.* ]] && [[ $CIRCLE_BRANCH != 21\.* ]]; then
+                    echo "Skipping packs download to artifact on non master or release branch"
+                    exit 0
+                  fi
+
                   GCS_PATH=$(mktemp)
                   ZIP_FOLDER=$(mktemp -d)
                   echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-ci-build' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH -n $CIRCLE_BUILD_NUM -br $CIRCLE_BRANCH
+                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH
                   rm $GCS_PATH
                 when: always
             - run:
@@ -582,9 +587,13 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+
+                    else
+                      echo "Not AMI run, can't run on this version"
+                  fi
             - *destroy_instances
             - *store_artifacts
   Server 4_5:
@@ -638,9 +647,13 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+
+                    else
+                      echo "Not AMI run, can't run on this version"
+                  fi
             - *destroy_instances
             - *store_artifacts
   Server 5_0:
@@ -695,9 +708,13 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
+                    else
+                      echo "Not AMI run, can't run on this version"
+                  fi
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
 
             - *destroy_instances
             - *store_artifacts
@@ -752,12 +769,16 @@ jobs:
                       echo "Skipping - instance was not setup"
                       exit 0
                   fi
-                  PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
-                  export RETVAL=$?
-                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                  exit $RETVAL
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                      export RETVAL=$?
+                      cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                      exit $RETVAL
+
+                  else
+                      echo "Not AMI run, can't run on this version"
+                  fi
             - *destroy_instances
             - *store_artifacts
   Server 6_0:
@@ -816,9 +837,7 @@ jobs:
                     echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
                   fi
                   source $BASH_ENV
-                  PUBLIC_IP=$(cat ./env_results.json | jq ".[] | select(.Role == \"${INSTANCE_ROLE}\") | .InstanceDNS" | sed "s/\"//g")
-                  export TESTS_LOG_PATH="${CIRCLE_ARTIFACTS}/$(echo \"$INSTANCE_ROLE\" | tr -d '[:space:]' | sed "s/\"//g")_run_tests_${PUBLIC_IP}.log"
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" 2>&1 | tee -a $TESTS_LOG_PATH
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
                   export RETVAL=$?
                   cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                   exit $RETVAL
