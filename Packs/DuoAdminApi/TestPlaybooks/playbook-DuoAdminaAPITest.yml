@@ -2,6 +2,7 @@ id: DuoAdmin API test playbook
 version: -1
 name: DuoAdmin API test playbook
 description: Test playbook for DuoAdmin Integration.
+fromversion: 5.5.0
 starttaskid: "0"
 tasks:
   "0":
