@@ -9,4 +9,5 @@ boto3==1.10.0
 pyminizip===0.2.4
 requests_mock==1.7.0
 google-cloud-storage==1.29.0
+google-cloud-bigquery==1.26.1
 prettytable==0.7.2

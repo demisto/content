@@ -38,9 +38,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.7.2"
-      SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "4ee42cb22bae137d2691868674001436e61f1b3c" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "20.8.1"
+      SERVER_VERSION: "6.0.0"
+      GIT_SHA1: "6bee490e79e851e5f23572ad65cd456022eea753" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -154,11 +154,6 @@ references:
     run:
       name: Destroy Instances
       command: |
-        if [ -n "${TIME_TO_LIVE}" ]
-        then
-            echo "Skipping - Time to live was set to $TIME_TO_LIVE minutes"
-            exit 0
-        fi
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ]
           then
             echo "Skipping - not running in demisto-sdk nightly"
@@ -171,7 +166,7 @@ references:
             echo "Skipping - instance was not setup"
             exit 0
         fi
-        python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json "$INSTANCE_ROLE"
+        python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
         zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
@@ -314,6 +309,7 @@ references:
                 echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
                 git remote add $USER git@github.com:$USER/content.git
                 git fetch $USER $BRANCH
+                rm -rf $PACK
                 git checkout $USER/$BRANCH $PACK
                 exit 0
 
@@ -372,6 +368,7 @@ jobs:
             - *add_ssh_keys
             - *prepare_environment
             - *secrets
+            - *create_id_set
             - *validate_files_and_yaml
             - run:
                 name: Content Docs Site
@@ -486,10 +483,15 @@ jobs:
             - run:
                 name: Zip Content Packs From GCS
                 command: |
+                  if [[ $CIRCLE_BRANCH != master ]] && [[ $CIRCLE_BRANCH != 20\.* ]] && [[ $CIRCLE_BRANCH != 21\.* ]]; then
+                    echo "Skipping packs download to artifact on non master or release branch"
+                    exit 0
+                  fi
+
                   GCS_PATH=$(mktemp)
                   ZIP_FOLDER=$(mktemp -d)
                   echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-ci-build' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH -n $CIRCLE_BUILD_NUM -br $CIRCLE_BRANCH
+                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH
                   rm $GCS_PATH
                 when: always
             - run:
@@ -498,7 +500,7 @@ jobs:
                 when: always
             - run:
                 name: Create Instance
-                when: always
+                when: on_success
                 command: |
                   [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
                   if ./Tests/scripts/is_ami.sh ;
@@ -523,7 +525,7 @@ jobs:
                   fi
             - run:
                 name: Setup Instance
-                when: always
+                when: on_success
                 command: |
                   if ./Tests/scripts/is_ami.sh ;
                     then
