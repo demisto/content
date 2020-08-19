@@ -173,9 +173,9 @@ def main():
         if demisto.command() == "test-module":
             demisto.results('ok')
         elif demisto.command() == 'genians-assign-ip-tag':
-            demisto.results(assign_ip_tag_command())
+            assign_ip_tag_command()
         elif demisto.command() == 'genians-unassign-ip-tag':
-            demisto.results(unassign_ip_tag_command())
+            unassign_ip_tag_command()
         else:
             raise NotImplementedError("Command {} was not implemented.".format(demisto.command()))
 
