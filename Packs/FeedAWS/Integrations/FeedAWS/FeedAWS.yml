@@ -48,7 +48,7 @@ configuration:
 - display: Fetch indicators
   name: feed
   required: false
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
 - defaultvalue: Good
   display: Indicator Reputation
