@@ -72,13 +72,16 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: 'false'
+- additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex
+    XSOAR.
+  defaultvalue: 'false'
   display: Close XSOAR Incident
   hidden: false
   name: close_incident
   required: false
   type: 8
-- defaultvalue: 'false'
+- additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
+  defaultvalue: 'false'
   display: Close ServiceNow Ticket
   hidden: false
   name: close_ticket
