@@ -620,20 +620,21 @@ def print_packs_summary(packs_list):
         print_error(failed_packs_table)
         sys.exit(1)
 
-    # when there is no failed packs, add the build summary to the pull request
-    successful_packs_table = build_summary_table_md(successful_packs)
-
-    build_num = os.environ['CIRCLE_BUILD_NUM']
+    # for external pull requests -  when there is no failed packs, add the build summary to the pull request
     branch_name = os.environ['CIRCLE_BRANCH']
+    if branch_name.startswith('pull/'):
+        successful_packs_table = build_summary_table_md(successful_packs)
 
-    bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-                  f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
+        build_num = os.environ['CIRCLE_BUILD_NUM']
 
-    pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
-        f'Uploaded packs:\n{successful_packs_table}\n\n' \
-        f'Browse to the build bucket with this address:\n{bucket_path}'
+        bucket_path = f'https://console.cloud.google.com/storage/browser/' \
+                      f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
 
-    add_pr_comment(pr_comment)
+        pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
+            f'Uploaded packs:\n{successful_packs_table}\n\n' \
+            f'Browse to the build bucket with this address:\n{bucket_path}'
+
+        add_pr_comment(pr_comment)
 
 
 def option_handler():
