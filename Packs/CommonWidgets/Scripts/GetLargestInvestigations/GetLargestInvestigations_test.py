@@ -64,4 +64,3 @@ def test_get_month_database_names(mocker):
     db_names = get_month_database_names()
     expected_dbs = {'082020', '072020', '062020'}
     assert db_names == expected_dbs
-
