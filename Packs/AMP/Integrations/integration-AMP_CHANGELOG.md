@@ -1,8 +1,7 @@
-## [Unreleased]
--
-
-
-## [19.8.2] - 2019-08-22
-  - Improved integration documentation.
-  - Changed the name of the ***amp_get_computer_trajctory*** command to ***amp_get_computer_trajectory***.
-  - Changed the name of the ***mp_get_computer_actvity*** command to ***mp_get_computer_activity***.
+#### Integrations
+##### Cortex XSOAR - AMP
+  - Add new commands for cisco amp
+  - amp_delete_computers_isolation
+  - amp_options_computers_isolation
+  - amp_put_computers_isolation
+  - amp_get_computers_isolation
