@@ -7,7 +7,7 @@ from datetime import datetime
 
 from requests.exceptions import HTTPError
 
-from CommonServerPython import *it cha
+from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
