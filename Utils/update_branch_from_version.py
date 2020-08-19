@@ -12,6 +12,8 @@ ryaml = YAML()
 ryaml.preserve_quotes = True
 ryaml.width = 50000  # make sure long lines will not break (relevant for code section)
 
+DOCKERIMAGE_45_TOP_VERSION = '4.5.9'
+
 
 def should_keep_yml_file(yml_content, new_from_version):
     # if the file's toversion is lower than the new from version we should delete it
@@ -106,12 +108,12 @@ def rewrite_yml(file_path, yml_content, new_from_version):
 def check_dockerimage45(yml_content, new_from_version):
     # check in scripts
     if 'dockerimage45' in yml_content:
-        if parse_version(new_from_version) > parse_version('4.5.9'):
+        if parse_version(new_from_version) > parse_version(DOCKERIMAGE_45_TOP_VERSION):
             del yml_content['dockerimage45']
 
     # check in integrations
     elif 'dockerimage45' in yml_content.get('script', {}):
-        if parse_version(new_from_version) > parse_version('4.5.9'):
+        if parse_version(new_from_version) > parse_version(DOCKERIMAGE_45_TOP_VERSION):
             del yml_content['script']['dockerimage45']
 
 
