@@ -237,7 +237,7 @@ script:
     - contextPath: EnableUser.details
       description: Gives the user information if the API is success else error information
       type: String
-  dockerimage: demisto/smartsheet:1.0.0.10255
+  dockerimage: demisto/smartsheet:1.0.0.10664
   runonce: false
   script: ''
   subtype: python3
