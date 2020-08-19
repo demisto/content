@@ -125,7 +125,6 @@ script:
             case 'amp_delete_computers_isolation':
                 base += '/' + args['connector_guid'] + '/isolation';
                 delete args['connector_guid'];
-                return base
                 break;
             case 'amp_put_computers_isolation':
                 base += '/' + args['connector_guid'] + '/isolation';
