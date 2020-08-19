@@ -18,7 +18,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 """
 Development info:
 *** Error in demisto docker loop, when importing tcex module a print occured therefor its handled with context manager to susspress prints. 
-    - ThreatConnect SDK - https://docs.threatconnect.com/en/latest/tcex/  (Don't use deprecated one).
+    - ThreatConnect SDK - https://docs.threatconnect.com/en/latest/python/python_sdk.html  (Don't use deprecated one).
     - More filters details - https://docs.threatconnect.com/en/latest/tcex/module_threat_intelligence.html#get-indicators-by-filter
     - REST API - https://docs.threatconnect.com/en/latest/rest_api/rest_api.html
 """  # noqa W291
@@ -97,7 +97,23 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 class Client:
     """Object represnt a client for ThreatConnect actions"""
     def __init__(self, access_key: str, secret_key: str, api_path: str):
-        # Must suppress stdout due to wrong handling docker loop executor.
+        """ Initialize client configuration.
+                HMAC authorization is typically only used for running Apps outside the ThreatConnect platform.
+                Generation of the authorization headers when using HMAC will utilize the api_access_id and
+                api_secret_key arguments.
+
+        Args:
+            access_key: Generated access key.
+            secret_key: Generated secret key.
+            api_path:
+
+        References:
+            1. HMAC: https://docs.threatconnect.com/en/latest/tcex/authorization.html
+            2. Creating user: https://training.threatconnect.com/learn/article/creating-user-accounts-kb-article#2
+
+        Notes:
+            1. When importing TcEx, Print occured therefor an error raised in the server due to not valid stdout.
+        """
         with suppress_stdout():
             from tcex import TcEx
         self._client = TcEx(config={
@@ -213,7 +229,8 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
 
 
 def main():
-    client = Client(demisto.getParam("api_access_id"), demisto.getParam("api_secret_key"),
+    client = Client(demisto.getParam("api_access_id"),
+                    demisto.getParam("api_secret_key"),
                     demisto.getParam("tc_api_path"))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
