@@ -54,6 +54,31 @@ if DEVICE_GROUP:
 else:
     XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
 
+# setting security rulebase xpath relevant to FW or panorama management
+if DEVICE_GROUP:
+    device_group_shared = DEVICE_GROUP.lower()
+    if DEVICE_GROUP == 'shared':
+        XPATH_RULEBASE = "/config/shared/"
+        DEVICE_GROUP = device_group_shared
+    else:
+        XPATH_RULEBASE = "/config/devices/entry/[@name='localhost.localdomain']/device-group/entry[@name=\'" \
+                        + DEVICE_GROUP + "\']/"
+else:
+    XPATH_RULEBASE = "/config/devices/entry/[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + "\']/"
+
+# setting security profile xpath relevant to FW or panorama management
+if DEVICE_GROUP:
+    device_group_shared = DEVICE_GROUP.lower()
+    if DEVICE_GROUP == 'shared':
+        XPATH_PROFILE = "/config/shared/profiles"
+        DEVICE_GROUP = device_group_shared
+    else:
+        XPATH_PROFILE = "/config/devices/entry/[@name='localhost.localdomain']/device-group/entry[@name=\'" \
+                        + DEVICE_GROUP + "\']/"
+else:
+    XPATH_PROFILE = "/config/devices/entry/[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + "\']/"
+
+
 # Security rule arguments for output handling
 SECURITY_RULE_ARGS = {
     'rulename': 'Name',
@@ -5417,11 +5442,7 @@ def panorama_get_licence():
         'cmd': '<request><license><info/></license></request>',
         'key': API_KEY
     }
-    result = http_request(
-        URL,
-        'GET',
-        params=params
-    )
+    result = http_request(URL, 'GET', params=params)
 
     return result
 
@@ -5456,7 +5477,106 @@ def panorama_get_licence_command():
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('PAN-OS Available Instances', available_licences, headers, removeNull=True),
-        'EntryContext': {"Panorama.PANOS.License(val.Feature == obj.Feature)": available_licences}
+        'EntryContext': {"Panorama.License(val.Feature == obj.Feature)": available_licences}
+    })
+
+
+def get_security_profile():
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': XPATH_PROFILE + "profiles",
+        'key': API_KEY
+    }
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_security_profiles_command():
+    """
+    Get information about profiles.
+    """
+    result = get_security_profile()
+
+    demisto.results(result)
+
+
+def apply_security_profile(rule_name, profile_type, profile_name):
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_PROFILE}/rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/"
+        f"profiles/{profile_type} and value <member>{profile_name}</member>",
+        'key': API_KEY
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+# def apply_security_profile_command():
+#
+#     profile_type = demisto.args().get('profile_type')
+#     rule_name = demisto.args().get('rule_name')
+
+
+def get_ssl_decryption_rules(xpath):
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': xpath,
+        'key': API_KEY
+    }
+    print(xpath)
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_ssl_decryption_rules_command():
+
+    content = []
+    if DEVICE_GROUP:
+        if 'pre_post' not in demisto.args():
+            raise Exception('Please provide the pre_post argument when getting rules in Panorama instance.')
+        else:
+            xpath = XPATH_RULEBASE + demisto.args()['pre_post'] + '/decryption/rules'
+    else:
+        xpath = XPATH_RULEBASE
+    result = get_ssl_decryption_rules(xpath)
+    ssl_decryption_ruls = result['response']['result']['rules']['entry']
+    if '@dirtyId' in ssl_decryption_ruls:
+        LOG(f'Found uncommitted item:\n{ssl_decryption_ruls}')
+        raise Exception('Please commit the instance prior to editing the ssl decryption ruls.')
+
+    for item in ssl_decryption_ruls:
+        content.append({
+            'Name': item.get('@name'),
+            'UUID': item.get('@uuid'),
+            'Target': item.get('target'),
+            'Category': item.get('categoty'),
+            'Service': item.get('service').get('member'),
+            'Type': item.get('type'),
+            'From': item.get('from').get('member'),
+            'To': item.get('to').get('member'),
+            'Source': item.get('source').get('member'),
+            'Destination': item.get('destination').get('member'),
+            'Source-user': item.get('source-user').get('member'),
+            'Action': item.get('action'),
+            'Description': item.get('description')
+        })
+
+    headers = ['Name', 'UUID', 'Description', 'Target', 'Service', 'Category', 'Type', 'From', 'To', 'Source',
+               'Destination', 'Action', 'Source-user']
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('SSL Decryption Rules', content, headers, removeNull=True),
+        'EntryContext': {"Panorama.SSLRule(val.UUID == obj.UUID)": content}
     })
 
 
@@ -5743,6 +5863,12 @@ def main():
 
         elif demisto.command() == 'panorama-get-licences':
             panorama_get_licence_command()
+
+        elif demisto.command() == 'panorama-get-security-profiles':
+            get_security_profiles_command()
+
+        elif demisto.command() == 'panorama-get-ssl-decryption-rules':
+            get_ssl_decryption_rules_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

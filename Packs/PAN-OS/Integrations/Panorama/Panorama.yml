@@ -3785,29 +3785,117 @@ script:
     execution: false
     name: panorama-get-licences
     outputs:
-    - contextPath: Panorama.PANOS.License.Authcode
+    - contextPath: Panorama.License.Authcode
       description: License authemtication code.
       type: String
-    - contextPath: Panorama.PANOS.License.Base-license-name
+    - contextPath: Panorama.License.Base-license-name
       description: Base License name.
       type: String
-    - contextPath: Panorama.PANOS.License.Description
+    - contextPath: Panorama.License.Description
       description: The License description.
       type: String
-    - contextPath: Panorama.PANOS.License.Expired
+    - contextPath: Panorama.License.Expired
       description: Is the license expired.
       type: String
-    - contextPath: Panorama.PANOS.License.Expires
+    - contextPath: Panorama.License.Expires
       description: When the license will be expired.
       type: String
-    - contextPath: Panorama.PANOS.License.Feature
+    - contextPath: Panorama.License.Feature
       description: The license feature.
       type: String
-    - contextPath: Panorama.PANOS.License.Issued
+    - contextPath: Panorama.License.Issued
       description: When the license was issued.
       type: String
-    - contextPath: Panorama.PANOS.License.Serial
+    - contextPath: Panorama.License.Serial
       description: The license serial.
+      type: String
+  - deprecated: false
+    description: Get information about profiles.
+    execution: false
+    name: panorama-get-security-profiles
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Security profile type.
+      isArray: false
+      name: profile_type
+      predefined:
+      - data-filtering
+      - file-blocking
+      - gtp
+      - sctp
+      - spyware
+      - url-filtering
+      - virus
+      - vulnerability
+      - wildfire-analysis
+      required: true
+      secret: false
+    - default: false
+      description: The rule name to apply.
+      isArray: false
+      name: rule_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Apply profile to specific rules / rules with specific tag.
+    execution: false
+    name: panorama-apply-security-profile
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory
+        for Panorama instances.
+      isArray: false
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      required: false
+      secret: false
+    deprecated: false
+    description: Show ssl decryption rules under policies -> decryption -> rules
+    execution: false
+    name: panorama-get-ssl-decryption-rules
+    outputs:
+    - contextPath: Panorama.SSLRule.From
+      description: SSL rule from source.
+      type: String
+    - contextPath: Panorama.SSLRule.Name
+      description: Name of the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.Destination
+      description: Destination of the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.Target
+      description: The target od the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.Service
+      description: SSL rule service.
+      type: String
+    - contextPath: Panorama.SSLRule.Action
+      description: SSL rule action.
+      type: String
+    - contextPath: Panorama.SSLRule.Type
+      description: SSL rule type.
+      type: String
+    - contextPath: Panorama.SSLRule.Source
+      description: The source of the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.To
+      description: SSL rule to destination.
+      type: String
+    - contextPath: Panorama.SSLRule.UUID
+      description: SSl rule UUID.
+      type: String
+    - contextPath: Panorama.SSLRule.Description
+      description: SSL rule description.
+      type: String
+    - contextPath: Panorama.SSLRule.Source-user
+      description: SSL rule source user.
+      type: String
+    - contextPath: Panorama.SSLRule.Category
+      description: SSL rule category.
       type: String
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
