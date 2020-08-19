@@ -1,0 +1,16 @@
+comment: Create duplicate incident to the current incident.
+commonfields:
+  id: CreateDuplicateIncident
+  version: -1
+dockerimage: demisto/dateutil
+enabled: true
+name: CreateDuplicateIncident
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
