@@ -3,7 +3,6 @@
 
 import json
 import requests
-import urllib
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
