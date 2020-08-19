@@ -216,7 +216,7 @@ script:
     description: Lookup RRset records
   - name: dnsdb-summarize-rrset
     arguments:
-    - name: owner
+    - name: owner_name
       required: true
       description: Owner name to query
     - name: rrtype
