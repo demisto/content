@@ -9,13 +9,13 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def get_investigations(raw_output, investigations, db_name):
-    for db in raw_output[0].get('Contents'):
+def get_investigations(raw_output, investigations):
+    for db in raw_output:
         buckets = db.get('buckets')
         for entry in buckets.keys():
             if entry.startswith('investigations-'):
                 investigations[entry] = buckets.get(entry)
-                investigations[entry].update({"Date": db_name})
+                investigations[entry].update({"Date": db.get('dbName')})
 
 
 def parse_investigations_to_table(investigations):
@@ -44,7 +44,7 @@ def get_month_db_from_date(date):
 
 
 def get_time_object(timestring):
-    if timestring is None:
+    if timestring is None or timestring == '':
         return datetime.now()
 
     date_object = parse(timestring)
@@ -72,11 +72,11 @@ def main():
         investigations: Dict = {}
         for db_name in get_month_database_names():
             raw_output = demisto.executeCommand('getDBStatistics', args={"filter": db_name})
-            get_investigations(raw_output, investigations, db_name)
+            get_investigations(raw_output[0].get('Contents', {}), investigations)
         demisto.results(parse_investigations_to_table(investigations))
     except Exception:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute LargestInvestigationsWidget. Error: {traceback.format_exc()}')
+        return_error(f'Failed to execute GetLargestInvestigations. Error: {traceback.format_exc()}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
