@@ -83,6 +83,11 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 description: This integration fetches indicators from ThreatConnect.
 display: ThreatConnect Feed
 name: ThreatConnect Feed
@@ -122,7 +127,7 @@ script:
     description: Get availble indicators owners.
     execution: false
     name: tc-get-owners
-  dockerimage: demisto/threatconnect-tcex:1.0.0.9577
+  dockerimage: demisto/threatconnect-tcex:1.0.0.10664
   feed: true
   isfetch: false
   longRunning: false
