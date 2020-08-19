@@ -3,7 +3,7 @@
     "description": "Instantly search live log data at scale. Create dashboards to visualize and analyze complex systems in real time",
     "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "Kristian Gausel",
+    "author": "Humio",
     "url": "",
     "email": "integrations@humio.com",
     "categories": [
