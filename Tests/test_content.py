@@ -795,6 +795,10 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
 
     demisto_api_key = tests_settings.api_key
+    if demisto_api_key is None:
+        print_error("Demisto api key is none")
+    elif demisto_api_key == "":
+        print_error("Demisto api key is an empty string")
 
     default_test_timeout = conf.get('testTimeout', 30)
 

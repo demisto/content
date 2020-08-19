@@ -9,6 +9,20 @@ DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq '.temp_apikey')
 temp="${DEMISTO_API_KEY%\"}"
 temp="${temp#\"}"
 DEMISTO_API_KEY=$temp
+if [[ -z $DEMISTO_API_KEY ]]; then
+  echo "11111111"
+fi
+if [[ -z "$DEMISTO_API_KEY" ]]; then
+  echo "2222222"
+fi
+if [[ -n $DEMISTO_API_KEY ]]; then
+  echo "33333333"
+fi
+if [[ -n "$DEMISTO_API_KEY" ]]; then
+  echo "4444444"
+fi
+
+echo "secret conf path is ${SECRET_CONF_PATH}"
 
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 [ -n "${MEM_CHECK}" ] && MEM_CHECK=true || MEM_CHECK=false
