@@ -694,7 +694,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
                 print_color, 0, LOG_COLORS.GREEN)
 
     failed_pre_and_post = preupdate_fails.intersection(postupdate_fails)
-    mismatched_statuses = preupdate_fails.symmetric_difference(postupdate_fails) - preupdate_fails
+    mismatched_statuses = postupdate_fails - preupdate_fails
     failed_only_after_update = []
     failed_but_is_new = []
     for instance_name, integration_of_instance in mismatched_statuses:
