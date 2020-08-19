@@ -2,10 +2,10 @@
  "id": "LargestInvestigationsWidget",
  "version": -1,
  "modified": "2020-08-18T13:28:59.339259+03:00",
- "name": "LargestInvestigationsWidget",
+ "name": "Largest Investigations",
  "dataType": "scripts",
  "widgetType": "table",
- "query": "LargestInvestigationsWidget",
+ "query": "GetLargestInvestigationst",
  "dateRange": {
   "fromDate": "0001-01-01T00:00:00Z",
   "toDate": "0001-01-01T00:00:00Z",

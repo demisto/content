@@ -11,12 +11,12 @@ args:
   name: from
   required: false
   secret: false
-comment: Create widget for the largest investigations
+comment: Script gets the all XSOAR investigations in a given time period whose size was above 1 MB.
 commonfields:
-  id: LargestInputsAndOuputsInIncidents
+  id: GetLargestInvestigations
   version: -1
 enabled: false
-name: LargestInputsAndOuputsInIncidents
+name: GetLargestInvestigations
 script: '-'
 subtype: python3
 system: false

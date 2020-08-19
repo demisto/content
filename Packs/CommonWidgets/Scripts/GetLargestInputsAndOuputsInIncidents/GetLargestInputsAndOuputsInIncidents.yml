@@ -11,12 +11,12 @@ args:
   name: from
   required: false
   secret: false
-comment: Create widget for the largest investigations
+comment: Script gets the largest inputs and outputs from the all the XSOAR investigations who are larger than 1 MB
 commonfields:
-  id: LargestInvestigationsWidget
+  id: GetLargestInputsAndOuputsInIncidents
   version: -1
 enabled: false
-name: LargestInvestigationsWidget
+name: GetLargestInputsAndOuputsInIncidents
 script: '-'
 subtype: python3
 system: false
