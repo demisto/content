@@ -1,11 +1,11 @@
 {
     "name": "Prisma Cloud IT Admin",
     "description": "The Prisma Cloud API consists of a set of API endpoints that allow customers to perform CRUD operation on their user profiles.",
-    "support": "partner",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
-    "author": "Balaji",
-    "url": "https://panwgithub.paloaltonetworks.local/rbilgundi/XSOAR-IAM.git",
-    "email": "bs@paloaltonetworks.com",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
     "created": "2020-06-26T13:59:01Z",
     "categories": [
         "IT Services"
