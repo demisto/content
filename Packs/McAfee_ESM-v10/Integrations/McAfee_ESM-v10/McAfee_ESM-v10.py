@@ -447,7 +447,6 @@ class NitroESM(object):
 
         cmd = 'userGetUserList'
         query = json.dumps({"authPW": {"value": self.passwd}})
-
         return self.cmdquery(cmd, query)
 
     @logger
@@ -583,6 +582,10 @@ class NitroESM(object):
         if organization is not None:
             case['orgId'] = self.organization_name_to_id(organization)
 
+        # due to error 400 from api - java.util.ArrayList` out of VALUE_STRING
+        del case['notes']
+        del case['history']
+
         cmd = 'caseEditCase'
         query = json.dumps({'caseDetail': case})
         self.cmdquery(cmd, query, no_answer=True)
@@ -640,12 +643,12 @@ def cases_to_entry(esm, title, cases):
     headers = ['ID', 'Summary', 'Status', 'Severity', 'OpenTime']
     fixed_cases = []
     context_cases = []
-
     for case in cases:
         fixed_case = {
             'ID': case['id']['value'],
             'Summary': case['summary'],
-            'Status': esm.case_status_id_to_name(case['statusId']['value']),
+            'Status': esm.case_status_id_to_name(
+                case['statusId']['value'] if type(case['statusId']) is dict else case['statusId']),
             'OpenTime': case['openTime'],
             'Severity': case['severity']
         }

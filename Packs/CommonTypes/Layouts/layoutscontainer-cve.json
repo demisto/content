@@ -77,7 +77,7 @@
                     {
                         "description": "By Virus Total",
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "main-2914c250-a2fe-11e9-b76d-69524aca75e8",
                         "isVisible": true,
@@ -136,7 +136,7 @@
                             }
                         ],
                         "displayType": "ROW",
-                        "h": 5,
+                        "h": 4,
                         "hideName": false,
                         "i": "main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
                         "isVisible": true,
@@ -151,7 +151,7 @@
                         "type": "relatedIncidents",
                         "w": 2,
                         "x": 0,
-                        "y": 6
+                        "y": 8
                     },
                     {
                         "columns": [
@@ -236,7 +236,7 @@
                         "y": 0
                     },
                     {
-                        "h": 3,
+                        "h": 5,
                         "i": "main-174e7bd0-3d57-11ea-9dff-c57e8949d2f9",
                         "items": null,
                         "maxW": 3,
@@ -248,7 +248,7 @@
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "columns": [
@@ -503,31 +503,21 @@
                         "y": 3
                     },
                     {
-                        "displayType": "ROW",
                         "h": 2,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "main-c1091520-d0d9-11ea-937a-6f8841d9fed1",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "feedrelatedindicators",
-                                "height": 22,
-                                "id": "c8da93f0-d0d9-11ea-937a-6f8841d9fed1",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
+                        "i": "main-7162f100-dbb3-11ea-894b-59859b6b5482",
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
                         "name": "Feed Related Indicators",
+                        "query": "FeedRelatedIndicatorsWidget",
+                        "queryType": "script",
                         "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
+                        "type": "dynamicIndicator",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
                     }
                 ],
                 "type": "custom"
