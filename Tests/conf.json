@@ -40,6 +40,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "ThreatConnect Feed",
+            "playbookID": "FeedThreatConnect-Test"
+        },
+        {
             "integrations": "Group-IB TDS Polygon",
             "playbookID": "Polygon-Test",
             "timeout": 1000,
