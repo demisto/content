@@ -2033,11 +2033,3 @@ def test_format_policy_url_command():
 
     assert outputs.get('name') == '/mockexample'
     assert outputs.get('id') == 'eJxT4ThwaDSqmvcR0hFghQ'
-
-
-def test_format_date():
-    micros = 1596026066000000.0
-    assert format_date(micros) == '2020-07-29T15:34:26Z'
-    micros = 0
-    assert format_date(micros) == '1970-01-01T02:00:00Z'
-
