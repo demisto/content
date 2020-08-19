@@ -1624,3 +1624,5 @@ script:
 tests:
 - Test XDR Playbook
 fromversion: 4.1.0
+defaultclassifier: Cortex XDR - IR
+defaultmapperin: Cortex XDR - IR-mapper
