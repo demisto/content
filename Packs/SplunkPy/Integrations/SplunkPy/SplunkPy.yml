@@ -630,7 +630,7 @@ script:
     execution: false
     name: splunk-kv-store-collection-delete-entry
   dockerimage45: demisto/splunksdk:1.0
-  dockerimage: demisto/splunksdk:1.0.0.8854
+  dockerimage: demisto/splunksdk:1.0.0.10663
   feed: false
   isfetch: true
   longRunning: false
@@ -642,5 +642,6 @@ script:
 tests:
 - SplunkPy-Test-V2
 - SplunkPy KV commands
+- SplunkPy parse-raw - Test
 defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper

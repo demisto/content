@@ -1283,6 +1283,11 @@
         },
         {
             "integrations": "SplunkPy",
+            "playbookID": "SplunkPy parse-raw - Test",
+            "instance_names": "use_default_handler"
+        },
+        {
+            "integrations": "SplunkPy",
             "playbookID": "SplunkPy-Test-V2",
             "memory_threshold": 500,
             "instance_names": "use_default_handler"
