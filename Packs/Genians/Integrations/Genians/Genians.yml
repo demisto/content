@@ -63,7 +63,7 @@ script:
       description: Tag name
       type: string
     description: Removes the tag(s) from the Node specified.
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: false
   longRunning: false
