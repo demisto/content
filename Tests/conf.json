@@ -2794,13 +2794,13 @@
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
         },
-		{
-            "integrations": "F5 firewall",
-            "playbookID": "F5_firewall_v2_testplaybook",
-			"timeout": 600,
+        {
+            "integrations": "F5 WAF",
+            "playbookID": "playbook-F5_ASM-Testk",
+            "timeout": 600,
             "fromversion": "5.0.0",
-            "nightly": true        
-		}
+            "nightly": true
+        }
     ],
     "skipped_tests": {
         "SentinelOne V2 - test": "Issue 24933",
