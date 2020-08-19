@@ -5,7 +5,6 @@ import click
 import ujson
 from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import FoldedScalarString
-import json
 from pkg_resources import parse_version
 import shutil
 
