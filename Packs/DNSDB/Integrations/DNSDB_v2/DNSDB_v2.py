@@ -521,7 +521,7 @@ def rate_limit_to_markdown(results: Dict) -> str:
 def test_module(client, _):
     try:
         client.rate_limit()
-        return 'ok'
+        return ['ok']
     except Exception as e:
         raise DemistoException from e
 
