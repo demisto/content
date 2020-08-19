@@ -806,10 +806,14 @@ class Client(BaseClient):
             check_signatures (bool): Should attack signatures be checked.
             check_metachars(bool): Should metachar elements be checked.
         """
-        json_body = {'name': name, 'description': description, 'defenseAttributes': {
-            'maximumValueLength': maximum_value_len,
-            'maximumTotalLengthOfGWTData': maximum_total_len,
-            'tolerateGWTParsingWarnings': tolerate_parsing_warnings == 'true'},
+        json_body = {'name': name,
+                     'description': description,
+                     'defenseAttributes':
+                         {
+                             'maximumValueLength': maximum_value_len,
+                             'maximumTotalLengthOfGWTData': maximum_total_len,
+                             'tolerateGWTParsingWarnings': tolerate_parsing_warnings == 'true'
+                         },
                      'attackSignaturesCheck': check_signatures,
                      'metacharElementCheck': check_metachars}
         json_body = {key: value for key, value in json_body.items() if value is not None}
@@ -839,10 +843,13 @@ class Client(BaseClient):
             check_metachars(bool): Should metachar elements be checked.
         """
         profile_id = self.get_id(policy_md5, name, 'gwt-profiles')
-        json_body = {'description': description, 'defenseAttributes': {
-            'maximumValueLength': maximum_value_len,
-            'maximumTotalLengthOfGWTData': maximum_total_len,
-            'tolerateGWTParsingWarnings': tolerate_parsing_warnings == 'true'},
+        json_body = {'description': description,
+                     'defenseAttributes':
+                         {
+                             'maximumValueLength': maximum_value_len,
+                             'maximumTotalLengthOfGWTData': maximum_total_len,
+                             'tolerateGWTParsingWarnings': tolerate_parsing_warnings == 'true'
+                         },
                      'attackSignaturesCheck': check_signatures,
                      'metacharElementCheck': check_metachars}
         json_body = {key: value for key, value in json_body.items() if value is not None}
@@ -943,12 +950,15 @@ class Client(BaseClient):
             check_metachars(bool): Should the profile check for metachar elements.
         """
         profile_id = self.get_id(policy_md5, name, 'json-profiles')
-        json_body = {'description': description, 'defenseAttributes': {
-            'maximumValueLength': maximum_value_len,
-            'maximumTotalLengthOfJSONData': maximum_total_len,
-            'tolerateJSONParsingWarnings': tolerate_parsing_warnings == 'true',
-            'maximumArrayLength': max_array_len,
-            'maximumStructureDepth': max_structure_depth},
+        json_body = {'description': description,
+                     'defenseAttributes':
+                         {
+                             'maximumValueLength': maximum_value_len,
+                             'maximumTotalLengthOfJSONData': maximum_total_len,
+                             'tolerateJSONParsingWarnings': tolerate_parsing_warnings == 'true',
+                             'maximumArrayLength': max_array_len,
+                             'maximumStructureDepth': max_structure_depth
+                         },
                      'attackSignaturesCheck': check_signatures,
                      'metacharElementCheck': check_metachars,
                      'handleJsonValuesAsParameters': parse_parameters}
@@ -1188,17 +1198,18 @@ def format_list_policies(result: dict) -> CommandResults:
 
     result = result.get('items')
     printable_result = []
-    for item in result:
-        current_object_data = {
-            'name': item.get('name'),
-            'id': item.get('id'),
-            'type': item.get('type'),
-            'creatorName': item.get('creatorName'),
-            'createdTime': item.get('createdDatetime'),
-            'enforcementMode': item.get('enforcementMode'),
-            'active': item.get('active'),
-        }
-        printable_result.append(current_object_data)
+    if result:
+        for item in result:
+            current_object_data = {
+                'name': item.get('name'),
+                'id': item.get('id'),
+                'type': item.get('type'),
+                'creatorName': item.get('creatorName'),
+                'createdTime': item.get('createdDatetime'),
+                'enforcementMode': item.get('enforcementMode'),
+                'active': item.get('active'),
+            }
+            printable_result.append(current_object_data)
 
     readable_output = tableToMarkdown('f5 data for listing policies:', printable_result,
                                       ['name', 'id', 'type', 'enforcementMode',
@@ -1330,18 +1341,19 @@ def format_list_policy_functions(result: dict, context_path_endpoint: str) -> Co
     """
     result = result.get('items')
     printable_result = []
-    for item in result:
-        current_object_data = {}
-        for endpoint in BASIC_FIELDS:
-            if endpoint == 'lastUpdateMicros':
-                current_object_data[endpoint] = format_date(item.get(endpoint))
-            else:
-                current_object_data[endpoint] = item.get(endpoint)
-        server_tech_reference = item.get('serverTechnologyReference')
-        if server_tech_reference:
-            current_object_data['serverTechnologyName'] = server_tech_reference.get(
-                'serverTechnologyName')
-        printable_result.append(current_object_data)
+    if result:
+        for item in result:
+            current_object_data = {}
+            for endpoint in BASIC_FIELDS:
+                if endpoint == 'lastUpdateMicros':
+                    current_object_data[endpoint] = format_date(item.get(endpoint))
+                else:
+                    current_object_data[endpoint] = item.get(endpoint)
+            server_tech_reference = item.get('serverTechnologyReference')
+            if server_tech_reference:
+                current_object_data['serverTechnologyName'] = server_tech_reference.get(
+                    'serverTechnologyName')
+            printable_result.append(current_object_data)
 
     readable_output = tableToMarkdown(f'f5 data for all {context_path_endpoint}:',
                                       printable_result, BASIC_FIELDS, removeNull=True)
@@ -1402,25 +1414,26 @@ def format_policy_blocking_settings_list_command(result: dict, endpoint: str) ->
                   'web-services-securities': 'webServicesSecurityReference',
                   'http-protocols': 'httpProtocolReference'}
 
-    for item in result:
-        current_object_data = {
-            'description': item.get('description'),
-            'learn': item.get('learn'),
-            'alarm': item.get('alarm'),
-            'block': item.get('block'),
-            'id': item.get('id'),
-            'kind': item.get('kind'),
-            'enabled': item.get('enabled'),
-            'selfLink': item.get('selfLink'),
-            'section-reference': item.get('sectionReference').get('link') if item.get(
-                'sectionReference') else None,
-            'lastUpdateMicros': format_date(item.get('lastUpdateMicros')),
-        }
-        reference_link = item.get(references.get(endpoint))
+    if result:
+        for item in result:
+            current_object_data = {
+                'description': item.get('description'),
+                'learn': item.get('learn'),
+                'alarm': item.get('alarm'),
+                'block': item.get('block'),
+                'id': item.get('id'),
+                'kind': item.get('kind'),
+                'enabled': item.get('enabled'),
+                'selfLink': item.get('selfLink'),
+                'section-reference': item.get('sectionReference').get('link') if item.get(
+                    'sectionReference') else None,
+                'lastUpdateMicros': format_date(item.get('lastUpdateMicros')),
+            }
+            reference_link = item.get(references.get(endpoint))
 
-        if reference_link:
-            current_object_data['reference'] = reference_link.get('link')
-        printable_result.append(current_object_data)
+            if reference_link:
+                current_object_data['reference'] = reference_link.get('link')
+            printable_result.append(current_object_data)
 
     readable_output = tableToMarkdown(f'{endpoint.capitalize()} for selected policy',
                                       printable_result,
