@@ -18,13 +18,15 @@ class Client(BaseClient):
         self._client_secret = params.get('client_secret')
         super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))
-        self._token = self._generate_token()
+        self._token = self._get_access_token()
         self._headers = {'Authorization': 'Bearer ' + self._token}
 
     @staticmethod
-    def _error_handler(error_entry: dict) -> str:
+    def _handle_errors(error_entry: dict) -> str:
         errors = error_entry.get("errors", [])
-        return '\n' + '\n'.join(f"{error['code']}: {error['message']}" for error in errors)
+        error_messages = [f"{error['code']}: {error['message']}" for error in errors]
+        error_messages_str = '\n'.join(error_messages)
+        return error_messages_str
 
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
                      files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
@@ -33,10 +35,7 @@ class Client(BaseClient):
                                      json_data=json_data, params=params, data=data, files=files, timeout=timeout,
                                      ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
 
-    def _generate_token(self) -> str:
-        """Generate an Access token using the user name and password
-        :return: valid token
-        """
+    def _get_access_token(self) -> str:
         body = {
             'client_id': self._client_id,
             'client_secret': self._client_secret
@@ -44,18 +43,7 @@ class Client(BaseClient):
         token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
         return token_res.get('access_token')
 
-    def check_quota_status(self, suffix_url_to_filter_by) -> dict:
-        return self.http_request('GET', suffix_url_to_filter_by)
-
     def create_indicators_from_response(self, response, feed_tags: list) -> list:
-        """
-        Creates a list of indicators from a given response
-        Args:
-            response: List of dict that represent the response from the api
-            feed_tags: The indicator tags
-        Returns:
-            List of indicators with the correct indicator type.
-        """
         parsed_indicators = []  # type:List
         indicator = {}
         for actor in response['resources']:
@@ -85,6 +73,17 @@ class Client(BaseClient):
 
         return parsed_indicators
 
+    def add_target_countries_to_filter(self, country):
+        return f'target_countries%3A"{country}"%2B'
+
+    def add_target_industries_to_filter(self, industry):
+        return f'target_industries%3A"{industry}"%2B'
+
+    def convert_the_list_of_countries_and_industries_to_url_shape(self, list_of_targets):
+        list_of_targets = list_of_targets.split(',')
+        list_of_targets = [target.replace(' ', '%20') for target in list_of_targets if len(target) > 1]
+        return list_of_targets
+
     def build_actors_filter(self, target_countries, target_industries, custom_filter):
         actors_filter = ''
         if custom_filter:
@@ -92,16 +91,14 @@ class Client(BaseClient):
             return actors_filter
 
         if target_countries:
-            target_countries = target_countries.split(',')
-            target_countries = [country.replace(' ', '%20') for country in target_countries if len(country) > 1]
+            target_countries = self.convert_the_list_of_countries_and_industries_to_url_shape(target_countries)
             for country in target_countries:
-                actors_filter += f'target_countries%3A"{country}"%2B'
+                actors_filter += self.add_target_countries_to_filter(country)
 
         if target_industries:
-            target_industries = target_industries.split(',')
-            target_industries = [industry.replace(' ', '%20') for industry in target_industries if len(industry) > 1]
+            target_industries = self.convert_the_list_of_countries_and_industries_to_url_shape(target_industries)
             for industry in target_industries:
-                actors_filter += f'target_industries%3A"{industry}"%2B'
+                actors_filter += self.add_target_industries_to_filter(industry)
 
         if actors_filter:
             actors_filter = '?filter=' + actors_filter[:-3]
@@ -130,8 +127,8 @@ class Client(BaseClient):
         if not limit:
             params = self.get_last_modified_time()
 
-        suffix_url_to_filter_by = self.build_url_suffix(params, actors_filter)
-        response = self.check_quota_status(suffix_url_to_filter_by)
+        url_suffix_to_filter_by = self.build_url_suffix(params, actors_filter)
+        response = self.http_request('GET', url_suffix_to_filter_by)
         parsed_indicators = self.create_indicators_from_response(response, feed_tags)  # list of dict of indicators
 
         # for get_indicator_command only
@@ -147,7 +144,6 @@ class Client(BaseClient):
         demisto.setIntegrationContext(integration_context_to_set)
 
     def get_last_modified_time(self):
-        demisto.setIntegrationContext(None)
         integration_context = demisto.getIntegrationContext()
         if not integration_context:
             params = ''
@@ -160,20 +156,10 @@ class Client(BaseClient):
         return params
 
 
-def module_test_command(client: Client, args: dict, feed_tags: list):
-    """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-
-    Args:
-        client(Client): CrowdStrike Feed client
-        args(Dict): The instance parameters
-        feed_tags: The indicator tags
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
-    """
+def test_module(client: Client, args: dict, feed_tags: list):
     try:
-        client.build_iterator(argToList(demisto.params().get('feedTags')), 1, 0)
+        tags = argToList(demisto.params().get('feedTags'))
+        client.build_iterator(tags, limit=1, offset=0)
     except Exception:
         raise Exception("Could not fetch CrowdStrike Feed\n"
                         "\nCheck your API key and your connection to CrowdStrike.")
@@ -199,8 +185,7 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple
     custom_filter = args.get('custom_filter') if args.get('custom_filter') \
         else demisto.params().get('custom_filter')
 
-    indicators = fetch_indicators_command(client, feed_tags, limit, offset, target_countries, target_industries,
-                                          custom_filter)
+    indicators = fetch_indicators(client, feed_tags, limit, offset, target_countries, target_industries, custom_filter)
 
     hr_indicators = []
     for indicator in indicators:
@@ -214,13 +199,11 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list) -> Tuple
     human_readable = tableToMarkdown("Indicators from CrowdStrike:", hr_indicators,
                                      headers=['Value', 'Type', 'rawJSON', 'fields'], removeNull=True)
 
-    # if args.get('limit'):
-    #     human_readable = human_readable
     return human_readable, {}, indicators
 
 
-def fetch_indicators_command(client: Client, feed_tags: List, limit=None, offset=None, target_countries=None,
-                             target_industries=None, custom_filter=None) -> list:
+def fetch_indicators(client: Client, feed_tags: List, limit=None, offset=None, target_countries=None,
+                     target_industries=None, custom_filter=None) -> list:
     """Fetch-indicators command from CrowdStrike Feeds
 
     Args:
@@ -251,13 +234,13 @@ def main():
     demisto.info(f'Command being called is {command}')
     # Switch case
     commands = {
-        'test-module': module_test_command,
+        'test-module': test_module,
         'crowdstrike-falcon-intel-get-indicators': get_indicators_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, feed_tags, target_countries=target_countries,
-                                                  target_industries=target_industries, custom_filter=custom_filter)
+            indicators = fetch_indicators(client, feed_tags, target_countries=target_countries,
+                                          target_industries=target_industries, custom_filter=custom_filter)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)

@@ -15,7 +15,7 @@ configuration:
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Bad
-  display: Indicator Reputation
+  display: Indicator Reputation to fetch
   name: feedReputation
   options:
   - None
@@ -38,7 +38,6 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -48,7 +47,6 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -93,7 +91,7 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- additionalinfo: List divided by commas. for example - Aerospace,Academic
+- additionalinfo: Comma separated list. for example - Aerospace,Academic
   display: Filter by actor's target industries.
   hidden: false
   name: target_industries
@@ -105,7 +103,8 @@ configuration:
   name: target_countries
   required: false
   type: 0
-- additionalinfo: Link to documentation how to filter - https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F
+- additionalinfo: For more information about custom filters and their structure -
+    https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F
   display: Filter by custom filter, If the user uses custom_filter other filters will
     not work
   hidden: false
@@ -134,13 +133,13 @@ script:
       secret: false
     - default: false
       description: Filter by actor's target industries, List divided by commas.
-      isArray: false
+      isArray: true
       name: target_industries
       required: false
       secret: false
     - default: false
       description: Filter by actor's target countries, List divided by commas.
-      isArray: false
+      isArray: true
       name: target_countries
       required: false
       secret: false
