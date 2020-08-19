@@ -1,4 +1,3 @@
-from typing import Tuple, Any
 import requests
 
 import demistomock as demisto
