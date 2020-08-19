@@ -237,12 +237,17 @@ script:
       name: recipient_filter_value
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: |-
         Sender filter operator to filter with.
         If you want to use sender, you need to use both - sender_filter_operator, sender_filter_value.
       isArray: false
       name: sender_filter_operator
+      predefined:
+      - is
+      - begins_with
+      - contains
       required: false
       secret: false
     - default: false
@@ -253,12 +258,17 @@ script:
       name: sender_filter_value
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: |-
         Subject filter operator to filter with.
         If you want to use subject, you need to use both - subject_filter_operator, subject_filter_value.
       isArray: false
       name: subject_filter_operator
+      predefined:
+      - is
+      - begins_with
+      - contains
       required: false
       secret: false
     - default: false
@@ -351,12 +361,17 @@ script:
       - 'False'
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: |-
         Domain name operator to filter with.
         If you want to use domain filter, you need to use both - domain_name_operator, domain_name_value.
       isArray: false
       name: domain_name_operator
+      predefined:
+      - is
+      - begins_with
+      - contains
       required: false
       secret: false
     - default: false
@@ -466,26 +481,26 @@ script:
     - default: false
       description: Address to filter with.
       isArray: false
-      name: from_address
+      name: order_by_from_address
       required: false
       secret: false
     - default: false
       description: Address to filter with.
       isArray: false
-      name: to_address
+      name: order_by_to_address
       required: false
       secret: false
     - default: false
       description: Subject to filter with.
       isArray: false
-      name: subject
+      name: order_by_subject
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Address order filtering.
       isArray: false
-      name: from_address_order_dir
+      name: order_dir_from_address
       predefined:
       - asc
       - desc
@@ -495,7 +510,7 @@ script:
       default: false
       description: Address order filtering.
       isArray: false
-      name: to_address_order_dir
+      name: order_dir_to_address
       predefined:
       - asc
       - desc
@@ -505,7 +520,7 @@ script:
       default: false
       description: Subject order filtering.
       isArray: false
-      name: subject_order_dir
+      name: order_dir_subject
       predefined:
       - asc
       - desc
