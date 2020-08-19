@@ -75,9 +75,9 @@ class Client(BaseClient):
         }
 
     def rate_limit(self) -> Dict:
-        url_suffix = 'lookup/rate_limit?{0}'.format(urllib.parse.urlencode(self.base_params()))
-
-        return self._http_request('GET', url_suffix)
+        params = self.base_params()
+        url_suffix = 'lookup/rate_limit'
+        return self._http_request('GET', url_suffix=url_suffix, params=params)
 
     def lookup_rrset(self, owner_name: str, rrtype: str = None, bailiwick: str = None, limit: int = None,
                      time_first_before: int = None, time_first_after: int = None,
