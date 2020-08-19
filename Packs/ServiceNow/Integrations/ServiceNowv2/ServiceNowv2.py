@@ -97,7 +97,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
     via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
     since epoch). It will throw a ValueError if the input is invalid.
     If the input is None, it will throw a ValueError if required is ``True``,
-    or ``None`` if required is ``False.
+    or ``None`` if required is ``False``.
 
     Args:
         arg: argument to convert
@@ -1873,7 +1873,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             id: incident id to retrieve
             lastUpdate: when was the last time we retrieved data
 
-    Returns: List[Dict[str, Any]]`` first entry is the incident (which can be completely empty) and the new entries.
+    Returns:
+        List[Dict[str, Any]]`` first entry is the incident (which can be completely empty) and the new entries.
     """
 
     ticket_id = args.get('id')
@@ -2020,18 +2021,16 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     if parsed_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
-    entry_tags = params.get('entry_tags', 'work_notes,comments').split(",")
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if not params.get('close_ticket'):
-            update_fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
-            result = client.update(ticket_type, ticket_id, update_fields, {})
-        else:
-            demisto.info(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
-            result = client.update(ticket_type, ticket_id, fields, {})
+            fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
+
+        demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
+        result = client.update(ticket_type, ticket_id, fields)
 
         demisto.info(f'Ticket Update result {result}')
 
