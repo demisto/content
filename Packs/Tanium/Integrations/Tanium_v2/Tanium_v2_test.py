@@ -301,8 +301,8 @@ def test_parse_question(requests_mock):
 
 def test_get_question_result_invalid_input():
     client = Client(BASE_URL, 'username', 'password', 'domain')
-    data_args = {'completion-percantage' : '0'}
+    data_args = {'completion-percantage': '0'}
     try:
-        _,_,_ = get_question_result(client, data_args)
+        _, _, _ = get_question_result(client, data_args)
     except ValueError as e:
         assert str(e) == 'completion-percentage argument is invalid, Please enter number between 1 to 100'
