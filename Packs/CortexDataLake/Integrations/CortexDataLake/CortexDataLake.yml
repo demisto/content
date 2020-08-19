@@ -472,7 +472,7 @@ script:
         used.
       type: String
     - contextPath: CDL.Logging.Traffic.TunneledApp
-      description: Is app tunneled.
+      description: Whether app is tunneled.
       type: String
     - contextPath: CDL.Logging.Traffic.IsPhishing
       description: Indicates whether enterprise credentials were submitted by an end
@@ -503,7 +503,7 @@ script:
       description: Destination country or internal region for private addresses.
       type: String
     - contextPath: CDL.Logging.Traffic.LogSourceID
-      description: D that uniquely identifies the source of the log. If the source
+      description: ID that uniquely identifies the source of the log. If the source
         is a firewall, this is its serial number.
       type: String
     - contextPath: CDL.Logging.Traffic.TotalBytes
@@ -586,7 +586,7 @@ script:
         (NAT) for the logged traffic. If it is, this value is 1.
       type: String
     - contextPath: CDL.Logging.Threat.SubcategoryOfApp
-      description: Identifies the application's subcategory. The subcategoryis related
+      description: Identifies the application's subcategory. The subcategory is related
         to the application's category, which is identified in category_of_app.
       type: String
     - contextPath: CDL.Logging.Threat.PcapID
@@ -731,7 +731,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A source zone  name or an array of source zone names to search.
+      description: A source zone name or an array of source zone names to search.
       isArray: false
       name: from_zone
       required: false
@@ -767,7 +767,8 @@ script:
       default: false
       defaultValue: all
       description: 'The fields selected in the query. Selection can be "all" (same
-        as *) or a comma separated list of specific fields in the table. '
+        as *) or a comma separated list of specific fields. List of fields can
+        be found after viewing all the outputted fields with "all" '
       isArray: false
       name: fields
       predefined:
@@ -906,6 +907,8 @@ script:
       - dynusergroup_name
       - ingestion_time
       - record_size
+      - source_device_host
+      - dest_device_host
       required: false
       secret: false
     - default: false
@@ -1045,7 +1048,7 @@ script:
         used.
       type: String
     - contextPath: CDL.Logging.Traffic.TunneledApp
-      description: Is app tunneled.
+      description: Whether the app is tunneled.
       type: String
     - contextPath: CDL.Logging.Traffic.IsPhishing
       description: Indicates whether enterprise credentials were submitted by an end
@@ -1076,7 +1079,7 @@ script:
       description: Destination country or internal region for private addresses.
       type: String
     - contextPath: CDL.Logging.Traffic.LogSourceID
-      description: D that uniquely identifies the source of the log. If the source
+      description: ID that uniquely identifies the source of the log. If the source
         is a firewall, this is its serial number.
       type: String
     - contextPath: CDL.Logging.Traffic.TotalBytes
@@ -1097,6 +1100,12 @@ script:
       type: String
     - contextPath: CDL.Logging.Traffic.Tunnel
       description: Type of tunnel.
+      type: String
+    - contextPath: CDL.Logging.Traffic.SourceDeviceHost
+      description: Hostname of the device from which the session originated.
+      type: String
+    - contextPath: CDL.Logging.Traffic.DestDeviceHost
+      description: Hostname of the device session destination.
       type: String
   - arguments:
     - default: false
@@ -1201,8 +1210,8 @@ script:
       default: false
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or listing of specific fields in the table. List of fields can
-        be found after viewing all the outputted fields with all.
+        (same as *) or or a comma separated list of specific fields. List of fields can
+        be found after viewing all the outputted fields with "all". 
       isArray: true
       name: fields
       predefined:
@@ -1335,6 +1344,8 @@ script:
       - dynusergroup_name
       - ingestion_time
       - record_size
+      - source_device_host
+      - dest_device_host
       required: false
       secret: false
     - default: false
@@ -1446,7 +1457,7 @@ script:
       description: Time when the log was generated on the firewall's data plane.
       type: Date
     - contextPath: CDL.Logging.Threat.IsPhishing
-      description: ndicates whether enterprise credentials were submitted by an end
+      description: Indicates whether enterprise credentials were submitted by an end
         user.
       type: Boolean
     - contextPath: CDL.Logging.Threat.AppCategory
@@ -1533,6 +1544,12 @@ script:
     - contextPath: CDL.Logging.Threat.SourcePort
       description: Source port utilized by the session.
       type: Number
+    - contextPath: CDL.Logging.Threat.SourceDeviceHost
+      description: Hostname of the device from which the session originated.
+      type: String
+    - contextPath: CDL.Logging.Threat.DestDeviceHost
+      description: Hostname of the device session destination.
+      type: String
   - arguments:
     - default: false
       description: A source IP address or an array of IP addresses for which to search.
@@ -1617,7 +1634,7 @@ script:
       default: false
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or listing of specific fields in the table. List of fields can
+        (same as *) or a comma separated list of specific fields. List of fields can
         be found after viewing all the outputted fields with "all".
       isArray: true
       name: fields
@@ -1751,6 +1768,8 @@ script:
       - dynusergroup_name
       - ingestion_time
       - record_size
+      - source_device_host
+      - dest_device_host
       required: false
       secret: false
     - default: false
@@ -1837,7 +1856,7 @@ script:
       description: Identifies the high-level family of the application.
       type: String
     - contextPath: CDL.Logging.URL.AppSubCategory
-      description: Identifies the application's subcategory. The subcategoryis related
+      description: Identifies the application's subcategory. The subcategory is related
         to the application's category, which is identified in category_of_app.
       type: String
     - contextPath: CDL.Logging.URL.SourceLocation
@@ -1941,7 +1960,13 @@ script:
     - contextPath: CDL.Logging.URL.TechnologyOfApp
       description: The networking technology used by the identified application.
       type: String
-  dockerimage: demisto/python_pancloud_v2:1.0.0.10260
+    - contextPath: CDL.Logging.URL.SourceDeviceHost
+      description: Hostname of the device from which the session originated.
+      type: String
+    - contextPath: CDL.Logging.URL.DestDeviceHost
+      description: Hostname of the device session destination.
+      type: String
+  dockerimage: demisto/python_pancloud_v2:1.0.0.10370
   feed: false
   isfetch: true
   longRunning: false
