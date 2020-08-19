@@ -1,10 +1,8 @@
 id: Run Panorama Best Practice Assessment
 version: -1
-fromversion: 4.5.0
 name: Run Panorama Best Practice Assessment
+description: This playbook runs the Palo Alto Best Practice Assessment checks for a PAN-OS instance.
 starttaskid: "0"
-description: |-
-  This playbook runs Palo Alto Best Practice Assessment checks for a Panorama instance.
 tasks:
   "0":
     id: "0"
@@ -14,9 +12,9 @@ tasks:
       id: 5515df32-fe99-44e2-89ae-11a2ef02fc6b
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -25,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 220
+          "y": 280
         }
       }
     note: false
@@ -33,10 +31,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: c1dc0301-faa5-49dc-8aed-1194ddf54c1f
+    taskid: 1fbbaa79-ed15-4123-8918-668c2e1a170b
     type: regular
     task:
-      id: c1dc0301-faa5-49dc-8aed-1194ddf54c1f
+      id: 1fbbaa79-ed15-4123-8918-668c2e1a170b
       version: -1
       name: Submit BPA job
       description: Submits a best practice assessment job.
@@ -49,7 +47,7 @@ tasks:
       - "3"
     scriptarguments:
       generate_zip_bundle:
-        simple: ${inputs.generate_zip_bundle}
+        simple: "true"
     separatecontext: false
     view: |-
       {
@@ -116,18 +114,25 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: be5c533d-2bc9-45d9-8568-9500e69d6fd2
+    taskid: 5b0dfb5d-50c6-4613-87d7-676e62af22e5
     type: regular
     task:
-      id: be5c533d-2bc9-45d9-8568-9500e69d6fd2
+      id: 5b0dfb5d-50c6-4613-87d7-676e62af22e5
       version: -1
       name: Get BPA Results
       description: Returns results of the best practice assessment job.
+      tags:
+      - bpa results
       script: BPA|||pan-os-bpa-get-job-results
       type: regular
       iscommand: true
       brand: BPA
+    nexttasks:
+      '#none#':
+      - "6"
     scriptarguments:
+      exclude_passed_checks:
+        simple: "true"
       task_id:
         simple: ${PAN-OS-BPA.SubmittedJob.JobID}
     separatecontext: false
@@ -141,25 +146,43 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 72648d4a-941d-48d9-8d3a-09414532a259
+    type: title
+    task:
+      id: 72648d4a-941d-48d9-8d3a-09414532a259
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 645,
+        "height": 755,
         "width": 380,
         "x": 450,
-        "y": 220
+        "y": 280
       }
     }
   }
-inputs:
-- key: generate_zip_bundle
-  value:
-    simple: "false"
-  required: false
-  description: whether or not to download the panorama report
-  playbookInputQuery: null
+inputs: []
 outputs: []
+fromversion: 4.5.0
 tests:
   - Test-BPA_Integration

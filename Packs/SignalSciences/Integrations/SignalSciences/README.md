@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>se the Signal Sciences next-gen web application firewall to increase security and maintain reliability.</p>
+<p>Use the Signal Sciences next-gen web application firewall to increase security and maintain reliability.</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="configure-signal-sciences-waf-on-demisto">Configure Signal Sciences WAF on Demisto</h2>
@@ -15,7 +15,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Email</strong></li>
 <li><strong>Token</strong></li>
-<li><strong>Corporation Name</strong></li>
+<li><strong>Corporation Name (should match the pattern [0-9a-z_.-]+)</strong></li>
 <li><strong>Fetch incidents</strong></li>
 <li><strong>Incident type</strong></li>
 <li><strong>Fetch Interval (in minutes)</strong></li>

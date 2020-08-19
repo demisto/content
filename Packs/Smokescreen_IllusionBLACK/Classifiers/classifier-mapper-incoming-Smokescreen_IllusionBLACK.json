@@ -1,0 +1,36 @@
+{
+	"id": "Smokescreen IllusionBLACK-mapper",
+    "name": "Smokescreen IllusionBLACK - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps Smokescreen IllusionBLACK event fields.",
+	"defaultIncidentType": "",
+	"mapping": {
+		"IllusionBLACK": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"IllusionBLACK Attack Type": {
+					"complex": null,
+					"simple": "attack_type"
+				},
+				"IllusionBLACK Attacker ID": {
+					"complex": null,
+					"simple": "attacker_id"
+				},
+				"IllusionBLACK Decoy ID": {
+					"complex": null,
+					"simple": "decoy_id"
+				},
+				"IllusionBLACK Events": {
+					"complex": null,
+					"simple": "events"
+				},
+				"IllusionBLACK Threat Parse": {
+					"complex": null,
+					"simple": "threat_parse_ids"
+				}
+			}
+		}
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

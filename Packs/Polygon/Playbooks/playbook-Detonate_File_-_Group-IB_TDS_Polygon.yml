@@ -1,0 +1,551 @@
+id: Detonate File - Group-IB TDS Polygon
+version: -1
+name: Detonate File - Group-IB TDS Polygon
+description: 'Detonate file using Group-IB TDS Polygon integration. This playbook
+  returns relevant reports to the War Room and file reputations to the context data.
+  The detonation supports the following file types: 7z, ace, ar, arj, bat, bz2, cab,
+  chm, cmd, com, cpgz, cpl, csv, dat, doc, docm, docx, dot, dotm, dotx, eml, exe,
+  gz, gzip, hta, htm, html, iqy, iso, jar, js, jse, lnk, lz, lzma, lzo,  lzh, mcl,
+  mht, msg, msi, msp, odp, ods, odt, ots, ott, pdf, pif, potm, potx, pps, ppsm, ppsx,
+  ppt, pptm, pptx, ps1, pub, py, pyc, r*, rar, reg, rtf, scr, settingcontent-ms, stc,
+  svg, sxc, sxw, tar, taz,  .tb2, .tbz, .tbz2, tgz, tlz, txz, tzo, txt, url, uue,
+  vbe, vbs, wsf, xar, xls, xlsb, xlsm, xlsx, xml, xz, z*, zip.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9501b3b5-5523-40bd-8af6-ae6a9d6ac607
+    type: start
+    task:
+      id: 9501b3b5-5523-40bd-8af6-ae6a9d6ac607
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: fc02e787-ad1e-4381-8e8a-96bd716a9255
+    type: regular
+    task:
+      id: fc02e787-ad1e-4381-8e8a-96bd716a9255
+      version: -1
+      name: polygon-upload-file
+      description: Upload file for analysis
+      script: Group-IB TDS Polygon|||polygon-upload-file
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      file_id:
+        complex:
+          root: inputs.file_id
+      language:
+        simple: en
+      password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 3515a2f8-6b03-4061-8125-756cc50294fd
+    type: title
+    task:
+      id: 3515a2f8-6b03-4061-8125-756cc50294fd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 70256af8-c846-4973-86a8-9c3361ee58b3
+    type: playbook
+    task:
+      id: 70256af8-c846-4973-86a8-9c3361ee58b3
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: Polygon
+          accessor: Analysis.ID
+          transformers:
+          - operator: LastArrayElement
+      Interval:
+        simple: ${inputs.Interval}
+      PollingCommandArgName:
+        simple: tds_analysis_id
+      PollingCommandName:
+        simple: polygon-analysis-info
+      Timeout:
+        simple: ${inputs.Timeout}
+      dt:
+        simple: Polygon.Analysis(val.Status !== 'Finished').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: d2123158-1ae0-4f5e-87fd-ed63ac94647f
+    type: regular
+    task:
+      id: d2123158-1ae0-4f5e-87fd-ed63ac94647f
+      version: -1
+      name: polygon-export-report
+      description: Export an archive with TDS Polygon report to War Room
+      script: Group-IB TDS Polygon|||polygon-export-report
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      tds_analysis_id:
+        complex:
+          root: Polygon
+          accessor: Analysis.ID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 4a79b7e8-4212-4b47-8078-bfb2dde6e1b4
+    type: regular
+    task:
+      id: 4a79b7e8-4212-4b47-8078-bfb2dde6e1b4
+      version: -1
+      name: polygon-analysis-info
+      description: Get TDS Polygon analysis information
+      script: Group-IB TDS Polygon|||polygon-analysis-info
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      tds_analysis_id:
+        complex:
+          root: Polygon
+          accessor: Analysis.ID
+          transformers:
+          - operator: LastArrayElement
+      tds_file_id:
+        complex:
+          root: Polygon
+          accessor: Analysis.ID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 7d9a2924-35c5-4686-8ecb-7de719029f3f
+    type: regular
+    task:
+      id: 7d9a2924-35c5-4686-8ecb-7de719029f3f
+      version: -1
+      name: polygon-export-pcap
+      description: Network activity dump export
+      script: Group-IB TDS Polygon|||polygon-export-pcap
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      tds_analysis_id:
+        complex:
+          root: Polygon
+          accessor: Analysis.ID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 93f7ba3c-51fa-46f0-8b14-fc6609f50f2f
+    type: regular
+    task:
+      id: 93f7ba3c-51fa-46f0-8b14-fc6609f50f2f
+      version: -1
+      name: polygon-export-video
+      description: Screen activity video export
+      script: Group-IB TDS Polygon|||polygon-export-video
+      type: regular
+      iscommand: true
+      brand: Group-IB TDS Polygon
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      tds_analysis_id:
+        complex:
+          root: Polygon
+          accessor: Analysis.ID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 1295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 6bf891c0-3f7e-4265-8eb9-17931764bff6
+    type: condition
+    task:
+      id: 6bf891c0-3f7e-4265-8eb9-17931764bff6
+      version: -1
+      name: Is TDS Polygon integration enabled?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Group-IB TDS Polygon
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+          accessor: brand
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: e4ad7e47-59bc-45b2-8408-0d9da0ab7da2
+    type: condition
+    task:
+      id: e4ad7e47-59bc-45b2-8408-0d9da0ab7da2
+      version: -1
+      name: Is file malicious?
+      description: Check if a given value is true. Will return 'no' otherwise
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "17"
+    scriptarguments:
+      value:
+        complex:
+          root: Polygon
+          accessor: Analysis.Result
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1675,
+        "width": 660,
+        "x": 560,
+        "y": 20
+      }
+    }
+  }
+inputs:
+- key: file_id
+  value:
+    complex:
+      root: File
+      accessor: EntryID
+  required: false
+  description: File to detonate
+- key: Interval
+  value:
+    simple: "1"
+  required: true
+  description: Report requests frequency (minutes)
+- key: Timeout
+  value:
+    simple: "60"
+  required: true
+  description: Report waiting timeout (minutes)
+outputs:
+- contextPath: File.Name
+  description: The full file name (including file extension).
+  type: string
+- contextPath: File.MD5
+  description: The MD5 hash of the file
+  type: string
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file
+  type: string
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file
+  type: string
+- contextPath: File.Type
+  description: File type
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: The vendor that reported the file as malicious
+  type: string
+- contextPath: File.Malicious.Description
+  description: A description explaining why the file was determined to be malicious
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: IP.Address
+  description: IP address
+  type: string
+- contextPath: Domain.Name
+  description: The Domain name
+  type: string
+- contextPath: Domain.DNS
+  description: A list of IP objects resolved by DNS.
+  type: string
+- contextPath: URL.Data
+  description: The URL
+  type: string
+- contextPath: RegistryKey.Path
+  description: The path to the registry key
+  type: string
+- contextPath: RegistryKey.Value
+  description: The value at the given RegistryKey.
+  type: string
+- contextPath: Process.Name
+  description: Process name
+  type: string
+- contextPath: Process.PID
+  description: Process PID
+  type: number
+- contextPath: Process.CommandLine
+  description: Process Command Line
+  type: string
+- contextPath: Process.Path
+  description: Process path
+  type: string
+- contextPath: Process.StartTime
+  description: Process start time
+  type: date
+- contextPath: Process.EndTime
+  description: Process end time
+  type: date
+- contextPath: Polygon.Analysis.ID
+  description: Analysis ID in TDS
+  type: number
+- contextPath: Polygon.Analysis.Name
+  description: File Name
+  type: string
+- contextPath: Polygon.Analysis.Size
+  description: File Size
+  type: number
+- contextPath: Polygon.Analysis.Started
+  description: Analysis start timestamp
+  type: date
+- contextPath: Polygon.Analysis.Analyzed
+  description: Analysis finish timestamp
+  type: date
+- contextPath: Polygon.Analysis.MD5
+  description: Analyzed file MD5 hash
+  type: string
+- contextPath: Polygon.Analysis.SHA1
+  description: Analyzed file SHA1 hash
+  type: string
+- contextPath: Polygon.Analysis.SHA256
+  description: Analyzed file SHA256
+  type: string
+- contextPath: Polygon.Analysis.Result
+  description: Analysis verdict
+  type: string
+- contextPath: Polygon.Analysis.Status
+  description: The analysis status
+  type: string
+- contextPath: Polygon.Analysis.Verdict
+  description: Analysis verdict
+  type: boolean
+- contextPath: Polygon.Analysis.Probability
+  description: Verdict probability
+  type: string
+- contextPath: Polygon.Analysis.Families
+  description: Malware families
+  type: string
+- contextPath: Polygon.Analysis.Score
+  description: Polygon score
+  type: number
+- contextPath: Polygon.Analysis.Internet-connection
+  description: Internet availability
+  type: string
+- contextPath: Polygon.Analysis.Type
+  description: File type
+  type: string
+- contextPath: Polygon.Analysis.DumpExists
+  description: Network activity dump exists
+  type: boolean
+- contextPath: Polygon.Analysis.File
+  description: The information about files in analysis
+  type: unknown
+- contextPath: Polygon.Analysis.URL
+  description: The information about URL indicators
+- contextPath: Polygon.Analysis.IP
+  description: The information about IP indicators
+- contextPath: Polygon.Analysis.Domain
+  description: The information about Domain indicators
+- contextPath: Polygon.Analysis.RegistryKey
+  description: The information about registry keys which were modified during the
+    analysis
+- contextPath: Polygon.Analysis.Process
+  description: The information about processes started during the analysis
+fromversion: 5.0.0
+tests:
+- No tests

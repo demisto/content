@@ -1,4 +1,4 @@
-Dynamically retrieve and whitelist IPs Prisma Access uses to egress traffic to the internet and SaaS apps.
+Dynamically retrieve and allow IPs Prisma Access uses to egress traffic to the internet and SaaS apps.
 This integration was integrated and tested with version xx of Prisma Access Egress IP feed
 ## Configure Prisma Access Egress IP feed on Demisto
 

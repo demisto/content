@@ -11,7 +11,7 @@
     "id": "Logz.io Alert",
     "locked": false,
     "name": "Logz.io Alert",
-    "playbookId": "38b3a41b-04ce-4417-89b3-4efd95d28059",
+    "playbookId": "Logz.Io Handle Alert",
     "preProcessingScript": "",
     "readonly": false,
     "reputationCalc": 0,
@@ -20,5 +20,6 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.0.0",
+    "layout": "Logz.io Alert"
 }

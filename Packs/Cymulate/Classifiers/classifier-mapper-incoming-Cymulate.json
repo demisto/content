@@ -1,0 +1,52 @@
+{
+    "id": "Cymulate-mapper",
+    "name": "Cymulate - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Cymulate threat fields.",
+	"defaultIncidentType": "Cymulate Immediate Threats",
+	"mapping": {
+		"Cymulate Immediate Threats": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cymulate Immediate Threats Attack ID": {
+					"complex": null,
+					"simple": "Attack_ID"
+				},
+				"Cymulate Immediate Threats File Type": {
+					"complex": null,
+					"simple": "Penetration_Vector"
+				},
+				"Cymulate Immediate Threats ID": {
+					"complex": null,
+					"simple": "ID"
+				},
+				"Cymulate Immediate Threats Mitigations": {
+					"complex": null,
+					"simple": "Mitigation"
+				},
+				"Cymulate Immediate Threats Module": {
+					"complex": null,
+					"simple": "Module"
+				},
+				"Cymulate Immediate Threats Payload Name": {
+					"complex": null,
+					"simple": "Attack_Payload"
+				},
+				"Cymulate Immediate Threats Status": {
+					"complex": null,
+					"simple": "Status"
+				},
+				"Cymulate Immediate Threats Vector": {
+					"complex": null,
+					"simple": "Attack_Vector"
+				},
+				"details": {
+					"complex": null,
+					"simple": "Description"
+				}
+			}
+		}
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

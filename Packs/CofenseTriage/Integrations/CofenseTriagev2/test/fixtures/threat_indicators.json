@@ -1,0 +1,12 @@
+[
+	{
+		"id": 37,
+		"created_at": "2020-03-16T17:39:14.579Z",
+		"operator_id": 2,
+		"report_id": 13353,
+		"threat_level": "Malicious",
+		"threat_key": "Domain",
+		"threat_value": "malicious.example.com"
+	}
+]
+

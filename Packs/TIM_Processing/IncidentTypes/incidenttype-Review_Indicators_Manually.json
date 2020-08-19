@@ -20,5 +20,6 @@
 	"hoursR": 0,
   	"weeks": 0,
 	"weeksR": 0,
-	"reputationCalc": 0
+	"reputationCalc": 0,
+	"layout": "Review Indicators Manually"
 }

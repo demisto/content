@@ -47,7 +47,7 @@ To access the Export Indicators service by instance name, make sure ***Instance 
 
 1. In Demisto, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
-3. In a web browser, go to **https://*<demisto_address>*/instance/execute/*<instance_name>*** .
+3. In a web browser, go to `https://*<demisto_address>*/instance/execute/*<instance_name>*` .
 
 ### Update values in the export indicators service
 ---
@@ -60,17 +60,17 @@ Use the following arguments in the URL to change the request:
 
 | **Argument Name** | **Description** | **Example** |
 | --- | --- | --- |
-| n | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?n=50 |
-| s | The starting entry index from which to export the indicators. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50 |
-| v | The output format. Supports `text`, `csv`, `json`, `json-seq`,`xsoar-json`, `xsoar-seq`, `xsoar-csv`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`). | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=json |
-| q | The query used to retrieve indicators from the system. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source" |
-| t | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=mwg&t=ip |
-| sp | Only with `panosurl` format. If set will strip ports off URLs, otherwise will ignore URLs with ports. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=panosurl&sp |
-| di | Only with `panosurl` format. If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=panosurl&di |
-| cd | Only with `proxysg` format. The default category for the exported indicators. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&cd=default_category |
-| ca | Only with `proxysg` format. The categories which will be exported. Indicators not falling to these categories will be classified as the default category. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&ca=category1,category2 |
-| tr | Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"&tr=1 |
-| tx | Whether to output `csv` or `xsoar-csv` formats as textual web pages. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=xsoar-csv&tx |
+| n | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | `https://{server_host}/instance/execute/{instance_name}?n=50` |
+| s | The starting entry index from which to export the indicators. | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50` |
+| v | The output format. Supports `text`, `csv`, `json`, `json-seq`,`xsoar-json`, `xsoar-seq`, `xsoar-csv`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`). | `https://{server_host}/instance/execute/{instance_name}?v=json` |
+| q | The query used to retrieve indicators from the system. | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"` |
+| t | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex. | `https://{server_host}/instance/execute/{instance_name}?v=mwg&t=ip` |
+| sp | Only with `panosurl` format. If set will strip ports off URLs, otherwise will ignore URLs with ports. | `https://{server_host}/instance/execute/{instance_name}?v=panosurl&sp` |
+| di | Only with `panosurl` format. If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written. | `https://{server_host}/instance/execute/{instance_name}?v=panosurl&di` |
+| cd | Only with `proxysg` format. The default category for the exported indicators. | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&cd=default_category` |
+| ca | Only with `proxysg` format. The categories which will be exported. Indicators not falling to these categories will be classified as the default category. | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&ca=category1,category2` |
+| tr | Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"&tr=1` |
+| tx | Whether to output `csv` or `xsoar-csv` formats as textual web pages. | `https://{server_host}/instance/execute/{instance_name}?v=xsoar-csv&tx` |
 
 
 ##### Base Command

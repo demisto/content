@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue in which the **ServiceNow ticket column to be set as the incident name** parameter was not initialized with the default value as expected.
 
 ## [20.5.2] - 2020-05-26
   - Fixed the timestamp field parameter description.

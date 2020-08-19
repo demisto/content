@@ -121,6 +121,23 @@
 						{
 							"operator": "uniq",
 							"args": {}
+						},
+						{
+							"operator": "DateStringToISOFormat",
+							"args": {
+								"dayfirst": {
+									"value": null,
+									"isContext": false
+								},
+								"fuzzy": {
+									"value": null,
+									"isContext": false
+								},
+								"yearfirst": {
+									"value": null,
+									"isContext": false
+								}
+							}
 						}
 					]
 				}
@@ -415,11 +432,29 @@
 						{
 							"operator": "uniq",
 							"args": {}
+						},
+						{
+							"operator": "DateStringToISOFormat",
+							"args": {
+								"dayfirst": {
+									"value": null,
+									"isContext": false
+								},
+								"fuzzy": {
+									"value": null,
+									"isContext": false
+								},
+								"yearfirst": {
+									"value": null,
+									"isContext": false
+								}
+							}
 						}
 					]
 				}
 			}
 		},
   "manualMapping": null,
-  "fileHashesPriority": null
+  "fileHashesPriority": null,
+  "layout": "domainRepUnified"
 }

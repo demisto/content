@@ -135,7 +135,7 @@
 <td style="width: 332px;">The cookie for the results</td>
 </tr>
 <tr>
-<td style="width: 334px;"><a href="http://autofocus.samples.id/">Autofocus.Samples.id</a></td>
+<td style="width: 334px;">Autofocus.Samples.id</td>
 <td style="width: 74px;">string</td>
 <td style="width: 332px;">The ID of the sample.</td>
 </tr>
@@ -313,7 +313,7 @@
 <td style="width: 318px;">The cookie for the results.</td>
 </tr>
 <tr>
-<td style="width: 358px;"><a href="http://autofocus.sessions.id/">Autofocus.Sessions.id</a></td>
+<td style="width: 358px;">Autofocus.Sessions.id</td>
 <td style="width: 64px;">string</td>
 <td style="width: 318px;">The ID of the session.</td>
 </tr>
@@ -416,7 +416,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 374px;"><a href="http://autofocus.sessions.id/">Autofocus.Sessions.id</a></td>
+<td style="width: 374px;">Autofocus.Sessions.id</td>
 <td style="width: 72px;">string</td>
 <td style="width: 294px;">The ID of the session.</td>
 </tr>

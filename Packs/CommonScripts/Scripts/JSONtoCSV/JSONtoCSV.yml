@@ -1,0 +1,38 @@
+commonfields:
+  id: JSONtoCSV
+  version: -1
+name: JSONtoCSV
+script: ''
+type: python
+subtype: python2
+tags: []
+comment: Convert a JSON warroom output via EntryID to a CSV file.
+enabled: true
+args:
+- name: entryid
+  required: true
+  description: entry id of json
+  isArray: true
+- name: delimiter
+  default: true
+  description: CSV Delimiter.
+  defaultValue: '|'
+- name: filename
+  description: if provided will output CSV to file. Default output is to WarRoom.
+outputs:
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+scripttarget: 0
+runonce: false
+tests:
+- JSONtoCSV-Test

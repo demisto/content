@@ -320,7 +320,7 @@ script:
     - contextPath: Akamai.NetworkLists.ActivationStatus.ProductionStatus
       description: The network list environment activation status.
       type: String
-  dockerimage: demisto/akamai:1.0.0.5063
+  dockerimage: demisto/akamai:1.0.0.8883
   feed: false
   isfetch: false
   longRunning: false

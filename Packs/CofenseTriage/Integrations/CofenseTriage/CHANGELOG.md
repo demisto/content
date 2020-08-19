@@ -1,4 +1,5 @@
 ## [Unreleased]
+Deprecated - We recommend using Cofense Triage v2 instead (available from 5.0.0).
 
 
 ## [20.5.0] - 2020-05-12

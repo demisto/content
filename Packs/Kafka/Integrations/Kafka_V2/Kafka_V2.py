@@ -171,18 +171,23 @@ def print_topics(client):
     """
     Prints available topics in Broker
     """
-
+    include_offsets = demisto.args().get('include_offsets', 'true') == 'true'
     kafka_topics = client.topics.values()
     if kafka_topics:
         topics = []
         for topic in kafka_topics:
             partitions = []
             for partition in topic.partitions.values():
-                partitions.append({
-                    'ID': partition.id,
-                    'EarliestOffset': partition.earliest_available_offset(),
-                    'OldestOffset': partition.latest_available_offset()
-                })
+                partition_output = {'ID': partition.id}
+                if include_offsets:
+                    try:
+                        partition_output['EarliestOffset'] = partition.earliest_available_offset()
+                        partition_output['OldestOffset'] = partition.latest_available_offset()
+                    except Exception as e:
+                        demisto.error('Failed fetching available offset for topic {} partition {} - {}'.format(
+                            topic.name, partition.id, str(e))
+                        )
+                partitions.append(partition_output)
 
             topics.append({
                 'Name': topic.name,
@@ -347,7 +352,8 @@ def fetch_incidents(client):
 
         consumer_args = {
             'consumer_timeout_ms': 2000,  # wait max 2 seconds for new messages
-            'reset_offset_on_start': True
+            'reset_offset_on_start': True,
+            'auto_offset_reset': offset_to_fetch_from
         }
 
         if partition_to_fetch_from:

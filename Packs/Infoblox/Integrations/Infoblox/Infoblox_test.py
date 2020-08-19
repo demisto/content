@@ -57,7 +57,7 @@ class TestHelperFunctions:
 
     def test_parse_demisto_exception_unauthorized_error(self):
         from Infoblox import parse_demisto_exception
-        json_err = f'Expecting value: line 1 column 1 (char 0)'
+        json_err = 'Expecting value: line 1 column 1 (char 0)'
         api_err = 'Error in API call [401] - Authorization Required'
         parsed_err = parse_demisto_exception(DemistoException(api_err, json_err))
         assert str(parsed_err) == str(

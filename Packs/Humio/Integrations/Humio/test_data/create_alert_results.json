@@ -1,0 +1,17 @@
+{
+    "description": "Description of TestingAlert",
+    "id": "UQjuWHAb3ya4sDC6kGhe0Pkn1hBZJQYi",
+    "labels": [],
+    "name": "TestingAlert",
+    "notifiers": [
+        "BTkuj8QArhIFMh_L39FoN0tnyTUEXplc"
+    ],
+    "query": {
+        "end": "now",
+        "isLive": true,
+        "queryString": "alert=true",
+        "start": "24h"
+    },
+    "silenced": false,
+    "throttleTimeMillis": 3000000
+}

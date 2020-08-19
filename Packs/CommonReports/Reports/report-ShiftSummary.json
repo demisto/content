@@ -116,6 +116,7 @@
     "runOnce": false,
     "scheduled": false,
     "paperSize": "A4",
+    "orientation": "",
     "sections": [
       {
         "type": "header",
