@@ -14,8 +14,7 @@ configuration:
   type: 4
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: Bad
-  display: Indicator Reputation to fetch
+  display: Indicator Reputation
   name: feedReputation
   options:
   - None
@@ -24,6 +23,7 @@ configuration:
   - Bad
   required: false
   type: 18
+  defaultvalue: Bad
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -38,6 +38,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -47,6 +48,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
