@@ -28,7 +28,6 @@ def where_field_equals(args):
 def main():
     args = demisto.args()
     demisto.results(where_field_equals(args))
-    # return_outputs(readable_output=hr_string)
 
 
 # python2 uses __builtin__ python3 uses builtins
