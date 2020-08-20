@@ -405,7 +405,8 @@ def get_private_packs(private_index_path):
             if metadata:
                 private_packs.append({
                     'id': metadata.get('id'),
-                    'price': metadata.get('price')
+                    'price': metadata.get('price'),
+                    'vendorId': metadata.get('vendorId'),
                 })
         except ValueError as e:
             print_error(f'Invalid JSON in the metadata file [{metadata_file_path}]: {str(e)}')

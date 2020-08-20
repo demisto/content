@@ -474,6 +474,7 @@ class Pack(object):
         if pack_metadata['price'] > 0:
             pack_metadata['premium'] = True
             pack_metadata['previewOnly'] = True
+            pack_metadata['vendorId'] = user_metadata.get('vendorId')
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
         pack_metadata['versionInfo'] = build_number
