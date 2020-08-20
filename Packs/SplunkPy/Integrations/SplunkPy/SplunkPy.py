@@ -76,27 +76,30 @@ def get_current_splunk_time(splunk_service):
 
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
-    if 'message' in raw:
-        raw = raw.replace('"', '').strip('{').strip('}')
-        key_val_arr = raw.split(",")
-        for key_val in key_val_arr:
-            single_key_val = key_val.split(":")
-            if len(single_key_val) > 1:
-                val = single_key_val[1]
-                key = single_key_val[0].strip()
+    try:
+        result = json.loads(raw)
+    except ValueError:
+        if 'message' in raw:
+            raw = raw.replace('"', '').strip('{').strip('}')
+            key_val_arr = raw.split(",")
+            for key_val in key_val_arr:
+                single_key_val = key_val.split(":", 1)
+                if len(single_key_val) > 1:
+                    val = single_key_val[1]
+                    key = single_key_val[0].strip()
 
-                if key in result.keys():
-                    result[key] = result[key] + "," + val
-                else:
-                    result[key] = val
+                    if key in result.keys():
+                        result[key] = result[key] + "," + val
+                    else:
+                        result[key] = val
 
-    else:
-        raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
-        for key_val in raw_response:
-            key_value = key_val.replace('"', '').strip()
-            if '=' in key_value:
-                key_and_val = key_value.split('=', 1)
-                result[key_and_val[0]] = key_and_val[1]
+        else:
+            raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
+            for key_val in raw_response:
+                key_value = key_val.replace('"', '').strip()
+                if '=' in key_value:
+                    key_and_val = key_value.split('=', 1)
+                    result[key_and_val[0]] = key_and_val[1]
 
     if REPLACE_FLAG:
         result = replace_keys(result)
@@ -860,13 +863,14 @@ def get_store_data(service):
         store = service.kvstore[store]
         query = build_kv_store_query(store, args)
         if 'limit' not in query:
-            # query = {'query': json.dumps({key: val for key, val in json.loads(query).items()})}
-            # query = {'query': json.dumps(json.loads(query))}
             query = {'query': query}
         yield store.data.query(**query)
 
 
 def main():
+    if demisto.command() == 'splunk-parse-raw':
+        splunk_parse_raw_command()
+        sys.exit(0)
     service = None
     proxy = demisto.params().get('proxy')
     use_requests_handler = demisto.params().get('use_requests_handler')
@@ -916,8 +920,6 @@ def main():
         splunk_submit_event_command(service)
     if demisto.command() == 'splunk-notable-event-edit':
         splunk_edit_notable_event_command(proxy)
-    if demisto.command() == 'splunk-parse-raw':
-        splunk_parse_raw_command()
     if demisto.command() == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     if demisto.command() == 'splunk-job-status':
