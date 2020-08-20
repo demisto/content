@@ -3,6 +3,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": ["Mail Listener v2", "Mail Sender (New)"],
+            "playbookID": "Mail-Listener Test Playbook",
+            "fromversion": "5.0.0",
+            "instance_names": [
+                "Mail_Sender_(New)_STARTTLS"
+            ]
+        },
+        {
             "integrations": "AWS - Security Hub",
             "playbookID": "AWS-securityhub Test"
         },
