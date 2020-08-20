@@ -718,7 +718,7 @@ script:
     - contextPath: McAfeeESM.AlarmEvent.Cases.Summary
       description: Case summary.
       type: string
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false
