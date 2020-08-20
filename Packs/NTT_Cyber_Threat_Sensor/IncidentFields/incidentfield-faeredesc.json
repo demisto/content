@@ -1,5 +1,5 @@
 {
-    "id": "incident_faeredesc",
+    "id": "incident_faeredescription",
     "version": -1,
     "modified": "2020-04-08T12:09:56.460256104Z",
     "sortValues": null,
@@ -29,8 +29,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "TD Incident",
-        "Faere"
+        "TD Incident"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,

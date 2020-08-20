@@ -29,8 +29,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "TD Incident",
-        "Faere"
+        "TD Incident"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,
