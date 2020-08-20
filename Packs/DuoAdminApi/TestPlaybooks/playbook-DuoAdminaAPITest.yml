@@ -522,7 +522,7 @@ tasks:
     conditions:
     - label: "no"
       condition:
-      - - operator: isExists
+      - - operator: isEmpty
           left:
             value:
               complex:
