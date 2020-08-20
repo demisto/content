@@ -97,10 +97,7 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 class Client:
     """Object represnt a client for ThreatConnect actions"""
     def __init__(self, access_key: str, secret_key: str, api_path: str):
-        """ Initialize client configuration.
-                HMAC authorization is typically only used for running Apps outside the ThreatConnect platform.
-                Generation of the authorization headers when using HMAC will utilize the api_access_id and
-                api_secret_key arguments.
+        """ Initialize client configuration:
 
         Args:
             access_key: Generated access key.
@@ -140,7 +137,7 @@ class Client:
             owners: Filter indicators belongs to specific owner.
 
         Returns:
-
+            Iterator: indicatrs objects.
         """
         indicators = self._client.ti.indicator().many(params={"includes": ['additional', 'attributes'],
                                                               'owner': owners})

@@ -40,7 +40,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "ThreatConnectFeed",
+            "integrations": "ThreatConnect Feed",
             "playbookID": "FeedThreatConnect-Test"
         },
         {
