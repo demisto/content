@@ -472,6 +472,7 @@ class Pack(object):
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         if pack_metadata['price'] > 0:
+            print_error(f"Price is bigger than 0. User metadata is: {user_metadata}")
             pack_metadata['premium'] = True
             pack_metadata['previewOnly'] = True
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
@@ -1099,6 +1100,7 @@ class Pack(object):
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []))
+            print_error(f"user metadata passed to formatting is: {user_metadata}")
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
@@ -1108,6 +1110,7 @@ class Pack(object):
                                                            server_min_version=self.server_min_version,
                                                            build_number=build_number, commit_hash=commit_hash)
 
+            print_error(f"formatted pack metadata is: {formatted_metadata}")
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
 

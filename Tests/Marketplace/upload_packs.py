@@ -403,6 +403,7 @@ def get_private_packs(private_index_path):
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
             if metadata:
+                print_error(f"private pack {metadata.get('id')} metadata is: {metadata}")
                 private_packs.append({
                     'id': metadata.get('id'),
                     'price': metadata.get('price'),
@@ -665,7 +666,7 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
         pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
         pack.cleanup()
         return
-
+    print_error(f"user metadata sent to format_metadata is: {user_metadata}")
     task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                        integration_images=integration_images, author_image=author_image,
                                        index_folder_path=index_folder_path,
@@ -851,6 +852,7 @@ def main():
         private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
                                                                                                extract_destination_path,
                                                                                                index_folder_path)
+        print_error(f"private packs are: {private_packs}")
     else:  # skipping private packs
         print("Skipping index update of priced packs")
         private_packs = []
