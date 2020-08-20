@@ -109,7 +109,7 @@ class Client:
             2. Creating user: https://training.threatconnect.com/learn/article/creating-user-accounts-kb-article#2
 
         Notes:
-            1. When importing TcEx, Print occured therefor an error raised in the server due to not valid stdout.
+            1. When importing TcEx, Print occurred therefor an error raised in the server due to not valid stdout.
         """
         with suppress_stdout():
             from tcex import TcEx
