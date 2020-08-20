@@ -1157,7 +1157,8 @@ def fetch_incidents():
         :return: Fetched detections in incident format
     """
     incidents = []  # type:List
-    if 'detections' in demisto.params().get('fetch_incidents_or_detections'):
+    incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
+    if 'detections' in incidents_or_detections or not incidents_or_detections:
 
         last_run = demisto.getLastRun()
         # Get the last fetch time, if exists
@@ -1222,7 +1223,7 @@ def fetch_incidents():
 
             demisto.setLastRun({'first_behavior_time': last_fetch, 'last_detection_id': last_detection_id})
 
-    if 'incidents' in demisto.params().get('fetch_incidents_or_detections'):
+    if 'incidents' in incidents_or_detections:
 
         last_run = demisto.getLastRun()
 
