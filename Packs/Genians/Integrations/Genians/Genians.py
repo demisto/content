@@ -32,7 +32,7 @@ HEADER = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url, body = None):
+def http_request(method, url, body=None):
     """
     Makes an API call with the given arguments
     """
@@ -54,7 +54,7 @@ def http_request(method, url, body = None):
     except Exception as e:
         return_error(str(e))
 
-        
+
 def get_ip_nodeid(ip: str):
     URL = REQUEST_BASE_URL + "nodes/" + ip + "/managementscope?apiKey=" + APIKEY
     result = http_request("GET", URL)
@@ -126,10 +126,10 @@ def assign_ip_tag_command():
         else:
             raise Exception("IP : [{0}], [{1}] Tag assign fail.".format(IP, TAG_NAME))
 
-            
+
 def unassign_ip_tag(nodeid: str, data):
     URL = REQUEST_BASE_URL + "nodes/" + nodeid + "/tags?apiKey=" + APIKEY
-    result = http_request("DELETE", URL, body = data)
+    result = http_request("DELETE", URL, body=data)
     return result
 
 
