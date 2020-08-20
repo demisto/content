@@ -16,6 +16,7 @@ mock_demisto_args = {
     'ip': '172.29.62.3'
 }
 
+
 @pytest.fixture(autouse=True)
 def init_tests(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params)
@@ -70,19 +71,19 @@ response_data_1 = [{
     "nl_mac": "2C:F0:5D:0C:F4:98",
     "nl_sensornid": "455eba44-4871-103a-8001-08002746dd06-326ef817",
     "nl_genidev": 20
-    }]
+}]
 
 response_data_2 = {
     "result": [
         {
-          "NP_NAME": integration_params['tag_name'],
-          "NP_PERIOD": "0h",
-          "NP_STATIC": 0,
-          "NP_PERIODEXPIRE": "0h",
-          "NP_PERIODTYPE": 0,
-          "NP_COLOR": "ff0000",
-          "NP_DESC": "Anomaly",
-          "NP_IDX": 3
+            "NP_NAME": integration_params['tag_name'],
+            "NP_PERIOD": "0h",
+            "NP_STATIC": 0,
+            "NP_PERIODEXPIRE": "0h",
+            "NP_PERIODTYPE": 0,
+            "NP_COLOR": "ff0000",
+            "NP_DESC": "Anomaly",
+            "NP_IDX": 3
         }
     ],
     "total": 1,
@@ -96,19 +97,19 @@ result_data_1 = [{
     "nl_mac": "2C:F0:5D:0C:F4:98",
     "nl_sensornid": "455eba44-4871-103a-8001-08002746dd06-326ef817",
     "nl_genidev": 20
-    }]
+}]
 
 result_data_2 = {
     "result": [
         {
-          "NP_NAME": 'THREAT',
-          "NP_PERIOD": "0h",
-          "NP_STATIC": 0,
-          "NP_PERIODEXPIRE": "0h",
-          "NP_PERIODTYPE": 0,
-          "NP_COLOR": "ff0000",
-          "NP_DESC": "Anomaly",
-          "NP_IDX": 3
+            "NP_NAME": 'THREAT',
+            "NP_PERIOD": "0h",
+            "NP_STATIC": 0,
+            "NP_PERIODEXPIRE": "0h",
+            "NP_PERIODTYPE": 0,
+            "NP_COLOR": "ff0000",
+            "NP_DESC": "Anomaly",
+            "NP_IDX": 3
         }
     ],
     "total": 1,
