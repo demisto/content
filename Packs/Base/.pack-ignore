@@ -1,2 +1,10 @@
 [file:dashboard-SystemHealth.json]
 ignore=BA101
+[file:WordTokenizerV2.yml]
+ignore=DO106
+[file:DBotTrainTextClassifierV2.yml]
+ignore=DO106
+[file:DBotPreprocessTextData.yml]
+ignore=DO106
+[file:DBotPredictPhishingWords.yml]
+ignore=DO106
