@@ -17,7 +17,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 #########
 """
 Development info:
-*** Error in demisto docker loop, when importing tcex module a print occured therefor its handled with context manager to susspress prints. 
+*** Error in demisto docker loop, when importing tcex module a print occurred therefor it's handled with context manager to suppress prints. 
     - ThreatConnect SDK - https://docs.threatconnect.com/en/latest/python/python_sdk.html  (Don't use deprecated one).
     - More filters details - https://docs.threatconnect.com/en/latest/tcex/module_threat_intelligence.html#get-indicators-by-filter
     - REST API - https://docs.threatconnect.com/en/latest/rest_api/rest_api.html
