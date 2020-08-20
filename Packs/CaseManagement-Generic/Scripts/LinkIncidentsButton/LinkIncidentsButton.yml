@@ -1,0 +1,38 @@
+args:
+- description: Incident ID to link to, or a comma separated list of related Incident
+    IDs.
+  name: linkedIncidentIDs
+  required: true
+- defaultValue: "2"
+  description: Number of retries to perform after a failure.
+  name: retryLimit
+- auto: PREDEFINED
+  description: Action to perform - Link or Unlink Incidents
+  name: action
+  predefined:
+  - link
+  - unlink
+  required: true
+comment: |
+  Incident action button script to link or unlink Incidents from an Incident
+commonfields:
+  id: 2b9e3e5a-d49e-4ab9-8389-68b2274c760a
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: b13342fe-8a14-4569-8518-036bef2bb763
+    toServerVersion: ""
+dockerimage: demisto/python3:3.8.3.9324
+enabled: true
+name: LinkIncidentsButton
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- incident-action-button
+type: python

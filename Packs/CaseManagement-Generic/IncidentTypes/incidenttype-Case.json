@@ -1,0 +1,32 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#ff7500",
+	"days": 0,
+	"daysR": 4,
+	"default": false,
+	"disabled": false,
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Case",
+	"itemVersion": "",
+	"layout": "7d8fa0a9-82ed-402a-8024-895a4fb65b87",
+	"locked": false,
+	"name": "Case",
+	"packID": "b13342fe-8a14-4569-8518-036bef2bb763",
+	"playbookId": "f6783990-f7aa-41fe-80c9-7fa2c7a4fb7a",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 1,
+	"slaReminder": 96,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

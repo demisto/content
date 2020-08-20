@@ -1,0 +1,22 @@
+comment: This button will generate summary 'Case Report' template for a given Incident
+commonfields:
+  id: acb34501-dbf5-4edc-80ab-d9515ec204ce
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: b13342fe-8a14-4569-8518-036bef2bb763
+    toServerVersion: ""
+dockerimage: demisto/python3:3.8.2.6981
+enabled: true
+name: GenerateSummaryReportButton
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- incident-action-button
+type: python
