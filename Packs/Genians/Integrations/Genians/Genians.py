@@ -163,7 +163,7 @@ def unassign_ip_tag_command():
                         }
                     })
                 else:
-                    raise Exception("IP : [{0}], [{1}] Tag unassign fail.".format(THREAT_IP, TAG_NAME))
+                    raise Exception("IP : [{0}], [{1}] Tag unassign fail.".format(IP, TAG_NAME))
             else:
                 demisto.results("[{0}] Tag not found.".format(TAG_NAME))
         else:
