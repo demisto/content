@@ -61,6 +61,10 @@
             "mandatory": true,
             "display_name": "Common Types"
         },
+        "CortexDataLake": {
+            "mandatory": false,
+            "display_name": "Cortex Data Lake"
+        },
         "Active_Directory_Query": {
             "mandatory": false,
             "display_name": "Active Directory Query"
