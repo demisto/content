@@ -1,0 +1,21 @@
+{
+    "defaultIncidentType": "",
+    "description": "",
+    "feed": true,
+    "id": "c5f67469-e141-4648-8133-4cfb1cb5f26d-mapper",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "keyTypeMap": {
+        "IP": "ipRep"
+    },
+    "name": "Indicator Feed Integration 0f5daba8b20e43ce83cda1544450876f-instance (mapper)",
+    "sortValues": null,
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "mapping-incoming",
+    "unclassifiedCases": null,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

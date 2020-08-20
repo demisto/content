@@ -1,0 +1,21 @@
+{
+    "defaultIncidentType": "",
+    "description": "",
+    "feed": false,
+    "id": "default_API_custom-mapper",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "keyTypeMap": {
+        "doo": "Malware"
+    },
+    "name": "default_API (custom) (mapper)",
+    "sortValues": null,
+    "transformer": {
+        "complex": null,
+        "simple": "type"
+    },
+    "type": "mapping-incoming",
+    "unclassifiedCases": null,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

@@ -1,0 +1,33 @@
+{
+	"contextPath": "",
+	"contextValue": "",
+	"defaultMapping": null,
+	"details": "new_type",
+	"disabled": false,
+	"enhancementScriptNames": null,
+	"excludedBrands": null,
+	"expiration": 0,
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"fromServerVersion": "",
+	"id": "fa9d5554-a3e8-48c4-8f7d-d1c1176c38d9",
+	"itemVersion": "",
+	"layout": "",
+	"locked": false,
+	"manualMapping": {},
+	"mergeContext": false,
+	"packID": "c51ed6ea-3b89-4a07-8bd7-8eaf0749e1e6",
+	"propagationLabels": [
+		"all"
+	],
+	"regex": "",
+	"reputationCommand": "fetch-indicators",
+	"reputationScriptName": "",
+	"shouldShareComments": false,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"updateAfter": 0,
+	"version": -1
+}
