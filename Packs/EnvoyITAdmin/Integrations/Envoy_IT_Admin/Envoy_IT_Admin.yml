@@ -252,7 +252,7 @@ script:
     - contextPath: EnableUser.username
       description: Value of username passed as argument
       type: string
-  dockerimage: demisto/python3:3.8.5.10455
+  dockerimage: demisto/python3:3.8.5.10845
   runonce: false
   script: ''
   subtype: python3
