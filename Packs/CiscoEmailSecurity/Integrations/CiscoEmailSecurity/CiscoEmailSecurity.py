@@ -2,11 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import json
 import urllib3
-import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -15,8 +13,8 @@ urllib3.disable_warnings()
 class Client(BaseClient):
 
     def __init__(self, params):
-        self.username = params.get('client_id')
-        self.password = params.get('client_secret')
+        self.username = params.get('api_username')
+        self.password = params.get('api_password')
         super().__init__(base_url=params.get('base_url'), verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))
         self._token_jwt = self._generate_jwt_token()
@@ -80,8 +78,9 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client, suffix_url: str) -> str:
-    suffix_url += "?startDate=2016-09-10T19:00:00.000Z&endDate=2019-09-24T23:00:00.000Z&device_type=esa"
+def test_module(client: Client) -> str:
+    suffix_url = "/api/v2.0/reporting?startDate=2016-09-10T19:00:00.000Z&endDate=2019-09-24T23:00:00.000Z" \
+                 "&device_type=esa"
     try:
         client.list_report(suffix_url)
     except DemistoException as e:
@@ -105,14 +104,14 @@ def build_url_params_for_list_report(args):
             limit = arguments.get('limit')
             url_params += f'&{key}={int(value)}&limit={int(limit)}'
 
-        if key == 'filter_key':
+        elif key == 'filter_key':
             filter_operator = arguments.get('filter_operator', 'is')
             filter_value = arguments.get('filter_value')
             url_params += f'&filterBy={value}&filter_operator={filter_operator}&filter_value={filter_value}'
 
-        if key == 'device_group':
+        elif key == 'device_group':
             url_params += f'&{key}={value}'
-        if key == 'device_name':
+        elif key == 'device_name':
             url_params += f'&{key}={value}'
 
     return url_params
@@ -143,52 +142,52 @@ def build_url_params_for_list_messages(args):
             limit = arguments.get('limit')
             url_params += f'&{key}={int(value)}&limit={int(limit)}'
 
-        if key == 'attachment_name_value':
+        elif key == 'attachment_name_value':
             attachment_name_operator = arguments.get('attachment_name_operator', 'is')
             url_params += f'&attachmentNameOperator={attachment_name_operator}&attachmentNameValue={value}'
 
-        if key == 'recipient_filter_value':
+        elif key == 'recipient_filter_value':
             recipient_operator = arguments.get('recipient_filter_operator', 'is')
             url_params += f'&envelopeRecipientfilterOperator={recipient_operator}&envelopeRecipientfilterValue={value}'
 
-        if key == 'sender_filter_value':
+        elif key == 'sender_filter_value':
             sender_filter_operator = arguments.get('sender_filter_operator', 'is')
             url_params += f'&envelopeSenderfilterOperator={sender_filter_operator}&envelopeSenderfilterValue={value}'
 
-        if key == 'subject_filter_value':
+        elif key == 'subject_filter_value':
             subject_filter_operator = arguments.get('subject_filter_operator', 'is')
             url_params += f'&subjectfilterOperator={subject_filter_operator}&subjectfilterValue={value}'
 
-        if key == 'domain_name_value':
+        elif key == 'domain_name_value':
             domain_name_operator = arguments.get('domain_name_operator', 'is')
             url_params += f'&domainNameOperator={domain_name_operator}&domainNameValue={value}'
 
-        if key == 'spam_positive' and value == 'True':
+        elif key == 'spam_positive' and value == 'True':
             url_params += f'&spamPositive={argToBoolean(value)}'
-        if key == 'quarantined_as_spam' and value == 'True':
+        elif key == 'quarantined_as_spam' and value == 'True':
             url_params += f'&quarantinedAsSpam={argToBoolean(value)}'
-        if key == 'virus_positive' and value == 'True':
+        elif key == 'virus_positive' and value == 'True':
             url_params += f'&virusPositive={argToBoolean(value)}'
-        if key == 'contained_malicious_urls' and value == 'True':
+        elif key == 'contained_malicious_urls' and value == 'True':
             url_params += f'&containedMaliciousUrls={argToBoolean(value)}'
-        if key == 'contained_neutral_urls' and value == 'True':
+        elif key == 'contained_neutral_urls' and value == 'True':
             url_params += f'&containedNeutralUrls={argToBoolean(value)}'
 
-        if key == 'file_hash':
+        elif key == 'file_hash':
             url_params += f'&fileSha256={value}'
-        if key == 'message_id':
+        elif key == 'message_id':
             url_params += f'&messageIdHeader={int(value)}'
-        if key == 'cisco_message_id':
+        elif key == 'cisco_message_id':
             url_params += f'&ciscoMid={int(value)}'
-        if key == 'sender_ip':
+        elif key == 'sender_ip':
             url_params += f'&senderIp={value}'
-        if key == 'message_direction':
+        elif key == 'message_direction':
             url_params += f'&messageDirection={value}'
-        if key == 'quarantine_status':
+        elif key == 'quarantine_status':
             url_params += f'&quarantineStatus={value}'
-        if key == 'url_reputation':
+        elif key == 'url_reputation':
             url_params += f'&urlReputation={value}'
-        if key == 'macro_file_types_detected':
+        elif key == 'macro_file_types_detected':
             url_params += f'&macroFileTypesDetected={value}'
 
     return url_params
@@ -280,17 +279,17 @@ def build_url_params_for_spam_quarantine(args):
         if key == 'order_by_from_address':
             order_dir_from_address = arguments.get('order_dir_from_address', 'asc')
             url_params += f'&orderBy={value}&orderDir={order_dir_from_address}'
-        if key == 'order_by_to_address':
+        elif key == 'order_by_to_address':
             order_dir_to_address = arguments.get('order_dir_to_address', 'asc')
             url_params += f'&orderBy={value}&orderDir={order_dir_to_address}'
-        if key == 'order_by_subject':
+        elif key == 'order_by_subject':
             order_dir_subject = arguments.get('order_dir_subject', 'asc')
             url_params += f'&orderBy={value}&orderDir={order_dir_subject}'
 
-        if key == 'recipient_value':
+        elif key == 'recipient_value':
             recipient_operator = arguments.get('recipient_operator', 'is')
             url_params += f'&envelopeRecipientfilterOperator={recipient_operator}&envelopeRecipientfilterValue={value}'
-        if key == 'filter_value':
+        elif key == 'filter_value':
             filter_operator = arguments.get('filter_operator', 'is')
             url_params += f'&filterOperator={filter_operator}&filterValue={value}'
 
@@ -340,16 +339,16 @@ def quarantine_message_details_data_to_human_readable(message):
 
 
 def list_get_quarantine_message_details_command(client, args):
-    mid = args.get('mid')
-    url_suffix_to_filter_by = f'/api/v2.0/quarantine/messages?mid={mid}&quarantineType=spam'
-    quarantine_message_details_response_data = client.list_quarantine_get_details(url_suffix_to_filter_by)
-    quarantine_message_details_data = quarantine_message_details_response_data.get('data')
-    human_readable = quarantine_message_details_data_to_human_readable(quarantine_message_details_data)
+    message_id = args.get('message_id')
+    url_suffix_to_filter_by = f'/api/v2.0/quarantine/messages?mid={message_id}&quarantineType=spam'
+    quarantine_message_details_response = client.list_quarantine_get_details(url_suffix_to_filter_by)
+    quarantine_message_details = quarantine_message_details_response.get('data')
+    human_readable = quarantine_message_details_data_to_human_readable(quarantine_message_details)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='CiscoEmailSecurity.QuarantineMessageDetails',
         outputs_key_field='mid',
-        outputs=quarantine_message_details_data
+        outputs=quarantine_message_details
     )
 
 
@@ -363,7 +362,7 @@ def main() -> None:
         client = Client(params)
 
         if demisto.command() == 'test-module':
-            result = test_module(client, '/api/v2.0/reporting')
+            result = test_module(client)
             return_results(result)
 
         elif demisto.command() == 'cisco-email-security-report-get':

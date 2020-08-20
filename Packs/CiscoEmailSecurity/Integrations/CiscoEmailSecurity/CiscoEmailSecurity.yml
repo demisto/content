@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - defaultvalue: https://soar.monstersofhack.com
   display: Server URL (e.g. https://soar.monstersofhack.com)
-  name: url
+  name: base_url
   required: true
   type: 0
 - display: Fetch incidents
@@ -19,17 +19,6 @@ configuration:
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
-  type: 0
-- display: API Key
-  name: apikey
-  required: true
-  type: 4
-- additionalinfo: Set this to determine the HelloWorld score that will determine if
-    an IP is malicious (0-100)
-  defaultvalue: '65'
-  display: Score threshold for IP reputation command
-  name: threshold_ip
   required: false
   type: 0
 - additionalinfo: Set this to determine the HelloWorld score that will determine if
@@ -53,16 +42,6 @@ configuration:
   name: alert_type
   required: false
   type: 0
-- defaultvalue: Low
-  display: Minimum severity of alerts to fetch
-  name: min_severity
-  options:
-  - Low
-  - Medium
-  - High
-  - Critical
-  required: true
-  type: 15
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
@@ -76,6 +55,16 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: API Username
+  hidden: false
+  name: api_username
+  required: true
+  type: 0
+- display: API Password
+  hidden: false
+  name: api_password
+  required: true
+  type: 4
 description: This is the Hello World integration for getting started.
 display: CiscoEmailSecurity
 name: CiscoEmailSecurity
@@ -586,5 +575,3 @@ script:
   type: python
 defaultmapperin: HelloWorld-mapper
 defaultclassifier: HelloWorld
-tests:
-- No tests (auto formatted)
