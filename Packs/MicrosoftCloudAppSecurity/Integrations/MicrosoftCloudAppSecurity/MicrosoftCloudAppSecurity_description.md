@@ -5,5 +5,5 @@ To access the Microsoft Cloud App Security API, you need to grant authorization.
 To grant authorization, click [here](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication) to view a detailed explanation of how to create the Server URL and User key (token).
 
 ## Custom Filters
-To filter the call results of the API (custom filter), make sure it matches the Microsoft Cloud App Security filtering format. Click [here](https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters) for details.
+To filter the call results of the API, make sure it matches the Microsoft Cloud App Security filtering format. Click [here](https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters) for details.
 

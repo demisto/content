@@ -1,6 +1,6 @@
 {
     "name": "MicrosoftCloudAppSecurity",
-    "description": "Microsoft Cloud App Security Integration",
+    "description": "Microsoft Cloud App Security Integration, a Cloud Access Security Broker that supports various deployment modes",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -11,6 +11,11 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
-    "useCases": [],
+    "useCases": [
+        "fetching alerts",
+        "resolve/dismiss the alerts",
+        "lisitng cloud app activity",
+        "searching files and users"
+    ],
     "keywords": []
 }

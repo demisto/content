@@ -41,7 +41,7 @@ Command to dismiss multiple alerts matching the specified filters.
 
 
 #### Context Output
-Because the api does not return a value relevant to this command, this command has no outputs.
+Because the API does not return a value relevant to this command, this command has no outputs.
 
 
 #### Command Example

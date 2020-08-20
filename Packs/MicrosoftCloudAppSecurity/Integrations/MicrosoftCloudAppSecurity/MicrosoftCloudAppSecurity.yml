@@ -7,7 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: User's key to access the api
+- display: User's key to access the API
   name: token
   required: true
   type: 4
