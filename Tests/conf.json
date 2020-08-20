@@ -2959,10 +2959,6 @@
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
-        },
-        {
-            "integrations": "Query.AI",
-            "playbookID": ""
         }
     ],
     "skipped_tests": {

@@ -7,7 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Email ID
+- display: Email
   name: email
   required: true
   type: 0
@@ -19,7 +19,7 @@ configuration:
   name: alias
   required: true
   type: 0
-- display: Default Platform Connection Params. Eg- {"alias":{"username":"my_username","password":"my_password"}}
+- display: Default Platform Connection Params. Eg- {"platform_alias":{"username":"my_username","password":"my_password"}}
   name: connection_params
   required: true
   type: 12
@@ -50,19 +50,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Connection params as JSON object. Eg- {"alias":{"username":"my_username","password":"my_password"}}
+      description: Connection params as JSON object. Eg- {"platform_alias":{"username":"my_username","password":"my_password"}}
       isArray: false
       name: connection_params
       required: false
       secret: false
     - default: false
-      description: Workflow params as JSON object. Eg- {"param1":"value1","param2":"value2"}
+      description: Workflow params as JSON object.(If workflow requires params) Eg- {"param1":"value1","param2":"value2"}
       isArray: false
       name: workflow_params
       required: false
       secret: false
     - default: false
-      description: Search time period
+      description: Search time period. Eg- "search 1 year ago to now"
       isArray: false
       name: time_text
       required: false
@@ -77,7 +77,7 @@ script:
       type: Unknown
     - contextPath: QueryAI.query.markdown_string
       description: Readable Response after running query
-      type: Unknown
+      type: String
   dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: false

@@ -1,6 +1,6 @@
-import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+import demistomock as demisto
+from CommonServerUserPython import *
+from CommonServerPython import *
 
 from typing import Any, Dict
 import urllib3

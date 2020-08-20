@@ -23,5 +23,8 @@
         "query",
         "ai",
         "query.ai"
+    ],
+    "githubUser": [
+        "query-ai"
     ]
 }

@@ -9,3 +9,4 @@ In order to use this integration you need the following:
 
 #### BASE_URL
 The base URL would be of the [Query.AI Proxy](https://proxy.query.ai:443) . Replace with hostname and port of the Query.AI Proxy component running in your environment.
+Eg.- `https://<my_proxy_url>:<port>/`
