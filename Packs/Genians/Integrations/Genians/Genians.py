@@ -1,5 +1,3 @@
-import demistomock as demisto
-from CommonServerPython import *
 
 ''' IMPORT '''
 
@@ -63,20 +61,24 @@ def get_tag_list():
     result = http_request("GET", URL)
     return result
 
+def list_tag_data_string(tag_name:str):
+    data = [{
+        "id": "",
+        "name": tag_name,
+        "description": "",
+        "startDate": "",
+        "expireDate": "",
+        "periodType": "",
+        "expiryPeriod": ""
+    }]
+    return data
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 def assign_ip_tag(nodeid:str):
     URL = REQUEST_BASE_URL + "nodes/"+nodeid+"/tags?apiKey=" + APIKEY
-    data = [{
-        "id" : "",
-        "name" : TAG_NAME,
-        "description" : "",
-        "startDate" : "",
-        "expireDate" : "",
-        "periodType" : "",
-        "expiryPeriod" : ""
-    }]
+    data = list_tag_data_string(TAG_NAME)
     result = http_request("POST", URL, body=json.dumps(data))
     return result
 
