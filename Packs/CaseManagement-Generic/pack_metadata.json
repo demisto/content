@@ -2,7 +2,6 @@
     "name": "CaseManagement-Generic",
     "description": "Case Management - Beta\n\nBuilt by the Cortex Customer Success Team to provide quick and valuable deployment of XSOAR for the main use of Case Management",
     "support": "community",
-<<<<<<< HEAD
     "currentVersion": "0.0.5",
     "author": "omercnet",
     "url": "",
@@ -13,15 +12,3 @@
     "useCases": ["Case Management"],
     "keywords": ["Case Management", "siem", "SIEM"]
 }
-=======
-    "currentVersion": "1.0.0",
-    "author": "omercnet",
-    "url": "",
-    "email": "",
-    "created": "2020-08-20T14:45:46Z",
-    "categories": [],
-    "tags": [],
-    "useCases": [],
-    "keywords": []
-}
->>>>>>> omercnet-contrib-CaseManagement-Generic-1
