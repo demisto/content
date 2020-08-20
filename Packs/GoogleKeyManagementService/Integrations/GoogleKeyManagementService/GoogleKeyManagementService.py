@@ -1165,6 +1165,7 @@ def main():
         cmd_func = COMMANDS.get(command)  # type: ignore
 
         results = cmd_func(client, demisto.args())  # type: ignore
+
         return_outputs(*results)
 
     except Exception as e:
