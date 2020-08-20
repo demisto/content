@@ -1033,4 +1033,3 @@ workflows:
     jobs:
       - Demisto SDK Nightly:
           context: sdk_nightly_env
-
