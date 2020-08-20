@@ -191,11 +191,6 @@ references:
       name: Validate Files and Yaml
       when: always
       command: |
-        if [ -n "${NIGHTLY}" ];
-          then
-            echo "Skipping - not running in Nightly run"
-            exit 0
-        fi
         # Run flake8 on all excluding Packs (Integraions and Scripts) - they will be handled in linting
         ./Tests/scripts/pyflake.sh *.py
         find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
@@ -844,6 +839,7 @@ jobs:
             - run:
                 name: Upload Packs To Marketplace Storage
                 command: |
+                  # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
                   if [[ $CIRCLE_BRANCH != master ]]; then
                     echo "Skipping packs uploading on non master branch"
                     exit 0
