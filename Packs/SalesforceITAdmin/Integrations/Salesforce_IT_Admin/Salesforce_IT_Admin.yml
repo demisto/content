@@ -557,9 +557,9 @@ script:
     - contextPath: DisableUser.details
       description: Gives the raw response from API in case of error
       type: string
-  dockerimage: demisto/python3:3.8.5.10455
+  dockerimage: demisto/python3:3.8.5.10845
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
+fromversion: 6.0.0
