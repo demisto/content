@@ -8,7 +8,7 @@
     "email": "",
     "created": "2020-08-20T14:37:35Z",
     "categories": [],
-    "tags": ['beta', 'siem'],
-    "useCases": ['Case Management'],
-    "keywords": ['Case Management', 'siem', 'SIEM']
+    "tags": ["beta", "siem"],
+    "useCases": ["Case Management"],
+    "keywords": ["Case Management", "siem", "SIEM"]
 }
