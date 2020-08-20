@@ -1198,24 +1198,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "McAfee ESM-v10",
-            "instance_names": "v10.2.0",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "instance_names": "v10.3.0",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "instance_names": "v11.1.3",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240,
