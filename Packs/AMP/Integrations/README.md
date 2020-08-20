@@ -2,7 +2,7 @@
 ---
 
 Uses CISCO AMP Endpoint
-This integration was integrated and tested with version v1 of AMP
+This integration was integrated and tested with API version v1 of AMP
 
 ## Configure AMP on Demisto
 ---
