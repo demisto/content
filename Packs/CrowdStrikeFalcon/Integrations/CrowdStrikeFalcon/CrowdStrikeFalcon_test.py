@@ -65,11 +65,11 @@ response_incident = {
      "config_id_base": "65994753",
      "config_id_build": "10902",
      "config_id_platform": "4",
-     "external_ip": "108.89.36.132",
+     "external_ip": "1.1.1.1",
      "hostname": "SFO-M-Y81WHJ",
      "first_seen": "2019-05-10T17:20:39Z",
      "last_seen": "2020-05-17T16:59:42Z",
-     "local_ip": "169.254.171.160",
+     "local_ip": "1.1.1.1",
      "mac_address": "86-89-ad-65-d0-30",
      "major_version": "18",
      "minor_version": "7",
@@ -109,9 +109,9 @@ incident_context = {'name': 'Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1
                         '"bios_manufacturer": "Apple Inc.", '
                         '"bios_version": "1037.100.359.0.0 (iBridge: 17.16.14263.0.0,0)", '
                         '"config_id_base": "65994753", "config_id_build": "10902", "config_id_platform": "4", '
-                        '"external_ip": "108.89.36.132", "hostname": "SFO-M-Y81WHJ", '
+                        '"external_ip": "1.1.1.1", "hostname": "SFO-M-Y81WHJ", '
                         '"first_seen": "2019-05-10T17:20:39Z", "last_seen": "2020-05-17T16:59:42Z", '
-                        '"local_ip": "169.254.171.160", "mac_address": "86-89-ad-65-d0-30", "major_version": "18", '
+                        '"local_ip": "1.1.1.1", "mac_address": "86-89-ad-65-d0-30", "major_version": "18", '
                         '"minor_version": "7", "os_version": "Mojave (10.14)", "platform_id": "1", '
                         '"platform_name": "Mac", "product_type_desc": "Workstation", "status": "normal", '
                         '"system_manufacturer": "Apple Inc.", "system_product_name": "MacBookPro15,1", '

@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: CrowdstrikeFalcon - test
+  id: CrowdstrikeFalcon
   version: -1
 configuration:
 - defaultvalue: https://api.crowdstrike.com
@@ -1019,7 +1019,7 @@ script:
     description: List of incident summaries
     execution: false
     name: cs-falcon-list-incident-summaries
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: true
   longRunning: false
