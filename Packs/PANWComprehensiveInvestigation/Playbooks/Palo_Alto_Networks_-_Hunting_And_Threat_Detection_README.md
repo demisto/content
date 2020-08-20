@@ -50,4 +50,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Palo Alto Networks - Hunting And Threat Detection](Insert the link to your image here)
+![Palo Alto Networks - Hunting And Threat Detection](https://raw.githubusercontent.com/demisto/content/76c84b8dba7f71dedef605cc1417353222a425b4/Packs/PANWComprehensiveInvestigation/doc_files/Palo_Alto_Networks_-_Hunting_And_Threat_Detection.png)
