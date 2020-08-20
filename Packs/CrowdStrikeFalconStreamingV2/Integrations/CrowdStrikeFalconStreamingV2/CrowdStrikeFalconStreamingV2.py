@@ -460,7 +460,7 @@ def main():
     base_url: str = params.get('base_url', '')
     client_id: str = params.get('client_id', '')
     client_secret: str = params.get('client_secret', '')
-    event_type = ','.join(params.get('event_type', []))
+    event_type = ','.join(params.get('event_type', []) or [])
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     offset = params.get('offset', '0')
