@@ -281,7 +281,7 @@ class TrustarClient:
             'trustar-get-phishing-submissions': self.get_phishing_submissions,
             'trustar-set-triage-status': self.set_triage_status,
             'trustar-copy-report': self.copy_report,
-            'trustar-redact-report': self.redact_report
+            'trustar-redact-submit-report': self.redact_report
         }
         return command_dict
 

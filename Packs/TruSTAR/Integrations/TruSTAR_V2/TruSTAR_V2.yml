@@ -786,54 +786,12 @@ script:
       description: Limit of results to return. Max value possible is 1000.
       defaultValue: "25"
     outputs:
-    - contextPath: TruSTAR.Indicators.indicatorType
-      description: Indicator type
+    - contextPath: TruSTAR.Report.id
+      description: ID of the report
       type: string
-    - contextPath: TruSTAR.Indicators.value
-      description: Indicator value
+    - contextPath: TruSTAR.Report.title
+      description: Report Title
       type: string
-    - contextPath: File.Name
-      description: The full file name (including file extension).
-      type: String
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: String
-    - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA1 hash of the file.
-      type: String
-    - contextPath: IP.Address
-      description: IP address
-      type: String
-    - contextPath: URL.Data
-      description: The URL
-      type: String
-    - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: CVE-2015-1653'
-      type: String
-    - contextPath: Account.Email.Address
-      description: The email address of the account.
-      type: String
-    - contextPath: RegistryKey.Path
-      description: The path to the registry key
-      type: String
-    - contextPath: Domain.Name
-      description: 'The domain name, for example: "google.com".'
-      type: String
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: string
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
-    - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
     description: Searches for all reports that contain the given search term.
   - name: trustar-add-to-whitelist
     arguments:
@@ -1019,7 +977,7 @@ script:
       description: The actual score
       type: number
     description: Get phishing indicators that match the given criteria.
-  - name: trustar-redact-report
+  - name: trustar-redact-submit-report
     arguments:
     - name: title
       required: true
@@ -1036,7 +994,8 @@ script:
       predefined:
       - COMMUNITY
       - ENCLAVE
-      description: Distribution type of the report
+      description: Distribution type of the report. If 'ENCLAVE' is selected you have to input
+        at least one enclave id on the 'enclave_ids' argument.
       defaultValue: ENCLAVE
     - name: external_url
       description: URL for the external report that this originated from, if one exists.
@@ -1063,7 +1022,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/trustar:20.2.0.10810
+  dockerimage: demisto/trustar:20.2.0.10973
 fromversion: 5.0.0
 tests:
   - TruSTAR v2-Test
