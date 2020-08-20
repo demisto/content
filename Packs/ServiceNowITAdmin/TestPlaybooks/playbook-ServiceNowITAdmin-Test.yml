@@ -1,7 +1,7 @@
 id: playbook-ServiceNowITAdmin-Test
 name: playbook-ServiceNowITAdmin-Test
 version: 5
-fromversion: 5.0.0
+fromversion: 6.0.0
 starttaskid: "0"
 description: ''
 tasks:
