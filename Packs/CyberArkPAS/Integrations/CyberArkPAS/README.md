@@ -417,7 +417,7 @@ Return a list of all existing users in the vault that meet the filter and search
 ### cyberark-pas-user-activate
 ***
 Activate an existing vault user who was suspended after entering incorrect credentials multiple times.
-
+Uses the V1 API.
 
 #### Base Command
 
@@ -851,7 +851,7 @@ Return a list of the members of the safe.
 ### cyberark-pas-safe-member-add
 ***
 Add an existing user as a safe member.
-
+Uses the V1 API.
 
 #### Base Command
 
@@ -993,7 +993,7 @@ Add an existing user as a safe member.
 ### cyberark-pas-safe-member-update
 ***
 Update an existing safe member.
-
+Uses the V1 API.
 
 #### Base Command
 
@@ -1133,7 +1133,7 @@ Update an existing safe member.
 ### cyberark-pas-safe-member-delete
 ***
 Remove a specific member from a safe.
-
+Uses the V1 API.
 
 #### Base Command
 
