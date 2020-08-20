@@ -393,9 +393,11 @@
 				],
 				"type": "custom"
 			}
-		]
+		],
+		"typeId": "Report",
+		"version": -1
 	},
-	"typeId": "STIX Report",
+	"typeId": "Report",
 	"version": -1,
 	"fromVersion": "5.5.0",
 	"toVersion": "5.9.9"
