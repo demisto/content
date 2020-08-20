@@ -32,7 +32,7 @@ HEADER = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method: str, url: str, body: dict = None):
+def http_request(method, url, body = None):
     """
     Makes an API call with the given arguments
     """
