@@ -17,21 +17,22 @@ APIKEY = demisto.params().get("apikey")
 TAG_NAME = demisto.params().get("tag_name")
 
 # Genian NAC Policy Center (Server) URL
-BASE_URL = "https://"+SERVER_IP+":8443/mc2"
+BASE_URL = "https://" + SERVER_IP + ":8443/mc2"
 # Genian NAC REST API Request URL
-REQUEST_BASE_URL = "https://"+SERVER_IP+":8443/mc2/rest/"
+REQUEST_BASE_URL = "https://" + SERVER_IP + ":8443/mc2/rest/"
 # Should We use SSL
 USE_SSL = not demisto.params().get("insecure", False)
 # Response Content Type
 HEADER = {
-    "accept" : "application/json",
-    "content-type" : "application/json;charset=UTF-8"
+    "accept": "application/json",
+    "content-type": "application/json;charset=UTF-8"
 }
 
 
 ''' HELPER FUNCTIONS '''
 
-def http_request(method:str, url:str, body:dict=None):
+
+def http_request(method: str, url: str, body: dict = None):
     """
     Makes an API call with the given arguments
     """
@@ -44,7 +45,7 @@ def http_request(method:str, url:str, body:dict=None):
             verify=USE_SSL,
         )
         if result.status_code < 200 or result.status_code >= 300:
-            raise Exception("Error in Genian NAC Integration API Call. Code: {0} - {1}".format(str(result.status_code), str(result.reason)))
+            raise Exception("Error in Genian NAC Integration API Call. Code: {0}".format(str(result.status_code)))
 
         json_result = result.json()
 
@@ -53,17 +54,20 @@ def http_request(method:str, url:str, body:dict=None):
     except Exception as e:
         return_error(str(e))
 
-def get_ip_nodeid(ip:str):
-    URL = REQUEST_BASE_URL + "nodes/"+ip+"/managementscope?apiKey=" + APIKEY
+        
+def get_ip_nodeid(ip: str):
+    URL = REQUEST_BASE_URL + "nodes/" + ip + "/managementscope?apiKey=" + APIKEY
     result = http_request("GET", URL)
     return result
+
 
 def get_tag_list():
-    URL = REQUEST_BASE_URL + "tags?page=1&pageSize=30&npName="+TAG_NAME+"&apiKey="+APIKEY
+    URL = REQUEST_BASE_URL + "tags?page=1&pageSize=30&npName=" + TAG_NAME + "&apiKey=" + APIKEY
     result = http_request("GET", URL)
     return result
 
-def list_tag_data_string(tag_name:str):
+
+def list_tag_data_string(tag_name: str):
     data = [{
         "id": "",
         "name": tag_name,
@@ -78,11 +82,13 @@ def list_tag_data_string(tag_name:str):
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
-def assign_ip_tag(nodeid:str):
-    URL = REQUEST_BASE_URL + "nodes/"+nodeid+"/tags?apiKey=" + APIKEY
+
+def assign_ip_tag(nodeid: str):
+    URL = REQUEST_BASE_URL + "nodes/" + nodeid + "/tags?apiKey=" + APIKEY
     data = list_tag_data_string(TAG_NAME)
     result = http_request("POST", URL, body=json.dumps(data))
     return result
+
 
 def assign_ip_tag_command():
     IP = demisto.getArg("ip")
@@ -104,8 +110,8 @@ def assign_ip_tag_command():
         if tag_check == TAG_NAME:
             hr = "IP : [{0}], [{1}] Tag assign success.".format(IP, TAG_NAME)
             assign_tag = {
-                "nodeId" : nodeid,
-                "Name" : TAG_NAME
+                "nodeId": nodeid,
+                "Name": TAG_NAME
             }
             demisto.results({
                 'Type': entryTypes['note'],
@@ -120,10 +126,12 @@ def assign_ip_tag_command():
         else:
             raise Exception("IP : [{0}], [{1}] Tag assign fail.".format(IP, TAG_NAME))
 
-def unassign_ip_tag(nodeid:str, data):
-    URL = REQUEST_BASE_URL + "nodes/"+nodeid+"/tags?apiKey=" + APIKEY
-    result = http_request("DELETE", URL, body=data)
+            
+def unassign_ip_tag(nodeid: str, data):
+    URL = REQUEST_BASE_URL + "nodes/" + nodeid + "/tags?apiKey=" + APIKEY
+    result = http_request("DELETE", URL, body = data)
     return result
+
 
 def unassign_ip_tag_command():
     IP = demisto.getArg("ip")
@@ -144,13 +152,13 @@ def unassign_ip_tag_command():
 
         if tag_check != "tag_not_exists":
             if int(tag_check):
-                data = "[\""+str(tag_check)+"\"]"
+                data = "[\"" + str(tag_check) + "\"]"
                 result3 = unassign_ip_tag(nodeid, data)
                 if str(result3) == "[]":
                     hr = "IP : [{0}], [{1}] Tag unassign success.".format(IP, TAG_NAME)
                     unassign_tag = {
-                        "nodeId" : nodeid,
-                        "Name" : TAG_NAME
+                        "nodeId": nodeid,
+                        "Name": TAG_NAME
                     }
                     demisto.results({
                         'Type': entryTypes['note'],
@@ -168,6 +176,7 @@ def unassign_ip_tag_command():
                 demisto.results("[{0}] Tag not found.".format(TAG_NAME))
         else:
             demisto.results("[{0}] Tag not found.".format(TAG_NAME))
+
 
 def main():
     """Main execution block"""
@@ -189,6 +198,7 @@ def main():
 
     finally:
         LOG.print_log()
+
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == '__builtin__' or __name__ == 'builtins':
