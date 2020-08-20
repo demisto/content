@@ -105,7 +105,7 @@ class Client:
         Args:
             access_key: Generated access key.
             secret_key: Generated secret key.
-            api_path:
+            api_path: https://api.threatconnect.com
 
         References:
             1. HMAC: https://docs.threatconnect.com/en/latest/tcex/authorization.html
