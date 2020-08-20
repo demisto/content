@@ -17,4 +17,7 @@ Genrating credentials:
 
 5. Click the SAVE button.
 
+For more information - click [here](https://training.threatconnect.com/learn/article/creating-user-accounts-kb-article) (Section - Creating an API User).
+
+
     

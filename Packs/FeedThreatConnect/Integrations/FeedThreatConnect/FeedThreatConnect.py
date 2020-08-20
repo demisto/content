@@ -72,12 +72,11 @@ def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) 
     return score
 
 
-def parse_indicator(indicator: Dict[str, str], feed_tags: List[str]) -> Dict[str, Any]:
+def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     """ Parsing indicator by indicators demisto convension.
 
     Args:
         indicator: Indicator as raw response.
-        feed_tags: Indicators tags.
 
     Returns:
         dict: Parsed indicator.
@@ -88,7 +87,7 @@ def parse_indicator(indicator: Dict[str, str], feed_tags: List[str]) -> Dict[str
         "rawJSON": indicator,
         "score": calculate_dbot_score(indicator.get("threatAssessScore")),
         "fields": {
-            "tags": feed_tags,
+            "tags": argToList(demisto.getParam("feedTags")),
         },
     }
 
@@ -176,19 +175,18 @@ def module_test_command(client: Client) -> COMMAND_OUTPUT:
     return "ok", {}, {}
 
 
-def fetch_indicators_command(client: Client, feed_tags: List[str]) -> List[Dict[str, Any]]:
+def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:
     """ Fetch indicators from ThreatConnect
 
     Args:
         client: ThreatConnect client.
-        feed_tags: Indicators tags.
 
     Returns:
         list: indicator to populate in demisto server.
     """
     raw_response = client.get_indicators(owners=argToList(demisto.getParam('owners')))
 
-    return [parse_indicator(indicator, feed_tags) for indicator in raw_response]
+    return [parse_indicator(indicator) for indicator in raw_response]
 
 
 def get_indicators_command(client: Client) -> COMMAND_OUTPUT:
@@ -243,7 +241,7 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, argToList(demisto.getParam("feedTags")))
+            indicators = fetch_indicators_command(client)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
