@@ -37,7 +37,15 @@ class Client(BaseClient):
     def __init__(self, base_url: str, app_id: str, verify_ssl: bool, proxy: bool) -> None:
         self.app_id = app_id
         self.refresh_stream_url = None
-        super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
+        super().__init__(
+            base_url=base_url,
+            verify=verify_ssl,
+            proxy=proxy,
+            headers={
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        )
 
     async def set_access_token(self, refresh_token: 'RefreshToken') -> None:
         await refresh_token.set_access_token(self)
