@@ -498,8 +498,7 @@ There is no context output for this command.
 ### 20. amp_get_version
 ---
 Fetches a list of versions.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `amp_get_version`
