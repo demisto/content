@@ -6,7 +6,6 @@ import re
 import smtplib
 import string
 import sys
-import traceback
 from email import encoders
 from email.header import Header
 from email.message import Message
@@ -409,7 +408,6 @@ def main():
                     tb = "\n".join(traceback.format_exception(*sys.exc_info()))
                     demisto.updateModuleHealth(tb + '\n\noutbox:\n' + str(outbox))
                 finally:
-                    pass
                     set_to_integration_context_with_retries({'outbox': outbox}, {'outbox': 'entitlement'})
 
         if demisto.command() == 'test-module':
