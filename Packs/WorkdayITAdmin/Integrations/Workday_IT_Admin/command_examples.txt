@@ -1,0 +1,4 @@
+!workday-get-delta-user-report using="Workday IT Admin - Delta Report" from_date=2020-08-11T08:00:00.000-07:00 to_date=2020-08-12T08:00:00.000-07:00
+!workday-get-full-user-report using="Workday IT Admin - Full Report"
+!workday-get-integration-context using="Workday IT Admin - Delta Report"
+!workday-reset-integration-context using="Workday IT Admin - Delta Report"
