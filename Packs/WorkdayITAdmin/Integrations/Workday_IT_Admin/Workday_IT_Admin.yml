@@ -57,12 +57,12 @@ configuration:
 - defaultvalue: ""
   display: Fetch incidents
   name: isFetch
-  required: true
+  required: false
   type: 8
 - defaultvalue: ""
   display: Incident type
   name: incidentType
-  required: true
+  required: false
   type: 13
 - defaultvalue: ""
   display: Trust any certificate (not secure)
