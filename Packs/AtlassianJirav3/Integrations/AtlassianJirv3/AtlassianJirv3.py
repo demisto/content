@@ -25,7 +25,8 @@ ISSUE_SCHEMA = {
         "accountId": "5d4147974125b20c3159b11d",
         "emailAddress": "drwho@atlassian.net",
         "avatarUrls": {
-            "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
+            "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2Favatar-"
+                     "management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
         },
         "displayName": "Dr Who",
         "active": True,
@@ -42,7 +43,8 @@ ISSUE_SCHEMA = {
             "accountId": "5b10a2844c20165700ede21g",
             "name": ",",
             "avatarUrls": {
-                "48x48": "https://avatar-management--avatars.server-location.prod.public.atl-paas.net/initials/MK-5.png?size=48&s=48"
+                "48x48": "https://avatar-management--avatars.server-location.prod.public.atl-paas.net/initials/"
+                         "MK-5.png?size=48&s=48"
             },
             "displayName": "Mia Krystof",
             "active": False
@@ -62,7 +64,8 @@ ISSUE_SCHEMA = {
                 "accountId": "5d4147974125b20c3159b11d",
                 "emailAddress": "drwho@atlassian.net",
                 "avatarUrls": {
-                    "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
+                    "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2F"
+                             "avatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
                 },
                 "displayName": "Dr Who",
                 "active": True,
@@ -75,7 +78,8 @@ ISSUE_SCHEMA = {
                 "accountId": "5d4147974125b20c3159b11d",
                 "emailAddress": "drwho@atlassian.net",
                 "avatarUrls": {
-                    "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
+                    "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2F"
+                             "avatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
                 },
                 "displayName": "Dr Who",
                 "active": True,
@@ -97,17 +101,22 @@ ISSUE_SCHEMA = {
         "accountId": "5d4147974125b20c3159b11d",
         "emailAddress": "drwho@atlassian.net",
         "avatarUrls": {
-            "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
+            "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2Favatar-"
+                     "management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
         },
         "displayName": "Dr Who",
         "active": True,
         "timeZone": "Etc/GMT",
         "accountType": "atlassian"
     },
-    "description": "You are now looking at an issue in one of your preset queues. This is where your agents work on your end users' requests.\n\nOn your left hand side are the queues where you can easily see all requests coming from your end users.\n\nGot it? Now change the workflow status and add a comment to resolve this request.",
+    "description": "You are now looking at an issue in one of your preset queues. This is where your agents work on "
+                   "your end users' requests.\n\nOn your left hand side are the queues where you can easily see "
+                   "all requests coming from your end users.\n\nGot it? Now change the workflow status and add a "
+                   "comment to resolve this request.",
     "duedate": None,
     "environment": None,
-    "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations,customfield_10042.serviceName",
+    "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations,customfield_"
+              "10042.serviceName",
     "fixVersions": [],
     "id": "10000",
     "issuelinks": [],
@@ -119,7 +128,8 @@ ISSUE_SCHEMA = {
         "self": "https://your-server.atlassian.net/rest/api/2/issuetype/10005",
         "id": "10005",
         "description": "A request that follows ITSM workflows.",
-        "iconUrl": "https://your-server.atlassian.net/secure/viewavatar?size=medium&avatarId=10552&avatarType=issuetype",
+        "iconUrl": "https://your-server.atlassian.net/secure/viewavatar?size=medium&avatarId=10552&"
+                   "avatarType=issuetype",
         "name": "Service Request",
         "subtask": False,
         "avatarId": 10552
@@ -150,7 +160,8 @@ ISSUE_SCHEMA = {
         }
     },
     "reporter": {
-        "self": "https://your-server.atlassian.net/rest/api/2/user?accountId=qm%3A5a82b573-3fb7-472b-9ecc-5ab90388d8be%3A72e66569-cae7-433b-8b6d-c4109f0f7aae",
+        "self": "https://your-server.atlassian.net/rest/api/2/user?accountId=qm%3A5a82b573-3fb7-472b-9ecc-"
+                "5ab90388d8be%3A72e66569-cae7-433b-8b6d-c4109f0f7aae",
         "accountId": "qm:5a82b573-3fb7-472b-9ecc-5ab90388d8be:72e66569-cae7-433b-8b6d-c4109f0f7aae",
         "emailAddress": "example@atlassian-demo.invalid",
         "avatarUrls": {
@@ -245,7 +256,8 @@ ISSUE_SCHEMA = {
                 "accountId": "5d4147974125b20c3159b11d",
                 "emailAddress": "drwho@atlassian.net",
                 "avatarUrls": {
-                    "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
+                    "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2F"
+                             "avatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
                 },
                 "displayName": "Dr Who",
                 "active": True,
@@ -257,7 +269,8 @@ ISSUE_SCHEMA = {
                 "accountId": "5d4147974125b20c3159b11d",
                 "emailAddress": "drwho@atlassian.net",
                 "avatarUrls": {
-                    "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
+                    "48x48": "https://secure.gravatar.com/avatar/f5b796a9a312e4b61ef25a448dfc6207?d=https%3A%2F%2F"
+                             "avatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-6.png"
                 },
                 "displayName": "Dr Who",
                 "active": True,
