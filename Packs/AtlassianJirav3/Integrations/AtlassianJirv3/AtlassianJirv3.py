@@ -826,13 +826,12 @@ def update_remote_system_command(client, args):
     changes = {k: v for k, v in delta.items() if k in data.keys()}
     entries = args.get('entries', [])
     incident_changed = args.get('incidentChanged')
-    inc_status = args.get('status')
     issue_id = args.get('remoteId')
     if entries and len(entries) > 0:
         for entry in entries:
             entry['user'] = 'Cortex XSOAR' if not entry['user'] else entry['user']
             if entry.get("fileID", None):
-                result = client.upload_file(entry['id'], issue_id)
+                client.upload_file(entry['id'], issue_id)
             comment = f"({entry['user']}): {entry['contents']}"
             tags = entry['tags']
 
