@@ -1,0 +1,14 @@
+{
+    "name": "MailSender_LongRunning",
+    "description": "A long running Mail Sender that supports a living session to assist with large volume email sends.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "omercnet",
+    "url": "",
+    "email": "",
+    "created": "2020-08-21T13:25:39Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
