@@ -1033,6 +1033,8 @@ workflows:
             - Create Instances
 
   force_pack_upload:
+    when:
+      - << pipeline.parameters.force_pack_upload >>
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
