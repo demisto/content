@@ -1,14 +1,15 @@
 id: Mimecast test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Mimecast test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a2161270-53ac-45b3-8980-ee328c27e16c
+    taskid: e44ba6bb-6dbb-4928-817e-f43192dec154
     type: start
     task:
-      id: a2161270-53ac-45b3-8980-ee328c27e16c
+      id: e44ba6bb-6dbb-4928-817e-f43192dec154
       version: -1
       name: ""
       iscommand: false
@@ -20,19 +21,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 162.5,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 29acc0ab-e5ec-4b71-860b-e1ebb10f9c99
+    taskid: 39364903-35cd-4af1-8356-81ee0325c1ea
     type: regular
     task:
-      id: 29acc0ab-e5ec-4b71-860b-e1ebb10f9c99
+      id: 39364903-35cd-4af1-8356-81ee0325c1ea
       version: -1
       name: mimecast-list-blocked-sender-policies
       script: '|||mimecast-list-blocked-sender-policies'
@@ -46,19 +49,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1770
+          "x": 162.5,
+          "y": 4920
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: c574c9c4-e3cb-4af7-8a38-0e3d1ab62b21
+    taskid: deaf541e-b4ab-4fb0-8fb4-1447450cce03
     type: regular
     task:
-      id: c574c9c4-e3cb-4af7-8a38-0e3d1ab62b21
+      id: deaf541e-b4ab-4fb0-8fb4-1447450cce03
       version: -1
       name: mimecast-create-policy
       script: '|||mimecast-create-policy'
@@ -87,19 +92,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 360
+          "x": 162.5,
+          "y": 3520
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 58258a24-3f92-45b7-866f-8f949b938391
+    taskid: 657c2d05-b20b-4b5e-8256-a9bd2216708c
     type: regular
     task:
-      id: 58258a24-3f92-45b7-866f-8f949b938391
+      id: 657c2d05-b20b-4b5e-8256-a9bd2216708c
       version: -1
       name: mimecast-delete-policy
       script: '|||mimecast-delete-policy'
@@ -116,19 +123,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1420
+          "x": 162.5,
+          "y": 4570
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: cfafad34-0963-4e0c-86a1-6e4431c866be
+    taskid: f73730ea-5def-46eb-81cc-0a283caa52f6
     type: regular
     task:
-      id: cfafad34-0963-4e0c-86a1-6e4431c866be
+      id: f73730ea-5def-46eb-81cc-0a283caa52f6
       version: -1
       name: mimecast-get-policy
       script: '|||mimecast-get-policy'
@@ -145,19 +154,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 162.5,
+          "y": 4220
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 906174ed-f7b9-4696-84a9-b60d0737d96b
+    taskid: 423449db-b8f9-408e-8960-ab66ec612d0a
     type: regular
     task:
-      id: 906174ed-f7b9-4696-84a9-b60d0737d96b
+      id: 423449db-b8f9-408e-8960-ab66ec612d0a
       version: -1
       name: mimecast-query
       script: '|||mimecast-query'
@@ -166,7 +177,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "54"
     scriptarguments:
       active: {}
       attachmentText: {}
@@ -187,19 +198,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 162.5,
+          "y": 5620
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 5a00b656-9d13-4799-850d-2b1a36a4d9d5
+    taskid: 3b6ba668-bd38-446b-8aa4-2253989772ce
     type: regular
     task:
-      id: 5a00b656-9d13-4799-850d-2b1a36a4d9d5
+      id: 3b6ba668-bd38-446b-8aa4-2253989772ce
       version: -1
       name: mimecast-url-decode
       script: '|||mimecast-url-decode'
@@ -216,19 +229,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 162.5,
+          "y": 6145
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 8e3e52a6-6d5d-4ced-8e05-667137766281
+    taskid: 49303991-dec3-4dba-8c17-d115b401a7e3
     type: regular
     task:
-      id: 8e3e52a6-6d5d-4ced-8e05-667137766281
+      id: 49303991-dec3-4dba-8c17-d115b401a7e3
       version: -1
       name: mimecast-manage-sender
       script: '|||mimecast-manage-sender'
@@ -249,65 +264,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 162.5,
+          "y": 6495
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: d2b3c56e-2297-4451-82a1-294cbc896c62
-    type: regular
-    task:
-      id: d2b3c56e-2297-4451-82a1-294cbc896c62
-      version: -1
-      name: 'mimecast-create-managed-url '
-      script: '|||mimecast-create-managed-url'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      action:
-        simple: permit
-      comment: {}
-      disableLogClick: {}
-      disableRewrite: {}
-      disableUserAwareness: {}
-      matchType: {}
-      url:
-        complex:
-          root: incident
-          accessor: occurred
-          transformers:
-          - operator: toUnix
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: https://www.google.com/
-              suffix: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 0bfde031-1408-45e5-8189-847cb4ce2277
+    taskid: 51815ae0-efef-43d5-87c9-f3c2d62eee1a
     type: regular
     task:
-      id: 0bfde031-1408-45e5-8189-847cb4ce2277
+      id: 51815ae0-efef-43d5-87c9-f3c2d62eee1a
       version: -1
       name: mimecast-list-managed-url
       script: '|||mimecast-list-managed-url'
@@ -324,19 +295,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2470
+          "x": 162.5,
+          "y": 6845
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 1e75f720-f13a-47f0-8872-2c820e434af1
+    taskid: 418c8a96-d3ac-47e0-804f-2aa858c95105
     type: regular
     task:
-      id: 1e75f720-f13a-47f0-8872-2c820e434af1
+      id: 418c8a96-d3ac-47e0-804f-2aa858c95105
       version: -1
       name: mimecast-list-messages
       script: '|||mimecast-list-messages'
@@ -345,7 +318,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "37"
+      - "53"
     scriptarguments:
       endTime: {}
       mailbox:
@@ -359,19 +332,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 720
+          "x": 162.5,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 99e95154-4b7f-4ab2-8529-0b1a8f9fcce2
+    taskid: 8ac1f3e9-8047-4a2e-8361-8355e1b156c0
     type: regular
     task:
-      id: 99e95154-4b7f-4ab2-8529-0b1a8f9fcce2
+      id: 8ac1f3e9-8047-4a2e-8361-8355e1b156c0
       version: -1
       name: mimecast-get-url-logs
       script: '|||mimecast-get-url-logs'
@@ -392,19 +367,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1070
+          "x": 162.5,
+          "y": 1770
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 0a20ea31-936c-4e83-8a96-eb4634ef6edc
+    taskid: ef9875db-3b7d-4459-86ab-e82189b0bc5a
     type: regular
     task:
-      id: 0a20ea31-936c-4e83-8a96-eb4634ef6edc
+      id: ef9875db-3b7d-4459-86ab-e82189b0bc5a
       version: -1
       name: mimecast-get-impersonation-logs
       script: '|||mimecast-get-impersonation-logs'
@@ -429,19 +406,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1420
+          "x": 162.5,
+          "y": 2120
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 27b4a7d5-0eca-4cb4-8e7e-3c6b2fbdc148
+    taskid: e2a2f7ed-1477-436a-8086-1466e47a72cb
     type: regular
     task:
-      id: 27b4a7d5-0eca-4cb4-8e7e-3c6b2fbdc148
+      id: e2a2f7ed-1477-436a-8086-1466e47a72cb
       version: -1
       name: mimecast-get-attachment-logs
       script: '|||mimecast-get-attachment-logs'
@@ -463,19 +442,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1770
+          "x": 162.5,
+          "y": 2470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 6178c5b0-12f1-430f-8b29-517d15b3267c
+    taskid: be4bbcbc-1cce-4e1e-8586-47cc53667aa2
     type: title
     task:
-      id: 6178c5b0-12f1-430f-8b29-517d15b3267c
+      id: be4bbcbc-1cce-4e1e-8586-47cc53667aa2
       version: -1
       name: Test Done - Success
       type: title
@@ -485,19 +466,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2645
+          "x": 162.5,
+          "y": 7370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: f0c9e8f8-8ec7-432c-845d-debdbada338e
+    taskid: d40f17e6-7cc5-489f-82f9-9302a8d89952
     type: regular
     task:
-      id: f0c9e8f8-8ec7-432c-845d-debdbada338e
+      id: d40f17e6-7cc5-489f-82f9-9302a8d89952
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -506,9 +489,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
-      - "10"
-      - "2"
       - "40"
     scriptarguments:
       all:
@@ -521,19 +501,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 162.5,
           "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: a4187305-160f-4702-81d2-bcb54c0cf154
+    taskid: 19d3caee-ca17-4743-8b79-399445ce8007
     type: regular
     task:
-      id: a4187305-160f-4702-81d2-bcb54c0cf154
+      id: 19d3caee-ca17-4743-8b79-399445ce8007
       version: -1
       name: mimecast-discover
       script: '|||mimecast-discover'
@@ -547,19 +529,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2820
+          "x": 162.5,
+          "y": 7195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: fac2bcbc-30f2-4127-86e2-77778ab2f54b
+    taskid: 40ed0eec-685c-49c8-86e2-2fd38cdb7e95
     type: regular
     task:
-      id: fac2bcbc-30f2-4127-86e2-77778ab2f54b
+      id: 40ed0eec-685c-49c8-86e2-2fd38cdb7e95
       version: -1
       name: mimecast-login
       script: '|||mimecast-login'
@@ -568,24 +552,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "38"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2120
+          "x": 162.5,
+          "y": 2820
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 65683665-a813-41a0-8add-31be16e818b3
+    taskid: 4b1e427e-29bd-4fbe-832a-6a85f09dcd83
     type: regular
     task:
-      id: 65683665-a813-41a0-8add-31be16e818b3
+      id: 4b1e427e-29bd-4fbe-832a-6a85f09dcd83
       version: -1
       name: mimecast-refresh-token
       script: '|||mimecast-refresh-token'
@@ -594,123 +580,26 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "52"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2120
+          "x": 162.5,
+          "y": 5270
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 8f3971a4-40da-4b04-82a0-1ed8c55085a1
-    type: regular
-    task:
-      id: 8f3971a4-40da-4b04-82a0-1ed8c55085a1
-      version: -1
-      name: mimecast-get-message
-      script: '|||mimecast-get-message'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      context:
-        simple: DELIVERED
-      messageID:
-        simple: eNolj01vgkAQhv_LJj0txv0QdoUTamnaYmugrR5MCO4OlgC7hq8eTP97sc5hJnmS98m8V9SBGlooNfLRcb7-Mf17jZ8_V5SXmn-d3fE4f41HfkgqPZj8xRNiP-bNU7iFZrWLK747uDHYjd2KOI8MclADXZefoba2Gi69rcBMZk3kacFPiinhEqmBFdyTXHIgslgw6qmlli5QEUT7Bx7iKK-VNXhTdsqO0OJwn-LU1kNfTnTVllDgBC627QMz1HXACJWUMkmXnJHb3PH_mj76QD5x0OTppjjyqYPyVn2X4730Y5Klbxs6c7P17YZCSJLdjYRmTGSd0T20DZ0RQmdCCBf9_gG8al8L
-      part:
-        simple: all
-      type:
-        simple: PLAIN
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: d7370900-c99b-4f90-8ba7-c1a9f5210554
-    type: regular
-    task:
-      id: d7370900-c99b-4f90-8ba7-c1a9f5210554
-      version: -1
-      name: mimecast-get-message
-      script: '|||mimecast-get-message'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      context:
-        simple: RECEIVED
-      messageID:
-        simple: eNolj01vgkAQhv_LJj0txv0QdoUTamnaYmugrR5MCO4OlgC7hq8eTP97sc5hJnmS98m8V9SBGlooNfLRcb7-Mf17jZ8_V5SXmn-d3fE4f41HfkgqPZj8xRNiP-bNU7iFZrWLK747uDHYjd2KOI8MclADXZefoba2Gi69rcBMZk3kacFPiinhEqmBFdyTXHIgslgw6qmlli5QEUT7Bx7iKK-VNXhTdsqO0OJwn-LU1kNfTnTVllDgBC627QMz1HXACJWUMkmXnJHb3PH_mj76QD5x0OTppjjyqYPyVn2X4730Y5Klbxs6c7P17YZCSJLdjYRmTGSd0T20DZ0RQmdCCBf9_gG8al8L
-      part:
-        simple: all
-      type:
-        simple: PLAIN
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "21":
-    id: "21"
-    taskid: 7e84685e-0e14-4551-84c5-c7ebb05012fe
-    type: regular
-    task:
-      id: 7e84685e-0e14-4551-84c5-c7ebb05012fe
-      version: -1
-      name: mimecast-download-attachments
-      script: '|||mimecast-download-attachments'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      attachmentID:
-        simple: eNpNj11vgjAYhf9Lr3VrC-Ut3jndp-Cci5sXS0hbiqK0LFDIErP_vjKzj_tznuecE2q16hpd5miCNk8vjU0Pd8vHbVrdHzbBwnzMFkkfbNfHvLPiIQJ47YW5nabaXK2SY7DaskTX8zqFRNxYNEKmRpNCVK0eoaZQnNLWdVKiie2qaoSEc0LtjbZONGpf9trVR229ud2LIJNhwYmOAi1DFosYJCsAZCR5FOYhJsCwCLEEQhlTEgJOYipjHudxJGPJucooJpwQTPyOwhqPLY3YaYzJxbvdof_6oqzOl8nQoB4VUAIYh0NXda2rjW5UnWsfmT0v52QKwPHANe6H-3Z5pva6acvavyDecL71jb5eZ0NzzLI_wu_EjELW2tzpxpCxXzgGAIY-vwDIHnh9
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: 05d9fa05-52cd-4521-8262-0c7699ebd2c9
+    taskid: 20dc5f01-4452-4728-82c7-74fcb6919b1f
     type: condition
     task:
-      id: 05d9fa05-52cd-4521-8262-0c7699ebd2c9
+      id: 20dc5f01-4452-4728-82c7-74fcb6919b1f
       version: -1
       name: Test mimecast-query context
       type: condition
@@ -743,18 +632,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 5970
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 28de0696-7122-42a2-850a-0ae27e224eea
+    taskid: a4e8ebdc-8197-46af-8e12-b5bdbdc9f9fa
     type: condition
     task:
-      id: 28de0696-7122-42a2-850a-0ae27e224eea
+      id: a4e8ebdc-8197-46af-8e12-b5bdbdc9f9fa
       version: -1
       name: Test mimecast-url-decode context
       type: condition
@@ -778,19 +669,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 162.5,
+          "y": 6320
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 166d7c1c-5c68-4df4-8f0d-a9ecf4f34a2f
+    taskid: 0fc14467-269d-4152-8680-dd4de376d8ea
     type: condition
     task:
-      id: 166d7c1c-5c68-4df4-8f0d-a9ecf4f34a2f
+      id: 0fc14467-269d-4152-8680-dd4de376d8ea
       version: -1
       name: Test mimecast-manage-sender context
       type: condition
@@ -798,7 +691,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -814,55 +707,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 162.5,
+          "y": 6670
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "25":
-    id: "25"
-    taskid: ec603272-c066-4090-8d44-0ecbaf559030
-    type: condition
-    task:
-      id: ec603272-c066-4090-8d44-0ecbaf559030
-      version: -1
-      name: Test create-managed-url context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Mimecast.URL.Action
-            iscontext: true
-          right:
-            value:
-              simple: permit
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: f94d14a0-d06d-4e8b-840d-0ecfbf50620b
+    taskid: 2b214e29-1915-4e7c-83fb-2c149e65c908
     type: condition
     task:
-      id: f94d14a0-d06d-4e8b-840d-0ecfbf50620b
+      id: 2b214e29-1915-4e7c-83fb-2c149e65c908
       version: -1
       name: Test mimecast-list-managed-url context
       type: condition
@@ -894,124 +753,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2645
+          "x": 162.5,
+          "y": 7020
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "27":
-    id: "27"
-    taskid: 9264bd25-cb46-483e-827d-60f7cda92606
-    type: condition
-    task:
-      id: 9264bd25-cb46-483e-827d-60f7cda92606
-      version: -1
-      name: Test mimecast-get-message context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              simple: Mimecast.Message.Subject
-            iscontext: true
-          right:
-            value:
-              simple: AWS
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "28":
-    id: "28"
-    taskid: e49691a0-2376-41eb-807e-5e9e11cb02e7
-    type: condition
-    task:
-      id: e49691a0-2376-41eb-807e-5e9e11cb02e7
-      version: -1
-      name: Test mimecast-get-message context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "38"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isTrue
-          left:
-            value:
-              simple: Mimecast.Message.HasHtmlBody
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "29":
-    id: "29"
-    taskid: a8fe427d-4bc8-475f-8301-394eac57372f
-    type: condition
-    task:
-      id: a8fe427d-4bc8-475f-8301-394eac57372f
-      version: -1
-      name: Test mimecast-download-attachments context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "20"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              simple: File.Info
-            iscontext: true
-          right:
-            value:
-              simple: image/png
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: fcf937c7-49e0-495b-8d70-a88b80364fb0
+    taskid: ecb4a367-9d9c-47a4-851d-f3e98eec8cc9
     type: condition
     task:
-      id: fcf937c7-49e0-495b-8d70-a88b80364fb0
+      id: ecb4a367-9d9c-47a4-851d-f3e98eec8cc9
       version: -1
       name: Test mimecast-list-blocked-sender-policies context
       type: condition
@@ -1035,19 +791,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1945
+          "x": 162.5,
+          "y": 5095
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: 8dd09040-c319-4f75-85f5-d07fb7d0835a
+    taskid: 6d6d9540-b60f-4957-8e11-25ce3e500d2b
     type: condition
     task:
-      id: 8dd09040-c319-4f75-85f5-d07fb7d0835a
+      id: 6d6d9540-b60f-4957-8e11-25ce3e500d2b
       version: -1
       name: Test mimecast-get-attachment-logs
       type: condition
@@ -1060,30 +818,32 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
+      - - operator: isEqualString
           left:
             value:
-              simple: Mimecast.AttachmentLog.Recipient
+              simple: ${Mimecast=Object.keys(val)}
             iscontext: true
           right:
             value:
-              simple: mimecast@demistolab.com
+              simple: AttachmentLog
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1945
+          "x": 162.5,
+          "y": 2645
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
-    taskid: 229207b3-bb1c-49bd-8e5b-462244ed9b29
+    taskid: d68e92ae-022b-41e0-8315-a9fe30494dbf
     type: condition
     task:
-      id: 229207b3-bb1c-49bd-8e5b-462244ed9b29
+      id: d68e92ae-022b-41e0-8315-a9fe30494dbf
       version: -1
       name: Test mimecast-delete-policy context
       type: condition
@@ -1104,19 +864,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1595
+          "x": 162.5,
+          "y": 4745
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
-    taskid: 0a5c65e3-5a76-4134-8cd5-29a277c7e5bf
+    taskid: 34e8e543-6fcb-4f46-84fd-b25dfe11642e
     type: condition
     task:
-      id: 0a5c65e3-5a76-4134-8cd5-29a277c7e5bf
+      id: 34e8e543-6fcb-4f46-84fd-b25dfe11642e
       version: -1
       name: Test mimecast-get-impersonation-logs context
       type: condition
@@ -1129,30 +891,32 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
+      - - operator: isEqualString
           left:
             value:
-              simple: Mimecast.Impersonation.SenderIP
+              simple: ${Mimecast=Object.keys(val)}
             iscontext: true
           right:
             value:
-              simple: "40.107"
+              simple: Impersonation
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1595
+          "x": 162.5,
+          "y": 2295
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
-    taskid: 8d8b7574-5aa4-4656-8799-4d3ec3ffe796
+    taskid: 0190a72e-d7a4-43c6-8abf-cffb3992c277
     type: condition
     task:
-      id: 8d8b7574-5aa4-4656-8799-4d3ec3ffe796
+      id: 0190a72e-d7a4-43c6-8abf-cffb3992c277
       version: -1
       name: Test mimecast-get-url-logs context
       type: condition
@@ -1165,30 +929,32 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
+      - - operator: containsGeneral
           left:
             value:
-              simple: Mimecast.UrlLog.Category
+              simple: ${Mimecast=Object.keys(val)}
             iscontext: true
           right:
             value:
-              simple: Malware
+              simple: UrlLog
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1245
+          "x": 162.5,
+          "y": 1945
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "35":
     id: "35"
-    taskid: 9756d094-8ab5-47e6-8d1c-209df2167e79
+    taskid: 68345490-5605-4e30-8a13-57e8f88c4112
     type: condition
     task:
-      id: 9756d094-8ab5-47e6-8d1c-209df2167e79
+      id: 68345490-5605-4e30-8a13-57e8f88c4112
       version: -1
       name: Test mimecast-get-policy context
       type: condition
@@ -1209,19 +975,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1245
+          "x": 162.5,
+          "y": 4395
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
-    taskid: ee809161-528d-4bb7-865a-28fe16c920b2
+    taskid: 2e059b05-9d2d-4dd6-8cc3-a2b2225c9cb4
     type: condition
     task:
-      id: ee809161-528d-4bb7-865a-28fe16c920b2
+      id: 2e059b05-9d2d-4dd6-8cc3-a2b2225c9cb4
       version: -1
       name: Test mimecast-create-policy context
       type: condition
@@ -1242,55 +1010,59 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 162.5,
+          "y": 3695
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "37":
     id: "37"
-    taskid: 4b2fcc4e-c099-4a1d-8cb2-86ecb42b6b38
+    taskid: 28ad9a8e-c27c-455e-8a8f-1bd9577c1313
     type: condition
     task:
-      id: 4b2fcc4e-c099-4a1d-8cb2-86ecb42b6b38
+      id: 28ad9a8e-c27c-455e-8a8f-1bd9577c1313
       version: -1
       name: Test mimecast-list-messages context
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
+      Message Subject test:
       - "11"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Message Subject test
       condition:
-      - - operator: containsString
+      - - operator: containsGeneral
           left:
             value:
               simple: Mimecast.Message.Subject
             iscontext: true
           right:
             value:
-              simple: impersonation
+              simple: http://urltest.com/malware.bin
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 545
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "38":
     id: "38"
-    taskid: 1ea2b4e3-0fe4-4906-8616-57019426a7fb
+    taskid: 0a5d26e8-0d5c-4ac8-8b78-67ce17b5363c
     type: regular
     task:
-      id: 1ea2b4e3-0fe4-4906-8616-57019426a7fb
+      id: 0a5d26e8-0d5c-4ac8-8b78-67ce17b5363c
       version: -1
       name: Fetch incidents
       scriptName: FetchFromInstance
@@ -1311,19 +1083,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2295
+          "x": 162.5,
+          "y": 2995
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "39":
     id: "39"
-    taskid: 4a3c0119-7459-4099-8eda-24aca062cc6c
+    taskid: 5d657432-954e-451a-87e1-cdea8b9d75fc
     type: condition
     task:
-      id: 4a3c0119-7459-4099-8eda-24aca062cc6c
+      id: 5d657432-954e-451a-87e1-cdea8b9d75fc
       version: -1
       name: Test Fetch Incidents Context
       type: condition
@@ -1331,32 +1105,37 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "51"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isEqualString
           left:
             value:
-              simple: FetchedIncidents.url
+              simple: ${.=Object.keys(val)}
             iscontext: true
+          right:
+            value:
+              simple: FetchedIncidents
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2470
+          "x": 162.5,
+          "y": 3170
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "40":
     id: "40"
-    taskid: 089df9f4-76f9-47eb-851e-7a834b8d3082
+    taskid: c85d629d-dafa-48ef-8580-98d7ffceddda
     type: regular
     task:
-      id: 089df9f4-76f9-47eb-851e-7a834b8d3082
+      id: c85d629d-dafa-48ef-8580-98d7ffceddda
       version: -1
       name: mimecast-find-groups
       description: Get the list of groups according to specific query.
@@ -1375,19 +1154,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1245
+          "x": 162.5,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "41":
     id: "41"
-    taskid: 9385a61a-69c1-4bcf-8573-c49680bd58b5
+    taskid: 7dd0a79c-86a8-4ca9-8f7b-e22731c18f09
     type: regular
     task:
-      id: 9385a61a-69c1-4bcf-8573-c49680bd58b5
+      id: 7dd0a79c-86a8-4ca9-8f7b-e22731c18f09
       version: -1
       name: mimecast-get-group-members
       description: Get the members list for a specific group.
@@ -1406,192 +1187,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1770
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "42":
     id: "42"
-    taskid: f9f53025-e38e-4388-891a-b9f9b83cf6df
+    taskid: 5161edc5-0760-4ff3-81b5-ec3d26477f50
     type: condition
     task:
-      id: f9f53025-e38e-4388-891a-b9f9b83cf6df
+      id: 5161edc5-0760-4ff3-81b5-ec3d26477f50
       version: -1
       name: Test user in group
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "43"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Mimecast.Group.Users.EmailAddress
-            iscontext: true
-          right:
-            value:
-              simple: johnnydepp@gmail.com
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "43":
-    id: "43"
-    taskid: 4b3ba80a-dd2e-46ff-80a9-31b9df6932cb
-    type: regular
-    task:
-      id: 4b3ba80a-dd2e-46ff-80a9-31b9df6932cb
-      version: -1
-      name: mimecast-add-group-member
-      description: Add a user to a group.
-      script: MimecastV2|||mimecast-add-group-member
-      type: regular
-      iscommand: true
-      brand: MimecastV2
-    nexttasks:
-      '#none#':
-      - "44"
-    scriptarguments:
-      domain_address: {}
-      email_address:
-        simple: goo@demisto.com
-      group_id:
-        simple: eNoVzr0OgjAUQOF3uXMTRZQiG0g0Ma0hOsDgUumFkP5BKyzGdxf3ky_nAwHb2eMgIQOtlAhTT0393LxyH_dq5LyY2BI3dyVnK64JpfUizCXnaIqKqbhqDgxd6Thl4myBgJZihKwTOiCBdg5vZ9C3TuLqnx63MsopTbdruKAPg7OQRQQ6pyX6_8P-uEuT7w_xQDDv
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "44":
-    id: "44"
-    taskid: 37e8182b-4cd9-43b0-800d-e982cada5f6b
-    type: condition
-    task:
-      id: 37e8182b-4cd9-43b0-800d-e982cada5f6b
-      version: -1
-      name: 'Test user in group #2'
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "46"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Mimecast.Group.Users.EmailAddress
-            iscontext: true
-          right:
-            value:
-              simple: goo@demisto.com
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "45":
-    id: "45"
-    taskid: 8ed6c81b-4f29-4716-8e2f-dfec8bedb345
-    type: regular
-    task:
-      id: 8ed6c81b-4f29-4716-8e2f-dfec8bedb345
-      version: -1
-      name: mimecast-update-group
-      description: Update an existing Mimecast group.
-      script: MimecastV2|||mimecast-update-group
-      type: regular
-      iscommand: true
-      brand: MimecastV2
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      group_id:
-        simple: eNoVzssKgkAUgOF3OduE8lKj7izJiFHEFrlwMzjHEOcSM81ARO-e7X8-_g9YHJ3BmUMOLb0M241y_UNGvOoygdO78Yz6uO8W7hS7Hgi5eyarokZ5bOkSt_2eoi51TSg7KwhAcPaEfGLCYgCjsy8t0Yya4-qfbk0ZFoSkuzX0aOysFeRhAJMWHM3_IcmiNPn-ALcQMIg
-      group_name:
-        simple: Changed from Demisto
-      parent_id: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "46":
-    id: "46"
-    taskid: 21ce0aec-f570-401b-85b7-71f35934d404
-    type: regular
-    task:
-      id: 21ce0aec-f570-401b-85b7-71f35934d404
-      version: -1
-      name: mimecast-remove-group-member
-      description: Remove a user from a group.
-      script: MimecastV2|||mimecast-remove-group-member
-      type: regular
-      iscommand: true
-      brand: MimecastV2
-    nexttasks:
-      '#none#':
-      - "47"
-    scriptarguments:
-      domain_address: {}
-      email_address:
-        simple: goo@demisto.com
-      group_id:
-        simple: eNoVzr0OgjAUQOF3uXMTRZQiG0g0Ma0hOsDgUumFkP5BKyzGdxf3ky_nAwHb2eMgIQOtlAhTT0393LxyH_dq5LyY2BI3dyVnK64JpfUizCXnaIqKqbhqDgxd6Thl4myBgJZihKwTOiCBdg5vZ9C3TuLqnx63MsopTbdruKAPg7OQRQQ6pyX6_8P-uEuT7w_xQDDv
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "47":
-    id: "47"
-    taskid: 47435c71-6902-49ae-815d-09bc0c83e047
-    type: condition
-    task:
-      id: 47435c71-6902-49ae-815d-09bc0c83e047
-      version: -1
-      name: 'Test user in group #3'
       type: condition
       iscommand: false
       brand: ""
@@ -1609,30 +1221,60 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: goo@demisto.com
-      - - operator: isTrue
-          left:
-            value:
-              simple: Mimecast.Group.Users.IsRemoved
-            iscontext: true
+              simple: mimecastapi@demistolab.com
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 2645
+          "x": 162.5,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "48":
-    id: "48"
-    taskid: a74827ae-d72f-4f29-880b-48e3ab3509a3
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 4fe899ba-718d-49cb-824a-e6a3583239be
     type: regular
     task:
-      id: a74827ae-d72f-4f29-880b-48e3ab3509a3
+      id: 4fe899ba-718d-49cb-824a-e6a3583239be
+      version: -1
+      name: mimecast-update-group
+      description: Update an existing Mimecast group.
+      script: MimecastV2|||mimecast-update-group
+      type: regular
+      iscommand: true
+      brand: MimecastV2
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      group_id:
+        simple: eNoVzssKgkAUgOF3OduE8lKj7izJiFHEFrlwMzjHEOcSM81ARO-e7X8-_g9YHJ3BmUMOLb0M241y_UNGvOoygdO78Yz6uO8W7hS7Hgi5eyarokZ5bOkSt_2eoi51TSg7KwhAcPaEfGLCYgCjsy8t0Yya4-qfbk0ZFoSkuzX0aOysFeRhAJMWHM3_IcmiNPn-ALcQMIg
+      group_name:
+        simple: Changed from Demisto
+      parent_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 6650e0ac-a26b-4b7a-8751-7d93115a5436
+    type: regular
+    task:
+      id: 6650e0ac-a26b-4b7a-8751-7d93115a5436
       version: -1
       name: mimecast-update-policy
       description: update policy
@@ -1652,28 +1294,32 @@ tasks:
       fromValue: {}
       option: {}
       policy_id:
-        simple: ${Mimecast.Policy.ID}
+        complex:
+          root: Mimecast.Policy
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
       toType: {}
       toValue: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 162.5,
+          "y": 3870
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "49":
     id: "49"
-    taskid: c608fec7-594a-4d04-8c16-855cb332fac5
+    taskid: f452719e-ec03-4afe-8b6c-c72787b0f005
     type: condition
     task:
-      id: c608fec7-594a-4d04-8c16-855cb332fac5
+      id: f452719e-ec03-4afe-8b6c-c72787b0f005
       version: -1
       name: Test mimecast-create-policy context
       type: condition
@@ -1702,20 +1348,208 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 162.5,
+          "y": 4045
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: d122286f-ecfc-4511-8664-df8f54f6861b
+    type: regular
+    task:
+      id: d122286f-ecfc-4511-8664-df8f54f6861b
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: a7194dad-2702-416c-81bb-9ce7aefdd559
+    type: regular
+    task:
+      id: a7194dad-2702-416c-81bb-9ce7aefdd559
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: be4115ff-9cb3-49ae-89b6-358b032ee1fd
+    type: regular
+    task:
+      id: be4115ff-9cb3-49ae-89b6-358b032ee1fd
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 1e497581-9193-43b2-8ea3-296faaa8a5dd
+    type: condition
+    task:
+      id: 1e497581-9193-43b2-8ea3-296faaa8a5dd
+      version: -1
+      name: Are there messages?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Found messages:
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: Found messages
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Mimecast.Message
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: Mimecast.Message.Subject
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 4dbdbd58-10d3-4ac3-82bf-e70222f2bfbb
+    type: condition
+    task:
+      id: 4dbdbd58-10d3-4ac3-82bf-e70222f2bfbb
+      version: -1
+      name: Are there messages?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      Messages found:
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: Messages found
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Mimecast.Message
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3010,
-        "width": 1670,
+        "height": 7385,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }

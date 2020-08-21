@@ -91,5 +91,4 @@ dependson:
   must:
   - panorama
 tests:
-- palo_alto_firewall_test_pb
-- blockip_test_playbook
+- No tests

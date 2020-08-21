@@ -2,28 +2,17 @@
 <div class="cl-preview-section">
 <p>Use the Microsoft Graph integration to connect to and interact with user objects on Microsoft Platforms. This integration was integrated and tested with Microsoft Graph v1.0.</p>
 </div>
+
+<h2>Authentication</h2>
+For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
+<h3>Required Permissions</h3>
+<li>Directory.Read.All - Delegated</li>
+<li>User.ReadWrite.All - Application</li>
+<li>User.Read - Delegated</li>
+
 <div class="cl-preview-section">
-<h2>Generate Authentication Parameters</h2>
-<p>To use this integration, you have to grant access to Demisto from Microsoft Graph.</p>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Microsoft Graph User.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.</li>
-<li>Click the question mark button in the upper-right corner and read the information, and click the link.</li>
-<li>Click the <strong>Start Authorization Process</strong> button.</li>
-<li>Log in with Microsoft admin user credentials.</li>
-<li>Authorize Demisto application to access data.</li>
-<li>When you are redirected, copy the parameter values, which you will need when configuring the integration instance in Demisto.
-<ul>
-<li>ID</li>
-<li>Key</li>
-<li>Token</li>
-</ul>
-</li>
-</ol>
-</div>
-<div class="cl-preview-section">
-<h2 id="configure-microsoft-graph-user-on-demisto">Configure Microsoft Graph User on Demisto</h2>
+<h2 id="configure-microsoft-graph-user-on-demisto">Configure Microsoft Graph User on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -45,21 +34,6 @@
 </ol>
 </div>
 
-<h2>Use a Self-Deployed Azure Application</h2>
-<p>To use a self-configured Azure application, a need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following Microsoft article:
-<a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app</a></p>
-<p>The Tenant ID, Client ID, and Client secret are required for the integration.
-To configure the integration in Demisto to use the application, place those parameters in the following manner (instead of how you received them from the admin consent in the current doc):
-<p>ID - Client ID<br>
-Token - Tenant ID<br>
-Key - Client Secret</p></p>
-
-<h2>Required Permissions in the MS Graph User App:</h2>
-<li>Directory.Read.All - Delegated</li>
-<li>User.ReadWrite.All - Application</li>
-<li>User.Read - Delegated</li>
-
-
 <div class="cl-preview-section">
 <h2 id="commands">Commands</h2>
 </div>
@@ -76,6 +50,7 @@ Key - Client Secret</p></p>
 <li><a href="#get-new-updated-or-deleted-user-information" target="_self">Get new, updated, or deleted user information: msgraph-user-get-delta</a></li>
 <li><a href="#get-user-object-information" target="_self">Get user object information: msgraph-user-get</a></li>
 <li><a href="#get-a-list-of-user-objects" target="_self">Get a list of user objects: msgraph-user-list</a></li>
+<li><a href="#change-user-password" target="_self">Changes the user password: msgraph-user-change-password</a></li>
 </ol>
 </div>
 <div class="cl-preview-section">
@@ -1146,4 +1121,56 @@ Key - Client Secret</p></p>
 <p> </p>
 <div class="cl-preview-section">
 <p><img src="https://user-images.githubusercontent.com/37335599/56651529-e92f6800-6691-11e9-8bd1-8779a59cf51d.png" alt="Screen Shot 2019-04-24 at 12 13 05"></p>
+</div>
+<div class="cl-preview-section">
+<h3 id="change-user-password">9. Changes the user password</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Changes the user password. Permissions: Directory.AccessAsUser.All(Delegated)</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command-7">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>msgraph-user-change-password</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input-7">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 748px;">
+<thead>
+<tr>
+<th style="width: 139px;"><strong>Argument Name</strong></th>
+<th style="width: 530px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 139px;">password</td>
+<td style="width: 530px;">The new password.</td>
+<td style="width: 71px;">Required</td>
+</tr>
+<tr>
+<td style="width: 139px;">force_change_password_next_sign_in</td>
+<td style="width: 530px;">Whether the password will be changed on the next sign in.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 139px;">force_change_password_with_mfa</td>
+<td style="width: 530px;">Whether to change the password with MFA.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<div class="cl-preview-section">
+<h5 id="human-readable-output-3">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>user: {user_id} password was changed successfully.</p>
+</div>
+</div>
 </div>

@@ -1,18 +1,18 @@
 {
     "name": "Palo Alto Networks Cortex XDR - Investigation and Response",
-    "description": "Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.",
+    "description": "This Content Pack automates Cortex XDR incident response, and includes custom Cortex XDR incident views and layouts to aid analyst investigations.",
     "support": "xsoar",
-    "currentVersion": "2.0.0",
-    "author": "Cortex XSOAR  ",
+    "currentVersion": "2.3.2",
+    "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-03-11T13:16:53Z",
     "categories": [
-        "Endpoint"
+        "Endpoint",
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Recommended by Cortex XSOAR",
-        "xdr"
+        "Recommended by Cortex XSOAR"
     ],
     "useCases": [
         "Malware"
@@ -20,5 +20,63 @@
     "keywords": [
         "adaptive cyber protection",
         "apt"
-    ]
+    ],
+    "dependencies": {
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "XDR_iocs": {
+            "mandatory": true,
+            "display_name": "Cortex XDR - IOC"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "DemistoRESTAPI": {
+            "mandatory": false,
+            "display_name": "Demisto REST API"
+        },
+        "PANWComprehensiveInvestigation": {
+            "mandatory": false,
+            "display_name": "PANW Comprehensive Investigation"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "PortScan": {
+            "mandatory": false,
+            "display_name": "Port Scan"
+        }
+    }
 }

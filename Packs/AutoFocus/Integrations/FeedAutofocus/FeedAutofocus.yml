@@ -1,0 +1,141 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: AutoFocus Feed
+  version: -1
+configuration:
+- display: Fetch indicators
+  name: feed
+  required: false
+  defaultvalue: 'true'
+  type: 8
+- display: Indicator Feed
+  name: indicator_feeds
+  options:
+  - Daily Threat Feed
+  - Custom Feed
+  - Samples Feed
+  required: true
+  type: 16
+- display: The AutoFocus API key
+  name: api_key
+  required: true
+  type: 4
+- additionalinfo: Only necessary in case a Custom Feed is fetched. Can also support
+    a CSV of Custom feed URLs.
+  display: The URL for the custom feed to fetch
+  name: custom_feed_urls
+  required: false
+  type: 0
+- additionalinfo: Only necessary in case a Samples Feed is fetched.
+  display: Samples Feed Scope Type
+  name: scope_type
+  options:
+  - public
+  - private
+  - global
+  required: false
+  type: 15
+- additionalinfo: JSON styled AutoFocus query, an example can be found in the description (?) section. Only necessary in case a Samples Feed is fetched.
+  display: Samples Feed Query
+  name: sample_query
+  required: false
+  type: 0
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+    - None
+    - Good
+    - Suspicious
+    - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: suddenDeath
+  name: feedExpirationPolicy
+  display: ""
+  options:
+    - never
+    - interval
+    - indicatorType
+    - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '15'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
+description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
+display: AutoFocus Feed
+name: AutoFocus Feed
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of indicators to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The index of the first indicator to fetch.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the indicators from AutoFocus.
+    execution: false
+    name: autofocus-get-indicators
+  dockerimage: demisto/python3:3.8.5.10289
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.5.0

@@ -1,7 +1,7 @@
 id: DBotCreatePhishingClassifierJob
 version: -1
 name: DBot Create Phishing Classifier Job
-description: 'Train the phishing machine learning model. This playbook should be used
+description: 'DEPRECATED. Use "DBot Create Phishing Classifier V2" playbook instead. Train the phishing machine learning model. This playbook should be used
   as job, to run repeatedly, for example every week. '
 starttaskid: "0"
 tasks:
@@ -185,4 +185,4 @@ inputs: []
 outputs: []
 fromversion: 4.1.0
 tests:
-  - CreatePhishingClassifierMLTest
+  - No tests

@@ -488,6 +488,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name
       description: File signature vendor name
       type: String
+    - contextPath: Account.Username
+      description: The username in the relevant system.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to this endpoint.
+      type: String
   - arguments:
     - default: false
       description: XDR incident ID. You can get the incident ID from the output of
@@ -900,6 +906,21 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.group_name
       description: The name of the group to which the endpoint belongs.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to this endpoint.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The unique ID within the tool retrieving the endpoint.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The IP address of the endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: The domain of the endpoint.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Endpoint OS.
       type: String
   - deprecated: false
     description: Gets a list of all the agent versions to use for creating a distribution
@@ -1449,7 +1470,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: String that represents the file’s hash. Must be a valid SHA256 hash.
+      description: String that represents the file’s hash. Must be a valid SHA256
+        hash.
       isArray: false
       name: file_hash
       required: true
@@ -1484,7 +1506,8 @@ script:
     name: xdr-get-quarantine-status
   - arguments:
     - default: false
-      description: String that represents the file in hash. Must be a valid SHA256 hash.
+      description: String that represents the file in hash. Must be a valid SHA256
+        hash.
       isArray: false
       name: file_hash
       required: true
@@ -1585,8 +1608,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Runs a scan on selected endpoints. To scan all endpoints,
-      run this command with no filters.
+    description: Runs a scan on a selected endpoint. To scan all endpoints, run this
+      command with no filters.
     execution: true
     name: xdr-endpoint-scan
   dockerimage: demisto/python3:3.8.3.9324
@@ -1598,6 +1621,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 4.1.0
 tests:
-  - Test XDR Playbook
+- Test XDR Playbook
+fromversion: 4.1.0
