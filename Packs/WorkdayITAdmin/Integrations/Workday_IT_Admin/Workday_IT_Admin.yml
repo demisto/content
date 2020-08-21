@@ -54,13 +54,11 @@ configuration:
   name: from_email
   required: false
   type: 0
-- defaultvalue: ""
-  display: Fetch incidents
+- display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-- defaultvalue: ""
-  display: Incident type
+- display: Incident type
   name: incidentType
   required: false
   type: 13
