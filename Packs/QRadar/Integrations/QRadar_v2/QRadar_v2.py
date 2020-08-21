@@ -600,7 +600,7 @@ def epoch_to_iso(ms_passed_since_epoch):
     return ms_passed_since_epoch
 
 
-def print_debug_msg(msg):
+def print_debug_msg(msg, demisto=demisto):
     demisto.debug(f"QRadarMsg - {msg}")
 
 
@@ -677,7 +677,7 @@ def test_module(client: QRadarClient):
 
 
 def offense_enrichment_worker(
-    raw_offenses_queue, enriched_offenses_queue, counter, client: QRadarClient
+    raw_offenses_queue, enriched_offenses_queue, counter, client: QRadarClient, demisto
 ):
     params = demisto.params()
     events_columns = params.get("events_columns")
@@ -702,14 +702,15 @@ def offense_enrichment_worker(
                     events_limit,
                     counter,
                     client,
+                    demisto
                 )
             except Exception as e:
                 print_debug_msg(
-                    f"(0) Failed events fetch for offense {offense['id']}: {str(e)}"
+                    f"(0) Failed events fetch for offense {offense['id']}: {str(e)}", demisto
                 )
             time.sleep(1)
     except Exception as e:
-        print_debug_msg(f"(1) Worker stopped working, encountered error: {str(e)}")
+        print_debug_msg(f"(1) Worker stopped working, encountered error: {str(e)}", demisto)
 
 
 def perform_offense_enrichment(
@@ -720,6 +721,7 @@ def perform_offense_enrichment(
     events_limit,
     counter,
     client: QRadarClient,
+    demisto,
 ):
     offense_start_time = offense["start_time"]
     query_expression = (
@@ -728,7 +730,7 @@ def perform_offense_enrichment(
     )
     events_query = {"headers": "", "query_expression": query_expression}
     print_debug_msg(
-        f'(2) Starting events fetch for offense {offense["id"]}. Query: {query_expression}'
+        f'(2) Starting events fetch for offense {offense["id"]}. Query: {query_expression}', demisto
     )
     try:
         query_status = ''
@@ -761,7 +763,7 @@ def perform_offense_enrichment(
                 # print status debug every minute (or after)
                 if i >= 60:
                     print_debug_msg(
-                        f'(3) Still fetching offense {offense["id"]} events, search_id: {search_id}'
+                        f'(3) Still fetching offense {offense["id"]} events, search_id: {search_id}', demisto
                     )
                 raw_search = client.get_search(search_id)
                 search_res_query = deepcopy(raw_search)
@@ -775,17 +777,17 @@ def perform_offense_enrichment(
                 failures = 0  # failures are relevant only if subsequent
                 if query_status == "COMPLETED":
                     print_debug_msg(
-                        f'(4) Events fetched successfully for offense {offense["id"]}'
+                        f'(4) Events fetched successfully for offense {offense["id"]}', demisto
                     )
                     raw_search_results = client.get_search_results(search_id)
                     offense["events"] = raw_search_results.get("events", [])
             except Exception as e:
-                print_debug_msg(f'(5) Failed fetching event for offense {offense["id"]}: {str(e)}')
+                print_debug_msg(f'(5) Failed fetching event for offense {offense["id"]}: {str(e)}', demisto)
                 failures += 1
     finally:
         enriched_offenses_queue.put(offense, block=False)
         counter.increment()
-        print_debug_msg(f"(6) Enriched offense: {offense['id']} successfully.")
+        print_debug_msg(f"(6) Enriched offense: {offense['id']} successfully.", demisto)
 
 
 def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich):
@@ -1745,12 +1747,29 @@ def fetch_loop_with_events(client: QRadarClient, user_query, full_enrich):
     counter = AtomicCounter()
 
     workers_count = WORKERS_NUM
+    params = demisto.params()
+    server = params.get("server")
+    credentials = params.get("credentials")
+    token = params.get("token")
+    insecure = params.get("insecure", False)
+    offenses_per_fetch = params.get("offenses_per_fetch")
+    adv_params = params.get("adv_params")
+    proxies = handle_proxy()
 
     # Start workers
     for index in range(workers_count):
+        client = QRadarClient(
+            server=server,
+            proxies=proxies,
+            credentials=credentials,
+            token=token,
+            offenses_per_fetch=offenses_per_fetch,
+            insecure=insecure,
+            adv_params=adv_params,
+        )
         worker = Thread(
             target=offense_enrichment_worker,
-            args=(raw_offenses_queue, enriched_offenses_queue, counter, client,),
+            args=(raw_offenses_queue, enriched_offenses_queue, counter, client, demisto,),
         )
         worker.start()
 
