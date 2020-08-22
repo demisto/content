@@ -1,0 +1,82 @@
+category: Authentication
+commonfields:
+  id: CyberArkAIMV2
+  version: -1
+configuration:
+- defaultvalue: https://soar.monstersofhack.com
+  display: Server URL (e.g. https://soar.monstersofhack.com)
+  name: url
+  required: true
+  type: 0
+- display: Port
+  hidden: false
+  name: port
+  required: false
+  type: 0
+- display: AppID as configured in AIM
+  hidden: false
+  name: app_id
+  required: false
+  type: 0
+- display: Folder to search in safe
+  hidden: false
+  name: folder
+  required: true
+  type: 0
+- display: Safe to search in
+  hidden: false
+  name: safe
+  required: true
+  type: 0
+- display: Credential names - comma-seperated list of credentials names in vault
+  hidden: false
+  name: credential_names
+  required: false
+  type: 12
+- display: Authentication Type (NTLM or No Authentication)
+  hidden: false
+  name: ntlm_auto
+  options:
+  - No Authentication
+  - NTLM
+  required: false
+  type: 16
+- display: NTLM Username
+  hidden: false
+  name: ntlm
+  required: false
+  type: 9
+- display: NTLM Domain
+  hidden: false
+  name: ntlm_domain
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This is the Hello World integration for getting started.
+display: CyberArkAIMV2
+name: CyberArkAIMV2
+script:
+  commands:
+  - deprecated: false
+    description: Lists all credentials available
+    execution: false
+    name: cyberarkaim-list-credentials
+  dockerimage: demisto/python3:3.8.5.10845
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+
