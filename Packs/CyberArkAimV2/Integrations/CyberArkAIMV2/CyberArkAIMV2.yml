@@ -3,15 +3,10 @@ commonfields:
   id: CyberArkAIMV2
   version: -1
 configuration:
-- defaultvalue: https://soar.monstersofhack.com
-  display: Server URL (e.g. https://soar.monstersofhack.com)
+- defaultvalue: https://example.net:1234
+  display: Server URL and Port (e.g., https://example.net:1234)
   name: url
   required: true
-  type: 0
-- display: Port
-  hidden: false
-  name: port
-  required: false
   type: 0
 - display: AppID as configured in AIM
   hidden: false
@@ -33,24 +28,16 @@ configuration:
   name: credential_names
   required: false
   type: 12
-- display: Authentication Type (NTLM or No Authentication)
+- display: Username
   hidden: false
-  name: ntlm_auto
-  options:
-  - No Authentication
-  - NTLM
-  required: false
-  type: 16
-- display: NTLM Username
-  hidden: false
-  name: ntlm
+  name: credentials
   required: false
   type: 9
-- display: NTLM Domain
-  hidden: false
-  name: ntlm_domain
+- display: Fetches credentials
+  name: isFetchCredentials
+  defaultvalue: "true"
+  type: 8
   required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -59,7 +46,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the Hello World integration for getting started.
+description: Query CyberArk Application Identity Manager for accounts and credentials.
 display: CyberArkAIMV2
 name: CyberArkAIMV2
 script:
@@ -67,8 +54,8 @@ script:
   - deprecated: false
     description: Lists all credentials available
     execution: false
-    name: cyberarkaim-list-credentials
-  dockerimage: demisto/python3:3.8.5.10845
+    name: cyberark-aim-list-credentials
+  dockerimage: demisto/py3ews:1.0.0.10664
   feed: false
   isfetch: false
   longRunning: false
@@ -79,4 +66,3 @@ script:
   type: python
 tests:
 - No tests
-
