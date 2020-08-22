@@ -1,0 +1,17 @@
+{
+ "associatedTypes": [
+  "Respond Software Incident"
+ ],
+ "caseInsensitive": true,
+ "cliName": "feedbacktimeupdated",
+ "editForm": true,
+ "id": "incident_feedbacktimeupdated",
+ "name": "Feedback Time Updated",
+ "threshold": 72,
+ "type": "shortText",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "content": true,
+ "system": false,
+ "required": false
+}

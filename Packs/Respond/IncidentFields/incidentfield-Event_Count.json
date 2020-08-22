@@ -1,0 +1,17 @@
+{
+ "associatedTypes": [
+  "Respond Software Incident"
+ ],
+ "caseInsensitive": true,
+ "cliName": "eventcount",
+ "editForm": true,
+ "id": "incident_eventcount",
+ "name": "Event Count",
+ "threshold": 72,
+ "type": "number",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "content": true,
+ "system": false,
+ "required": false
+}

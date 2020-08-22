@@ -1,0 +1,17 @@
+{
+ "associatedTypes": [
+  "Respond Software Incident"
+ ],
+ "caseInsensitive": true,
+ "cliName": "firsteventtime",
+ "editForm": true,
+ "id": "incident_firsteventtime",
+ "name": "First Event Time",
+ "threshold": 72,
+ "type": "shortText",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "content": true,
+ "system": false,
+ "required": false
+}

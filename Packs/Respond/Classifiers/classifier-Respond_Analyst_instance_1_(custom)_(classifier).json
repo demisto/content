@@ -1,0 +1,25 @@
+{
+ "id": "745b2e2d-07c2-4d44-88b4-ad9a5baf1a5a_custom",
+ "keyTypeMap": {
+  "Closed": "Respond Software Incident",
+  "Open": "Respond Software Incident"
+ },
+ "name": "Respond_Analyst_instance_1 (custom) (classifier)",
+ "transformer": {
+  "complex": {
+   "accessor": "",
+   "filters": [
+
+   ],
+   "root": "status",
+   "transformers": [
+
+   ]
+  },
+  "simple": ""
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "description": ""
+}

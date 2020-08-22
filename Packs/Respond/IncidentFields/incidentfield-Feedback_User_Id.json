@@ -1,0 +1,17 @@
+{
+ "associatedTypes": [
+  "Respond Software Incident"
+ ],
+ "caseInsensitive": true,
+ "cliName": "feedbackuserid",
+ "editForm": true,
+ "id": "incident_feedbackuserid",
+ "name": "Feedback User Id",
+ "threshold": 72,
+ "type": "shortText",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "content": true,
+ "system": false,
+ "required": false
+}

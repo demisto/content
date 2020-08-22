@@ -1,0 +1,17 @@
+{
+ "associatedTypes": [
+  "Respond Software Incident"
+ ],
+ "caseInsensitive": true,
+ "cliName": "internalassetcount",
+ "editForm": true,
+ "id": "incident_internalassetcount",
+ "name": "Internal Asset Count",
+ "threshold": 72,
+ "type": "number",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "content": true,
+ "system": false,
+ "required": false
+}
