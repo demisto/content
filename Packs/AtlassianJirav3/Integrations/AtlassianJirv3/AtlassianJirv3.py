@@ -335,7 +335,7 @@ class Client(BaseClient):
             return self.generate_basic_oauth()
 
         elif is_oauth1:
-            client._headers.update({'X-Atlassian-Token': 'nocheck'})
+            self._headers.update({'X-Atlassian-Token': 'nocheck'})
             return self.generate_oauth1()
 
         return_error(
@@ -359,7 +359,7 @@ class Client(BaseClient):
         )
         if "issues" in result:
             return result
-        errors = ",".join(rj.get("errorMessages", ['could not fetch any issues, please check your query']))
+        errors = ",".join(result.get("errorMessages", ['could not fetch any issues, please check your query']))
         if 'could not fetch any issues, please check your query' in errors:
             return {}
         return_error(f'No issues were found, error message from Jira: {errors}')
@@ -529,6 +529,16 @@ class Client(BaseClient):
         )
         return res.content
 
+    def expand_url(self, url):
+        res = self._http_request(
+            'GET',
+            '',
+            full_url=url,
+            resp_type='json',
+            auth=self.auth
+        )
+        return res
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -628,23 +638,21 @@ def generate_md_upload_issue(data, issue_id):
     return upload_md
 
 
-def expand_urls(data, depth=0):
+def expand_urls(client, data, depth=0):
     if isinstance(data, dict) and depth < 10:
         for key, value in data.items():
             if key in ['_links', 'watchers', 'sla', 'request participants']:
                 # dictionary of links
                 if isinstance(value, dict):
                     for link_key, link_url in value.items():
-                        value[link_key + '_expended'] = json.dumps(
-                            jira_req(method='GET', resource_url=link_url, link=True, resp_type='json'))
+                        value[link_key + '_expended'] = json.dumps(client.expand_url(link_url))
                 # link
                 else:
-                    data[key + '_expended'] = json.dumps(jira_req(method='GET', resource_url=value,
-                                                                  link=True, resp_type='json'))
+                    data[key + '_expended'] = json.dumps(client.expand_url(value))
             # search deeper
             else:
                 if isinstance(value, dict):
-                    return expand_urls(value, depth + 1)
+                    return expand_urls(client, value, depth + 1)
 
 
 def map_fields(data={}):
@@ -663,7 +671,7 @@ def map_fields(data={}):
         "parentIssueKey": "fields.parent.key",
         "parentIssueId": "fields.parent.id"
     }
-    return_dict = dict()
+    return_dict: dict=dict()
     data = {k: v for k, v in data.items() if k in fields}
     for k, v in data.items():
         mapped = fields[k].split(".")
@@ -682,7 +690,7 @@ def map_fields(data={}):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client, params) -> str:
+def test_module(client, params):
     """
     Performs basic get request to get item samples
     """
@@ -691,7 +699,7 @@ def test_module(client, params) -> str:
         client.run_query(params.get('query'), 0, max_results=1)
 
     if not user_data.get('active'):
-        retrun_error(f'Test module for Jira failed for the configured parameters.'
+        return_error(f'Test module for Jira failed for the configured parameters.'
                      f'please Validate that the user is active. Response: {str(user_data)}')
 
     demisto.results('ok')
@@ -889,7 +897,7 @@ def get_issue_command(client, args, headers=None, is_update=False):
 
     j_res = client.get_issue(issue_id)
     if expand_links:
-        expand_urls(j_res)
+        expand_urls(client, j_res)
 
     attachments = demisto.get(j_res, 'fields.attachment')  # list of all attachments
 
