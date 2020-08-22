@@ -1,0 +1,740 @@
+category: Analytics & SIEM
+commonfields:
+  id: Lacework
+  version: -1
+configuration:
+- display: Lacework Instance Name (e.g. <XXXXXX>.lacework.net)
+  name: lacework_instance
+  required: true
+  type: 0
+- display: Lacework API Key
+  name: lacework_api_key
+  required: true
+  type: 4
+- display: Lacework API Secret
+  name: lacework_api_secret
+  required: true
+  type: 4
+- defaultvalue: high
+  display: Lacework Event Severity Threshold
+  hidden: false
+  name: lacework_event_severity
+  options:
+  - critical
+  - high
+  - medium
+  - low
+  - informational
+  required: true
+  type: 15
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Lacework is focused on giving customers visibility and control over their
+  cloud operations at cloud scale to the monitoring of all activities across all cloud
+  components.
+display: Lacework
+name: Lacework
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The AWS Account ID to use when fetching compliance data.
+      isArray: false
+      name: account_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: AWS_CIS_S3
+      description: The Report Type to fetch from Lacework.
+      isArray: false
+      name: report_type
+      predefined:
+      - AWS_CIS_S3
+      - HIPAA
+      - ISO_2700
+      - NIST_800-53_Rev4
+      - PCI
+      - SOC
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch the latest AWS compliance data from Lacework.
+    execution: false
+    name: lw-get-aws-compliance-assessment
+    outputs:
+    - contextPath: Lacework.ComplianceReport.reportType
+      type: String
+    - contextPath: Lacework.ComplianceReport.reportTitle
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.SUPPRESSIONS
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.INFO_LINK
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.ASSESSED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.recommendations.STATUS
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.REC_ID
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.CATEGORY
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.SERVICE
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.TITLE
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.VIOLATIONS.region
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.VIOLATIONS.reasons
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.VIOLATIONS.resource
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.recommendations.SEVERITY
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_RECOMMENDATIONS
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_2_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_4_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_1_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_COMPLIANT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_3_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.ASSESSED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SUPPRESSED
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_5_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_NOT_COMPLIANT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.VIOLATED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.SUPPRESSED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.accountId
+      type: String
+    - contextPath: Lacework.ComplianceReport.accountAlias
+      type: String
+    - contextPath: Lacework.ComplianceReport.tenantId
+      type: String
+    - contextPath: Lacework.ComplianceReport.tenantName
+      type: String
+    - contextPath: Lacework.ComplianceReport.subscriptionId
+      type: String
+    - contextPath: Lacework.ComplianceReport.subscriptionName
+      type: String
+    - contextPath: Lacework.ComplianceReport.projectId
+      type: String
+    - contextPath: Lacework.ComplianceReport.projectName
+      type: String
+    - contextPath: Lacework.ComplianceReport.organizationId
+      type: String
+    - contextPath: Lacework.ComplianceReport.organizationName
+      type: String
+    - contextPath: Lacework.ComplianceReport.reportTime
+      type: String
+  - arguments:
+    - default: false
+      description: The Azure Tenant ID to use when fetching compliance data.
+      isArray: false
+      name: tenant_id
+      required: true
+      secret: false
+    - default: false
+      description: The Azure Subscription ID to use when fetching compliance data.
+      isArray: false
+      name: subscription_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: AZURE_CIS
+      description: The Report Type to fetch from Lacework.
+      isArray: false
+      name: report_type
+      predefined:
+      - AZURE_CIS
+      - AZURE_PCI
+      - AZURE_SOC
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch the latest Azure compliance data from Lacework.
+    execution: false
+    name: lw-get-azure-compliance-assessment
+    outputs:
+    - contextPath: Lacework.ComplianceReport.reportType
+      type: String
+    - contextPath: Lacework.ComplianceReport.reportTitle
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.SUPPRESSIONS
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.INFO_LINK
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.ASSESSED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.recommendations.STATUS
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.REC_ID
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.CATEGORY
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.SERVICE
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.TITLE
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.VIOLATIONS.region
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.VIOLATIONS.reasons
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.VIOLATIONS.resource
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.recommendations.SEVERITY
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_RECOMMENDATIONS
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_2_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_4_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_1_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_COMPLIANT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_3_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.ASSESSED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SUPPRESSED
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_5_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_NOT_COMPLIANT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.VIOLATED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.SUPPRESSED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.accountId
+      type: String
+    - contextPath: Lacework.ComplianceReport.accountAlias
+      type: String
+    - contextPath: Lacework.ComplianceReport.tenantId
+      type: String
+    - contextPath: Lacework.ComplianceReport.tenantName
+      type: String
+    - contextPath: Lacework.ComplianceReport.subscriptionId
+      type: String
+    - contextPath: Lacework.ComplianceReport.subscriptionName
+      type: String
+    - contextPath: Lacework.ComplianceReport.projectId
+      type: String
+    - contextPath: Lacework.ComplianceReport.projectName
+      type: String
+    - contextPath: Lacework.ComplianceReport.organizationId
+      type: String
+    - contextPath: Lacework.ComplianceReport.organizationName
+      type: String
+    - contextPath: Lacework.ComplianceReport.reportTime
+      type: String
+  - arguments:
+    - default: false
+      description: The GCP Organization ID to use when fetching compliance data.
+      isArray: false
+      name: organization_id
+      required: true
+      secret: false
+    - default: false
+      description: The GCP Project ID to use when fetching compliance data.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: GCP_CIS
+      description: The Report Type to fetch from Lacework.
+      isArray: false
+      name: report_type
+      predefined:
+      - GCP_CIS
+      - GCP_PCI
+      - GCP_SOC
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch the latest GCP compliance data from Lacework.
+    execution: false
+    name: lw-get-gcp-compliance-assessment
+    outputs:
+    - contextPath: Lacework.ComplianceReport.reportType
+      type: String
+    - contextPath: Lacework.ComplianceReport.reportTitle
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.SUPPRESSIONS
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.INFO_LINK
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.ASSESSED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.recommendations.STATUS
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.REC_ID
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.CATEGORY
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.SERVICE
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.TITLE
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.VIOLATIONS.region
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.VIOLATIONS.reasons
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.VIOLATIONS.resource
+      type: String
+    - contextPath: Lacework.ComplianceReport.recommendations.RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.recommendations.SEVERITY
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_RECOMMENDATIONS
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_2_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_4_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_1_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_COMPLIANT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_3_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.ASSESSED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SUPPRESSED
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_SEVERITY_5_NON_COMPLIANCE
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.NUM_NOT_COMPLIANT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.VIOLATED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.summary.SUPPRESSED_RESOURCE_COUNT
+      type: Number
+    - contextPath: Lacework.ComplianceReport.accountId
+      type: String
+    - contextPath: Lacework.ComplianceReport.accountAlias
+      type: String
+    - contextPath: Lacework.ComplianceReport.tenantId
+      type: String
+    - contextPath: Lacework.ComplianceReport.tenantName
+      type: String
+    - contextPath: Lacework.ComplianceReport.subscriptionId
+      type: String
+    - contextPath: Lacework.ComplianceReport.subscriptionName
+      type: String
+    - contextPath: Lacework.ComplianceReport.projectId
+      type: String
+    - contextPath: Lacework.ComplianceReport.projectName
+      type: String
+    - contextPath: Lacework.ComplianceReport.organizationId
+      type: String
+    - contextPath: Lacework.ComplianceReport.organizationName
+      type: String
+    - contextPath: Lacework.ComplianceReport.reportTime
+      type: String
+  - arguments:
+    - default: false
+      description: The AWS Account ID to run a compliance assessment against.
+      isArray: false
+      name: account_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Run an AWS compliance assessment in Lacework.
+    execution: false
+    name: lw-run-aws-compliance-assessment
+  - arguments:
+    - default: false
+      description: The Azure Tenant ID to run a compliance assessment against.
+      isArray: false
+      name: tenant_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Run an Azure compliance assessment in Lacework.
+    execution: false
+    name: lw-run-azure-compliance-assessment
+  - arguments:
+    - default: false
+      description: The GCP Project ID to run a compliance assessment against.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Run a GCP compliance assessment in Lacework.
+    execution: false
+    name: lw-run-gcp-compliance-assessment
+  - arguments:
+    - default: false
+      description: The Lacework Event ID to be retrieved.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch Event Details for a specific Event in Lacework.
+    execution: false
+    name: lw-get-event-details
+    outputs:
+    - contextPath: Lacework.Event.START_TIME
+      type: Date
+    - contextPath: Lacework.Event.END_TIME
+      type: Date
+    - contextPath: Lacework.Event.EVENT_TYPE
+      type: String
+    - contextPath: Lacework.Event.EVENT_ID
+      type: String
+    - contextPath: Lacework.Event.EVENT_ACTOR
+      type: String
+    - contextPath: Lacework.Event.EVENT_MODEL
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.User.MACHINE_HOSTNAME
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.User.USERNAME
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Application.APPLICATION
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Application.HAS_EXTERNAL_CONNS
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.Application.IS_CLIENT
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.Application.IS_SERVER
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.Application.EARLIEST_KNOWN_TIME
+      type: Date
+    - contextPath: Lacework.Event.ENTITY_MAP.Machine.HOSTNAME
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Machine.EXTERNAL_IP
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Machine.INSTANCE_ID
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Machine.INSTANCE_NAME
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Machine.CPU_PERCENTAGE
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.Machine.INTERNAL_IP_ADDRESS
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Container.IMAGE_REPO
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Container.IMAGE_TAG
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Container.HAS_EXTERNAL_CONNS
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.Container.IS_CLIENT
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.Container.IS_SERVER
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.Container.FIRST_SEEN_TIME
+      type: Date
+    - contextPath: Lacework.Event.ENTITY_MAP.Container.POD_NAMESPACE
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Container.POD_IP_ADDR
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.DnsName.HOSTNAME
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.DnsName.PORT_LIST
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.DnsName.TOTAL_IN_BYTES
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.DnsName.TOTAL_OUT_BYTES
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.IP_ADDRESS
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.TOTAL_IN_BYTES
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.TOTAL_OUT_BYTES
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.THREAT_TAGS
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.COUNTRY
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.REGION
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.PORT_LIST
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.FIRST_SEEN_TIME
+      type: Date
+    - contextPath: Lacework.Event.ENTITY_MAP.Process.HOSTNAME
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Process.PROCESS_ID
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.Process.PROCESS_START_TIME
+      type: Date
+    - contextPath: Lacework.Event.ENTITY_MAP.Process.CMDLINE
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Process.CPU_PERCENTAGE
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.FileDataHash.FILEDATA_HASH
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.FileDataHash.MACHINE_COUNT
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.FileDataHash.EXE_PATH_LIST
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.FileDataHash.FIRST_SEEN_TIME
+      type: Date
+    - contextPath: Lacework.Event.ENTITY_MAP.FileDataHash.IS_KNOWN_BAD
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.EXE_PATH
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.FIRST_SEEN_TIME
+      type: Date
+    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.LAST_FILEDATA_HASH
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.LAST_PACKAGE_NAME
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.LAST_VERSION
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.FileExePath.LAST_FILE_OWNER
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.SourceIpAddress.IP_ADDRESS
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.SourceIpAddress.REGION
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.SourceIpAddress.COUNTRY
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.API.SERVICE
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.API.API
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Region.REGION
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Region.ACCOUNT_LIST
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.USERNAME
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.ACCOUT_ID
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.MFA
+      type: Number
+    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.API_LIST
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.REGION_LIST
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.CT_User.PRINCIPAL_ID
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Resource.NAME
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.Resource.VALUE
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.RecId.REC_ID
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.RecId.ACCOUNT_ID
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.RecId.ACCOUNT_ALIAS
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.RecId.TITLE
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.RecId.STATUS
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.RecId.EVAL_TYPE
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.RecId.EVAL_GUID
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.CustomRule.LAST_UPDATED_TIME
+      type: Date
+    - contextPath: Lacework.Event.ENTITY_MAP.CustomRule.LAST_UPDATED_USER
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.CustomRule.DISPLAY_FILTER
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.CustomRule.RULE_GUID
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.NewViolation.REC_ID
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.NewViolation.REASON
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.NewViolation.RESOURCE
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.ViolationReason.REC_ID
+      type: String
+    - contextPath: Lacework.Event.ENTITY_MAP.ViolationReason.REASON
+      type: String
+  - arguments:
+    - default: false
+      description: The GCP Organization ID to use when fetching projects data.
+      isArray: false
+      name: organization_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch a list of GCP projects that are under an organization.
+    execution: false
+    name: lw-get-gcp-projects-by-organization
+    outputs:
+    - contextPath: Lacework.GCP.organization
+      type: String
+    - contextPath: Lacework.GCP.projects
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: image_digest
+      description: The identifier type for the container - Image ID or Image Digest
+      isArray: false
+      name: id_type
+      predefined:
+      - image_digest
+      - image_id
+      required: true
+      secret: false
+    - default: false
+      description: A string representing the container image ID for which to fetch
+        vulnerabilities.
+      isArray: false
+      name: image_id
+      required: false
+      secret: false
+    - default: false
+      description: A string representing the container image digest for which to fetch
+        vulnerabilities.
+      isArray: false
+      name: image_digest
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A string representing the severity of vulnerabilities to fetch.
+      isArray: false
+      name: severity
+      predefined:
+      - critical
+      - high
+      - medium
+      - info
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A boolean which filters for fixable vulnerabilities.
+      isArray: false
+      name: fixable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from.
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at.
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch the container vulnerability information from Lacework.
+    execution: false
+    name: lw-get-container-vulnerabilities
+    outputs:
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_info.created_time
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_info.image_digest
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_info.image_id
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_info.registry
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_info.repository
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_info.size
+      type: Number
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_info.tags
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.hash
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.created_by
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.name
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.namespace
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.fix_available
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.version
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.vulnerabilities.name
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.vulnerabilities.description
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.vulnerabilities.link
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.vulnerabilities.severity
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.vulnerabilities.fix_version
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.fixed_version
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.host_count
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.severity
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.cve_link
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.cvss_score
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.cvss_v3_score
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.cvss_v2_score
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.status
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.package_status
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.image.image_layers.packages.first_seen_time
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.scan_status
+      type: String
+    - contextPath: Lacework.Vulnerabilities.Container.total_vulnerabilities
+      type: Number
+    - contextPath: Lacework.Vulnerabilities.Container.critical_vulnerabilities
+      type: Number
+    - contextPath: Lacework.Vulnerabilities.Container.high_vulnerabilities
+      type: Number
+    - contextPath: Lacework.Vulnerabilities.Container.medium_vulnerabilities
+      type: Number
+    - contextPath: Lacework.Vulnerabilities.Container.low_vulnerabilities
+      type: Number
+    - contextPath: Lacework.Vulnerabilities.Container.info_vulnerabilities
+      type: Number
+    - contextPath: Lacework.Vulnerabilities.Container.fixable_vulnerabilities
+      type: Number
+    - contextPath: Lacework.Vulnerabilities.Container.last_evaluation_time
+      type: String
+  dockerimage: demisto/lacework:1.0.0.11021
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
