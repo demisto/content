@@ -1,7 +1,7 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Tool"
+		"STIX Tool"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

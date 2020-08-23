@@ -355,7 +355,7 @@ tasks:
       FileTypeFilter:
         simple: ${inputs.FileTypeFilter}
       FilterType:
-        simple: ${inputs.FileTypeFilter}
+        simple: ${inputs.FilterType}
       PcapFileEntryID:
         simple: ${inputs.PcapFileEntryID}
       PcapFilter:
