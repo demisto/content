@@ -481,8 +481,8 @@ script:
       default: true
       description: connector GUID.
     - name: unlock_code
-      description: this is a comment about locking the computer","unlock_code":"unlockme"
-    description: Performs a feature availability request on a computer. Can also be
+      description: Comment about unlocking the computer. Use the amp_get_computers_isolation command to retrieve the unlock_code.
+    description: Request to unlock an isolated computer. Can also be
       used as a course-grained isolation status request.
   - name: amp_put_computers_isolation
     arguments:
@@ -491,10 +491,9 @@ script:
       default: true
       description: connector GUID.
     - name: unlock_code
-      description: this is a comment about locking the computer","unlock_code":"unlockme"
-    description: Request Isolation for a Computer.  If a computer is already isolated
-      a 409 Conflict error status will be sent. Returns the same result of a GET request
-      on the /isolation endpoint.
+      description: Comment used when locking the computer. Use the amp_get_computers_isolation command to retrieve the unlock_code.
+    description: Requests isolation for a Computer.  If a computer is already isolated
+      a 409 conflict error status is returned.
   - name: amp_get_computers_isolation
     arguments:
     - name: connector_guid
@@ -502,10 +501,8 @@ script:
       default: true
       description: connector GUID.
     - name: status
-      description: TBD
-    description: 'Returns a fine grained isolation status for a computer.  The available
-      flag is set to true if isolation can be performed on the computer.  status will
-      be set to one of:  not_isolated pending_start isolated pending_stop'
+      description: 'The status of the computer. Can be: "not_isolated", "pending_start", "isolated", or "pending_stop".'
+    description: 'Returns a fine grained isolation status for a computer.' 
   - name: amp_options_computers_isolation
     arguments:
     - name: connector_guid
@@ -513,7 +510,7 @@ script:
       default: true
       description: connector GUID.
     description: Performs a feature availability request on a computer. Can also be
-      used as a course-grained isolation status request.
+      used as a fine grained isolation status request.
 system: true
 tests:
   - No test - missing instace
