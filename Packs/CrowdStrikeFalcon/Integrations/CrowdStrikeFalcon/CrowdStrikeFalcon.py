@@ -170,8 +170,10 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             headers=headers,
             files=files
         )
-    except requests.exceptions.RequestException:
-        return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
+    except requests.exceptions.RequestException as exception:
+        return_error(
+            '{}\nError in connection to the server. Please make sure you entered the URL correctly.'.format(str(exception)),
+            exception)
     try:
         if res.status_code not in {200, 201, 202, 204}:
             res_json = res.json()
@@ -1126,6 +1128,9 @@ def fetch_incidents():
 
     if fetch_query:
         fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch, query=fetch_query)
+        demisto.error('------------------------------------------------------------1')
+        demisto.error(fetch_query)
+        demisto.error('------------------------------------------------------------1')
         detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
 
     else:
@@ -1133,7 +1138,9 @@ def fetch_incidents():
     incidents = []  # type:List
 
     if detections_ids:
-
+        demisto.error('------------------------------------------------------------2')
+        demisto.error(json.dumps(detections_ids))
+        demisto.error('------------------------------------------------------------2')
         # make sure we do not fetch the same detection again.
         if last_detection_id == detections_ids[0]:
             first_index_to_fetch = 1
