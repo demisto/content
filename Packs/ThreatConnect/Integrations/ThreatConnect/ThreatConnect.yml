@@ -45,7 +45,7 @@ configuration:
   required: false
   type: 0
 description: Deprecated. Threat intelligence platform.
-display: Deprecated. ThreatConnect
+display: ThreatConnect (Deprecated)
 name: ThreatConnect
 script:
   commands:

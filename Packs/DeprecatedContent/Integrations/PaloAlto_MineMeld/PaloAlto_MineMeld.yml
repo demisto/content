@@ -26,7 +26,7 @@ configuration:
 description: Deprecated. MineMeld streamlines the aggregation, enforcement and sharing of threat
   intelligence.
 deprecated: true
-display: Deprecated. Palo Alto Networks MineMeld
+display: Palo Alto Networks MineMeld (Deprecated)
 name: Palo Alto Minemeld
 script:
   commands:

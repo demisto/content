@@ -27,7 +27,7 @@ configuration:
   type: 8
 description: Deprecated. Unified security management and advanced threat protection across hybrid
   cloud workloads.
-display: Deprecated. Azure Security Center
+display: Azure Security Center (Deprecated)
 name: Azure Security Center
 script:
   commands:

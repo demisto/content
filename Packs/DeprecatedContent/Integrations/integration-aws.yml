@@ -2,7 +2,7 @@ commonfields:
   id: Amazon Web Services
   version: -1
 name: Amazon Web Services
-display: Deprecated. Amazon Web Services
+display: Amazon Web Services (Deprecated)
 deprecated: true
 category: IT Services
 fromversion: 1.6.2

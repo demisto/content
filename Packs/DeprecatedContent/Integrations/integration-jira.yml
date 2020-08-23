@@ -2,7 +2,7 @@ commonfields:
   id: jira
   version: -1
 name: jira
-display: Deprecated. Atlassian Jira ()
+display: Atlassian Jira (Deprecated)
 deprecated: true
 fromversion: 2.6.0
 category: Case Management

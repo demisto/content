@@ -12,7 +12,7 @@ configuration:
   required: false
   type: 8
 description: Deprecated. Analyzes suspicious domains and IP addresses
-display: Deprecated. Cymon
+display: Cymon (Deprecated)
 deprecated: true
 name: Cymon
 script:

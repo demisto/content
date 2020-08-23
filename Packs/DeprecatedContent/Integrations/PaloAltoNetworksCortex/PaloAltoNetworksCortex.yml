@@ -142,7 +142,7 @@ configuration:
   type: 16
 description: Deprecated. We recommend using the Cortex Data Lake integration instead.
   This framework manages all PA's cloud managed products
-display: Deprecated. Palo Alto Networks Cortex
+display: Palo Alto Networks Cortex (Deprecated)
 name: Palo Alto Networks Cortex
 script:
   commands:

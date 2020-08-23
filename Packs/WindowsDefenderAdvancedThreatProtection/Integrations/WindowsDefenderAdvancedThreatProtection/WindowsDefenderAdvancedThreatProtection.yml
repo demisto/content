@@ -53,7 +53,7 @@ configuration:
 description: Deprecated. use Microsoft Defender Advanced Threat Protection instead.
   Windows Defender Advanced Threat Protection (ATP) is a unified platform for preventative protection,
   post-breach detection, automated investigation, and response.
-display: Deprecated. Windows Defender Advanced Threat Protection.
+display: Windows Defender Advanced Threat Protection (Deprecated)
 name: Windows Defender Advanced Threat Protection
 script:
   commands:
