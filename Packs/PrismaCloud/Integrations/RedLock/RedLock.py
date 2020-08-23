@@ -428,11 +428,10 @@ def fetch_incidents():
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     last_run_object = demisto.getLastRun()
     last_run = last_run_object and last_run_object['time']
-    response = req('GET', 'alert/rule', None, None)
-    rules = str([rule.get('name') for rule in response])
-    demisto.info("Alert rules for the user: {}".format(rules))
+    filters = req('GET', 'filter/alert/suggest', None, None)
+    demisto.info("Alerts Filters: {}".format(filters))
     if not last_run:
-        last_run = now - 24 * 60 * 60 * 1000
+        last_run = now - 168 * 60 * 60 * 1000
     payload = {'timeRange': {
         'type': 'absolute',
         'value': {
