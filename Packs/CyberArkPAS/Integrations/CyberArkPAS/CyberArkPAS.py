@@ -503,7 +503,7 @@ class Client(BaseClient):
         """
         This function uses the V1 CyberArk PAS api, currently there is no matching function in V2
         """
-        url_suffix = f"/PasswordVault/WebServices/PIMServices.svc/Accounts/{account_id}/VerifyCredentials"
+        url_suffix = f"/PasswordVault/API/Accounts/{account_id}/Verify"
 
         self._http_request("POST", url_suffix, resp_type='text')
 
