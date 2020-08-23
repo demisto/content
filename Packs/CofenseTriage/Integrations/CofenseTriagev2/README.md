@@ -466,7 +466,7 @@ Threat Indicators that are designated by analysts as malicious, suspicious or be
             "ReportId": 5760,
             "ThreatKey": "URL",
             "ThreatLevel": "Malicious",
-            "ThreatValue": "http://bold-air.000webhostapp.com/notification.php?email=test@demisto.net.n<br />et"
+            "ThreatValue": "http://bold-air.000webhostapp.com/notification.php?email=test@demisto.net.net"
         }
     }
 }
@@ -477,5 +477,5 @@ Threat Indicators that are designated by analysts as malicious, suspicious or be
 >### Threat Indicators:
 >|Created At|Id|Operator Id|Report Id|Threat Key|Threat Level|Threat Value|
 >|---|---|---|---|---|---|---|
->| 2020-05-28T22:14:52.690Z | 75 | 2 | 5760 | URL | Malicious | http://bold-air.000webhostapp.com/notification.php?email=test@demisto.net.n<br />et |
+>| 2020-05-28T22:14:52.690Z | 75 | 2 | 5760 | URL | Malicious | `http://bold-air.000webhostapp.com/notification.php?email=test@demisto.net.net` |
 
