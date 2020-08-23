@@ -408,6 +408,7 @@ def get_private_packs(private_index_path):
                     'id': metadata.get('id'),
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
+                    'vendorName': metadata.get('vendorName')
                 })
         except ValueError as e:
             print_error(f'Invalid JSON in the metadata file [{metadata_file_path}]: {str(e)}')
