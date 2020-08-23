@@ -47,7 +47,7 @@ configuration:
   required: false
   type: 8
 description: Query CyberArk Application Identity Manager for accounts and credentials.
-display: CyberArkAIMV2
+display: CyberArk AIM v2
 name: CyberArkAIMV2
 script:
   commands:
