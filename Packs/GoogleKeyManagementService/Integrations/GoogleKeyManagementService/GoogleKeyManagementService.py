@@ -3,8 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 '''IMPORTS'''
-from google.cloud import kms_v1
-from google.cloud.kms_v1 import enums
+from google.cloud import kms
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -61,7 +60,7 @@ class Client:
             json_object = json.loads(str(self.service_account))
             json.dump(json_object, creds_file)
 
-        return kms_v1.KeyManagementServiceClient.from_service_account_json(credentials_file_path)
+        return kms.KeyManagementServiceClient.from_service_account_json(credentials_file_path)
 
 
 """HELPER FUNCTIONS"""
@@ -126,7 +125,7 @@ def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_i
     """Creates GoogleKMS.CryptoKey context.
 
     Args:
-        res(Any): `~google.cloud.kms_v1.types.CryptoKey` instance.
+        res(Any): `~google.cloud.kms.CryptoKey` instance.
         project_id(str): the project id
         location_id(str): the location id
         key_ring_id(str): the KeyRing id
@@ -153,14 +152,14 @@ def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_i
         'Project': project_id,
         'Location': location_id,
         'KeyRing': key_ring_id,
-        'Purpose': enums.CryptoKey.CryptoKeyPurpose(res.purpose).name,
+        'Purpose': kms.CryptoKey.CryptoKeyPurpose(res.purpose).name,
         'CreationTime': datetime.fromtimestamp(int(res.create_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
         'NextRotationTime': datetime.fromtimestamp(int(res.next_rotation_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
         'RotationPeriod': f'{str(res.rotation_period.seconds)}s',
         'Labels': labels,
         'VersionTemplate': {
-            'ProtectionLevel': enums.ProtectionLevel(res.version_template.protection_level).name,
-            'Algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(res.version_template.algorithm).name,
+            'ProtectionLevel': kms.ProtectionLevel(res.version_template.protection_level).name,
+            'Algorithm': kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm(res.version_template.algorithm).name,
         }
     }
     # if primary CryptoKeyVersion exists and is returned create context for it.
@@ -168,10 +167,10 @@ def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_i
     if res.primary and res.primary.name and len(res.primary.name) > 0:
         key_context['PrimaryCryptoKeyVersion'] = {
             'Name': res.primary.name,
-            'State': enums.CryptoKeyVersion.CryptoKeyVersionState(res.primary.state).name,
+            'State': kms.CryptoKeyVersion.CryptoKeyVersionState(res.primary.state).name,
             'CreationTime': datetime.fromtimestamp(int(res.primary.create_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
-            'ProtectionLevel': enums.ProtectionLevel(res.primary.protection_level).name,
-            'Algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(res.primary.algorithm).name,
+            'ProtectionLevel': kms.ProtectionLevel(res.primary.protection_level).name,
+            'Algorithm': kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm(res.primary.algorithm).name,
             'GenerateTime': datetime.fromtimestamp(int(res.primary.generate_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT)
         }
 
@@ -179,10 +178,10 @@ def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_i
 
 
 def crypto_key_to_json(crypto_key: Any) -> Dict:
-    """Creates a json dict from `~google.cloud.kms_v1.types.CryptoKey` instance to use as raw response.
+    """Creates a json dict from `~google.cloud.kms.CryptoKey` instance to use as raw response.
 
     Args:
-        crypto_key(Any): `~google.cloud.kms_v1.types.CryptoKey` instance.
+        crypto_key(Any): `~google.cloud.kms.CryptoKey` instance.
 
     Returns:
         A json Dict containing the raw response.
@@ -198,7 +197,7 @@ def crypto_key_to_json(crypto_key: Any) -> Dict:
 
     key_json = {
         'name': crypto_key.name,
-        'purpose': enums.CryptoKey.CryptoKeyPurpose(crypto_key.purpose).name,
+        'purpose': kms.CryptoKey.CryptoKeyPurpose(crypto_key.purpose).name,
         'create_time': {
             'seconds': crypto_key.create_time.seconds,
             'nanos': crypto_key.create_time.nanos
@@ -213,21 +212,21 @@ def crypto_key_to_json(crypto_key: Any) -> Dict:
         },
         'labels': labels,
         'version_template': {
-            'protection_level': enums.ProtectionLevel(crypto_key.version_template.protection_level).name,
-            'algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key.version_template.algorithm).name,
+            'protection_level': kms.ProtectionLevel(crypto_key.version_template.protection_level).name,
+            'algorithm': kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key.version_template.algorithm).name,
         }
     }
 
     if crypto_key.primary:
         key_json['primary'] = {
             'name': crypto_key.primary.name,
-            'state': enums.CryptoKeyVersion.CryptoKeyVersionState(crypto_key.primary.state).name,
+            'state': kms.CryptoKeyVersion.CryptoKeyVersionState(crypto_key.primary.state).name,
             'create_time': {
                 'seconds': crypto_key.primary.create_time.seconds,
                 'nanos': crypto_key.primary.create_time.nanos
             },
-            'protection_level': enums.ProtectionLevel(crypto_key.primary.protection_level).name,
-            'algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key.primary.algorithm).name,
+            'protection_level': kms.ProtectionLevel(crypto_key.primary.protection_level).name,
+            'algorithm': kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key.primary.algorithm).name,
             'generate_time': {
                 'seconds': crypto_key.primary.generate_time.seconds,
                 'nanos': crypto_key.primary.generate_time.nanos
@@ -328,7 +327,7 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
 
     if 'purpose' in update_mask:
         # Add purpose enum to body
-        body['purpose'] = enums.CryptoKey.CryptoKeyPurpose[args.get('purpose')].value
+        body['purpose'] = kms.CryptoKey.CryptoKeyPurpose[args.get('purpose')].value
 
     if 'rotation_period' in update_mask:
         # Add rotation_period to body
@@ -344,7 +343,7 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
 
         if 'primary.state' in update_mask:
             # Add state enum to 'primary' sub-dictionary
-            body['primary']['state'] = enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value
+            body['primary']['state'] = kms.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value
 
     if 'version_template.algorithm' in update_mask or 'version_template.protection_level' in update_mask:
         # Init the 'version_template' sun-dictionary
@@ -352,12 +351,12 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
 
         if 'version_template.algorithm' in update_mask:
             # Add algorithm enum to 'version_template' sun-dictionary
-            val = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value
+            val = kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value
             body['version_template']['algorithm'] = val
 
         if 'version_template.protection_level' in update_mask:
             # Add protection_level to 'version_template' sun-dictionary
-            val = enums.ProtectionLevel[args.get('protection_level')].value
+            val = kms.ProtectionLevel[args.get('protection_level')].value
             body['version_template']['protection_level'] = val
 
     return body
@@ -440,7 +439,7 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
 
     # Create the CryptoKey object template
     crypto_key = {
-        'purpose': enums.CryptoKey.CryptoKeyPurpose[args.get('purpose')].value,
+        'purpose': kms.CryptoKey.CryptoKeyPurpose[args.get('purpose')].value,
         'next_rotation_time': next_rotation_time,
         'labels': arg_dict_creator(args.get('labels')),
         'rotation_period': {
@@ -451,12 +450,12 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
     # Additional info in case CryptoKeyVersion is created
     if not args.get('skip_initial_version_creation') == 'true':
         crypto_key['primary'] = {
-            'state': enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value,
+            'state': kms.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value,
             'attestation': arg_dict_creator(args.get('attestation'))
         }
         crypto_key['version_template'] = {
-            'algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value,
-            'protection_level': enums.ProtectionLevel[args.get('protection_level')].value
+            'algorithm': kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value,
+            'protection_level': kms.ProtectionLevel[args.get('protection_level')].value
         }
 
     # Create a CryptoKey for the given KeyRing.
@@ -651,14 +650,14 @@ def disable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any,
         raise Exception("Please insert primary CryptoKeyVersion ID")
 
     # Use the KMS API to disable the CryptoKeyVersion.
-    new_state = enums.CryptoKeyVersion.CryptoKeyVersionState.DISABLED
+    new_state = kms.CryptoKeyVersion.CryptoKeyVersionState.DISABLED
     version = {'name': crypto_key_version_name, 'state': new_state}
     update_mask = {'paths': ["state"]}
 
     # Print results
     response = client.kms_client.update_crypto_key_version(version, update_mask)
     return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
-            f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
+            f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
 
 def enable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
@@ -685,14 +684,14 @@ def enable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, 
         raise Exception("Please insert primary CryptoKeyVersion ID")
 
     # Use the KMS API to enable the CryptoKeyVersion.
-    new_state = enums.CryptoKeyVersion.CryptoKeyVersionState.ENABLED
+    new_state = kms.CryptoKeyVersion.CryptoKeyVersionState.ENABLED
     version = {'name': crypto_key_version_name, 'state': new_state}
     update_mask = {'paths': ["state"]}
 
     # Print results
     response = client.kms_client.update_crypto_key_version(version, update_mask)
     return(f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
-           f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
+           f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
 
 def destroy_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
@@ -723,7 +722,7 @@ def destroy_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any,
 
     # Print results
     return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
-            f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}, it will be destroyed in 24h.',
+            f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}, it will be destroyed in 24h.',
             None, None)
 
 
@@ -755,7 +754,7 @@ def restore_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any,
 
     # Print results
     return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
-            f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
+            f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
 
 def update_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
@@ -864,7 +863,7 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
                                                                         crypto_key_id, crypto_key_version)
     # get the CryptoKeyVersion info and check it's algorithm.
     crypto_key_version_info = client.kms_client.get_crypto_key_version(crypto_key_version_name)
-    key_algo = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key_version_info.algorithm).name
+    key_algo = kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key_version_info.algorithm).name
 
     # Algorithm must be a "DECRYPT" type asymmetric algorithm - if not, raise an error to the user.
     if 'DECRYPT' not in key_algo:
@@ -992,7 +991,7 @@ def list_key_rings_command(client: Client, args: Dict[str, Any]) -> Tuple[str, A
     key_rings_json = []
 
     for location in locations:
-        location_path = client.kms_client.location_path(client.project, location)
+        location_path = f'projects/{client.project}/locations/{location}'
         # the response is a iterable containing the KeyRings info.
         response = client.kms_client.list_key_rings(location_path)
 
@@ -1032,7 +1031,7 @@ def list_all_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, An
     keys_json = []
     filter_state = args.get('key_state')
     for location in locations:
-        location_path = client.kms_client.location_path(client.project, location)
+        location_path = f'projects/{client.project}/locations/{location}'
         # the response is a iterable containing the KeyRings info.
         response = client.kms_client.list_key_rings(location_path)
 
@@ -1079,7 +1078,7 @@ def get_public_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, D
     public_key_context = {
         'CryptoKey': crypto_key_id,
         'PEM': str(public_key_response.pem),
-        'Algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(public_key_response.algorithm).name
+        'Algorithm': kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm(public_key_response.algorithm).name
     }
 
     return (
