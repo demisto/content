@@ -527,6 +527,8 @@ def fetch_incidents():
         demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
         raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL - 1), _filter=fetch_query)
         if raw_offenses:
+            if isinstance(raw_offenses, list):
+                raw_offenses.reverse()
             latest_offense_fnd = True
         else:
             if not lim_id:
