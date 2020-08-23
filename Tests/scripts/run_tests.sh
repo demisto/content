@@ -21,6 +21,7 @@ PREVIOUS_JOB_NUMBER=`cat create_instances_build_num.txt`
 
 python3 ./Tests/configure_and_test_integration_instances.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" -s "$SECRET_CONF_PATH" -g "$GIT_SHA1" --ami_env "$1" -n $IS_NIGHTLY --branch "$CIRCLE_BRANCH" --build-number "$PREVIOUS_JOB_NUMBER"
 code_1=$?
+cp ./Tests/test_pack.zip $CIRCLE_ARTIFACTS
 
 echo 'export GOOGLE_APPLICATION_CREDENTIALS="creds.json"' >> $BASH_ENV
 source $BASH_ENV
