@@ -1,7 +1,7 @@
 {
     "id": "unifiedFileRep1",
     "group": "indicator",
-    "name": "File Indicator1",
+    "name": "File Indicator",
     "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
