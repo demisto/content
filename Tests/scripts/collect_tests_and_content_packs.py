@@ -1129,7 +1129,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
                                                                                   conf, id_set)
         print(f"find_tests_and_content_packs_for_modified_files: modified_files_with_relevant_tests:{packs_to_install}"
               f"\n")
-    print(f"get_tests_for_pack: modified_metadata_list\n")
+    print("get_tests_for_pack: modified_metadata_list\n")
     for pack in modified_metadata_list:
         print(f"pack to install from modified_metadata_list: {pack}")
         pack_tests = get_tests_for_pack(tools.pack_name_to_path(pack))
