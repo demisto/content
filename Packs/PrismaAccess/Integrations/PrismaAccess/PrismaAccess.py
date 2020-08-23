@@ -58,6 +58,7 @@ def panos_ssh(cmd: str, net_connect: Netmiko = None):
         try:
             if not net_connect:
                 net_connect = Netmiko(**panos)
+            net_connect.send_command_timing('set cli scripting-mode on')
             result_cmd = net_connect.send_command_timing(cmd)
         finally:
             if net_connect:
