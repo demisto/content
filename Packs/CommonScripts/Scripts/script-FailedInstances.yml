@@ -45,7 +45,6 @@ script: |
       }
   });
 
-  var allInstances = failedInstances.concat(instances);
   var hr;
   var success = countSuccess.toString();
   var failed = countFailed.toString();
@@ -54,9 +53,9 @@ script: |
   if (failedInstances.length === 0) {
       hr = '### All active instances are available! ✅';
   } else {
-      hr = 'Total Enabled Instances: ' + total +'\n';
-      hr += 'Successful Instances: ' + success +'\n';
-      hr += 'Failure Instances: ' + failed +'\n';
+      hr = 'Total instances: ' + total +'\n';
+      hr += 'Successed Instances: ' + success +'\n';
+      hr += 'Failed Instances: ' + failed +'\n';
       hr += tableToMarkdown('Failed Instances:', failedInstances, ['instance', 'brand', 'category', 'information']);
   }
 
@@ -66,41 +65,59 @@ script: |
       ContentsFormat: formats.markdown,
       HumanReadable: hr,
       EntryContext: {
-          'FailedInstances': allInstances,
-          'FailedInstances.failureCount': failed,
-          'FailedInstances.totalCount': total,
-          'FailedInstances.successCount': success
-        }
+          'FailedInstances': failedInstances,
+          'SuccessInstances': instances,
+          'InstancesCount':{
+              'FailedCount': failed,
+              'SuccessCount': success,
+              'TotalCount': total
+          }
+      }
   };
 type: javascript
 tags: []
-comment: Executes test for all integration instances available and returns a detailed
-  table about failed integration instances
+comment: Executes a test for all integration instances available and returns detailed
+  information about succeeded and failed integration instances.
 enabled: true
 outputs:
 - contextPath: FailedInstances.instance
-  description: Name of failed integration instance
+  description: The name of the failed integration instance.
   type: string
 - contextPath: FailedInstances.brand
-  description: Brand of failed integration instance
+  description: The brand name of the failed integration instance.
   type: string
 - contextPath: FailedInstances.category
-  description: Category of failed integration instance
+  description: The category of the failed integration instance.
   type: string
 - contextPath: FailedInstances.information
-  description: Error information about failed integration instance
+  description: Error information about the failed integration instance.
   type: string
 - contextPath: FailedInstances.status
-  description: Status of the instance.
+  description: The status of the instance.
   type: string
-- contextPath: FailedInstances.failureCount
-  description: The number of failed instnaces.
+- contextPath: InstancesCount.FailedCount
+  description: The number of failed instances.
   type: string
-- contextPath: FailedInstances.successCount
+- contextPath: InstancesCount.SuccessCount
   description: The number of working instances.
   type: string
-- contextPath: FailedInstances.totalCount
+- contextPath: InstancesCount.TotalCount
   description: The number of total enabled instances.
+  type: string
+- contextPath: SuccessInstances.brand
+  description: The brand name of the successful integration instance.
+  type: string
+- contextPath: SuccessInstances.category
+  description: The category of the successful integration instance.
+  type: string
+- contextPath: SuccessInstances.information
+  description: Information that the integration instance was succesful.
+  type: string
+- contextPath: SuccessInstances.instance
+  description: The name of the successful integration instance.
+  type: string
+- contextPath: SuccessInstances.status
+  description: The status of the instance.
   type: string
 scripttarget: 0
 timeout: 10.8µs
