@@ -301,8 +301,8 @@ tasks:
     task:
       id: e73bffd5-2a93-4a32-8b2a-4807fbcda046
       version: -1
-      name: ms-ata-get-entity
-      script: '|||ms-ata-get-entity'
+      name: ms-ata-entity-get
+      script: '|||ms-ata-entity-get'
       type: regular
       iscommand: true
       brand: ""

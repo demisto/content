@@ -337,7 +337,7 @@ def main() -> None:
             return_results(update_suspicious_activity_status(client, demisto.args()))
         elif demisto.command() == 'ms-ata-monitoring-alerts-list':
             return_results(get_monitoring_alert(client, demisto.args()))
-        elif demisto.command() == 'ms-ata-get-entity':
+        elif demisto.command() == 'ms-ata-entity-get':
             return_results(get_entity(client, demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())

@@ -182,14 +182,14 @@ def test_get_monitoring_alert(requests_mock):
     assert response.outputs_key_field == 'Id'
 
 
-def test_get_entity_computer(requests_mock):
+def test_entity_get_computer(requests_mock):
     """
     Given:
      - Microsoft ATA client
      - Computer entity ID to retrieve
 
     When:
-     - Running get-entity command
+     - Running entity-get command
 
     Then:
      - Ensure command runs successfully

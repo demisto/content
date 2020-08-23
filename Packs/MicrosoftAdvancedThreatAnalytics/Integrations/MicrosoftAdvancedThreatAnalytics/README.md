@@ -281,14 +281,14 @@ Retrieves health alerts.
 >| 5f159e9283eaed101cd5c837 | GatewayDirectoryServicesClientAccountPasswordExpiryMonitoringAlert | Closed | Medium | 2020-07-20T13:39:30.5559003Z | 2020-07-28T12:06:30.9408859Z |
 
 
-### ms-ata-get-entity
+### ms-ata-entity-get
 ***
 Retrieves information of distinct entity, such as computers and users.
 
 
 #### Base Command
 
-`ms-ata-get-entity`
+`ms-ata-entity-get`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -346,7 +346,7 @@ Retrieves information of distinct entity, such as computers and users.
 
 
 #### Command Example
-```!ms-ata-get-entity id="7a58c171-fa19-44f9-bf1e-81b544b318ad"```
+```!ms-ata-entity-get id="7a58c171-fa19-44f9-bf1e-81b544b318ad"```
 
 #### Context Example
 ```

@@ -371,7 +371,7 @@ script:
     deprecated: false
     description: Retrieves information of distinct entity, such as computers and users.
     execution: false
-    name: ms-ata-get-entity
+    name: ms-ata-entity-get
     outputs:
     - contextPath: MicrosoftATA.Entity.BadPasswordTime
       description: Time in which bad password was entered.
@@ -502,7 +502,7 @@ script:
     - contextPath: MicrosoftATA.Entity.Profile.UpdateTime
       description: Update time of the entity profile.
       type: Date
-  dockerimage: demisto/ntlm:1.0.0.10567
+  dockerimage: demisto/ntlm:1.0.0.10980
   feed: false
   isfetch: true
   longRunning: false
