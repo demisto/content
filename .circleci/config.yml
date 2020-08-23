@@ -889,15 +889,13 @@ jobs:
       - run:
           name: Check User Permissions to Force Upload Pack
           command: |
-            CONTENT_LEADERS=$(curl https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
+            CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
             LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-            SEARCH_RESULT=`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`
-            if [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
-            # if [[ -z "${SEARCH_RESULT}" ]]; then
-                echo -e "${CIRCLE_USERNAME} is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
+            if [[ -z "${CIRCLE_USERNAME}" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
+                echo -e "User '${CIRCLE_USERNAME}' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
                 exit 1
             else
-                echo "User ${CIRCLE_USERNAME} is allowed to force pack uploads."
+                echo "User '${CIRCLE_USERNAME}' is allowed to force pack uploads."
             fi
 
       - run:
