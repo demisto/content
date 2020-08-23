@@ -1116,14 +1116,24 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths, id_set)
 
     create_filter_envs_file(from_version, to_version)
+    print(f"modified_files_with_relevant_tests:{modified_files_with_relevant_tests}\n")
+    print(f"modified_tests_list:{modified_tests_list}\n")
+    print(f"changed_common:{changed_common}\n")
+    print(f"sample_tests: {sample_tests}\n")
+    print(f"modified_metadata_list: {modified_metadata_list}\n")
 
     tests = set([])
     packs_to_install = set([])
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
+        print(f"find_tests_and_content_packs_for_modified_files: modified_files_with_relevant_tests:{packs_to_install}"
+              f"\n")
+    print(f"get_tests_for_pack: modified_metadata_list\n")
     for pack in modified_metadata_list:
+        print(f"pack to install from modified_metadata_list: {pack}")
         pack_tests = get_tests_for_pack(tools.pack_name_to_path(pack))
+        print(f"get_pack_tests_to_install: {pack_tests}")
         packs_to_install.add(pack)
         tests = tests.union(pack_tests)
 
@@ -1142,7 +1152,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
             tests.add(test)
 
     packs_to_install = packs_to_install.union(get_content_pack_name_of_test(tests, id_set))
-
+    print(f"packs_to_install: because modified_tests_list has changed: {packs_to_install}")
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
 
@@ -1169,14 +1179,16 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     modified_packs = get_modified_packs(files_string)
     if modified_packs:
         packs_to_install = packs_to_install.union(modified_packs)
+        print(f"get all packs that have changed, not only the tests related:{packs_to_install}")
 
     packs_to_install.update(["DeveloperTools", "Base"])
 
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
+    print(f"packs_of_tested_integrations:{packs_of_tested_integrations}")
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
-
+    print(f"final packs to install list:{packs_to_install}")
     return tests, packs_to_install
 
 
