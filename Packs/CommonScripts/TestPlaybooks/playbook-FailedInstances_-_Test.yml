@@ -118,7 +118,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FailedInstances.brand
+              simple: SuccessInstances.brand
             iscontext: true
           right:
             value:
@@ -126,7 +126,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FailedInstances.information
+              simple: SuccessInstances.information
             iscontext: true
           right:
             value:
@@ -134,7 +134,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FailedInstances.status
+              simple: SuccessInstances.status
             iscontext: true
           right:
             value:
@@ -196,7 +196,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FailedInstances.brand
+              simple: SuccessInstances.brand
             iscontext: true
           right:
             value:
@@ -204,7 +204,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FailedInstances.status
+              simple: SuccessInstances.status
             iscontext: true
           right:
             value:
@@ -242,12 +242,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: FailedInstances.totalCount
+              simple: InstancesCount.TotalCount
             iscontext: true
       - - operator: isEqualString
           left:
             value:
-              simple: FailedInstances.totalCount
+              simple: InstancesCount.TotalCount
             iscontext: true
           right:
             value:

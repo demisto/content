@@ -1,3 +1,4 @@
+import uuid
 from itertools import combinations
 
 import dateutil
@@ -21,6 +22,8 @@ from nltk import ngrams
 from datetime import datetime
 import tldextract
 from email.utils import parseaddr
+
+MAX_ALLOWED_EXCEPTIONS = 20
 
 NO_FETCH_EXTRACT = tldextract.TLDExtract(suffix_list_urls=None)
 NON_POSITIVE_VALIDATION_VALUES = set(['none', 'fail', 'softfail'])
@@ -58,6 +61,7 @@ FETCH_DATA_VERSION = '1.0'
 LAST_EXECUTION_LIST_NAME = 'FETCH_DATA_ML_LAST_EXECUTION'
 MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 500
 MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
+FROM_DATA_FIRST_EXECUTION = FROM_DATA_PERIODIC_EXECUTION = '30 days ago'
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 IMG_FORMATS = ['.jpeg', '.gif', '.bmp', '.png', '.jfif', '.tiff', '.eps', '.indd', '.jpg']
@@ -88,9 +92,12 @@ signal.signal(signal.SIGALRM, timeout_handler)
 '''
 Define heuristics for finding label field
 '''
-LABEL_FIELDS_BLACKLIST = set(['CustomFields', 'ShardID', 'account', 'activated', 'attachment', 'autime', 'canvases',
+LABEL_FIELDS_BLACKLIST = set([EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, 'emailbodyhtml', 'CustomFields',
+                              'ShardID', 'account', 'activated', 'attachment', 'autime', 'canvases',
                               'category', 'closeNotes', 'closed', 'closingUserId', 'created', 'criticalassets',
-                              'dbotCreatedBy', 'details', 'detectionsla', 'droppedCount', 'dueDate', 'emailbody',
+                              'dbotCreatedBy', 'dbotMirrorDirection', 'dbotMirrorId', 'details', 'detectionsla',
+                              'droppedCount', 'dbotMirrorInstance', 'dbotMirrorLastSync', 'dueDate', 'emailbody',
+                              'emailcc', 'emailfrom', 'emailhtml', 'emailmessageid', 'emailto', 'emailtocount',
                               'emailheaders', 'emailsubject', 'hasRole', 'id', 'investigationId', 'isPlayground',
                               'labels', 'lastJobRunTime', 'lastOpen', 'linkedCount', 'linkedIncidents', 'modified',
                               'name', 'notifyTime', 'occurred', 'openDuration', 'owner', 'parent', 'phase',
@@ -586,13 +593,15 @@ def extract_features_from_all_incidents(incidents_df):
         except Exception:
             exception_indices.add(index)
             exceptions_log.append(traceback.format_exc())
+            if len(exception_indices) == MAX_ALLOWED_EXCEPTIONS:
+                break
         finally:
             signal.alarm(0)
     n_fetched_incidents = len(incidents_df) - len(exception_indices) - len(timeout_indices)
     return X, n_fetched_incidents, exceptions_log, exception_indices, timeout_indices, durations
 
 
-def extract_data_from_incidents(incidents):
+def extract_data_from_incidents(incidents, input_label_field=None):
     incidents_df = pd.DataFrame(incidents)
     if 'created' in incidents_df:
         incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))   # type: ignore
@@ -600,7 +609,13 @@ def extract_data_from_incidents(incidents):
         incidents_df_for_finding_labels_fields_candidates = incidents_df.head(500)
     else:
         incidents_df_for_finding_labels_fields_candidates = incidents_df
-    label_fields = find_label_fields_candidates(incidents_df_for_finding_labels_fields_candidates)
+    if input_label_field is None:
+        label_fields = find_label_fields_candidates(incidents_df_for_finding_labels_fields_candidates)
+    else:
+        input_label_field = input_label_field.strip()
+        if input_label_field not in incidents_df:
+            return_error('Could not find label field "{}" among the incidents'.format(input_label_field))
+        label_fields = [input_label_field]
     for label in label_fields:
         incidents_df[label].replace('', float('nan'), regex=True, inplace=True)
     incidents_df.dropna(how='all', subset=label_fields, inplace=True)
@@ -629,7 +644,7 @@ def extract_data_from_incidents(incidents):
 def return_json_entry(obj):
     entry = {
         "Type": entryTypes["note"],
-        "ContentsFormat": formats["json"],
+        "ContentsFormat": formats["json"],  # type: ignore
         "Contents": obj,
     }
     demisto.results(entry)
@@ -638,7 +653,7 @@ def return_json_entry(obj):
 def get_args_based_on_last_execution():
     lst = demisto.executeCommand('getList', {'listName': LAST_EXECUTION_LIST_NAME})
     if isError(lst):  # if first execution
-        return {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION}
+        return {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION, 'fromDate': FROM_DATA_FIRST_EXECUTION}
     else:
         last_execution_datetime = datetime.strptime(lst[0]['Contents'], DATETIME_FORMAT)
         try:
@@ -646,7 +661,7 @@ def get_args_based_on_last_execution():
         except Exception:
             query = None  # type: ignore
         finally:
-            res = {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION}
+            res = {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION, 'fromDate': FROM_DATA_PERIODIC_EXECUTION}
             if query is not None:
                 res['query'] = query  # type: ignore
             return res
@@ -659,33 +674,70 @@ def update_last_execution_time():
         demisto.results(res)
 
 
-def main():
-    incidents_query_args = demisto.args()
-    args = get_args_based_on_last_execution()
-    if 'query' in incidents_query_args and 'query' in args:
-        incidents_query_args['query'] = '({}) and ({}) and (status:Closed)'.format(incidents_query_args['query'], args['query'])
-    elif 'query' in args:
-        incidents_query_args['query'] = '({}) and (status:Closed)'.format(args['query'])
-    elif 'query' in incidents_query_args:
-        incidents_query_args['query'] = '({}) and (status:Closed)'.format(incidents_query_args['query'])
+def determine_incidents_args(input_args, default_args):
+    get_incidents_by_query_args = {}
+    if 'query' in input_args:
+        get_incidents_by_query_args['query'] = '({}) and (status:Closed)'.format(input_args['query'])
+    elif 'query' in default_args:
+        get_incidents_by_query_args['query'] = '({}) and (status:Closed)'.format(default_args['query'])
     else:
-        incidents_query_args['query'] = '(status:Closed)'
-    if 'limit' in args:
-        incidents_query_args['limit'] = args['limit']
-    incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', incidents_query_args)
+        get_incidents_by_query_args['query'] = 'status:Closed'
+    for arg in ['limit', 'fromDate']:
+        if arg in input_args:
+            get_incidents_by_query_args[arg] = input_args[arg]
+        elif arg in default_args:
+            get_incidents_by_query_args[arg] = default_args[arg]
+    return get_incidents_by_query_args
+
+
+def set_incidents_fields_names(input_args):
+    global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_HTML_FIELD, EMAIL_HEADERS_FIELD, \
+        EMAIL_ATTACHMENT_FIELD
+    EMAIL_BODY_FIELD = input_args.get('emailBody', EMAIL_BODY_FIELD)
+    EMAIL_SUBJECT_FIELD = input_args.get('emailSubject', EMAIL_SUBJECT_FIELD)
+    EMAIL_HTML_FIELD = input_args.get('emailBodyHTML', EMAIL_HTML_FIELD)
+    EMAIL_HEADERS_FIELD = input_args.get('emailHeaders', EMAIL_HEADERS_FIELD)
+    EMAIL_ATTACHMENT_FIELD = input_args.get('emailAttachments', EMAIL_ATTACHMENT_FIELD)
+
+
+def return_file_entry(res, num_of_incidents):
+    file_name = str(uuid.uuid4())
+    entry = fileResult(file_name, json.dumps(res))
+    entry['Contents'] = res
+    entry['HumanReadable'] = 'Fetched features from {} incidents'.format(num_of_incidents)
+    entry["ContentsFormat"]: formats["json"]  # type: ignore
+    demisto.results(entry)
+
+
+def main():
+    input_args = demisto.args()
+    set_incidents_fields_names(input_args)
+    default_args = get_args_based_on_last_execution()
+    get_incidents_by_query_args = determine_incidents_args(input_args, default_args)
+    incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_by_query_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents = json.loads(incidents_query_res[-1]['Contents'])
     if len(incidents) == 0:
         demisto.results('No results were found')
     else:
-        data = extract_data_from_incidents(incidents)
-        encoded_data = json.dumps(data).encode('utf-8', errors='ignore')
-        compressed_data = zlib.compress(encoded_data, 4)
-        compressed_hr_data = b64encode(compressed_data).decode('utf-8')
+        tag_field = demisto.args().get('tagField', None)
+        data = extract_data_from_incidents(incidents, tag_field)
+        data_str = json.dumps(data)
+        compress = demisto.args().get('compress', 'True') == 'True'
+        if compress:
+            encoded_data = data_str.encode('utf-8', errors='ignore')
+            compressed_data = zlib.compress(encoded_data, 4)
+            compressed_hr_data = b64encode(compressed_data).decode('utf-8')
+        else:
+            compressed_hr_data = data_str
         res = {'PayloadVersion': FETCH_DATA_VERSION, 'PayloadData': compressed_hr_data,
-               'Execution Time': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}
-        return_json_entry(res)
+               'ExecutionTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"), 'IsCompressed': compress}
+        return_file = input_args.get('toFile', 'False').strip() == 'True'
+        if return_file:
+            return_file_entry(res, len(incidents))
+        else:
+            return_json_entry(res)
     update_last_execution_time()
 
 
