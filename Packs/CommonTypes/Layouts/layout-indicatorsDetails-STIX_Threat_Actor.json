@@ -462,9 +462,11 @@
 				],
 				"type": "custom"
 			}
-		]
+		],
+		"typeId": "Threat Actor",
+		"version": -1
 	},
-	"typeId": "STIX Threat Actor",
+	"typeId": "Threat Actor",
 	"version": -1,
 	"fromVersion": "5.5.0",
 	"toVersion": "5.9.9"
