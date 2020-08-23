@@ -380,7 +380,7 @@ def get_primary_key_version(project_id: str, location_id: str, key_ring_id: str,
     crypto_key_name = client.kms_client.crypto_key_path(project_id, location_id, key_ring_id, crypto_key_id)
 
     # Get the CryptoKey and extract it's primary version path.
-    crypto_key = client.kms_client.get_crypto_key(crypto_key_name)
+    crypto_key = client.kms_client.get_crypto_key(request={"name": crypto_key_name})
     if crypto_key.primary.name is None:
         raise Exception(f"CryptoKey {crypto_key_name} has no primary CryptoKeyVersion")
 
@@ -459,8 +459,10 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
         }
 
     # Create a CryptoKey for the given KeyRing.
-    response = client.kms_client.create_crypto_key(key_ring_name, crypto_key_id, crypto_key,
-                                                   args.get('skip_initial_version_creation') == 'true')
+    response = client.kms_client.create_crypto_key(request={'parent': key_ring_name, 'crypto_key_id': crypto_key_id,
+                                                            'crypto_key': crypto_key,
+                                                            'skip_initial_version_creation':
+                                                                args.get('skip_initial_version_creation') == 'true'})
 
     context = key_context_creation(response, project_id, location_id, key_ring_id)
 
@@ -512,8 +514,8 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
     crypto_key_name = client.kms_client.crypto_key_path_path(project_id, location_id, key_ring_id, crypto_key_id)
 
     # Use the KMS API to encrypt the data.
-    response = client.kms_client.encrypt(crypto_key_name, plaintext,
-                                         additional_authenticated_data=additional_authenticated_data)
+    response = client.kms_client.encrypt(request={'name': crypto_key_name, 'plaintext': plaintext,
+                                                  'additional_authenticated_data': additional_authenticated_data})
 
     # return the created ciphertext cleaned from additional characters.
     ciphertext = str(base64.b64encode(response.ciphertext))[2:-1]
@@ -570,8 +572,8 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
     crypto_key_name = client.kms_client.crypto_key_path_path(project_id, location_id, key_ring_id, crypto_key_id)
 
     # Use the KMS API to decrypt the data.
-    response = client.kms_client.decrypt(crypto_key_name, ciphertext,
-                                         additional_authenticated_data=additional_authenticated_data)
+    response = client.kms_client.decrypt(request={'name': crypto_key_name, 'ciphertext': ciphertext,
+                                                  'additional_authenticated_data': additional_authenticated_data})
 
     # handle the resulting plain text if it supposed to be in base64 and clean added characters.
     if args.get('base64_ciphertext'):
@@ -610,7 +612,7 @@ def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Di
     crypto_key_name = client.kms_client.crypto_key_path(project_id, location_id, key_ring_id, crypto_key_id)
 
     # Get CryptoKey info.
-    response = client.kms_client.get_crypto_key(crypto_key_name)
+    response = client.kms_client.get_crypto_key(request={'name': crypto_key_name})
 
     context = key_context_creation(response, project_id, location_id, key_ring_id)
 
@@ -655,7 +657,8 @@ def disable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any,
     update_mask = {'paths': ["state"]}
 
     # Print results
-    response = client.kms_client.update_crypto_key_version(version, update_mask)
+    response = client.kms_client.update_crypto_key_version(request={'crypto_key_version': version,
+                                                                    'update_mask': update_mask})
     return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
             f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
@@ -689,7 +692,8 @@ def enable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, 
     update_mask = {'paths': ["state"]}
 
     # Print results
-    response = client.kms_client.update_crypto_key_version(version, update_mask)
+    response = client.kms_client.update_crypto_key_version(retuest={'crypto_key_version': version,
+                                                                    'update_mask': update_mask})
     return(f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
            f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
@@ -718,7 +722,7 @@ def destroy_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any,
         raise Exception("Please insert primary CryptoKeyVersion ID")
 
     # Use the KMS API to mark the CryptoKeyVersion for destruction.
-    response = client.kms_client.destroy_crypto_key_version(crypto_key_version_name)
+    response = client.kms_client.destroy_crypto_key_version(requst={'name': crypto_key_version_name})
 
     # Print results
     return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
@@ -750,7 +754,7 @@ def restore_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any,
         raise Exception("Please insert primary CryptoKeyVersion ID")
 
     # Use the KMS API to restore the CryptoKeyVersion.
-    response = client.kms_client.restore_crypto_key_version(crypto_key_version_name)
+    response = client.kms_client.restore_crypto_key_version(request={'name': crypto_key_version_name})
 
     # Print results
     return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
@@ -777,7 +781,7 @@ def update_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict,
     crypto_key['name'] = crypto_key_name
 
     # update command using the KMS API.
-    response = client.kms_client.update_crypto_key(crypto_key=crypto_key, update_mask=update_mask)
+    response = client.kms_client.update_crypto_key(request={'crypto_key': crypto_key, 'update_mask': update_mask})
 
     context = key_context_creation(response, project_id, location_id, key_ring_id)
 
@@ -809,7 +813,7 @@ def list_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, 
     # if needed add state filter.
     filter_state = args.get('key_state', None)
 
-    response = client.kms_client.list_crypto_keys(key_ring_name, filter_=filter_state)
+    response = client.kms_client.list_crypto_keys(request={'parent': key_ring_name, 'filter_': filter_state})
 
     overall_context = []  # type: List
     overall_raw = []  # type: List
@@ -862,7 +866,7 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
     crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
                                                                         crypto_key_id, crypto_key_version)
     # get the CryptoKeyVersion info and check it's algorithm.
-    crypto_key_version_info = client.kms_client.get_crypto_key_version(crypto_key_version_name)
+    crypto_key_version_info = client.kms_client.get_crypto_key_version(request={'name': crypto_key_version_name})
     key_algo = kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key_version_info.algorithm).name
 
     # Algorithm must be a "DECRYPT" type asymmetric algorithm - if not, raise an error to the user.
@@ -870,7 +874,7 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
         raise ValueError(f"{crypto_key_version_name} is not a valid asymmetric CryptoKeyVersion")
 
     # get public key of the asymmetric encryption.
-    public_key_response = client.kms_client.get_public_key(crypto_key_version_name)
+    public_key_response = client.kms_client.get_public_key(request={'name': crypto_key_version_name})
     key_txt = public_key_response.pem.encode('ascii')
     public_key = serialization.load_pem_public_key(key_txt, default_backend())
 
@@ -938,7 +942,7 @@ def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
     else:
         raise ValueError("No object to decrypt.")
 
-    response = client.kms_client.asymmetric_decrypt(crypto_key_version_name, ciphertext)
+    response = client.kms_client.asymmetric_decrypt(request={'name': crypto_key_version_name, 'ciphertext': ciphertext})
 
     # handle the created plaintext back to base64 if needed and clear added characters.
     if args.get('base64_ciphertext'):
@@ -993,7 +997,7 @@ def list_key_rings_command(client: Client, args: Dict[str, Any]) -> Tuple[str, A
     for location in locations:
         location_path = f'projects/{client.project}/locations/{location}'
         # the response is a iterable containing the KeyRings info.
-        response = client.kms_client.list_key_rings(location_path)
+        response = client.kms_client.list_key_rings(request={'parent': location_path})
 
         for key_ring in list(response):
             single_context, single_json = key_ring_context_and_json_creation(key_ring)
@@ -1033,13 +1037,14 @@ def list_all_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, An
     for location in locations:
         location_path = f'projects/{client.project}/locations/{location}'
         # the response is a iterable containing the KeyRings info.
-        response = client.kms_client.list_key_rings(location_path)
+        response = client.kms_client.list_key_rings(request={'parent': location_path})
 
         for key_ring in list(response):
             key_ring_name = key_ring.name
             pre_name = f"projects/{client.project}/locations/{location}/keyRings/"
             key_ring_id = str(key_ring_name).replace(pre_name, '')
-            crypto_key_response = client.kms_client.list_crypto_keys(key_ring_name, filter_=filter_state)
+            crypto_key_response = client.kms_client.list_crypto_keys(request={'parent': key_ring_name,
+                                                                              'filter_': filter_state})
 
             for crypto_key in crypto_key_response:
                 keys_context.append(key_context_creation(crypto_key, str(client.project),
@@ -1073,7 +1078,7 @@ def get_public_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, D
     crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
                                                                         crypto_key_id, crypto_key_version)
 
-    public_key_response = client.kms_client.get_public_key(crypto_key_version_name)
+    public_key_response = client.kms_client.get_public_key(request={'name': crypto_key_version_name})
 
     public_key_context = {
         'CryptoKey': crypto_key_id,
@@ -1113,7 +1118,7 @@ def test_function(client: Client) -> None:
         key_ring = "random"
 
     key_ring_name = client.kms_client.key_ring_path(client.project, client.location, key_ring)
-    client.kms_client.list_crypto_keys(key_ring_name)
+    client.kms_client.list_crypto_keys(request={'parent': key_ring_name})
 
 
 def main():
