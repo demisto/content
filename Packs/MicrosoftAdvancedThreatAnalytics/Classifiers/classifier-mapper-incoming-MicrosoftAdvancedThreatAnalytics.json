@@ -6,7 +6,7 @@
     "fromVersion": "6.0.0",
     "version": -1,
     "defaultIncidentType": "Microsoft ATA Suspicious Activity",
-    "feed": false,
+	"feed": false,
 	"mapping": {
 		"Microsoft ATA Suspicious Activity": {
 			"dontMapEventToLabels": false,
