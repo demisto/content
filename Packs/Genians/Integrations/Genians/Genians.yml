@@ -5,10 +5,7 @@ name: Genians
 display: Genians
 category: Network Security
 description: Use the Genians integration to block IP using assign tag and unassign tag.
-detaileddescription: |-
-  Generating and obtaining an API Token
-  - You can generate an API Key in the Genian NAC web console.
-  - Go to Management > User > Administrator tab > API Key to generate a key and save it.
+detaileddescription:
 configuration:
 - display: Server IP (e.g. 172.29.62.26)
   name: server_ip
@@ -72,5 +69,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.5.0
 tests:
 - Genians Test
