@@ -185,23 +185,23 @@ def get_user_id(username):
 # Duo client return 2 different known structures of error messages
 def test_instance():
     try:
-        admin_api.get_info_summary()
+        admin_api.get_users()
         demisto.results('ok')
 
     except Exception as e:
         if hasattr(e, 'data'):
             # error data for 40103 is not informative enough so we write our own
             if e.__getattribute__('data')['code'] == 40103:
-                demisto.results('Invalid secret key in request credentials')
+                raise Exception('Invalid secret key in request credentials')
 
             else:
-                demisto.results(e.__getattribute__('data')['message'])
+                raise Exception(e.__getattribute__('data')['message'])
 
         elif hasattr(e, 'strerror'):
-            demisto.results(e.__getattribute__('strerror'))
+            raise Exception(e.__getattribute__('strerror'))
 
         else:
-            demisto.results('Unknown error: ' + str(e))
+            raise Exception('Unknown error: ' + str(e))
 
 
 def get_all_users():
