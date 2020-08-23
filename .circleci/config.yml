@@ -38,9 +38,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.7.2"
-      SERVER_VERSION: "5.5.0"
-      GIT_SHA1: "4ee42cb22bae137d2691868674001436e61f1b3c" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "20.8.2"
+      SERVER_VERSION: "6.0.0"
+      GIT_SHA1: "6bee490e79e851e5f23572ad65cd456022eea753" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -191,11 +191,6 @@ references:
       name: Validate Files and Yaml
       when: always
       command: |
-        if [ -n "${NIGHTLY}" ];
-          then
-            echo "Skipping - not running in Nightly run"
-            exit 0
-        fi
         # Run flake8 on all excluding Packs (Integraions and Scripts) - they will be handled in linting
         ./Tests/scripts/pyflake.sh *.py
         find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
@@ -483,10 +478,15 @@ jobs:
             - run:
                 name: Zip Content Packs From GCS
                 command: |
+                  if [[ $CIRCLE_BRANCH != master ]] && [[ $CIRCLE_BRANCH != 20\.* ]] && [[ $CIRCLE_BRANCH != 21\.* ]]; then
+                    echo "Skipping packs download to artifact on non master or release branch"
+                    exit 0
+                  fi
+
                   GCS_PATH=$(mktemp)
                   ZIP_FOLDER=$(mktemp -d)
                   echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-ci-build' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH -n $CIRCLE_BUILD_NUM -br $CIRCLE_BRANCH
+                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH
                   rm $GCS_PATH
                 when: always
             - run:
@@ -839,6 +839,7 @@ jobs:
             - run:
                 name: Upload Packs To Marketplace Storage
                 command: |
+                  # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
                   if [[ $CIRCLE_BRANCH != master ]]; then
                     echo "Skipping packs uploading on non master branch"
                     exit 0
@@ -1032,4 +1033,3 @@ workflows:
     jobs:
       - Demisto SDK Nightly:
           context: sdk_nightly_env
-

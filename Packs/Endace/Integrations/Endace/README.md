@@ -1,8 +1,9 @@
 The EndaceProbe Analytics Platform provides 100% accurate, continuous packet capture on network links up to 100Gbps, with unparalleled depth of storage and retrieval performance.  Coupled with the Endace InvestigationManager, this provides a central search and data-mining capability across a fabric of EndaceProbes deployed in a network. 
                                      
 This integration uses Endace APIs to search, archive and download PCAP file from either a single EndaceProbe or many via the InvestigationManager and enables integration of full historical packet capture into security automation workflows.
-This integration was integrated and tested with version 6.5.7 of Endace
-## Configure Endace on Demisto
+This integration was integrated and tested with version 6.5.7 & 7.0.0 of Endace
+
+## Configure Endace on Cortex XSOAR 
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Endace.
@@ -10,14 +11,15 @@ This integration was integrated and tested with version 6.5.7 of Endace
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| applianceurl | EndaceProbe URL \(e.g. https://endaceprobe.com\) | True |
+| applianceurl | EndaceProbe URL e.g. https://<fqdn/ip[:port]> | True |
 | credentials | Username | True |
-| insecure | Trust any certificate \(not secure\) | False |
+| insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
+| hostname | EndaceProbe System Hostname | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### endace-create-search
 ***
@@ -31,14 +33,16 @@ Create a search task on EndaceProbe. Search is issued against all Rotation Files
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Event Start Time in ISO 8601 format as in 2020-04-08T15:46:30 | Optional | 
-| end | Event End Time in ISO 8601 format  as in 2020-04-08T15:46:30 | Optional | 
-| src_host_list | List of Source IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required. | Optional | 
-| dest_host_list | List of Destination IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required. | Optional | 
-| src_port_list | List of Source Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
-| dest_port_list | List of Destination Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
-| protocol | TCP or UDP | Optional | 
-| timeframe | Event timeframe to search - in seconds.  Timeframe works as search for last &quot;n&quot; seconds if start and end time is not provided. For example, by specifying 3600 seconds as the timeframe, analyst can schedule a search for last 1 hour. If both start and end time is provided, timeframe value is ignored. If either start or end time is provided along with timeframe, the respective start or end time is calculated accordingly. | Optional | 
+| start | UTC StartTime in ISO 8601 format as in 2020-04-08T15:46:30 | Optional | 
+| end | UTC EndTime in ISO 8601 format  as in 2020-04-08T15:46:30 | Optional | 
+| ip | directionless ip address. For valid search either a IP or Src Host or a Dest Host value is required. | Optional
+| port | directionless port. | Optional
+| src_host_list | List of comma delimited Source IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required. | Optional | 
+| dest_host_list | List of comma delimited Destination IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required. | Optional | 
+| src_port_list | List of comma delimited Source Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
+| dest_port_list | List of comma delimited Destination Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
+| protocol | IANA defined IP Protocol Name or Number. For example: either use TCP or tcp or 6 for tcp protocol | Optional | 
+| timeframe | Event timeframe to search. Select one of the values from  30seconds, 1minute, 5minutes, 10minutes, 30minutes, 1hour, 2hours, 5hours, 10hours, 12hours, 1day, 3days, 5days, 1week. Timeframe works as search for last n seconds if start and end time is not provided. For example, by specifying 1hour as the timeframe, analyst can schedule a search for last 3600s. If both start and end time is provided, timeframe value is ignored. If either start or end time is provided along with timeframe, the respective start or end time is calculated accordingly. Initial value of timeframe is 1hour. | Optional | 
 
 
 ##### Context Output
@@ -51,7 +55,7 @@ Create a search task on EndaceProbe. Search is issued against all Rotation Files
 
 
 ##### Command Example
-```!endace-create-search start="2020-04-15T14:48:12" src_host_list="10.16.13.188" timeframe="3600"```
+```!endace-create-search start="2020-04-15T14:48:12" ip="1.1.1.1" timeframe="1hour"```
 
 ##### Context Example
 ```
@@ -95,12 +99,11 @@ Get search status from EndaceProbe. This command can be polled in a loop until r
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endace.Search.Response.JobID | String | This is the job ID of search query which we polled to get search status | 
-| Endace.Search.Response.Status | String | Task status  | 
+| Endace.Search.Response.JobID | String | This is the job ID of search query which we polled to get search status |
 | Endace.Search.Response.JobProgress | String | Progress of this search Job  | 
 | Endace.Search.Response.DataSources | String | List of Data Sources where packets of interest were found. | 
 | Endace.Search.Response.TotalBytes | String | Total data matching this search across all Data Sources. | 
-| Endace.Search.Response.Status | String | Status of Search Response | 
+| Endace.Search.Response.Status | String | Task status | 
 | Endace.Search.Response.Error | String | Search response error  | 
 
 
@@ -195,15 +198,17 @@ Create an archive task to archive packets of interest on EndaceProbe. Archived p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Event Start Time in ISO 8601 format  as in 2020-04-08T15:46:30 | Optional | 
-| end | Event End Time in ISO 8601 format  as in 2020-04-08T15:46:30 | Optional | 
-| timeframe | Event timeframe to search - in seconds.  Timeframe works as search for last &quot;n&quot; seconds if start and end time is not provided. For example, by specifying 3600 seconds as the timeframe, analyst can schedule a search for last 1 hour. If both start and end time is provided, timeframe value is ignored. If either start or end time is provided along with timeframe, the respective start or end time is calculated accordingly.   | Optional | 
-| src_host_list | List of Source IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required.| Optional | 
-| dest_host_list | List of Destination IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required.| Optional | 
-| src_port_list | List of Source Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
-| dest_port_list | List of Destination Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
-| protocol | TCP or UDP  | Optional | 
-| archive_filename | Name of the archive file. For example, archive_filename could be an event ID. To keep archive filename unique, value of epoch seconds at the time of execution of the command is appended to this filename argument. For example: if the event id is &#x27;123456789&#x27;, then archive_filename is 123456789-&lt;epoch time&gt;. | Required | 
+| start | UTC StartTime in ISO 8601 format as in 2020-04-08T15:46:30 | Optional | 
+| end | UTC EndTime in ISO 8601 format  as in 2020-04-08T15:46:30 | Optional |
+| ip | directionless ip address. | Optional
+| port | directionless port. For valid search either a Src Host or a Dest Host value is required. | Optional 
+| timeframe | Event timeframe to search. Select one of the values from  30seconds, 1minute, 5minutes, 10minutes, 30minutes, 1hour, 2hours, 5hours, 10hours, 12hours, 1day, 3days, 5days, 1week. Timeframe works as search for last n seconds if start and end time is not provided. For example, by specifying 1hour as the timeframe, analyst can schedule a search for last 3600s. If both start and end time is provided, timeframe value is ignored. If either start or end time is provided along with timeframe, the respective start or end time is calculated accordingly. Initial value of timeframe is 1hour. | Optional | 
+| src_host_list | List of comma delimited Source IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required.| Optional | 
+| dest_host_list | List of comma delimited Destination IP addresses to search with a maximum of 10 IP addresses per search. For valid search either a Src Host or a Dest Host value is required.| Optional | 
+| src_port_list | List of comma delimited Source Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
+| dest_port_list | List of comma delimited Destination Port addresses to search with a maximum of 10 Port addresses per search. | Optional | 
+| protocol | IANA defined IP Protocol Name or Number. For example: either use TCP or tcp or 6 for tcp protocol  | Optional | 
+| archive_filename | Name of the archive file. For example, archive_filename could be an event ID. To keep archive filename unique, value of epoch seconds at the time of execution of the command is appended to this filename argument. For example - if the event id is eventid, then archive_filename is eventid-[epochtime]. | Required | 
 
 
 ##### Context Output
@@ -218,7 +223,7 @@ Create an archive task to archive packets of interest on EndaceProbe. Archived p
 
 
 ##### Command Example
-```!endace-create-archive start="2020-04-15T14:48:12" archive_filename="event" src_host_list="10.16.13.188" timeframe="3600"```
+```!endace-create-archive start="2020-04-15T14:48:12" archive_filename="event" ip="1.1.1.1" timeframe="1hour"```
 
 ##### Context Example
 ```
@@ -230,7 +235,7 @@ Create an archive task to archive packets of interest on EndaceProbe. Archived p
                 "Error": "NoError",
                 "FileName": "event-1586976954",
                 "JobID": "495f1899-6f27-4ed9-85c9-2af19a4e55d8",
-                "P2Vurl": "[Endace PivotToVision URL](https://endaceprobe-1/vision2/pivotintovision/?datasources=tag:rotation-file&title=event-1586976954&start=1586962092000&end=1586965692000&tools=trafficOverTime_by_app%2CtrafficOverTime_by_sip%2CtrafficOverTime_by_dip%2Cconversations_by_ipaddress&sip=10.16.13.188)",
+                "P2Vurl": "[Endace PivotToVision URL](https://endaceprobe-1/vision2/pivotintovision/?datasources=tag:rotation-file&title=event-1586976954&start=1586962092000&end=1586965692000&tools=trafficOverTime_by_app%2Cconversations_by_ipaddress&ip=1.1.1.1)",
                 "Start": 1586962092,
                 "Status": "Started",
                 "Task": "CreateArchiveTask"
@@ -244,7 +249,7 @@ Create an archive task to archive packets of interest on EndaceProbe. Archived p
 ### EndaceResult
 |Task|FileName|P2Vurl|Status|Error|JobID|
 |---|---|---|---|---|---|
-| CreateArchiveTask | event-1586976954 | [Endace PivotToVision URL](https://endaceprobe-1/vision2/pivotintovision/?datasources=tag:rotation-file&title=event-1586976954&start=1586962092000&end=1586965692000&tools=trafficOverTime_by_app%2CtrafficOverTime_by_sip%2CtrafficOverTime_by_dip%2Cconversations_by_ipaddress&sip=10.16.13.188) | Started | NoError | 495f1899-6f27-4ed9-85c9-2af19a4e55d8 |
+| CreateArchiveTask | event-1586976954 | [Endace PivotToVision URL](https://endaceprobe-1/vision2/pivotintovision/?datasources=tag:rotation-file&title=event-1586976954&start=1586962092000&end=1586965692000&tools=trafficOverTime_by_app%2Cconversations_by_ipaddress&ip=1.1.1.1) | Started | NoError | 495f1899-6f27-4ed9-85c9-2af19a4e55d8 |
 
 
 ### endace-get-archive-status
@@ -361,8 +366,8 @@ Download a copy of the PCAP file from EndaceProbe if PCAP file size is within th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filename | Name of the file to download from EndaceProbe | Required | 
-| filesizelimit | User defined upper size limit on file download (in MegaBytes). A PCAP File with size less than or equal to this limit can be downloaded from EndaceProbe. Default Upper Limit is 50MB.  | Required | 
+| filename | Name of the file (without extension) to download from EndaceProbe. Text, numbers, underscore or dash is supported.  | Required | 
+| filesizelimit | User defined upper size limit on file download (in MegaBytes). A PCAP File with size less than or equal to this limit can be downloaded from EndaceProbe. Minimum size is 1 (MB). Default Upper Limit is 50 (MB).  | Required | 
 
 
 ##### Context Output
