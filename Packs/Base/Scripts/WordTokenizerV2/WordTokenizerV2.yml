@@ -186,7 +186,7 @@ tags:
 - ml
 timeout: 60µs
 type: python
-dockerimage: demisto/dl:1.2
+dockerimage: demisto/dl:1.4
 runas: DBotWeakRole
 runonce: true
 tests:
