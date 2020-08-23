@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 68a4accc-a3b5-43d0-8143-41f9b135c393
+    taskid: c0ee6f8b-c8db-46dc-8f97-cedcf4d12e50
     type: start
     task:
-      id: 68a4accc-a3b5-43d0-8143-41f9b135c393
+      id: c0ee6f8b-c8db-46dc-8f97-cedcf4d12e50
       version: -1
       name: ""
       iscommand: false
@@ -30,10 +30,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 6346d1ef-cae0-43e3-8c01-b352c4e9f5ab
+    taskid: e755df9d-9b89-4b74-8b63-26b4e58d48ba
     type: regular
     task:
-      id: 6346d1ef-cae0-43e3-8c01-b352c4e9f5ab
+      id: e755df9d-9b89-4b74-8b63-26b4e58d48ba
       version: -1
       name: Delete context
       description: Delete field from context
@@ -68,10 +68,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 1fa22e88-0d6c-4a2b-856d-77b4d35af04b
+    taskid: 72935e3a-3d50-4338-8d1c-a88a092ad443
     type: regular
     task:
-      id: 1fa22e88-0d6c-4a2b-856d-77b4d35af04b
+      id: 72935e3a-3d50-4338-8d1c-a88a092ad443
       version: -1
       name: Add username to account in context
       description: Sets a value into the context with the given context key
@@ -103,10 +103,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: ecd7a134-815e-41bf-8661-3677f714fdaf
+    taskid: 7b04132d-78d3-4fa6-8818-bea2ffe431c4
     type: title
     task:
-      id: ecd7a134-815e-41bf-8661-3677f714fdaf
+      id: 7b04132d-78d3-4fa6-8818-bea2ffe431c4
       version: -1
       name: Critical Assets Data Initialization
       type: title
@@ -133,10 +133,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 73edb313-83da-494a-8d8a-5027617d42ac
+    taskid: 0bc37299-f1bb-4b2d-8be7-5bf2ffd1aa26
     type: regular
     task:
-      id: 73edb313-83da-494a-8d8a-5027617d42ac
+      id: 0bc37299-f1bb-4b2d-8be7-5bf2ffd1aa26
       version: -1
       name: Get AD user
       script: Active Directory Query v2|||ad-get-user
@@ -171,10 +171,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 620079e5-a247-4762-81b4-96a224941a55
+    taskid: abf415fa-5933-4d11-82ac-d9d6ffd4e6b3
     type: regular
     task:
-      id: 620079e5-a247-4762-81b4-96a224941a55
+      id: abf415fa-5933-4d11-82ac-d9d6ffd4e6b3
       version: -1
       name: Get AD computers
       script: Active Directory Query v2|||ad-get-computer
@@ -204,10 +204,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: af2557b9-1e60-45b3-81a5-f7391bd2659b
+    taskid: 2051e941-58cb-46a8-8706-87bd494de825
     type: title
     task:
-      id: af2557b9-1e60-45b3-81a5-f7391bd2659b
+      id: 2051e941-58cb-46a8-8706-87bd494de825
       version: -1
       name: DBotScore Data Initialization
       type: title
@@ -230,10 +230,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: b84c420d-169d-4387-8443-bbf29389a461
+    taskid: d3dbd04f-81c7-4210-83f1-e1b16f0a0eb1
     type: title
     task:
-      id: b84c420d-169d-4387-8443-bbf29389a461
+      id: d3dbd04f-81c7-4210-83f1-e1b16f0a0eb1
       version: -1
       name: Incident Severity Initialization
       type: title
@@ -255,27 +255,112 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 86c06fcb-f290-4307-88e9-2bff5d1c1f27
+    taskid: 7696b49f-7d13-4c50-80b5-df2f874f530b
     type: regular
     task:
-      id: 86c06fcb-f290-4307-88e9-2bff5d1c1f27
+      id: 7696b49f-7d13-4c50-80b5-df2f874f530b
       version: -1
-      name: Add malicious item to Minemeld miner
-      script: '|||minemeld-add-to-miner'
+      name: Create malicious URL indicator
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
-      - "9"
+      - "16"
     scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
       comment:
         simple: Malicious URL for test
-      indicator:
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents: {}
+      reputation:
+        simple: Bad
+      seenNow: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      type:
+        simple: URL
+      updateddate: {}
+      username: {}
+      value:
         simple: http://annachapman3.icu/eu/1.exe
-      miner:
-        simple: Malicious
-    reputationcalc: 1
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -287,68 +372,111 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 8833403c-cc03-4553-8c52-8be38396f8c2
-    type: regular
-    task:
-      id: 8833403c-cc03-4553-8c52-8be38396f8c2
-      version: -1
-      name: Get malicious URL reputation using Minemeld
-      script: Palo Alto Minemeld|||url
-      type: regular
-      iscommand: true
-      brand: Palo Alto Minemeld
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      include_inactive: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      url:
-        simple: http://annachapman3.icu/eu/1.exe
-      wait: {}
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -160,
-          "y": 660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "10":
     id: "10"
-    taskid: df2d7610-cdb4-4af9-8e36-ee52bb7869f4
+    taskid: 6f50d0d0-53a4-4650-8649-6c558b6f3d47
     type: regular
     task:
-      id: df2d7610-cdb4-4af9-8e36-ee52bb7869f4
+      id: 6f50d0d0-53a4-4650-8649-6c558b6f3d47
       version: -1
-      name: Get benign URL reputation using Minemeld
-      script: Palo Alto Minemeld|||url
+      name: Create benign URL indicator
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
       type: regular
       iscommand: true
-      brand: Palo Alto Minemeld
+      brand: Builtin
     nexttasks:
       '#none#':
       - "16"
     scriptarguments:
-      include_inactive: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
-      url:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      comment: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents: {}
+      reputation: {}
+      seenNow: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      type:
+        simple: URL
+      updateddate: {}
+      username: {}
+      value:
         simple: www.google.com
-      wait: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -363,10 +491,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: d1cb4262-52af-492f-8200-524b0c4ae88c
+    taskid: 601afd74-d52c-43d9-83ce-a448158d431b
     type: regular
     task:
-      id: d1cb4262-52af-492f-8200-524b0c4ae88c
+      id: 601afd74-d52c-43d9-83ce-a448158d431b
       version: -1
       name: Set incident severity to medium
       script: Builtin|||setIncident
@@ -529,10 +657,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: e5fdc1d4-6916-4693-8b82-1b45008cb5a1
+    taskid: deb157fb-9cbc-4cc4-8f24-c071358dc2fc
     type: title
     task:
-      id: e5fdc1d4-6916-4693-8b82-1b45008cb5a1
+      id: deb157fb-9cbc-4cc4-8f24-c071358dc2fc
       version: -1
       name: Email Authentication Initialization
       type: title
@@ -554,10 +682,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: ffe3681b-9a95-4535-899a-06107a80c8c2
+    taskid: 799e0924-f823-4466-835d-3dbe02a2a20a
     type: regular
     task:
-      id: ffe3681b-9a95-4535-899a-06107a80c8c2
+      id: 799e0924-f823-4466-835d-3dbe02a2a20a
       version: -1
       name: Set email authentication verdict to "Fail"
       description: Sets a value into the context with the given context key
@@ -588,10 +716,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 3e6a6dc4-49f3-48c6-8009-085fcafcf70a
+    taskid: 6246d560-3260-4c24-849e-8131f6cf568e
     type: playbook
     task:
-      id: 3e6a6dc4-49f3-48c6-8009-085fcafcf70a
+      id: 6246d560-3260-4c24-849e-8131f6cf568e
       version: -1
       name: Calculate Severity - Generic v2
       playbookName: Calculate Severity - Generic v2
@@ -611,10 +739,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 2d11cff3-fa19-4825-8476-4cfe59fce885
+    taskid: bc5bda0f-8cb8-4430-8250-64ef2093984a
     type: regular
     task:
-      id: 2d11cff3-fa19-4825-8476-4cfe59fce885
+      id: bc5bda0f-8cb8-4430-8250-64ef2093984a
       version: -1
       name: Add hostname to context
       description: Sets a value into the context with the given context key
@@ -646,10 +774,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 616948c7-e396-41c4-8750-61b9594f5493
+    taskid: ea7fe586-f1f0-4317-84cb-e1aafb2ecb2b
     type: regular
     task:
-      id: 616948c7-e396-41c4-8750-61b9594f5493
+      id: ea7fe586-f1f0-4317-84cb-e1aafb2ecb2b
       version: -1
       name: Add hostname to context
       description: Sets a value into the context with the given context key
@@ -681,10 +809,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 38a91c38-5b08-48bc-80d7-d3e9bbca01ad
+    taskid: fc9e2e2a-7f47-460f-8e15-18159cbb1a30
     type: regular
     task:
-      id: 38a91c38-5b08-48bc-80d7-d3e9bbca01ad
+      id: fc9e2e2a-7f47-460f-8e15-18159cbb1a30
       version: -1
       name: Add hostname to context
       description: Sets a value into the context with the given context key

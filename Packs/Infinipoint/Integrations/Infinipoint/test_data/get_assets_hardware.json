@@ -1,0 +1,23 @@
+[
+  {
+    "$device": "37dee181-dd6e-48ce-9591-19e803a41bd9",
+    "$host": "OSX-Sign-Machine.local",
+    "$time": "2020-07-16T08:57:02.000Z",
+    "$type": "csv",
+    "cpu_brand": "Intel(R) Core(TM) i5-7360U CPU @ 2.30GHz",
+    "cpu_logical_cores": "4",
+    "cpu_physical_cores": "2",
+    "hardware_model": "MacBookPro14,1",
+    "hardware_serial": "FVFYC187HV2J",
+    "hardware_vendor": "Apple Inc.",
+    "kernel_version": "19.3.0",
+    "os_build": "",
+    "os_name": "Mac OS X 10.15.3",
+    "os_patch_version": "",
+    "os_type": "4",
+    "os_version": "10.15.3",
+    "physical_memory": "16.0",
+    "platform": "darwin",
+    "user": "naor"
+  }
+]
