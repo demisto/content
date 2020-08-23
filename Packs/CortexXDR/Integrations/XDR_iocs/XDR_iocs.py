@@ -199,9 +199,16 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
         if vendors:
             xdr_ioc['vendors'] = vendors
-        threat_type = ioc.get('CustomFields', {}).get('threattypes', {}).get('threatcategory')
-        if threat_type:
-            xdr_ioc['class'] = threat_type
+        demisto.error('++++++++++++++++++++++++++++++++\n' + json.dumps(ioc.get('CustomFields', {})) + '\n+++++++++++++++++++++++++++++++++++++++++++')
+        threat_type = ioc.get('CustomFields', {}).get('threattypes', {})
+        if isinstance(threat_type, Dict):
+            threat_category = threat_type.get('threatcategory')
+        elif threat_type:
+            threat_category = json.dumps(threat_type)
+        else:
+            threat_category = None
+        if threat_category:
+            xdr_ioc['class'] = threat_category
         if ioc.get('CustomFields', {}).get('xdrstatus') == 'disabled':
             xdr_ioc['status'] = 'DISABLED'
         return xdr_ioc
