@@ -91,6 +91,7 @@ class McAfeeESMClient(BaseClient):
             looking_for = user_id
         else:
             return {}
+
         if not self.__cache.get('users'):
             _, _, self.__cache['users'] = self.get_user_list()
         for user in self.__cache['users']:

@@ -234,7 +234,7 @@ def get_integration_names_from_files(integration_files_list):
     return [name for name in integration_names_list if name]  # remove empty values
 
 
-def get_new_and_modified_integration_files(git_sha1):
+def get_new_and_modified_integration_files(build):
     """Return 2 lists - list of new integrations and list of modified integrations since the commit of the git_sha1.
 
     Args:
@@ -245,8 +245,8 @@ def get_new_and_modified_integration_files(git_sha1):
     """
     # get changed yaml files (filter only added and modified files)
     file_validator = ValidateManager()
-    change_log = run_command('git diff --name-status {}'.format(git_sha1))
-    modified_files, added_files, _, _, _ = file_validator.filter_changed_files(change_log)
+    file_validator.branch_name = build.branch_name
+    modified_files, added_files, _, _, _ = file_validator.get_modified_and_added_files('...', 'origin/master')
     all_integration_regexes = YML_INTEGRATION_REGEXES
 
     new_integration_files = [
@@ -915,8 +915,8 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
         #  END CHANGE ON LOCAL RUN  #
 
 
-def get_changed_integrations(git_sha1, prints_manager):
-    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
+def get_changed_integrations(build, prints_manager):
+    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(build)
     new_integrations_names, modified_integrations_names = [], []
 
     if new_integrations_files:
@@ -1206,7 +1206,7 @@ def main():
         installed_content_packs_successfully = True
 
     tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly)
-    new_integrations, modified_integrations = get_changed_integrations(build.git_sha1, prints_manager)
+    new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
     all_module_instances, brand_new_integrations = \
         configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
     if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
