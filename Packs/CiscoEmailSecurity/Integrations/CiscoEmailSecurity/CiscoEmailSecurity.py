@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 import urllib3
 import traceback
@@ -32,12 +31,12 @@ class Client(BaseClient):
                                      ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
 
     def _generate_jwt_token(self) -> str:
-        """Generate an Access token using the user name and password
-        :return: valid token
-        """
+        username = base64.b64encode(self.username.encode('ascii')).decode('utf-8')
+        password = base64.b64encode(self.password.encode('ascii')).decode('utf-8')
+
         body = {
-            'userName': self.username,
-            'passphrase': self.password
+            'userName': username,
+            'passphrase': password
         }
         token_res = self.http_request('POST', '/esa/api/v2.0/login', data=body, auth=(self.username, self.password))
         return token_res.get('data').get('jwtToken')
@@ -79,7 +78,7 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    suffix_url = "/api/v2.0/reporting?startDate=2016-09-10T19:00:00.000Z&endDate=2019-09-24T23:00:00.000Z" \
+    suffix_url = "/esa/api/v2.0/reporting?startDate=2016-09-10T19:00:00.000Z&endDate=2019-09-24T23:00:00.000Z" \
                  "&device_type=esa"
     try:
         client.list_report(suffix_url)
@@ -118,7 +117,7 @@ def build_url_params_for_list_report(args):
 
 
 def list_report_command(client: Client, args: Dict[str, Any]):
-    url_suffix = '/api/v2.0/reporting'
+    url_suffix = '/esa/api/v2.0/reporting'
     url_params = build_url_params_for_list_report(args)
     url_suffix_to_filter_by = url_suffix + url_params
     report_response_data = client.list_report(url_suffix_to_filter_by)
@@ -253,7 +252,7 @@ def message_to_human_readable(message):
 
 
 def list_get_message_details_command(client, args):
-    url_suffix = '/api/v2.0/message-tracking/details'
+    url_suffix = '/esa/api/v2.0/message-tracking/details'
     url_params = build_url_params_for_get_details(args)
     url_suffix_to_filter_by = url_suffix + url_params
     message_get_details_response_data = client.list_message_get_details(url_suffix_to_filter_by)
@@ -312,7 +311,7 @@ def spam_quarantine_to_human_readable(spam_quarantine):
 
 
 def list_search_spam_quarantine_command(client, args):
-    url_suffix = '/api/v2.0/quarantine/messages'
+    url_suffix = '/esa/api/v2.0/quarantine/messages'
     url_params = build_url_params_for_spam_quarantine(args)
     url_suffix_to_filter_by = url_suffix + url_params
     spam_quarantine_response_data = client.list_spam_quarantine(url_suffix_to_filter_by)
@@ -340,7 +339,7 @@ def quarantine_message_details_data_to_human_readable(message):
 
 def list_get_quarantine_message_details_command(client, args):
     message_id = args.get('message_id')
-    url_suffix_to_filter_by = f'/api/v2.0/quarantine/messages?mid={message_id}&quarantineType=spam'
+    url_suffix_to_filter_by = f'/esa/api/v2.0/quarantine/messages?mid={message_id}&quarantineType=spam'
     quarantine_message_details_response = client.list_quarantine_get_details(url_suffix_to_filter_by)
     quarantine_message_details = quarantine_message_details_response.get('data')
     human_readable = quarantine_message_details_data_to_human_readable(quarantine_message_details)
