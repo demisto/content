@@ -12,7 +12,9 @@ import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
 import demisto_client
 import json
+import os
 from Tests.tools import update_server_configuration
+from Tests.scripts.collect_tests_and_content_packs import TestConf
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS
 from demisto_sdk.commands.common.constants import PB_Status
@@ -25,8 +27,15 @@ DEFAULT_TIMEOUT = 60
 DEFAULT_INTERVAL = 20
 ENTRY_TYPE_ERROR = 4
 
+if os.path.isfile('./Tests/conf.json'):
+    with open('./Tests/conf.json', 'r') as conf_file:
+        CONF = TestConf(json.load(conf_file))
+else:
+    CONF = None
 
 # ----- Docker class ----- #
+
+
 class Docker:
     """ Client for running docker commands on remote machine using ssh connection.
 
@@ -567,9 +576,13 @@ def __create_integration_instance(client, integration_name, integration_instance
     module_instance['id'] = integration_config['id']
 
     # test integration
-    if validate_test:
-        test_succeed, failure_message = __test_integration_instance(client, module_instance, prints_manager,
-                                                                    thread_index=thread_index)
+    if validate_test and CONF:
+        skipped_integrations = CONF.get_skipped_integrations()
+        if module_instance in skipped_integrations:
+            test_succeed = True
+        else:
+            test_succeed, failure_message = __test_integration_instance(client, module_instance, prints_manager,
+                                                                        thread_index=thread_index)
     else:
         print_warning(
             "Skipping test validation for integration: {} (it has test_validate set to false)".format(integration_name)
