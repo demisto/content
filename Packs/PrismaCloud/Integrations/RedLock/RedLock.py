@@ -429,9 +429,12 @@ def fetch_incidents():
     last_run_object = demisto.getLastRun()
     last_run = last_run_object and last_run_object['time']
     filters = req('GET', 'filter/alert/suggest', None, None)
-    demisto.info("Alerts Filters: {}".format(filters))
+    alerts_rules = req('GET', 'alert/rule', None, None)
+    rules = str([rule.get('name') for rule in alerts_rules])
+    demisto.info("Alert rules for the user: {}\n".format(rules))
+    demisto.info("Alerts Filters: {}\n".format(filters))
     if not last_run:
-        last_run = now - 168 * 60 * 60 * 1000
+        last_run = now - 240 * 60 * 60 * 1000
     payload = {'timeRange': {
         'type': 'absolute',
         'value': {
@@ -448,6 +451,8 @@ def fetch_incidents():
 
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
     response = req('POST', 'alert', payload, {'detailed': 'true'})
+    alerts = str([alert.get('id') for alert in response])
+    demisto.info("Alerts found: {}\n".format(alerts))
     incidents = []
     for alert in response:
         incidents.append({
