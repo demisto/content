@@ -1533,7 +1533,7 @@ Returns the activities of a specific account that is identified by its account I
 
 ### cyberark-pas-account-get-details
 ***
-Returns information of a specific account that is identified by its account ID.
+Returns information for the specified account, identified by the account ID.
 
 
 #### Base Command
@@ -1543,7 +1543,7 @@ Returns information of a specific account that is identified by its account ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The ID of the account whose information will be retrieved. | Required | 
+| account_id | The ID of the account for which to retrieve information. | Required | 
 
 
 #### Context Output
@@ -1551,7 +1551,7 @@ Returns information of a specific account that is identified by its account ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CyberArkPAS.Accounts.id | String | The unique ID of the account. | 
-| CyberArkPAS.Accounts.categoryModificationTime | Number | The last modified date of the account. | 
+| CyberArkPAS.Accounts.categoryModificationTime | Number | The date the account was last modified. | 
 | CyberArkPAS.Accounts.createdTime | Number | The date the account was created. | 
 | CyberArkPAS.Accounts.name | String | The name of the account. | 
 | CyberArkPAS.Accounts.platformId | String | The platform assigned to this account. | 
