@@ -74,7 +74,7 @@ def get_timestamp_seconds(date):
         seconds = date.total_seconds()
 
     else:
-        seconds = str(date.timestamp()).split('.')[0]  # type:ignore
+        seconds = str(date.timestamp()).split('.')[0]  # type: ignore
 
     return seconds
 
@@ -535,7 +535,8 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
         additional_authenticated_data = base64.b64decode(str(args.get('additional_authenticated_data')))
 
     # The resource name of the CryptoKey.
-    crypto_key_name = client.kms_client.crypto_key_path_path(project_id, location_id, key_ring_id, crypto_key_id)
+
+    crypto_key_name = client.kms_client.crypto_key_path(project_id, location_id, key_ring_id, crypto_key_id)
 
     # Use the KMS API to encrypt the data.
     response = client.kms_client.encrypt(request={'name': crypto_key_name, 'plaintext': plaintext,
@@ -593,7 +594,7 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
         additional_authenticated_data = base64.b64decode(str(args.get('additional_authenticated_data')))
 
     # The resource name of the CryptoKey.
-    crypto_key_name = client.kms_client.crypto_key_path_path(project_id, location_id, key_ring_id, crypto_key_id)
+    crypto_key_name = client.kms_client.crypto_key_path(project_id, location_id, key_ring_id, crypto_key_id)
 
     # Use the KMS API to decrypt the data.
     response = client.kms_client.decrypt(request={'name': crypto_key_name, 'ciphertext': ciphertext,
@@ -716,7 +717,7 @@ def enable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, 
     update_mask = {'paths': ["state"]}
 
     # Print results
-    response = client.kms_client.update_crypto_key_version(retuest={'crypto_key_version': version,
+    response = client.kms_client.update_crypto_key_version(request={'crypto_key_version': version,
                                                                     'update_mask': update_mask})
     return(f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
            f'{kms.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
@@ -746,7 +747,7 @@ def destroy_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any,
         raise Exception("Please insert primary CryptoKeyVersion ID")
 
     # Use the KMS API to mark the CryptoKeyVersion for destruction.
-    response = client.kms_client.destroy_crypto_key_version(requst={'name': crypto_key_version_name})
+    response = client.kms_client.destroy_crypto_key_version(request={'name': crypto_key_version_name})
 
     # Print results
     return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
