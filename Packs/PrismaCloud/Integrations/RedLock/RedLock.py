@@ -369,6 +369,57 @@ def translate_severity(alert):
         return 1
     return 0
 
+def get_RQL_response():
+
+    """"
+    Retrieve any RQL
+    """
+    RQL = demisto.getArg('rql').encode("utf-8")
+
+    payload = {"query":RQL, "filter": {}}
+
+    handle_filters(payload['filter'])
+    handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
+
+    if not RQL:
+        return_error('You must specify an RQL to retrieve the response')
+    response = req('POST', 'search/config', payload, None)
+    context = {}
+    #MD = tableToMarkdown("RQLoutput", response)
+    MD2 = tableToMarkdown("RQLoutput", response["data"]["items"])
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'EntryContext': {'Redlock':response},
+        'HumanReadable': MD2
+    })
+
+
+def remediate_alerts():
+    """
+    Retrieve remediation details for a given alert
+    """
+    alert_ids = argToList(demisto.getArg('alert-id'))
+    payload = {'alerts': alert_ids, 'filter': {}}
+    handle_filters(payload['filter'])
+    handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
+
+    if not alert_ids:
+        return_error('You must specify the alert-id to retrieve with CLI remediation')
+
+    md_data = []
+    context = []
+    response = req('PATCH', 'alert/remediation/'+ demisto.getArg('alert-id'), None, None)
+
+    """
+    human_readable_details = {
+    demisto.results(str(response))
+
+        }
+    """
+    demisto.results(str(response))
+
 
 def get_remediation_details():
     """
@@ -468,6 +519,10 @@ try:
         reopen_alerts()
     elif demisto.command() == 'redlock-get-remediation-details':
         get_remediation_details()
+    elif demisto.command() == 'redlock-get-RQL-response':
+        get_RQL_response()
+    elif demisto.command() == 'redlock-remediate-alerts':
+        remediate_alerts()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
     else:

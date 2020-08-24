@@ -54,6 +54,22 @@ script:
   type: python
   subtype: python2
   commands:
+  - name: redlock-get-RQL-response
+    description: Run RQL query on Prisma Cloud
+    arguments:
+    - name: rql  
+      required: true
+      default: false
+      isArray: false
+      description: the RQL query to run
+  - name: redlock-remediate-alerts
+    description: Remediate alerts in Prisma Cloud
+    arguments:
+    - name: alert-id
+      required: true
+      default: false
+      isArray: false
+      description: The alert id to remediate
   - name: redlock-search-alerts
     arguments:
     - name: time-range-date-from
@@ -250,6 +266,21 @@ script:
     arguments:
     - name: alert-id
       description: comma separated list of string IDs to be dismissed
+    - name: dismissal-value
+      required: false
+      description: The amount of time to dismiss for if snoozing. Both value and unit must be specified
+    - name: dismissal-unit
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      description: The time unit for dismissial if snoozing alert.  Both dimissal value and unit must be specified if snoozing.
     - name: dismissal-note
       required: true
       description: Reason for dismissal
