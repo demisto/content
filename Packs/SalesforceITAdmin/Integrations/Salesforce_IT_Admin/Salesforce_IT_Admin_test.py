@@ -82,7 +82,6 @@ def test_create_user_command(mocker):
     # Negative scenario - Duplicate User
     res.status_code = 400
     mocker.patch.object(demisto, 'dt', return_value='TestID@paloaltonetworks.com')
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"email":"TestID@paloaltonetworks.com"}]'
     _, outputs, _ = salesforce_it_admin.create_user_command(client, inp_args)
 
@@ -116,7 +115,6 @@ def test_update_user_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"email":"TestID@paloaltonetworks.com", "message": "Mock message"}]'
     _, outputs, _ = salesforce_it_admin.update_user_command(client, inp_args)
 
@@ -156,7 +154,6 @@ def test_disable_user_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"email":"TestID@paloaltonetworks.com", "message": "Mock message"}]'
     _, outputs, _ = salesforce_it_admin.enable_disable_user_command(client, inp_args)
 
@@ -196,7 +193,6 @@ def test_enable_user_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"email":"TestID@paloaltonetworks.com", "message": "Mock message"}]'
     _, outputs, _ = salesforce_it_admin.enable_disable_user_command(client, inp_args)
 
@@ -232,7 +228,6 @@ def test_assign_permission_set_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.assign_permission_set_command(client, inp_args)
 
@@ -259,7 +254,6 @@ def test_get_assigned_permission_set_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.get_assigned_permission_set_command(client, inp_args)
 
@@ -286,7 +280,6 @@ def test_delete_assigned_permission_set_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.delete_assigned_permission_set_command(client, inp_args)
 
@@ -314,7 +307,6 @@ def test_assign_permission_set_license_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.assign_permission_set_license_command(client, inp_args)
 
@@ -341,7 +333,6 @@ def test_get_assigned_permission_set_license_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.get_assigned_permission_set_license_command(client, inp_args)
 
@@ -368,7 +359,6 @@ def test_delete_assigned_permission_set_license_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.delete_assigned_permission_set_license_command(client, inp_args)
 
@@ -396,7 +386,6 @@ def test_assign_package_license_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.assign_package_license_command(client, inp_args)
 
@@ -423,7 +412,6 @@ def test_get_assigned_package_license_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.get_assigned_package_license_command(client, inp_args)
 
@@ -450,7 +438,6 @@ def test_delete_assigned_package_license_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.delete_assigned_package_license_command(client, inp_args)
 
@@ -477,7 +464,6 @@ def test_unfreeze_user_account(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.freeze_unfreeze_user_account_command(client, inp_args)
 
@@ -504,7 +490,6 @@ def test_freeze_user_account(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.freeze_unfreeze_user_account_command(client, inp_args)
 
@@ -531,7 +516,6 @@ def test_get_user_isfrozen_status_command(mocker):
 
     # Negative scenario
     res.status_code = 400
-    mocker.patch.object(client, 'create_login', return_value=token_res)
     res._content = b'[{"message":"Mock Response"}]'
     _, outputs, _ = salesforce_it_admin.get_user_isfrozen_status_command(client, inp_args)
 

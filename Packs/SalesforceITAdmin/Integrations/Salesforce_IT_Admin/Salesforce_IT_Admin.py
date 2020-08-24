@@ -36,13 +36,7 @@ class Client(BaseClient):
         self.session = requests.Session()
         if not proxy:
             self.session.trust_env = False
-        res = self.create_login()
-        res_json = res.json()
-        self.headers['content-type'] = 'application/json'
-        if res_json.get('access_token') is not None:
-            self.headers['Authorization'] = "Bearer " + res_json.get('access_token')
-        else:
-            self.headers['Authorization'] = None
+        self.get_access_token()
 
     def http_request(self, method, url_suffix, params=None, data=None, headers=None):
         if not headers:
@@ -60,7 +54,7 @@ class Client(BaseClient):
 
         return res
 
-    def create_login(self):
+    def get_access_token(self):
         uri = '/services/oauth2/token'
         params = {
             "client_id": self.conn_client_id,
@@ -69,11 +63,17 @@ class Client(BaseClient):
             "password": self.conn_password,
             "grant_type": "password"
         }
-        return self.http_request(
+        res = self.http_request(
             method='POST',
             url_suffix=uri,
             params=params
         )
+        res_json = res.json()
+        self.headers['content-type'] = 'application/json'
+        if res_json.get('access_token') is not None:
+            self.headers['Authorization'] = "Bearer " + res_json.get('access_token')
+        else:
+            self.headers['Authorization'] = None
 
     def get_user_profile(self, user_term):
         uri = URI_PREFIX + f'sobjects/User/{encode_string_results(user_term)}'
@@ -214,7 +214,7 @@ class Client(BaseClient):
         )
 
     # Builds a new user salesforce profile dict with pre-defined keys and custom mapping (for user)
-    def build_salesforce_profile_create_user(self, args, scim):
+    def build_salesforce_profile_create_update_user(self, args, scim, custom_mapping):
         parsed_scim_data = map_scim(scim)
 
         salesforce_user = {
@@ -241,11 +241,10 @@ class Client(BaseClient):
             "SmallPhotoUrl": parsed_scim_data.get('small_photo_url'),
         }
 
-        custom_mapping = None
         if args.get('customMapping'):
             custom_mapping = json.loads(args.get('customMapping'))
-        elif CUSTOM_MAPPING_CREATE:
-            custom_mapping = json.loads(CUSTOM_MAPPING_CREATE)
+        else:
+            custom_mapping = json.loads(custom_mapping)
 
         extension_schema = scim.get(SCIM_EXTENSION_SCHEMA)
         if custom_mapping and extension_schema:
@@ -256,75 +255,9 @@ class Client(BaseClient):
                     salesforce_user[value] = user_extension_data
         return salesforce_user
 
-    # Builds a new user salesforce profile dict with pre-defined keys and custom mapping (for user)
-
-    def build_salesforce_profile_update_user(self, args, scim):
-        parsed_scim_data = map_scim(scim)
-
+    def build_salesforce_profile_enable_disable_user(self, args, scim, active):
         salesforce_user = {
-            "Username": parsed_scim_data.get('userName'),
-            "Email": parsed_scim_data.get('email'),
-            "FirstName": parsed_scim_data.get('first_name'),
-            "LastName": parsed_scim_data.get('last_name'),
-            "Name": parsed_scim_data.get('Name'),
-            "CommunityNickname": parsed_scim_data.get('nick_name'),
-            "IsActive": parsed_scim_data.get('active'),
-            "Address": parsed_scim_data.get('address'),
-            "Street": parsed_scim_data.get('street'),
-            "City": parsed_scim_data.get('city'),
-            "Country": parsed_scim_data.get('country'),
-            "State": parsed_scim_data.get('state'),
-            "PostalCode": parsed_scim_data.get('zip'),
-            "MobilePhone": parsed_scim_data.get('mobile_phone'),
-            "Phone": parsed_scim_data.get('phone'),
-            "TimeZoneSidKey": parsed_scim_data.get('timezone'),
-            "LocaleSidKey": parsed_scim_data.get('locale'),
-            "LanguageLocaleKey": parsed_scim_data.get('locale'),
-            "Title": parsed_scim_data.get('title'),
-            "FullPhotoUrl": parsed_scim_data.get('full_photo_url'),
-            "SmallPhotoUrl": parsed_scim_data.get('small_photo_url'),
-        }
-
-        custom_mapping = None
-        if args.get('customMapping'):
-            custom_mapping = json.loads(args.get('customMapping'))
-        elif CUSTOM_MAPPING_UPDATE:
-            custom_mapping = json.loads(CUSTOM_MAPPING_UPDATE)
-
-        extension_schema = scim.get(SCIM_EXTENSION_SCHEMA)
-        if custom_mapping and extension_schema:
-            for key, value in custom_mapping.items():
-                # key is the attribute name in input scim. value is the attribute name of app profile
-                user_extension_data = extension_schema.get(key)
-                if user_extension_data:
-                    salesforce_user[value] = user_extension_data
-
-        return salesforce_user
-
-    def build_salesforce_profile_enable_user(self, args, scim):
-        salesforce_user = {
-            "IsActive": True
-        }
-
-        custom_mapping = None
-        if args.get('customMapping'):
-            custom_mapping = json.loads(args.get('customMapping'))
-        elif CUSTOM_MAPPING_UPDATE:
-            custom_mapping = json.loads(CUSTOM_MAPPING_UPDATE)
-
-        extension_schema = scim.get(SCIM_EXTENSION_SCHEMA)
-        if custom_mapping and extension_schema:
-            for key, value in custom_mapping.items():
-                # key is the attribute name in input scim. value is the attribute name of app profile
-                user_extension_data = extension_schema.get(key)
-                if user_extension_data:
-                    salesforce_user[value] = user_extension_data
-
-        return salesforce_user
-
-    def build_salesforce_profile_disable_user(self, args, scim):
-        salesforce_user = {
-            "IsActive": False
+            "IsActive": active
         }
 
         custom_mapping = None
@@ -548,7 +481,7 @@ def create_user_command(client, args):
     scim = verify_and_load_scim_data(args.get('scim'))
     parsed_scim = map_scim(scim)
 
-    salesforce_user = client.build_salesforce_profile_create_user(args, scim)
+    salesforce_user = client.build_salesforce_profile_create_update_user(args, scim, CUSTOM_MAPPING_CREATE)
 
     # Removing Elements from salesforce_user dictionary which was not sent as part of scim
     salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
@@ -601,7 +534,7 @@ def update_user_command(client, args):
     if not user_id:
         raise Exception('You must provide id of the user')
 
-    salesforce_user = client.build_salesforce_profile_update_user(args, new_scim)
+    salesforce_user = client.build_salesforce_profile_create_update_user(args, new_scim, CUSTOM_MAPPING_UPDATE)
 
     # Removing Elements from salesforce user dictionary which was not sent as part of scim
     salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
@@ -650,7 +583,7 @@ def enable_disable_user_command(client, args):
     if demisto.command() == 'enable-user':
         format_pre_text = 'Enable'
         active = True
-        salesforce_user = client.build_salesforce_profile_enable_user(args, scim)
+        salesforce_user = client.build_salesforce_profile_enable_disable_user(args, scim, active)
 
         # Removing Elements from salesforce user dictionary which was not sent as part of scim
         salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
@@ -659,7 +592,7 @@ def enable_disable_user_command(client, args):
     elif demisto.command() == 'disable-user':
         format_pre_text = 'Disable'
         active = False
-        salesforce_user = client.build_salesforce_profile_disable_user(args, scim)
+        salesforce_user = client.build_salesforce_profile_enable_disable_user(args, scim, active)
 
         # Removing Elements from salesforce user dictionary which was not sent as part of scim
         salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
@@ -1152,12 +1085,7 @@ def main():
 
     # Log exceptions
     except Exception:
-        demisto.error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
         return_error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
-
-    # Log exceptions
-    except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
