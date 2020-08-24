@@ -1272,6 +1272,13 @@ def create_test_file(is_nightly, skip_save=False):
         tests_string = '\n'.join(tests)
         packs_to_install_string = '\n'.join(packs_to_install)
 
+        for pack in tests:
+            print(f"pack to install from modified_metadata_list: {pack}")
+            pack_tests = get_tests_for_pack(tools.pack_name_to_path(pack))
+            print(f"get_pack_tests_to_install: {pack_tests}")
+            packs_to_install.add(pack)
+            tests = tests.union(pack_tests)
+
         if not skip_save:
             logging.info("Creating filter_file.txt")
             with open("./Tests/filter_file.txt", "w") as filter_file:
