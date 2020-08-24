@@ -1,23 +1,23 @@
 ## ThreatConnect Feed
-This integration fetches indicators from ThreatConnect and indicators could be filtered by indicator owner.
+This integration fetches indicators from ThreatConnect, which you can filter by indicator owner.
 
-Genrating credentials:
+### Generate Credentials
 
-1. Hover on settings icon and select Org Settings from the dropdown menu.
+1. Hover on the **Settings** icon and from the drop-down menu select **Org Settings**.
 
-2. Click the Create API User button on the Membership tab.
+2. From the **Membership** tab, click the **Create API User**.
 
-3. Fill up the following parts of the form:
-    - First Name.
-    - Last Name.
-    - Organization Role.
-    - Include in Observations and False Positives.
+3. Enter values for the following fields in the form.
+    - First Name
+    - Last Name
+    - Organization Role
+    - Include in Observations and False Positives
     
-4. Record the Secret Key, as it will not be accessible after the window is closed.
+4. Record and save the Secret Key. You will not be able to access the Secret Key after you close this window.
 
-5. Click the SAVE button.
+5. Click the **SAVE** button.
 
-For more information - click [here](https://training.threatconnect.com/learn/article/creating-user-accounts-kb-article) (Section - Creating an API User).
+For more information, see [Create an API User section in the ThreatConnect documentation](https://training.threatconnect.com/learn/article/creating-user-accounts-kb-article).
 
 
     
