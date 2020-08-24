@@ -67,11 +67,22 @@ class Client:
 
 
 def get_timestamp_seconds(date):
-    seconds = str(date.timestamp()).split('.')[0]
+    if not date:
+        return 0
+
+    if isinstance(date, timedelta):
+        seconds = date.total_seconds()
+
+    else:
+        seconds = str(date.timestamp()).split('.')[0]  # type:ignore
+
     return seconds
 
 
 def get_timestamp_nanoseconds(date):
+    if not date:
+        return 0
+
     nanos = str(date.timestamp()).split('.')[1]
     return nanos
 
@@ -826,7 +837,7 @@ def list_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, 
     # if needed add state filter.
     filter_state = args.get('key_state', None)
 
-    response = client.kms_client.list_crypto_keys(request={'parent': key_ring_name, 'filter_': filter_state})
+    response = client.kms_client.list_crypto_keys(request={'parent': key_ring_name, 'filter': filter_state})
 
     overall_context = []  # type: List
     overall_raw = []  # type: List
@@ -1057,7 +1068,7 @@ def list_all_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, An
             pre_name = f"projects/{client.project}/locations/{location}/keyRings/"
             key_ring_id = str(key_ring_name).replace(pre_name, '')
             crypto_key_response = client.kms_client.list_crypto_keys(request={'parent': key_ring_name,
-                                                                              'filter_': filter_state})
+                                                                              'filter': filter_state})
 
             for crypto_key in crypto_key_response:
                 keys_context.append(key_context_creation(crypto_key, str(client.project),
