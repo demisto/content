@@ -43,7 +43,6 @@ script:
       predefined:
       - name
       - ip
-      - raw
       description: Query type
     - name: value
       required: true
@@ -111,7 +110,6 @@ script:
       predefined:
       - name
       - ip
-      - raw
       description: Query type
     - name: value
       required: true
