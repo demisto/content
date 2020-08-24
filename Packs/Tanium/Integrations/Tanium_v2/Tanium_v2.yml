@@ -36,8 +36,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The package ID. Package ID or package name is required. When both
-        exist, ID is used.
+      description: The package ID. Either Package ID or Package name is required. When both
+        exist, Packate ID is used.
       isArray: false
       name: id
       required: false
@@ -152,7 +152,7 @@ script:
       secret: false
     - default: false
       defaultValue: '95'
-      description: Indicates the threashold to returns the question results.
+      description: Indicates the threshold at which to return the question results. Default is 95. The threshold is the percentage of mr_tested against the estimated_total.
       isArray: false
       name: completion-percentage
       required: false
@@ -437,7 +437,7 @@ script:
       defaultValue: '95'
       description: Indicates the threashold to returns the question results.
       isArray: false
-      name: completion-percentage
+      name: completion-percantage
       required: false
       secret: false
     deprecated: false
