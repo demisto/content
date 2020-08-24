@@ -591,8 +591,6 @@ def main():
     """
 
     apikey = demisto.params().get('apikey')
-    if not apikey:
-        raise DemistoException('apikey is required')
     base_url = demisto.params().get('url', DEFAULT_DNSDB_SERVER)
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
