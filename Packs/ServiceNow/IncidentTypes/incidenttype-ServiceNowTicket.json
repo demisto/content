@@ -7,5 +7,6 @@
  "description": "ServiceNow Ticket",
  "color": "#7C71F5",
  "layout": "ServiceNow Ticket",
- "system": false
+ "system": false,
+ "isPredefined": true
 }

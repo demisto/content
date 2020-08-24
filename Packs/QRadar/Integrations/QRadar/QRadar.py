@@ -499,62 +499,64 @@ def test_module():
 
 
 def fetch_incidents():
-    query = demisto.params().get('query')
+    user_query = demisto.params().get('query')
     full_enrich = demisto.params().get('full_enrich')
     last_run = demisto.getLastRun()
+
     offense_id = last_run['id'] if last_run and 'id' in last_run else 0
-    if last_run and offense_id == 0:
-        start_time = last_run['startTime'] if 'startTime' in last_run else '0'
-        fetch_query = 'start_time>{0}{1}'.format(start_time, ' AND ({0})'.format(query) if query else '')
-    else:
-        fetch_query = 'id>{0} {1}'.format(offense_id, 'AND ({0})'.format(query) if query else '')
-        # qradar returns offenses sorted desc on id and there's no way to change sorting.
-        # if we get `offensesPerCall` offenses it means we (probably) have more than that so we
-        # start looking for the end of the list by doubling the page position until we're empty.
-        # then start binary search back until you find the end of the list and finally return
-        # `offensesPerCall` from the end.
-    demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
-    raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
-    demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
-    if len(raw_offenses) >= OFFENSES_PER_CALL:
-        last_offense_pos = find_last_page_pos(fetch_query)
-        raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos),
-                                    _filter=fetch_query)
+    # adjust start_offense_id to user_query start offense id
+    try:
+        if 'id>' in user_query:
+            user_offense_id = int(user_query.split('id>')[1].split(' ')[0])
+            if user_offense_id > offense_id:
+                offense_id = user_offense_id
+    except Exception:
+        pass
+
+    # fetch offenses
+    raw_offenses = []
+    fetch_query = ''
+    lim_id = None
+    latest_offense_fnd = False
+    while not latest_offense_fnd:
+        start_offense_id = offense_id
+        end_offense_id = int(offense_id) + OFFENSES_PER_CALL + 1
+        fetch_query = 'id>{0} AND id<{1} {2}'.format(start_offense_id,
+                                                     end_offense_id,
+                                                     'AND ({})'.format(user_query) if user_query else '')
+        demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
+        raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL - 1), _filter=fetch_query)
+        if raw_offenses:
+            if isinstance(raw_offenses, list):
+                raw_offenses.reverse()
+            latest_offense_fnd = True
+        else:
+            if not lim_id:
+                # set fetch upper limit
+                lim_offense = get_offenses(_range='0-0')
+                if not lim_offense:
+                    raise DemistoException(
+                        "No offenses could be fetched, please make sure there are offenses available for this user.")
+                lim_id = lim_offense[0]['id']  # if there's no id, raise exception
+            if lim_id >= end_offense_id:  # increment the search until we reach limit
+                offense_id += OFFENSES_PER_CALL
+            else:
+                latest_offense_fnd = True
+    demisto.debug('QRadarMsg - Fetched {} results for {}'.format(len(raw_offenses), fetch_query))
+
+    # set incident
     raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
-    if full_enrich:
+    if full_enrich and raw_offenses:
         demisto.debug('QRadarMsg - Enriching  {}'.format(fetch_query))
         enrich_offense_res_with_source_and_destination_address(raw_offenses)
         demisto.debug('QRadarMsg - Enriched  {} successfully'.format(fetch_query))
     for offense in raw_offenses:
         offense_id = max(offense_id, offense['id'])
         incidents.append(create_incident_from_offense(offense))
+    demisto.debug('QRadarMsg - LastRun was set to {}'.format(offense_id))
     demisto.setLastRun({'id': offense_id})
     return incidents
-
-
-# Finds the last page position for QRadar query that receives a range parameter
-def find_last_page_pos(fetch_query):
-    # Make sure it wasn't a fluke we have exactly OFFENSES_PER_CALL results
-    if len(get_offenses(_range='{0}-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)) == 0:
-        return OFFENSES_PER_CALL - 1
-    # Search up until we don't have any more results
-    pos = OFFENSES_PER_CALL * 2
-    while len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetch_query)) == 1:
-        pos = pos * 2
-    # Binary search the gap from the las step
-    high = pos
-    low = pos / 2
-    while high > low + 1:
-        pos = (high + low) / 2
-        if len(get_offenses(_range='{0}-{0}'.format(pos), _filter=fetch_query)) == 1:
-            # we still have results, raise the bar
-            low = pos
-        else:
-            # we're too high, lower the bar
-            high = pos
-    # low holds the last pos of the list
-    return low
 
 
 # Creates incidents from offense
@@ -662,22 +664,28 @@ def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
 
 # Helper method: Enriches the source addresses ids dictionary with the source addresses values corresponding to the ids
 def enrich_source_addresses_dict(src_adrs):
-    src_ids_str = dict_values_to_comma_separated_string(src_adrs)
-    source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
-    src_res = send_request('GET', source_url, AUTH_HEADERS)
-    for src_adr in src_res:
-        src_adrs[src_adr['id']] = convert_to_str(src_adr['source_ip'])
+    batch_size = demisto.params().get('enrich_size') or 100
+    for b in batch(list(src_adrs.values()), batch_size=int(batch_size)):
+        src_ids_str = ','.join(map(str, b))
+        demisto.debug('QRadarMsg - Enriching source addresses: {}'.format(src_ids_str))
+        source_url = '{0}/api/siem/source_addresses?filter=id in ({1})'.format(SERVER, src_ids_str)
+        src_res = send_request('GET', source_url, AUTH_HEADERS)
+        for src_adr in src_res:
+            src_adrs[src_adr['id']] = convert_to_str(src_adr['source_ip'])
     return src_adrs
 
 
 # Helper method: Enriches the destination addresses ids dictionary with the source addresses values corresponding to
 # the ids
 def enrich_destination_addresses_dict(dst_adrs):
-    dst_ids_str = dict_values_to_comma_separated_string(dst_adrs)
-    destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
-    dst_res = send_request('GET', destination_url, AUTH_HEADERS)
-    for dst_adr in dst_res:
-        dst_adrs[dst_adr['id']] = convert_to_str(dst_adr['local_destination_ip'])
+    batch_size = demisto.params().get('enrich_size') or 100
+    for b in batch(list(dst_adrs.values()), batch_size=int(batch_size)):
+        dst_ids_str = ','.join(map(str, b))
+        demisto.debug('QRadarMsg - Enriching destination addresses: {}'.format(dst_ids_str))
+        destination_url = '{0}/api/siem/local_destination_addresses?filter=id in ({1})'.format(SERVER, dst_ids_str)
+        dst_res = send_request('GET', destination_url, AUTH_HEADERS)
+        for dst_adr in dst_res:
+            dst_adrs[dst_adr['id']] = convert_to_str(dst_adr['local_destination_ip'])
     return dst_adrs
 
 

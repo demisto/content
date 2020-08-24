@@ -80,7 +80,7 @@ def create_context(indicators, include_dbot_score=False):
             # returned in general indicator request - REST API
             rating = int(ind.get('threatAssessRating', 0))
 
-        if confidence >= int(demisto.params()['rating']) and rating >= int(demisto.params()['confidence']):
+        if confidence >= int(demisto.params()['confidence']) and rating >= int(demisto.params()['rating']):
             dbot_score = 3
             desc = ''
             if hasattr(ind, 'description'):

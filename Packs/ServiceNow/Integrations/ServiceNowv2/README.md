@@ -43,7 +43,6 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 | get_attachments | Get incident attachments | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
-| entry_tags | Entry Tags | False |
 | close_incident | Close XSOAR Incident. When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
 | close_ticket | Close ServiceNow Ticket. When selected, closing the XSOAR incident is mirrored in ServiceNow. | False |
 

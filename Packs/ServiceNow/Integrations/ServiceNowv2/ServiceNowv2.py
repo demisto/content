@@ -1874,7 +1874,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             lastUpdate: when was the last time we retrieved data
 
     Returns:
-        List[Dict[str, Any]]`` first entry is the incident (which can be completely empty) and the new entries.
+        List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
     """
 
     ticket_id = args.get('id')
