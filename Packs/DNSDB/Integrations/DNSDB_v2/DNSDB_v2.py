@@ -223,22 +223,18 @@ class Client(BaseClient):
                time_last_before: int = None, time_last_after: int = None,
                aggr: bool = None, offset: int = None, max_count: int = None) -> Iterator[Dict]:
         params = self.base_params()
-        if limit is not None:
-            params['limit'] = limit
-        if time_first_before is not None:
-            params['time_first_before'] = time_first_before
-        if time_first_after is not None:
-            params['time_first_after'] = time_first_after
-        if time_last_before is not None:
-            params['time_last_before'] = time_last_before
-        if time_last_after is not None:
-            params['time_last_after'] = time_last_after
-        if aggr is not None:
-            params['aggr'] = aggr
-        if offset is not None:
-            params['offset'] = offset
-        if max_count is not None:
-            params['max_count'] = max_count
+        params.update(
+            assign_params(
+                limit=limit,
+                time_first_before=time_first_before,
+                time_first_after=time_first_after,
+                time_last_before=time_last_before,
+                time_last_after=time_last_after,
+                aggr=aggr,
+                offset=offset,
+                max_count=max_count,
+            )
+        )
 
         res = self._http_request('GET', path, params=params, stream=True, resp_type='response')
 
