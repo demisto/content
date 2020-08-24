@@ -930,7 +930,7 @@ def main():
         elif command in commands:
             commands[command](client, args)
         else:
-            return_error(f"{command} not recognised")
+            return_error(f"{command} does not exist in SpaceX integration.")
     except Exception as err:
         return_error(str(err))
 
