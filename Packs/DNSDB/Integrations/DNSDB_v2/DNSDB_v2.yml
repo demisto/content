@@ -63,7 +63,7 @@ script:
     - name: aggr
       description: Aggregate identical RRsets
     - name: offset
-      description: How many rows to offset (e.g. skip) in the results.
+      description: How many rows to offset in the results.
     outputs:
     - contextPath: DNSDB.Record.RRName
       type: string
@@ -175,7 +175,7 @@ script:
     - name: aggr
       description: Aggregate identical RRsets
     - name: offset
-      description: How many rows to offset (e.g. skip) in the results.
+      description: How many rows to offset in the results.
     outputs:
     - contextPath: DNSDB.Record.RRName
       type: string
