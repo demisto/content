@@ -1,3 +1,6 @@
+import mimetypes
+import random
+import string
 from typing import Dict
 
 import demistomock as demisto
@@ -117,6 +120,8 @@ ITEMS_RESULTS_HEADERS = [
     "textBody",
 ]
 
+UTF_8 = 'utf-8'
+
 """ Classes """
 
 
@@ -124,6 +129,7 @@ class ProxyAdapter(requests.adapters.HTTPAdapter):
     """
     Proxy Adapter used to add PROXY to requests
     """
+
     def send(self, *args, **kwargs):
         kwargs['proxies'] = handle_proxy()
         return super().send(*args, **kwargs)
@@ -134,6 +140,7 @@ class InsecureProxyAdapter(NoVerifyHTTPAdapter):
     Insecure Proxy Adapter used to add PROXY and INSECURE to requests
     NoVerifyHTTPAdapter is a built-in insecure HTTPAdapter class
     """
+
     def send(self, *args, **kwargs):
         kwargs['proxies'] = handle_proxy()
         return super().send(*args, **kwargs)
@@ -141,19 +148,19 @@ class InsecureProxyAdapter(NoVerifyHTTPAdapter):
 
 class EWSClient:
     def __init__(
-        self,
-        default_target_mailbox,
-        client_id,
-        client_secret,
-        tenant_id,
-        folder="Inbox",
-        is_public_folder=False,
-        request_timeout="120",
-        max_fetch=MAX_INCIDENTS_PER_FETCH,
-        self_deployed=True,
-        insecure=True,
-        proxy=False,
-        **kwargs,
+            self,
+            default_target_mailbox,
+            client_id,
+            client_secret,
+            tenant_id,
+            folder="Inbox",
+            is_public_folder=False,
+            request_timeout="120",
+            max_fetch=MAX_INCIDENTS_PER_FETCH,
+            self_deployed=True,
+            insecure=True,
+            proxy=False,
+            **kwargs,
     ):
         """
         Client used to communicate with EWS
@@ -280,8 +287,8 @@ class EWSClient:
             if item.attachments:
                 for attachment in item.attachments:
                     if (
-                        attachment_ids
-                        and attachment.attachment_id.id not in attachment_ids
+                            attachment_ids
+                            and attachment.attachment_id.id not in attachment_ids
                     ):
                         continue
                     attachments.append(attachment)
@@ -345,6 +352,11 @@ class EWSClient:
             folder_result = folder_filter_by_name[0]
 
         return folder_result
+
+    def send_email(self, message: Message):
+        account = self.get_account()
+        message.account = account
+        message.send_and_save()
 
 
 class MarkAsJunk(EWSAccountService):
@@ -483,8 +495,8 @@ class ExpandGroup(EWSService):
 
         for member in self.expand_group(email_address):
             if (
-                member["mailboxType"] == "PublicDL"
-                or member["mailboxType"] == "PrivateDL"
+                    member["mailboxType"] == "PublicDL"
+                    or member["mailboxType"] == "PrivateDL"
             ):
                 self.expand_group_recursive(member.get("mailbox"), non_dl_emails, dl_emails)
             else:
@@ -612,6 +624,7 @@ def keys_to_camel_case(value):
     :param value: value to transform
     :return: transformed value
     """
+
     def str_to_camel_case(snake_str):
         components = snake_str.split("_")
         return components[0] + "".join(x.title() for x in components[1:])
@@ -688,6 +701,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
     :param (Optional) compact_fields: Is compact fields
     :return: Item as a dict
     """
+
     def parse_object_as_dict(obj):
         raw_dict = {}
         if obj is not None:
@@ -937,7 +951,7 @@ def get_searchable_mailboxes(client: EWSClient):
 
 
 def delete_attachments_for_message(
-    client: EWSClient, item_id, target_mailbox=None, attachment_ids=None
+        client: EWSClient, item_id, target_mailbox=None, attachment_ids=None
 ):
     """
     Deletes attachments for a given message
@@ -983,7 +997,7 @@ def delete_attachments_for_message(
 
 
 def fetch_attachments_for_message(
-    client: EWSClient, item_id, target_mailbox=None, attachment_ids=None
+        client: EWSClient, item_id, target_mailbox=None, attachment_ids=None
 ):
     """
     Fetches attachments for a message
@@ -1022,12 +1036,12 @@ def fetch_attachments_for_message(
 
 
 def move_item_between_mailboxes(
-    client: EWSClient,
-    item_id,
-    destination_mailbox,
-    destination_folder_path,
-    source_mailbox=None,
-    is_public=None,
+        client: EWSClient,
+        item_id,
+        destination_mailbox,
+        destination_folder_path,
+        source_mailbox=None,
+        is_public=None,
 ):
     """
     Moves item between mailboxes
@@ -1061,7 +1075,7 @@ def move_item_between_mailboxes(
 
 
 def move_item(
-    client: EWSClient, item_id, target_folder_path, target_mailbox=None, is_public=None
+        client: EWSClient, item_id, target_folder_path, target_mailbox=None, is_public=None
 ):
     """
     Moves an item within the same mailbox
@@ -1132,14 +1146,14 @@ def delete_items(client: EWSClient, item_ids, delete_type, target_mailbox=None):
 
 
 def search_items_in_mailbox(
-    client: EWSClient,
-    query=None,
-    message_id=None,
-    folder_path="",
-    limit=100,
-    target_mailbox=None,
-    is_public=None,
-    selected_fields="all",
+        client: EWSClient,
+        query=None,
+        message_id=None,
+        folder_path="",
+        limit=100,
+        target_mailbox=None,
+        is_public=None,
+        selected_fields="all",
 ):
     """
     Search items in mailbox
@@ -1244,11 +1258,11 @@ def get_out_of_office_state(client: EWSClient, target_mailbox=None):
 
 
 def recover_soft_delete_item(
-    client: EWSClient,
-    message_ids,
-    target_folder_path="Inbox",
-    target_mailbox=None,
-    is_public=None,
+        client: EWSClient,
+        message_ids,
+        target_folder_path="Inbox",
+        target_mailbox=None,
+        is_public=None,
 ):
     """
     Recovers soft deleted items
@@ -1297,6 +1311,7 @@ def get_contacts(client: EWSClient, limit, target_mailbox=None):
     :param (Optional) target_mailbox: Target mailbox
     :return:
     """
+
     def parse_physical_address(address):
         result = {}
         for attr in ["city", "country", "label", "state", "street", "zipcode"]:
@@ -1324,9 +1339,9 @@ def get_contacts(client: EWSClient, limit, target_mailbox=None):
                 map(parse_phone_number, contact.phone_numbers)
             )
         if (
-            isinstance(contact, Contact)
-            and contact.email_addresses
-            and len(contact.email_addresses) > 0
+                isinstance(contact, Contact)
+                and contact.email_addresses
+                and len(contact.email_addresses) > 0
         ):
             contact_dict["emailAddresses"] = [x.email for x in contact.email_addresses]
         contact_dict = keys_to_camel_case(contact_dict)
@@ -1415,12 +1430,12 @@ def mark_item_as_junk(client: EWSClient, item_id, move_items, target_mailbox=Non
 
 
 def get_items_from_folder(
-    client: EWSClient,
-    folder_path,
-    limit=100,
-    target_mailbox=None,
-    is_public=None,
-    get_internal_item="no",
+        client: EWSClient,
+        folder_path,
+        limit=100,
+        target_mailbox=None,
+        is_public=None,
+        get_internal_item="no",
 ):
     """
     Retrieve items from folder path
@@ -1447,9 +1462,9 @@ def get_items_from_folder(
         )
         for attachment in item.attachments:
             if (
-                get_internal_item
-                and isinstance(attachment, ItemAttachment)
-                and isinstance(attachment.item, Message)
+                    get_internal_item
+                    and isinstance(attachment, ItemAttachment)
+                    and isinstance(attachment.item, Message)
             ):
                 # if found item attachment - switch item to the attchment
                 item_attachment = parse_item_as_dict(
@@ -1554,7 +1569,7 @@ def folder_to_context_entry(f):
 
 
 def mark_item_as_read(
-    client: EWSClient, item_ids, operation="read", target_mailbox=None
+        client: EWSClient, item_ids, operation="read", target_mailbox=None
 ):
     """
     Marks item as read
@@ -1588,6 +1603,224 @@ def mark_item_as_read(
     return readable_output, output, marked_items
 
 
+def randomword(length):
+    """
+    Generate a random string of given length
+    """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
+
+
+def handle_html(htmlBody):
+    """
+    Extract all data-url content from within the html and return as separate attachments.
+    Due to security implications, we support only images here
+    We might not have Beautiful Soup so just do regex search
+    """
+    attachments = []
+    clean_body = ''
+    last_index = 0
+    for i, m in enumerate(
+            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
+        att = {
+            'data': base64.b64decode(m.group(3)),
+            'name': 'image%d.%s' % (i, m.group(2).split('/', 1)[-1].split('.')[-1])
+        }
+        att['cid'] = '%s@%s.%s' % (att['name'], randomword(8), randomword(8))
+        attachments.append(att)
+        clean_body += htmlBody[last_index:m.start(1)] + 'cid:' + att['cid']
+        last_index = m.end() - 1
+    clean_body += htmlBody[last_index:]
+    return clean_body, attachments
+
+
+def collect_manual_attachments():
+    attachments = []
+    for attachment in demisto.getArg('manualAttachObj') or []:
+        res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))
+
+        path = res['path']
+
+        with open(path, 'rb') as fp:
+            data = fp.read()
+
+        attachments.append({
+            'name': attachment['FileName'],
+            'data': data,
+            'cid': ''
+        })
+
+    return attachments
+
+
+def collect_attachments():
+    """
+    Collect all attachments into a list with all data
+    """
+    attachments = []
+    attachIDs = argToList(demisto.getArg('attachIDs'))
+    attachNames = argToList(demisto.getArg('attachNames'))
+    attachCIDs = argToList(demisto.getArg('attachCIDs'))
+    for i, aid in enumerate(attachIDs):
+        try:
+            fileRes = demisto.getFilePath(aid)
+
+            path = fileRes['path']
+            if len(attachNames) > i and attachNames[i]:
+                filename = attachNames[i]
+            else:
+                filename = fileRes['name']
+            if len(attachCIDs) > i and attachCIDs[i]:
+                cid = attachCIDs[i]
+            else:
+                cid = ''
+            with open(path, 'rb') as fp:
+                data = fp.read()
+            attachments.append({
+                'name': filename,
+                'data': data,
+                'cid': cid
+            })
+        except Exception as ex:
+            demisto.error("Invalid entry {} with exception: {}".format(aid, ex))
+            return_error('Entry %s is not valid or is not a file entry' % (aid))
+
+    # handle transient files
+    args = demisto.args()
+    f_names = args.get('transientFile', [])
+    f_names = f_names if isinstance(f_names, (list, tuple)) else f_names.split(',')
+    f_contents = args.get('transientFileContent', [])
+    f_contents = f_contents if isinstance(f_contents, (list, tuple)) else f_contents.split(',')
+    f_cids = args.get('transientFileCID', [])
+    f_cids = f_cids if isinstance(f_cids, (list, tuple)) else f_cids.split(',')
+
+    for name, data, cid in map(None, f_names, f_contents, f_cids):
+        if name is None or data is None:
+            break
+        attachments.append({
+            'name': name,
+            'data': data,
+            'cid': cid
+        })
+
+    return attachments
+
+
+def template_params(paramsStr):
+    """
+    Translate the template params if they exist from the context
+    """
+    actualParams = {}
+    if paramsStr:
+        try:
+            params = json.loads(paramsStr)
+        except ValueError as e:
+            return_error('Unable to parse templateParams: %s' % (str(e)))
+        # Build a simple key/value
+        for p in params:
+            if params[p].get('value'):
+                actualParams[p] = params[p]['value']
+            elif params[p].get('key'):
+                actualParams[p] = demisto.dt(demisto.context(), params[p]['key'])
+    return actualParams
+
+
+# def header(s):
+#     if not s:
+#         return None
+#     s_no_newlines = ' '.join(s.splitlines())
+#     return Header(s_no_newlines, UTF_8)
+
+
+def create_msg(to, subject='', body='', bcc=None, cc=None, replyTo=None, htmlBody='',
+               attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
+               transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
+               additionalHeader=None):
+    """
+    Will get args from demisto object
+    Return: a message object, to, cc, bcc
+    """
+    additional_header = argToList(demisto.getArg('additionalHeader'))
+    templateParams = template_params(templateParams)
+    if templateParams:
+        body = body.format(**templateParams)
+        htmlBody = htmlBody.format(**templateParams)
+
+    # Basic validation - we allow pretty much everything but you have to have at least a recipient
+    # We allow messages without subject and also without body
+    if not to and not cc and not bcc:
+        return_error('You must have at least one recipient')
+
+    attachments = collect_attachments()
+    attachments.extend(collect_manual_attachments())
+
+    if not htmlBody:
+        # This is a simple text message - we cannot have CIDs here
+        message = Message(
+            to_recipients=to,
+            cc_recipients=cc,
+            bcc_recipients=bcc,
+            subject=subject,
+            body=body,
+        )
+
+        for attachment in attachments:
+            if not attachment.get('cid'):
+                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
+                message.attach(new_attachment)
+
+    else:
+        htmlBody, htmlAttachments = handle_html(htmlBody)
+        attachments += htmlAttachments
+
+        message = Message(
+            to_recipients=to,
+            cc_recipients=cc,
+            bcc_recipients=bcc,
+            subject=subject,
+            body=HTMLBody(f'{body} {htmlBody}')
+        )
+
+        for att in attachments:
+            # handle_file(msg, att['name'], att['maintype'], att['subtype'], att['cid'], att['data'])
+            pass
+
+    # if additional_header:
+    #     for h in additional_header:
+    #         header_name_and_value = h.split('=', 1)
+    #         msg[header_name_and_value[0]] = header(header_name_and_value[1])
+
+    # Notice we should not add BCC header since Python2 does not filter it
+    return message
+
+
+def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
+               attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
+               transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
+               additionalHeader=None, raw_message=None):
+    to = argToList(demisto.getArg('to'))
+    cc = argToList(demisto.getArg('cc'))
+    bcc = argToList(demisto.getArg('bcc'))
+
+    if raw_message:
+        message = Message(
+            to_recipients=to,
+            cc_recipients=cc,
+            bcc_recipients=bcc,
+            body=raw_message
+        )
+
+    else:
+        message = create_msg(to, subject, body, bcc, cc, replyTo, htmlBody,
+                             attachIDs, attachCIDs, attachNames, manualAttachObj,
+                             transientFile, transientFileContent, transientFileCID, templateParams,
+                             additionalHeader)
+
+    client.send_email(message)
+
+    demisto.results('Mail sent successfully')
+
+
 def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
     """
     Retrieve item as an eml
@@ -1612,8 +1845,8 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
             ]
             for header in item.headers:
                 if (
-                    header.name,
-                    header.value,
+                        header.name,
+                        header.value,
                 ) not in attached_email_headers and header.name != "Content-Type":
                     email_content.add_header(header.name, header.value)
 
@@ -1720,9 +1953,9 @@ def parse_incident_from_item(item):
                         ]
                         for header in attachment.item.headers:
                             if (
-                                (header.name, header.value)
-                                not in attached_email_headers
-                                and header.name != "Content-Type"
+                                    (header.name, header.value)
+                                    not in attached_email_headers
+                                    and header.name != "Content-Type"
                             ):
                                 attached_email.add_header(header.name, header.value)
 
@@ -1935,6 +2168,7 @@ def sub_main():
             "ews-get-folder": get_folder,
             "ews-expand-group": get_expanded_group,
             "ews-mark-items-as-read": mark_item_as_read,
+            "ews-send-mail": send_email,
         }
 
         # commands that may return multiple results or non-note result
@@ -1968,7 +2202,7 @@ def sub_main():
 
         # Office365 regular maintenance case
         if isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(
-            e, ErrorMailboxMoveInProgress
+                e, ErrorMailboxMoveInProgress
         ):
             log_message = (
                 "Office365 is undergoing load balancing operations. "
