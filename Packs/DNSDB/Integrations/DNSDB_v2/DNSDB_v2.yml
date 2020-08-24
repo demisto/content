@@ -47,7 +47,7 @@ script:
       description: query rrtype
     - name: limit
       description: Limit the number of returned records
-      defaultValue: "100"
+      defaultValue: "50"
     - name: time_first_before
       description: Filter results for entries seen for first time before (UNIX timestamp,
         relative if negative)
@@ -115,7 +115,7 @@ script:
       description: query rrtype
     - name: limit
       description: Limit the number of returned records
-      defaultValue: "100"
+      defaultValue: "50"
     - name: time_first_before
       description: Filter results for entries seen for first time before (UNIX timestamp,
         relative if negative)
@@ -163,7 +163,7 @@ script:
       description: Bailiwick value to query
     - name: limit
       description: Limit the number of returned records
-      defaultValue: "100"
+      defaultValue: "50"
     - name: time_first_before
       description: Filter results for entries seen for first time before (seconds)
     - name: time_first_after
@@ -225,7 +225,7 @@ script:
       description: Bailiwick value to query
     - name: limit
       description: Limit the number of returned records
-      defaultValue: "100"
+      defaultValue: "50"
     - name: time_first_before
       description: Filter results for entries seen for first time before (seconds)
     - name: time_first_after
