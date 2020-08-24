@@ -1,5 +1,5 @@
-create-user scim="{"userName":"rbilgundi+demistotest@paloaltonetworks.com","emails":[{"type":"work","primary":true,"value":"rbilgundi+demistotest@paloaltonetworks.com"}],"name":{"familyName":"Test","givenName":"Demisto"},"urn:scim:schemas:extension:custom:1.0:user":{"action":"create","type":"1"}}
-!get-user scim="{"id":"wRj-ffDKSTWTtR-NtqhVYg"}" using=ZoomITAdmin 
-!update-user oldScim="{"id":"wRj-ffDKSTWTtR-NtqhVYg"}" newScim="{"name":{"familyName":"Test","givenName":"RashmiDemisto"}}" using=ZoomITAdmin 
-!disable-user scim="{"id":"wRj-ffDKSTWTtR-NtqhVYg"}" using=ZoomITAdmin 
-!enable-user scim="{"id":"wRj-ffDKSTWTtR-NtqhVYg"}" using=ZoomITAdmin
+create-user scim={"userName":"demistotest1@paloaltonetworks.com","emails":[{"type":"work","primary":true,"value":"demistotest1@paloaltonetworks.com"}],"name":{"familyName":"Test","givenName":"Demisto"},"urn:scim:schemas:extension:custom:1.0:user":{"action":"create","type":"1"}}  using=ZoomITAdmin
+!get-user scim={"id":"wRj-ffDKSTWTtR-NtqhVYg"} using=ZoomITAdmin 
+!update-user oldScim={"id":"wRj-ffDKSTWTtR-NtqhVYg"} newScim={"name":{"familyName":"Test","givenName":"RashmiDemisto"}} using=ZoomITAdmin 
+!disable-user scim={"id":"wRj-ffDKSTWTtR-NtqhVYg"} using=ZoomITAdmin 
+!enable-user scim={"id":"wRj-ffDKSTWTtR-NtqhVYg"} using=ZoomITAdmin

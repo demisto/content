@@ -1,6 +1,6 @@
 {
     "name": "Zoom IT Admin",
-    "description": "Zoom IT Admin",
+    "description": "Zoom integration to manage Zoom users",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
