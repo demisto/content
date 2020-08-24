@@ -65,7 +65,7 @@ script:
       description: Filter results for entries seen for last time after (UNIX timestamp,
         relative if negative)
     - name: aggr
-      description: Aggregate identical RRsets
+      description: Aggregate identical RRsets (bool)
     - name: offset
       description: How many rows to offset in the results.
     outputs:
@@ -132,7 +132,7 @@ script:
       description: Filter results for entries seen for last time after (UNIX timestamp,
         relative if negative)
     - name: aggr
-      description: Aggregate identical RRsets
+      description: Aggregate identical RRsets (bool)
     - name: max_count
       description: Stop when the summary count is reached
     outputs:
@@ -176,7 +176,7 @@ script:
     - name: time_last_after
       description: Filter results for entries seen for last time after (seconds)
     - name: aggr
-      description: Aggregate identical RRsets
+      description: Aggregate identical RRsets (bool)
     - name: offset
       description: How many rows to offset in the results.
     outputs:
@@ -238,7 +238,7 @@ script:
     - name: time_last_after
       description: Filter results for entries seen for last time after (seconds)
     - name: aggr
-      description: Aggregate identical RRsets
+      description: Aggregate identical RRsets (bool)
     - name: max_count
       description: Stop when the summary count is reached
     outputs:
