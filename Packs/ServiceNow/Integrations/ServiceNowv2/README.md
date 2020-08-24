@@ -9,7 +9,7 @@ Please refer to ServiceNow documentation for additional information. We especial
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
 ## Use cases
-1. Get, update, create, and delete ServiceNow tickets, as well as add links/comments or upload files to the tickets.
+1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
 2. Fetch newly created incidents.
 3. Get, update, create, delete records from any ServiceNow table.
 ## Wrapper Scripts
@@ -23,8 +23,13 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 ## Configure ServiceNow v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ServiceNow v2.
-3. Click **Add instance** to create and configure a new integration instance.
+1. Search for ServiceNow v2.
+1. Click **Add instance** to create and configure a new integration instance.
+1. To ensure that mirroring works:
+    1. Under **Classifier**, select ServiceNow Classifier.
+    1. Under **Incident type**, select ServiceNowTicket.
+    1. Under **Mapper (incoming)**, select Mapper-Incoming-ServiceNow.
+    1. Under **Mapper (outgoing)**, select Mapper-Outgoing-ServiceNow.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -46,7 +51,7 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 | close_incident | Close XSOAR Incident. When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
 | close_ticket | Close ServiceNow Ticket. When selected, closing the XSOAR incident is mirrored in ServiceNow. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+5. Click **Test** to validate the URLs, token, and connection.
 ## Fetch Incidents
 The integration fetches newly created tickets according to the following parameters,
 which you define in the instance configuration: ticket_type, query, and limit.
