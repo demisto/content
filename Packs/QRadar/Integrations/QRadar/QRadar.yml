@@ -46,6 +46,12 @@ configuration:
   name: full_enrich
   required: false
   type: 8
+- defaultvalue: '100'
+  display: Number of addresses to enrich per API call
+  hidden: false
+  name: enrich_size
+  required: false
+  type: 0
 description: Fetch offenses as incidents and search QRadar
 display: IBM QRadar
 name: QRadar

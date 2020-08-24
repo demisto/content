@@ -16,7 +16,8 @@ requests.packages.urllib3.disable_warnings()
 
 USER = demisto.params().get('user')
 TOKEN = demisto.params().get('token', '')
-PRIVATE_KEY = demisto.params().get('credentials', {}).get('credentials', {}).get('sshkey', '')
+PRIVATE_KEY = demisto.params().get('credentials', {})
+PRIVATE_KEY = PRIVATE_KEY.get('credentials', {}).get('sshkey', '') if PRIVATE_KEY else PRIVATE_KEY
 INTEGRATION_ID = demisto.params().get('integration_id')
 INSTALLATION_ID = demisto.params().get('installation_id')
 BASE_URL = 'https://api.github.com'

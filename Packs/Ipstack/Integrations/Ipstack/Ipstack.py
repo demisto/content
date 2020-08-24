@@ -100,5 +100,5 @@ try:
         test_module()
     elif demisto.command() == 'ip':
         do_ip_command()
-except Exception, e:
+except Exception as e:
     return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
