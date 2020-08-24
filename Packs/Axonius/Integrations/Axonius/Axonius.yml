@@ -25,7 +25,7 @@ configuration:
   required: false
   type: 8
 script:
-  script: ''
+  script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/axonius:1.0.0.10828
@@ -64,7 +64,7 @@ script:
       description: The IP addresses of the asset
     - contextPath: Axonius.Devices.os_type
       type: String
-      description: The OS type (Windows, Linux, iOS,...)
+      description: The OS type (Windows, Linux, macOS,...)
     - contextPath: Axonius.Devices.labels
       type: String
       description: Tags assigned to the asset
@@ -99,4 +99,3 @@ script:
     - contextPath: Axonius.Users.labels
       type: String
       description: Tags assigned to the asset
-
