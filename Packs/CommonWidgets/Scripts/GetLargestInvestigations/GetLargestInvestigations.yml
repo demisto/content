@@ -1,12 +1,12 @@
 args:
 - default: false
-  description: The date whose month is the last month we want to fetch the incidents.
+  description: The end date for fetching incidents in ISO format. Incidents will be fetched until the last day of the specified month. For example, if you specify 2020-08-14, incidents created on the specified "from" date until  2020-08-31 will be returned.
   isArray: false
   name: to
   required: false
   secret: false
 - default: false
-  description: The date whose month is the first month we want to fetch the incidents.
+  description: The start date for fetching incidents in ISO format. Incidents will be fetched starting from the first day of the specified month. For example, if you specify 2020-08-14, incidents created on 2020-08-01 will be returned.
   isArray: false
   name: from
   required: false
