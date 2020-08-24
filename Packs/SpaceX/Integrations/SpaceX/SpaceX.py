@@ -935,5 +935,5 @@ def main():
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(err)}')
 
 
-if __name__ in ['builtin', 'builtins']:
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
