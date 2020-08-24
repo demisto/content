@@ -1274,7 +1274,7 @@ def create_test_file(is_nightly, skip_save=False):
 
         for test in tests:
             print(f"found this test: {test}")
-            pack_tests = get_tests_for_pack(tools.pack_name_to_path(test))
+            pack_tests = get_tests_for_pack(tools.pack_name_to_path(test))  # TODO: think if it's necessary
             print(f"get_pack_tests_to_install new: {pack_tests}")
             packs_to_install.add(tools.get_pack_name(tools.pack_name_to_path(test)))
             print(f"found this pack name:{tools.get_pack_name(tools.pack_name_to_path(test))}")
