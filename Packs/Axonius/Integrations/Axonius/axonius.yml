@@ -1,6 +1,6 @@
 name: Axonius
 display: Axonius
-description: This is the Axonius integration
+description: This integration is for fetching information about assets in Axonius.
 category: Data Enrichment & Threat Intelligence
 tests:
 - No tests
@@ -24,6 +24,10 @@ configuration:
   display: Trust any certificate (not secure)
   required: false
   type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 script:
   script: '-'
   type: python
@@ -36,7 +40,7 @@ script:
     arguments:
     - name: saved_query_name
       required: true
-      description: The name of the saved query
+      description: "The name of the devices saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-devices"
     outputs:
     - contextPath: Axonius.Devices.adapter_list_length
       type: Number
@@ -73,7 +77,7 @@ script:
     arguments:
     - name: saved_query_name
       required: true
-      description: The name of the saved query
+      description: "The name of the users saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-users"
     outputs:
     - contextPath: Axonius.Users.adapter_list_length
       type: Number
