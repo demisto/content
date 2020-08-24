@@ -237,16 +237,10 @@ def test_module(client, args):
         'ok' if test passed, anything else will fail the test.
     """
 
-    """result = client.http_request('DBot')
-    if res.status_code == 200:
-        return 'ok'
-    else:
-        raise Exception"""
-
     uri = f'/scim/directory/{encode_string_results(client.directory_id)}/Users/1234'
     res = client.http_request(method='GET', url_suffix=uri)
     if res.status_code == 403:
-        err_msg = 'Invalid url: ' + client.base_url + f'/scim/directory/{encode_string_results(client.directory_id)}'
+        err_msg = 'Please check the client directory ' + client.directory_id
         raise Exception(f"{res.status_code} - {err_msg}")
     elif res.status_code == 401:
         raise Exception(f"{res.status_code} - {res.json().get('message')}")
@@ -495,14 +489,14 @@ def update_user_command(client, args):
 
 
 def disable_user_command(client, args):
-    return enablee_disable_user_command(client, args, False)
+    return enable_disable_user_command(client, args, False)
 
 
 def enable_user_command(client, args):
-    return enablee_disable_user_command(client, args, True)
+    return enable_disable_user_command(client, args, True)
 
 
-def enablee_disable_user_command(client, args, is_active):
+def enable_disable_user_command(client, args, is_active):
     """
         Enable user by setting active = true in Atlassian API , if Connection to the service is successful.
 
@@ -607,7 +601,6 @@ def main():
 
     # Log exceptions
     except Exception:
-        demisto.error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
         return_error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
 
 
