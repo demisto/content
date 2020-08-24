@@ -1,0 +1,655 @@
+id: OktaITAdmin-Test
+version: -1
+name: OktaITAdmin-Test
+starttaskid: "0"
+description: ''
+tasks:
+  "0":
+    id: "0"
+    taskid: bb65faa6-953a-480a-8468-4549a929c074
+    type: start
+    task:
+      id: bb65faa6-953a-480a-8468-4549a929c074
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: b7df2f2f-f22c-4be1-8a9a-a0e1c615babb
+    type: regular
+    task:
+      id: b7df2f2f-f22c-4be1-8a9a-a0e1c615babb
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7077f73f-250a-488a-83a4-ca6c42c1fb91
+    type: regular
+    task:
+      id: 7077f73f-250a-488a-83a4-ca6c42c1fb91
+      version: -1
+      name: create-user
+      description: Creates a user
+      script: Okta IT Admin|||create-user
+      type: regular
+      iscommand: true
+      brand: Okta IT Admin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 789e2c93-4002-44c7-8dd0-17234ceb7bbb
+    type: condition
+    task:
+      id: 789e2c93-4002-44c7-8dd0-17234ceb7bbb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CreateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: user already exist
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 79d4c918-534c-4e8d-851e-a30ab8471ea1
+    type: regular
+    task:
+      id: 79d4c918-534c-4e8d-851e-a30ab8471ea1
+      version: -1
+      name: update-user
+      description: Updates an existing user resource found with the "oldscim" with
+        the data in the "newscim"
+      script: Okta IT Admin|||update-user
+      type: regular
+      iscommand: true
+      brand: Okta IT Admin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      customMapping: {}
+      newScim:
+        simple: ${scim}
+      oldScim:
+        simple: '{"id": "${id}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: cead168e-d60d-4b92-8785-b341c2d6ffeb
+    type: condition
+    task:
+      id: cead168e-d60d-4b92-8785-b341c2d6ffeb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UpdateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: fef9bf8a-6c23-4da4-8724-7093ae4487de
+    type: regular
+    task:
+      id: fef9bf8a-6c23-4da4-8724-7093ae4487de
+      version: -1
+      name: get-user
+      description: Retrieves a single user resource.
+      script: Okta IT Admin|||get-user
+      type: regular
+      iscommand: true
+      brand: Okta IT Admin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      scim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 596b213c-b6d9-49e1-8f08-da2ae2fcef06
+    type: condition
+    task:
+      id: 596b213c-b6d9-49e1-8f08-da2ae2fcef06
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GetUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 64d8c709-991c-4cbd-885f-e4479feb776e
+    type: regular
+    task:
+      id: 64d8c709-991c-4cbd-885f-e4479feb776e
+      version: -1
+      name: enable-user
+      description: Enable active users by setting the active attribute equal to true.
+      script: Okta IT Admin|||enable-user
+      type: regular
+      iscommand: true
+      brand: Okta IT Admin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      scim:
+        simple: '{"id": "${id}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 3bf2079a-275e-4a51-863a-1cea2d01c11b
+    type: condition
+    task:
+      id: 3bf2079a-275e-4a51-863a-1cea2d01c11b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EnableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: a28ee155-679d-4330-8aaa-e961f828f83d
+    type: regular
+    task:
+      id: a28ee155-679d-4330-8aaa-e961f828f83d
+      version: -1
+      name: disable-user
+      description: Disable active users by setting the active attribute equal to false.
+      script: Okta IT Admin|||disable-user
+      type: regular
+      iscommand: true
+      brand: Okta IT Admin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      scim:
+        simple: '{"id": "${id}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 5b596468-d45c-47bf-8db0-d1494ce5f383
+    type: condition
+    task:
+      id: 5b596468-d45c-47bf-8db0-d1494ce5f383
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 2fcabd39-2678-4725-8410-82815fa3fbbd
+    type: regular
+    task:
+      id: 2fcabd39-2678-4725-8410-82815fa3fbbd
+      version: -1
+      name: okta-get-assigned-user-for-app
+      script: '|||okta-get-assigned-user-for-app'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      applicationId:
+        simple: 0oae6ioe81sQ64Aui0h7
+      userId:
+        simple: ${id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: b51aede8-4465-4a97-8f36-2d6607b3cb8c
+    type: condition
+    task:
+      id: b51aede8-4465-4a97-8f36-2d6607b3cb8c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Okta.UserAppAssignment.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 7922c00b-f17e-4f17-8357-dfd2f81cb6ba
+    type: title
+    task:
+      id: 7922c00b-f17e-4f17-8357-dfd2f81cb6ba
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: b611955f-af99-4c0d-88e1-e95990899cce
+    type: regular
+    task:
+      id: b611955f-af99-4c0d-88e1-e95990899cce
+      version: -1
+      name: Set app instance
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append: {}
+      key:
+        simple: appInstanceName
+      stringify: {}
+      value:
+        simple: OktaITAdmin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 1360e5fe-5771-41aa-81b8-22b6fcc5c017
+    type: regular
+    task:
+      id: 1360e5fe-5771-41aa-81b8-22b6fcc5c017
+      version: -1
+      name: set scim value
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: scim
+      stringify: {}
+      value:
+        simple: '{"userName":"testdemisto@paloaltonetworks.com", "name":{"familyName":"Test","givenName":"Demisto"},
+          "emails":[{"type":"work","primary":true,"value":"testdemisto@paloaltonetworks.com"}]}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 70c44983-5765-43bb-8096-f74f2bceec81
+    type: regular
+    task:
+      id: 70c44983-5765-43bb-8096-f74f2bceec81
+      version: -1
+      name: set id for update
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: id
+      stringify: {}
+      value:
+        simple: ${GetUser.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3010,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+
