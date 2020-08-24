@@ -724,45 +724,45 @@ script:
     arguments: []
     outputs:
       - contextPath: EsmWatchlist.ID
-        description: The Id of the watchlist
+        description: The ID of the watchlist.
         type: string
       - contextPath: EsmWatchlist.Type
-        description: The type of the watchlist
+        description: The watchlist type.
         type: string
       - contextPath: EsmWatchlist.ValuesNumber
-        description: The number of values in the watchlist
+        description: The number of values in the watchlist.
         type: number
       - contextPath: EsmWatchlist.IsDynamic
-        description: Is the watchlist dynamic
+        description: Whether the watchlist is dynamic.
         type: boolean
       - contextPath: EsmWatchlist.IsActive
-        description: Is the watchlist active
+        description: Whether the watchlist is active.
         type: boolean
-    description: Gets the names of the watchlists
+    description: Gets the names of all watchlists.
   - name: esm-add-watchlist-values
     arguments:
       - name: id
         required: true
-        description: ID of the watchlist we want to add values to. ID can be retrieved
+        description: The ID of the watchlist to add values to. ID can be retrieved
           with the "esm-get-watchlists" command.
       - name: values
         required: true
-        description: 'A comma-separated list of values to be added to the watchlist.
-        Example: "1.1.1.1,2.2.2.2". Please add the correct type of values to correct
+        description: 'A comma-separated list of values to add to the watchlist.
+        For example, "1.1.1.1,2.2.2.2". Make sure you add the correct type of values to the correct
         watchlist type.'
-    description: 'Add values to an existing watchlist. '
+    description: 'Adds the supplied values to the specified (existing) watchlist. '
   - name: esm-remove-watchlist-values
     arguments:
       - name: id
         required: true
-        description: ID of the watchlist we want to remove values from. ID can be retrieved
+        description: The ID of the watchlist to remove values from. ID can be retrieved
           with the "esm-get-watchlists" command.
       - name: values
         required: true
-        description: 'A comma-separated list of values to be removed from the watchlist.
-        Example: "1.1.1.1,2.2.2.2". Please remove the correct type of values from correct
+        description: 'A comma-separated list of values to remove from the watchlist.
+        For example, "1.1.1.1,2.2.2.2". Make sure you remove the correct type of values from the correct
         watchlist type.'
-    description: 'Remove values from an existing watchlist. '
+    description: 'Removes values from an existing watchlist. '
   isfetch: true
   runonce: false
   script: '-'
