@@ -364,7 +364,7 @@ class Client(BaseClient):
         )
 
 
-def get_company_info_command(client, args):
+def get_company_info_command(client):
     res = client.get_company_info()
     md = tableToMarkdown('SpaceX Company Info:', res)
     command_results = CommandResults(
