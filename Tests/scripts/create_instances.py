@@ -12,10 +12,10 @@ SERVER_TWO_BEFORE_GA = "Demisto-Circle-CI-Content-OneBefore-GA*"  # Two before i
 AMI_LIST = [SERVER_GA, SERVER_MASTER, SERVER_ONE_BEFORE_GA, SERVER_TWO_BEFORE_GA]
 
 AMI_NAME_TO_READABLE = {
-    SERVER_GA: "Demisto GA",
+    SERVER_GA: "Demisto 6.0",
     SERVER_MASTER: "Server Master",
-    SERVER_ONE_BEFORE_GA: "Demisto one before GA",
-    SERVER_TWO_BEFORE_GA: "Demisto two before GA"}
+    SERVER_ONE_BEFORE_GA: "Demisto GA",
+    SERVER_TWO_BEFORE_GA: "Demisto one before GA"}
 
 
 def options_handler():

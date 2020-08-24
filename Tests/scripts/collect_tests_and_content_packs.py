@@ -1225,7 +1225,7 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
         'Demisto Marketplace': True,
         'Demisto two before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
         'Demisto one before GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
-        'Demisto GA': is_runnable_in_server_version(from_version, ga, to_version),
+        'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
