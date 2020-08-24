@@ -1028,5 +1028,6 @@
 	"type": "pdf",
 	"userAPIKey": "",
 	"userAPIKeyID": "",
-	"version": -1
+	"version": -1,
+	"fromVersion": "5.0.0"
 }
