@@ -66,6 +66,16 @@ class Client:
 """HELPER FUNCTIONS"""
 
 
+def get_timestamp_seconds(date):
+    seconds = str(date.timestamp()).split('.')[0]
+    return seconds
+
+
+def get_timestamp_nanoseconds(date):
+    nanos = str(date.timestamp()).split('.')[1]
+    return nanos
+
+
 def arg_dict_creator(string: Any):
     """Creates a Dict from a CSV string.
 
@@ -153,9 +163,11 @@ def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_i
         'Location': location_id,
         'KeyRing': key_ring_id,
         'Purpose': kms.CryptoKey.CryptoKeyPurpose(res.purpose).name,
-        'CreationTime': datetime.fromtimestamp(int(res.create_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
-        'NextRotationTime': datetime.fromtimestamp(int(res.next_rotation_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
-        'RotationPeriod': f'{str(res.rotation_period.seconds)}s',
+        'CreationTime': datetime.fromtimestamp(int(get_timestamp_seconds(
+            res.create_time))).strftime(DEMISTO_DATETIME_FORMAT),
+        'NextRotationTime': datetime.fromtimestamp(int(get_timestamp_seconds(
+            res.next_rotation_time))).strftime(DEMISTO_DATETIME_FORMAT),
+        'RotationPeriod': f'{str(get_timestamp_seconds(res.rotation_period))}s',
         'Labels': labels,
         'VersionTemplate': {
             'ProtectionLevel': kms.ProtectionLevel(res.version_template.protection_level).name,
@@ -168,10 +180,12 @@ def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_i
         key_context['PrimaryCryptoKeyVersion'] = {
             'Name': res.primary.name,
             'State': kms.CryptoKeyVersion.CryptoKeyVersionState(res.primary.state).name,
-            'CreationTime': datetime.fromtimestamp(int(res.primary.create_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
+            'CreationTime': datetime.fromtimestamp(int(get_timestamp_seconds(
+                res.primary.create_time))).strftime(DEMISTO_DATETIME_FORMAT),
             'ProtectionLevel': kms.ProtectionLevel(res.primary.protection_level).name,
             'Algorithm': kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm(res.primary.algorithm).name,
-            'GenerateTime': datetime.fromtimestamp(int(res.primary.generate_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT)
+            'GenerateTime': datetime.fromtimestamp(int(get_timestamp_seconds(
+                res.primary.generate_time))).strftime(DEMISTO_DATETIME_FORMAT)
         }
 
     return key_context
@@ -199,16 +213,15 @@ def crypto_key_to_json(crypto_key: Any) -> Dict:
         'name': crypto_key.name,
         'purpose': kms.CryptoKey.CryptoKeyPurpose(crypto_key.purpose).name,
         'create_time': {
-            'seconds': crypto_key.create_time.seconds,
-            'nanos': crypto_key.create_time.nanos
-
+            'seconds': get_timestamp_seconds(crypto_key.create_time),
+            'nanos': get_timestamp_nanoseconds(crypto_key.create_time)
         },
         'next_rotation_time': {
-            'seconds': crypto_key.next_rotation_time.seconds,
-            'nanos': crypto_key.next_rotation_time.nanos
+            'seconds': get_timestamp_seconds(crypto_key.next_rotation_time),
+            'nanos': get_timestamp_nanoseconds(crypto_key.next_rotation_time)
         },
         'rotation_period': {
-            'seconds': crypto_key.rotation_period.seconds
+            'seconds': get_timestamp_seconds(crypto_key.rotation_period)
         },
         'labels': labels,
         'version_template': {
@@ -222,14 +235,14 @@ def crypto_key_to_json(crypto_key: Any) -> Dict:
             'name': crypto_key.primary.name,
             'state': kms.CryptoKeyVersion.CryptoKeyVersionState(crypto_key.primary.state).name,
             'create_time': {
-                'seconds': crypto_key.primary.create_time.seconds,
-                'nanos': crypto_key.primary.create_time.nanos
+                'seconds': get_timestamp_seconds(crypto_key.primary.create_time),
+                'nanos': get_timestamp_nanoseconds(crypto_key.primary.create_time)
             },
             'protection_level': kms.ProtectionLevel(crypto_key.primary.protection_level).name,
             'algorithm': kms.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key.primary.algorithm).name,
             'generate_time': {
-                'seconds': crypto_key.primary.generate_time.seconds,
-                'nanos': crypto_key.primary.generate_time.nanos
+                'seconds': get_timestamp_seconds(crypto_key.primary.generate_time),
+                'nanos': get_timestamp_nanoseconds(crypto_key.primary.generate_time)
             }
         }
 
@@ -390,14 +403,14 @@ def get_primary_key_version(project_id: str, location_id: str, key_ring_id: str,
 def key_ring_context_and_json_creation(key_ring: Any) -> Tuple[Dict, Dict]:
     key_ring_context = {
         'Name': key_ring.name,
-        'CreateTime': datetime.fromtimestamp(int(key_ring.create_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT)
+        'CreateTime': datetime.fromtimestamp(int(key_ring.create_time.timestamp())).strftime(DEMISTO_DATETIME_FORMAT)
     }
 
     key_ring_json = {
         'name': key_ring.name,
         'create_time': {
-            'seconds': key_ring.create_time.seconds,
-            'nanos': key_ring.create_time.nanos
+            'seconds': int(get_timestamp_seconds(key_ring.create_time)),
+            'nanos': int(get_timestamp_nanoseconds(key_ring.create_time))
         }
     }
 
