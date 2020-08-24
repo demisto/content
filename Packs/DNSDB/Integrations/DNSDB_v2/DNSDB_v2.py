@@ -241,11 +241,6 @@ class Client(BaseClient):
         if res.status_code == 404:
             return
 
-        try:
-            res.raise_for_status()
-        except requests.RequestException as e:
-            raise QueryError from e
-
         for line in res.iter_lines():
             yield json.loads(line)
 
