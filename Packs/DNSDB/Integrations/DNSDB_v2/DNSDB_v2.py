@@ -537,9 +537,7 @@ def dnsdb_rdata(client, args):
         raise Exception(f'Invalid rdata query type: {type}')
 
     ctx = {
-        INTEGRATION_CONTEXT_NAME: {
-            RECORD_SUBCONTEXT_NAME: [build_result_context(r) for r in res]
-        }
+        f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}': [build_result_context(r) for r in res],
     }
     md = lookup_to_markdown(res, want_bailiwick=False)
     return md, ctx, res
@@ -556,9 +554,7 @@ def dnsdb_summarize_rdata(client, args):
         raise Exception(f'Invalid rdata query type: {type}')
 
     ctx = {
-        INTEGRATION_CONTEXT_NAME: {
-            SUMMARY_SUBCONTEXT_NAME: build_result_context(res)
-        }
+        f'INTEGRATION_CONTEXT_NAME.{SUMMARY_SUBCONTEXT_NAME}': build_result_context(res),
     }
     md = summarize_to_markdown(res)
     return md, ctx, res
@@ -570,9 +566,7 @@ def dnsdb_rrset(client, args):
     res = list(q)
 
     ctx = {
-        INTEGRATION_CONTEXT_NAME: {
-            RECORD_SUBCONTEXT_NAME: [build_result_context(r) for r in res],
-        }
+        f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}': [build_result_context(r) for r in res],
     }
     md = lookup_to_markdown(res)
     return md, ctx, res
@@ -582,9 +576,7 @@ def dnsdb_rrset(client, args):
 def dnsdb_summarize_rrset(client, args):
     res = _run_query(client.summarize_rrset, args)
     ctx = {
-        INTEGRATION_CONTEXT_NAME: {
-            SUMMARY_SUBCONTEXT_NAME: build_result_context(res)
-        }
+        f'{INTEGRATION_CONTEXT_NAME}.{SUMMARY_SUBCONTEXT_NAME}': build_result_context(res),
     }
     md = summarize_to_markdown(res)
     return md, ctx, res
@@ -594,9 +586,7 @@ def dnsdb_summarize_rrset(client, args):
 def dnsdb_rate_limit(client, _):
     res = client.rate_limit()
     ctx = {
-        INTEGRATION_CONTEXT_NAME: {
-            RATE_SUBCONTEXT_NAME: build_rate_limits_context(res)
-        }
+        f'{INTEGRATION_CONTEXT_NAME}.{RATE_SUBCONTEXT_NAME}': build_rate_limits_context(res),
     }
     md = rate_limit_to_markdown(res)
     return md, ctx, res
