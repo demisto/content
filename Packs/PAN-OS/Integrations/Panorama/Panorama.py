@@ -61,22 +61,10 @@ if DEVICE_GROUP:
         XPATH_RULEBASE = "/config/shared/"
         DEVICE_GROUP = device_group_shared
     else:
-        XPATH_RULEBASE = "/config/devices/entry/[@name='localhost.localdomain']/device-group/entry[@name=\'" \
-                        + DEVICE_GROUP + "\']/"
+        XPATH_RULEBASE = f"/config/devices/entry[@name=\'localhost.localdomain\']/device-group/entry" \
+            f"[@name='{DEVICE_GROUP}']/"
 else:
-    XPATH_RULEBASE = "/config/devices/entry/[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + "\']/"
-
-# setting security profile xpath relevant to FW or panorama management
-if DEVICE_GROUP:
-    device_group_shared = DEVICE_GROUP.lower()
-    if DEVICE_GROUP == 'shared':
-        XPATH_PROFILE = "/config/shared/profiles"
-        DEVICE_GROUP = device_group_shared
-    else:
-        XPATH_PROFILE = "/config/devices/entry/[@name='localhost.localdomain']/device-group/entry[@name=\'" \
-                        + DEVICE_GROUP + "\']/"
-else:
-    XPATH_PROFILE = "/config/devices/entry/[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + "\']/"
+    XPATH_RULEBASE = "/config/devices/entry[@name=\'localhost.localdomain\']/vsys/entry[@name=\'" + VSYS + "\']/"
 
 
 # Security rule arguments for output handling
@@ -5481,13 +5469,14 @@ def panorama_get_licence_command():
     })
 
 
-def get_security_profile():
+def get_security_profile(xpath):
     params = {
         'action': 'get',
         'type': 'config',
-        'xpath': XPATH_PROFILE + "profiles",
+        'xpath': xpath,
         'key': API_KEY
     }
+
     result = http_request(URL, 'GET', params=params)
 
     return result
@@ -5497,28 +5486,80 @@ def get_security_profiles_command():
     """
     Get information about profiles.
     """
-    result = get_security_profile()
+    content = []
+    rules_content = []
+    security_profile = demisto.args().get('security_profile')
+    if security_profile:
+        xpath = f'{XPATH_RULEBASE}profiles/{security_profile}'
+    else:
+        xpath = f'{XPATH_RULEBASE}profiles'
+    result = get_security_profile(xpath)
 
-    demisto.results(result)
+    security_profiles = result['response']['result']['profiles']
+    if 'spyware' in security_profiles:
+        rules = security_profiles.get('spyware').get('entry', {}).get('rules', {}).get('entry', {})
+        for rule in rules:
+            rules_content.append({
+                'Name': rule.get('@name'),
+                'Action': rule.get('action'),
+                'Severity': rule.get('severity'),
+                'Threat-name': rule.get('threat-name'),
+                'Category': rule.get('category'),
+                'Packet-capture': rule.get('packet-capture')
+            })
+        content.append({
+            'Name': security_profiles.get('spyware').get('entry').get('@name'),
+            'Rules': rules_content,
+            'Description': security_profiles.get('spyware').get('entry').get('description')
+        })
+
+        human_readable = tableToMarkdown('Anti-spyware Profiles:', content, ['Name', 'Description', 'Rules'], removeNull=True)
+    # for profile in security_profiles:
+    #     content.append({
+    #         'Profile': profile,
+    #         'Name': security_profiles.get(profile).get('entry').get('@name'),
+    #         'Rules': security_profiles.get(profile).get('entry').get('rules').get('entry')
+    #     })
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {"Panorama.Profile(val.Profile == obj.Profile)": security_profiles}
+    })
 
 
-def apply_security_profile(rule_name, profile_type, profile_name):
+def apply_security_profile(pre_post, rule_name, profile_type, profile_name):
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': f"{XPATH_PROFILE}/rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/"
-        f"profiles/{profile_type} and value <member>{profile_name}</member>",
-        'key': API_KEY
+        'xpath': f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"
+        f"profiles/{profile_type}",
+        'key': API_KEY,
+        'element': '<member>' + profile_name + '</member>'
     }
     result = http_request(URL, 'POST', params=params)
 
     return result
 
 
-# def apply_security_profile_command():
-#
-#     profile_type = demisto.args().get('profile_type')
-#     rule_name = demisto.args().get('rule_name')
+def apply_security_profile_command():
+
+    pre_post = demisto.args().get('pre_post')
+    profile_type = demisto.args().get('profile_type')
+    rule_name = demisto.args().get('rule_name')
+    profile_name = demisto.args().get('profile_name')
+
+    if DEVICE_GROUP:
+        if not pre_post:
+            raise Exception('Please provide the pre_post argument when apply profiles to  rules in Panorama instance.')
+
+    result = apply_security_profile(pre_post, rule_name, profile_type, profile_name)
+    if result['response']['@status'] == 'success':
+        demisto.results(f'The profile {profile_name} has been applied to the rule {rule_name}')
+    else:
+        demisto.results(result['response']['msg'])
 
 
 def get_ssl_decryption_rules(xpath):
@@ -5528,7 +5569,6 @@ def get_ssl_decryption_rules(xpath):
         'xpath': xpath,
         'key': API_KEY
     }
-    print(xpath)
     result = http_request(URL, 'GET', params=params)
 
     return result
@@ -5578,6 +5618,137 @@ def get_ssl_decryption_rules_command():
         'HumanReadable': tableToMarkdown('SSL Decryption Rules', content, headers, removeNull=True),
         'EntryContext': {"Panorama.SSLRule(val.UUID == obj.UUID)": content}
     })
+
+
+# def get_anti_spyware_best_practice():
+#     params = {
+#         'action': 'get',
+#         'type': 'config',
+#         'xpath': XPATH_RULEBASE + 'profiles/spyware',
+#         'key': API_KEY
+#     }
+#
+#     result = http_request(URL, 'GET', params=params)
+#
+#     return result
+#
+#
+# def get_anti_spyware_best_practice_command():
+#
+#     result = get_anti_spyware_best_practice()
+#
+def set_xpath_wildfire(template: str = None) -> str:
+    """
+    Setting wildfire xpath relevant to panorama instances.
+    """
+    if template:
+        xpath_wildfire = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=" \
+            f"'{template}']/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting/wildfire"
+
+    else:
+        xpath_wildfire = "/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting"
+    return xpath_wildfire
+
+
+def get_wildfire_system_config(template):
+
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': set_xpath_wildfire(template),
+        'key': API_KEY,
+    }
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_wildfire_update_schedule(template):
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']"
+        f"/config/devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
+        'key': API_KEY
+    }
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_wildfire_system_config_command():
+
+    file_size = []
+    template = demisto.args().get('template')
+    result = get_wildfire_system_config(template)
+    system_config = result['response']['result']['wildfire']
+
+    file_size_limit = system_config.get('file-size-limit').get('entry')
+    for item in file_size_limit:
+        file_size.append({
+            'Name': item.get('@name'),
+            'Size-limit': item.get('size-limit')
+        })
+
+    if 'report-grayware-file' in system_config:
+        report_grayware_file = system_config.get('report-grayware-file')
+    else:
+        report_grayware_file = 'No'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(f'WildFire Configuration\n Report Grayware File: {report_grayware_file}',
+                                         file_size, ['Name', 'Size-limit'], removeNull=True),
+        'EntryContext': {"Panorama.WildFire(val.Name == obj.Name)": file_size}
+    })
+
+
+def get_wildfire_update_schedule_command():
+    template = demisto.args().get('template')
+    result = get_wildfire_update_schedule(template)
+
+    schedule = result['response']['result']['wildfire']
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(f'The updated schedule for Wildfire', schedule),
+        'EntryContext': {"Panorama.WildFire": schedule}
+    })
+
+
+# def enforce_wildfire_best_practice():
+
+
+def url_filtering_block_default_categories(profile_name):
+
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/url-filtering/entry[@name='{profile_name}']/block",
+        'key': API_KEY,
+        'element': '<member>adult</member><member>hacking</member><member>command-and-control</member><member>'
+                   'copyright-infringement</member><member>extremism</member><member>malware</member><member>'
+                   'phishing</member><member>proxy-avoidance-and-anonymizers</member><member>parked</member><member>'
+                   'unknown</member><member>dynamic-dns</member>'
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def url_filtering_block_default_categories_command():
+
+    profile_name = demisto.args().get('profile_name')
+    result = url_filtering_block_default_categories(profile_name)
+    if result['response']['@status'] == 'success':
+        demisto.results(f'The default categories to block has been set successfully to {profile_name}')
+    else:
+        demisto.results(result['response']['msg'])
 
 
 def main():
@@ -5864,11 +6035,24 @@ def main():
         elif demisto.command() == 'panorama-get-licences':
             panorama_get_licence_command()
 
-        elif demisto.command() == 'panorama-get-security-profiles':
-            get_security_profiles_command()
+        # elif demisto.command() == 'panorama-get-security-profiles':
+        #     get_security_profiles_command()
+
+        elif demisto.command() == 'panorama-apply-security-profile':
+            apply_security_profile_command()
 
         elif demisto.command() == 'panorama-get-ssl-decryption-rules':
             get_ssl_decryption_rules_command()
+
+        elif demisto.command() == 'panorama-get-wildfire-configuration':
+            get_wildfire_system_config_command()
+            get_wildfire_update_schedule_command()
+
+        elif demisto.command() == 'panorama-url-filtering-block-default-categories':
+            url_filtering_block_default_categories_command()
+
+        # elif demisto.command() == 'panorama-get-anti-spyware-best-practice':
+        #     get_anti_spyware_best_practice_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

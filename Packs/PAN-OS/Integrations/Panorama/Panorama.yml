@@ -3809,7 +3809,23 @@ script:
     - contextPath: Panorama.License.Serial
       description: The license serial.
       type: String
-  - deprecated: false
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The security profile to get.
+      isArray: false
+      name: security_profile
+      predefined:
+      - data-filtering
+      - file-blocking
+      - spyware
+      - url-filtering
+      - virus
+      - vulnerability
+      - wildfire-analysis
+      required: false
+      secret: false
+    deprecated: false
     description: Get information about profiles.
     execution: false
     name: panorama-get-security-profiles
@@ -3822,8 +3838,6 @@ script:
       predefined:
       - data-filtering
       - file-blocking
-      - gtp
-      - sctp
       - spyware
       - url-filtering
       - virus
@@ -3836,6 +3850,23 @@ script:
       isArray: false
       name: rule_name
       required: true
+      secret: false
+    - default: false
+      description: The profile name to apply to the rule.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory
+        for Panorama instances.
+      isArray: false
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      required: false
       secret: false
     deprecated: false
     description: Apply profile to specific rules / rules with specific tag.
@@ -3897,6 +3928,38 @@ script:
     - contextPath: Panorama.SSLRule.Category
       description: SSL rule category.
       type: String
+  - arguments:
+    - default: false
+      description: The template name.
+      isArray: false
+      name: template
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve Wildfire Configuration
+    execution: false
+    name: panorama-get-wildfire-configuration
+    outputs:
+    - contextPath: Panorama.WildFire.Name
+      description: File type.
+      type: String
+    - contextPath: Panorama.WildFire.Size-limit
+      description: File size limit.
+      type: String
+    - contextPath: Panorama.WildFire.recurring
+      description: Schedule recurring
+      type: String
+  - arguments:
+    - default: false
+      description: The url-filtering profile name.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Set default categories to block in the URL filtering profile.
+    execution: false
+    name: panorama-url-filtering-block-default-categories
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false
