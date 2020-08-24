@@ -738,7 +738,7 @@ script:
       - contextPath: EsmWatchlist.IsActive
         description: Whether the watchlist is active.
         type: boolean
-    description: Gets the names of all watchlists.
+    description: Gets a list of user created watchlists.
   - name: esm-add-watchlist-values
     arguments:
       - name: id
@@ -750,7 +750,7 @@ script:
         description: 'A comma-separated list of values to add to the watchlist.
         For example, "1.1.1.1,2.2.2.2". Make sure you add the correct type of values to the correct
         watchlist type.'
-    description: 'Adds the supplied values to the specified (existing) watchlist. '
+    description: 'Adds the supplied values to an existing watchlist. '
   - name: esm-remove-watchlist-values
     arguments:
       - name: id
@@ -762,7 +762,7 @@ script:
         description: 'A comma-separated list of values to remove from the watchlist.
         For example, "1.1.1.1,2.2.2.2". Make sure you remove the correct type of values from the correct
         watchlist type.'
-    description: 'Removes values from an existing watchlist. '
+    description: 'Removes the supplied values from an existing watchlist. '
   isfetch: true
   runonce: false
   script: '-'
