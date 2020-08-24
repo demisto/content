@@ -240,10 +240,7 @@ class Client(BaseClient):
         if max_count is not None:
             params['max_count'] = max_count
 
-        if params:
-            path = '{0}?{1}'.format(path, urllib.parse.urlencode(params))
-
-        res = self._http_request('GET', path, stream=True, resp_type='response')
+        res = self._http_request('GET', path, params=params, stream=True, resp_type='response')
 
         if res.status_code == 404:
             return
