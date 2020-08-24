@@ -4,7 +4,7 @@ from CommonServerPython import *
 ''' IMPORTS '''
 
 import json
-
+from datetime import datetime
 import urllib3
 
 # Disable insecure warnings
@@ -823,6 +823,7 @@ def fetch_incidents_command(client, params):
     all_ids = [latest_id]
     instance_name = demisto.integrationInstance()
     mirror_direction = "In" if demisto.params().get('mirror') else ""
+    now = datetime.utcnow().isoformat()
     for launch in upcoming_launches:
         launch['dbotMirrorDirection'] = mirror_direction
         launch['dbotMirrorInstance'] = instance_name
@@ -830,6 +831,7 @@ def fetch_incidents_command(client, params):
         incident = {
             "name": f"SpaceX Flight Number {launch['flight_number']}",
             "details": launch['details'],
+            "occurred": now,
             "rawJSON": json.dumps(launch)
         }
         incidents.append(incident)
