@@ -3257,7 +3257,7 @@
 </table>
 </div>
 </div>
-<h3 id="get-a-list-of-user-created-watchlists">20. Get a list of user created watchlists.</h3>
+<h3 id="get-a-list-of-user-created-watchlists">20. Gets a list of user created watchlists.</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -3293,27 +3293,27 @@
 <tr>
 <td style="width: 320px;">EsmWatchlist.ID</td>
 <td style="width: 92px;">string</td>
-<td style="width: 328px;">The Id of the watchlist</td>
+<td style="width: 328px;">The ID of the watchlist.</td>
 </tr>
 <tr>
 <td style="width: 320px;">EsmWatchlist.Type</td>
 <td style="width: 92px;">string</td>
-<td style="width: 328px;">The type of the watchlist</td>
+<td style="width: 328px;">The watchlist type.</td>
 </tr>
 <tr>
 <td style="width: 320px;">EsmWatchlist.ValuesNumber</td>
 <td style="width: 92px;">number</td>
-<td style="width: 328px;">The number of values in the watchlist</td>
+<td style="width: 328px;">The number of values in the watchlist.</td>
 </tr>
 <tr>
 <td style="width: 320px;">EsmWatchlist.IsDynamic</td>
 <td style="width: 92px;">boolean</td>
-<td style="width: 328px;">Is the watchlist dynamic</td>
+<td style="width: 328px;">Whether the watchlist is dynamic.</td>
 </tr>
 <tr>
 <td style="width: 320px;">EsmWatchlist.IsActive</td>
 <td style="width: 92px;">boolean</td>
-<td style="width: 328px;">Is the watchlist active</td>
+<td style="width: 328px;">Whether the watchlist is active.</td>
 </tr>
 </tbody>
 </table>
@@ -3404,11 +3404,11 @@
 </table>
 </div>
 </div>
-<h3 id="add-value-to-existing-watchlist">21. Add value to existing watchlist</h3>
+<h3 id="add-value-to-existing-watchlist">21. Add values to an existing watchlist</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Adds values to an existing watchlist.</p>
+<p>Adds the supplied values to an existing watchlist.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-16">Base Command</h5>
@@ -3433,13 +3433,13 @@
 <tr>
 <td style="width: 187px;">id</td>
 <td style="width: 452px;">
-ID of the watchlist we want to add values to. ID can be retrieved with the "esm-get-watchlists" command.</td>
+The ID of the watchlist to add values to. ID can be retrieved with the "esm-get-watchlists" command.</td>
 <td style="width: 101px;">Required</td>
 </tr>
 <tr>
 <td style="width: 187px;">values</td>
 <td style="width: 452px;">
-Coma separated values of the data we want to add to the watchlist. Example: "1.1.1.1,2.2.2.2". Please add the correct type of values to correct watchlist type.</td>
+A comma-separated list of values to add to the watchlist. For example, "1.1.1.1,2.2.2.2". Make sure you add the correct type of values to the correct watchlist type.</td>
 <td style="width: 101px;">Required</td>
 </tr>
 </tbody>
@@ -3466,7 +3466,7 @@ Coma separated values of the data we want to add to the watchlist. Example: "1.1
 <p>Watchlist Id:3 successfully updated with 1 values.</p>
 </div>
 <div class="cl-preview-section">
-<h3 id="remove-value-from-existing-watchlist">22. Remove value from existing watchlist</h3>
+<h3 id="remove-value-from-existing-watchlist">22. Remove values from an existing watchlist</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -3495,13 +3495,13 @@ Coma separated values of the data we want to add to the watchlist. Example: "1.1
 <tr>
 <td style="width: 187px;">id</td>
 <td style="width: 452px;">
-ID of the watchlist we want to remove values from. ID can be retrieved with the "esm-get-watchlists" command.</td>
+The ID of the watchlist to remove values from. ID can be retrieved with the "esm-get-watchlists" command.</td>
 <td style="width: 101px;">Required</td>
 </tr>
 <tr>
 <td style="width: 187px;">values</td>
 <td style="width: 452px;">
-Coma separated values of the data we want to remove from the watchlist. Example: "1.1.1.1,2.2.2.2". Please remove the correct type of values from correct watchlist type.</td>
+A comma-separated list of values to remove from the watchlist. For example, "1.1.1.1,2.2.2.2". Make sure you remove the correct type of values from the correct watchlist type.</td>
 <td style="width: 101px;">Required</td>
 </tr>
 </tbody>
