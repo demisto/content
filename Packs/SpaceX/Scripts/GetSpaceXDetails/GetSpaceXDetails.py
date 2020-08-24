@@ -21,7 +21,7 @@ type_info = {
     "site": {
         "title": "Sites",
         "key": "spacexsites"
-    },
+    }
 
 }
 selected_type = type_info.get(details_type)
