@@ -751,14 +751,18 @@ jobs:
                 shell: /bin/bash
                 when: always
                 command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto 6.0"
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto 6.0"
+                  else
+                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
+                  fi
             - run:
-                name: Run Tests - Server 6.0
+                name: Run Tests - Demisto 6.0
                 shell: /bin/bash
                 when: always
+                no_output_timeout: 5h
                 command: |
-                  echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
-                  source $BASH_ENV
                   export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto 6.0"')
                   echo "Demisto 6.0 filter=$TEMP"
                   if [[ "$TEMP" == "false" ]];
@@ -768,11 +772,21 @@ jobs:
                   fi
                   if ./Tests/scripts/is_ami.sh ;
                     then
-                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-
-                    else
-                      echo "Not AMI run, can't run on this version"
+                      echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
+                  else
+                    echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
                   fi
+                  source $BASH_ENV
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                  export RETVAL=$?
+                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                  exit $RETVAL
+            - run:
+                name: Slack Notifier
+                shell: /bin/bash
+                command: |
+                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
+                when: always
             - *destroy_instances
             - *store_artifacts
   Server Master:
@@ -861,6 +875,7 @@ jobs:
                 when: always
             - *destroy_instances
             - *store_artifacts
+
   Instance Test:
     <<: *container_config
     resource_class: medium
@@ -941,7 +956,7 @@ workflows:
       - Run Validations:
           requires:
             - Setup Environment
-      - Server Master:
+      - Server 4_1:
           filters:
             branches:
               ignore: /pull\/[0-9]+/

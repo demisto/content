@@ -1216,7 +1216,9 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
     two_before_ga = two_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
+    # Two before GA is not two before GA. Mistakes were made and this version is now actually 5.0
     one_before_ga = one_before_ga or AMI_BUILDS.get('PreGA', '0').split('-')[0]
+    # One before GA is not one before GA. Mistakes were made and this version is now actually 5.5
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
     envs_to_test = {
         'Demisto PreGA': True,
