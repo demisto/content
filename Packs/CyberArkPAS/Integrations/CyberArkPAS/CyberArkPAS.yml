@@ -1177,14 +1177,14 @@ script:
       type: String
   - arguments:
       - default: false
-        description: The ID of the account whose information will be retrieved.
+        description: The ID of the account for which to retrieve information.
         isArray: false
         name: account_id
         required: true
         secret: false
     deprecated: false
-    description: Returns information of a specific account that is identified by
-      its account ID.
+    description: Returns information for the specified account, identified by
+      the account ID.
     execution: false
     name: cyberark-pas-account-get-details
     outputs:
@@ -1192,7 +1192,7 @@ script:
         description: The unique ID of the account.
         type: String
       - contextPath: CyberArkPAS.Accounts.categoryModificationTime
-        description: The last modified date of the account.
+        description: The date the account was last modified.
         type: Number
       - contextPath: CyberArkPAS.Accounts.createdTime
         description: The date the account was created.
