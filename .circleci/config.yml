@@ -530,67 +530,6 @@ jobs:
                   fi
             - *store_artifacts
       - *persist_to_workspace
-  Server 4_1:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
-      - unless:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - *attach_workspace
-            - *restore_cache
-            - *add_ssh_keys
-            - *prepare_environment
-            - run:
-                name: Wait until server ready
-                shell: /bin/bash
-                when: always
-                command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto two before GA"
-            - run:
-                name: Run Tests - Server 4.1
-                shell: /bin/bash
-                when: always
-                command: |
-                  echo 'export INSTANCE_ROLE="Demisto two before GA"' >> $BASH_ENV
-                  source $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
-                  echo "Demisto two before GA filter=$TEMP"
-                  if [[ "$TEMP" == "false" ]];
-                    then
-                      echo "Skipping - instance was not setup"
-                      exit 0
-                  fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-
-                    else
-                      echo "Not AMI run, can't run on this version"
-                  fi
-            - *destroy_instances
-            - *store_artifacts
   Server 4_5:
     <<: *container_config
     resource_class: medium
@@ -777,6 +716,66 @@ jobs:
             - *destroy_instances
             - *store_artifacts
   Server 6_0:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.nightly >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - run:
+                name: Not running this job
+                when: always
+                command: |
+                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.nightly >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - *attach_workspace
+            - *add_ssh_keys
+            - *prepare_environment
+            - run:
+                name: Wait until server ready
+                shell: /bin/bash
+                when: always
+                command: |
+                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto 6.0"
+            - run:
+                name: Run Tests - Server 6.0
+                shell: /bin/bash
+                when: always
+                command: |
+                  echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
+                  source $BASH_ENV
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto 6.0"')
+                  echo "Demisto 6.0 filter=$TEMP"
+                  if [[ "$TEMP" == "false" ]];
+                    then
+                      echo "Skipping - instance was not setup"
+                      exit 0
+                  fi
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+
+                    else
+                      echo "Not AMI run, can't run on this version"
+                  fi
+            - *destroy_instances
+            - *store_artifacts
+  Server Master:
     <<: *container_config
     resource_class: medium
     <<: *environment
