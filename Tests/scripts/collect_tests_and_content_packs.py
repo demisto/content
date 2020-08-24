@@ -1272,11 +1272,12 @@ def create_test_file(is_nightly, skip_save=False):
         tests_string = '\n'.join(tests)
         packs_to_install_string = '\n'.join(packs_to_install)
 
-        for pack in tests:
-            print(f"pack to install from modified_metadata_list: {pack}")
-            pack_tests = get_tests_for_pack(tools.pack_name_to_path(pack))
-            print(f"get_pack_tests_to_install: {pack_tests}")
-            packs_to_install.add(pack)
+        for test in tests:
+            print(f"found this test: {test}")
+            pack_tests = get_tests_for_pack(tools.pack_name_to_path(test))
+            print(f"get_pack_tests_to_install new: {pack_tests}")
+            packs_to_install.add(tools.get_pack_name(tools.pack_name_to_path(test)))
+            print(f"found this pack name:{tools.get_pack_name(tools.pack_name_to_path(test))}")
             tests = tests.union(pack_tests)
 
         if not skip_save:
