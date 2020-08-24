@@ -1,0 +1,14 @@
+{
+    "name": "TestPackFromCurl",
+    "description": "This is a test pack from curl",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Octocat Smith",
+    "url": "",
+    "email": "",
+    "created": "2020-08-24T07:58:44Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
