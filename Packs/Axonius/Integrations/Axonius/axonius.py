@@ -36,13 +36,13 @@ def get_int_arg(
 
 
 def test_module(client: axonius_api_client.connect.Connect) -> str:
-    """Pass."""
+    """Tests Axonius API Client connectivity."""
     client.start()
     return "ok"
 
 
 def parse_kv(key: str, value: Any) -> Any:
-    """Pass."""
+    """Parse time stamp into required format."""
     if "last_seen" in key:
         try:
             return axonius_api_client.tools.dt_parse(value).isoformat()
@@ -52,7 +52,7 @@ def parse_kv(key: str, value: Any) -> Any:
 
 
 def parse_key(key: str) -> str:
-    """Pass."""
+    """Parse fields into required format."""
     if key.startswith("specific_data.data."):
         key = axonius_api_client.tools.strip_left(obj=key, fix="specific_data.data.")
         key = f"aggregated_{key}"
@@ -63,7 +63,7 @@ def parse_key(key: str) -> str:
 
 
 def parse_asset(asset: dict) -> dict:
-    """Pass."""
+    """Initiate field format correction on assets."""
     return {
         parse_key(key=k): parse_kv(key=k, value=v)
         for k, v in asset.items()
