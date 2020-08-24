@@ -11,7 +11,7 @@ args:
   name: from
   required: false
   secret: false
-comment: Script gets the all XSOAR investigations in a given time period whose size was above 1 MB.
+comment: Returns all investigations larger than 1 MB from all Cortex XSOAR.
 commonfields:
   id: GetLargestInvestigations
   version: -1
