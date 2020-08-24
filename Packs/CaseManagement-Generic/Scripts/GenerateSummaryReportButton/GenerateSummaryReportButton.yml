@@ -1,6 +1,6 @@
 comment: This button will generate summary 'Case Report' template for a given Incident
 commonfields:
-  id: acb34501-dbf5-4edc-80ab-d9515ec204ce
+  id: GenerateSummaryReportButton
   version: -1
 contentitemexportablefields:
   contentitemfields:
