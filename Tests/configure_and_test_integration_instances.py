@@ -851,9 +851,10 @@ def configure_servers_and_restart(build, prints_manager):
                 input('restart your server and then press enter.')
             else:
                 restart_server(server)
-        prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
-        prints_manager.execute_thread_prints(0)
-        sleep(60)
+        if not Build.run_environment == Running.WITH_LOCAL_SERVER:
+            prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
+            prints_manager.execute_thread_prints(0)
+            sleep(60)
 
 
 def restart_server(server):
@@ -996,7 +997,7 @@ def install_packs(build, prints_manager):
     return installed_content_packs_successfully
 
 
-def configure_server_instances(build: Build, tests_for_iteration, new_integrations, modified_integrations, prints_manager):
+def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations, prints_manager):
     all_module_instances = []
     brand_new_integrations = []
     testing_client = demisto_client.configure(base_url=build.servers[0], username=build.username,
@@ -1010,7 +1011,7 @@ def configure_server_instances(build: Build, tests_for_iteration, new_integratio
         prints_manager.add_print_job(integrations_names, print_warning, 0)
 
         new_integrations, modified_integrations, unchanged_integrations, integration_to_status = group_integrations(
-            integrations, build.skipped_integrations_conf, new_integrations, modified_integrations
+            integrations, build.skipped_integrations_conf, all_new_integrations, modified_integrations
         )
 
         instance_names_conf = test.get('instance_names', [])
