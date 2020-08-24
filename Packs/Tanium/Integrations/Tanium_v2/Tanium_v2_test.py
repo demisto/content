@@ -301,7 +301,7 @@ def test_parse_question(requests_mock):
 
 def test_get_question_result_invalid_input():
     client = Client(BASE_URL, 'username', 'password', 'domain')
-    data_args = {'completion-percantage': '0'}
+    data_args = {'completion-percentage': '0'}
     try:
         _, _, _ = get_question_result(client, data_args)
     except ValueError as e:
