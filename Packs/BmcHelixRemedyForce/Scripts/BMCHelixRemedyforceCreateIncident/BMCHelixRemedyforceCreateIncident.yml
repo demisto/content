@@ -232,6 +232,6 @@ dependson:
   - '|||bmc-remedy-asset-details-get'
   - '|||bmc-remedy-incident-create'
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.8.5.10455
+dockerimage: demisto/python3:3.8.5.10845
 tests:
 - No tests (auto formatted)

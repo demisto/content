@@ -158,7 +158,7 @@
     },
     "Bmc Remedyforce Last Modified Date": {
      "complex": null,
-     "simple": "LastModifiedDate"
+     "simple": "BmcLastModifiedDate"
     },
     "Bmc Remedyforce Opened Date": {
      "complex": null,

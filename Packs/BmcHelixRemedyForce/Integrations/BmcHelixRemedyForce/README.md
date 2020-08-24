@@ -70,6 +70,7 @@ This command gets details of service request definitions with the help of servic
 | BmcRemedyforce.ServiceRequestDefinition.requestedBy | String | Requested by field value. | 
 | BmcRemedyforce.ServiceRequestDefinition.title | String | Title field value for Service Request Definition. | 
 | BmcRemedyforce.ServiceRequestDefinition.description | String | Description field value for Service Request Definition. | 
+| BmcRemedyforce.ServiceRequestDefinition.approvalRequired | Boolean | Indicates if approval is required or not. |
 
 
 #### Command Example

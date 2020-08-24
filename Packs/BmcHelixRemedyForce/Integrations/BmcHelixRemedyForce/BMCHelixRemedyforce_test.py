@@ -676,8 +676,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         with open('./TestData/service_request_definition.json', encoding='utf-8') as f:
             data = json.load(f)
 
-        from BMCHelixRemedyforce import prepare_output_for_get_service_request_definitions
-        output = prepare_output_for_get_service_request_definitions(data['input_data'])
+        from BMCHelixRemedyforce import prepare_hr_output_for_get_service_request_definitions
+        output = prepare_hr_output_for_get_service_request_definitions(data['input_data'])
         assert output == data['expected_output']
 
     @patch('BMCHelixRemedyforce.Client.http_request')
@@ -1088,26 +1088,6 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
     @patch('BMCHelixRemedyforce.Client.get_session_id')
     @patch("requests.Session.request")
-    def test_bmc_remedy_template_details_get_command_unauthorized_without_params(self, req_obj, mocker_get_session_id):
-        """
-        Testcase for bmc_remedy_template_details_get_command method without passing impact name argument incase of
-        getting error response from rest API like 401 - Unauthorized.
-
-        :param req_obj: mocker object for making http request call
-        :param mocker_get_session_id: mocker object for getting valid session id
-        """
-        mocker_get_session_id.return_value = self.valid_session_id
-        resp1 = Response()
-        resp1.status_code = 401
-        req_obj.return_value = resp1
-        args = {}
-        try:
-            bmc_remedy_template_details_get_command(self.client, args)
-        except Exception as e:
-            assert str(e) == "{}".format(MESSAGES["AUTHENTICATION_ERROR"])
-
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch("requests.Session.request")
     def test_update_incident_positive(self, req_obj, mocker_get_session_id):
         """
         Testcase for positive scenario of update_incident method.
@@ -1331,9 +1311,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
                 "345", "broadcast_id", MESSAGES["UNEXPECTED_ERROR"])
             assert kwargs["exit"] is True
             assert kwargs["ignore_auto_extract"] is True
-            assert kwargs["outputs"]["BmcRemedyforce.ServiceRequest(val.Number == obj.Number)"]["Number"] == '345'
-            assert kwargs["outputs"]["BmcRemedyforce.ServiceRequest(val.Number == obj.Number)"]["key"] == 'value'
-            assert mocker_error.called
+            assert kwargs["outputs"]["BmcRemedyforce.ServiceRequest(val.Number === obj.Number)"]["Number"] == '345'
+            assert kwargs["outputs"]["BmcRemedyforce.ServiceRequest(val.Number === obj.Number)"]["key"] == 'value'
 
     @patch('BMCHelixRemedyforce.return_results')
     @patch('BMCHelixRemedyforce.update_incident')
@@ -1476,7 +1455,6 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             assert kwargs['ignore_auto_extract'] is True
             assert kwargs['outputs'][OUTPUT_PREFIX['SERVICE_REQUEST_WARNING']]['Number'] == '00000132'
             assert kwargs['outputs'][OUTPUT_PREFIX['SERVICE_REQUEST_WARNING']]['Id'] == 'adfghjkl'
-            assert mocker_error.called
 
     @patch('demistomock.error')
     @patch('BMCHelixRemedyforce.return_results')
@@ -1598,46 +1576,6 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         result = bmc_remedy_impact_details_get_command(self.client, args)
         assert result == MESSAGES['NO_ENTITY_FOUND'].format('impact(s)')
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch("requests.Session.request")
-    def test_bmc_remedy_impact_details_get_command_unauthorized(self, req_obj, mocker_get_session_id):
-        """
-        Testcase for bmc_remedy_impact_details_get_command method incase of getting error response
-        from rest API like 401 - Unauthorized.
-
-        :param req_obj: mocker object for making http request call
-        :param mocker_get_session_id: mocker object for getting valid session id
-        """
-        mocker_get_session_id.return_value = self.valid_session_id
-        resp1 = Mock(spec=requests.Response)
-        resp1.status_code = 401
-        req_obj.side_effect = [resp1]
-        args = {"impact_name": "abc"}
-        try:
-            bmc_remedy_impact_details_get_command(self.client, args)
-        except Exception as e:
-            assert str(e) == "{}".format(MESSAGES["AUTHENTICATION_ERROR"])
-
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch("requests.Session.request")
-    def test_bmc_remedy_impact_details_get_command_unauthorized_without_params(self, req_obj, mocker_get_session_id):
-        """
-        Testcase for bmc_remedy_impact_details_get_command method without passing impact name argument incase of
-        getting error response from rest API like 401 - Unauthorized.
-
-        :param req_obj: mocker object for making http request call
-        :param mocker_get_session_id: mocker object for getting valid session id
-        """
-        mocker_get_session_id.return_value = self.valid_session_id
-        resp1 = Response()
-        resp1.status_code = 401
-        req_obj.return_value = resp1
-        args = {}
-        try:
-            bmc_remedy_impact_details_get_command(self.client, args)
-        except Exception as e:
-            assert str(e) == "{}".format(MESSAGES["AUTHENTICATION_ERROR"])
-
     @patch('BMCHelixRemedyforce.Client.http_request')
     def test_bmc_remedy_service_offering_details_get_command_success(self, mock_http_res):
         """
@@ -1690,27 +1628,6 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         args = {}
         result = bmc_remedy_service_offering_details_get_command(self.client, args)
         assert result == MESSAGES['NO_ENTITY_FOUND'].format('service offering(s)')
-
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch("requests.Session.request")
-    def test_bmc_remedy_service_offering_details_get_command_unauthorized_without_params(self, req_obj,
-                                                                                         mocker_get_session_id):
-        """
-        Testcase for bmc_remedy_service_offering_details_get_command method without passing impact name argument
-        incase of getting error response from rest API like 401 - Unauthorized.
-
-        :param req_obj: mocker object for making http request call
-        :param mocker_get_session_id: mocker object for getting valid session id
-        """
-        mocker_get_session_id.return_value = self.valid_session_id
-        resp1 = Response()
-        resp1.status_code = 401
-        req_obj.return_value = resp1
-        args = {}
-        try:
-            bmc_remedy_service_offering_details_get_command(self.client, args)
-        except Exception as e:
-            assert str(e) == "{}".format(MESSAGES["AUTHENTICATION_ERROR"])
 
     @patch('BMCHelixRemedyforce.return_results')
     @patch('BMCHelixRemedyforce.Client.http_request')
@@ -1776,7 +1693,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
                                                                          'SOME_ISSUE_WITH_UPDATE')
             assert expected_msg == str(kwargs['warning'])
 
-            warning_output = {'BmcRemedyforce.Incident(val.Id == obj.Id)': success_result}
+            warning_output = {'BmcRemedyforce.Incident(val.Id === obj.Id)': success_result}
 
             assert warning_output == kwargs['outputs']
             assert mocker_error.called
@@ -1933,26 +1850,6 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         assert result == MESSAGES['NO_ENTITY_FOUND'].format('asset(s)')
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch("requests.Session.request")
-    def test_bmc_remedy_asset_details_get_command_unauthorized_without_params(self, req_obj, mocker_get_session_id):
-        """
-        Testcase for bmc_remedy_asset_details_get_command method without passing impact name argument
-        incase of getting error response from rest API like 401 - Unauthorized.
-
-        :param req_obj: mocker object for making http request call
-        :param mocker_get_session_id: mocker object for getting valid session id
-        """
-        mocker_get_session_id.return_value = self.valid_session_id
-        resp1 = Response()
-        resp1.status_code = 401
-        req_obj.return_value = resp1
-        args = {}
-        try:
-            bmc_remedy_asset_details_get_command(self.client, args)
-        except Exception as e:
-            assert str(e) == "{}".format(MESSAGES["AUTHENTICATION_ERROR"])
-
     @patch('BMCHelixRemedyforce.Client.http_request')
     def test_bmc_remedy_account_details_get_command_success(self, mock_http_res):
         """
@@ -2002,26 +1899,6 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         args = {}
         result = bmc_remedy_account_details_get_command(self.client, args)
         assert result == MESSAGES['NO_ENTITY_FOUND'].format('account(s)')
-
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch("requests.Session.request")
-    def test_bmc_remedy_account_details_get_command_unauthorized_without_params(self, req_obj, mocker_get_session_id):
-        """
-        Testcase for bmc_remedy_account_details_get_command method without passing impact name argument incase of
-        getting error response from rest API like 401 - Unauthorized.
-
-        :param req_obj: mocker object for making http request call
-        :param mocker_get_session_id: mocker object for getting valid session id
-        """
-        mocker_get_session_id.return_value = self.valid_session_id
-        resp1 = Response()
-        resp1.status_code = 401
-        req_obj.return_value = resp1
-        args = {}
-        try:
-            bmc_remedy_account_details_get_command(self.client, args)
-        except Exception as e:
-            assert str(e) == "{}".format(MESSAGES["AUTHENTICATION_ERROR"])
 
     @patch('BMCHelixRemedyforce.Client.http_request')
     def test_bmc_remedy_status_details_get_command_success(self, mocker_http_request):
@@ -2112,26 +1989,6 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         args = {}
         result = bmc_remedy_urgency_details_get_command(self.client, args)
         assert result == MESSAGES['NO_ENTITY_FOUND'].format('urgency')
-
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch("requests.Session.request")
-    def test_bmc_remedy_urgency_details_get_command_unauthorized_without_params(self, req_obj, mocker_get_session_id):
-        """
-        Testcase for bmc_remedy_urgency_details_get_command method without passing impact name argument incase of
-        getting error response from rest API like 401 - Unauthorized.
-
-        :param req_obj: mocker object for making http request call
-        :param mocker_get_session_id: mocker object for getting valid session id
-        """
-        mocker_get_session_id.return_value = self.valid_session_id
-        resp1 = Response()
-        resp1.status_code = 401
-        req_obj.return_value = resp1
-        args = {}
-        try:
-            bmc_remedy_urgency_details_get_command(self.client, args)
-        except Exception as e:
-            assert str(e) == "{}".format(MESSAGES["AUTHENTICATION_ERROR"])
 
     def test_bmc_remedy_category_details_get_command_invalid_type(self):
         """
@@ -2249,25 +2106,6 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         req_obj.return_value = expected_res
         actual_result = bmc_remedy_category_details_get_command(self.client, {'type': 'All'})
         assert actual_result == MESSAGES['NO_ENTITY_FOUND'].format('category')
-
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch("requests.Session.request")
-    def test_bmc_remedy_category_details_get_command_unauthorized(self, req_obj, mocker_get_session_id):
-        """
-        Testcase for bmc_remedy_category_details_get_command method to fetch all categories
-        incase of no categories found.
-
-        :param req_obj: mocker object for making http request call
-        :param mocker_get_session_id: mocker object for getting valid session id
-        """
-        mocker_get_session_id.return_value = self.valid_session_id
-        resp1 = Response()
-        resp1.status_code = 401
-        req_obj.side_effect = [resp1]
-        try:
-            bmc_remedy_category_details_get_command(self.client, {'type': 'All'})
-        except Exception as e:
-            assert str(e) == MESSAGES["AUTHENTICATION_ERROR"]
 
     @patch('demistomock.args')
     @patch('BMCHelixRemedyforce.Client.http_request')
@@ -2430,24 +2268,6 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert actual_result.outputs_prefix == OUTPUT_PREFIX["BROADCAST"]
         assert actual_result.raw_response == fetch_dummy_broadcasts()
         assert actual_result.outputs == self.dummy_broadcasts
-
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch("requests.Session.request")
-    def test_bmc_remedy_broadcast_details_get_command_unauthorized(self, req_obj, mocker_get_session_id):
-        """
-        Testcase for bmc_remedy_broadcast_details_get_command method incase of unauthenticate response from rest API.
-
-        :param req_obj: mocker object for making http request call
-        :param mocker_get_session_id: mocker object for getting valid session id
-        """
-        mocker_get_session_id.return_value = self.valid_session_id
-        resp1 = Response()
-        resp1.status_code = 401
-        req_obj.side_effect = [resp1]
-        try:
-            bmc_remedy_broadcast_details_get_command(self.client, {})
-        except Exception as e:
-            assert str(e) == MESSAGES["AUTHENTICATION_ERROR"]
 
     @patch('BMCHelixRemedyforce.Client.get_session_id')
     @patch('BMCHelixRemedyforce.Client.http_request')
@@ -2683,27 +2503,6 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         result = BMCHelixRemedyforce.bmc_remedy_incident_get_command(self.client, args)
         assert result == HR_MESSAGES['NO_INCIDENT_DETAILS_FOUND']
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch("requests.Session.request")
-    def test_bmc_remedy_incident_get_command_unauthorized_without_params(self, req_obj, mocker_get_session_id):
-        """
-        Testcase for bmc_remedy_incident_get_command method without passing impact name argument incase of
-        getting error response from rest API like 401 - Unauthorized.
-
-        :param req_obj: mocker object for making http request call
-        :param mocker_get_session_id: mocker object for getting valid session id
-        """
-        import BMCHelixRemedyforce
-        mocker_get_session_id.return_value = self.valid_session_id
-        resp1 = Response()
-        resp1.status_code = 401
-        req_obj.return_value = resp1
-        args = {}
-        try:
-            BMCHelixRemedyforce.bmc_remedy_incident_get_command(self.client, args)
-        except Exception as e:
-            assert str(e) == "{}".format(MESSAGES["AUTHENTICATION_ERROR"])
-
     def test_bmc_remedy_incident_get_command_invalid_maximum_service_request(self):
         """
         Testcase for bmc_remedy_incident_get_command method to fetch a service request with
@@ -2770,18 +2569,3 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             bmc_remedy_service_request_get_command(self.client, input_args)
         except ValueError as e:
             assert str(e) == MESSAGES["MAX_INCIDENT_LIMIT"].format('maximum_service_request')
-
-    @patch('BMCHelixRemedyforce.Client.http_request')
-    def test_bmc_remedy_service_request_get_command_exception(self, mock_http_res):
-        """
-        Testcase for bmc_remedy_service_request_get_command method to fetch a service request with
-        given arguments.
-
-        :param mock_http_res: mocker object for making http request call
-        """
-        mock_http_res.side_effect = DemistoException()
-        input_args = self.get_service_request_response["input_args"]
-        try:
-            bmc_remedy_service_request_get_command(self.client, input_args)
-        except Exception as e:
-            assert str(e) == MESSAGES['UNEXPECTED_ERROR']

@@ -183,6 +183,9 @@ script:
     - contextPath: BmcRemedyforce.ServiceRequestDefinition.description
       description: Description field value for Service Request Definition.
       type: String
+    - contextPath: BmcRemedyforce.ServiceRequestDefinition.approvalRequired
+      description: Indicates if approval is required or not.
+      type: Boolean
   - arguments:
     - default: false
       description: The unique incident or service request number that needs to be
@@ -1181,7 +1184,7 @@ script:
     - contextPath: BmcRemedyforce.ServiceRequest.Type
       description: Service Desk Type.
       type: String
-  dockerimage: demisto/python3:3.8.5.10455
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false

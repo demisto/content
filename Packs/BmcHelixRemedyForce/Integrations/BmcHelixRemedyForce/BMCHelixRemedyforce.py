@@ -2,7 +2,7 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS
 from datetime import datetime
-from typing import Dict, Callable, Any, List, Tuple, Union
+from typing import Dict, Callable, Any, List, Tuple, Union, Optional
 from requests import Response
 from requests.exceptions import MissingSchema, InvalidSchema
 import urllib3
@@ -35,13 +35,15 @@ DATE_AND_TIME = 'Date & Time [UTC]'
 HEADER_SECTION_TYPE = 'header section'
 
 MESSAGES: Dict[str, str] = {
+    'TRACEBACK_MESSAGE': 'Error when calling {} - ',
+    'BAD_REQUEST_ERROR': 'An error occurred while fetching the data. Reason: {}',
     'AUTHENTICATION_ERROR': 'Unauthenticated. Check the configured Username and Password instance parameters.',
     'AUTHENTICATION_CONFIG_ERROR': 'Error authenticating with Remedyforce/Salesforce API. Please check configuration '
                                    'parameters.',
-    'FORBIDDEN': 'Access to the requested resource is forbidden',
-    'NOT_FOUND_ERROR': 'Requested resource not found.',
+    'FORBIDDEN': 'Access to the requested resource is forbidden. Reason: {}',
+    'NOT_FOUND_ERROR': 'Requested resource not found. Reason: {}',
     'INTERNAL_SERVER_ERROR': 'Encountered an internal server error with Remedyforce API, unable to complete '
-                             'your request.',
+                             'your request. Reason: {}',
     'REQUEST_TIMEOUT_VALIDATION': 'HTTP(S) Request Timeout parameter must be a positive number.',
     'REQUEST_TIMEOUT_EXCEED_ERROR': 'Value is too large for HTTP(S) Request Timeout parameter. Maximum value allowed '
                                     'is 120 seconds.',
@@ -129,7 +131,8 @@ PRIORITY_TO_SEVERITY_MAP = {
 }
 OUTPUT_PREFIX: Dict[str, str] = {
     'SERVICE_REQUEST': 'BmcRemedyforce.ServiceRequest',
-    'SERVICE_REQUEST_WARNING': 'BmcRemedyforce.ServiceRequest(val.Number == obj.Number)',
+    # Using this in return_warning for setting context.
+    'SERVICE_REQUEST_WARNING': 'BmcRemedyforce.ServiceRequest(val.Number === obj.Number)',
     'NOTE': 'BmcRemedyforce.Note',
     'SERVICE_REQUEST_DEFINITION': 'BmcRemedyforce.ServiceRequestDefinition',
     'TEMPLATE': 'BmcRemedyforce.Template',
@@ -137,7 +140,8 @@ OUTPUT_PREFIX: Dict[str, str] = {
     'SERVICE_OFFERING': 'BmcRemedyforce.ServiceOffering',
     'IMPACT': 'BmcRemedyforce.Impact',
     'INCIDENT': 'BmcRemedyforce.Incident',
-    'INCIDENT_WARNING': 'BmcRemedyforce.Incident(val.Id == obj.Id)',
+    # Using this in return_warning for setting context.
+    'INCIDENT_WARNING': 'BmcRemedyforce.Incident(val.Id === obj.Id)',
     'ASSET': 'BmcRemedyforce.Asset',
     'ACCOUNT': 'BmcRemedyforce.Account',
     'STATUS': 'BmcRemedyforce.Status',
@@ -349,6 +353,8 @@ QUEUE_TYPES = {
     'Incident/Service Request': 'BMCServiceDesk__Incident__c'
 }
 
+SOAP_LOGIN_URL = f'https://login.salesforce.com/services/Soap/u/{LOGIN_API_VERSION}'
+
 
 class Client(BaseClient):
     """
@@ -356,16 +362,12 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, username, password, request_timeout,
-                 soap_login_url: str = f'https://login.salesforce.com/services/Soap/u/{LOGIN_API_VERSION}',
-                 *args,
-                 **kwargs):
+    def __init__(self, username: str, password: str, request_timeout: int, *args, **kwargs):
         """
         BMCRemedyForceClient implements logic to authenticate each http request with bearer token
         :param soap_login_url: Salesforce soap login url, with default value
         """
         super().__init__(*args, **kwargs)
-        self._soap_login_url = soap_login_url
         self._username = username
         self._password = password
         self._request_timeout = request_timeout
@@ -482,7 +484,7 @@ class Client(BaseClient):
         </env:Envelope>"""
 
         with http_exception_handler():
-            return self._http_request('POST', '', full_url=self._soap_login_url, data=request_payload, headers=headers,
+            return self._http_request('POST', '', full_url=SOAP_LOGIN_URL, data=request_payload, headers=headers,
                                       timeout=self._request_timeout, ok_codes=(200, 201, 202, 204, 400, 401, 404, 500),
                                       resp_type='response')
 
@@ -514,7 +516,7 @@ def http_exception_handler():
             raise e
 
 
-def handle_error_response(response):
+def handle_error_response(response: Response) -> None:
     """
     Handles http error response and raises DemistoException with appropriate message.
     :param response: Http response
@@ -538,12 +540,13 @@ def handle_error_response(response):
         pass
 
     status_code_messages = {
-        400: error_message,
+        400: MESSAGES['BAD_REQUEST_ERROR'].format(error_message),
         401: MESSAGES['AUTHENTICATION_ERROR'],
-        404: error_message if len(error_message.strip()) > 0 else MESSAGES['NOT_FOUND_ERROR'],
-        403: error_message if len(error_message.strip()) > 0 else MESSAGES['FORBIDDEN'],
-        500: error_message if len(error_message.strip()) > 0 else MESSAGES['INTERNAL_SERVER_ERROR']
+        404: MESSAGES['NOT_FOUND_ERROR'].format(error_message),
+        403: MESSAGES['FORBIDDEN'].format(error_message),
+        500: MESSAGES['INTERNAL_SERVER_ERROR'].format(error_message)
     }
+
     if response.status_code in status_code_messages:
         LOG('Response Code: {}, Reason: {}'.format(response.status_code, status_code_messages[response.status_code]))
         raise DemistoException(status_code_messages[response.status_code])
@@ -551,7 +554,7 @@ def handle_error_response(response):
         response.raise_for_status()
 
 
-def is_service_request_number_blank(service_request_number):
+def is_service_request_number_blank(service_request_number: str) -> str:
     """
     Check if service_request_number is empty or None then raise the exception.
 
@@ -570,7 +573,7 @@ def is_service_request_number_blank(service_request_number):
         raise ValueError(MESSAGES["EMPTY_SERVICE_REQUEST"])
 
 
-def is_parameter_blank(parameter, parameter_name):
+def is_parameter_blank(parameter: str, parameter_name: str) -> str:
     """
     Check if parameter is empty or None then raise the exception.
 
@@ -769,11 +772,12 @@ def prepare_incident_for_fetch_incidents(record: Dict[str, Any], params: Dict[st
     return incident
 
 
-def prepare_outputs_for_categories(records):
+def prepare_outputs_for_categories(records: List[Dict[str, Any]]) -> \
+        Tuple[List[Dict[str, Optional[Any]]], List[Dict[str, Optional[Any]]]]:
     """
     Prepares human readables and context output for 'bmc-remedy-category-details-get' command.
 
-    :param records: List containing records of categories from rest API..
+    :param records: List containing records of categories from rest API.
     :return: Tuple containing human-readable and context-ouputs.
     """
     outputs = list()
@@ -913,9 +917,10 @@ def prepare_context_for_get_service_request_definitions(resp: dict) -> list:
             else process_single_service_request_definition(res) for res in resp.get('Result', [])]
 
 
-def prepare_output_for_get_service_request_definitions(resp: dict):
+def prepare_hr_output_for_get_service_request_definitions(resp: dict):
     """
-    Prepare output for get service request definition command.
+    Prepare hr output for get service request definition command.
+
     :param resp: Dictionary of response of the API.
     :return: List of objects or dictionary for output.
     """
@@ -946,7 +951,7 @@ def get_service_request_def_id_from_name(name, client) -> str:
         return ''
 
 
-def get_id_from_incident_number(client: Client, request_number: str, incident_type: str = None):
+def get_id_from_incident_number(client: Client, request_number: str, incident_type: Optional[str] = None):
     """
     Retrieve id of input request_number
 
@@ -1003,7 +1008,7 @@ def input_data_create_note(summary: str, notes: str) -> Dict:
     }
 
 
-def get_request_params(data, params):
+def get_request_params(data: Dict[str, str], params: Dict[str, Any]) -> Dict[str, Any]:
     """
     Generate request params from given data.
 
@@ -1022,7 +1027,7 @@ def get_request_params(data, params):
     return params
 
 
-def generate_params(param, param_object, body):
+def generate_params(param: str, param_object: str, body: Dict[str, str]) -> Dict[str, str]:
     """
     Generate Dictionary having key as Mapping object of field mentioned in "param_object" and value as param.
 
@@ -1044,7 +1049,7 @@ def generate_params(param, param_object, body):
     return body
 
 
-def get_valid_arguments(data, field):
+def get_valid_arguments(data: str, field: str) -> Tuple[Any, List[str]]:
     """
     Get dictionary structure
 
@@ -1078,7 +1083,7 @@ def get_valid_arguments(data, field):
         return data, excluded_fields
 
 
-def remove_prefix(prefix, field):
+def remove_prefix(prefix: str, field: str) -> str:
     """
     Remove the prefix from given field.
 
@@ -1099,8 +1104,9 @@ def remove_prefix(prefix, field):
     return field
 
 
-def create_service_request(client, service_request_definition, answers, excluded_fields,
-                           additional_fields=None, default_args={}):
+def create_service_request(client: Client, service_request_definition: str, answers: List[Dict[str, Any]],
+                           excluded_fields: List[str], additional_fields: Optional[Dict[str, Any]],
+                           default_args: Dict[str, Any]) -> None:
     """
     Create service request and update rest of the fields in that service request and also update context output.
 
@@ -1131,27 +1137,24 @@ def create_service_request(client, service_request_definition, answers, excluded
     status_id = default_args.get("status_id")
     urgency_id = default_args.get("urgency_id")
     client_id = default_args.get("client_id")
-    try:
-        body = {
-            "Fields": [
-                {
-                    "Name": "requestDefinitionId",
-                    "Value": service_request_definition
-                },
-                {
-                    "Name": "client",
-                    "Value": client_id if client_id else ""
-                }
-            ],
-            "Answers": answers
-        }
-        headers = {
-            "Content-Type": "application/json"
-        }
-        response = client.http_request(method='POST', url_suffix=URL_SUFFIX["SERVICE_REQUEST"], headers=headers,
-                                       json_data=body)
-    except DemistoException as e:
-        raise DemistoException(str(e) if str(e) else MESSAGES['UNEXPECTED_ERROR'])
+    body = {
+        "Fields": [
+            {
+                "Name": "requestDefinitionId",
+                "Value": service_request_definition
+            },
+            {
+                "Name": "client",
+                "Value": client_id if client_id else ""
+            }
+        ],
+        "Answers": answers
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+    response = client.http_request(method='POST', url_suffix=URL_SUFFIX["SERVICE_REQUEST"], headers=headers,
+                                   json_data=body)
     if response and response.get("Success"):
         outputs = {
             "Number": response.get('Result', {}).get('Number', 0),
@@ -1172,13 +1175,13 @@ def create_service_request(client, service_request_definition, answers, excluded
             params = get_request_params(data=additional_fields, params=params)
         params = remove_empty_elements(params)
         resp = update_incident(client, response.get('Result', {}).get('Id', 0), params=params)
-        if resp.get("message"):
+        if resp and resp.get("message"):
             markdown_message = "{}".format(MESSAGES["CREATE_SERVICE_REQUEST_WARNING"]).format(
                 response.get('Result', {}).get('Number', 0), ", ".join(params.keys()), resp.get("message"))
             hr_output = {
                 OUTPUT_PREFIX['SERVICE_REQUEST_WARNING']: outputs
             }
-            demisto.error(traceback.format_exc())  # print the traceback
+
             return_warning(
                 message=markdown_message,
                 exit=True,
@@ -1191,7 +1194,6 @@ def create_service_request(client, service_request_definition, answers, excluded
             hr_output = {
                 OUTPUT_PREFIX['SERVICE_REQUEST_WARNING']: outputs
             }
-            demisto.error(traceback.format_exc())  # print the traceback
             return_warning(
                 message=markdown_message,
                 exit=True,
@@ -1210,8 +1212,8 @@ def create_service_request(client, service_request_definition, answers, excluded
         raise DemistoException(response.get("ErrorMessage", MESSAGES["UNEXPECTED_ERROR"]))
 
 
-def update_service_request(client, service_request_number, excluded_fields,
-                           additional_fields=None, default_args={}):
+def update_service_request(client: Client, service_request_number: str, excluded_fields: List[str],
+                           additional_fields: Optional[Dict[str, str]], default_args: Dict[str, str]) -> None:
     """
     Fetch respective id from given service request number and update service request and
     return valid context output.
@@ -1246,6 +1248,9 @@ def update_service_request(client, service_request_number, excluded_fields,
     :type additional_fields: ``dict``
     :param additional_fields: Dictionary containing values of rest of the fields which will be updated.
 
+    :type default_args: ``dict``
+    :param default_args: Dictionary containing values of default fields which will be updated.
+
     :raises DemistoException: If request to update rest of the fields will fail.
     :raises DemistoException: If service_request_number is invalid.
     """
@@ -1255,6 +1260,7 @@ def update_service_request(client, service_request_number, excluded_fields,
     status_id = default_args.get("status_id")
     urgency_id = default_args.get("urgency_id")
     client_id = default_args.get("client_id")
+
     endpoint_to_get_id = SALESFORCE_QUERIES["GET_ID_FROM_SERVICE_REQUEST_NUMBER"].format(service_request_number)
 
     # Check it is service request or not and if it is then find id from Service request number
@@ -1287,7 +1293,7 @@ def update_service_request(client, service_request_number, excluded_fields,
         context_output = {
             OUTPUT_PREFIX['SERVICE_REQUEST_WARNING']: resp["outputs"]
         }
-        demisto.error(traceback.format_exc())  # print the traceback
+
         return_error(
             message=readable_output,
             error=readable_output,
@@ -1300,7 +1306,7 @@ def update_service_request(client, service_request_number, excluded_fields,
             outputs = {
                 OUTPUT_PREFIX['SERVICE_REQUEST_WARNING']: resp["outputs"]
             }
-            demisto.error(traceback.format_exc())  # print the traceback
+
             return_warning(
                 message=markdown_message,
                 exit=True,
@@ -1317,7 +1323,7 @@ def update_service_request(client, service_request_number, excluded_fields,
             ))
 
 
-def update_incident(client, incident_id, params):
+def update_incident(client: Client, incident_id: str, params: Dict[str, Any]) -> Dict[str, Any]:
     """
     Common method to update incident/service request.
 
@@ -1347,9 +1353,9 @@ def update_incident(client, incident_id, params):
                                             json_data=body)
         if isinstance(http_response, Response) and http_response.status_code == 204 and not http_response.text:
             outputs["LastUpdatedDate"] = datetime.now().strftime(DATE_FORMAT)
-            return {
-                "outputs": outputs
-            }
+        return {
+            "outputs": outputs
+        }
     except DemistoException as e:
         message = str(e) if str(e) else MESSAGES['UNEXPECTED_ERROR']
         return {
@@ -1358,7 +1364,7 @@ def update_incident(client, incident_id, params):
         }
 
 
-def create_template_output(result):
+def create_template_output(result: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Prepares data for context and human readable
 
@@ -1393,7 +1399,7 @@ def create_hr_context_output(result: list) -> list:
     return hr_context_output_list
 
 
-def get_update_incident_payload(args):
+def get_update_incident_payload(args: Dict[str, str]) -> Tuple[Dict[str, Any], List[str]]:
     """
     Processes command arguments for update incident api call payload
     :param args: Command arguments
@@ -1434,7 +1440,7 @@ def get_update_incident_payload(args):
     return update_request_body, fields
 
 
-def validate_and_get_date_argument(args, key, field_name):
+def validate_and_get_date_argument(args: Dict[str, Any], key: str, field_name: str) -> Optional[datetime]:
     """
     Validates and gets a key as per one of the ALLOWED_DATE_FORMATs from the arguments, if exists.
 
@@ -1458,9 +1464,10 @@ def validate_and_get_date_argument(args, key, field_name):
             return date
         except ValueError:
             raise ValueError(MESSAGES['DATE_PARSE_ERROR'].format(field_name))
+    return None
 
 
-def validate_incident_update_payload(payload):
+def validate_incident_update_payload(payload: Dict[str, Any]) -> None:
     """
     Validates incident update payload.
 
@@ -1487,7 +1494,7 @@ def validate_incident_update_payload(payload):
         raise ValueError(MESSAGES['DATE_VALIDATION_ERROR'].format('outage_end', 'outage_start'))
 
 
-def remove_extra_space_from_args(args):
+def remove_extra_space_from_args(args: Dict[str, str]) -> Dict[str, str]:
     """
     Remove leading and trailing spaces from all the arguments and remove empty arguments
     :param args: Dictionary of arguments
@@ -1496,7 +1503,7 @@ def remove_extra_space_from_args(args):
     return {key: value.strip() for (key, value) in args.items() if value and len(value.strip()) > 0}
 
 
-def create_asset_output(result, output_type):
+def create_asset_output(result: List[Dict[str, Any]], output_type: str) -> List[Dict[str, str]]:
     """
     Prepares data for context and human readable
 
@@ -1531,7 +1538,7 @@ def create_asset_output(result, output_type):
     return asset_readable_list
 
 
-def create_asset_query(asset_name, instance_type):
+def create_asset_query(asset_name: str, instance_type: str) -> str:
     """
     Prepare query with asset_name and instance_type
 
@@ -1621,7 +1628,7 @@ def prepare_note_create_output(record: Dict) -> Dict:
     }
 
 
-def get_service_request_details(client, service_request_id):
+def get_service_request_details(client: Client, service_request_id: str) -> Dict[str, str]:
     """
     Get service request details for given service_request_id
     :param client: Instance of Client class.
@@ -1642,7 +1649,7 @@ def get_service_request_details(client, service_request_id):
     return service_request_details
 
 
-def process_attachment_record(record):
+def process_attachment_record(record: Dict[str, Any]) -> Dict[str, Any]:
     """
     Processes single record of attachment to convert as per the custom incident layout
     :param record: attachment record
@@ -1661,7 +1668,7 @@ def process_attachment_record(record):
     return attachment
 
 
-def get_attachments_for_incident(client, incident_id):
+def get_attachments_for_incident(client: Client, incident_id: str) -> List[Dict[str, Any]]:
     """
     Get attachments for the given incident/service request id
     :param client: Instance of Client class.
@@ -1680,7 +1687,7 @@ def get_attachments_for_incident(client, incident_id):
     return [process_attachment_record(record) for record in records]
 
 
-def process_notes_record(record):
+def process_notes_record(record: Dict[str, Any]) -> Dict[str, str]:
     """
     Process Note(s) record.
 
@@ -1703,7 +1710,7 @@ def process_notes_record(record):
     return notes
 
 
-def get_notes_for_incident(client, incident_number):
+def get_notes_for_incident(client: Client, incident_number: str) -> List[Dict[str, Any]]:
     """
     Gets Note(s) from incident or service request.
 
@@ -1769,7 +1776,7 @@ def create_output_for_incident(result: list) -> list:
     return hr_output_list
 
 
-def prepare_outputs_for_get_service_request(records):
+def prepare_outputs_for_get_service_request(records: List[Dict]) -> Tuple[List, List]:
     """
     Prepares context output and human readable output for service_requests_get command.
 
@@ -1804,7 +1811,7 @@ def prepare_outputs_for_get_service_request(records):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client):
+def test_module(client: Client) -> None:
     """
     Setting 'ok' result indicates that the integration works like it is supposed to. Connection to the salesforce
     service is successful and we can retrieve user information from the session id generated using provided parameters.
@@ -1862,7 +1869,7 @@ def fetch_incidents(client: Client, params: Dict[str, Any], last_run: Dict[str, 
 
 
 @logger
-def bmc_remedy_update_service_request_command(client, args):
+def bmc_remedy_update_service_request_command(client: Client, args: Dict[str, str]) -> None:
     """
     To update a service request.
 
@@ -1876,8 +1883,8 @@ def bmc_remedy_update_service_request_command(client, args):
     :raises ValueError: If any invalid formatted value is given in the addition_fields argument.
     """
     args = remove_extra_space_from_args(args)
-    service_request_number = is_service_request_number_blank(args.get("service_request_number"))
-    additional_fields, excluded_fields = get_valid_arguments(args.get("additional_fields"), "additional_fields")
+    service_request_number = is_service_request_number_blank(args.get("service_request_number", ""))
+    additional_fields, excluded_fields = get_valid_arguments(args.get("additional_fields", ""), "additional_fields")
     if additional_fields:
         if isinstance(safe_load_json(additional_fields), dict):
             invalid_fields = list()
@@ -1895,7 +1902,7 @@ def bmc_remedy_update_service_request_command(client, args):
 
 
 @logger
-def bmc_remedy_create_service_request_command(client, args):
+def bmc_remedy_create_service_request_command(client: Client, args: Dict[str, str]) -> None:
     """
     To create a service request.
 
@@ -1911,11 +1918,11 @@ def bmc_remedy_create_service_request_command(client, args):
     """
     args = remove_extra_space_from_args(args)
     answers_list = list()
-    service_request_definition = is_parameter_blank(args.get("service_request_definition_id"),
+    service_request_definition = is_parameter_blank(args.get("service_request_definition_id", ""),
                                                     "service_request_definition_id")
-    answers, excluded_answers = get_valid_arguments(args.get("service_request_definition_params"),
+    answers, excluded_answers = get_valid_arguments(args.get("service_request_definition_params", ""),
                                                     "service_request_definition_params")
-    additional_fields, excluded_fields = get_valid_arguments(args.get("additional_fields"), "additional_fields")
+    additional_fields, excluded_fields = get_valid_arguments(args.get("additional_fields", ""), "additional_fields")
     if answers and isinstance(safe_load_json(answers), dict):
         for each_answer in answers:
             temp: Dict[str, Any] = dict()
@@ -1943,7 +1950,7 @@ def bmc_remedy_create_service_request_command(client, args):
 
 
 @logger
-def bmc_remedy_incident_create_command(client, args):
+def bmc_remedy_incident_create_command(client: Client, args: Dict[str, str]) -> None:
     """
     Creates an incident.
 
@@ -1996,7 +2003,8 @@ def bmc_remedy_incident_create_command(client, args):
         context_output = {
             OUTPUT_PREFIX['INCIDENT_WARNING']: warning_output
         }
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(
+            MESSAGES['TRACEBACK_MESSAGE'].format(demisto.command()) + traceback.format_exc())  # print the traceback
         return_warning(
             message=readable_output,
             exit=True,
@@ -2006,7 +2014,7 @@ def bmc_remedy_incident_create_command(client, args):
 
 
 @logger
-def bmc_remedy_incident_update_command(client, args):
+def bmc_remedy_incident_update_command(client: Client, args: Dict[str, str]) -> None:
     args = remove_extra_space_from_args(args)
     incident_number = args.pop('incident_number', '')
     incident_number = incident_number[2:] if incident_number.startswith("IN") else incident_number
@@ -2033,38 +2041,26 @@ def bmc_remedy_incident_update_command(client, args):
         "Id": incident_id,
         "Number": incident_number
     }
-    try:
-        id_suffix = '/{}'.format(incident_id)
-        update_api_response = client.http_request('PATCH', URL_SUFFIX['UPDATE_INCIDENT'] + id_suffix,
-                                                  json_data=update_payload)
-        context_output["LastUpdatedDate"] = datetime.now().strftime(DATE_FORMAT)
 
-        if isinstance(update_api_response, Response) and update_api_response.status_code == 204:
-            readable_output = HR_MESSAGES['UPDATE_INCIDENT_SUCCESS'].format(incident_number)
+    id_suffix = '/{}'.format(incident_id)
+    update_api_response = client.http_request('PATCH', URL_SUFFIX['UPDATE_INCIDENT'] + id_suffix,
+                                              json_data=update_payload)
+    context_output["LastUpdatedDate"] = datetime.now().strftime(DATE_FORMAT)
 
-            return_results(CommandResults(
-                outputs_prefix=OUTPUT_PREFIX['INCIDENT'],
-                outputs_key_field='Id',
-                outputs=context_output,
-                readable_output=readable_output,
-                raw_response=context_output
-            ))
+    if isinstance(update_api_response, Response) and update_api_response.status_code == 204:
+        readable_output = HR_MESSAGES['UPDATE_INCIDENT_SUCCESS'].format(incident_number)
 
-    except Exception as e:
-        readable_output = HR_MESSAGES['COMMAND_FAILURE'].format(demisto.command(), str(e))
-
-        context_output = {
-            OUTPUT_PREFIX['INCIDENT_WARNING']: context_output
-        }
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            message=readable_output,
-            error=readable_output,
-            outputs=context_output)
+        return_results(CommandResults(
+            outputs_prefix=OUTPUT_PREFIX['INCIDENT'],
+            outputs_key_field='Id',
+            outputs=context_output,
+            readable_output=readable_output,
+            raw_response=context_output
+        ))
 
 
 @logger
-def bmc_remedy_note_create_command(client, args):
+def bmc_remedy_note_create_command(client: Client, args: Dict[str, str]) -> Optional[CommandResults]:
     """
     Create a note for incident or service request.
 
@@ -2085,31 +2081,28 @@ def bmc_remedy_note_create_command(client, args):
     url_suffix = URL_SUFFIX.get('CREATE_NOTE_COMMAND', '')
     url_suffix = url_suffix.format(BMC_API_VERSION, incident_id)
 
-    try:
-        response = client.http_request('POST', url_suffix, json_data=json_data)
-        result_flag = response.get('Result', '')
-        result = result_flag.get('ActivityLog', [])[0]
-        context_result = prepare_note_create_output(result)
+    response = client.http_request('POST', url_suffix, json_data=json_data)
+    result_flag = response.get('Result', '')
+    result = result_flag.get('ActivityLog', [])[0]
+    context_result = prepare_note_create_output(result)
 
-        # set readable output
-        readable_output = HR_MESSAGES['NOTE_CREATE_SUCCESS'].format(args.get('request_number', request_number))
+    # set readable output
+    readable_output = HR_MESSAGES['NOTE_CREATE_SUCCESS'].format(args.get('request_number', request_number))
 
-        # set Output
-        custom_ec = createContext(data=context_result, removeNull=True)
+    # set Output
+    custom_ec = createContext(data=context_result, removeNull=True)
 
-        return CommandResults(
-            outputs_prefix=OUTPUT_PREFIX["NOTE"],
-            outputs_key_field='Id',
-            outputs=custom_ec,
-            readable_output=readable_output,
-            raw_response=response
-        )
-    except DemistoException as e:
-        raise DemistoException(str(e) if str(e) else MESSAGES['UNEXPECTED_ERROR'])
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["NOTE"],
+        outputs_key_field='Id',
+        outputs=custom_ec,
+        readable_output=readable_output,
+        raw_response=response
+    )
 
 
 @logger
-def bmc_remedy_service_request_definition_get_command(client, args):
+def bmc_remedy_service_request_definition_get_command(client: Client, args: Dict[str, str]) -> Optional[CommandResults]:
     """
     Gets service request definitions.
 
@@ -2148,7 +2141,7 @@ def bmc_remedy_service_request_definition_get_command(client, args):
         output_header = MESSAGES['GET_OUTPUT_MESSAGE'].format('service request definition(s)',
                                                               1 if isinstance(api_response.get('Result'), dict)
                                                               else len(api_response.get('Result', [])))
-        output_content = prepare_output_for_get_service_request_definitions(api_response)
+        output_content = prepare_hr_output_for_get_service_request_definitions(api_response)
 
         # set readable output
         readable_output = tableToMarkdown(output_header, output_content,
@@ -2166,7 +2159,7 @@ def bmc_remedy_service_request_definition_get_command(client, args):
 
 
 @logger
-def bmc_remedy_template_details_get_command(client, args):
+def bmc_remedy_template_details_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
     """
     Gets template details.
 
@@ -2187,39 +2180,35 @@ def bmc_remedy_template_details_get_command(client, args):
     }
     url_suffix = URL_SUFFIX.get('SALESFORCE_QUERY', '')
 
-    try:
-        response = client.http_request('GET', url_suffix=url_suffix, params=params)
+    response = client.http_request('GET', url_suffix=url_suffix, params=params)
 
-        result = response.get('records', '')
+    result = response.get('records', '')
 
-        if result:
-            template_result_list = create_template_output(result)
-            custom_ec = createContext(data=template_result_list, removeNull=True)
+    if result:
+        template_result_list = create_template_output(result)
+        custom_ec = createContext(data=template_result_list, removeNull=True)
 
-            readable_output = tableToMarkdown(
-                HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('template(s)', len(template_result_list)),
-                template_result_list,
-                headers=['Id', 'Name', 'Description', 'Recurring'],
-                removeNull=True)
-            return CommandResults(
-                outputs_prefix=OUTPUT_PREFIX["TEMPLATE"],
-                outputs_key_field='Id',
-                outputs=custom_ec,
-                readable_output=readable_output,
-                raw_response=response
-            )
+        readable_output = tableToMarkdown(
+            HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('template(s)', len(template_result_list)),
+            template_result_list,
+            headers=['Id', 'Name', 'Description', 'Recurring'],
+            removeNull=True)
+        return CommandResults(
+            outputs_prefix=OUTPUT_PREFIX["TEMPLATE"],
+            outputs_key_field='Id',
+            outputs=custom_ec,
+            readable_output=readable_output,
+            raw_response=response
+        )
+    else:
+        if template_name:
+            return MESSAGES['INVALID_ENTITY_NAME'].format('template_name', template_name)
         else:
-            if template_name:
-                return MESSAGES['INVALID_ENTITY_NAME'].format('template_name', template_name)
-            else:
-                return MESSAGES['NO_ENTITY_FOUND'].format('template(s)')
-
-    except DemistoException as e:
-        raise DemistoException((str(e) if str(e) else MESSAGES['NOT_FOUND_ERROR']))
+            return MESSAGES['NO_ENTITY_FOUND'].format('template(s)')
 
 
 @logger
-def bmc_remedy_service_offering_details_get_command(client: Client, args: Dict):
+def bmc_remedy_service_offering_details_get_command(client: Client, args: Dict) -> Union[CommandResults, str, None]:
     """
     Gets service offering details
 
@@ -2238,39 +2227,36 @@ def bmc_remedy_service_offering_details_get_command(client: Client, args: Dict):
         'q': query + SALESFORCE_QUERIES['ORDER_BY_NAME']
     }
     url_suffix = URL_SUFFIX.get('SALESFORCE_QUERY', '')
-    try:
-        response = client.http_request('GET', url_suffix=url_suffix, params=params)
 
-        result = response.get('records')
-        if result:
-            service_offering_result_list = create_hr_context_output(result)
-            custom_ec = createContext(data=service_offering_result_list, removeNull=True)
+    response = client.http_request('GET', url_suffix=url_suffix, params=params)
 
-            readable_output = tableToMarkdown(
-                HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('service offering(s)',
-                                                                  len(service_offering_result_list)),
-                service_offering_result_list,
-                headers=['Id', 'Name'],
-                removeNull=True)
-            return CommandResults(
-                outputs_prefix=OUTPUT_PREFIX['SERVICE_OFFERING'],
-                outputs_key_field='Id',
-                outputs=custom_ec,
-                readable_output=readable_output,
-                raw_response=response
-            )
+    result = response.get('records')
+    if result:
+        service_offering_result_list = create_hr_context_output(result)
+        custom_ec = createContext(data=service_offering_result_list, removeNull=True)
+
+        readable_output = tableToMarkdown(
+            HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('service offering(s)',
+                                                              len(service_offering_result_list)),
+            service_offering_result_list,
+            headers=['Id', 'Name'],
+            removeNull=True)
+        return CommandResults(
+            outputs_prefix=OUTPUT_PREFIX['SERVICE_OFFERING'],
+            outputs_key_field='Id',
+            outputs=custom_ec,
+            readable_output=readable_output,
+            raw_response=response
+        )
+    else:
+        if service_offering_name:
+            return MESSAGES['INVALID_ENTITY_NAME'].format('service_offering_name', service_offering_name)
         else:
-            if service_offering_name:
-                return MESSAGES['INVALID_ENTITY_NAME'].format('service_offering_name', service_offering_name)
-            else:
-                return MESSAGES['NO_ENTITY_FOUND'].format('service offering(s)')
-
-    except DemistoException as e:
-        raise DemistoException((str(e) if str(e) else MESSAGES['NOT_FOUND_ERROR']))
+            return MESSAGES['NO_ENTITY_FOUND'].format('service offering(s)')
 
 
 @logger
-def bmc_remedy_asset_details_get_command(client, args):
+def bmc_remedy_asset_details_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
     """
     Gets asset details.
 
@@ -2290,37 +2276,35 @@ def bmc_remedy_asset_details_get_command(client, args):
         'q': query + SALESFORCE_QUERIES['ORDER_BY_NAME']
     }
 
-    try:
-        response = client.http_request('GET', url_suffix=url_suffix, params=params)
+    response = client.http_request('GET', url_suffix=url_suffix, params=params)
 
-        result = response.get('records', '')
-        if result:
-            assets_result_list_hr = create_asset_output(result, 'hr')
-            assets_result_list_context = create_asset_output(result, 'ct')
-            custom_ec = createContext(data=assets_result_list_context, removeNull=True)
+    result = response.get('records', '')
+    if result:
+        assets_result_list_hr = create_asset_output(result, 'hr')
+        assets_result_list_context = create_asset_output(result, 'ct')
+        custom_ec = createContext(data=assets_result_list_context, removeNull=True)
 
-            readable_output = tableToMarkdown(
-                HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('asset(s)', len(assets_result_list_hr)),
-                assets_result_list_hr,
-                headers=['Id', 'Name', 'Description', 'Asset #', 'Class Name', 'Instance Type'], removeNull=True)
-            return CommandResults(
-                outputs_prefix=OUTPUT_PREFIX['ASSET'],
-                outputs_key_field='Id',
-                outputs=custom_ec,
-                readable_output=readable_output,
-                raw_response=response
-            )
+        readable_output = tableToMarkdown(
+            HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('asset(s)', len(assets_result_list_hr)),
+            assets_result_list_hr,
+            headers=['Id', 'Name', 'Description', 'Asset #', 'Class Name', 'Instance Type'], removeNull=True)
+        return CommandResults(
+            outputs_prefix=OUTPUT_PREFIX['ASSET'],
+            outputs_key_field='Id',
+            outputs=custom_ec,
+            readable_output=readable_output,
+            raw_response=response
+        )
+    else:
+        if asset_name or (instance_type and instance_type != ALL_INSTANCE_TYPE['all_classes']):
+            return HR_MESSAGES['NO_ASSETS_FOUND']
         else:
-            if asset_name or (instance_type and instance_type != ALL_INSTANCE_TYPE['all_classes']):
-                return HR_MESSAGES['NO_ASSETS_FOUND']
-            else:
-                return MESSAGES['NO_ENTITY_FOUND'].format('asset(s)')
-    except DemistoException as e:
-        raise DemistoException((str(e) if str(e) else MESSAGES['NOT_FOUND_ERROR']))
+            return MESSAGES['NO_ENTITY_FOUND'].format('asset(s)')
 
 
 @logger
-def bmc_remedy_impact_details_get_command(client, args):
+def bmc_remedy_impact_details_get_command(client: Client, args: Dict[str, str]) \
+        -> Optional[Union[CommandResults, str, None]]:
     """
     To get details of impact.
 
@@ -2339,39 +2323,37 @@ def bmc_remedy_impact_details_get_command(client, args):
     if impact_name:
         impact_name = impact_name.strip()
         endpoint_to_get_impacts = "{} and name='{}'".format(endpoint_to_get_impacts, impact_name)
-    try:
-        api_response = client.http_request('GET', url_suffix=URL_SUFFIX["SALESFORCE_QUERY"],
-                                           params={'q': endpoint_to_get_impacts})
-    except Exception as e:
-        raise DemistoException(str(e) if str(e) else MESSAGES['UNEXPECTED_ERROR'])
-    if isinstance(api_response, dict):
-        records = api_response.get("records")
-        if records:
-            outputs = list()
-            for each_record in records:
-                temp = dict()
-                temp["Id"] = each_record.get("Id")
-                temp["Name"] = each_record.get("Name")
-                outputs.append(temp)
-            markdown = HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('impact(s)', len(outputs))
-            readable_output = tableToMarkdown(
-                markdown, outputs, headers=["Id", "Name"], removeNull=True)
-            return CommandResults(
-                outputs_prefix=OUTPUT_PREFIX["IMPACT"],
-                outputs_key_field="Id",
-                outputs=outputs,
-                readable_output=readable_output,
-                raw_response=records
-            )
+
+    api_response = client.http_request('GET', url_suffix=URL_SUFFIX["SALESFORCE_QUERY"],
+                                       params={'q': endpoint_to_get_impacts})
+
+    records = api_response.get("records")
+    if records:
+        outputs = list()
+        for each_record in records:
+            temp = dict()
+            temp["Id"] = each_record.get("Id")
+            temp["Name"] = each_record.get("Name")
+            outputs.append(temp)
+        markdown = HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('impact(s)', len(outputs))
+        readable_output = tableToMarkdown(
+            markdown, outputs, headers=["Id", "Name"], removeNull=True)
+        return CommandResults(
+            outputs_prefix=OUTPUT_PREFIX["IMPACT"],
+            outputs_key_field="Id",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=records
+        )
+    else:
+        if impact_name:
+            return MESSAGES['INVALID_ENTITY_NAME'].format('impact_name', impact_name)
         else:
-            if impact_name:
-                return MESSAGES['INVALID_ENTITY_NAME'].format('impact_name', impact_name)
-            else:
-                return MESSAGES['NO_ENTITY_FOUND'].format('impact(s)')
+            return MESSAGES['NO_ENTITY_FOUND'].format('impact(s)')
 
 
 @logger
-def bmc_remedy_account_details_get_command(client, args):
+def bmc_remedy_account_details_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
     """
     Gets account details.
 
@@ -2390,31 +2372,29 @@ def bmc_remedy_account_details_get_command(client, args):
         'q': query + SALESFORCE_QUERIES['ORDER_BY_NAME']
     }
 
-    try:
-        response = client.http_request('GET', url_suffix=url_suffix, params=params)
+    response = client.http_request('GET', url_suffix=url_suffix, params=params)
 
-        result = response.get('records', '')
-        if result:
-            accounts_result_list = create_hr_context_output(result)
-            custom_ec = createContext(data=accounts_result_list, removeNull=True)
+    result = response.get('records', '')
 
-            readable_output = tableToMarkdown(
-                HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('account(s)', len(result)), accounts_result_list,
-                headers=['Id', 'Name'], removeNull=True)
-            return CommandResults(
-                outputs_prefix=OUTPUT_PREFIX['ACCOUNT'],
-                outputs_key_field='Id',
-                outputs=custom_ec,
-                readable_output=readable_output,
-                raw_response=response
-            )
+    if result:
+        accounts_result_list = create_hr_context_output(result)
+        custom_ec = createContext(data=accounts_result_list, removeNull=True)
+
+        readable_output = tableToMarkdown(
+            HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('account(s)', len(result)), accounts_result_list,
+            headers=['Id', 'Name'], removeNull=True)
+        return CommandResults(
+            outputs_prefix=OUTPUT_PREFIX['ACCOUNT'],
+            outputs_key_field='Id',
+            outputs=custom_ec,
+            readable_output=readable_output,
+            raw_response=response
+        )
+    else:
+        if account_name:
+            return MESSAGES['INVALID_ENTITY_NAME'].format('account_name', account_name)
         else:
-            if account_name:
-                return MESSAGES['INVALID_ENTITY_NAME'].format('account_name', account_name)
-            else:
-                return MESSAGES['NO_ENTITY_FOUND'].format('account(s)')
-    except DemistoException as e:
-        raise DemistoException((str(e) if str(e) else MESSAGES['NOT_FOUND_ERROR']))
+            return MESSAGES['NO_ENTITY_FOUND'].format('account(s)')
 
 
 @logger
@@ -2453,7 +2433,7 @@ def bmc_remedy_status_details_get_command(client: Client, args: Dict[str, str]) 
 
 
 @logger
-def bmc_remedy_urgency_details_get_command(client, args):
+def bmc_remedy_urgency_details_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
     """
     Gets urgency details.
 
@@ -2472,39 +2452,36 @@ def bmc_remedy_urgency_details_get_command(client, args):
         'q': query
     }
     url_suffix = URL_SUFFIX.get('SALESFORCE_QUERY', '')
-    try:
-        response = client.http_request('GET', url_suffix=url_suffix, params=params)
+    response = client.http_request('GET', url_suffix=url_suffix, params=params)
 
-        result = response.get('records')
-        if result:
-            urgency_result_list = create_hr_context_output(result)
-            custom_ec = createContext(data=urgency_result_list, removeNull=True)
+    result = response.get('records')
+    if result:
+        urgency_result_list = create_hr_context_output(result)
+        custom_ec = createContext(data=urgency_result_list, removeNull=True)
 
-            readable_output = tableToMarkdown(
-                HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('urgencies',
-                                                                  len(urgency_result_list)),
-                urgency_result_list,
-                headers=['Id', 'Name'],
-                removeNull=True)
-            return CommandResults(
-                outputs_prefix=OUTPUT_PREFIX['URGENCY'],
-                outputs_key_field='Id',
-                outputs=custom_ec,
-                readable_output=readable_output,
-                raw_response=response
-            )
+        readable_output = tableToMarkdown(
+            HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('urgencies',
+                                                              len(urgency_result_list)),
+            urgency_result_list,
+            headers=['Id', 'Name'],
+            removeNull=True)
+        return CommandResults(
+            outputs_prefix=OUTPUT_PREFIX['URGENCY'],
+            outputs_key_field='Id',
+            outputs=custom_ec,
+            readable_output=readable_output,
+            raw_response=response
+        )
+    else:
+        if urgency_name:
+            return MESSAGES['INVALID_ENTITY_NAME'].format('urgency_name', urgency_name)
         else:
-            if urgency_name:
-                return MESSAGES['INVALID_ENTITY_NAME'].format('urgency_name', urgency_name)
-            else:
-                return MESSAGES['NO_ENTITY_FOUND'].format('urgency')
-
-    except DemistoException as e:
-        raise DemistoException((str(e) if str(e) else MESSAGES['NOT_FOUND_ERROR']))
+            return MESSAGES['NO_ENTITY_FOUND'].format('urgency')
 
 
 @logger
-def bmc_remedy_category_details_get_command(client, args):
+def bmc_remedy_category_details_get_command(client: Client, args: Dict[str, str]) \
+        -> Optional[Union[CommandResults, str, None]]:
     """
     To get details of categories.
 
@@ -2539,27 +2516,23 @@ def bmc_remedy_category_details_get_command(client, args):
         raise ValueError("{}".format(
             MESSAGES["INVALID_TYPE_FOR_CATEGORIES"]).format("type", "type", ", ".join(POSSIBLE_CATEGORY_TYPES)))
 
-    try:
-        api_response = client.http_request('GET', url_suffix=URL_SUFFIX["SALESFORCE_QUERY"],
-                                           params={'q': endpoint_to_get_category})
-    except Exception as e:
-        raise DemistoException(str(e) if str(e) else MESSAGES['UNEXPECTED_ERROR'])
-    if isinstance(api_response, dict):
-        records = api_response.get("records")
-        if records:
-            hr_output, outputs = prepare_outputs_for_categories(records)
-            markdown = HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('categories', len(hr_output))
-            readable_output = tableToMarkdown(
-                markdown, hr_output, headers=["Id", "Name", "Children Count"], removeNull=True)
-            return CommandResults(
-                outputs_prefix=OUTPUT_PREFIX["CATEGORY"],
-                outputs_key_field="Id",
-                outputs=outputs,
-                readable_output=readable_output,
-                raw_response=api_response
-            )
-        else:
-            return error_message
+    api_response = client.http_request('GET', url_suffix=URL_SUFFIX["SALESFORCE_QUERY"],
+                                       params={'q': endpoint_to_get_category})
+    records = api_response.get("records")
+    if records:
+        hr_output, outputs = prepare_outputs_for_categories(records)
+        markdown = HR_MESSAGES['GET_COMMAND_DETAILS_SUCCESS'].format('categories', len(hr_output))
+        readable_output = tableToMarkdown(
+            markdown, hr_output, headers=["Id", "Name", "Children Count"], removeNull=True)
+        return CommandResults(
+            outputs_prefix=OUTPUT_PREFIX["CATEGORY"],
+            outputs_key_field="Id",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=api_response
+        )
+    else:
+        return error_message
 
 
 @logger
@@ -2617,7 +2590,7 @@ def bmc_remedy_user_details_get_command(client: Client, args: Dict[str, Any]) ->
 
 
 @logger
-def bmc_remedy_broadcast_details_get_command(client, args):
+def bmc_remedy_broadcast_details_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
     """
     Get broadcast details.
 
@@ -2644,11 +2617,10 @@ def bmc_remedy_broadcast_details_get_command(client, args):
             MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS["category"],
             category_name
         )
-    try:
-        response = client.http_request(method='GET', url_suffix=URL_SUFFIX["SALESFORCE_QUERY"],
-                                       params={'q': endpoint_to_get_broadcast})
-    except Exception as e:
-        raise DemistoException(str(e) if str(e) else MESSAGES['UNEXPECTED_ERROR'])
+
+    response = client.http_request(method='GET', url_suffix=URL_SUFFIX["SALESFORCE_QUERY"],
+                                   params={'q': endpoint_to_get_broadcast})
+
     if response.get('records'):
         output = prepare_broadcast_details_get_output(response.get('records'))
         custom_ec = createContext(output, removeNull=True)
@@ -2666,7 +2638,7 @@ def bmc_remedy_broadcast_details_get_command(client, args):
 
 
 @logger
-def bmc_remedy_incident_get_command(client, args):
+def bmc_remedy_incident_get_command(client: Client, args: Dict[str, str]) -> Union[CommandResults, str, None]:
     """
     Gets Incident details.
 
@@ -2677,7 +2649,7 @@ def bmc_remedy_incident_get_command(client, args):
     args = remove_extra_space_from_args(args)
     incident_time = args.get('last_fetch_time')
     incident_number = args.get('incident_number')
-    maximum_incident = args.get('maximum_incident')
+    maximum_incident = args.get('maximum_incident', 50)
     query = ''
     if incident_number:
         incident_number = remove_prefix("IN", incident_number)
@@ -2689,17 +2661,15 @@ def bmc_remedy_incident_get_command(client, args):
     final_query = SALESFORCE_QUERIES.get('GET_INCIDENTS', '').format(query, 'false', 'No')
     if maximum_incident:
         try:
-            maximum_incident = int(maximum_incident)
+            maximum_incident_int = int(maximum_incident)
         except ValueError:
             raise ValueError(MESSAGES['MAX_INCIDENT_LIMIT'].format('maximum_incident'))
-        if not (1 <= int(maximum_incident) <= 500):
+        if not (1 <= int(maximum_incident_int) <= 500):
             raise ValueError(MESSAGES['MAX_INCIDENT_LIMIT'].format('maximum_incident'))
-        final_query = final_query + ' LIMIT {}'.format(maximum_incident)
+        final_query = final_query + ' LIMIT {}'.format(maximum_incident_int)
 
-    try:
-        response = client.http_request('GET', url_suffix=URL_SUFFIX['SALESFORCE_QUERY'], params={'q': final_query})
-    except Exception as e:
-        raise DemistoException(str(e) if str(e) else MESSAGES['UNEXPECTED_ERROR'])
+    response = client.http_request('GET', url_suffix=URL_SUFFIX['SALESFORCE_QUERY'], params={'q': final_query})
+
     if response and response.get('records', ''):
         records = response['records']
 
@@ -2723,7 +2693,7 @@ def bmc_remedy_incident_get_command(client, args):
         return HR_MESSAGES["NO_INCIDENT_DETAILS_FOUND"]
 
 
-def bmc_remedy_service_request_get_command(client, args):
+def bmc_remedy_service_request_get_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str, None]:
     """
     Get service request details.
 
@@ -2740,7 +2710,7 @@ def bmc_remedy_service_request_get_command(client, args):
     query = ""
     service_request_number = args.get("service_request_number")
     from_time = args.get("last_fetch_time")
-    maximum_service_request = args.get("maximum_service_request")
+    maximum_service_request = args.get("maximum_service_request", 50)
     if from_time:
         start_time, _ = parse_date_range(from_time, date_format=DATE_FORMAT, utc=True)
         query = "{} LastModifiedDate > {}{}".format(query, start_time, SALESFORCE_QUERIES["QUERY_AND"])
@@ -2750,16 +2720,14 @@ def bmc_remedy_service_request_get_command(client, args):
     final_query = SALESFORCE_QUERIES['GET_SERVICE_REQUEST'].format(query, 'true', 'Yes')
     if maximum_service_request:
         try:
-            maximum_service_request = int(maximum_service_request)
+            maximum_service_request_int = int(maximum_service_request)
         except ValueError:
             raise ValueError(MESSAGES["MAX_INCIDENT_LIMIT"].format('maximum_service_request'))
-        if not (1 <= maximum_service_request <= 500):
+        if not (1 <= maximum_service_request_int <= 500):
             raise ValueError(MESSAGES["MAX_INCIDENT_LIMIT"].format('maximum_service_request'))
-        final_query = '{} LIMIT {}'.format(final_query, maximum_service_request)
-    try:
-        response = client.http_request('GET', url_suffix=URL_SUFFIX['SALESFORCE_QUERY'], params={'q': final_query})
-    except Exception as e:
-        raise DemistoException(str(e) if str(e) else MESSAGES['UNEXPECTED_ERROR'])
+        final_query = '{} LIMIT {}'.format(final_query, maximum_service_request_int)
+
+    response = client.http_request('GET', url_suffix=URL_SUFFIX['SALESFORCE_QUERY'], params={'q': final_query})
 
     if response and response.get('records'):
         records = response['records']
@@ -2872,7 +2840,8 @@ def main():
 
         # Log exceptions
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(
+            MESSAGES['TRACEBACK_MESSAGE'].format(demisto.command()) + traceback.format_exc())  # print the traceback
         if command == 'test-module':
             return_error(str(e))
         else:
