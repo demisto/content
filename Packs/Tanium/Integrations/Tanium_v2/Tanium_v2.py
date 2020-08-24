@@ -728,7 +728,7 @@ def get_saved_question_result(client, data_args):
     id_ = data_args.get('question-id')
     completion_percentage = int(data_args.get('completion-percentage', DEFAULT_COMPLETION_PERCENTAGE))
     if completion_percentage > 100 or completion_percentage < 1:
-        raise ValueError('complete-percentage argument is invalid, Please enter number between 1 to 100')
+        raise ValueError('completion-percentage argument is invalid, Please enter number between 1 to 100')
 
     res = client.do_request('GET', 'result_data/saved_question/' + str(id_))
 

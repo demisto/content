@@ -437,7 +437,7 @@ script:
       defaultValue: '95'
       description: Indicates the threashold to returns the question results.
       isArray: false
-      name: completion-percantage
+      name: completion-percentage
       required: false
       secret: false
     deprecated: false
