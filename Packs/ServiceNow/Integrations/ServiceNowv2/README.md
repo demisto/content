@@ -28,8 +28,8 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 1. To ensure that mirroring works:
     1. Under **Classifier**, select ServiceNow Classifier.
     1. Under **Incident type**, select ServiceNowTicket.
-    1. Under **Mapper (incoming)**, select Mapper-Incoming-ServiceNow.
-    1. Under **Mapper (outgoing)**, select Mapper-Outgoing-ServiceNow.
+    1. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
+    1. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

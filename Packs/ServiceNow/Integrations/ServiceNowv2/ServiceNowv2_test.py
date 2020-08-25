@@ -282,7 +282,7 @@ def test_incident_name_is_initialized(mocker, requests_mock):
     )
     with pytest.raises(ValueError) as e:
         main()
-    assert str(e.value) == 'The field [number] does not exist in the ticket.'
+        assert str(e.value) == 'The field [number] does not exist in the ticket.'
 
 
 def test_not_authenticated_retry_positive(requests_mock, mocker):
