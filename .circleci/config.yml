@@ -459,6 +459,7 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 echo "Using AMI - Not downloading artifacts"
+                exit 0
 
               else
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
