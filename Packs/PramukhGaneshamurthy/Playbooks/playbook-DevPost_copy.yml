@@ -1,0 +1,216 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c8387028-0e11-4113-8ba2-47b09f339049
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 18a14702-94af-49b6-8fde-c89303bd248b
+inputs: []
+name: ' DevPost_copy'
+outputs: []
+sourceplaybookid: ee0e8f48-b139-4459-838e-c4c1089ebf5f
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fd2076cf-bf99-496f-82a5-8aa1741d03f8
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: fd2076cf-bf99-496f-82a5-8aa1741d03f8
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: email ids
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      sender: Your SOC team
+      title: List of email ids
+      totalanswers: 0
+    formDisplay:
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    id: "1"
+    ignoreworker: false
+    message:
+      bcc: null
+      body:
+        simple: Hi, Kindly input the new list of email ids for validated registrations
+      cc: null
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: New registration emails
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: pganeshamurt@paloaltonetworks.com
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6196d7ba-3aae-45e8-8b81-9d22c27c8abe
+      iscommand: false
+      name: Input the list of new email ids of participants
+      type: collection
+      version: -1
+    taskid: 6196d7ba-3aae-45e8-8b81-9d22c27c8abe
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: this is a test
+      cc: {}
+      htmlBody:
+        simple: test
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: test
+      templateParams: {}
+      to:
+        complex:
+          accessor: Answers.0
+          root: List of email ids
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: c2864ed5-3e5d-4426-8d98-bbe06f6f8d0e
+      iscommand: true
+      name: Send email
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: c2864ed5-3e5d-4426-8d98-bbe06f6f8d0e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: List of email ids.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: has value
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: aff785d6-a314-4dd1-8b72-9244b200cf16
+      iscommand: false
+      name: filter each mail
+      type: condition
+      version: -1
+    taskid: aff785d6-a314-4dd1-8b72-9244b200cf16
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
