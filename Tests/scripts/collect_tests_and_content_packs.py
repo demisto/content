@@ -79,10 +79,11 @@ class TestConf(object):
     def get_packs_of_collected_tests(self, collected_tests, id_set):
         packs = set([])
         for test_obj in id_set['TestPlaybooks']:
-            test_obj_name = test_obj[0].get('name')
-            test_obj_pack = test_obj[0].get('pack')
-            if test_obj_name in collected_tests and test_obj_pack:
-                packs.add(test_obj_pack)
+            for test_id, test_data in test_obj.items():
+                test_obj_name = test_obj[test_id].get('name')
+                test_obj_pack = test_obj[test_id].get('pack')
+                if test_obj_name in collected_tests and test_obj_pack:
+                    packs.add(test_obj_pack)
         return packs
 
     def get_packs_of_tested_integrations(self, collected_tests, id_set):
