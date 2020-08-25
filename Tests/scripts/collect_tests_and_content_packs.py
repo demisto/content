@@ -1218,6 +1218,11 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
     two_before_ga = two_before_ga or AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
     one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
+    """
+    The environment naming is being phased out due to it being difficult to follow. In this case,
+    Demisto 6.0 is the GA, Demisto GA is one before GA (5.0), Demisto one before GA is two before GA 
+    (4.5)
+    """
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
@@ -1225,7 +1230,6 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
         'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
         'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
-    print(envs_to_test)
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)

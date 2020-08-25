@@ -259,7 +259,7 @@ class TestChangedTestPlaybook:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Demisto PreGA') is True
         assert filter_envs.get('Demisto Marketplace') is True
-        assert filter_envs.get('Demisto 6.0') is False
+        assert filter_envs.get('Demisto 6.0') is True
         assert filter_envs.get('Demisto one before GA') is False
         assert filter_envs.get('Demisto GA') is True
 
