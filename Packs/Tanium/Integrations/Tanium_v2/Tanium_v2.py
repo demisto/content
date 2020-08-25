@@ -12,6 +12,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 GROUP_TYPES = {0: 'Filter-based group', 1: 'Action group', 2: 'Action policy pair group', 3: 'Ad hoc group',
                4: 'Manual group'}
 DEMISTO_API_ACTION_NAME = 'via Demisto API'
+DEFAULT_COMPLETION_PERCENTAGE = "95"
 
 
 class Client(BaseClient):
@@ -146,7 +147,7 @@ class Client(BaseClient):
         res = self.do_request('POST', 'questions', question_body)
         return res.get('data').get('id'), res
 
-    def parse_question_results(self, result):
+    def parse_question_results(self, result, completion_percentage):
         results_sets = result.get('data').get('result_sets')[0]
         estimated_total = results_sets.get('estimated_total')
         mr_tested = results_sets.get('mr_tested')
@@ -154,9 +155,9 @@ class Client(BaseClient):
         if not estimated_total and not mr_tested:
             return None
 
-        percantage = mr_tested / estimated_total * 100
+        percentage = mr_tested / estimated_total * 100
 
-        if percantage < 95:
+        if percentage < completion_percentage:
             return None
         if results_sets.get('row_count') == 0:
             return []
@@ -668,9 +669,13 @@ def get_question_metadata(client, data_args):
 
 def get_question_result(client, data_args):
     id_ = data_args.get('question-id')
+    completion_percentage = int(data_args.get('completion-percentage', DEFAULT_COMPLETION_PERCENTAGE))
+    if completion_percentage > 100 or completion_percentage < 1:
+        raise ValueError('completion-percentage argument is invalid, Please enter number between 1 to 100')
+
     res = client.do_request('GET', 'result_data/question/' + str(id_))
 
-    rows = client.parse_question_results(res)
+    rows = client.parse_question_results(res, completion_percentage)
 
     if rows is None:
         context = {'QuestionID': id_, 'Status': 'Pending'}
@@ -721,10 +726,13 @@ def get_saved_question_metadata(client, data_args):
 
 def get_saved_question_result(client, data_args):
     id_ = data_args.get('question-id')
+    completion_percentage = int(data_args.get('completion-percentage', DEFAULT_COMPLETION_PERCENTAGE))
+    if completion_percentage > 100 or completion_percentage < 1:
+        raise ValueError('completion-percentage argument is invalid, Please enter number between 1 to 100')
 
     res = client.do_request('GET', 'result_data/saved_question/' + str(id_))
 
-    rows = client.parse_question_results(res)
+    rows = client.parse_question_results(res, completion_percentage)
     if rows is None:
         context = {'SavedQuestionID': id_, 'Status': 'Pending'}
         return f'Question is still executing, Question id: {str(id_)}',\
