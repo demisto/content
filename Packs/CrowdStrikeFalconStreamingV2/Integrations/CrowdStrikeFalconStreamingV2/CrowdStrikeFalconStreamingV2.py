@@ -159,7 +159,10 @@ class EventStream:
             last_fetch_stats_print = datetime.utcnow()
             async with ClientSession(
                 connector=TCPConnector(ssl=self.verify_ssl),
-                headers={'Authorization': f'Token {self.session_token}'},
+                headers={
+                    'Authorization': f'Token {self.session_token}',
+                    'Connection': 'keep-alive'
+                },
                 trust_env=self.proxy,
                 timeout=None
             ) as session:
