@@ -4,6 +4,7 @@
     "type": "mapping-incoming",
     "id": "Cortex XDR - IR-mapper",
     "description": "Maps incoming Cortex XDR incidents fields.",
+
 	"defaultIncidentType": "",
 	"mapping": {
 		"Cortex XDR Incident": {
