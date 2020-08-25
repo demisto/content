@@ -464,7 +464,7 @@ jobs:
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
                 cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
-#      - *collect_test_list_and_content_packs
+      - *collect_test_list_and_content_packs
 #      - *calculate_packs_dependencies
       - unless:
           condition: << pipeline.parameters.demisto_sdk_nightly >>
