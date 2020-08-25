@@ -16,11 +16,14 @@ class Client(BaseClient):
         self.password = params.get('api_password')
         super().__init__(base_url=params.get('base_url'), verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))
-        self._token_jwt = self._generate_jwt_token()
-        self._token_base64 = self._generate_base64_token()
-        self._headers = {'Authorization': 'Bearer ' + self._token_jwt}
 
-        # Authorization base64 If jwtToken does not work
+        self._token_jwt_a = self._generate_jwt_token_a()
+        self._headers = {'Authorization': 'Bearer ' + self._token_jwt_a}
+
+        # self._token_jwt_b = self._generate_jwt_token_b()
+        # self._headers = {'Authorization': 'Bearer ' + self._token_jwt_b}
+
+        # self._token_base64 = self._generate_base64_token()
         # self._headers = {'Authorization': 'Basic ' + self._token_base64}
 
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
@@ -30,13 +33,26 @@ class Client(BaseClient):
                                      json_data=json_data, params=params, data=data, files=files, timeout=timeout,
                                      ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
 
-    def _generate_jwt_token(self) -> str:
+    def _generate_jwt_token_a(self) -> str:
         username = base64.b64encode(self.username.encode('ascii')).decode('utf-8')
         password = base64.b64encode(self.password.encode('ascii')).decode('utf-8')
 
         body = {
             'userName': username,
             'passphrase': password
+        }
+        token_res = self.http_request('POST', '/esa/api/v2.0/login', data=body, auth=(self.username, self.password))
+        return token_res.get('data').get('jwtToken')
+
+    def _generate_jwt_token_b(self):
+        username = base64.b64encode(self.username.encode('ascii')).decode('utf-8')
+        password = base64.b64encode(self.password.encode('ascii')).decode('utf-8')
+
+        body = {
+            "data": {
+                'userName': username,
+                'passphrase': password
+            }
         }
         token_res = self.http_request('POST', '/esa/api/v2.0/login', data=body, auth=(self.username, self.password))
         return token_res.get('data').get('jwtToken')
@@ -359,6 +375,8 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(params)
+
+        return_error("Authorization Ok")
 
         if demisto.command() == 'test-module':
             result = test_module(client)
