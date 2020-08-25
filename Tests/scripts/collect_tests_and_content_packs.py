@@ -76,6 +76,15 @@ class TestConf(object):
 
         return tested_integrations
 
+    def get_packs_of_collected_tests(self, collected_tests, id_set):
+        packs = set([])
+        for test_obj in id_set['TestPlaybooks']:
+            test_obj_name = test_obj[0].get('name')
+            test_obj_pack = test_obj[0].get('pack')
+            if test_obj_name in collected_tests and test_obj_pack:
+                packs.add(test_obj_pack)
+        return packs
+
     def get_packs_of_tested_integrations(self, collected_tests, id_set):
         packs = set([])
         tested_integrations = self.get_tested_integrations_for_collected_tests(collected_tests)
@@ -1124,11 +1133,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
 
     tests = set([])
     packs_to_install = set([])
-
-    tests, more_packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
-                                                                                   conf, id_set)
-    if more_packs_to_install:
-        packs_to_install = packs_to_install.union(more_packs_to_install)
+    if modified_files_with_relevant_tests:
+        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
+                                                                                  conf, id_set)
 
     print(f"find_tests_and_content_packs_for_modified_files: modified_files_with_relevant_tests:{packs_to_install}"
           f"\n")
@@ -1190,6 +1197,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
     print(f"packs_of_tested_integrations:{packs_of_tested_integrations}")
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
+
+    packs_of_collected_tests = conf.get_packs_of_collected_tests(tests, id_set)
+    packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
     print(f"final packs to install list:{packs_to_install}")
