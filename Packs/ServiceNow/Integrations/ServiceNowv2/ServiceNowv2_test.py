@@ -490,6 +490,3 @@ def test_get_remote_data(mocker):
 
     assert res[1]['File'] == 'test.txt'
     assert res[2]['Contents'] == 'This is a comment'
-
-
-

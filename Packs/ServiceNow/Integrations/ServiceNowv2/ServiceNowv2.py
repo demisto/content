@@ -1877,7 +1877,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
     """
 
-    ticket_id = args.get('id')
+    ticket_id = args.get('id', '')
     demisto.debug(f'Getting update for remote {ticket_id}')
     last_update = arg_to_timestamp(
         arg=args.get('lastUpdate'),
@@ -1909,8 +1909,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     demisto.debug(f'ticket_last_update is {ticket_last_update}')
 
-    if last_update > ticket_last_update:
-        demisto.debug(f'Nothing new in the ticket')
+    if last_update > ticket_last_update:  # type: ignore
+        demisto.debug('Nothing new in the ticket')
         ticket = {}
 
     else:
@@ -1932,7 +1932,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         if file_entries:
             for file_ in file_entries:
                 if file_.get('File') == attachment.get('file_name'):
-                    if last_update > entry_time:
+                    if last_update > entry_time:  # type: ignore
                         continue
                     else:
                         entries.append(file_)
@@ -1957,7 +1957,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         )
         demisto.debug(f'entry_time is {entry_time}')
 
-        if last_update > entry_time:
+        if last_update > entry_time:  # type: ignore
             continue
 
         comments_context = {'comments_and_work_notes': note.get('value')}
@@ -2076,7 +2076,10 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     for field in SNOW_ARGS:
         incident_type_scheme.add_field(field)
 
-    return GetMappingFieldsResponse(incident_type_scheme)
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(incident_type_scheme)
+
+    return mapping_response
 
 
 def main():
