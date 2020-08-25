@@ -1074,12 +1074,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: Address that should be used to reply to the message
-      isArray: false
-      name: reply_to
-      required: false
-      secret: false
-    - default: false
       description: A comma-separated list of IDs of war room entries that contain
         the files that should be attached to the email
       isArray: true

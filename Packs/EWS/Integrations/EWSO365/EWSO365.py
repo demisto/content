@@ -51,6 +51,7 @@ from exchangelib import (
     OAUTH2,
     OAuth2AuthorizationCodeCredentials,
     Identity,
+    ExtendedProperty
 )
 from oauthlib.oauth2 import OAuth2Token
 from exchangelib.version import EXCHANGE_O365
@@ -1603,7 +1604,7 @@ def mark_item_as_read(
     return readable_output, output, marked_items
 
 
-def randomword(length):
+def random_word_generator(length):
     """
     Generate a random string of given length
     """
@@ -1622,14 +1623,14 @@ def handle_html(html_body):
     last_index = 0
     for i, m in enumerate(
             re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
-        att = {
+        attachment = {
             'data': base64.b64decode(m.group(3)),
             'name': f'image{i}'
         }
-        att['cid'] = f'{att["name"]}@{randomword(8)}.{randomword(8)}'
+        attachment['cid'] = f'{attachment["name"]}@{random_word_generator(8)}.{random_word_generator(8)}'
 
-        attachments.append(att)
-        clean_body += html_body[last_index:m.start(1)] + 'cid:' + att['cid']
+        attachments.append(attachment)
+        clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
         last_index = m.end() - 1
 
     clean_body += html_body[last_index:]
@@ -1657,8 +1658,7 @@ def collect_manual_attachments(manualAttachObj):
     return attachments
 
 
-def collect_attachments(attachments_ids, attachments_cids, attachments_names,
-                        transient_files, transient_files_contents, transient_files_cids):
+def collect_attachments(attachments_ids, attachments_cids, attachments_names):
     """
     Collect all attachments into a list with all data
     """
@@ -1692,7 +1692,12 @@ def collect_attachments(attachments_ids, attachments_cids, attachments_names,
             demisto.error(f'Invalid entry {attachment_id} with exception: {ex}')
             return_error(f'Entry {attachment_id} is not valid or is not a file entry')
 
-    # handle transient files
+    return attachments
+
+
+def handle_transient_files(transient_files, transient_files_contents, transient_files_cids):
+    transient_attachments = []
+
     files_names = argToList(transient_files)
     files_contents = argToList(transient_files_contents)
     files_cids = argToList(transient_files_cids)
@@ -1700,13 +1705,13 @@ def collect_attachments(attachments_ids, attachments_cids, attachments_names,
     for name, data, cid in map(None, files_names, files_contents, files_cids):
         if name is None or data is None:
             break
-        attachments.append({
+        transient_attachments.append({
             'name': name,
             'data': data,
             'cid': cid
         })
 
-    return attachments
+    return transient_attachments
 
 
 def handle_template_params(template_params):
@@ -1728,9 +1733,10 @@ def handle_template_params(template_params):
     return actual_params
 
 
-def create_msg(to, subject='', body="", bcc=None, cc=None, reply_to=None, html_body=None,
-               attachments_ids="", attachments_cids="", attachments_names="", manualAttachObj=None,
-               transient_files=None, transient_files_contents=None, transient_files_cids=None, template_params=None):
+def create_message(to, subject='', body="", bcc=None, cc=None, html_body=None,
+                   attachments_ids="", attachments_cids="", attachments_names="", manualAttachObj=None,
+                   transient_files=None, transient_files_contents=None, transient_files_cids=None, template_params=None,
+                   additional_headers=None):
     """
     Return: a message object
     """
@@ -1744,9 +1750,9 @@ def create_msg(to, subject='', body="", bcc=None, cc=None, reply_to=None, html_b
     if not to and not cc and not bcc:
         return_error('You must have at least one recipient')
 
-    attachments = collect_attachments(attachments_ids, attachments_cids, attachments_names,
-                                      transient_files, transient_files_contents, transient_files_cids)
+    attachments = collect_attachments(attachments_ids, attachments_cids, attachments_names)
     attachments.extend(collect_manual_attachments(manualAttachObj))
+    attachments.extend(handle_transient_files(transient_files, transient_files_contents, transient_files_cids))
 
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
@@ -1756,6 +1762,7 @@ def create_msg(to, subject='', body="", bcc=None, cc=None, reply_to=None, html_b
             bcc_recipients=bcc,
             subject=subject,
             body=body,
+            **additional_headers
         )
 
         for attachment in attachments:
@@ -1775,7 +1782,8 @@ def create_msg(to, subject='', body="", bcc=None, cc=None, reply_to=None, html_b
             cc_recipients=cc,
             bcc_recipients=bcc,
             subject=subject,
-            body=HTMLBody(html_body)
+            body=HTMLBody(html_body),
+            **additional_headers
         )
 
         for attachment in attachments:
@@ -1790,13 +1798,24 @@ def create_msg(to, subject='', body="", bcc=None, cc=None, reply_to=None, html_b
     return message
 
 
-# Not sure that it is possible
 def add_additional_headers(additional_headers):
-    for header in additional_headers:
+    headers = dict()
+
+    for header in argToList(additional_headers):
         header_name, header_value = header.split('=', 1)
 
+        class TempClass(ExtendedProperty):
+            distinguished_property_set_id = 'InternetHeaders'
+            property_name = header_name
+            property_type = 'String'
 
-def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, reply_to=None, html_body=None,
+        Message.register(header_name, TempClass)
+        headers[header_name] = header_value
+
+    return headers
+
+
+def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, html_body=None,
                attachments_ids="", attachments_cids="", attachments_names="", manualAttachObj=None,
                transient_files=None, transient_files_contents=None, transient_files_cids=None, template_params=None,
                additional_headers=None, raw_message=None):
@@ -1814,15 +1833,15 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, re
 
     else:
         if additional_headers:
-            add_additional_headers(additional_headers)
+            additional_headers = add_additional_headers(additional_headers)
 
-        message = create_msg(to, subject, body, bcc, cc, reply_to, html_body,
-                             attachments_ids, attachments_cids, attachments_names, manualAttachObj,
-                             transient_files, transient_files_contents, transient_files_cids, template_params)
+        message = create_message(to, subject, body, bcc, cc, html_body, attachments_ids, attachments_cids,
+                                 attachments_names, manualAttachObj, transient_files, transient_files_contents,
+                                 transient_files_cids, template_params, additional_headers)
 
     client.send_email(message)
 
-    return 'Mail sent successfully'  # , context_output, raw_repsonse
+    return 'Mail sent successfully', {}, {}
 
 
 def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
