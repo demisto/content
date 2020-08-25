@@ -1,9 +1,8 @@
-IT service management
-Demisto interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the ‘ServiceNow’ integration in order to:
+IT service management. Demisto interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the ‘ServiceNow’ integration in order to:
 
-View, create, update or delete a ServiceNow ticket directly from the Demisto CLI and enrich it with Demisto data.
-View, create, update and delete records from any ServiceNow table.
-Query ServiceNow data with the ServiceNow query syntax.
+- View, create, update or delete a ServiceNow ticket directly from the Demisto CLI and enrich it with Demisto data.
+- View, create, update and delete records from any ServiceNow table.
+- Query ServiceNow data with the ServiceNow query syntax.
 
 Please refer to ServiceNow documentation for additional information. We especially recommend the Operators available for filters and queries page: https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
 
@@ -29,7 +28,7 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | ServiceNow URL, in the format https://company.service\-now.com/ | True |
+| url | ServiceNow URL, in the format `https://company.service-now.com/` | True |
 | credentials | Username | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
@@ -39,8 +38,7 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 | sysparm_query | The query to use when fetching incidents | False |
 | fetch_limit | How many incidents to fetch each time | False |
 | fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
-| timestamp_field | Timestamp field to filter by \(e.g., \`opened\_at\`\)
-This is how the filter is applied to the query: “ORDERBYopened\_at^opened\_at&gt;\[Last Run\]. To prevent duplicate incidents, this field is mandatory for fetching incidents. | False |
+| timestamp_field | Timestamp field to filter by \(e.g., \`opened\_at\`\) This is how the filter is applied to the query: "ORDERBYopened\_at^opened\_at&gt;\[Last Run\]". To prevent duplicate incidents, this field is mandatory for fetching incidents. | False |
 | incidentType | Incident type | False |
 | get_attachments | Get incident attachments | False |
 
@@ -229,6 +227,9 @@ Creates new ServiceNow ticket.
 | caller | Caller system ID. | Optional | 
 | approval | Ticket approval. | Optional | 
 | additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value; | Optional | 
+| input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
+
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 
 #### Context Output
@@ -376,7 +377,9 @@ Updates the specified ticket.
 | caller | Caller system ID. | Optional | 
 | approval | Ticket approval. | Optional | 
 | additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value; | Optional | 
+| input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 #### Context Output
 
@@ -850,6 +853,9 @@ Creates a new record in the specified ServiceNow table.
 | table_name | The name of the table in which to create a record. | Required | 
 | fields | Fields and their values to create the record with, in the format: fieldname1=value;fieldname2=value;... | Optional | 
 | custom_fields | Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;... | Optional | 
+| input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
+
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 
 #### Context Output
@@ -904,8 +910,10 @@ Updates a record in the specified ServiceNow table.
 | table_name | The name of the table to update the record in. | Required | 
 | id | The system ID of the ticket to update. | Required | 
 | fields | Fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional | 
-| custom_fields | Custom (user defined) fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional | 
+| custom_fields | Custom (user defined) fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional |
+| input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
 
+For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
 #### Context Output
 

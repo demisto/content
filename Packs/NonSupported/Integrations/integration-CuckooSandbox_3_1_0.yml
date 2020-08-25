@@ -24,7 +24,7 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -348,7 +348,9 @@ script:
     };
 
 
-
+    if (params['proxy'] === undefined){
+      params['proxy'] = true;
+    }
     // The command input arg holds the command sent from the user.
     switch (command) {
         // This is the call made when pressing the integration test button.

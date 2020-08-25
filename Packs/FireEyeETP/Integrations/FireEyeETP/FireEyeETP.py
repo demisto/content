@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 '''
 IMPORTS
 '''
@@ -13,9 +12,9 @@ import os
 import re
 import copy
 import json
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
 
 '''
 GLOBAL VARS
@@ -29,7 +28,6 @@ HTTP_HEADERS = {
 USE_SSL = not demisto.params().get('unsecure')
 MESSAGE_STATUS = demisto.params().get('message_status')
 
-
 '''
 SEARCH ATTRIBUTES VALID VALUES
 '''
@@ -41,14 +39,12 @@ STATUS_VALUES = ["accepted", "deleted", "delivered", "delivered (retroactive)", 
                  "dropped oob", "dropped (oob retroactive)", "permanent failure", "processing",
                  "quarantined", "rejected", "temporary failure"]
 
-
 '''
 BASIC FUNCTIONS
 '''
 
 
 def set_proxies():
-
     if not demisto.params().get('proxy', False):
         del os.environ['HTTP_PROXY']
         del os.environ['HTTPS_PROXY']
@@ -57,14 +53,12 @@ def set_proxies():
 
 
 def listify(comma_separated_list):
-
     if isinstance(comma_separated_list, list):
         return comma_separated_list
     return comma_separated_list.split(',')
 
 
 def http_request(method, url, body=None, headers={}, url_params=None):
-
     '''
     returns the http response
     '''
@@ -96,7 +90,6 @@ def http_request(method, url, body=None, headers={}, url_params=None):
 
 
 def return_error_entry(message):
-
     entry = {
         'Type': entryTypes['error'],
         'Contents': str(message),
@@ -106,7 +99,6 @@ def return_error_entry(message):
 
 
 def to_search_attribute_object(value, filter=None, is_list=False, valid_values=None):
-
     values = listify(value) if is_list else value
     if valid_values:
         for val in values:
@@ -127,7 +119,6 @@ def format_search_attributes(from_email=None, from_email_not_in=None, recipients
                              recipients_not_in=None, subject=None, from_accepted_date_time=None,
                              to_accepted_date_time=None, rejection_reason=None, sender_ip=None, status=None,
                              status_not_in=None, last_modified_date_time=None, domains=None):
-
     search_attributes = {}  # type: Dict
 
     # handle from_email attribute
@@ -150,9 +141,11 @@ def format_search_attributes(from_email=None, from_email_not_in=None, recipients
     if status and status_not_in:
         raise ValueError('Only one of the followings can be specified: status, status_not_in')
     if status:
-        search_attributes['status'] = to_search_attribute_object(status, filter='in', is_list=True, valid_values=STATUS_VALUES)
+        search_attributes['status'] = to_search_attribute_object(status, filter='in', is_list=True,
+                                                                 valid_values=STATUS_VALUES)
     elif status_not_in:
-        search_attributes['status'] = to_search_attribute_object(status, filter='in', is_list=True, valid_values=STATUS_VALUES)
+        search_attributes['status'] = to_search_attribute_object(status, filter='in', is_list=True,
+                                                                 valid_values=STATUS_VALUES)
 
     if subject:
         search_attributes['subject'] = to_search_attribute_object(subject, filter='in', is_list=True)
@@ -181,7 +174,6 @@ def format_search_attributes(from_email=None, from_email_not_in=None, recipients
 
 
 def readable_message_data(message):
-
     return {
         'Message ID': message['id'],
         'Accepted Time': message['acceptedDateTime'],
@@ -193,7 +185,6 @@ def readable_message_data(message):
 
 
 def message_context_data(message):
-
     context_data = copy.deepcopy(message)
 
     # remove 'attributes' level
@@ -218,7 +209,6 @@ def message_context_data(message):
 
 
 def search_messages_request(attributes={}, has_attachments=None, max_message_size=None):
-
     url = '{}/messages/trace'.format(BASE_PATH)
     body = {
         'attributes': attributes,
@@ -240,7 +230,6 @@ def search_messages_request(attributes={}, has_attachments=None, max_message_siz
 
 
 def search_messages_command():
-
     args = demisto.args()
     if 'size' in args.keys():
         # parse to int
@@ -301,7 +290,6 @@ def search_messages_command():
 
 
 def get_message_request(message_id):
-
     url = '{}/messages/{}'.format(BASE_PATH, message_id)
     response = http_request(
         'GET',
@@ -313,7 +301,6 @@ def get_message_request(message_id):
 
 
 def get_message_command():
-
     # get raw data
     raw_message = get_message_request(demisto.args()['message_id'])
 
@@ -361,7 +348,6 @@ def get_message_command():
 
 
 def alert_readable_data_summery(alert):
-
     return {
         'Alert ID': alert['id'],
         'Alert Timestamp': alert['alert']['timestamp'],
@@ -377,7 +363,6 @@ def alert_readable_data_summery(alert):
 
 
 def alert_readable_data(alert):
-
     return {
         'Alert ID': alert['id'],
         'Alert Timestamp': alert['alert']['timestamp'],
@@ -393,20 +378,18 @@ def alert_readable_data(alert):
 
 
 def malware_readable_data(malware):
-
     return {
-        'Name': malware['name'],
+        'Name': malware.get('name'),
         'Domain': malware.get('domain'),
-        'Downloaded At': malware['downloaded_at'],
-        'Executed At': malware['executed_at'],
-        'Type': malware['stype'],
-        'Submitted At': malware['submitted_at'],
-        'SID': malware['sid']
+        'Downloaded At': malware.get('downloaded_at'),
+        'Executed At': malware.get('executed_at'),
+        'Type': malware.get('stype'),
+        'Submitted At': malware.get('submitted_at'),
+        'SID': malware.get('sid')
     }
 
 
 def alert_context_data(alert):
-
     context_data = copy.deepcopy(alert)
     # remove 'attributes' level
     context_data.update(context_data.pop('attributes', {}))
@@ -414,7 +397,6 @@ def alert_context_data(alert):
 
 
 def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_id=None, size=None, raw_response=False):
-
     url = '{}/alerts'.format(BASE_PATH)
 
     # constract the body for the request
@@ -445,7 +427,6 @@ def get_alerts_request(legacy_id=None, from_last_modified_on=None, etp_message_i
 
 
 def get_alerts_command():
-
     args = demisto.args()
 
     if 'size' in args.keys():
@@ -498,7 +479,6 @@ def get_alerts_command():
 
 
 def get_alert_request(alert_id):
-
     url = '{}/alerts/{}'.format(BASE_PATH, alert_id)
     response = http_request(
         'GET',
@@ -510,10 +490,8 @@ def get_alert_request(alert_id):
 
 
 def get_alert_command():
-
     # get raw data
     alert_raw = get_alert_request(demisto.args()['alert_id'])
-
     if alert_raw:
         # create context data
         alert_context = alert_context_data(alert_raw)
@@ -556,7 +534,6 @@ def get_alert_command():
 
 
 def parse_string_in_iso_format_to_datetime(iso_format_string):
-
     alert_last_modified = None
     try:
         alert_last_modified = datetime.strptime(iso_format_string, "%Y-%m-%dT%H:%M:%S.%f")
@@ -569,7 +546,6 @@ def parse_string_in_iso_format_to_datetime(iso_format_string):
 
 
 def parse_alert_to_incident(alert):
-
     context_data = alert_context_data(alert)
     incident = {
         'name': context_data['email']['headers']['subject'],
@@ -579,7 +555,6 @@ def parse_alert_to_incident(alert):
 
 
 def fetch_incidents():
-
     last_run = demisto.getLastRun()
     week_ago = datetime.now() - timedelta(days=7)
     iso_format = "%Y-%m-%dT%H:%M:%S.%f"
@@ -596,10 +571,11 @@ def fetch_incidents():
         raw_response=True
     )
     # end if no results returned
-    if not alerts_raw_response or 'data' not in alerts_raw_response.keys():
+    if not alerts_raw_response or not alerts_raw_response.get('data'):
+        demisto.incidents([])
         return
 
-    alerts = alerts_raw_response['data']
+    alerts = alerts_raw_response.get('data', [])
     last_alert_created = parse_string_in_iso_format_to_datetime(last_run['last_created'])
     alert_creation_limit = parse_string_in_iso_format_to_datetime(last_run['last_created'])
     incidents = []
@@ -629,24 +605,30 @@ def fetch_incidents():
 EXECUTION
 '''
 
-set_proxies()
 
-try:
-    if demisto.command() == 'test-module':
-        alerts = get_alerts_request(size=1)
-        # request was succesful
-        demisto.results('ok')
-    if demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    if demisto.command() == 'fireeye-etp-search-messages':
-        search_messages_command()
-    if demisto.command() == 'fireeye-etp-get-message':
-        get_message_command()
-    if demisto.command() == 'fireeye-etp-get-alerts':
-        get_alerts_command()
-    if demisto.command() == 'fireeye-etp-get-alert':
-        get_alert_command()
-except ValueError as e:
-    LOG(e)
-    LOG.print_log()
-    return_error_entry(e)
+def main():
+    set_proxies()
+
+    try:
+        if demisto.command() == 'test-module':
+            get_alerts_request(size=1)
+            # request was succesful
+            demisto.results('ok')
+        if demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        if demisto.command() == 'fireeye-etp-search-messages':
+            search_messages_command()
+        if demisto.command() == 'fireeye-etp-get-message':
+            get_message_command()
+        if demisto.command() == 'fireeye-etp-get-alerts':
+            get_alerts_command()
+        if demisto.command() == 'fireeye-etp-get-alert':
+            get_alert_command()
+    except ValueError as e:
+        LOG(e)
+        LOG.print_log()
+        return_error_entry(e)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

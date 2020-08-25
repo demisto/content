@@ -1,4 +1,7 @@
 ## [Unreleased]
+Fixed a breaking change in the outputs of the ***as-get-security-events*** command.
+
+## [20.5.2] - 2020-05-26
 - Fixed an issue where the as-get-security-events command changed some IP addresses.
 
 

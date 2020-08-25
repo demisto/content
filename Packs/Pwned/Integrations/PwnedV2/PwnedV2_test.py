@@ -1,5 +1,9 @@
 import pytest
 from PwnedV2 import pwned_domain_command, pwned_username_command
+import PwnedV2
+from requests_mock import ANY
+
+RETURN_ERROR_TARGET = 'PwnedV2.return_error'
 
 username_context = {
     'Domain(val.Name && val.Name == obj.Name)': {
@@ -104,3 +108,18 @@ def test_pwned_commands(command, args, response, expected_result, mocker):
     md_list, ec_list, api_email_res_list = command(args)
     for hr, outputs, raw in zip(md_list, ec_list, api_email_res_list):
         assert expected_result == outputs  # entry context is found in the 2nd place in the result of the command
+
+
+def test_rate_limited(mocker, requests_mock):
+    # mock all requests with retry and provide a huge timeout
+    requests_mock.get(ANY, status_code=429,
+                      text='{ "statusCode": 429, "message": "Rate limit is exceeded. Try again in 20 seconds." }')
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    return_error_mock.side_effect = ValueError(RETURN_ERROR_TARGET)
+    PwnedV2.MAX_RETRY_ALLOWED = 10
+    PwnedV2.set_retry_end_time()
+    with pytest.raises(ValueError, match=RETURN_ERROR_TARGET):
+        PwnedV2.pwned_email(['test@test.com'])
+    assert return_error_mock.call_count == 1
+    # call_args last call with a tuple of args list and kwargs
+    assert 'Max retry time' in return_error_mock.call_args[0][0]

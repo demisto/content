@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed parsing of responses for the ***create-mimecast-incident*** command.
 
 ## [20.5.0] - 2020-05-12
 -

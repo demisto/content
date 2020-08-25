@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.5.2] - 2020-05-26
 Fixed an issue in **recorded-future-get-related-entities** where the command output was mishandled.
 
 ## [20.4.1] - 2020-04-29

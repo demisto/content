@@ -21,7 +21,7 @@
 <ul>
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>ServiceNow URL, in the format <a href="https://company.service-now.com/" rel="nofollow">https://company.service-now.com/</a></strong></li>
+<li><strong>ServiceNow URL, in the format https://company.service-now.com/</strong></li>
 <li><strong>Username</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
@@ -285,7 +285,7 @@
 <li><a href="#h_59791168127661543394007101">Upload a file to a ticket: servicenow-upload-file</a></li>
 <li><a href="#h_42025144228861543394012547">Get record information: servicenow-get-record</a></li>
 <li><a href="#h_31329423830051543394018349">Query a table: servicenow-query-table</a></li>
-<li><a href="11">Create a record in a table: servicenow-create-record</a></li>
+<li><a href="#h_11">Create a record in a table: servicenow-create-record</a></li>
 <li><a href="#h_82174951331301543394025269">Update a record in a table: servicenow-update-record</a></li>
 <li><a href="#h_70112060732471543394030180">Delete a record from a table: servicenow-delete-record</a></li>
 <li><a href="#h_6980755125801543393891359">List API fields for a table: servicenow-list-table-fields</a></li>
@@ -2110,7 +2110,7 @@
 </pre>
 <h5>Human Readable Output</h5>
 <p><a href="https://user-images.githubusercontent.com/35098543/49082769-480fc300-f253-11e8-93f2-c2ca049ffdbc.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49082769-480fc300-f253-11e8-93f2-c2ca049ffdbc.png" alt="image"></a></p>
-<h3>11. Create a record in a table</h3>
+<h3 id="h_11">11. Create a record in a table</h3>
 <hr>
 <p>Creates a new record in a specified ServiceNow table.</p>
 <h5>Base Command</h5>

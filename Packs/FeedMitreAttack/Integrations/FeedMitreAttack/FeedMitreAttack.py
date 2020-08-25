@@ -1,6 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 from typing import List, Dict, Set
 import json
@@ -41,13 +41,14 @@ requests.packages.urllib3.disable_warnings()
 
 class Client:
 
-    def __init__(self, url, proxies, verify, include_apt, reputation):
+    def __init__(self, url, proxies, verify, include_apt, reputation, tags: list = None):
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
         self.include_apt = include_apt
         self.indicatorType = "MITRE ATT&CK"
         self.reputation = 0
+        self.tags = [] if tags is None else tags
         if reputation == 'Good':
             self.reputation = 0
         elif reputation == 'Suspicious':
@@ -207,6 +208,7 @@ class Client:
                                 "score": self.reputation,
                                 "type": "MITRE ATT&CK",
                                 "rawJSON": mitre_item_json,
+                                "fields": {"tags": self.tags}
                             })
                             indicator_values_list.add(value)
                             counter += 1
@@ -224,6 +226,7 @@ class Client:
                                         "score": self.reputation,
                                         "type": "MITRE ATT&CK",
                                         "rawJSON": mitre_item_json,
+                                        "fields": {"tags": self.tags}
                                     })
                                     external_refs.add(x)
 
@@ -307,7 +310,7 @@ def search_command(client, args):
     sensitive = True if args.get('casesensitive') == 'True' else False
     return_list_md: List[Dict] = list()
     entries = list()
-    all_indicators = list()
+    all_indicators: List[Dict] = list()
     page = 0
     size = 1000
     raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}"', page=page, size=size)
@@ -347,7 +350,7 @@ def search_command(client, args):
     return_list_md = sorted(return_list_md, key=lambda name: name['mitrename'])
     return_list_md = [{"Name": x.get('Name')} for x in return_list_md]
 
-    md = tableToMarkdown(f'MITRE Indicator search:', return_list_md)
+    md = tableToMarkdown('MITRE Indicator search:', return_list_md)
     ec = {'indicators(val.id && val.id == obj.id)': entries}
     return_outputs(md, ec, return_list_md)
 
@@ -356,39 +359,44 @@ def reputation_command(client, args):
     input_indicator = args.get('indicator')
     demisto_urls = demisto.demistoUrls()
     indicator_url = demisto_urls.get('server') + "/#/indicator/"
-    all_indicators = list()
+    all_indicators: List[Dict] = list()
     page = 0
     size = 1000
-    raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
-                                        size=size)
-    while len(raw_data.get('iocs', [])) > 0:
-        all_indicators.extend(raw_data.get('iocs', []))
-        page += 1
-        raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}', page=page,
-                                            size=size)
-    for indicator in all_indicators:
-        custom_fields = indicator.get('CustomFields')
+    raw_data: dict = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}',
+                                              page=page, size=size)
+    if raw_data.get('total') == 0:
+        md = 'No indicators found.'
+        ec = {}
+    else:
+        while len(raw_data.get('iocs', [])) > 0:
+            all_indicators.extend(raw_data.get('iocs', []))
+            page += 1
+            raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}',
+                                                page=page, size=size)
+        for indicator in all_indicators:
+            custom_fields = indicator.get('CustomFields', {})
 
-        score = indicator.get('score')
-        value = indicator.get('value')
-        indicator_id = indicator.get('id')
-        url = indicator_url + indicator_id
-        md = f"## {[value]}({url}):\n {custom_fields.get('mitredescription', '')}"
-        ec = {
-            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)": {
-                "Indicator": value,
-                "Type": client.indicatorType,
-                "Vendor": "MITRE ATT&CK",
-                "Score": score
-            },
-            "MITRE.ATT&CK(val.value && val.value = obj.value)": {
-                'value': value,
-                'indicatorid': indicator_id,
-                'customFields': custom_fields
+            score = indicator.get('score')
+            value = indicator.get('value')
+            indicator_id = indicator.get('id')
+            url = indicator_url + indicator_id
+            md = f"## {[value]}({url}):\n {custom_fields.get('mitredescription', '')}"
+            ec = {
+                "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)": {
+                    "Indicator": value,
+                    "Type": client.indicatorType,
+                    "Vendor": "MITRE ATT&CK",
+                    "Score": score
+                },
+                "MITRE.ATT&CK(val.value && val.value = obj.value)": {
+                    'value': value,
+                    'indicatorid': indicator_id,
+                    'customFields': custom_fields
+                }
             }
-        }
+        raw_data = {'indicators': all_indicators}
 
-        return_outputs(md, ec, score)
+    return_outputs(md, ec, raw_data)
 
 
 def main():
@@ -399,12 +407,12 @@ def main():
     reputation = params.get('feedReputation', 'None')
     proxies = handle_proxy()
     verify_certificate = not params.get('insecure', False)
-
+    tags = argToList(params.get('feedTags', []))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(url, proxies, verify_certificate, include_apt, reputation)
+        client = Client(url, proxies, verify_certificate, include_apt, reputation, tags)
         client.initialise()
         commands = {
             'mitre-get-indicators': get_indicators_command,

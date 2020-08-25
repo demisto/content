@@ -1554,7 +1554,7 @@ def get_contact(args):
             # Get id field of first result of contacts with that email (There should only be one)
             contact_id = list_contacts(filters)[0].get('id')
         # If there is an IndexError, it means no results were returned for the given filter
-        except IndexError as e:
+        except IndexError:
             err_msg = 'Couldn\'t find a contact with that email address.'\
                       ' Double check that you wrote the email address correctly'\
                       ' and/or that you have a FreshDesk contact with that exact'\
@@ -1568,7 +1568,7 @@ def get_contact(args):
             # Get id field of first result of contacts with that mobile number
             contact_id = list_contacts(filters)[0].get('id')
         # If there is an IndexError, it means no results were returned for the given filter
-        except IndexError as e:
+        except IndexError:
             err_msg = 'Couldn\'t find a contact with that mobile number.'\
                       ' Double check that you wrote it correctly and/or that '\
                       'you have a FreshDesk contact with that exact mobile number.'

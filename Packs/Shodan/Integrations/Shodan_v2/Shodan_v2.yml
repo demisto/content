@@ -380,7 +380,7 @@ script:
     description: Resumes receiving notifications for network alerts that are set off by the specified triggers.
     execution: false
     name: shodan-network-alert-remove-service-from-whitelist
-  dockerimage: demisto/python3:3.7.3.286
+  dockerimage: demisto/python3:3.8.3.9324
   subtype: python3
   isfetch: false
   runonce: false

@@ -1,0 +1,335 @@
+id: Prisma Cloud Remediation - AWS IAM User Policy Misconfiguration
+version: -1
+fromversion: 5.0.0
+name: Prisma Cloud Remediation - AWS IAM User Policy Misconfiguration
+description: |-
+  This playbook remediates the following Prisma Cloud AWS IAM User alerts.
+
+  Prisma Cloud policies remediated:
+
+   - AWS IAM user has two active Access Keys
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6d5fe016-d6c6-4952-8519-2e0aece8fe29
+    type: start
+    task:
+      id: 6d5fe016-d6c6-4952-8519-2e0aece8fe29
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: bd7547a2-2f55-4a7e-8489-86e8d492730f
+    type: regular
+    task:
+      id: bd7547a2-2f55-4a7e-8489-86e8d492730f
+      version: -1
+      name: Disable the user's 2nd access key
+      description: Marks access key as "inactive"
+      script: '|||aws-iam-update-access-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      accessKeyId:
+        complex:
+          root: AWS
+          accessor: IAM.Users.AccessKeys.AccessKeyId
+          transformers:
+          - operator: LastArrayElement
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      status:
+        simple: Inactive
+      userName:
+        complex:
+          root: AWS
+          accessor: IAM.Users.AccessKeys.UserName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ffcd7bb2-29a0-440c-8856-c6afe386fae9
+    type: title
+    task:
+      id: ffcd7bb2-29a0-440c-8856-c6afe386fae9
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: c63ad7ca-3d92-4db2-858b-a22fc1dc3f1c
+    type: regular
+    task:
+      id: c63ad7ca-3d92-4db2-858b-a22fc1dc3f1c
+      version: -1
+      name: Print credential report
+      description: Outputs user's credential report, which contains access key attributes
+        and user login profile.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      value:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: cd15e88c-60f8-48cc-8033-146dfc80950f
+    type: regular
+    task:
+      id: cd15e88c-60f8-48cc-8033-146dfc80950f
+      version: -1
+      name: List user access keys
+      description: Returns information about the access key IDs associated with the
+        specified IAM user.
+      script: '|||aws-iam-list-access-keys-for-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      userName:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: e706b3e4-eeca-410f-8933-48cbe29ceed2
+    type: title
+    task:
+      id: e706b3e4-eeca-410f-8933-48cbe29ceed2
+      version: -1
+      name: Two Active Access Keys
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 55f84bcc-d85c-4f7a-8f0a-ca6a2286f0c1
+    type: condition
+    task:
+      id: 55f84bcc-d85c-4f7a-8f0a-ca6a2286f0c1
+      version: -1
+      name: Execute remediation
+      description: Determine the appropriate course for remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      twoKeys:
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: twoKeys
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: e809c246-2ef5-4319-bba9-2c5735d88aa8
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 29813f24-d676-4746-834e-da00d0270dac
+    type: condition
+    task:
+      id: 29813f24-d676-4746-834e-da00d0270dac
+      version: -1
+      name: Is AWS - IAM integration enabled?
+      description: "Is AWS - IAM integration enabled?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - IAM
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_16_twoKeys": 0.52,
+      "17_7_#default#": 0.29,
+      "18_14_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1255,
+        "width": 805,
+        "x": -160,
+        "y": 80
+      }
+    }
+  }
+inputs:
+- key: policyId
+  value: {}
+  required: true
+  description: Prisma Cloud policy Id.
+outputs: []
+tests:
+- No Test

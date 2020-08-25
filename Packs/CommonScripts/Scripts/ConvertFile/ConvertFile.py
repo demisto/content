@@ -22,8 +22,8 @@ def find_zombie_processes():
     pid = str(os.getpid())
     zombies = []
     if len(lines) > 1:
-        for l in lines[1:]:
-            pinfo = l.split()
+        for line in lines[1:]:
+            pinfo = line.split()
             if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
                 zombies.append(pinfo[0])
     return zombies, ps_out

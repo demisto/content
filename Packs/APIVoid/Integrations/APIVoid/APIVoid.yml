@@ -1,0 +1,1598 @@
+commonfields:
+  id: APIVoid
+  version: -1
+name: APIVoid
+display: APIVoid
+category: Data Enrichment & Threat Intelligence
+description: APIVoid wraps up a number of services such as ipvoid & urlvoid
+configuration:
+- display: API KEY
+  name: apikey
+  defaultvalue: ''
+  type: 4
+  required: true
+- display: Good Reputation (Percentage)
+  name: good
+  defaultvalue: '10'
+  type: 0
+  required: true
+  additionalinfo: If the percentage of detections is BELOW this value, the indicator
+    is considered GOOD
+- display: Suspicious Reputation (Percentage)
+  name: suspicious
+  defaultvalue: '30'
+  type: 0
+  required: true
+  additionalinfo: If the percentage of detections is ABOVE this value, the indicator
+    is considered SUSPICIOUS
+- display: Bad Reputation (Percentage)
+  name: bad
+  defaultvalue: '60'
+  type: 0
+  required: true
+  additionalinfo: If the percentage of detections is ABOVE this value, the indicator
+    is considered BAD
+- display: Malicious
+  name: malicious
+  defaultvalue: suspicious
+  type: 15
+  required: true
+  options:
+  - suspicious
+  - bad
+  additionalinfo: Consider the indicator malicious if either "suspicious" or "bad"
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ''
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ''
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: apivoid-ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP to query.
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: number
+    - contextPath: IP.Geo
+      description: ''
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: string
+    - contextPath: IP.Geo.Description
+      description: Additional information about the location.
+      type: string
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: string
+    - contextPath: IP.Hostname
+      description: The hostname that is mapped to this IP address.
+      type: string
+    - contextPath: IP.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: number
+    - contextPath: DBotScore
+      description: ''
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: APIVoid.IP.anonymity.is_hosting
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.IP.anonymity.is_proxy
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.IP.anonymity.is_tor
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.IP.anonymity.is_vpn
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.IP.anonymity.is_webproxy
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.IP.blacklists.detection_rate
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.blacklists.detections
+      description: ''
+      type: number
+    - contextPath: APIVoid.IP.blacklists.engines.detected
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.IP.blacklists.engines.elapsed
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.blacklists.engines.engine
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.blacklists.engines.reference
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.blacklists.engines_count
+      description: ''
+      type: number
+    - contextPath: APIVoid.IP.blacklists.scantime
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.isp
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.latitude
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.reverse_dns
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.longitude
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.country_calling_code
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.country_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.region_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.country_code
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.continent_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.continent_code
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.country_currency
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.information.city_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.IP.ip
+      description: ''
+      type: string
+    description: Returns the reputation and extended context of the IP.
+  - name: apivoid-domain
+    arguments:
+    - name: domain
+      required: true
+      description: The Domain to query.
+    outputs:
+    - contextPath: Domain
+      description: ''
+    - contextPath: Domain.DNS
+      description: A list of IP objects resolved by DNS.
+      type: string
+    - contextPath: Domain.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: number
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: string
+    - contextPath: Domain.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: number
+    - contextPath: DBotScore
+      description: ''
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: APIVoid.Domain.alexa_top_100k
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Domain.domain_length
+      description: ''
+      type: number
+    - contextPath: APIVoid.Domain.server.isp
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.server.ip
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.server.latitude
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.server.reverse_dns
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.server.longitude
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.server.country_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.server.region_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.server.country_code
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.server.continent_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.server.continent_code
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.server.city_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.alexa_top_250k
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Domain.alexa_top_10k
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Domain.most_abused_tld
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Domain.host
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.blacklists.detection_rate
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.blacklists.detections
+      description: ''
+      type: number
+    - contextPath: APIVoid.Domain.blacklists.engines.confidence
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.blacklists.engines.detected
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Domain.blacklists.engines.elapsed
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.blacklists.engines.engine
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.blacklists.engines.reference
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.blacklists.engines_count
+      description: ''
+      type: number
+    - contextPath: APIVoid.Domain.blacklists.scantime
+      description: ''
+      type: string
+    - contextPath: APIVoid.Domain.category.is_anonymizer
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Domain.category.is_free_dynamic_dns
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Domain.category.is_free_hosting
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Domain.category.is_url_shortener
+      description: ''
+      type: boolean
+    description: Returns the reputation of the domain.
+  - name: apivoid-url
+    arguments:
+    - name: url
+      required: true
+      description: The URL to query.
+    outputs:
+    - contextPath: URL
+      description: ''
+    - contextPath: URL.Data
+      description: The URL
+      type: string
+    - contextPath: URL.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: number
+    - contextPath: URL.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: number
+    - contextPath: DBotScore
+      description: ''
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: APIVoid.URL.risk_score.result
+      description: ''
+      type: number
+    - contextPath: APIVoid.URL.domain_blacklist.detections
+      description: ''
+      type: number
+    - contextPath: APIVoid.URL.domain_blacklist.engines.detected
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.domain_blacklist.engines.name
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.domain_blacklist.engines.reference
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.geo_location.countries
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.server_details.isp
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.server_details.ip
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.server_details.latitude
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.server_details.longitude
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.server_details.hostname
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.server_details.country_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.server_details.region_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.server_details.country_code
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.server_details.continent_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.server_details.continent_code
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.server_details.city_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.response_headers.server
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.response_headers.code
+      description: ''
+      type: number
+    - contextPath: APIVoid.URL.response_headers.content-type
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.response_headers.date
+      description: ''
+      type: date
+    - contextPath: APIVoid.URL.response_headers.cache-control
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.response_headers.host-header
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.response_headers.status
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.response_headers.x-redirect-by
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.response_headers.expires
+      description: ''
+      type: date
+    - contextPath: APIVoid.URL.response_headers.location
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.response_headers.content-length
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.response_headers.upgrade
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.response_headers.connection
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.security_checks.is_windows_exe_file_on_ipv4
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_credit_card_form
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_windows_exe_file_on_free_hosting
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_linux_elf_file_on_ipv4
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_linux_elf_file_on_free_hosting
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_masked_windows_exe_file
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_zip_on_directory_listing
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_masked_linux_elf_file
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_sinkholed_domain
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_suspended_page
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_suspicious_file_extension
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_uncommon_clickable_url
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_suspicious_content
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_risky_geo_location
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_php_on_directory_listing
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_doc_on_directory_listing
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_doc_on_directory_listing
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_empty_page_title
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_login_form
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_robots_noindex
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_suspicious_domain
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_windows_exe_file_on_free_dynamic_dns
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_most_abused_tld
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_linux_elf_file_on_free_dynamic_dns
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_suspicious_url_pattern
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_valid_https
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_exe_on_directory_listing
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_pdf_on_directory_listing
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_host_an_ipv4
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_domain_blacklisted
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_china_country
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_windows_exe_file
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_masked_file
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_email_address_on_url_query
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_phishing_heuristic
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_non_standard_port
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_linux_elf_file
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_defaced_heuristic
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.security_checks.is_directory_listing
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.dns_records.mx.records.country_code
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.dns_records.ns.records.country_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.dns_records.ns.records.ip
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.dns_records.ns.records.isp
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.dns_records.ns.records.target
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.redirection.external
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.redirection.found
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.redirection.url
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.url
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.url_parts.host
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.url_parts.host_nowww
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.url_parts.path
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.url_parts.port
+      description: ''
+      type: number
+    - contextPath: APIVoid.URL.url_parts.query
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.url_parts.scheme
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.site_category.is_anonymizer
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.site_category.is_free_dynamic_dns
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.site_category.is_free_hosting
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.site_category.is_torrent
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.site_category.is_url_shortener
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.site_category.is_vpn_provider
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.web_page.description
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.web_page.keywords
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.web_page.title
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.html_forms.credit_card_field_present
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.html_forms.email_field_present
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.html_forms.number_of_total_forms
+      description: ''
+      type: number
+    - contextPath: APIVoid.URL.html_forms.number_of_total_input_fields
+      description: ''
+      type: number
+    - contextPath: APIVoid.URL.html_forms.password_field_present
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.html_forms.two_text_inputs_in_a_form
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.URL.file_type.extension
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.file_type.headers
+      description: ''
+      type: string
+    - contextPath: APIVoid.URL.file_type.signature
+      description: ''
+      type: string
+    description: Returns the reputation of the URL.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP to query.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: IP
+      description: ''
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: number
+    - contextPath: IP.Geo
+      description: ''
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: string
+    - contextPath: IP.Geo.Description
+      description: Additional information about the location.
+      type: string
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: string
+    - contextPath: IP.Hostname
+      description: The hostname that is mapped to this IP address.
+      type: string
+    - contextPath: IP.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    description: Returns the reputation of the IP.
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: The Domain to query.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: Domain.DNS
+      description: A list of IP objects resolved by DNS.
+      type: string
+    - contextPath: Domain.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: number
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: string
+    - contextPath: Domain.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    description: Returns the reputation of the domain.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: The URL to query.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: URL.Data
+      description: The URL
+      type: string
+    - contextPath: URL.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: number
+    - contextPath: URL.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: number
+    - contextPath: URL.RiskScore
+      description: ''
+      type: number
+    - contextPath: URL.Score
+      description: ''
+      type: string
+    - contextPath: DBotScore
+      description: ''
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    description: Returns the reputation of the URL.
+  - name: apivoid-dns-lookup
+    arguments:
+    - name: host
+      required: true
+      description: Host to lookup.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - MX
+      - NS
+      - DMARK
+      - Reverse
+      - TXT
+      - ANY
+      - CNAME
+      - SOA
+      - SRV
+      - CAA
+      description: The DNS record type to lookup
+      defaultValue: A
+    outputs:
+    - contextPath: APIVoid.DNS
+      description: ''
+    - contextPath: APIVoid.DNS.items.host
+      description: ''
+      type: string
+    - contextPath: APIVoid.DNS.items.class
+      description: ''
+      type: string
+    - contextPath: APIVoid.DNS.items.ttl
+      description: ''
+      type: number
+    - contextPath: APIVoid.DNS.items.type
+      description: ''
+      type: string
+    - contextPath: APIVoid.DNS.items.ip
+      description: ''
+      type: string
+    - contextPath: APIVoid.DNS.found
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.DNS.count
+      description: ''
+      type: number
+    - contextPath: APIVoid.DNS.items.ipv6
+      description: ''
+      type: string
+    - contextPath: APIVoid.DNS.items.pri
+      description: ''
+      type: number
+    - contextPath: APIVoid.DNS.items.target
+      description: ''
+      type: string
+    - contextPath: APIVoid.DNS.items.txt
+      description: ''
+      type: string
+    - contextPath: APIVoid.DNS.items.entries
+      description: ''
+      type: unknown
+    - contextPath: APIVoid.DNS.items.mname
+      description: ''
+      type: string
+    - contextPath: APIVoid.DNS.items.rname
+      description: ''
+      type: string
+    - contextPath: APIVoid.DNS.items.serial
+      description: ''
+      type: number
+    - contextPath: APIVoid.DNS.items.refresh
+      description: ''
+      type: number
+    - contextPath: APIVoid.DNS.items.retry
+      description: ''
+      type: number
+    - contextPath: APIVoid.DNS.items.expire
+      description: ''
+      type: number
+    - contextPath: APIVoid.DNS.items.minimum-ttl
+      description: ''
+      type: number
+    - contextPath: APIVoid.DNS.items.weight
+      description: ''
+      type: number
+    - contextPath: APIVoid.DNS.items.port
+      description: ''
+      type: number
+    - contextPath: APIVoid.DNS.items.flags
+      description: ''
+      type: number
+    - contextPath: APIVoid.DNS.items.tag
+      description: ''
+      type: string
+    - contextPath: APIVoid.DNS.items.value
+      description: ''
+      type: string
+    description: Gets DNS records of a host.
+  - name: apivoid-ssl-info
+    arguments:
+    - name: host
+      required: true
+      description: Host to lookup SSL.
+    outputs:
+    - contextPath: APIVoid.SSL
+      description: ''
+    - contextPath: APIVoid.SSL.found
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SSL.fingerprint
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.deprecated_issuer
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SSL.expired
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SSL.valid_peer
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SSL.host
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.name_match
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SSL.debug_message
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.blacklisted
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SSL.valid
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SSL.details
+      description: ''
+    - contextPath: APIVoid.SSL.details.extensions
+      description: ''
+    - contextPath: APIVoid.SSL.details.extensions.authority_info_access
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.extensions.authority_key_identifier
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.extensions.basic_constraints
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.extensions.certificate_policies
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.extensions.crl_distribution_points
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.extensions.extended_key_usage
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.extensions.key_usage
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.extensions.subject_key_identifier
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.hash
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.issuer
+      description: ''
+    - contextPath: APIVoid.SSL.details.issuer.common_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.issuer.country
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.issuer.location
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.issuer.organization
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.issuer.organization_unit
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.issuer.state
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.signature
+      description: ''
+    - contextPath: APIVoid.SSL.details.signature.serial
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.signature.serial_hex
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.signature.type
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.subject
+      description: ''
+    - contextPath: APIVoid.SSL.details.subject.postal_code
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.subject.street
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.subject.name
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.subject.organization_unit
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.subject.state
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.subject.organization
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.subject.location
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.subject.alternative_names
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.subject.country
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.subject.category
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.subject.common_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.SSL.details.validity
+      description: ''
+    - contextPath: APIVoid.SSL.details.validity.days_left
+      description: ''
+      type: number
+    - contextPath: APIVoid.SSL.details.validity.valid_from
+      description: ''
+      type: date
+    - contextPath: APIVoid.SSL.details.validity.valid_from_timestamp
+      description: ''
+      type: date
+    - contextPath: APIVoid.SSL.details.validity.valid_to
+      description: ''
+      type: date
+    - contextPath: APIVoid.SSL.details.validity.valid_to_timestamp
+      description: ''
+      type: date
+    - contextPath: APIVoid.SSL.details.version
+      description: ''
+      type: string
+    description: Get useful SSL information from a remote host
+  - name: apivoid-email-verify
+    arguments:
+    - name: email
+      required: true
+      description: Email address to lookup
+    outputs:
+    - contextPath: APIVoid.Email
+      description: ''
+    - contextPath: APIVoid.Email.email
+      description: ''
+      type: string
+    - contextPath: APIVoid.Email.valid_format
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.username
+      description: ''
+      type: string
+    - contextPath: APIVoid.Email.role_address
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.suspicious_username
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.dirty_words_username
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.domain
+      description: ''
+      type: string
+    - contextPath: APIVoid.Email.valid_tld
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.disposable
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.has_mx_records
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.free_email
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.russian_free_email
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.china_free_email
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.suspicious_domain
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.did_you_mean
+      description: ''
+      type: string
+    - contextPath: APIVoid.Email.dirty_words_domain
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.domain_popular
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.risky_tld
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.police_domain
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.government_domain
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.educational_domain
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.should_block
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.Email.score
+      description: ''
+      type: number
+    description: Checks if an email address is disposable, if it has MX records, and more.
+  - name: apivoid-threatlog
+    arguments:
+    - name: host
+      required: true
+      description: The host the check
+    outputs:
+    - contextPath: APIVoid.ThreatLog.detected
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.ThreatLog.host
+      description: ''
+      type: string
+    - contextPath: APIVoid.ThreatLog.scantime
+      description: ''
+      type: string
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: string
+    description: Check if a website is present on ThreatLog database
+  - name: apivoid-parked-domain
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to check
+    outputs:
+    - contextPath: APIVoid.ParkedDomain.host
+      description: ''
+      type: string
+    - contextPath: APIVoid.ParkedDomain.parked_domain
+      description: ''
+      type: boolean
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: string
+    description: Detect if a domain (i.e google.com) is actually parked
+  - name: apivoid-domain-age
+    arguments:
+    - name: domain
+      required: true
+      description: The domain to check
+    outputs:
+    - contextPath: APIVoid.DomainAge.debug_message
+      description: ''
+      type: string
+    - contextPath: APIVoid.DomainAge.domain_age_found
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.DomainAge.domain_age_in_days
+      description: ''
+      type: number
+    - contextPath: APIVoid.DomainAge.domain_age_in_months
+      description: ''
+      type: number
+    - contextPath: APIVoid.DomainAge.domain_age_in_years
+      description: ''
+      type: number
+    - contextPath: APIVoid.DomainAge.domain_creation_date
+      description: ''
+      type: string
+    - contextPath: APIVoid.DomainAge.domain_registered
+      description: ''
+      type: string
+    - contextPath: APIVoid.DomainAge.host
+      description: ''
+      type: string
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: date
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: string
+    description: Get the registration date of a domain and the domain age in days
+  - name: apivoid-url-to-image
+    arguments:
+    - name: url
+      required: true
+      description: URL to capture screenshot of
+    outputs:
+    - contextPath: File.Size
+      description: ''
+      type: number
+    - contextPath: File.SHA1
+      description: ''
+      type: string
+    - contextPath: File.SHA256
+      description: ''
+      type: string
+    - contextPath: File.SHA512
+      description: ''
+      type: string
+    - contextPath: File.Name
+      description: ''
+      type: string
+    - contextPath: File.SSDeep
+      description: ''
+      type: string
+    - contextPath: File.EntryID
+      description: ''
+      type: string
+    - contextPath: File.Info
+      description: ''
+      type: string
+    - contextPath: File.Type
+      description: ''
+      type: string
+    - contextPath: File.MD5
+      description: ''
+      type: string
+    - contextPath: File.Extension
+      description: ''
+      type: string
+    description: Capture a high-quality screenshot of any website or URL
+  - name: apivoid-url-to-pdf
+    arguments:
+    - name: url
+      required: true
+      description: URL to create PDF of
+    outputs:
+    - contextPath: File.Size
+      description: ''
+      type: number
+    - contextPath: File.SHA1
+      description: ''
+      type: string
+    - contextPath: File.SHA256
+      description: ''
+      type: string
+    - contextPath: File.SHA512
+      description: ''
+      type: string
+    - contextPath: File.Name
+      description: ''
+      type: string
+    - contextPath: File.SSDeep
+      description: ''
+      type: string
+    - contextPath: File.EntryID
+      description: ''
+      type: string
+    - contextPath: File.Info
+      description: ''
+      type: string
+    - contextPath: File.Type
+      description: ''
+      type: string
+    - contextPath: File.MD5
+      description: ''
+      type: string
+    - contextPath: File.Extension
+      description: ''
+      type: string
+    description: Convert an URL info high-quality and printable PDF document
+  - name: apivoid-url-to-html
+    arguments:
+    - name: url
+      required: true
+      description: URL to create PDF of
+    outputs:
+    - contextPath: File.Size
+      description: ''
+      type: number
+    - contextPath: File.SHA1
+      description: ''
+      type: string
+    - contextPath: File.SHA256
+      description: ''
+      type: string
+    - contextPath: File.SHA512
+      description: ''
+      type: string
+    - contextPath: File.Name
+      description: ''
+      type: string
+    - contextPath: File.SSDeep
+      description: ''
+      type: string
+    - contextPath: File.EntryID
+      description: ''
+      type: string
+    - contextPath: File.Info
+      description: ''
+      type: string
+    - contextPath: File.Type
+      description: ''
+      type: string
+    - contextPath: File.MD5
+      description: ''
+      type: string
+    - contextPath: File.Extension
+      description: ''
+      type: string
+    description: Get the body of an html page after javascript has been executed
+  - name: apivoid-site-trustworthiness
+    arguments:
+    - name: host
+      required: true
+      description: The host to check
+    outputs:
+    - contextPath: APIVoid.SiteTrust.domain_blacklist.detections
+      description: ''
+      type: number
+    - contextPath: APIVoid.SiteTrust.domain_blacklist.engines.detected
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.domain_blacklist.engines.name
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.domain_blacklist.engines.reference
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.geo_location.countries
+      description: ''
+    - contextPath: APIVoid.SiteTrust.domain_age.domain_age_in_days
+      description: ''
+      type: number
+    - contextPath: APIVoid.SiteTrust.domain_age.domain_age_in_months
+      description: ''
+      type: number
+    - contextPath: APIVoid.SiteTrust.domain_age.domain_age_in_years
+      description: ''
+      type: number
+    - contextPath: APIVoid.SiteTrust.domain_age.domain_creation_date
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.domain_age.found
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.server_details.isp
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.server_details.ip
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.server_details.latitude
+      description: ''
+      type: number
+    - contextPath: APIVoid.SiteTrust.server_details.longitude
+      description: ''
+      type: number
+    - contextPath: APIVoid.SiteTrust.server_details.hostname
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.server_details.country_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.server_details.region_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.server_details.country_code
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.server_details.continent_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.server_details.continent_code
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.server_details.city_name
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.response_headers.server
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.response_headers.content-encoding
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.response_headers.code
+      description: ''
+      type: number
+    - contextPath: APIVoid.SiteTrust.response_headers.content-type
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.response_headers.date
+      description: ''
+      type: date
+    - contextPath: APIVoid.SiteTrust.response_headers.vary
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.response_headers.status
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.response_headers.x-amz-rid
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.response_headers.content-length
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.response_headers.connection
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.host
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.security_checks.is_website_popular
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_suspended_site
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_domain_recent
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.security_checks.is_heuristic_pattern
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_sinkholed_domain
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_risky_geo_location
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_empty_page_title
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_robots_noindex
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_suspicious_domain
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_most_abused_tld
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_valid_https
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_domain_blacklisted
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_email_configured
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_china_country
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_directory_listing
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.security_checks.is_free_email
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.trust_score.result
+      description: ''
+      type: number
+    - contextPath: APIVoid.SiteTrust.dns_records
+      description: ''
+    - contextPath: APIVoid.SiteTrust.redirection.external
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.redirection.found
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.redirection.url
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.url_parts.host
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.url_parts.host_nowww
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.url_parts.path
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.url_parts.port
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.url_parts.query
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.url_parts.scheme
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_magento
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_opencart
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_prestashop
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_shopify
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_woocommerce
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.ecommerce_platform.is_zencart
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.web_page.description
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.web_page.keywords
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.web_page.title
+      description: ''
+      type: string
+    - contextPath: APIVoid.SiteTrust.targeted_brands.patagonia
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.rolex
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.timberland
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.hugoboss
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.moncler
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.longchamp
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.abercrombie
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.montblanc
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.carhartt
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.rayban
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.drmartens
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.hermes
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.oakley
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.michaelkors
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.louisvuitton
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.birkenstock
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.adidas
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.vans
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.ralphlauren
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.mulberry
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.converse
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.versace
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.ugg
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.nike
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.swarovski
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.peuterey
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.cartier
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.pandora
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.burberry
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.gucci
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.salomon
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.liujo
+      description: ''
+      type: boolean
+    - contextPath: APIVoid.SiteTrust.targeted_brands.truereligion
+      description: ''
+      type: boolean
+    description: A smart API that accurately checks a website's trustworthiness.
+  dockerimage: demisto/python3:3.8.2.8159
+  runonce: false
+  subtype: python3
+fromversion: 5.0.0
+tests:
+- APIVoid Test

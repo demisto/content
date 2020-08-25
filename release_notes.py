@@ -14,7 +14,7 @@ from demisto_sdk.commands.common.constants import INTEGRATIONS_DIR, SCRIPTS_DIR,
 from demisto_sdk.commands.common.tools import print_error, print_warning, get_last_release_version, \
     filter_packagify_changes, is_file_path_in_pack, \
     run_command, server_version_compare, old_get_release_notes_file_path, old_get_latest_release_notes_text, get_remote_file
-from demisto_sdk.commands.validate.file_validator import FilesValidator
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 CONTENT_LIB_PATH = "./"
 
@@ -589,7 +589,7 @@ def get_release_notes_draft(github_token, asset_id):
 def create_content_descriptor(version, asset_id, res, github_token, beta_rn=None):
     # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
-    release_notes = '## Cortex XSOAR Content Release Notes for version {} ({})\n'.format(version, asset_id)
+    release_notes = '# Cortex XSOAR Content Release Notes for version {} ({})\n'.format(version, asset_id)
     release_notes += '##### Published on {}\n{}'.format(datetime.datetime.now().strftime("%d %B %Y"), res)
     content_descriptor = {
         "installDate": "0001-01-01T00:00:00Z",
@@ -634,7 +634,7 @@ def main():
     print('Last release version: {}'.format(tag))
 
     # get changed yaml/json files (filter only relevant changed files)
-    file_validator = FilesValidator()
+    validate_manager = ValidateManager()
     try:
         change_log = run_command('git diff --name-status {}'.format(args.git_sha1), exit_on_error=False)
     except RuntimeError:
@@ -647,7 +647,7 @@ def main():
                     'these steps will merge your branch with content master as a base.')
         sys.exit(1)
     else:
-        modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
+        modified_files, added_files, removed_files, _, _ = validate_manager.filter_changed_files(change_log)
         modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
                                                                               removed_files, tag=tag)
 

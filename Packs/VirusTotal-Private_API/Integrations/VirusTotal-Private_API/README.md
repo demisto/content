@@ -4660,11 +4660,11 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 268px;">VirusTotal.SearchResult</td>
+<td style="width: 268px;">VirusTotal.SearchFile.SearchResult</td>
 <td style="width: 453px;">Hashes of files that match the query</td>
 </tr>
 <tr>
-<td style="width: 268px;">VirusTotal.Query</td>
+<td style="width: 268px;">VirusTotal.SearchFile.Query</td>
 <td style="width: 453px;">Original search query</td>
 </tr>
 </tbody>

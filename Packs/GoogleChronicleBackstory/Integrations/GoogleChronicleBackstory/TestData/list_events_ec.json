@@ -1,0 +1,73 @@
+{
+  "GoogleChronicleBackstory.Events": [
+    {
+      "eventTimestamp": "2020-01-01T00:01:00Z",
+      "collectedTimestamp": "2020-01-01T00:01:00Z",
+      "eventType": "NETWORK_DNS",
+      "productName": "ExtraHop",
+      "principal": {
+        "hostname": "dummy-host",
+        "ip": [
+          "1.2.3.4"
+        ]
+      },
+      "target": {
+        "ip": [
+          "5.6.7.8"
+        ]
+      },
+      "network": {
+        "applicationProtocol": "DNS",
+        "dns": {
+          "questions": [
+            {
+              "name": "www.google.com",
+              "type": 1
+            }
+          ],
+          "answers": [
+            {
+              "name": "www.google.com",
+              "type": 1,
+              "ttl": 1111,
+              "data": "4.3.2.1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eventTimestamp": "2020-01-01T00:02:00Z",
+      "collectedTimestamp": "2020-01-01T00:02:00Z",
+      "eventType": "NETWORK_DNS",
+      "productName": "ExtraHop",
+      "principal": {
+        "asset_id": 123
+      },
+      "target": {
+        "mac": [
+          "5.6.7.8"
+        ]
+      },
+      "network": {
+        "applicationProtocol": "DNS",
+        "dns": {
+          "questions": [
+            {
+              "name": "another.google.com",
+              "type": 1
+            }
+          ],
+          "answers": [
+            {
+              "name": "another.google.com",
+              "type": 1,
+              "ttl": 1111,
+              "data": "4.3.2.1"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

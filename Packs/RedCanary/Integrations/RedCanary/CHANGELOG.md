@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+ - Removed timeline details for a detection fetched as an incident.
+ - Fixed an issue in which acknowledged detections were fetched as incidents.
 
 ## [20.4.1] - 2020-04-29
 -

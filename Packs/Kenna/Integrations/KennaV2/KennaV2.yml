@@ -520,7 +520,7 @@ script:
     description: Deletes tags from the specified asset.
     execution: false
     name: kenna-delete-tag
-  dockerimage: demisto/python3:3.7.5.4002
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: false
   longRunning: false
   longRunningPort: false

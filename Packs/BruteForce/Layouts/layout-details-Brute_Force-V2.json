@@ -1,0 +1,608 @@
+{
+	"TypeName": "Brute Force",
+	"kind": "details",
+	"fromVersion": "5.0.0",
+	"layout": {
+		"TypeName": "",
+		"id": "Brute Force",
+		"kind": "details",
+		"modified": "2020-03-24T09:49:43.322651779Z",
+		"name": "",
+		"system": false,
+		"tabs": [
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 24,
+								"id": "incident-type-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 24,
+								"id": "incident-severity-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 24,
+								"id": "incident-owner-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotsource",
+								"height": 24,
+								"id": "incident-source-field",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 24,
+								"id": "incident-sourceBrand-field",
+								"index": 4,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 24,
+								"id": "incident-sourceInstance-field",
+								"index": 5,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 24,
+								"id": "incident-playbookId-field",
+								"index": 6,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Child Incidents",
+						"static": false,
+						"type": "childInv",
+						"w": 1,
+						"x": 1,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 24,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 24,
+								"id": "incident-modified-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 24,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 24,
+								"id": "incident-created-field",
+								"index": 0,
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 24,
+								"id": "incident-closed-field",
+								"index": 1,
+								"startCol": 1
+							}
+						],
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-9e171660-6771-11ea-9848-a3492f3eb5ce",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Bad or Suspicious Indicators",
+						"query": "reputation:Bad or reputation:Suspicious",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 3,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-8bdbd0e0-6d33-11ea-9670-457a0e5f6d49",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 24,
+								"id": "a9e183f0-6d33-11ea-9670-457a0e5f6d49",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 24,
+								"id": "ae09d0e0-6d33-11ea-9670-457a0e5f6d49",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 48,
+								"id": "af3a88b0-6d33-11ea-9670-457a0e5f6d49",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 6
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "gkkt0eprjk",
+				"name": "Investigation",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "gkkt0eprjk-f3bff370-6771-11ea-9848-a3492f3eb5ce",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "src",
+								"height": 24,
+								"id": "5fbc2580-6772-11ea-9848-a3492f3eb5ce",
+								"index": 0,
+								"listId": "gkkt0eprjk-f3bff370-6771-11ea-9848-a3492f3eb5ce",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "srchostname",
+								"height": 24,
+								"id": "95795170-6772-11ea-9848-a3492f3eb5ce",
+								"index": 1,
+								"listId": "gkkt0eprjk-f3bff370-6771-11ea-9848-a3492f3eb5ce",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "srcos",
+								"height": 24,
+								"id": "b01b8e30-6772-11ea-9848-a3492f3eb5ce",
+								"index": 2,
+								"listId": "gkkt0eprjk-f3bff370-6771-11ea-9848-a3492f3eb5ce",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "srcntdomain",
+								"height": 24,
+								"id": "a0c0e430-6772-11ea-9848-a3492f3eb5ce",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "blockedaction",
+								"height": 24,
+								"id": "c55eabb0-6772-11ea-9848-a3492f3eb5ce",
+								"index": 4,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Source Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "gkkt0eprjk-f998fda0-6771-11ea-9848-a3492f3eb5ce",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dest",
+								"height": 24,
+								"id": "c86a16f0-6772-11ea-9848-a3492f3eb5ce",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "desthostname",
+								"height": 24,
+								"id": "dc0ddc50-6772-11ea-9848-a3492f3eb5ce",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "destos",
+								"height": 24,
+								"id": "fd0e58d0-6772-11ea-9848-a3492f3eb5ce",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "destntdomain",
+								"height": 24,
+								"id": "ddd751b0-6772-11ea-9848-a3492f3eb5ce",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "username",
+								"height": 24,
+								"id": "1f529ff0-6773-11ea-9848-a3492f3eb5ce",
+								"index": 4,
+								"listId": "gkkt0eprjk-f998fda0-6771-11ea-9848-a3492f3eb5ce",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "isolated",
+								"height": 24,
+								"id": "123a92f0-6773-11ea-9848-a3492f3eb5ce",
+								"index": 5,
+								"listId": "gkkt0eprjk-f998fda0-6771-11ea-9848-a3492f3eb5ce",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Destination Details",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "gkkt0eprjk-03e9d450-6772-11ea-9848-a3492f3eb5ce",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "username",
+								"height": 24,
+								"id": "21295bc0-6773-11ea-9848-a3492f3eb5ce",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "emailaddress",
+								"height": 24,
+								"id": "2f7c32b0-6773-11ea-9848-a3492f3eb5ce",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "useraccountcontrol",
+								"height": 24,
+								"id": "95ccd330-6773-11ea-9848-a3492f3eb5ce",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "samaccountname",
+								"height": 24,
+								"id": "9fb06920-6773-11ea-9848-a3492f3eb5ce",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "accountgroups",
+								"height": 24,
+								"id": "a23a2140-6773-11ea-9848-a3492f3eb5ce",
+								"index": 4,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "userdisabledstatus",
+								"height": 24,
+								"id": "7aed1960-6d33-11ea-9670-457a0e5f6d49",
+								"index": 5,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "passwordexpirationstatus",
+								"height": 24,
+								"id": "765fc910-6d33-11ea-9670-457a0e5f6d49",
+								"index": 6,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "User Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "gkkt0eprjk-16e41340-6772-11ea-9848-a3492f3eb5ce",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Incident Files",
+						"query": {
+							"categories": [
+								"attachments"
+							],
+							"lastId": "",
+							"pageSize": 100,
+							"tags": [],
+							"users": []
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "gkkt0eprjk-1e2d7650-6772-11ea-9848-a3492f3eb5ce",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "incident_attachment",
+								"height": 55,
+								"id": "1e1b26d1-6772-11ea-9848-a3492f3eb5ce",
+								"index": 1,
+								"isVisible": true,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Attachments",
+						"static": false,
+						"type": "",
+						"w": 1,
+						"x": 1,
+						"y": 2
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "gkkt0eprjk-23be53f0-6772-11ea-9848-a3492f3eb5ce",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "gkkt0eprjk-3c6fd250-6774-11ea-9848-a3492f3eb5ce",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "loginattemptcount",
+								"height": 55,
+								"id": "4c513880-6774-11ea-9848-a3492f3eb5ce",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "successfullogin",
+								"height": 55,
+								"id": "4d28fae0-6774-11ea-9848-a3492f3eb5ce",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "successfullogin",
+								"height": 24,
+								"id": "c7864db0-6db4-11ea-a83d-b55060fcded7",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Brute Force Data",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		],
+		"typeId": "Brute Force",
+		"version": -1
+	},
+	"typeId": "Brute Force",
+	"version": -1,
+	"toVersion": "5.9.9"
+}

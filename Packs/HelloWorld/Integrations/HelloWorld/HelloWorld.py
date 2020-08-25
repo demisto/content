@@ -240,19 +240,18 @@ variable is ``__main__`` , ``__builtin__`` (for Python 2) or ``builtins`` (for
 Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 """
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
-import requests
+import urllib3
 import dateparser
 import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
@@ -287,7 +286,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix=f'/ip',
+            url_suffix='/ip',
             params={
                 'ip': ip
             }
@@ -305,7 +304,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix=f'/domain',
+            url_suffix='/domain',
             params={
                 'domain': domain
             }
@@ -358,7 +357,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix=f'/get_alerts',
+            url_suffix='/get_alerts',
             params=request_params
         )
 
@@ -374,7 +373,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix=f'/get_alert_details',
+            url_suffix='/get_alert_details',
             params={
                 'alert_id': alert_id
             }
@@ -785,6 +784,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
         # convert it from the HelloWorld API response
         incident_created_time = int(alert.get('created', '0'))
         incident_created_time_ms = incident_created_time * 1000
+
+        # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
+        if last_fetch:
+            if incident_created_time <= last_fetch:
+                continue
 
         # If no name is present it will throw an exception
         incident_name = alert['name']

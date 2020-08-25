@@ -2,6 +2,7 @@ commonfields:
   id: DemistoUploadFile
   version: -1
 name: DemistoUploadFile
+deprecated: true
 script: |
   var res = executeCommand("demisto-api-multipart", {"uri":'entry/upload/' + args.incidentID,"entryID":args.entryID, "body":args.body});
   if (isError(res[0])) {
@@ -23,7 +24,7 @@ script: |
 type: javascript
 tags:
 - DemistoAPI
-comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
+comment: Deprecated - We recommend using DemistoUploadFileV2 instead.
 enabled: true
 args:
 - name: entryID

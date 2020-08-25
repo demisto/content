@@ -851,8 +851,8 @@ def validate_no_query_and_indicators(query, arg_list):
     if query:
         for arg in arg_list:
             if arg:
-                return_error(f'The search command can either run a search using a custom query '
-                             f'or use the builtin arguments, but not both')
+                return_error('The search command can either run a search using a custom query '
+                             'or use the builtin arguments, but not both')
 
 
 def validate_no_multiple_indicators_for_search(arg_list):
@@ -1103,7 +1103,7 @@ def search_samples_command():
     info = search_samples(query=query, scope=scope, size=max_results, sort=sort, order=order, file_hash=file_hash,
                           domain=domain, ip=ip, url=url, wildfire_verdict=wildfire_verdict, first_seen=first_seen,
                           last_updated=last_updated, artifact_source=artifact_source)
-    md = tableToMarkdown(f'Search Samples Info:', info)
+    md = tableToMarkdown('Search Samples Info:', info)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
@@ -1127,7 +1127,7 @@ def search_sessions_command():
     order = args.get('order')
     info = search_sessions(query=query, size=max_results, sort=sort, order=order, file_hash=file_hash, domain=domain,
                            ip=ip, url=url, from_time=from_time, to_time=to_time)
-    md = tableToMarkdown(f'Search Sessions Info:', info)
+    md = tableToMarkdown('Search Sessions Info:', info)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
@@ -1161,7 +1161,7 @@ def samples_search_results_command():
                 return_outputs(readable_output=hr, outputs=context, raw_response=results)
             else:
                 hr = tableToMarkdown(f'Search Samples Result is {status}', result)
-                hr += tableToMarkdown(f'Artifacts for Sample: ', [])
+                hr += tableToMarkdown('Artifacts for Sample: ', [])
                 return_outputs(readable_output=hr, outputs=context, raw_response=results)
 
 
@@ -1184,8 +1184,9 @@ def samples_search_result_hr(result: dict, status: str) -> str:
     rest = result
     hr = tableToMarkdown(f'Search Samples Result is {status}', rest)
     hr += '\n\n'
-    hr += tableToMarkdown(f'Artifacts for Sample: ', updated_artifact, headers=["b", "g", "m", "indicator_type",
-                                                                                "confidence", "indicator"])
+    hr += tableToMarkdown(
+        'Artifacts for Sample: ', updated_artifact,
+        headers=["b", "g", "m", "indicator_type", "confidence", "indicator"])
     return hr
 
 
@@ -1244,7 +1245,7 @@ def sample_analysis_command():
         'ContentsFormat': formats['text'],
         'Contents': {'ID': sample_id, 'Analysis': analysis},
         'HumanReadable': f'### Sample Analysis results for {sample_id}:',
-        'EntryContext': {f'AutoFocus.SampleAnalysis(val.ID == obj.ID)': {'ID': sample_id, 'Analysis': context}},
+        'EntryContext': {'AutoFocus.SampleAnalysis(val.ID == obj.ID)': {'ID': sample_id, 'Analysis': context}},
     })
     for category_name, category_data in analysis.items():
         print_hr_by_category(category_name, category_data)
@@ -1274,7 +1275,7 @@ def top_tags_search_command():
     commodity = args.get('commodity') == 'True'
     unit42 = args.get('unit42') == 'True'
     info = autofocus_top_tags_search(scope, tag_class, private, public, commodity, unit42)
-    md = tableToMarkdown(f'Top tags search Info:', info)
+    md = tableToMarkdown('Top tags search Info:', info)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],

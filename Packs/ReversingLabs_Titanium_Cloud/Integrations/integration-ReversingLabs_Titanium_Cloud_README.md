@@ -14,14 +14,14 @@
 <li>
 <strong>Base URL for malware presence</strong> :
 <ul>
-<li>Preconfigured on Demisto - <a href="https://ticloud-aws1-api.reversinglabs.com">https://ticloud-aws1-api.reversinglabs.com</a>
+<li>Preconfigured on Demisto - https://ticloud-aws1-api.reversinglabs.com
 </li>
 </ul>
 </li>
 <li>
 <strong>Base URL for extended RL Data</strong> :
 <ul>
-<li>Preconfigured on Demisto - <a href="https://ticloud-cdn-api.reversinglabs.com">https://ticloud-cdn-api.reversinglabs.com</a>
+<li>Preconfigured on Demisto - https://ticloud-cdn-api.reversinglabs.com
 </li>
 </ul>
 </li>
@@ -43,10 +43,10 @@
 <li>
 <strong>Name</strong>: a meaningful name for the integration instance.</li>
 <li>
-<strong>Base URL for malware presence </strong>: <a href="https://ticloud-aws1-api.reversinglabs.com">https://ticloud-aws1-api.reversinglabs.com</a>
+<strong>Base URL for malware presence </strong>: https://ticloud-aws1-api.reversinglabs.com
 </li>
 <li>
-<strong>Base URL for extended RL Data</strong> : <a href="https://ticloud-cdn-api.reversinglabs.com">https://ticloud-cdn-api.reversinglabs.com</a>
+<strong>Base URL for extended RL Data</strong> : https://ticloud-cdn-api.reversinglabs.com
 </li>
 <li>
 <strong>Credentials and Password</strong>: paste the username and password for your TitaniumCloud account.</li>

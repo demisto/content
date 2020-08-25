@@ -1,2 +1,2 @@
 ## [Unreleased]
--
+Added the **command** argument to the ***checkpoint*** command. This argument is the command to run in the firewall.
