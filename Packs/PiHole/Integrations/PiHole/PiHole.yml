@@ -1,7 +1,6 @@
 commonfields:
   id: PiHole
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: PiHole
 display: PiHole
 category: IT Services
@@ -219,3 +218,5 @@ script:
   dockerimage: demisto/python3:3.8.3.9324
   runonce: false
   subtype: python3
+tests:
+- No Test
