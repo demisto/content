@@ -436,10 +436,10 @@ jobs:
       - *prepare_environment
       - *get_contribution_pack
       - *add_ssh_keys
-      - *update_tests_step
+#      - *update_tests_step
 #      - *create_id_set
-      - *build_content_descriptor
-      - *common_server_documentation
+#      - *build_content_descriptor
+#      - *common_server_documentation
 #      - *create_artifact
       - run:
           name: Download Configuration
@@ -464,35 +464,35 @@ jobs:
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
                 cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
-      - *collect_test_list_and_content_packs
-      - *calculate_packs_dependencies
+#      - *collect_test_list_and_content_packs
+#      - *calculate_packs_dependencies
       - unless:
           condition: << pipeline.parameters.demisto_sdk_nightly >>
           steps:
-            - run:
-                name: Prepare Content Packs For Testing
-                when: always
-                command: |
-                  ./Tests/scripts/prepare_content_packs_for_testing.sh
-                  echo "$CIRCLE_BUILD_NUM" > create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
-            - run:
-                name: Zip Content Packs From GCS
-                command: |
-                  if [[ $CIRCLE_BRANCH != master ]] && [[ $CIRCLE_BRANCH != 20\.* ]] && [[ $CIRCLE_BRANCH != 21\.* ]]; then
-                    echo "Skipping packs download to artifact on non master or release branch"
-                    exit 0
-                  fi
-
-                  GCS_PATH=$(mktemp)
-                  ZIP_FOLDER=$(mktemp -d)
-                  echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH
-                  rm $GCS_PATH
-                when: always
-            - run:
-                name: Store Artifacts to GCS
-                command: ./Tests/scripts/upload_artifacts.sh
-                when: always
+#            - run:
+#                name: Prepare Content Packs For Testing
+#                when: always
+#                command: |
+#                  ./Tests/scripts/prepare_content_packs_for_testing.sh
+#                  echo "$CIRCLE_BUILD_NUM" > create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
+#            - run:
+#                name: Zip Content Packs From GCS
+#                command: |
+#                  if [[ $CIRCLE_BRANCH != master ]] && [[ $CIRCLE_BRANCH != 20\.* ]] && [[ $CIRCLE_BRANCH != 21\.* ]]; then
+#                    echo "Skipping packs download to artifact on non master or release branch"
+#                    exit 0
+#                  fi
+#
+#                  GCS_PATH=$(mktemp)
+#                  ZIP_FOLDER=$(mktemp -d)
+#                  echo $GCS_MARKET_KEY > $GCS_PATH
+#                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH
+#                  rm $GCS_PATH
+#                when: always
+#            - run:
+#                name: Store Artifacts to GCS
+#                command: ./Tests/scripts/upload_artifacts.sh
+#                when: always
             - run:
                 name: Create Instance
                 when: on_success
