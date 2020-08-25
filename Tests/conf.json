@@ -3013,7 +3013,6 @@
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
-        "DuoAdmin API test playbook": "Issue 24937",
         "SMB test": "Issue 26454",
         "Infocyte-Test": "Issue 26445",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
@@ -3174,7 +3173,8 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "Palo Alto Minemeld": "Issue #26878"
+        "Palo Alto Minemeld": "Issue #26878",
+        "DUO Admin": "Issue #24937"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3276,6 +3276,7 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "QRadar": "Playbooks has parallel steps which are causing inconsistent results"
+
     },
     "parallel_integrations": [
         "SNDBOX",
