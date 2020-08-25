@@ -5620,23 +5620,28 @@ def get_ssl_decryption_rules_command():
     })
 
 
-# def get_anti_spyware_best_practice():
-#     params = {
-#         'action': 'get',
-#         'type': 'config',
-#         'xpath': XPATH_RULEBASE + 'profiles/spyware',
-#         'key': API_KEY
-#     }
-#
-#     result = http_request(URL, 'GET', params=params)
-#
-#     return result
-#
-#
-# def get_anti_spyware_best_practice_command():
-#
-#     result = get_anti_spyware_best_practice()
-#
+def get_anti_spyware_best_practice():
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': '/config/predefined/profiles/spyware',
+        'key': API_KEY
+    }
+
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_anti_spyware_best_practice_command():
+
+    result = get_anti_spyware_best_practice()
+    spyware_profile = result['response']['result']['spyware']
+    strict_profile = spyware_profile.get('entry')[1]
+
+    demisto.results(strict_profile)
+
+
 def set_xpath_wildfire(template: str = None) -> str:
     """
     Setting wildfire xpath relevant to panorama instances.
@@ -6051,8 +6056,8 @@ def main():
         elif demisto.command() == 'panorama-url-filtering-block-default-categories':
             url_filtering_block_default_categories_command()
 
-        # elif demisto.command() == 'panorama-get-anti-spyware-best-practice':
-        #     get_anti_spyware_best_practice_command()
+        elif demisto.command() == 'panorama-get-anti-spyware-best-practice':
+            get_anti_spyware_best_practice_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

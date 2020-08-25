@@ -3960,6 +3960,10 @@ script:
     description: Set default categories to block in the URL filtering profile.
     execution: false
     name: panorama-url-filtering-block-default-categories
+  - deprecated: false
+    description: Show anti-spyware best practices.
+    execution: false
+    name: panorama-get-anti-spyware-best-practice
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false
