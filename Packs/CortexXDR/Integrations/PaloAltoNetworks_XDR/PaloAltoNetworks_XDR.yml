@@ -29,27 +29,11 @@ configuration:
   name: extra_data
   required: false
   type: 8
-- additionalinfo: If selected, for every incident fetched from Cortex XDR to XOSAR
-    - the incident owners will be synced. Note this only applies in a single direction
-    and only if the users exist in both Cortex XSOAR and Cortex XDR.
-  display: Sync Incident Owners
-  hidden: false
-  name: sync_owners
-  required: false
-  type: 8
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -61,6 +45,22 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
+- additionalinfo: If selected, for every incident fetched from Cortex XDR to XOSAR
+    - the incident owners will be synced. Note this only applies in a single direction
+    and only if the users exist in both Cortex XSOAR and Cortex XDR.
+  display: Sync Incident Owners
+  hidden: false
+  name: sync_owners
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
@@ -1674,3 +1674,6 @@ script:
 tests:
 - Test XDR Playbook
 fromversion: 4.1.0
+defaultclassifier: Cortex XDR - IR
+defaultmapperin: Cortex XDR - IR-mapper
+defaultmapperout: Cortex XDR - IR-out-mapper
