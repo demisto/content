@@ -1225,6 +1225,7 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
         'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
         'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
+    print(envs_to_test)
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
