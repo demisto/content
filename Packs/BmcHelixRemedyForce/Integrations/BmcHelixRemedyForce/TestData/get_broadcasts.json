@@ -1,0 +1,34 @@
+{
+    "totalSize": 2,
+    "done": true,
+    "records": [
+        {
+            "attributes": {
+                "type": "BMCServiceDesk__Broadcasts__c",
+                "url": "/services/data/v48.0/sobjects/BMCServiceDesk__Broadcasts__c/a1v2w000000IaP7AAK"
+            },
+            "Id": "a1v2w000000IaP7AAK",
+            "Name": "BES Server is down",
+            "BMCServiceDesk__Priority_ID__c": "1",
+            "BMCServiceDesk__Urgency_ID__c": "HIGH",
+            "BMCServiceDesk__Impact_ID__c": "HIGH",
+            "BMCServiceDesk__broadcastDescription__c": null,
+            "BMCServiceDesk__Category_ID__c": "Telecommunication",
+            "BMCServiceDesk__Status_ID__c": "OPENED"
+        },
+        {
+            "attributes": {
+                "type": "BMCServiceDesk__Broadcasts__c",
+                "url": "/services/data/v48.0/sobjects/BMCServiceDesk__Broadcasts__c/a1v2w000000IaP6AAK"
+            },
+            "Id": "a1v2w000000IaP6AAK",
+            "Name": "WEB-01",
+            "BMCServiceDesk__Priority_ID__c": "1",
+            "BMCServiceDesk__Urgency_ID__c": "HIGH",
+            "BMCServiceDesk__Impact_ID__c": "HIGH",
+            "BMCServiceDesk__broadcastDescription__c": null,
+            "BMCServiceDesk__Category_ID__c": "IT Services",
+            "BMCServiceDesk__Status_ID__c": "OPENED"
+        }
+    ]
+}
