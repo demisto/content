@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import json
 
+
 class Client(BaseClient):
 
     def __init__(self, base_url, *args, **kwarg):
@@ -66,7 +67,6 @@ def submit_sample(client: Client, **args):
 
         file_path = demisto.getFilePath(demisto.args().get('data')).get('path')
         with open(file_path, 'rb') as f:
-            # TODO: Add in optional file name
             files = {
                 'file': f,
                 '_json': (None, '{"kind":"file","interactive":false}')
@@ -89,7 +89,7 @@ def get_sample(client: Client, **args):
     r = client.http_request('GET', f'samples/{sample_id}')
 
     results = CommandResults(
-        outputs_prefix = 'Triage.sample.single',
+        outputs_prefix = 'Triage.samples',
         outputs_key_field = 'data',
         outputs = r
     )
@@ -461,17 +461,13 @@ def get_profile(client: Client, **args):
 
 # Working
 def create_profile(client: Client, **args):
-    '''
-    TODO
-    - Need to add options argument (e.g. browser: chrome)
-    '''
 
     data = json.dumps({
         "name": args.get('name'),
-        "tags": argToList(args.get('tags')), #["foo","bar"],
+        "tags": argToList(args.get('tags')),
         "timeout": int(args.get('timeout', 120)),
-        "network": args.get('network')
-        # "options": argToList(args.get('options'))
+        "network": args.get('network'),
+        "browser": args.get('browser')
     })
 
     r = client.http_request('POST', f'profiles', data=data)
