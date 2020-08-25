@@ -2009,7 +2009,7 @@ There is no context output for this command.
 ### Uptycs Threat Sources
 |name|description|url|enabled|custom|createdAt|lastDownload|
 |---|---|---|---|---|---|---|
-|Debian Linux vulnerabilities|Debian Linux vulnerabilities|https://vulners.com/api/v3/archive/collection/?type=debian|true|false|2018-09-14T18:43:54.832Z||
+|Debian Linux vulnerabilities|Debian Linux vulnerabilities|`https://vulners.com/api/v3/archive/collection/?type=debian`|true|false|2018-09-14T18:43:54.832Z||
 
 
 ### 25. uptycs-get-process-events

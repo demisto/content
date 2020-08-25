@@ -16,22 +16,22 @@ description: |-
   - XLS
   - XLSX
   - XML
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 7820586b-f2e6-4673-8dd8-08caab0d1173
     type: start
     task:
       id: 7820586b-f2e6-4673-8dd8-08caab0d1173
       version: -1
-      name: ''
-      description: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -43,8 +43,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 7872ce6f-5e06-4c00-846b-6de0d54307b1
     type: condition
     task:
@@ -55,15 +55,15 @@ tasks:
         Checks if there is a file in the playbook input.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '10'
-      'yes':
-      - '2'
+      - "10"
+      "yes":
+      - "2"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -82,8 +82,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: ae4c0ec9-1082-477b-8b41-dc412d1377e5
     type: regular
     task:
@@ -94,10 +94,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     scriptarguments:
       append: {}
       key:
@@ -119,18 +119,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: 832242ed-942e-4094-8cf4-003921e7ef7a
     type: title
     task:
       id: 832242ed-942e-4094-8cf4-003921e7ef7a
       version: -1
       name: Done
-      description: ''
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -142,24 +142,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: ab59c7dd-3e82-4efe-8e36-d3065d88a590
     type: title
     task:
       id: ab59c7dd-3e82-4efe-8e36-d3065d88a590
       version: -1
       name: Extract Indicators From Files
-      description: ''
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - '5'
-      - '7'
-      - '9'
-      - '15'
+      - "5"
+      - "7"
+      - "9"
+      - "15"
     separatecontext: false
     view: |-
       {
@@ -171,27 +171,27 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '5':
-    id: '5'
-    taskid: f8c66e0d-b4a9-45d7-810a-020bc5f921f8
+  "5":
+    id: "5"
+    taskid: ec94113f-b87d-40e7-80da-93bfd4262a37
     type: condition
     task:
-      id: f8c66e0d-b4a9-45d7-810a-020bc5f921f8
+      id: ec94113f-b87d-40e7-80da-93bfd4262a37
       version: -1
       name: Is there a text-based file?
       description: Checks if there is a text-based file in context. Skips MSG and
         EML files.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '10'
-      'yes':
-      - '6'
+      - "10"
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -216,6 +216,14 @@ tasks:
                     right:
                       value:
                         simple: Rich Text Format
+                  - operator: containsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: UTF-8 Unicode text
                 - - operator: notContainsString
                     left:
                       value:
@@ -306,22 +314,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '6':
-    id: '6'
-    taskid: 584508ae-71de-46a5-8c04-e5d45dfbb6d0
+  "6":
+    id: "6"
+    taskid: 2fa182d1-a775-4c81-8e7d-d63474ec434b
     type: regular
     task:
-      id: 584508ae-71de-46a5-8c04-e5d45dfbb6d0
+      id: 2fa182d1-a775-4c81-8e7d-d63474ec434b
       version: -1
       name: Extract indicators from text-based file
       description: Extracts indicators from text-based files.
       scriptName: ExtractIndicatorsFromTextFile
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       entryID:
         complex:
@@ -344,6 +352,14 @@ tasks:
               right:
                 value:
                   simple: Rich Text Format
+            - operator: containsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: UTF-8 Unicode
           - - operator: notContainsString
               left:
                 value:
@@ -436,8 +452,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: 79feacf1-749d-4213-85ce-9b87809c59cf
     type: condition
     task:
@@ -447,15 +463,15 @@ tasks:
       description: Checks if there is a PDF file in context.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '10'
-      'yes':
-      - '8'
+      - "10"
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -495,8 +511,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: f954fb51-0ed0-44d2-837a-64f852f3dd9d
     type: regular
     task:
@@ -507,10 +523,10 @@ tasks:
       scriptName: ReadPDFFileV2
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '13'
+      - "13"
     scriptarguments:
       entryID:
         complex:
@@ -550,8 +566,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: ea30b950-c393-43b3-8f33-1804d071bb4b
     type: condition
     task:
@@ -561,15 +577,15 @@ tasks:
       description: Checks if there is a Word file (DOC, DOCX) in context.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '10'
-      'yes':
-      - '11'
+      - "10"
+      "yes":
+      - "11"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -694,21 +710,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: 371fb092-fd79-4550-8b2e-d3c945d2cc10
     type: title
     task:
       id: 371fb092-fd79-4550-8b2e-d3c945d2cc10
       version: -1
       name: No File To Parse
-      description: ''
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     separatecontext: false
     view: |-
       {
@@ -720,8 +736,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: bccca988-5145-4391-8476-945618df7c72
     type: regular
     task:
@@ -732,10 +748,10 @@ tasks:
       scriptName: ExtractIndicatorsFromWordFile
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       entryID:
         complex:
@@ -858,8 +874,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     taskid: 01853d00-5297-4e59-83fa-1aec87f7b3aa
     type: condition
     task:
@@ -869,15 +885,15 @@ tasks:
       description: Checks whether images were extracted from PDF files.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '3'
-      'yes':
-      - '14'
+      - "3"
+      "yes":
+      - "14"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -934,8 +950,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 60827e91-7450-4f79-8e82-863488b15371
     type: condition
     task:
@@ -946,15 +962,15 @@ tasks:
         enabled.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '3'
-      'yes':
-      - '12'
+      - "3"
+      "yes":
+      - "12"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -981,8 +997,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '14':
-    id: '14'
+  "14":
+    id: "14"
     taskid: 19fe4f88-c55b-4f13-814c-1ad0aae31cae
     type: regular
     task:
@@ -994,10 +1010,10 @@ tasks:
       script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       entryid:
         complex:
@@ -1055,8 +1071,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '15':
-    id: '15'
+  "15":
+    id: "15"
     taskid: b7677e2a-e24c-42f2-845e-0a0b8138222c
     type: condition
     task:
@@ -1073,15 +1089,15 @@ tasks:
         - XML
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '10'
-      'yes':
-      - '16'
+      - "10"
+      "yes":
+      - "16"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -1185,8 +1201,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: 152dad0a-3204-4907-8bf3-a81f8f6af520
     type: regular
     task:
@@ -1204,13 +1220,13 @@ tasks:
       scriptName: ConvertFile
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       all_files:
-        simple: 'yes'
+        simple: "yes"
       entry_id:
         complex:
           root: File
@@ -1331,7 +1347,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1815,
-        "width": 2540,
+        "width": 2270,
         "x": -350,
         "y": -20
       }
@@ -1342,8 +1358,6 @@ inputs:
   value:
     complex:
       root: File
-      transformers:
-      - operator: uniq
   required: false
   description: The file from which to extract indicators.
 outputs:
