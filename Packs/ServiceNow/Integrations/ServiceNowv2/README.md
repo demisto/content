@@ -72,7 +72,7 @@ This is made possible by the addition of 3 new functions in the integration, whi
 - Can sync mirror in
 - Can sync mirror out
 
-![image](/Users/sberman/dev/demisto/content/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-configuration.png)
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-configuration.png)
 
 
 #### STEP 1 -  Define the ServiceNowv2 integration.
@@ -86,7 +86,7 @@ This is made possible by the addition of 3 new functions in the integration, whi
 8. Enter the remaining connection parameters.
 9. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select the
 **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** checkboxes, respectively.
-![image](/Users/sberman/dev/demisto/content/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
 10. Click **Done.**
 
 #### STEP 2 - Modify the incoming mapper.
@@ -104,7 +104,7 @@ This is made possible by the addition of 3 new functions in the integration, whi
     - To mirror files, use the **ForServiceNow** tag.
     - To mirror general notes, use the **comments** tag.
     - To mirror private notes that can be read only by users with the necessary permissions, use the **work_notes** tag.
-![image](/Users/sberman/dev/demisto/content/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-fields.png)
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-fields.png)
 
 #### STEP 3 - Modify the outgoing mapper.
 1. Under **Classification and Mapping**, click **ServiceNow - Outgoing Mapper.**
@@ -118,7 +118,7 @@ ServiceNow supports.
 match.
 5. Change the mapping according to your needs.
 6. Save your changes.
-![image](/Users/sberman/dev/demisto/content/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/outgoing-mapper.png)
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/outgoing-mapper.png)
 
 
 
@@ -128,10 +128,10 @@ match.
 1. Add a note to the incident. In the example below, we have written A comment from Cortex XSOAR to ServiceNow.
 2. Click Actions > Tags and add the comments tag.
 3. Add a file to the incident and mark it with the ForServiceNow tag.
-![image](/Users/sberman/dev/demisto/content/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-files.png)
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-files.png)
 4. Navigate back to the incident in ServiceNow and within approximately one minute, the changes will be reflected there, too.
 * You can make additional changes like closing the incident or changing severity and those will be reflected in both systems.
-![image](/Users/sberman/dev/demisto/content/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
 
 
 * The final **source of truth** for the incident for Cortex XSOAR are the **values in Cortex XSOAR**. 
