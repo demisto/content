@@ -1129,6 +1129,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
                                                                               conf, id_set)
     if more_packs_to_install:
         packs_to_install.add(more_packs_to_install)
+
     print(f"find_tests_and_content_packs_for_modified_files: modified_files_with_relevant_tests:{packs_to_install}"
           f"\n")
     print("get_tests_for_pack: modified_metadata_list\n")
@@ -1273,14 +1274,6 @@ def create_test_file(is_nightly, skip_save=False):
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name, two_before_ga)
         tests_string = '\n'.join(tests)
         packs_to_install_string = '\n'.join(packs_to_install)
-
-        for test in tests:
-            print(f"found this test: {test}")
-            pack_tests = get_tests_for_pack(tools.pack_name_to_path(test))  # TODO: think if it's necessary
-            print(f"get_pack_tests_to_install new: {pack_tests}")
-            packs_to_install.add(tools.get_pack_name(tools.pack_name_to_path(test)))
-            print(f"found this pack name:{tools.get_pack_name(tools.pack_name_to_path(test))}")
-            tests = tests.union(pack_tests)
 
         if not skip_save:
             logging.info("Creating filter_file.txt")
