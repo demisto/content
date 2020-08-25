@@ -5,7 +5,6 @@ import Okta_IT_Admin as okta_it_admin
 from Okta_IT_Admin import Client, get_user_command, create_user_command, update_user_command,\
     enable_disable_user_command, get_assigned_user_for_app_command
 
-from CommonServerPython import BaseClient
 from datetime import datetime
 
 res = Response()
