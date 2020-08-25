@@ -424,7 +424,7 @@ class TrustarClient:
         :param time_began: Incident time. Defaults to current time if not given.
         :param distribution_type: Whether the report will be in the community, or only
         in enclaves
-        :param redact: Wether to redact a report before submitting or not. 
+        :param redact: Wether to redact a report before submitting or not.
 
         :return: Entry context with the submitted report.
         """
