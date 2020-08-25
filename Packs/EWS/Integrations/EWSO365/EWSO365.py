@@ -1611,7 +1611,7 @@ def randomword(length):
     return ''.join(random.choice(letters) for i in range(length))
 
 
-def handle_html(htmlBody):
+def handle_html(html_body):
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
@@ -1621,25 +1621,29 @@ def handle_html(htmlBody):
     clean_body = ''
     last_index = 0
     for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
+            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
         att = {
             'data': base64.b64decode(m.group(3)),
-            'name': 'image%d.%s' % (i, m.group(2).split('/', 1)[-1].split('.')[-1])
+            'name': f'image{i}'
         }
-        att['cid'] = '%s@%s.%s' % (att['name'], randomword(8), randomword(8))
+        att['cid'] = f'{att["name"]}@{randomword(8)}.{randomword(8)}'
+
         attachments.append(att)
-        clean_body += htmlBody[last_index:m.start(1)] + 'cid:' + att['cid']
+        clean_body += html_body[last_index:m.start(1)] + 'cid:' + att['cid']
         last_index = m.end() - 1
-    clean_body += htmlBody[last_index:]
+
+    clean_body += html_body[last_index:]
     return clean_body, attachments
 
 
-def collect_manual_attachments():
-    attachments = []
-    for attachment in demisto.getArg('manualAttachObj') or []:
-        res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))
+def collect_manual_attachments(manualAttachObj):
+    manually_attached_objects = argToList(manualAttachObj)
 
-        path = res['path']
+    attachments = []
+    for attachment in manually_attached_objects:
+        file_res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))
+
+        path = file_res['path']
 
         with open(path, 'rb') as fp:
             data = fp.read()
@@ -1653,48 +1657,47 @@ def collect_manual_attachments():
     return attachments
 
 
-def collect_attachments():
+def collect_attachments(attachments_ids, attachments_cids, attachments_names,
+                        transient_files, transient_files_contents, transient_files_cids):
     """
     Collect all attachments into a list with all data
     """
     attachments = []
-    attachIDs = argToList(demisto.getArg('attachIDs'))
-    attachNames = argToList(demisto.getArg('attachNames'))
-    attachCIDs = argToList(demisto.getArg('attachCIDs'))
-    for i, aid in enumerate(attachIDs):
-        try:
-            fileRes = demisto.getFilePath(aid)
 
-            path = fileRes['path']
-            if len(attachNames) > i and attachNames[i]:
-                filename = attachNames[i]
+    for index, attachment_id in enumerate(attachments_ids):
+        try:
+            file_res = demisto.getFilePath(attachment_id)
+            path = file_res['path']
+
+            if len(attachments_names) > index and attachments_names[index]:
+                filename = attachments_names[index]
             else:
-                filename = fileRes['name']
-            if len(attachCIDs) > i and attachCIDs[i]:
-                cid = attachCIDs[i]
+                filename = file_res['name']
+
+            if len(attachments_cids) > index and attachments_cids[index]:
+                cid = attachments_cids[index]
             else:
                 cid = ''
+
             with open(path, 'rb') as fp:
                 data = fp.read()
+
             attachments.append({
                 'name': filename,
                 'data': data,
                 'cid': cid
             })
+
         except Exception as ex:
-            demisto.error("Invalid entry {} with exception: {}".format(aid, ex))
-            return_error('Entry %s is not valid or is not a file entry' % (aid))
+            demisto.error(f'Invalid entry {attachment_id} with exception: {ex}')
+            return_error(f'Entry {attachment_id} is not valid or is not a file entry')
 
     # handle transient files
-    args = demisto.args()
-    f_names = args.get('transientFile', [])
-    f_names = f_names if isinstance(f_names, (list, tuple)) else f_names.split(',')
-    f_contents = args.get('transientFileContent', [])
-    f_contents = f_contents if isinstance(f_contents, (list, tuple)) else f_contents.split(',')
-    f_cids = args.get('transientFileCID', [])
-    f_cids = f_cids if isinstance(f_cids, (list, tuple)) else f_cids.split(',')
+    files_names = argToList(transient_files)
+    files_contents = argToList(transient_files_contents)
+    files_cids = argToList(transient_files_cids)
 
-    for name, data, cid in map(None, f_names, f_contents, f_cids):
+    for name, data, cid in map(None, files_names, files_contents, files_cids):
         if name is None or data is None:
             break
         attachments.append({
@@ -1706,55 +1709,46 @@ def collect_attachments():
     return attachments
 
 
-def template_params(paramsStr):
+def handle_template_params(template_params):
     """
     Translate the template params if they exist from the context
     """
-    actualParams = {}
-    if paramsStr:
+    actual_params = {}
+    if template_params:
         try:
-            params = json.loads(paramsStr)
+            params = json.loads(template_params)
         except ValueError as e:
             return_error('Unable to parse templateParams: %s' % (str(e)))
         # Build a simple key/value
         for p in params:
             if params[p].get('value'):
-                actualParams[p] = params[p]['value']
+                actual_params[p] = params[p]['value']
             elif params[p].get('key'):
-                actualParams[p] = demisto.dt(demisto.context(), params[p]['key'])
-    return actualParams
+                actual_params[p] = demisto.dt(demisto.context(), params[p]['key'])
+    return actual_params
 
 
-# def header(s):
-#     if not s:
-#         return None
-#     s_no_newlines = ' '.join(s.splitlines())
-#     return Header(s_no_newlines, UTF_8)
-
-
-def create_msg(to, subject='', body='', bcc=None, cc=None, replyTo=None, htmlBody='',
-               attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
-               transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
-               additionalHeader=None):
+def create_msg(to, subject='', body="", bcc=None, cc=None, reply_to=None, html_body=None,
+               attachments_ids="", attachments_cids="", attachments_names="", manualAttachObj=None,
+               transient_files=None, transient_files_contents=None, transient_files_cids=None, template_params=None):
     """
-    Will get args from demisto object
-    Return: a message object, to, cc, bcc
+    Return: a message object
     """
-    additional_header = argToList(demisto.getArg('additionalHeader'))
-    templateParams = template_params(templateParams)
-    if templateParams:
-        body = body.format(**templateParams)
-        htmlBody = htmlBody.format(**templateParams)
+    template_params = handle_template_params(template_params)
+    if template_params:
+        body = body.format(**template_params)
+        html_body = html_body.format(**template_params)
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
     if not to and not cc and not bcc:
         return_error('You must have at least one recipient')
 
-    attachments = collect_attachments()
-    attachments.extend(collect_manual_attachments())
+    attachments = collect_attachments(attachments_ids, attachments_cids, attachments_names,
+                                      transient_files, transient_files_contents, transient_files_cids)
+    attachments.extend(collect_manual_attachments(manualAttachObj))
 
-    if not htmlBody:
+    if not html_body:
         # This is a simple text message - we cannot have CIDs here
         message = Message(
             to_recipients=to,
@@ -1770,37 +1764,45 @@ def create_msg(to, subject='', body='', bcc=None, cc=None, replyTo=None, htmlBod
                 message.attach(new_attachment)
 
     else:
-        htmlBody, htmlAttachments = handle_html(htmlBody)
-        attachments += htmlAttachments
+        html_body, html_attachments = handle_html(html_body)
+        attachments += html_attachments
+
+        if body:
+            html_body = f'{body}<br/><br/>{html_body}'
 
         message = Message(
             to_recipients=to,
             cc_recipients=cc,
             bcc_recipients=bcc,
             subject=subject,
-            body=HTMLBody(f'{body} {htmlBody}')
+            body=HTMLBody(html_body)
         )
 
-        for att in attachments:
-            # handle_file(msg, att['name'], att['maintype'], att['subtype'], att['cid'], att['data'])
-            pass
+        for attachment in attachments:
+            if not attachment.get('cid'):
+                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
+            else:
+                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+                                                is_inline=True, content_id=attachment.get('cid'))
 
-    # if additional_header:
-    #     for h in additional_header:
-    #         header_name_and_value = h.split('=', 1)
-    #         msg[header_name_and_value[0]] = header(header_name_and_value[1])
+            message.attach(new_attachment)
 
-    # Notice we should not add BCC header since Python2 does not filter it
     return message
 
 
-def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
-               attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
-               transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
-               additionalHeader=None, raw_message=None):
-    to = argToList(demisto.getArg('to'))
-    cc = argToList(demisto.getArg('cc'))
-    bcc = argToList(demisto.getArg('bcc'))
+# Not sure that it is possible
+def add_additional_headers(additional_headers):
+    for header in additional_headers:
+        header_name, header_value = header.split('=', 1)
+
+
+def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, reply_to=None, html_body=None,
+               attachments_ids="", attachments_cids="", attachments_names="", manualAttachObj=None,
+               transient_files=None, transient_files_contents=None, transient_files_cids=None, template_params=None,
+               additional_headers=None, raw_message=None):
+    to = argToList(to)
+    cc = argToList(cc)
+    bcc = argToList(bcc)
 
     if raw_message:
         message = Message(
@@ -1811,14 +1813,16 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, re
         )
 
     else:
-        message = create_msg(to, subject, body, bcc, cc, replyTo, htmlBody,
-                             attachIDs, attachCIDs, attachNames, manualAttachObj,
-                             transientFile, transientFileContent, transientFileCID, templateParams,
-                             additionalHeader)
+        if additional_headers:
+            add_additional_headers(additional_headers)
+
+        message = create_msg(to, subject, body, bcc, cc, reply_to, html_body,
+                             attachments_ids, attachments_cids, attachments_names, manualAttachObj,
+                             transient_files, transient_files_contents, transient_files_cids, template_params)
 
     client.send_email(message)
 
-    demisto.results('Mail sent successfully')
+    return 'Mail sent successfully'  # , context_output, raw_repsonse
 
 
 def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
