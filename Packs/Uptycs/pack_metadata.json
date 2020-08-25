@@ -1,11 +1,11 @@
 {
     "name": "Uptycs",
     "description": "Fetches data from the Uptycs database.",
-    "support": "xsoar",
+    "support": "partner",
     "currentVersion": "1.0.1",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "author": "Uptycs Inc.",
+    "url": "https://xsoar.pan.dev/docs/reference/integrations/uptycs",
+    "email": "support@uptycs.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Analytics & SIEM"
