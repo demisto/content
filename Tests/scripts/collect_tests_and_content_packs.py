@@ -1215,17 +1215,15 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id
 def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=None, one_before_ga=None, ga=None):
     """Create a file containing all the envs we need to run for the CI"""
     # always run master and PreGA
-    two_before_ga = two_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
-    # Two before GA is not two before GA. Mistakes were made and this version is now actually 5.0
-    one_before_ga = one_before_ga or AMI_BUILDS.get('PreGA', '0').split('-')[0]
-    # One before GA is not one before GA. Mistakes were made and this version is now actually 5.5
+    two_before_ga = two_before_ga or AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
+    one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
-        'Demisto two before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
-        'Demisto one before GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
-        'Demisto GA': is_runnable_in_server_version(from_version, ga, to_version),
+        'Demisto one before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
+        'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
+        'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
