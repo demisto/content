@@ -1,4 +1,5 @@
 <p>
+  shtak
   Send messages and notifications to your Slack Team.
   This integration was integrated and tested with version 4.0.1 of Slack, and is available from Cortex XSOAR version 5.0.
 </p>
