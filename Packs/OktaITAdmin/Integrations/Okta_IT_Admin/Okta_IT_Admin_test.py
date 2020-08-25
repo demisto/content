@@ -5,6 +5,9 @@ import Okta_IT_Admin as okta_it_admin
 from Okta_IT_Admin import Client, get_user_command, create_user_command, update_user_command,\
     enable_disable_user_command, get_assigned_user_for_app_command
 
+from CommonServerPython import BaseClient
+from datetime import datetime
+
 res = Response()
 
 
@@ -278,14 +281,19 @@ def test_get_assigned_user_for_app_command(mocker):
 
 
 def test_fetch_incidents(mocker):
-    params = {"fetch_events_time_minutes": 60, "fetch_limit": 1, "fetchLogsQuery": "test query",
-              "url": "https://test.com"}
+    params = {"fetch_limit": 1, "fetchLogsQuery": "test query", "url": "https://test.com"}
     res.status_code = 200
     res._content = b'[{"id": "123"}]'
-    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    client = Client(base_url='https://test.com', verify=False, auth='123', headers={})
     mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'getLastRun', return_value='2020-01-01T01:01:01Z')
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'key1': 'val1', 'key2': 'val2'})
     mocker.patch.object(requests, 'request', return_value=res)
 
-    okta_it_admin.main()
+    last_run, events = okta_it_admin.fetch_incidents(client=client,
+                                                     last_run='2020-01-01T01:01:01Z',
+                                                     fetch_time=60)
+
+    curr_date = datetime.now().strftime('%Y-%m-%d')
+
+    assert curr_date in last_run['time']
+    assert events == [{'rawJSON': '{"id": "123"}'}]
