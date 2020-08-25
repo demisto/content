@@ -1,4 +1,4 @@
-from Tanium_v2 import Client
+from Tanium_v2 import Client, get_question_result
 import json
 
 BASE_URL = 'https://test.com/'
@@ -283,7 +283,7 @@ def test_create_action_body_with_parameters(requests_mock):
 
 def test_parse_question_results():
     client = Client(BASE_URL, 'username', 'password', 'domain')
-    results = client.parse_question_results(QUESTION_RESULTS_RAW)
+    results = client.parse_question_results(QUESTION_RESULTS_RAW, 95)
     assert results == QUESTION_RESULTS
 
 
@@ -297,3 +297,12 @@ def test_parse_question(requests_mock):
     assert results['selects'][0]['sensor']['name'] == 'Folder-Contents'
     assert results['selects'][0]['sensor']['parameters'][0]['key'] == '||folderPath||'
     assert results['selects'][0]['sensor']['parameters'][0]['value'] == 'c:\\'
+
+
+def test_get_question_result_invalid_input():
+    client = Client(BASE_URL, 'username', 'password', 'domain')
+    data_args = {'completion-percentage': '0'}
+    try:
+        _, _, _ = get_question_result(client, data_args)
+    except ValueError as e:
+        assert str(e) == 'completion-percentage argument is invalid, Please enter number between 1 to 100'
