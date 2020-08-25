@@ -15,7 +15,7 @@
     "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
-    "id": "incident_ServiceNow Ticketnumber",
+    "id": "incident_servicenowticketnumber",
     "isReadOnly": false,
     "locked": false,
     "name": "ServiceNow Ticket Number",
