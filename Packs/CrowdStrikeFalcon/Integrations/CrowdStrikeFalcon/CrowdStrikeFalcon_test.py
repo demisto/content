@@ -26,27 +26,6 @@ def get_access_token(requests_mock, mocker):
     )
 
 
-# client_mocker = Client(base_url='https://demistodev.eu2.portal.cloudappsecurity.com/api/v1')
-#
-#
-# def test_list_alerts_command(requests_mock):
-#     alert = get_fetch_data()
-#     from MicrosoftCloudAppSecurity import list_alerts_command
-#     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/5f06d71dba4289d0602ba5ac',
-#                       json=alert['ALERT_BY_ID_DATA'])
-#     res = list_alerts_command(client_mocker, {'alert_id': '5f06d71dba4289d0602ba5ac'})
-#     assert res.outputs[0] == alert['ALERT_BY_ID_DATA_CONTEXT']
-#
-#
-# client_mocker = Client(base_url='https://api.crowdstrike.com/')
-#
-#
-# def test_get_fetch_detections(requests_mock):
-#     from CrowdStrikeFalcon import get_fetch_detections
-#     DETECTIONS_RESPONS =
-#     requests_mock.get('https://api.crowdstrike.com//detects/queries/detects/v1', json=DETECTIONS_RESPONS)
-
-
 response_incident = {
    "incident_id": "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd",
    "cid": "24ab288b109b411aba970e570d1ddf58",
