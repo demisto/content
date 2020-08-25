@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict, Tuple, List
 from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
@@ -37,6 +37,7 @@ class MsClient:
         self.alert_severities_to_fetch = alert_severities_to_fetch,
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
+        self.indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
     def isolate_machine(self, machine_id, comment, isolation_type):
         """Isolates a machine from accessing external network.
@@ -555,7 +556,7 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def list_indicators(self, indicator_id: Optional[str] = None) -> Dict:
+    def list_indicators(self, indicator_id: Optional[str] = None) -> List:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
         Args:
@@ -564,13 +565,28 @@ class MsClient:
         Returns:
             json of a response.
         """
-        base = 'https://graph.microsoft.com'
-        cmd_url = urljoin(base, 'beta/security/tiIndicators')
+        cmd_url = self.indicators_endpoint
+        # For getting one indicator
         if indicator_id is not None:
             cmd_url = urljoin(cmd_url, indicator_id)
-        params = {'$filter': 'targetProduct eq \'Microsoft Defender ATP\''}
-        self.ms_client.scope = 'https://graph.microsoft.com/.default'
-        return self.ms_client.http_request('GET', full_url=cmd_url, params=params, url_suffix=None)
+        # TODO: check in the future if the filter is working. Then remove the filter function.
+        # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
+        resp = self.ms_client.http_request('GET', full_url=cmd_url, url_suffix=None, scope='graph', timeout=100, ok_codes=(200, 204, 206, 404), resp_type='response')
+        # 404 - No indicators found, an empty list.
+        if resp.status_code == 404:
+            return []
+        resp = resp.json()
+        # If 'value' is in the response, should filter and limit. The '@odata.context' key is in the root which we're
+        # not returning
+        if 'value' in resp:
+            resp['value'] = list(
+                filter(lambda item: item.get('targetProduct') == 'Microsoft Defender ATP', resp.get('value', []))
+            )
+            return resp['value']
+        # If a single object - should remove the '@odata.context' key.
+        else:
+            resp.pop('@odata.context')
+            return [resp]
 
     def create_indicator(self, body: Dict) -> Dict:
         """Creates indicator from the given body.
@@ -581,11 +597,13 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        cmd_url = 'beta/security/tiIndicators'
-        return self.ms_client.http_request('POST', cmd_url, json_data=body)
+        resp = self.ms_client.http_request('POST', full_url=self.indicators_endpoint, json_data=body, url_suffix=None, scope='graph')
+        # A single object - should remove the '@odata.context' key.
+        resp.pop('@odata.context')
+        return resp
 
     def update_indicator(
-            self, indicator_id: str, expiration_date_time: Optional[str],
+            self, indicator_id: str, expiration_date_time: str,
             description: Optional[str], severity: Optional[str]
     ):
         """Updates a given indicator
@@ -599,14 +617,22 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        cmd_url = 'bet/security/tiIndicators'
-        body = assign_params(
-            indicator_id=indicator_id,
-            expirationDateTime=expiration_date_time,
+        cmd_url = urljoin(self.indicators_endpoint, indicator_id)
+        header = {'Prefer': 'return=representation'}
+        body = {
+            'targetProduct': 'Microsoft Defender ATP',
+            'expirationDateTime': expiration_date_time
+        }
+        body.update(assign_params(
             description=description,
             severity=severity
+        ))
+        resp =  self.ms_client.http_request(
+            'PATCH', full_url=cmd_url, json_data=body, url_suffix=None, scope='graph', headers=header
         )
-        return self.ms_client.http_request('UPDATE', cmd_url, json_data=body)
+        # A single object - should remove the '@odata.context' key.
+        resp.pop('@odata.context')
+        return resp
 
 
 ''' Commands '''
@@ -1828,7 +1854,7 @@ def get_last_alert_fetched_time(last_run, alert_time_to_fetch):
     return last_alert_fetched_time
 
 
-def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str, Optional[Dict], Optional[Dict]]:
+def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str, Optional[Dict], Optional[List]]:
     """
 
     Args:
@@ -1838,14 +1864,16 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
     Returns:
         human_readable, outputs.
     """
-    response = client.list_indicators(args.get('indicator_id'))
-    indicators = response.get('value')
+    indicators = client.list_indicators(args.get('indicator_id'))
+    limit = int(args.get('limit', 50))
+
+    indicators = indicators[:limit]
     if indicators:
         human_readable = tableToMarkdown(
             'Indicators from Microsoft ATP:',
             indicators,
             headers=[
-                'indicator_id',
+                'id',
                 'action',
                 'threatType',
                 'severity',
@@ -1855,9 +1883,10 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
                 'domainName',
                 'networkIPv4',
                 'url'
-            ]
+            ],
+            removeNull=True
         )
-        return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicators}, response
+        return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicators}, indicators
     else:
         return 'No indicators found', None, None
 
@@ -1954,10 +1983,10 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Op
     assert file_object, 'Must supply at least one file attribute.'
     indicator = create_indicator_command(client, args, file_object)
     human_readable = tableToMarkdown(
-        'Indicators from Microsoft ATP:',
+        f'Indicator {indicator.get("id")} was successfully created:',
         indicator,
         headers=[
-            'indicator_id',
+            'id',
             'action',
             'threatType',
             'severity',
@@ -1967,7 +1996,8 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Op
             'domainName',
             'networkIPv4',
             'url'
-        ]
+        ],
+        removeNull=True
     )
     return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
 
@@ -1986,7 +2016,7 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict]:
     Raises:
         AssertionError: If no file arguments.
     """
-    email_object = assign_params(
+    network_object = assign_params(
         domainName=args.get('domain_name'),
         networkCidrBlock=args.get('network_cidr_block'),
         networkDestinationAsn=args.get('network_destination_asn'),
@@ -2003,15 +2033,16 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict]:
         networkSourceIPv4=args.get('network_source_ipv4'),
         networkSourceIPv6=args.get('network_source_ipv6'),
         networkSourcePort=args.get('network_source_port'),
-        userAgent=args.get('user_agent')
+        userAgent=args.get('user_agent'),
+        url=args.get('url')
     )
-    assert email_object, 'Must supply at least one email attribute.'
-    indicator = create_indicator_command(client, args, email_object)
+    assert network_object, 'Must supply at least one network attribute.'
+    indicator = create_indicator_command(client, args, network_object)
     human_readable = tableToMarkdown(
-        'Indicators from Microsoft ATP:',
+        f'Indicator {indicator.get("id")} was successfully created:',
         indicator,
         headers=[
-            'indicator_id',
+            'id',
             'action',
             'threatType',
             'severity',
@@ -2021,7 +2052,8 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict]:
             'domainName',
             'networkIPv4',
             'url'
-        ]
+        ],
+        removeNull=True
     )
     return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
 
@@ -2038,7 +2070,8 @@ def test_module(client: MsClient):
 ''' EXECUTION CODE '''
 
 
-def update_indicator_command(client: MsClient, args: dict) -> str:
+def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, dict]:
+    indicator_id = args.get('indicator_id', '')
     severity = args.get('severity')
     if severity is not None:
         try:
@@ -2046,18 +2079,22 @@ def update_indicator_command(client: MsClient, args: dict) -> str:
             assert 0 <= severity <= 5, 'The severity argument must be between 0 and 5'
         except ValueError:
             raise DemistoException('The severity argument must be an integer.')
-    indicator_id = args.get('indicator_id', '')
-    expiration_date_time = args.get('expiration_date_time')
+    expiration_time = get_future_time(args.get('expiration_time'))
     description = args.get('description')
     if description is not None:
         assert 1 <= len(
             description) <= 100, 'The description argument must contain at least 1 letter and less than 100.'
 
-    client.update_indicator(
-        indicator_id=indicator_id, expiration_date_time=expiration_date_time,
+    resp = client.update_indicator(
+        indicator_id=indicator_id, expiration_date_time=expiration_time,
         description=description, severity=severity
     )
-    return f'Indicator ID: {indicator_id} was updated successfully.'
+    human_readable = tableToMarkdown(
+        f'Indicator ID: {indicator_id} was updated successfully.',
+        resp,
+        removeNull=True
+    )
+    return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': resp}
 
 
 def main():
@@ -2190,8 +2227,8 @@ def main():
             return_outputs(*create_file_indicator_command(client, args))
         elif command == 'microsoft-atp-network-indicator-create':
             return_outputs(*create_network_indicator_command(client, args))
-        elif command == 'microsoft-atp-indicator-upd ate':
-            return_outputs(update_indicator_command(client, args))
+        elif command == 'microsoft-atp-indicator-update':
+            return_outputs(*update_indicator_command(client, args))
     except Exception as err:
         return_error(str(err))
 

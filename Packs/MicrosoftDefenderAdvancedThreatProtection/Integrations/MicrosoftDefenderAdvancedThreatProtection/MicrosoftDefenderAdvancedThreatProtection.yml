@@ -2252,13 +2252,21 @@ script:
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags
       type: String
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum amount of indicators to get.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Lists all indicators by ID
     execution: false
     name: microsoft-atp-indicators-list
   - arguments:
     - default: true
-      description: The id of the indicator to get,
+      description: The ID of the indicator to get.
       isArray: false
       name: indicator_id
       required: true
@@ -2646,8 +2654,42 @@ script:
       secret: false
     deprecated: false
     execution: false
+    description: Creates a file indicator
     name: microsoft-atp-network-indicator-create
-  dockerimage: demisto/crypto:1.0.0.8854
+  - arguments:
+    - default: false
+      description: The ID of the indicator to update.
+      isArray: false
+      name: indicator_id
+      required: true
+      secret: false
+    - default: false
+      description: An integer representing the severity of the malicious behavior
+        identified by the data within the indicator. Acceptable values are 0 – 5 where
+        5 is the most severe and zero is not severe at all.
+      isArray: false
+      name: severity
+      required: false
+      secret: false
+    - default: false
+      description: 'DateTime string indicating when the Indicator expires. Format:
+        (<number> <time unit>, e.g., 12 hours, 7 days).'
+      isArray: false
+      name: expiration_time
+      required: true
+      secret: false
+    - default: false
+      description: Brief description (100 characters or less) of the threat represented
+        by the indicator.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a given indicator
+    execution: false
+    name: microsoft-atp-indicator-update
+  dockerimage: demisto/crypto:1.0.0.10743
   feed: false
   isfetch: true
   longRunning: false

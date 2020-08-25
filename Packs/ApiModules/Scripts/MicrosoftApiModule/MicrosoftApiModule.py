@@ -53,7 +53,8 @@ class MicrosoftClient(BaseClient):
             auth_id_and_token_retrieval_url = auth_id.split('@')
             auth_id = auth_id_and_token_retrieval_url[0]
             if len(auth_id_and_token_retrieval_url) != 2:
-                self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
+                self.token_retrieval_url = 'https://us-central1-oproxy-dev.cloudfunctions.net/add-scope-atp_ProvideAccessTokenFunction'  # guardrails-disable-line
+                # self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
             else:
                 self.token_retrieval_url = auth_id_and_token_retrieval_url[1]
 
@@ -77,14 +78,14 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
 
-    def http_request(self, *args, resp_type='json', headers=None, return_empty_response=False, **kwargs):
+    def http_request(self, *args, resp_type='json', headers=None, return_empty_response=False, scope=None, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
         Returns:
             Response from api according to resp_type. The default is `json` (dict or list).
         """
-        token = self.get_access_token()
+        token = self.get_access_token(scope)
         default_headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
@@ -92,7 +93,6 @@ class MicrosoftClient(BaseClient):
         }
         if headers:
             default_headers.update(headers)
-
         response = super()._http_request(   # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
@@ -100,7 +100,6 @@ class MicrosoftClient(BaseClient):
         # In that case, logs with the warning header will be written.
         if response.status_code == 206:
             demisto.debug(str(response.headers))
-
         is_response_empty_and_successful = (response.status_code == 204)
         if is_response_empty_and_successful and return_empty_response:
             return response
@@ -118,7 +117,7 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
 
-    def get_access_token(self):
+    def get_access_token(self, scope=None):
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
         Access token is used and stored in the integration context
@@ -129,16 +128,21 @@ class MicrosoftClient(BaseClient):
             str: Access token that will be added to authorization header.
         """
         integration_context = demisto.getIntegrationContext()
-        access_token = integration_context.get('access_token')
+        if scope == 'graph':
+            access_token = integration_context.get('graph_access_token')
+            valid_until = integration_context.get('graph_valid_until')
+        else:
+            access_token = integration_context.get('access_token')
+            valid_until = integration_context.get('valid_until')
         refresh_token = integration_context.get('current_refresh_token', '')
-        valid_until = integration_context.get('valid_until')
+
         if access_token and valid_until:
             if self.epoch_seconds() < valid_until:
                 return access_token
 
         auth_type = self.auth_type
         if auth_type == OPROXY_AUTH_TYPE:
-            access_token, expires_in, refresh_token = self._oproxy_authorize()
+            access_token, expires_in, refresh_token = self._oproxy_authorize(scope)
         else:
             access_token, expires_in, refresh_token = self._get_self_deployed_token(refresh_token)
         time_now = self.epoch_seconds()
@@ -146,17 +150,23 @@ class MicrosoftClient(BaseClient):
         if expires_in - time_buffer > 0:
             # err on the side of caution with a slightly shorter access token validity period
             expires_in = expires_in - time_buffer
-
-        integration_context = {
-            'access_token': access_token,
-            'current_refresh_token': refresh_token,
-            'valid_until': time_now + expires_in,
-        }
+        valid_until = time_now + expires_in
+        if scope == 'graph':
+            integration_context.update({
+                'graph_access_token': access_token,
+                'graph_valid_until': valid_until
+            })
+        else:
+            integration_context.update({
+                'access_token': access_token,
+                'valid_until': time_now + expires_in,
+            })
+        integration_context.update({'current_refresh_token': refresh_token})
 
         demisto.setIntegrationContext(integration_context)
         return access_token
 
-    def _oproxy_authorize(self) -> Tuple[str, int, str]:
+    def _oproxy_authorize(self, scope=None) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing with oproxy.
 
@@ -171,7 +181,8 @@ class MicrosoftClient(BaseClient):
             json={
                 'app_name': self.app_name,
                 'registration_id': self.auth_id,
-                'encrypted_token': self.get_encrypted(content, self.enc_key)
+                'encrypted_token': self.get_encrypted(content, self.enc_key),
+                'scope': scope
             },
             verify=self.verify
         )
