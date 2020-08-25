@@ -921,6 +921,58 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
+    def test_multiple_outputs_keys(self):
+        """
+        Given
+        - File has 3 unique keys. sha256, md5 and sha1
+
+        When
+        - creating CommandResults with outputs_key_field=[sha1, sha256, md5]
+
+        Then
+        - entrycontext DT expression contains all 3 unique fields
+        """
+        from CommonServerPython import CommandResults
+
+        files = [
+            {
+                'sha256': '111',
+                'sha1': '111',
+                'md5': '111'
+            },
+            {
+                'sha256': '222',
+                'sha1': '222',
+                'md5': '222'
+            }
+        ]
+        results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
+
+        assert list(results.to_context()['EntryContext'].keys())[0] == \
+               'File(val.sha1 == obj.sha1 && val.sha256 == obj.sha256 && val.md5 == obj.md5)'
+
+    def test_output_prefix_includes_dt(self):
+        """
+        Given
+        - Returning File with only outputs_prefix which includes DT in it
+        - outputs key fields are not provided
+
+        When
+        - creating CommandResults
+
+        Then
+        - EntryContext key should contain only the outputs_prefix
+        """
+        from CommonServerPython import CommandResults
+
+        files = []
+        results = CommandResults(outputs_prefix='File(val.sha1 == obj.sha1 && val.md5 == obj.md5)',
+                                 outputs_key_field='', outputs=files)
+
+        assert list(results.to_context()['EntryContext'].keys())[0] == \
+               'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
+
+
     def test_readable_only_context(self):
         """
         Given:
@@ -2274,3 +2326,185 @@ def test_set_latest_integration_context_fail(mocker):
 
     # Assert
     assert int_context_calls == CommonServerPython.CONTEXT_UPDATE_RETRY_TIMES
+
+
+def test_handle_outgoing_error_in_mirror__should_update(mocker):
+    """
+    Given:
+        -  an integration context with and outgoing mirror error that was not printed
+    When
+        - running handle_outgoing_error_in_mirror
+    Then
+        - the result is the expected out error entry
+        - 'out_mirror_error' in the incident data is set to True
+    """
+    from CommonServerPython import handle_outgoing_error_in_mirror
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"out_mirror_error": "Some Error",
+                                                                        "out_error_printed": False})
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    out_entry = handle_outgoing_error_in_mirror(incident_data)
+    expected_out_entry = {
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
+    }
+    assert out_entry == expected_out_entry
+    assert incident_data.get('out_mirror_error') == 'Some Error'
+
+
+def test_handle_outgoing_error_in_mirror__should_not_update(mocker):
+    """
+    Given:
+        -  an integration context with and outgoing mirror error that was printed
+    When
+        - running handle_outgoing_error_in_mirror
+    Then
+        - the result is an empty dict
+        - 'out_mirror_error' in the incident data is set to True
+    """
+    from CommonServerPython import handle_outgoing_error_in_mirror
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"out_mirror_error": "Some Error",
+                                                                        "out_error_printed": True})
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    out_entry = handle_outgoing_error_in_mirror(incident_data)
+    assert out_entry == {}
+    assert incident_data.get('out_mirror_error') == 'Some Error'
+
+
+def test_handle_incoming_error_in_mirror__should_update_in_only(mocker):
+    """
+    Given:
+        -  an integration context with and outgoing mirror error that was printed and no in error
+        -  A new incoming mirror error message
+    When
+        - running handle_incoming_error_in_mirror
+    Then
+        - the result is the expected in error entry without an out error entry
+        - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
+    """
+    from CommonServerPython import handle_incoming_error_in_mirror
+    integrartion_context = {
+        "out_mirror_error": "Some Error",
+        "out_error_printed": True,
+    }
+
+    expected_in_error_entry = {
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring incoming data: My in error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    response = handle_incoming_error_in_mirror(incident_data, "My in error")
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
+    assert len(response.entries) == 1
+    assert response.entries[0] == expected_in_error_entry
+
+
+def test_handle_incoming_error_in_mirror__should_update_in_and_out(mocker):
+    """
+   Given:
+       -  an integration context with and outgoing mirror error that was not printed and no in error
+       -  A new incoming mirror error message
+   When
+       - running handle_incoming_error_in_mirror
+   Then
+       - the result has the expected in error entry and out error entry
+       - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
+   """
+    from CommonServerPython import handle_incoming_error_in_mirror
+    integrartion_context = {
+        "out_mirror_error": "Some Error",
+        "out_error_printed": False,
+    }
+    expected_in_error_entry = {
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring incoming data: My in error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
+    }
+    expected_out_entry = {
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    response = handle_incoming_error_in_mirror(incident_data, "My in error")
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
+    assert len(response.entries) == 2
+    assert expected_in_error_entry in response.entries
+    assert expected_out_entry in response.entries
+
+
+def test_handle_incoming_error_in_mirror__should_update_out_only(mocker):
+    """
+   Given:
+       -  an integration context with and outgoing mirror error that was not printed and incoming error that was printed
+   When
+       - running handle_incoming_error_in_mirror
+   Then
+       - the result has the expected out error entry and no in error entry
+       - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
+   """
+    from CommonServerPython import handle_incoming_error_in_mirror
+    integrartion_context = {
+        "out_mirror_error": "Some Error",
+        "out_error_printed": False,
+        "in_mirror_error": "My in error",
+        "in_error_printed": True
+    }
+    expected_out_entry = {
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    response = handle_incoming_error_in_mirror(incident_data, "My in error")
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
+    assert len(response.entries) == 1
+    assert expected_out_entry in response.entries
+
+
+def test_handle_incoming_error_in_mirror__should_not_update(mocker):
+    """
+   Given:
+       -  an integration context with and outgoing mirror error that was printed and incoming error that was printed
+   When
+       - running handle_incoming_error_in_mirror
+   Then
+       - the result has no entries
+       - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
+   """
+    from CommonServerPython import handle_incoming_error_in_mirror
+    integrartion_context = {
+        "out_mirror_error": "Some Error",
+        "out_error_printed": True,
+        "in_mirror_error": "My in error",
+        "in_error_printed": True
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    response = handle_incoming_error_in_mirror(incident_data, "My in error")
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
+    assert len(response.entries) == 0
