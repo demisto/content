@@ -428,13 +428,8 @@ def fetch_incidents():
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     last_run_object = demisto.getLastRun()
     last_run = last_run_object and last_run_object['time']
-    filters = req('GET', 'filter/alert/suggest', None, None)
-    alerts_rules = req('GET', 'alert/rule', None, None)
-    rules = str([rule.get('name') for rule in alerts_rules])
-    demisto.info("Alert rules for the user: {}\n".format(rules))
-    demisto.info("Alerts Filters: {}\n".format(filters))
     if not last_run:
-        last_run = now - 240 * 60 * 60 * 1000
+        last_run = now - 24 * 60 * 60 * 1000
     payload = {'timeRange': {
         'type': 'absolute',
         'value': {
@@ -451,8 +446,14 @@ def fetch_incidents():
 
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
     response = req('POST', 'alert', payload, {'detailed': 'true'})
-    alerts = str([alert.get('id') for alert in response])
-    demisto.info("Alerts found: {}\n".format(alerts))
+    query_params = {"timeType": "relative", "timeAmount": "20", "timeUnit": "day", "detailed": "true",
+                    "alertRule.name": "0009 - Anaplan Operations - AWS - Prod - Network Alerts - LEGACY - TBD"}
+    list_alerts = req('GET', 'alert', None, param_data=query_params)
+    alerts_from_search = str([alert.get('id') for alert in list_alerts])
+    alert_rule_details = req('GET', 'alert/rule', None, None)
+    demisto.info("Alerts found with list alerts: {}\n".format(alerts_from_search))
+    demisto.info("\nAlerts rules full details: {}\n".format(alert_rule_details))
+    demisto.info("\nEND OF Alerts rules full details\n")
     incidents = []
     for alert in response:
         incidents.append({
