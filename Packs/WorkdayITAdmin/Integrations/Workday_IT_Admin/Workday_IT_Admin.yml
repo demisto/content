@@ -90,10 +90,6 @@ script:
   - arguments: []
     description: Gets the full report from Workday
     name: workday-get-full-user-report
-    outputs:
-    - contextPath: Workday.User
-      description: List of Workday users
-      type: Unknown
   - arguments:
     - auto: PREDEFINED
       description: The key to reset from the integraton context dictionary. If not
