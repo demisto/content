@@ -723,7 +723,7 @@ def delete_assigned_permission_set_command(client, args):
         'SalesforceDeleteAssignedPermissionSet': output_data
     }
 
-    readable_output = tableToMarkdown(name='Delete Assigned Permission Set License:',
+    readable_output = tableToMarkdown(name='Delete Assigned Permission Set:',
                                       t=output_data,
                                       headers=["success", "errorCode", "errorMessage"],
                                       removeNull=True)

@@ -1527,18 +1527,7 @@ tasks:
       stringify:
         simple: "true"
       value:
-        complex:
-          root: GetUser
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: GetUser.instanceName
-                iscontext: true
-              right:
-                value:
-                  simple: ${appInstanceName}
-          accessor: id
+        simple: ${GetUser.id}
     separatecontext: false
     view: |-
       {
