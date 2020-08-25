@@ -90,11 +90,8 @@ def get_access_token():
     if access_token and valid_until:
         if epoch_seconds() < valid_until:
             return access_token
-    headers = {'Accept': 'application/json'}
-    headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
-    headers['X-Branch-Name'] = CONTENT_BRANCH_NAME
-    headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
-
+    headers = get_x_content_info_headers()
+    headers['Accept'] = 'application/json'
     dbot_response = requests.post(
         TOKEN_RETRIEVAL_URL,
         headers=headers,
