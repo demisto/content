@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 36ae70b3-d522-46f7-8edd-edad6bed20d3
+    taskid: 3aed7122-150a-4c40-81a7-ce24fda38d21
     type: start
     task:
-      id: 36ae70b3-d522-46f7-8edd-edad6bed20d3
+      id: 3aed7122-150a-4c40-81a7-ce24fda38d21
       version: -1
       name: ""
       iscommand: false
@@ -27,12 +27,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: fa16dd51-f1bd-422e-8efd-93e2c5cb3ce6
+    taskid: ede7a5ce-265a-465b-8d86-625c63e33af6
     type: regular
     task:
-      id: fa16dd51-f1bd-422e-8efd-93e2c5cb3ce6
+      id: ede7a5ce-265a-465b-8d86-625c63e33af6
       version: -1
       name: msg-search-alerts
       description: List alerts (security issues) within a customer's tenant that Microsoft
@@ -62,12 +64,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 21200bbe-54c3-4d33-8e8e-dfd463b3fcd7
+    taskid: bdba67ea-5bc5-489e-8df5-a365959ba115
     type: regular
     task:
-      id: 21200bbe-54c3-4d33-8e8e-dfd463b3fcd7
+      id: bdba67ea-5bc5-489e-8df5-a365959ba115
       version: -1
       name: msg-get-alert-details
       description: Get details for a specific alert.
@@ -101,12 +105,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 32f4ef88-29cd-4b99-867b-7a8302f499ab
+    taskid: 000d140c-8266-434a-87cd-5119df548f20
     type: regular
     task:
-      id: 32f4ef88-29cd-4b99-867b-7a8302f499ab
+      id: 000d140c-8266-434a-87cd-5119df548f20
       version: -1
       name: msg-update-alert
       description: Update an editable alert property within any integrated solution
@@ -168,12 +174,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 194f6263-ef14-4a71-8893-44f08fd98579
+    taskid: 54aee009-eee5-4f7d-86f5-9a6c7de26d78
     type: title
     task:
-      id: 194f6263-ef14-4a71-8893-44f08fd98579
+      id: 54aee009-eee5-4f7d-86f5-9a6c7de26d78
       version: -1
       name: Done
       type: title
@@ -184,18 +192,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 24a65117-5c3a-4f45-8b38-977dc051a253
+    taskid: 0c942e75-0962-4bea-897e-4dd7fbd8b152
     type: condition
     task:
-      id: 24a65117-5c3a-4f45-8b38-977dc051a253
+      id: 0c942e75-0962-4bea-897e-4dd7fbd8b152
       version: -1
       name: Verify msg-search-alerts output
       type: condition
@@ -225,12 +235,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: f2dad29f-bff3-4ad3-8d19-58bbabd54b0c
+    taskid: 2085aeef-0879-4845-86e8-e469fa5c06cb
     type: regular
     task:
-      id: f2dad29f-bff3-4ad3-8d19-58bbabd54b0c
+      id: 2085aeef-0879-4845-86e8-e469fa5c06cb
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -259,12 +271,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: d1da2962-1337-4a67-83d7-3b3d5403421a
+    taskid: 234debb0-6cd1-40ec-83b0-239a0ea3abc0
     type: regular
     task:
-      id: d1da2962-1337-4a67-83d7-3b3d5403421a
+      id: 234debb0-6cd1-40ec-83b0-239a0ea3abc0
       version: -1
       name: msg-get-users
       description: Retrieve a list of user objects.
@@ -288,10 +302,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: c39a2080-bd13-433b-807e-9c49e8916e53
+    taskid: dacd5278-71dd-40e2-8a8e-ad93adee3263
     type: regular
     task:
-      id: c39a2080-bd13-433b-807e-9c49e8916e53
+      id: dacd5278-71dd-40e2-8a8e-ad93adee3263
       version: -1
       name: msg-get-user
       description: Retrieve the properties and relationships of user object.
@@ -301,7 +315,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "10"
     scriptarguments:
       user_id:
         complex:
@@ -330,12 +344,46 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 71c08271-ef40-44aa-8d55-ba6b85c63932
+    type: regular
+    task:
+      id: 71c08271-ef40-44aa-8d55-ba6b85c63932
+      version: -1
+      name: Sleep for 30 seconds
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1610,
         "width": 380,
         "x": 50,
         "y": 50

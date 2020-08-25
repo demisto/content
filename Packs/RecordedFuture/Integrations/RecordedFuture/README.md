@@ -479,7 +479,7 @@ Get a quick indicator of the risk associated with a URL.
 >### Risk Rules Triggered
 >|Criticality|Rule|Evidence|Timestamp|
 >|---|---|---|---|
->| Informational | Historically Reported as a Defanged URL | 13 sightings on 5 sources: Geeks To Go, AbuseIP Database, PasteBin, Malwarebytes Unpacked, PSBDMP Dumps. Most recent link (Dec 16, 2018): https://pastebin.com/2Brry0ZQ | 2018-12-16 22:31:25 |
+>| Informational | Historically Reported as a Defanged URL | 13 sightings on 5 sources: Geeks To Go, AbuseIP Database, PasteBin, Malwarebytes Unpacked, PSBDMP Dumps. Most recent link (Dec 16, 2018): `https://pastebin.com/2Brry0ZQ` | 2018-12-16 22:31:25 |
 
 
 ### recordedfuture-threat-assessment
