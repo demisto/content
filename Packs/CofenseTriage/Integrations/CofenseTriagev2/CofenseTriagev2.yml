@@ -324,7 +324,7 @@ script:
           type: string
       description: Threat Indicators that are designated by analysts as malicious, suspicious
         or benign
-  dockerimage: demisto/chromium:1.0.0.7857
+  dockerimage: demisto/chromium:1.0.0.10664
   isfetch: true
   runonce: false
 tests:

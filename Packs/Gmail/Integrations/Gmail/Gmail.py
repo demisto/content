@@ -617,7 +617,6 @@ def list_users_command():
     args = demisto.args()
     domain = args.get('domain', ADMIN_EMAIL.split('@')[1])  # type: ignore
     customer = args.get('customer')
-    event = args.get('event')
     view_type = args.get('view-type-public-domain', 'admin_view')
     query = args.get('query')
     sort_order = args.get('sort-order')
@@ -628,17 +627,16 @@ def list_users_command():
         'custom_field_mask') if projection == 'custom' else None
     page_token = args.get('page-token')
 
-    users, next_page_token = list_users(domain, customer, event, query, sort_order, view_type,
+    users, next_page_token = list_users(domain, customer, query, sort_order, view_type,
                                         show_deleted, max_results, projection, custom_field_mask, page_token)
     return users_to_entry('Users:', users, next_page_token)
 
 
-def list_users(domain, customer=None, event=None, query=None, sort_order=None, view_type='admin_view',
+def list_users(domain, customer=None, query=None, sort_order=None, view_type='admin_view',
                show_deleted=False, max_results=100, projection='basic', custom_field_mask=None, page_token=None):
     command_args = {
         'domain': domain,
         'customer': customer,
-        'event': event,
         'viewType': view_type,
         'query': query,
         'sortOrder': sort_order,
@@ -1670,7 +1668,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         # if there is only body and no attachments to the mail , we would like to send it without attaching every part
         message = MIMEText(body, 'plain', 'utf-8')  # type: ignore
     else:
-        message = MIMEMultipart()  # type: ignore
+        message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
 
     message['to'] = header(','.join(emailto))
     message['cc'] = header(','.join(cc))
@@ -1877,5 +1875,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins"):
     main()
