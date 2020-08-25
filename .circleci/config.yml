@@ -459,7 +459,6 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 echo "Using AMI - Not downloading artifacts"
-                exit 0
 
               else
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
@@ -588,6 +587,7 @@ jobs:
 
                     else
                       echo "Not AMI run, can't run on this version"
+                      exit 0
                   fi
             - *destroy_instances
             - *store_artifacts
@@ -648,6 +648,7 @@ jobs:
                       echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
                     else
                       echo "Not AMI run, can't run on this version"
+                      exit 0
                   fi
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
 
@@ -713,6 +714,7 @@ jobs:
 
                   else
                       echo "Not AMI run, can't run on this version"
+                      exit 0
                   fi
             - *destroy_instances
             - *store_artifacts
