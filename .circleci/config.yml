@@ -844,7 +844,7 @@ jobs:
                       python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
                   fi
             - run:
-                name: Run Tests - Demisto 6.0
+                name: Run Tests - Demisto Master
                 shell: /bin/bash
                 when: always
                 no_output_timeout: 5h

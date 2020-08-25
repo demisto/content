@@ -1220,8 +1220,8 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
     """
     The environment naming is being phased out due to it being difficult to follow. In this case,
-    Demisto 6.0 is the GA, Demisto GA is one before GA (5.0), Demisto one before GA is two before GA
-    (4.5)
+    Demisto 6.0 is the GA, Demisto PreGA is (5.5), Demisto GA is one before GA (5.0), Demisto one
+    before GA is two before GA (4.5)
     """
     envs_to_test = {
         'Demisto PreGA': True,
