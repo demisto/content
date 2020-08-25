@@ -823,7 +823,7 @@ def fetch_incidents_command(client, params):
     all_ids = [latest_id]
     instance_name = demisto.integrationInstance()
     mirror_direction = "In" if demisto.params().get('mirror') else ""
-    now = datetime.utcnow().isoformat()
+    now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     for launch in upcoming_launches:
         launch['dbotMirrorDirection'] = mirror_direction
         launch['dbotMirrorInstance'] = instance_name
