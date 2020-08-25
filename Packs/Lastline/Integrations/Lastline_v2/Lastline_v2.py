@@ -25,6 +25,7 @@ class Client(BaseClient):
         human_readable = ''
         context_entry: Dict = {
             'Lastline': list(),
+
             'File': list(),
             'DBotScore': list()
         }
