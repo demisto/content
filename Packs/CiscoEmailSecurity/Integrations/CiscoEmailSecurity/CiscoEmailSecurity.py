@@ -17,11 +17,11 @@ class Client(BaseClient):
         super().__init__(base_url=params.get('base_url'), verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))
 
-        self._token_jwt_a = self._generate_jwt_token_a()
-        self._headers = {'Authorization': 'Bearer ' + self._token_jwt_a}
+        # self._token_jwt_a = self._generate_jwt_token_a()
+        # self._headers = {'Authorization': 'Bearer ' + self._token_jwt_a}
 
-        # self._token_jwt_b = self._generate_jwt_token_b()
-        # self._headers = {'Authorization': 'Bearer ' + self._token_jwt_b}
+        self._token_jwt_b = self._generate_jwt_token_b_for_esa()
+        self._headers = {'Authorization': 'Bearer ' + self._token_jwt_b}
 
         # self._token_base64 = self._generate_base64_token()
         # self._headers = {'Authorization': 'Basic ' + self._token_base64}
@@ -44,7 +44,7 @@ class Client(BaseClient):
         token_res = self.http_request('POST', '/esa/api/v2.0/login', data=body, auth=(self.username, self.password))
         return token_res.get('data').get('jwtToken')
 
-    def _generate_jwt_token_b(self):
+    def _generate_jwt_token_b_for_esa(self):
         username = base64.b64encode(self.username.encode('ascii')).decode('utf-8')
         password = base64.b64encode(self.password.encode('ascii')).decode('utf-8')
 
