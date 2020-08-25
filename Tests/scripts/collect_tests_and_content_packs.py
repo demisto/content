@@ -1124,11 +1124,13 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
 
     tests = set([])
     packs_to_install = set([])
-    if modified_files_with_relevant_tests:
-        tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
-                                                                                  conf, id_set)
-        print(f"find_tests_and_content_packs_for_modified_files: modified_files_with_relevant_tests:{packs_to_install}"
-              f"\n")
+
+    tests, more_packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
+                                                                              conf, id_set)
+    if more_packs_to_install:
+        packs_to_install.add(more_packs_to_install)
+    print(f"find_tests_and_content_packs_for_modified_files: modified_files_with_relevant_tests:{packs_to_install}"
+          f"\n")
     print("get_tests_for_pack: modified_metadata_list\n")
     for pack in modified_metadata_list:
         print(f"pack to install from modified_metadata_list: {pack}")
