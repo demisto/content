@@ -1,5 +1,4 @@
 Workday IAM Integration
-This integration was integrated and tested with version xx of Workday IT Admin
 ## Configure Workday IT Admin on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

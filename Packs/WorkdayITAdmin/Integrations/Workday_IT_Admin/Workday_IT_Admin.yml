@@ -13,7 +13,7 @@ configuration:
   name: report_type
   options:
   - Full-Report
-  - Delta_Report
+  - Delta-Report
   required: false
   type: 15
 - defaultvalue: ""

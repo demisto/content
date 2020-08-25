@@ -1,6 +1,6 @@
 {
     "name": "WorkdayITAdmin",
-    "description": "Workday IAM Integration",
+    "description": "Workday offers enterprise-level software solutions for financial management, human resources, and planning.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

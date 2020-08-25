@@ -10,7 +10,7 @@ import requests
 
 WORKDAY_DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 FULL_REPORT_TYPE = 'Full-Report'
-DELTA_REPORT_TYPE = 'Delta_Report'
+DELTA_REPORT_TYPE = 'Delta-Report'
 READ_TIME_OUT_IN_SECONDS = 300
 
 
