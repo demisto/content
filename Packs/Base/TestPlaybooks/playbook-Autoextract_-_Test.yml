@@ -2,7 +2,7 @@ id: Autoextract - Test
 version: -1
 name: Autoextract - Test
 description: |-
-  This is a test playbook for the sole function of auto-extract. It tests if auto-extract finds indicators and puts them in context, by printing them to the war room.
+  This is a  test playbook for the sole function of auto-extract. It tests if auto-extract finds indicators and puts them in context, by printing them to the war room.
   The test currently tests auto-extract on:
   - IPs
   - Escaped IPs
