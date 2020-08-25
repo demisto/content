@@ -10,8 +10,8 @@ def main():
     if is_error(get_users_response):
         demisto.error(f'Failed to get users on call: {str(get_error(get_users_response))}')
     else:
-        number_of_users_on_call = len(get_users_response[0]['Contents'])
-        demisto.results(number_of_users_on_call)
+        number_widget = NumberWidget(len(get_users_response[0]['Contents']))
+        return_results(number_widget)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

@@ -1176,6 +1176,49 @@ script:
       description: The names or addresses of the machine where the accounts are used.
       type: String
   - arguments:
+      - default: false
+        description: The ID of the account for which to retrieve information.
+        isArray: false
+        name: account_id
+        required: true
+        secret: false
+    deprecated: false
+    description: Returns information for the specified account, identified by
+      the account ID.
+    execution: false
+    name: cyberark-pas-account-get-details
+    outputs:
+      - contextPath: CyberArkPAS.Accounts.id
+        description: The unique ID of the account.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.categoryModificationTime
+        description: The date the account was last modified.
+        type: Number
+      - contextPath: CyberArkPAS.Accounts.createdTime
+        description: The date the account was created.
+        type: Number
+      - contextPath: CyberArkPAS.Accounts.name
+        description: The name of the account.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.platformId
+        description: The platform assigned to this account.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.safeName
+        description: The safe where the account is created.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.secretManagement
+        description: Whether the account secret is automatically managed by the CPM.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.secretType
+        description: The type of password.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.userName
+        description: The name of the account user.
+        type: String
+      - contextPath: CyberArkPAS.Accounts.address
+        description: The name or address of the machine where the account will be used.
+        type: String
+  - arguments:
     - default: false
       description: The ID of the account whose activities will be retrieved.
       isArray: false
@@ -1326,7 +1369,7 @@ script:
     - contextPath: CyberArkPAS.SecurityEvents.type
       description: The type of the security events.
       type: String
-  dockerimage: demisto/python3:3.8.5.10455
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false
