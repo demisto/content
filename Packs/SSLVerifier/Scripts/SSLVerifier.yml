@@ -1,0 +1,57 @@
+commonfields:
+  id: da1c210e-51d1-4021-bd5d-dfcaed4f7588
+  version: 4
+vcShouldKeepItemLegacyProdMachine: false
+name: SSLVerifier
+script: |-
+  import ssl, socket
+  import json
+  from datetime import datetime
+  hostname = demisto.args()['URL']
+  port = demisto.args()['Port']
+  ctx = ssl.create_default_context()
+  s = ctx.wrap_socket(socket.socket(), server_hostname=hostname)
+  s.connect((hostname, int(port)))
+  cert = s.getpeercert()
+  issuer = json.dumps(cert['issuer'])
+  jsonissuer=json.loads(issuer.replace('\",','\":').replace('[[[','{').replace(']]]','}').replace('[[','').replace(']]',''))
+  data={}
+  finalData={}
+  expiration_obj = datetime.strptime(cert['notAfter'],'%b %d %H:%M:%S %Y %Z')
+  converteddate = datetime.strftime(expiration_obj,'%Y-%m-%dT%H:%M:%S.%fZ')
+  now_obj = datetime.now()
+  dateresults_obj = expiration_obj - now_obj
+  seconds = int(dateresults_obj.seconds)
+  days = int(dateresults_obj.days)
+  data['Expiry'] = converteddate
+  data['Site'] = hostname
+  data['TimeToExpiration'] = str(days)+' days'
+  data['Issuer'] = jsonissuer['organizationName']
+  finalData['CertificateExpiry'] = data
+  demisto.results({'Type': entryTypes['note'],
+      'ContentsFormat': formats['json'],
+      'Contents': data,
+      'ReadableContentsFormat': formats['markdown'],
+      'HumanReadable': tableToMarkdown('Certificate Expiry details', data, headers=None, headerTransform=None, removeNull=False, metadata=None),
+      'EntryContext': finalData})
+type: python
+tags: []
+comment: Verify the validity of the SSL certificate
+enabled: true
+args:
+- name: URL
+  required: true
+  isArray: true
+- name: Port
+  defaultValue: "443"
+outputs:
+- contextPath: CertificateExpiry
+- contextPath: CertificateExpiry.Expiry
+- contextPath: CertificateExpiry.Site
+- contextPath: CertificateExpiry.TimeToExpiration
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.1.6120
+runas: DBotWeakRole
