@@ -49,6 +49,7 @@ Get indicators from Threatconnect.
 #### Base Command
 
 `tc-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -57,7 +58,6 @@ Get indicators from Threatconnect.
 | limit | The maximum number of indicators to return. | Optional |
 | offset | The index of the first indicator to fetch. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
@@ -65,14 +65,15 @@ There is no context output for this command.
 #### Command Example
 ```!tc-get-indicators limit=2 offset=0```
 
-#### Human Readable Output
+>#### Human Readable Output
 
->### ThreatConnect Feed - Indicators
 >|rawJSON|score|type|value|
 >|---|---|---|---|
 >| id: Indicator01 | 2 | IP | 8.8.8.8 |
 >| id: Indicator02 | 3 | IP | 8.8.4.4 |
 
+
+### ThreatConnect Feed - Indicators
 
 ### tc-get-owners
 ***
@@ -101,5 +102,4 @@ There is no context output for this command.
 >|---|---|---|
 >| 10303 | NAME-01 | Organization |
 >| 10666 | NAME-02 | Source |
-
 
