@@ -645,6 +645,14 @@ script:
     - name: time_began
       description: ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00.
         Default is current time.
+    - name: redact
+      auto: PREDEFINED
+      predefined:
+      - "YES"
+      - "NO"
+      description: YES OR NO. If redact is YES, all terms from user's company redaction library in TruSTAR will
+        be applied before submitting. If NO, submits the report with body and title as written by the user. 
+      defaultValue: "NO"
     outputs:
     - contextPath: TruSTAR.Report.title
       description: Title of the report
@@ -977,46 +985,6 @@ script:
       description: The actual score
       type: number
     description: Get phishing indicators that match the given criteria.
-  - name: trustar-redact-submit-report
-    arguments:
-    - name: title
-      required: true
-      description: Title of the report
-    - name: report_body
-      required: true
-      description: Text content of report
-    - name: enclave_ids
-      description: CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the
-        enclave name. Mandatory if the distribution type is ENCLAVE.
-      isArray: true
-    - name: distribution_type
-      auto: PREDEFINED
-      predefined:
-      - COMMUNITY
-      - ENCLAVE
-      description: Distribution type of the report. If 'ENCLAVE' is selected you have to input
-        at least one enclave id on the 'enclave_ids' argument.
-      defaultValue: ENCLAVE
-    - name: external_url
-      description: URL for the external report that this originated from, if one exists.
-        Limit 500 alphanumeric characters. Must be unique across all reports for a
-        given company.
-    - name: time_began
-      description: ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00.
-        Default is current time.
-    outputs:
-    - contextPath: TruSTAR.Report.title
-      description: Title of the report
-      type: string
-    - contextPath: TruSTAR.Report.reportBody
-      description: Body of the report
-      type: string
-    - contextPath: TruSTAR.Report.id
-      description: ID of the report
-      type: string
-    description: Redacts a report applying company's redaction terms and submits a
-      new incident report. Then it receives the ID it has been assigned in TruSTAR’s
-      system.
   isfetch: false
   runonce: false
   script: ''

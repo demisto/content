@@ -280,8 +280,7 @@ class TrustarClient:
             'trustar-get-phishing-indicators': self.get_all_phishing_indicators,
             'trustar-get-phishing-submissions': self.get_phishing_submissions,
             'trustar-set-triage-status': self.set_triage_status,
-            'trustar-copy-report': self.copy_report,
-            'trustar-redact-submit-report': self.redact_report
+            'trustar-copy-report': self.copy_report
         }
         return command_dict
 
@@ -413,7 +412,8 @@ class TrustarClient:
                       enclave_ids=None,
                       external_url=None,
                       time_began=None,
-                      distribution_type="ENCLAVE"):
+                      distribution_type="ENCLAVE",
+                      redact="NO"):
         """
         Submits a new report to TruSTAR station.
 
@@ -424,11 +424,21 @@ class TrustarClient:
         :param time_began: Incident time. Defaults to current time if not given.
         :param distribution_type: Whether the report will be in the community, or only
         in enclaves
+        :param redact: Wether to redact a report before submitting or not. 
 
         :return: Entry context with the submitted report.
         """
         if distribution_type == 'ENCLAVE' and enclave_ids is None:
             raise Exception('Distribution type is ENCLAVE, but no enclave ID was given.')
+
+        if redact == "YES":
+            response = self.client.redact_report(
+                title=title,
+                report_body=report_body
+            )
+
+            title = response.title
+            report_body = response.body
 
         ts_report = trustar.models.Report(
             title=title,
@@ -659,44 +669,6 @@ class TrustarClient:
         title = f'TruSTAR reports that contain the term {search_term}'
         entry = self.get_entry(title, reports, ec)
         return entry
-
-    def redact_report(
-            self,
-            title=None,
-            report_body=None,
-            enclave_ids=None,
-            external_url=None,
-            time_began=None,
-            distribution_type="ENCLAVE"):
-        """
-        Redacts and submits a new report to TruSTAR station.
-
-        :param title: Title of the report.
-        :param report_body: Body of the report.
-        :param enclave_ids: Enclave IDs where to submit the report.
-        :param external_url: External URL of the report.
-        :param time_began: Incident time. Defaults to current time if not given.
-        :param distribution_type: Whether the report will be in the community, or only
-        in enclaves
-
-        :return: Entry context with the submitted report.
-        """
-        response = self.client.redact_report(
-            title=title,
-            report_body=report_body
-        )
-
-        redacted_title = response.title
-        redacted_body = response.body
-
-        return self.submit_report(
-            redacted_title,
-            redacted_body,
-            enclave_ids,
-            external_url,
-            time_began,
-            distribution_type
-        )
 
     def add_to_whitelist(self, indicators=None):
         """
