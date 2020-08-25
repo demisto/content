@@ -68,11 +68,10 @@ class Client(BaseClient):
         if not proxy:
             self.session.trust_env = False
 
-    def http_request(self, method, url_suffix, params=None, data=None, headers=None, full_url=None):
+    def http_request(self, method, url_suffix, full_url=None, params=None, data=None, headers=None):
         if headers is None:
             headers = self.headers
-        if full_url is None:
-            full_url = self.base_url + url_suffix
+        full_url = full_url if full_url else urljoin(self.base_url, url_suffix)
         res = requests.request(
             method,
             full_url,
