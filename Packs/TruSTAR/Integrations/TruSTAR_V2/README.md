@@ -2598,7 +2598,7 @@ Searches for all reports that contain the given search term.
 >| 2020-07-02 15:11:01 | ENCLAVE | d039cebb-fb2a-411f-bbc8-7e6a80af105f | 899d6193-0dab-40b6-9a23-7bc8ee7145ba | URLhaus - http://demo.singhealth.xyz/files/WannaCry/Ransomware.WannaCry.zip | 2020-07-02 15:11:01 |
 >| 2020-07-02 04:59:03 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | 5f0d4d95-834b-4ce2-8bfc-7c8ad109a88d | hybridanalysispublicfeed-5b7f02a9c9aae2fad269a1b00b4398ab-2020-07-02 03:56:51 | 2020-07-02 04:59:03 |
 >| 2020-07-02 04:59:00 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | a18578c1-3217-4401-80a5-97520bf484f2 | hybridanalysispublicfeed-4e12d4af0963a8def144bf358e6bf6b7-2020-07-02 03:07:35 | 2020-07-02 04:59:00 |
->| 2020-06-20 05:34:03 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | dea957a9-3b79-4976-ae29-12e86e6e799e | X-Force URL: https://searchsecurity.techtarget.com/news/252463452/wannacry-infections-continue-to-spread-2-years-later. | 2020-07-02 03:10:01 |
+>| 2020-06-20 05:34:03 | ENCLAVE | ed35f85a-d6bf-4e74-a0f8-61651abf705e | dea957a9-3b79-4976-ae29-12e86e6e799e | X-Force URL: https://searchsecurity.techtarget.com/news/252463452/WannaCry-infections-continue-to-spread-2-years-later. | 2020-07-02 03:10:01 |
 >| 2020-07-01 18:04:00 | ENCLAVE | 82c899e4-1031-4e5a-bb0b-c91a4e95150c | 9b5861b9-fdf2-4f22-a36a-cce2bdd9b6f0 | Indonesia | 2020-07-01 18:04:00 |
 >| 2020-04-01 19:55:00 | ENCLAVE | 82c899e4-1031-4e5a-bb0b-c91a4e95150c | e5831db3-17b7-44a7-bb24-ff0d1c64f1b3 | India Global Spotlight (Analyst Knowledge Page) | 2020-06-30 13:21:00 |
 >| 2020-06-30 04:23:01 | ENCLAVE | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | 9812510b-60ce-46fb-989b-85fbb5050b8e | hybridanalysispublicfeed-f25e024d175c1be65d6888412601ce32-2020-06-30 03:02:40 | 2020-06-30 04:23:01 |
