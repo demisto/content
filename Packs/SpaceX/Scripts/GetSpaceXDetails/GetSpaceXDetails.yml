@@ -9,7 +9,7 @@ args:
   required: true
 comment: Retrieves details for a rocket
 commonfields:
-  id: 9557abc6-2d5e-481e-8a3b-f0326317ee7b
+  id: getSpaceXDetails
   version: -1
 contentitemexportablefields:
   contentitemfields:
