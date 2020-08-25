@@ -325,10 +325,12 @@ EXPECTED_DOCUMENT_ROUTE = {
         }
 }
 
-EXPECTED_MAPPING = {
+EXPECTED_MAPPING = [{
     "incident": {
         "active": "",
         "activity_due": "",
+        "opened_at": "",
+        "short_description": "",
         "additional_assignee_list": "",
         "approval": "",
         "approval_history": "",
@@ -370,7 +372,6 @@ EXPECTED_MAPPING = {
         "location": "",
         "made_sla": "",
         "notify": "",
-        "opened_at": "",
         "order": "",
         "parent": "",
         "parent_incident": "",
@@ -380,7 +381,6 @@ EXPECTED_MAPPING = {
         "resolved_by": "",
         "rfc": "",
         "severity": "",
-        "short_description": "",
         "sla_due": "",
         "state": "",
         "subcategory": "",
@@ -396,4 +396,4 @@ EXPECTED_MAPPING = {
         "work_notes_list": "",
         "work_start": ""
     }
-}
+}]

@@ -459,7 +459,7 @@ def test_get_mapping_fields():
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     res = get_mapping_fields_command(client)
-    assert EXPECTED_MAPPING in res.extract_mapping()
+    assert EXPECTED_MAPPING == res.extract_mapping()
 
 
 def test_get_remote_data(mocker):
