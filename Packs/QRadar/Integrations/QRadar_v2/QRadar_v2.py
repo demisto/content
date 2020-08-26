@@ -18,11 +18,17 @@ from requests.exceptions import HTTPError, ConnectionError
 urllib3.disable_warnings()
 
 """ GLOBAL VARS """
-WORKERS_NUM = 8
+SYNC_CONTEXT = True
+
+""" ADVANCED GLOBAL PARAMETERS """
 EVENTS_INTERVAL_SECS = 15
 EVENTS_FAILURE_LIMIT = 3
 FETCH_SLEEP = 60
-SYNC_CONTEXT = True
+ADVANCED_PARAMETER_NAMES = [
+    "EVENTS_INTERVAL_SECS",
+    "EVENTS_FAILURE_LIMIT",
+    "FETCH_SLEEP"
+]
 
 """ Header names transformation maps """
 # Format: {'OldName': 'NewName'}
@@ -150,9 +156,7 @@ class QRadarClient:
         token,
         offenses_per_fetch=50,
         insecure=False,
-        adv_params=None,
     ):
-        global WORKERS_NUM, EVENTS_INTERVAL_SECS
         self._server = server[:-1] if server.endswith("/") else server
         self._proxies = proxies
         self._username = credentials.get("identifier", "")
@@ -534,6 +538,19 @@ class QRadarClient:
 """ Utility functions """
 
 
+def try_parse_integer(int_to_parse, err_msg=None) -> int:
+    """
+    Tries to parse an integer, and if fails will throw DemistoException with given err_msg
+    """
+    try:
+        res = int(int_to_parse)
+    except (TypeError, ValueError) as e:
+        if not err_msg:
+            err_msg = str(e)
+        raise DemistoException(err_msg)
+    return res
+
+
 def get_entry_for_object(
     title, obj, contents, headers=None, context_key=None, human_readable=None
 ):
@@ -787,12 +804,12 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich
 
     # fetch offenses
     raw_offenses, fetch_query = seek_fetchable_offenses(client, offense_id, user_query)
-    print_debug_msg(f"(7) Fetched {fetch_query}successfully.", client.lock)
-
-    if full_enrich and raw_offenses:
-        print_debug_msg(f"(8) Enriching {fetch_query}.")
-        enrich_offense_res_with_source_and_destination_address(client, raw_offenses)
-        print_debug_msg(f"(9) Enriched {fetch_query}successfully.")
+    if raw_offenses:
+        print_debug_msg(f"(7) Fetched {fetch_query}successfully.", client.lock)
+        if full_enrich:
+            print_debug_msg(f"(8) Enriching {fetch_query}.")
+            enrich_offense_res_with_source_and_destination_address(client, raw_offenses)
+            print_debug_msg(f"(9) Enriched {fetch_query}successfully.")
 
     return raw_offenses
 
@@ -919,8 +936,11 @@ def fetch_incidents_long_running_no_events(
         incidents_batch.append(create_incident_from_offense(offense))
 
     demisto.createIncidents(incidents_batch)
+    incidents_batch_for_sample = (
+        incidents_batch if incidents_batch else last_run.get("samples", [])
+    )
 
-    context = {"id": offense_id}
+    context = {"id": offense_id, "samples": incidents_batch_for_sample}
     set_integration_context(context, SYNC_CONTEXT)
 
 
@@ -1725,13 +1745,19 @@ def long_running_main(client: QRadarClient, user_query, full_enrich, fetch_mode)
 
 def main():
     params = demisto.params()
+    adv_params = params.get("adv_params")
+    if adv_params:
+        globals_ = globals()
+        for adv_p in adv_params.split(','):
+            adv_p_kv = adv_p.split('=')
+            if len(adv_p_kv) == 2 and adv_p_kv[0] in ADVANCED_PARAMETER_NAMES:
+                globals_[adv_p_kv[0]] = try_parse_integer(adv_p_kv[1])
 
     server = params.get("server")
     credentials = params.get("credentials")
     token = params.get("token")
     insecure = params.get("insecure", False)
     offenses_per_fetch = params.get("offenses_per_fetch")
-    adv_params = params.get("adv_params")
     proxies = handle_proxy()
     client = QRadarClient(
         server=server,
@@ -1740,7 +1766,6 @@ def main():
         token=token,
         offenses_per_fetch=offenses_per_fetch,
         insecure=insecure,
-        adv_params=adv_params,
     )
 
     fetch_mode = params.get("fetch_mode")

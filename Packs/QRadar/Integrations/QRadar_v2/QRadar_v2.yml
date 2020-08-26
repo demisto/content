@@ -73,7 +73,7 @@ configuration:
 - display: Advanced Parameters
   name: adv_params
   type: 12
-  additionalinfo: Comma separated advanced configuration values. e.g. EVENTS_INTERVAL_SECS=20,WORKERS_NUM=5
+  additionalinfo: Comma separated configuration for managing advanved parameters values. e.g. EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   required: false
 description: Fetch offenses as incidents and search QRadar
 display: IBM QRadar V2
@@ -1599,8 +1599,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Uploads indicators from Demisto to Qradar. This command requires Cortex
-      SOAR v5.5 or later.
+    description: Uploads indicators from Demisto to Qradar.
     execution: false
     name: qradar-upload-indicators
   feed: false

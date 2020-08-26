@@ -1,12 +1,6 @@
 <!-- HTML_DOC -->
 <p>Use the QRadar integration to query offenses and create Demisto incidents from the offenses.</p>
 <p>For more information about filter syntax, see the <a href="https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/c_rest_api_filtering.html" target="_blank" rel="noopener">IBM support documentation</a>.</p>
-<h2>QRadar Playbook</h2>
-<p>After you configure the QRadar integration, you can use the <em>QRadar - Get offense correlations</em> playbook. This playbook identifies and extracts additional information about QRadar offenses.</p>
-<ul>
-<li>All correlations relevant to the offense.</li>
-<li>Retrieve logs relevant to the correlations. Make sure that in the <strong><em>Should query for the correlations' log</em></strong> task you set the <code>inputs.GetCorrelationLogs</code> parameter to <code>True</code>). The maximum log count is 20.</li>
-</ul>
 <h2>Troubleshooting Performance Issues</h2>
 <p>In some cases, you might encounter performance issues when running QRadar AQL queries from Demisto. This issue is caused by QRadar API limitations. We recommend that you test the QRadar API performance by running several cURL scripts.</p>
 <h5>1. Creating a search</h5>
@@ -33,6 +27,10 @@
 <li><strong>Fetch incidents</strong></li>
 <li><strong>Incident type</strong></li>
 <li><strong>Full Incident Enrichment</strong> - when fetching incidents the integration will limit the number of requests it's sending QRadar. As a side effect, this will make the following fields contain their QRadar ids, and not values: source_address_ids, local_destination_address_ids.
+<li><strong>Event columns to return from the events query</strong></li>
+<li><strong>Fetch mode</strong></li>
+<li><strong>Max number of events per incident</strong></li>
+<li><strong>Advanced Parameters</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
@@ -57,6 +55,7 @@
 <li><a href="#h_1052844619731542805553936">Create a value in a reference set: qradar-create-reference-set-value</a></li>
 <li><a href="#h_38204499011231542805639258">Add or update a value in a reference set: qradar-update-reference-set-value</a></li>
 <li><a href="#h_54862502414121542805968008">Delete a value from a reference set: qradar-delete-reference-set-value</a></li>
+<li><a href="#h_43243249324939494949493493">Uploads indicators from Demisto to Qradar: qradar-upload-indicators</a></li>
 </ol>
 <h3 id="h_63925473610281540896013759">1. Get offenses</h3>
 <hr>
