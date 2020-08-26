@@ -1,9 +1,8 @@
 id: PANW IoT ServiceNow Tickets Check
 version: -1
 name: PANW IoT ServiceNow Tickets Check
-description: This playbook should be used in a "Job" that is recurring to check the
-  ServiceNow tickets status for the Palo Alto Networks IoT alerts / vulnerabilties
-  (previously Zingbox).
+description: This playbook should be used in a  recurring Job to check the
+  ServiceNow ticket status for the Palo Alto Networks IoT (previously Zingbox) alerts or vulnerabilties.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +40,7 @@ tasks:
       id: 1db6684d-1ed6-40b8-8ec3-6ad24fc9520c
       version: -1
       name: iot-security-check-servicenow
-      description: To close the XSOAR incident if the IoT ServiceNow ticket was closed.
+      description: Closes the XSOAR incident if the IoT ServiceNow ticket was closed.
         This command should be run in a Job.
       scriptName: iot-security-check-servicenow
       type: regular
@@ -71,7 +70,7 @@ tasks:
       id: a22d3115-8190-4665-8573-a30860676e83
       version: -1
       name: Close incident
-      description: Close the current incident
+      description: Close the current incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
