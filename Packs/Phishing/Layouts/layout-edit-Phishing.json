@@ -287,7 +287,8 @@
                 "query": null,
                 "queryType": ""
             }
-        ]
+        ],
+        "typeId": "Phishing"
     },
     "toVersion": "5.9.9",
     "version": -1,
