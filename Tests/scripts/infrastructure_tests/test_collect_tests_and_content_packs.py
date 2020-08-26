@@ -224,7 +224,7 @@ class TestChangedTestPlaybook:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Demisto PreGA') is True
         assert filter_envs.get('Demisto Marketplace') is True
-        assert filter_envs.get('Demisto two before GA') is True
+        assert filter_envs.get('Demisto 6.0') is True
         assert filter_envs.get('Demisto one before GA') is True
         assert filter_envs.get('Demisto GA') is True
 
@@ -259,9 +259,9 @@ class TestChangedTestPlaybook:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Demisto PreGA') is True
         assert filter_envs.get('Demisto Marketplace') is True
-        assert filter_envs.get('Demisto two before GA') is False
+        assert filter_envs.get('Demisto 6.0') is True
         assert filter_envs.get('Demisto one before GA') is False
-        assert filter_envs.get('Demisto GA') is True
+        assert filter_envs.get('Demisto GA') is False
 
     def test_changed_unrunnable_test__playbook_fromvesion_2(self, mocker):
         # future_playbook_1 is fromversion 99.99.99 in conf file
