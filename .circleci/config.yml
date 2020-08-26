@@ -145,7 +145,7 @@ references:
         unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
         zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
         rm -r test_content_dir
-        ./Utils/merge_content_new_zip.py -f 4.5.0 -g $GCS_PATH -v 4_5
+        python Utils/merge_content_new_zip.py -f 4.5.0 -g $GCS_PATH -v 4_5
   restore_cache: &restore_cache
     restore_cache:
       key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
