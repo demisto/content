@@ -576,7 +576,7 @@ def epoch_to_iso(ms_passed_since_epoch):
 
 
 def print_debug_msg(msg, demisto=demisto):
-    demisto.debug(f"QRadarMsg - {msg}")
+    demisto.error(f"QRadarMsg - {msg}")
 
 
 def filter_dict_null(d):
@@ -687,9 +687,10 @@ def enrich_offense_with_events(
             demisto
         )
     except Exception as e:
-        print_debug_msg(
-            f"(0) Failed events fetch for offense {offense['id']}: {str(e)}", demisto
-        )
+        pass
+        # print_debug_msg(
+        #     f"(0) Failed events fetch for offense {offense['id']}: {str(e)}", demisto
+        # )
     return offense
 
 
@@ -707,9 +708,9 @@ def perform_offense_enrichment(
         f"{additional_where} limit {events_limit} START '{offense_start_time}'"
     )
     events_query = {"headers": "", "query_expression": query_expression}
-    print_debug_msg(
-        f'(1) Starting events fetch for offense {offense["id"]}. Query: {query_expression}', demisto
-    )
+    # print_debug_msg(
+    #     f'(1) Starting events fetch for offense {offense["id"]}. Query: {query_expression}', demisto
+    # )
     try:
         query_status = ''
         failures = 0
@@ -750,23 +751,20 @@ def perform_offense_enrichment(
                 # failures are relevant only when consecutive
                 failures = 0
                 if query_status == "COMPLETED":
-                    print_debug_msg(
-                        f'(3) Events fetched successfully for offense {offense["id"]}', demisto
-                    )
                     raw_search_results = client.get_search_results(search_id)
                     offense["events"] = raw_search_results.get("events", [])
-                    print_debug_msg(f"(4) Enriched offense: {offense['id']} with events successfully.", demisto)
+                    # print_debug_msg(f'(3) Events fetched successfully for offense {offense["id"]}', demisto)
                     break
                 else:
                     # prepare next run
-                    i = i % FETCH_SLEEP + EVENTS_INTERVAL_SECS
-                    if i >= FETCH_SLEEP:  # print status debug every fetch sleep (or after)
-                        print_debug_msg(
-                            f'(2) Still fetching offense {offense["id"]} events, search_id: {search_id}', demisto
-                        )
+                    # i = i % FETCH_SLEEP + EVENTS_INTERVAL_SECS
+                    # if i >= FETCH_SLEEP:  # print status debug every fetch sleep (or after)
+                    #     print_debug_msg(
+                    #         f'(2) Still fetching offense {offense["id"]} events, search_id: {search_id}', demisto
+                    #     )
                     time.sleep(EVENTS_INTERVAL_SECS)
             except Exception as e:
-                print_debug_msg(f'(5) Failed fetching event for offense {offense["id"]}: {str(e)}', demisto)
+                # print_debug_msg(f'(5) Failed fetching event for offense {offense["id"]}: {str(e)}', demisto)
                 failures += 1
     finally:
         return offense
@@ -804,7 +802,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich
             offense_id,
             lim_id,
         ) = seek_fetchable_offenses(client, offense_id, lim_id, user_query)
-    print_debug_msg(f"(7) Fetched {fetch_query}successfully")
+    # print_debug_msg(f"(7) Fetched {fetch_query}successfully")
 
     if full_enrich and raw_offenses:
         print_debug_msg(f"(8) Enriching {fetch_query}")
@@ -878,10 +876,10 @@ def fetch_incidents_long_running_events(
         return
     if isinstance(raw_offenses, list):
         raw_offenses.reverse()
-
     for offense in raw_offenses:
         offense_id = max(offense_id, offense["id"])
-    new_incidents_samples = []
+    enriched_offenses = []
+
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = []
         for offense in raw_offenses:
@@ -891,31 +889,35 @@ def fetch_incidents_long_running_events(
                 )
             )
         for future in concurrent.futures.as_completed(futures):
-            demisto.error("BEFORE CALLING RESULT")
-            enriched_offense = future.result()
-            demisto.error("AFTER CALLING RESULT")
-            incidents_sample = try_create_incident(enriched_offense)
-            demisto.error("AFTER CREATING INCIDENT")
-            new_incidents_samples.extend(incidents_sample)
+            enriched_offenses.append(future.result())
+            demisto.error('EXITING THREAD')
+        executor._threads.clear()
+    concurrent.futures.thread._threads_queues.clear()
+
+    # for offense in raw_offenses:
+    #     enriched_offenses.append(enrich_offense_with_events(offense=offense, fetch_mode=fetch_mode, demisto=demisto))
+    demisto.error('EXITED ALL THREADS')
+    new_incidents_samples = try_create_incidents(enriched_offenses)
     incidents_batch_for_sample = (
         new_incidents_samples if new_incidents_samples else last_run.get("samples", [])
     )
 
     context = {"id": offense_id, "samples": incidents_batch_for_sample}
-
     set_integration_context(context, SYNC_CONTEXT)
 
 
-def try_create_incident(enriched_offense):
-    if not enriched_offense:
+def try_create_incidents(enriched_offenses):
+    if not enriched_offenses:
         return []
-    incidents = [create_incident_from_offense(enriched_offense)]
-    try:
-        print_debug_msg(f'(12) Creating incident {incidents[0].get("name")}')
-        demisto.createIncidents(incidents)
-    except Exception as e:
-        print_debug_msg(f"(13) Incident Creation failed. error: {type(e)}: {str(e)}")
-        return []
+
+    incidents = []
+    for offense in enriched_offenses:
+        incidents.append(create_incident_from_offense(offense))
+    print_debug_msg(f'(12) Creating {len(incidents)} incidents')
+    time.sleep(1)
+    print_debug_msg(f'The incidents are: {json.dumps(incidents)}')
+    time.sleep(1)
+    demisto.createIncidents(incidents)
     return incidents
 
 
