@@ -1783,13 +1783,13 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers):
     """
     if additional_headers:
         return Message(
-                to_recipients=to,
-                cc_recipients=cc,
-                bcc_recipients=bcc,
-                subject=subject,
-                body=body,
-                **additional_headers
-            )
+            to_recipients=to,
+            cc_recipients=cc,
+            bcc_recipients=bcc,
+            subject=subject,
+            body=body,
+            **additional_headers
+        )
 
     return Message(
         to_recipients=to,
