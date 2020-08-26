@@ -167,15 +167,15 @@ script:
         the message in PPS, which is not unique.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.ccAddresses
-      description: 'A list of email addresses contained within the CC: header, excluding, and
-        friendly names.'
+      description: 'A list of email addresses contained within the CC: header, excluding,
+        and friendly names.'
       type: String
     - contextPath: Proofpoint.MessagesDelivered.clusterId
       description: The name of the PPS cluster which processed the message.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.fromAddress
-      description: 'The email address contained in the From: header, excluding friendly, and
-        name.'
+      description: 'The email address contained in the From: header, excluding friendly,
+        and name.'
       type: String
     - contextPath: Proofpoint.MessagesDelivered.headerCC
       description: The CC header.
@@ -230,7 +230,8 @@ script:
       description: The list of PPS modules which processed the message.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.phishScore
-      description: The phishing score of the message. Higher scores indicate higher certainty.
+      description: The phishing score of the message. Higher scores indicate higher
+        certainty.
       type: Number
     - contextPath: Proofpoint.MessagesDelivered.policyRoutes
       description: The policy routes that the message matched during processing by
@@ -336,7 +337,8 @@ script:
       description: The list of PPS modules which processed the message.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.phishScore
-      description: The phishing score of the message. Higher scores indicate higher certainty.
+      description: The phishing score of the message. Higher scores indicate higher
+        certainty.
       type: Number
     - contextPath: Proofpoint.MessagesBlocked.policyRoutes
       description: The policy routes that the message matched during processing by
@@ -391,8 +393,8 @@ script:
       description: The time the user clicked on the URL.
       type: Date
     - contextPath: Proofpoint.ClicksPermitted.messageID
-      description: The Message-ID extracted from the headers of the email message. It
-        can be used to look up the associated message in PPS and is not unique.
+      description: The Message-ID extracted from the headers of the email message.
+        It can be used to look up the associated message in PPS and is not unique.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.recipient
       description: The email address of the recipient.
@@ -472,20 +474,21 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the threat (use with either threadId or campaignId).
+      description: The ID of the threat (use with either threatId or campaignId).
       isArray: false
       name: threatId
       required: false
       secret: false
     - default: false
-      description: ID of the campaign (use with either threadId or campaignId).
+      description: ID of the campaign (use with either threatId or campaignId).
       isArray: false
       name: campaignId
       required: false
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Whether to include forensic evidence for the whole campaign. Can be used with threatId only.
+      description: Whether to include forensic evidence for the whole campaign. Can
+        be used with threatId only.
       isArray: false
       name: includeCampaignForensics
       required: false
@@ -839,7 +842,9 @@ script:
     - contextPath: Proofpoint.Report.URL.Platform.Version
       description: The version of the platform.
       type: String
-  dockerimage: demisto/python3:3.7.4.977
+  dockerimage45: demisto/python3:3.7.4.977
+  dockerimage: demisto/python3:3.8.5.10845
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
