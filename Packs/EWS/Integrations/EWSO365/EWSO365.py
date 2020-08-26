@@ -1605,8 +1605,7 @@ def mark_item_as_read(
 
 
 def random_word_generator(length):
-    """
-    Generate a random string of given length
+    """Generate a random string of given length
     """
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(length))
@@ -1638,6 +1637,14 @@ def handle_html(html_body):
 
 
 def collect_manual_attachments(manualAttachObj):
+    """Collect all manual attachments' data
+
+    Args:
+        manualAttachObj (str): String representation of the manually attached files list.
+
+    Returns:
+        List[Dict]. List of the files data.
+    """
     manually_attached_objects = argToList(manualAttachObj)
 
     attachments = []
@@ -1659,23 +1666,34 @@ def collect_manual_attachments(manualAttachObj):
 
 
 def collect_attachments(attachments_ids, attachments_cids, attachments_names):
-    """
-    Collect all attachments into a list with all data
+    """Collect all attachments' data
+
+    Args:
+        attachments_ids (str): String representation of the files ids list.
+        attachments_cids (str): String representation of the files content ids list.
+        attachments_names (str): String representation of the files names list.
+
+    Returns:
+        List[Dict]. List of the files data.
     """
     attachments = []
 
-    for index, attachment_id in enumerate(attachments_ids):
+    files_ids = argToList(attachments_ids)
+    files_cids = argToList(attachments_cids)
+    files_names = argToList(attachments_names)
+
+    for index, file_id in enumerate(files_ids):
         try:
-            file_res = demisto.getFilePath(attachment_id)
+            file_res = demisto.getFilePath(file_id)
             path = file_res['path']
 
-            if len(attachments_names) > index and attachments_names[index]:
-                filename = attachments_names[index]
+            if len(files_names) > index and files_names[index]:
+                filename = files_names[index]
             else:
                 filename = file_res['name']
 
-            if len(attachments_cids) > index and attachments_cids[index]:
-                cid = attachments_cids[index]
+            if len(files_cids) > index and files_cids[index]:
+                cid = files_cids[index]
             else:
                 cid = ''
 
@@ -1688,14 +1706,24 @@ def collect_attachments(attachments_ids, attachments_cids, attachments_names):
                 'cid': cid
             })
 
-        except Exception as ex:
-            demisto.error(f'Invalid entry {attachment_id} with exception: {ex}')
-            return_error(f'Entry {attachment_id} is not valid or is not a file entry')
+        except Exception as e:
+            demisto.error(f'Invalid entry {file_id} with exception: {e}')
+            return_error(f'Entry {file_id} is not valid or is not a file entry')
 
     return attachments
 
 
 def handle_transient_files(transient_files, transient_files_contents, transient_files_cids):
+    """Creates the transient attachments data
+
+    Args:
+        transient_files (str): String representation of the transient files names list.
+        transient_files_contents (str): String representation of the transient files content list.
+        transient_files_cids (str): String representation of the transient files content ids list.
+
+    Returns:
+        List[Dict]. List of the transient files data.
+    """
     transient_attachments = []
 
     files_names = argToList(transient_files)
@@ -1715,45 +1743,49 @@ def handle_transient_files(transient_files, transient_files_contents, transient_
 
 
 def handle_template_params(template_params):
-    """
-    Translate the template params if they exist from the context
+    """Translates the template params if they exist from the context
+
+    Args:
+        template_params (str): JSON string that represent the variables names to be replaced and the desired value.
+                                Value can be either real value or context key to fetch the value from.
+
+    Returns:
+        Dict. `variable_name: value_to_use` of the templated parameters.
     """
     actual_params = {}
+
     if template_params:
         try:
             params = json.loads(template_params)
+
+            for p in params:
+                if params[p].get('value'):
+                    actual_params[p] = params[p]['value']
+                elif params[p].get('key'):
+                    actual_params[p] = demisto.dt(demisto.context(), params[p]['key'])
         except ValueError as e:
-            return_error('Unable to parse templateParams: %s' % (str(e)))
-        # Build a simple key/value
-        for p in params:
-            if params[p].get('value'):
-                actual_params[p] = params[p]['value']
-            elif params[p].get('key'):
-                actual_params[p] = demisto.dt(demisto.context(), params[p]['key'])
+            return_error('Unable to parse template_params: %s' % (str(e)))
+
     return actual_params
 
 
-def create_message(to, subject='', body="", bcc=None, cc=None, html_body=None,
-                   attachments_ids="", attachments_cids="", attachments_names="", manualAttachObj=None,
-                   transient_files=None, transient_files_contents=None, transient_files_cids=None, template_params=None,
+def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=None,
                    additional_headers=None):
+    """Creates the Message object that will be sent.
+
+    Args:
+        to (list): Main recipients.
+        cc (list): CC recipients.
+        bcc (list): BCC recipients.
+        subject (str): Email's subject.
+        body (str): Email's simple text body.
+        html_body (str): Email's html body.
+        attachments (list): Files to be attached to the mail, both inline and as files.
+        additional_headers (Dict): Custom headers to be added to the message.
+
+    Returns:
+        Message. Message object ready to be sent.
     """
-    Return: a message object
-    """
-    template_params = handle_template_params(template_params)
-    if template_params:
-        body = body.format(**template_params)
-        html_body = html_body.format(**template_params)
-
-    # Basic validation - we allow pretty much everything but you have to have at least a recipient
-    # We allow messages without subject and also without body
-    if not to and not cc and not bcc:
-        return_error('You must have at least one recipient')
-
-    attachments = collect_attachments(attachments_ids, attachments_cids, attachments_names)
-    attachments.extend(collect_manual_attachments(manualAttachObj))
-    attachments.extend(handle_transient_files(transient_files, transient_files_contents, transient_files_cids))
-
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
         message = Message(
@@ -1799,6 +1831,14 @@ def create_message(to, subject='', body="", bcc=None, cc=None, html_body=None,
 
 
 def add_additional_headers(additional_headers):
+    """Adds custom headers to the Message object
+
+    Args:
+        additional_headers (str): Headers list as string. Example: headerName1=headerValue1,headerName2=headerValue2
+
+    Returns:
+        Dict. Headers dictionary in the form of: `header_name: header value`
+    """
     headers = dict()
 
     for header in argToList(additional_headers):
@@ -1823,6 +1863,11 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
     cc = argToList(cc)
     bcc = argToList(bcc)
 
+    # Basic validation - we allow pretty much everything but you have to have at least a recipient
+    # We allow messages without subject and also without body
+    if not to and not cc and not bcc:
+        return_error('You must have at least one recipient')
+
     if raw_message:
         message = Message(
             to_recipients=to,
@@ -1835,9 +1880,18 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
         if additional_headers:
             additional_headers = add_additional_headers(additional_headers)
 
-        message = create_message(to, subject, body, bcc, cc, html_body, attachments_ids, attachments_cids,
-                                 attachments_names, manualAttachObj, transient_files, transient_files_contents,
-                                 transient_files_cids, template_params, additional_headers)
+        # collect all types of attachments
+        attachments = collect_attachments(attachments_ids, attachments_cids, attachments_names)
+        attachments.extend(collect_manual_attachments(manualAttachObj))
+        attachments.extend(handle_transient_files(transient_files, transient_files_contents, transient_files_cids))
+
+        # update body and html_body with the templated params, if exists
+        template_params = handle_template_params(template_params)
+        if template_params:
+            body = body.format(**template_params)
+            html_body = html_body.format(**template_params)
+
+        message = create_message(to, subject, body, bcc, cc, html_body, attachments, additional_headers)
 
     client.send_email(message)
 
