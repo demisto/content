@@ -105,13 +105,19 @@ def copy_key_from_context(ctx, context_keys):
     return new_ctx
 
 
+def get_context(incident_id):
+    res = demisto.executeCommand("getContext", {'id': incident_id})
+    try:
+        return res[0]['Contents'].get('context') or {}
+    except Exception:
+        return {}
+
+
 def hash_incident(fields_to_hash, un_populate_fields):
     args = demisto.args()
 
     remove_labels = demisto.args().get('removeLabels', '') == 'true'
     context_keys = [x for x in argToList(demisto.args().get('contextKeys', '')) if x]
-    if context_keys:
-        args['includeContext'] = True
 
     # load incidents
     res = demisto.executeCommand('GetIncidentsByQuery', args)
@@ -122,8 +128,8 @@ def hash_incident(fields_to_hash, un_populate_fields):
     # filter incidents
     new_incident_list = []
     for incident in incident_list:
-        if 'context' in incident and context_keys:
-            incident['context'] = copy_key_from_context(incident['context'], context_keys)
+        if context_keys:
+            incident['context'] = copy_key_from_context(get_context(incident['id']), context_keys)
 
         incident = hash_multiple(incident, fields_to_hash)
 

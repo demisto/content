@@ -36,8 +36,7 @@ incident1 = {
     'created': '2019-01-02',
     'closed': '0001-01-01T00:00:00Z',
     'labels': [{'type': 'subject', 'value': 'This subject1'}, {'type': 'unique', 'value': 'This subject1'}],
-    'attachment': [{'name': 'Test word1 word2'}],
-    'context': context1
+    'attachment': [{'name': 'Test word1 word2'}]
 }
 
 context2 = context1
@@ -69,7 +68,6 @@ incident2 = {
     'closed': '0001-01-01T00:00:00Z',
     'labels': [{'type': 'subject', 'value': 'This subject2'}],
     'attachment': [{'name': 'Test word1'}],
-    'context': context2
 }
 
 incident3 = {
@@ -82,7 +80,6 @@ incident3 = {
     'closed': '0001-01-01T00:00:00Z',
     'labels': [{'type': 'subject', 'value': 'This subject1'}],
     'attachment': [{'name': 'Test word1 word2'}],
-    'context': context3
 }
 
 
