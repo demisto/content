@@ -118,6 +118,10 @@ script:
                 base += '/' + args['connector_guid'];
                 delete args['connector_guid'];
                 break;
+            case 'amp_move_computer':
+                base += '/' + args['connector_guid'];
+                delete args['connector_guid'];
+                break;
             case 'amp_get_computer_trajctory':
                 base += '/' + args['connector_guid'] + '/trajectory';
                 delete args['connector_guid'];

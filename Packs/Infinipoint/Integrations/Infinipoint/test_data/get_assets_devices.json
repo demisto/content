@@ -1,0 +1,40 @@
+[
+  {
+    "agentVersion": "X.XXX.XX.X",
+    "clientType": 0,
+    "discoveryId": "",
+    "domain": "europe-west1-b.c.riscale.internal",
+    "edge": true,
+    "ftDidRespond": false,
+    "ftIsSuccessful": false,
+    "ftResult": "",
+    "gatewayIp": 176422913,
+    "gatewayMACAddress": "42:01:0A:84:00:01",
+    "host": "ubu-et",
+    "id": "a523014f-1612-4b65-90a8-7974b116cb44",
+    "ip": 176422918,
+    "lastSeen": "2020-07-13T13:25:11.834766Z",
+    "macAddress": "42:01:0A:84:00:06",
+    "networkAlias": "",
+    "networkId": 5868903,
+    "networks": [
+      {
+        "alias": "",
+        "cidr": "XX.132.0.1/32",
+        "gatewayIp": 176422913,
+        "gatewayMACAddress": "42:01:0A:84:00:01"
+      }
+    ],
+    "osName": "Ubuntu-20.04 LTS (Focal Fossa)",
+    "osType": 2,
+    "policyVersion": "1.0.0",
+    "productType": "Cloud Compute",
+    "regDate": "2020-07-13T12:41:15.834235Z",
+    "status": 3,
+    "statusCode": null,
+    "statusDescription": null,
+    "supportId": null,
+    "tags": [],
+    "uniqueHostname": "ubu-et-frJ"
+  }
+]

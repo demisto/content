@@ -1,0 +1,25 @@
+args:
+- default: false
+  description: The input to encode using Base64 format.
+  isArray: false
+  name: input
+  required: true
+  secret: false
+comment: Encodes an input to Base64 format.
+commonfields:
+  id: Base64EncodeV2
+  version: -1
+enabled: false
+name: Base64EncodeV2
+outputs:
+- contextPath: Base64.encoded
+  description: The input encoded as Base64 format.
+  type: string
+script: '-'
+subtype: python3
+dockerimage: demisto/python3:3.8.5.10455
+system: false
+tags:
+- Utility
+timeout: '0'
+type: python
