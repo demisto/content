@@ -3,6 +3,7 @@
  "type": "mapping-incoming",
  "defaultIncidentType": "Bmc Remedyforce Service Request",
  "id": "BMCHelixRemedyforce - mapper",
+ "description": "Maps incoming BMC Helix Remdey force incidents fields.",
  "keyTypeMap": {
   "Service Request": "Bmc Remedyforce Service Request",
   "Incident": "Bmc Remedyforce Incident"
