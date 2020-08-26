@@ -72,13 +72,14 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Date from which the search begins. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      description: Date from which the search begins. Template for date - YYYY-MM-DD
+        hh:mm:00
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
       isArray: false
       name: end_date
       required: true
@@ -151,13 +152,14 @@ script:
     name: cisco-email-security-report-get
   - arguments:
     - default: false
-      description: Date from which the search begins. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      description: Date from which the search begins. Template for date - YYYY-MM-DD
+        hh:mm:00
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
       isArray: false
       name: end_date
       required: true
@@ -405,13 +407,14 @@ script:
     name: cisco-email-security-messages-search
   - arguments:
     - default: false
-      description: Date from which the search begins. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      description: Date from which the search begins. Template for date - YYYY-MM-DD
+        hh:mm:00
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
       isArray: false
       name: end_date
       required: true
@@ -440,13 +443,14 @@ script:
     name: cisco-email-security-message-details-get
   - arguments:
     - default: false
-      description: Date from which the search begins. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      description: Date from which the search begins. Template for date - YYYY-MM-DD
+        hh:mm:00
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: Date the search ends. Template for date - YYYY-MM-DDThh:mm:00.000Z
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
       isArray: false
       name: end_date
       required: true
@@ -564,6 +568,114 @@ script:
     description: Cisco Email Security get details for quarantine message
     execution: false
     name: cisco-email-security-spam-quarantine-message-details-get
+  - arguments:
+    - default: false
+      description: Date from which the search begins. Template for date - YYYY-MM-DD
+        hh:mm:00
+      isArray: false
+      name: start_date
+      required: true
+      secret: false
+    - default: false
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
+      isArray: false
+      name: end_date
+      required: true
+      secret: false
+    - default: false
+      description: Cisco message ID to filter with.
+      isArray: false
+      name: icid
+      required: true
+      secret: false
+    - default: false
+      description: Message ID to filter with.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    - default: false
+      description: Appliance serial number to filter with.
+      isArray: false
+      name: appliance_serial_number
+      required: false
+      secret: false
+    deprecated: false
+    description: Cisco Email Security get details on a dlp
+    execution: false
+    name: cisco-email-security-dlp-details-get
+  - arguments:
+    - default: false
+      description: Date from which the search begins. Template for date - YYYY-MM-DD
+        hh:mm:00
+      isArray: false
+      name: start_date
+      required: true
+      secret: false
+    - default: false
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
+      isArray: false
+      name: end_date
+      required: true
+      secret: false
+    - default: false
+      description: Cisco message ID to filter with.
+      isArray: false
+      name: icid
+      required: true
+      secret: false
+    - default: false
+      description: Message ID to filter with.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    - default: false
+      description: Appliance serial number to filter with.
+      isArray: false
+      name: appliance_serial_number
+      required: false
+      secret: false
+    deprecated: false
+    description: Cisco Email Security get details on a amp
+    execution: false
+    name: cisco-email-security-amp-details-get
+  - arguments:
+    - default: false
+      description: Date from which the search begins. Template for date - YYYY-MM-DD
+        hh:mm:00
+      isArray: false
+      name: start_date
+      required: true
+      secret: false
+    - default: false
+      description: Date the search ends. Template for date - YYYY-MM-DD hh:mm:00
+      isArray: false
+      name: end_date
+      required: true
+      secret: false
+    - default: false
+      description: Cisco message ID to filter with.
+      isArray: false
+      name: icid
+      required: true
+      secret: false
+    - default: false
+      description: Message ID to filter with.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    - default: false
+      description: Appliance serial number to filter with.
+      isArray: false
+      name: appliance_serial_number
+      required: false
+      secret: false
+    deprecated: false
+    description: Cisco Email Security get details on a url
+    execution: false
+    name: cisco-email-security-url-details-get
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true

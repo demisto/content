@@ -10,6 +10,12 @@ def get_fetch_data():
 test_data = get_fetch_data()
 
 
+def test_date_to_cisco_date():
+    from CiscoEmailSecurity import date_to_cisco_date
+    res = date_to_cisco_date('2019-11-20 09:36:09')
+    assert res == '2019-11-20T09:36:09.000Z'
+
+
 def test_build_url_params_for_list_report():
     from CiscoEmailSecurity import build_url_params_for_list_report
     res = build_url_params_for_list_report(test_data['args_for_list_report'])
