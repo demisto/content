@@ -69,12 +69,12 @@ class SimpleSSH(SSHClient):
 
 class Build:
     # START CHANGE ON LOCAL RUN #
-    content_path = '{}'.format(os.getenv('CONTENT'))
+    content_path = '{}/project'.format(os.getenv('HOME'))
     test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
     key_file_path = 'Use in case of running with non local server'
-    run_environment = Running.WITH_LOCAL_SERVER
+    run_environment = Running.CIRCLECI_RUN
     env_results_path = './env_results.json'
-    DEFAULT_SERVER_VERSION = '6.0.0'
+    DEFAULT_SERVER_VERSION = '99.99.98'
     #  END CHANGE ON LOCAL RUN  #
 
     def __init__(self, options):
@@ -903,39 +903,14 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
         # START CHANGE ON LOCAL RUN #
         return [
             {
+                "playbookID": "Docker Hardening Test",
+                "fromversion": "5.0.0"
+            },
+            {
                 "integrations": "SplunkPy",
-                "playbookID": "SplunkPy parse-raw - Test",
+                "playbookID": "SplunkPy-Test-V2",
+                "memory_threshold": 500,
                 "instance_names": "use_default_handler"
-            },
-            {
-                "integrations": "McAfee ESM v2",
-                "instance_names": "v10.2.0",
-                "playbookID": "McAfee ESM v2 - Test",
-                "fromversion": "5.0.0"
-            },
-            {
-                "integrations": "McAfee ESM v2",
-                "instance_names": "v10.3.0",
-                "playbookID": "McAfee ESM v2 - Test",
-                "fromversion": "5.0.0"
-            },
-            {
-                "integrations": "McAfee ESM v2",
-                "instance_names": "v11.1.3",
-                "playbookID": "McAfee ESM v2 - Test",
-                "fromversion": "5.0.0"
-            },
-            {
-                "integrations": "McAfee ESM v2",
-                "instance_names": "v11.3",
-                "playbookID": "McAfee ESM v2 (v11.3) - Test",
-                "fromversion": "5.0.0"
-            },
-            {
-                "integrations": "McAfee ESM v2",
-                "instance_names": "v11.3",
-                "playbookID": "Init_McAfee_ESM_v2_Test",
-                "fromversion": "5.0.0"
             }
         ]
         #  END CHANGE ON LOCAL RUN  #
@@ -967,7 +942,9 @@ def get_pack_ids_to_install():
             return [pack_id.rstrip('\n') for pack_id in pack_ids]
     else:
         # START CHANGE ON LOCAL RUN #
-        return []
+        return [
+            'SplunkPy'
+        ]
         #  END CHANGE ON LOCAL RUN  #
 
 
