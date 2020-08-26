@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: The alert close reason (either 'Resolved' or 'No Action Needed')
+  description: The reason the alert was closed (either 'Resolved' or 'No Action Needed').
   isArray: false
   name: close_reason
   required: true
