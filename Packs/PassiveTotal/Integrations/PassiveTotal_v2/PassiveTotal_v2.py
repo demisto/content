@@ -1,10 +1,10 @@
 from CommonServerPython import *
-from typing import Dict, Any, List, Union, Tuple, Optional
-from requests import ConnectionError
-from requests.exceptions import MissingSchema, InvalidSchema
 
 ''' IMPORTS '''
 
+from typing import Dict, Any, List, Union, Tuple, Optional
+from requests import ConnectionError
+from requests.exceptions import MissingSchema, InvalidSchema
 import urllib3
 import traceback
 
@@ -30,6 +30,7 @@ MESSAGES: Dict[str, str] = {
     'REQUEST_TIMEOUT_EXCEED_ERROR': 'Value is too large for HTTP(S) Request Timeout.',
     'NO_RECORDS_FOUND': 'No {0} were found for the given argument(s).',
     'EMPTY_WHOIS_ARGUMENT': 'query or field argument should not be empty.',
+    'EMPTY_DOMAIN_ARGUMENT': 'domain argument should not be empty.',
     'INVALID_DIRECTION_VALUE': 'The given value for direction is invalid. Supported values: children, parents.',
     'INVALID_QUERY_VALUE': 'The given value for query is invalid.',
     'MISSING_SCHEMA_ERROR': 'Invalid API URL. No schema supplied: http(s).',
@@ -346,13 +347,14 @@ def prepare_context_dict(response_dict: Dict[str, Any],
 
 def get_context_for_whois_commands(domains: List[Dict[str, Any]]) -> Tuple[list, list]:
     """
-    Prepare context for whois commands.
+    Prepare context for whois and domain reputation commands.
 
     :param domains: list of domains return from response
-    :return: standard context and custom context for whois commands
+    :return: standard context and custom context for whois and domain reputation command
     """
     standard_context_domain_list: List[Common.Domain] = []
     custom_context: List[Dict[str, Any]] = []
+    # set domain standard context
     for domain in domains:
         # set domain standard context
         if auto_detect_indicator_type(domain.get('domain', '')) == FeedIndicatorType.Domain:
@@ -405,14 +407,16 @@ def prepare_hr_cell_for_whois_info(domain_info: Dict[str, Any]) -> str:
     return ',\n'.join(hr_cell_info)
 
 
-def get_human_readable_for_whois_commands(domains: List[Dict[str, Any]]):
+def get_human_readable_for_whois_commands(domains: List[Dict[str, Any]], is_reputation_command=False):
     """
     Prepare readable output for whois commands
 
     :param domains: list of domains return from response
+    :param is_reputation_command: true if the command is execute for reputation command else false, default is false
     :return: markdown of whois commands based on domains passed
     """
     hr_table_content: List[Dict[str, Any]] = []
+    table_name = 'Domain(s)'
     for domain in domains:
         hr_row = {
             'Domain': domain.get('domain', ''),
@@ -431,9 +435,12 @@ def get_human_readable_for_whois_commands(domains: List[Dict[str, Any]]):
         }
         hr_table_content.append(hr_row)
 
-    hr = '### Total Retrieved Record(s): ' + str(len(domains)) + '\n'
+    hr = ''
+    if not is_reputation_command:
+        hr += '### Total Retrieved Record(s): ' + str(len(domains)) + '\n'
+        table_name = 'Associated Domains'
     hr += tableToMarkdown(
-        name='Associated Domains',
+        name=table_name,
         t=hr_table_content,
         headers=['Domain', 'WHOIS Server', 'Registrar', 'Contact Email', 'Name Servers', 'Registrant', 'Admin',
                  'Billing', 'Tech', 'Creation Date (GMT)', 'Expire Date (GMT)', 'Updated Date (GMT)',
@@ -826,6 +833,63 @@ def get_host_pairs_command(client: Client, args: Dict[str, Any]) -> Union[str, C
     )
 
 
+@logger
+def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+    """
+    Reputation command for domain.
+
+    :param client_obj: Client object
+    :param args: The command arguments provided by user
+    :return: Standard command result or no records found message
+    """
+    # Retrieve arguments
+    domains = argToList(args.get('domain', ''))
+
+    # argument validation
+    if len(domains) == 0:
+        raise ValueError('domain(s) not specified')
+
+    domain_standard_list: List[Common.Domain] = []
+    custom_domain_context = []
+    domain_responses = []
+
+    for domain in domains:
+        # argument validation
+        if domain.strip() == '':
+            raise ValueError(MESSAGES['EMPTY_DOMAIN_ARGUMENT'])
+
+        params = {
+            'query': domain,
+            'field': 'domain'
+        }
+
+        # http call
+        response = client_obj.http_request(method='GET', url_suffix=URL_SUFFIX['WHOIS_SEARCH'], params=params)
+
+        domains_response = response.get('results', [])
+        if len(domains_response) <= 0:
+            continue
+
+        # Creating entry context
+        domain_standard_list += get_context_for_whois_commands(domains_response)[0]
+        custom_domain_context += get_context_for_whois_commands(domains_response)[1]
+        domain_responses += domains_response
+
+    # Creating human-readable
+    domain_standard_hr = get_human_readable_for_whois_commands(
+        domain_responses,
+        is_reputation_command=True
+    )
+
+    return CommandResults(
+        readable_output=domain_standard_hr,
+        outputs_prefix='PassiveTotal.Domain',
+        outputs_key_field='domain',
+        outputs=custom_domain_context,
+        indicators=domain_standard_list
+    )
+
+
 def main() -> None:
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -837,7 +901,8 @@ def main() -> None:
         'pt-whois-search': pt_whois_search_command,
         'pt-get-components': get_components_command,
         'pt-get-trackers': get_trackers_command,
-        'pt-get-host-pairs': get_host_pairs_command
+        'pt-get-host-pairs': get_host_pairs_command,
+        'domain': domain_reputation_command
     }
 
     command = demisto.command()

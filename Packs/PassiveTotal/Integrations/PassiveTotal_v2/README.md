@@ -63,7 +63,7 @@ Gets WHOIS information records based on field matching queries.
 | Domain.WHOIS.Registrant.Phone | String | The phone number for receiving abuse reports. | 
 | Domain.WHOIS.Registrant.Country | String | The country of the registrant. | 
 | PassiveTotal.WHOIS.domain | String | The domain name, for example: 'google.com'. | 
-| PassiveTotal.WHOIS.registrar | String | The name of registrar of domain | 
+| PassiveTotal.WHOIS.registrar | String | The name of the registrar of the domain | 
 | PassiveTotal.WHOIS.whoisServer | String | WHOIS server name where the details of domain registrations belong | 
 | PassiveTotal.WHOIS.registered | Date | The date that the domain was registered. | 
 | PassiveTotal.WHOIS.expiresAt | Date | The expiration date of the domain. | 
@@ -877,3 +877,225 @@ Retrieves the host attribute pairs related to a domain or IP address. Maximum 20
 >| ns1.furth.com.ar | furth.com.ar | 2020-05-29 07:05:22 | 2020-06-10 11:53:23 | redirect |
 >| ns1.furth.com.ar | ns1.furth.com.ar | 2020-05-02 06:47:23 | 2020-06-08 03:08:38 | parentPage |
 
+
+### domain
+***
+Provides data enrichment for domains.
+
+
+#### Base Command
+
+`domain`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The domain to enrich. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The domain name, for example: 'google.com'. | 
+| Domain.WHOIS.CreationDate | Date | The date that the domain was created. | 
+| Domain.WHOIS.UpdatedDate | Date | The date that the domain was last updated. | 
+| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
+| Domain.WHOIS.NameServers | String | Name servers of the domain. | 
+| Domain.Organization | String | The organization of the domain. | 
+| Domain.Admin.Email | String | The email address of the domain administrator. | 
+| Domain.Admin.Name | String | The name of the domain administrator. | 
+| Domain.Admin.Phone | String | The phone number of the domain administrator. | 
+| Domain.Admin.Country | String | The country of the domain administrator. | 
+| Domain.Registrant.Email | String | The email address of the registrant. | 
+| Domain.Registrant.Name | String | The name of the registrant. | 
+| Domain.Registrant.Phone | String | The phone number for receiving abuse reports. | 
+| Domain.Registrant.Country | String | The country of the registrant. | 
+| Domain.WHOIS.Admin.Email | String | The email address of the domain administrator. | 
+| Domain.WHOIS.Admin.Name | String | The name of the domain administrator. | 
+| Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator. | 
+| Domain.WHOIS.Admin.Country | String | The country of the domain administrator. | 
+| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: 'GoDaddy'. | 
+| Domain.WHOIS.Registrant.Email | String | The email address of the registrant. | 
+| Domain.WHOIS.Registrant.Name | String | The name of the registrant. | 
+| Domain.WHOIS.Registrant.Phone | String | The phone number for receiving abuse reports. | 
+| Domain.WHOIS.Registrant.Country | String | The country of the registrant. | 
+| PassiveTotal.Domain.domain | String | The domain name, for example: 'google.com'. | 
+| PassiveTotal.Domain.registrar | String | The name of the registrar of the domain | 
+| PassiveTotal.Domain.whoisServer | String | WHOIS server name where the details of domain registrations belong | 
+| PassiveTotal.Domain.registered | Date | The date that the domain was registered. | 
+| PassiveTotal.Domain.expiresAt | Date | The expiration date of the domain. | 
+| PassiveTotal.Domain.registryUpdatedAt | Date | The date when registry was last updated. | 
+| PassiveTotal.Domain.lastLoadedAt | Date | Last loaded date of WHOIS database. | 
+| PassiveTotal.Domain.nameServers | String | Name servers of the domain. | 
+| PassiveTotal.Domain.organization | String | The organization of the domain. | 
+| PassiveTotal.Domain.name | String | Name of the domain. | 
+| PassiveTotal.Domain.telephone | String | Telephone number fetched from whois details of the domain. | 
+| PassiveTotal.Domain.contactEmail | String | Contact Email address of the domain owner | 
+| PassiveTotal.Domain.registrantEmail | String | The name of the domain registrant. | 
+| PassiveTotal.Domain.registrantFax | String | The fax number of the domain registrant. | 
+| PassiveTotal.Domain.registrantName | String | The name of the domain registrant. | 
+| PassiveTotal.Domain.registrantOrganization | String | The organizations of the domain registrant. | 
+| PassiveTotal.Domain.registrantStreet | String | The street of the domain registrant. | 
+| PassiveTotal.Domain.registrantCity | String | The city of the domain registrant. | 
+| PassiveTotal.Domain.registrantState | String | The state of the domain registrant. | 
+| PassiveTotal.Domain.registrantPostalCode | String | The postal code of the domain registrant. | 
+| PassiveTotal.Domain.registrantCountry | String | The country of the domain registrant. | 
+| PassiveTotal.Domain.registrantTelephone | String | The telephone number of the domain registrant. | 
+| PassiveTotal.Domain.adminEmail | String | The email address of the domain administrator. | 
+| PassiveTotal.Domain.adminFax | String | The fax number of the domain administrator. | 
+| PassiveTotal.Domain.adminName | String | The name of the domain administrator. | 
+| PassiveTotal.Domain.adminOrganization | String | The organizations of the domain administrator. | 
+| PassiveTotal.Domain.adminStreet | String | The street of the domain administrator. | 
+| PassiveTotal.Domain.adminCity | String | The city of the domain administrator. | 
+| PassiveTotal.Domain.adminState | String | The state of the domain administrator. | 
+| PassiveTotal.Domain.adminPostalCode | String | The postal code of the domain administrator. | 
+| PassiveTotal.Domain.adminCountry | String | The country of the domain administrator. | 
+| PassiveTotal.Domain.adminTelephone | String | The telephone number of the domain administrator. | 
+| PassiveTotal.Domain.billingEmail | String | The email address of the domain billing. | 
+| PassiveTotal.Domain.billingFax | String | The fax number of the domain billing. | 
+| PassiveTotal.Domain.billingName | String | The name of the domain billing. | 
+| PassiveTotal.Domain.billingOrganization | String | The organizations of the domain billing. | 
+| PassiveTotal.Domain.billingStreet | String | The street of the domain billing. | 
+| PassiveTotal.Domain.billingCity | String | The city of the domain billing. | 
+| PassiveTotal.Domain.billingState | String | The state of the domain billing. | 
+| PassiveTotal.Domain.billingPostalCode | String | The postal code of the domain billing. | 
+| PassiveTotal.Domain.billingCountry | String | The country of the domain billing. | 
+| PassiveTotal.Domain.billingTelephone | String | The telephone number of the domain billing. | 
+| PassiveTotal.Domain.techEmail | String | The email address of the domain tech. | 
+| PassiveTotal.Domain.techFax | String | The fax number of the domain tech. | 
+| PassiveTotal.Domain.techName | String | The name of the domain tech. | 
+| PassiveTotal.Domain.techOrganization | String | The organizations of domain tech. | 
+| PassiveTotal.Domain.techStreet | String | The street of the domain tech. | 
+| PassiveTotal.Domain.techCity | String | The city of the domain tech. | 
+| PassiveTotal.Domain.techState | String | The state of the domain tech. | 
+| PassiveTotal.Domain.techPostalCode | String | The postal code of the domain tech. | 
+| PassiveTotal.Domain.techCountry | String | The country of the domain tech. | 
+| PassiveTotal.Domain.techTelephone | String | The telephone number of the domain tech. | 
+
+
+#### Command Example
+```!domain domain=riskiq.com```
+
+#### Context Example
+```
+{
+    "DBotScore": [
+        {
+            "Indicator": "riskiq.com",
+            "Score": 0,
+            "Type": "domain",
+            "Vendor": "PassiveTotal"
+        }
+    ],
+    "Domain": [
+        {
+            "Admin": {
+                "Country": "us",
+                "Email": "domains@riskiq.com",
+                "Name": "Risk IQ",
+                "Phone": "18884154447"
+            },
+            "CreationDate": "2006-01-11T16:00:00.000-0800",
+            "ExpirationDate": "2017-01-11T16:00:00.000-0800",
+            "Name": "riskiq.com",
+            "NameServers": [
+                "luke.ns.cloudflare.com",
+                "serena.ns.cloudflare.com"
+            ],
+            "Organization": "RiskIQ, Inc.",
+            "Registrant": {
+                "Country": "us",
+                "Email": "domains@riskiq.com",
+                "Name": "Risk IQ",
+                "Phone": "18884154447"
+            },
+            "Registrar": {
+                "AbuseEmail": null,
+                "AbusePhone": null,
+                "Name": "GODADDY.COM, LLC"
+            },
+            "UpdatedDate": "2014-12-08T16:00:00.000-0800",
+            "WHOIS": {
+                "Admin": {
+                    "Country": "us",
+                    "Email": "domains@riskiq.com",
+                    "Name": "Risk IQ",
+                    "Phone": "18884154447"
+                },
+                "CreationDate": "2006-01-11T16:00:00.000-0800",
+                "ExpirationDate": "2017-01-11T16:00:00.000-0800",
+                "NameServers": [
+                    "luke.ns.cloudflare.com",
+                    "serena.ns.cloudflare.com"
+                ],
+                "Registrant": {
+                    "Country": "us",
+                    "Email": "domains@riskiq.com",
+                    "Name": "Risk IQ",
+                    "Phone": "18884154447"
+                },
+                "Registrar": {
+                    "AbuseEmail": null,
+                    "AbusePhone": null,
+                    "Name": "GODADDY.COM, LLC"
+                },
+                "UpdatedDate": "2014-12-08T16:00:00.000-0800"
+            }
+        }
+    ],
+    "PassiveTotal": {
+        "Domain": {
+            "adminCity": "san francisco",
+            "adminCountry": "us",
+            "adminEmail": "domains@riskiq.com",
+            "adminName": "Risk IQ",
+            "adminOrganization": "RiskIQ, Inc.",
+            "adminPostalCode": "94111",
+            "adminState": "california",
+            "adminStreet": "22 Battery Street\n10th Floor",
+            "adminTelephone": "18884154447",
+            "contactEmail": "domains@riskiq.com",
+            "domain": "riskiq.com",
+            "expiresAt": "2017-01-11T16:00:00.000-0800",
+            "lastLoadedAt": "2016-09-27T09:40:31.180-0700",
+            "name": "Risk IQ",
+            "nameServers": [
+                "luke.ns.cloudflare.com",
+                "serena.ns.cloudflare.com"
+            ],
+            "organization": "RiskIQ, Inc.",
+            "registered": "2006-01-11T16:00:00.000-0800",
+            "registrantCity": "san francisco",
+            "registrantCountry": "us",
+            "registrantEmail": "domains@riskiq.com",
+            "registrantName": "Risk IQ",
+            "registrantOrganization": "RiskIQ, Inc.",
+            "registrantPostalCode": "94111",
+            "registrantState": "california",
+            "registrantStreet": "22 Battery Street\n10th Floor",
+            "registrantTelephone": "18884154447",
+            "registrar": "GODADDY.COM, LLC",
+            "registryUpdatedAt": "2014-12-08T16:00:00.000-0800",
+            "techCity": "san francisco",
+            "techCountry": "us",
+            "techEmail": "domains@riskiq.com",
+            "techName": "Risk IQ",
+            "techOrganization": "RiskIQ, Inc.",
+            "techPostalCode": "94111",
+            "techState": "california",
+            "techStreet": "22 Battery Street\n10th Floor",
+            "techTelephone": "18884154447",
+            "telephone": "18884154447",
+            "whoisServer": "whois.godaddy.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Domain(s)
+>|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |

@@ -140,7 +140,7 @@ script:
       description: 'The domain name, for example: ''google.com''.'
       type: String
     - contextPath: PassiveTotal.WHOIS.registrar
-      description: The name of registrar of domain
+      description: The name of the registrar of the domain
       type: String
     - contextPath: PassiveTotal.WHOIS.whoisServer
       description: WHOIS server name where the details of domain registrations belong
@@ -697,7 +697,244 @@ script:
     - contextPath: PassiveTotal.HostPair.child
       description: The hostname of the child of the host pair.
       type: String
-  dockerimage: demisto/python3:3.8.5.10455
+  - arguments:
+    - default: true
+      description: The domain to enrich.
+      isArray: true
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for domains.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: ''google.com''.'
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date that the domain was last updated.
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.NameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number for receiving abuse reports.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: 'The name of the registrar, for example: ''GoDaddy''.'
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: The phone number for receiving abuse reports.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.domain
+      description: 'The domain name, for example: ''google.com''.'
+      type: String
+    - contextPath: PassiveTotal.Domain.registrar
+      description: The name of the registrar of the domain
+      type: String
+    - contextPath: PassiveTotal.Domain.whoisServer
+      description: WHOIS server name where the details of domain registrations belong
+      type: String
+    - contextPath: PassiveTotal.Domain.registered
+      description: The date that the domain was registered.
+      type: Date
+    - contextPath: PassiveTotal.Domain.expiresAt
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: PassiveTotal.Domain.registryUpdatedAt
+      description: The date when registry was last updated.
+      type: Date
+    - contextPath: PassiveTotal.Domain.lastLoadedAt
+      description: Last loaded date of WHOIS database.
+      type: Date
+    - contextPath: PassiveTotal.Domain.nameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: PassiveTotal.Domain.organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: PassiveTotal.Domain.name
+      description: Name of the domain.
+      type: String
+    - contextPath: PassiveTotal.Domain.telephone
+      description: Telephone number fetched from whois details of the domain.
+      type: String
+    - contextPath: PassiveTotal.Domain.contactEmail
+      description: Contact Email address of the domain owner
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantEmail
+      description: The name of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantFax
+      description: The fax number of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantName
+      description: The name of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantOrganization
+      description: The organizations of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantStreet
+      description: The street of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantCity
+      description: The city of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantState
+      description: The state of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantPostalCode
+      description: The postal code of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantCountry
+      description: The country of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantTelephone
+      description: The telephone number of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminEmail
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminFax
+      description: The fax number of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminName
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminOrganization
+      description: The organizations of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminStreet
+      description: The street of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminCity
+      description: The city of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminState
+      description: The state of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminPostalCode
+      description: The postal code of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminCountry
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminTelephone
+      description: The telephone number of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingEmail
+      description: The email address of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingFax
+      description: The fax number of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingName
+      description: The name of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingOrganization
+      description: The organizations of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingStreet
+      description: The street of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingCity
+      description: The city of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingState
+      description: The state of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingPostalCode
+      description: The postal code of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingCountry
+      description: The country of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingTelephone
+      description: The telephone number of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.techEmail
+      description: The email address of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techFax
+      description: The fax number of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techName
+      description: The name of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techOrganization
+      description: The organizations of domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techStreet
+      description: The street of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techCity
+      description: The city of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techState
+      description: The state of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techPostalCode
+      description: The postal code of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techCountry
+      description: The country of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techTelephone
+      description: The telephone number of the domain tech.
+      type: String
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: false
   longRunning: false
