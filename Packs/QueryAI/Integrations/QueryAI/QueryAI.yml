@@ -19,7 +19,8 @@ configuration:
   name: alias
   required: true
   type: 0
-- display: Default Platform Connection Params. Eg- {"platform_alias":{"username":"my_username","password":"my_password"}}
+- display: Default Platform Connection Params.
+  additionalinfo: Connection params as JSON object. Eg - {"platform_alias":{"username":"my_username","password":"my_password"}}
   name: connection_params
   required: true
   type: 12
