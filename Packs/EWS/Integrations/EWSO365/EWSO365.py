@@ -1730,13 +1730,23 @@ def handle_transient_files(transient_files, transient_files_contents, transient_
     files_contents = argToList(transient_files_contents)
     files_cids = argToList(transient_files_cids)
 
-    for name, data, cid in map(None, files_names, files_contents, files_cids):
-        if name is None or data is None:
+    for index in range(len(files_names)):
+        file_name = files_names[index]
+
+        if index >= len(files_contents):
             break
+
+        file_content = bytes(files_contents[index], UTF_8)
+
+        if index >= len(files_cids):
+            file_cid = ''
+        else:
+            file_cid = files_cids[index]
+
         transient_attachments.append({
-            'name': name,
-            'data': data,
-            'cid': cid
+            'name': file_name,
+            'data': file_content,
+            'cid': file_cid
         })
 
     return transient_attachments

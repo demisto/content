@@ -1373,7 +1373,7 @@ None.
 ##### Command Example
 
 ```
-!ews-send-mail to=demisto@demisto.onmicrosoft.com subject=some_subject body=some_text attachments_ids=110@457,116@457 html_body="<html><body>Hello <b>World</b></body></html>" additional_headers="some_header_name=some_header_value"
+!ews-send-mail to=demisto@demisto.onmicrosoft.com subject=some_subject body=some_text attachments_ids=110@457,116@457 html_body="<html><body>Hello <b>World</b></body></html>" additional_headers="some_header_name=some_header_value" transient_files=some_file.txt transient_files_contents="Some file content"
 ```
 
 ##### Human Readable Output
