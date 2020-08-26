@@ -302,5 +302,6 @@ def test_associate_indicator_request(indicator_type, indicator, expected_url, mo
 
 def test_ip_get_indicators_multiple_owners(mocker):
     mocker.patch('ThreatConnect_v2.get_xindapi', side_effect=[GET_XINDAPI_OWNER1, GET_XINDAPI_OWNER2])
+    mocker.patch('ThreatConnect_v2.get_client', return_value=ThreatConnect())
     indicators = get_indicators('127.0.0.1', 'Address', 'Demisto Inc.,PhishTank', -1, -1)
     assert indicators == EXPECTED_INDOCATORS_OUTPUT
