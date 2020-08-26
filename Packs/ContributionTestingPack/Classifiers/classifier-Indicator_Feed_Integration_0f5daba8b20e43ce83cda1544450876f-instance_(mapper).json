@@ -1,0 +1,16 @@
+{
+ "feed": true,
+ "id": "c5f67469-e141-4648-8133-4cfb1cb5f26d-mapper",
+ "keyTypeMap": {
+  "IP": "ipRep"
+ },
+ "name": "Indicator Feed Integration 0f5daba8b20e43ce83cda1544450876f-instance (mapper)",
+ "transformer": {
+  "complex": null,
+  "simple": ""
+ },
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "description": ""
+}
