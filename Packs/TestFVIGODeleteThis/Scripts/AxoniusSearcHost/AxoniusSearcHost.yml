@@ -1,0 +1,24 @@
+args:
+- default: true
+  description: the host
+  name: value
+  required: true
+commonfields:
+  id: Axonius-SearcHost
+  version: -1
+enabled: true
+name: Axonius-SearcHost
+outputs:
+- type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags:
+- transformer
+- string
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
