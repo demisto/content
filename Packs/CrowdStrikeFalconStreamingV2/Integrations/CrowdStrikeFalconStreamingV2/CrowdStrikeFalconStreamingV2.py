@@ -473,7 +473,7 @@ def main():
         offset = 0
     incident_type = params.get('incidentType', '')
     store_samples = params.get('store_samples', False)
-    first_fetch_time, _ = parse_date_range(params.get('first_fetch', '1 hour'))
+    first_fetch_time, _ = parse_date_range(params.get('fetch_time', '1 hour'))
 
     stream = EventStream(base_url=base_url, app_id='Demisto', verify_ssl=verify_ssl, proxy=proxy)
 
