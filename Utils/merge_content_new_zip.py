@@ -9,7 +9,7 @@ import argparse
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-ACCEPT_TYPE = "Accept: application/json"
+ACCEPT_TYPE = "application/json"
 CONTENT_API_URI = "https://circleci.com/api/v1/project/demisto/content"
 ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
