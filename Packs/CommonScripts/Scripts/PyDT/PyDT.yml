@@ -1,0 +1,28 @@
+args:
+- default: false
+  defaultValue: val
+  description: Python code, context can be referenced like a Python dict named "val"
+    . e.g. return_results(val['incident']['id'])
+  isArray: false
+  name: Python
+  required: false
+  secret: false
+comment: Python alternative to DT
+commonfields:
+  id: d9f3dbf6-bb9d-482e-864d-f86d724f65b5
+  version: -1
+enabled: true
+name: PyDT
+script: '-'
+subtype: python3
+system: false
+tags:
+- transformer
+- general
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.3.8715
+runas: DBotWeakRole
+runonce: false
+pswd: ''
+vcShouldKeepItemLegacyProdMachine: false
