@@ -1,7 +1,7 @@
 {
   "args_for_list_report": {
-    "start_date": "2017-02-14T09:51:46.000-0600",
-    "end_date": "2017-02-14T09:51:46.000-0600",
+    "start_date": "2017-02-14 09:51:46",
+    "end_date": "2017-02-14 09:51:46",
     "device_type": "email",
     "offset": "1",
     "limit": "1",
@@ -11,11 +11,11 @@
     "device_group": "cisco"
   },
 
-  "url_params_for_list_reports": "?startDate=2017-02-14T09:51:46.000-0600&endDate=2017-02-14T09:51:46.000-0600&device_type=email&offset=1&limit=1&filterBy=name&filter_operator=is&filter_value=name&device_group=cisco",
+  "url_params_for_list_reports": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&device_type=email&offset=1&limit=1&filterBy=name&filter_operator=is&filter_value=name&device_group=cisco",
 
   "args_for_list_messages": {
-    "start_date": "2017-02-14T09:51:46.000-0600",
-    "end_date": "2017-02-14T09:51:46.000-0600",
+    "start_date": "2017-02-14 09:51:46",
+    "end_date": "2017-02-14 09:51:46",
     "offset": "1",
     "limit": "1",
     "attachment_name_value": "name",
@@ -27,21 +27,21 @@
     "file_hash": "1234abcd"
   },
 
-  "url_params_for_list_messages": "?startDate=2017-02-14T09:51:46.000-0600&endDate=2017-02-14T09:51:46.000-0600&offset=1&limit=1&attachmentNameOperator=is&attachmentNameValue=name&envelopeRecipientfilterOperator=is&envelopeRecipientfilterValue=name&envelopeSenderfilterOperator=is&envelopeSenderfilterValue=name&spamPositive=True&fileSha256=1234abcd",
+  "url_params_for_list_messages": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&searchOption=messages&offset=1&limit=1&attachmentNameOperator=is&attachmentNameValue=name&envelopeRecipientfilterOperator=is&envelopeRecipientfilterValue=name&envelopeSenderfilterOperator=is&envelopeSenderfilterValue=name&spamPositive=True&fileSha256=1234abcd",
 
   "args_for_get_details": {
-    "start_date": "2017-02-14T09:51:46.000-0600",
-    "end_date": "2017-02-14T09:51:46.000-0600",
+    "start_date": "2017-02-14 09:51:46",
+    "end_date": "2017-02-14 09:51:46",
     "message_id": "1234",
     "icid": "1234",
     "appliance_serial_number": "1234"
   },
 
-  "url_params_for_get_details": "?startDate=2017-02-14T09:51:46.000-0600&endDate=2017-02-14T09:51:46.000-0600&mid=1234&icid=1234&serialNumber=1234",
+  "url_params_for_get_details": "/sma/api/v2.0/quarantine/messages?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&mid=1234&icid=1234&serialNumber=1234",
 
   "args_for_spam_quarantine": {
-    "start_date": "2017-02-14T09:51:46.000-0600",
-    "end_date": "2017-02-14T09:51:46.000-0600",
+    "start_date": "2017-02-14 09:51:46",
+    "end_date": "2017-02-14 09:51:46",
     "order_by_from_address": "name",
     "order_dir_from_address": "asc",
     "recipient_value": "name",
@@ -49,7 +49,7 @@
     "filter_value": "name"
   },
 
-  "url_params_for_spam_quarantine": "?startDate=2017-02-14T09:51:46.000-0600&endDate=2017-02-14T09:51:46.000-0600&quarantineType=spam&orderBy=name&orderDir=asc&envelopeRecipientfilterOperator=is&envelopeRecipientfilterValue=name&filterOperator=is&filterValue=name",
+  "url_params_for_spam_quarantine": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&quarantineType=spam&offset=0&limit=50&orderBy=name&orderDir=asc&envelopeRecipientfilterOperator=is&envelopeRecipientfilterValue=name&filterOperator=is&filterValue=name",
 
   "search_messages_response_data": {
                                       "meta": {
