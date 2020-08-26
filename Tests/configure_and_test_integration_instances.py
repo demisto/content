@@ -234,7 +234,7 @@ def get_integration_names_from_files(integration_files_list):
     return [name for name in integration_names_list if name]  # remove empty values
 
 
-def get_new_and_modified_integration_files(git_sha1):
+def get_new_and_modified_integration_files(build):
     """Return 2 lists - list of new integrations and list of modified integrations since the commit of the git_sha1.
 
     Args:
@@ -245,8 +245,8 @@ def get_new_and_modified_integration_files(git_sha1):
     """
     # get changed yaml files (filter only added and modified files)
     file_validator = ValidateManager()
-    change_log = run_command('git diff --name-status {}'.format(git_sha1))
-    modified_files, added_files, _, _, _ = file_validator.filter_changed_files(change_log)
+    file_validator.branch_name = build.branch_name
+    modified_files, added_files, _, _, _ = file_validator.get_modified_and_added_files('...', 'origin/master')
     all_integration_regexes = YML_INTEGRATION_REGEXES
 
     new_integration_files = [
@@ -851,9 +851,10 @@ def configure_servers_and_restart(build, prints_manager):
                 input('restart your server and then press enter.')
             else:
                 restart_server(server)
-        prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
-        prints_manager.execute_thread_prints(0)
-        sleep(60)
+        if Build.run_environment != Running.WITH_LOCAL_SERVER:
+            prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
+            prints_manager.execute_thread_prints(0)
+            sleep(60)
 
 
 def restart_server(server):
@@ -915,8 +916,8 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
         #  END CHANGE ON LOCAL RUN  #
 
 
-def get_changed_integrations(git_sha1, prints_manager):
-    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(git_sha1)
+def get_changed_integrations(build, prints_manager):
+    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(build)
     new_integrations_names, modified_integrations_names = [], []
 
     if new_integrations_files:
@@ -996,7 +997,7 @@ def install_packs(build, prints_manager):
     return installed_content_packs_successfully
 
 
-def configure_server_instances(build: Build, tests_for_iteration, new_integrations, modified_integrations, prints_manager):
+def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations, prints_manager):
     all_module_instances = []
     brand_new_integrations = []
     testing_client = demisto_client.configure(base_url=build.servers[0], username=build.username,
@@ -1010,7 +1011,7 @@ def configure_server_instances(build: Build, tests_for_iteration, new_integratio
         prints_manager.add_print_job(integrations_names, print_warning, 0)
 
         new_integrations, modified_integrations, unchanged_integrations, integration_to_status = group_integrations(
-            integrations, build.skipped_integrations_conf, new_integrations, modified_integrations
+            integrations, build.skipped_integrations_conf, all_new_integrations, modified_integrations
         )
 
         instance_names_conf = test.get('instance_names', [])
@@ -1042,8 +1043,6 @@ def configure_server_instances(build: Build, tests_for_iteration, new_integratio
             continue
         prints_manager.execute_thread_prints(0)
 
-        brand_new_integrations.extend(new_integrations)
-
         module_instances = []
         for integration in integrations_to_configure:
             placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
@@ -1053,6 +1052,14 @@ def configure_server_instances(build: Build, tests_for_iteration, new_integratio
                 module_instances.append(module_instance)
 
         all_module_instances.extend(module_instances)
+        for integration in new_integrations:
+            placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
+            module_instance = configure_integration_instance(integration, testing_client, prints_manager,
+                                                             placeholders_map)
+            if module_instance:
+                module_instances.append(module_instance)
+
+        brand_new_integrations.extend(module_instances)
     return all_module_instances, brand_new_integrations
 
 
@@ -1206,7 +1213,7 @@ def main():
         installed_content_packs_successfully = True
 
     tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly)
-    new_integrations, modified_integrations = get_changed_integrations(build.git_sha1, prints_manager)
+    new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
     all_module_instances, brand_new_integrations = \
         configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
     if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
