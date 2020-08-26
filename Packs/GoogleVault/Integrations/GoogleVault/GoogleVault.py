@@ -11,6 +11,7 @@ from googleapiclient._auth import authorized_http
 import dateparser
 import io
 import os
+from multiprocessing import Process
 
 #  @@@@@@@@ GLOBALS @@@@@@@@
 
@@ -1334,6 +1335,7 @@ def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
 
     if not out_file_json['Root']['Batch'].get('Documents'):
         demisto.results('The export given contains 0 documents')
+        out_file.close()
         sys.exit(0)
     documents = out_file_json['Root']['Batch']['Documents']['Document']
 
@@ -1341,8 +1343,8 @@ def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
         documents = [documents]
 
     dictList = build_dict_list(documents)
-
     if len(dictList) > max_results:
+        out_file.close()
         return dictList[0:max_results]
 
     return dictList
@@ -1460,7 +1462,7 @@ def test_module():
             return_error(str(ex))
 
 
-def main():
+def sub_main():
     """Main Execution Block"""
 
     try:
@@ -1507,6 +1509,29 @@ def main():
             get_mail_and_groups_results_command('GROUPS')
     except Exception as e:
         return_error(str(e))
+
+
+def process_main():
+    """setup stdin to fd=0 so we can read from the server"""
+    sys.stdin = os.fdopen(0, "r")
+    sub_main()
+
+
+def main():
+    # When running big queries, like 'gvault-get-mail' the memory might not freed by the garbage
+    # collector. `separate_process` flag will run the integration on a separate process that will prevent
+    # memory leakage.
+    separate_process = demisto.params().get("separate_process", False)
+    demisto.debug("Running as separate_process: {}".format(separate_process))
+    if separate_process:
+        try:
+            p = Process(target=process_main)
+            p.start()
+            p.join()
+        except Exception as ex:
+            demisto.error("Failed starting Process: {}".format(ex))
+    else:
+        sub_main()
 
 
 # python2 uses __builtin__ python3 uses builtins
