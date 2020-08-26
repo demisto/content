@@ -1,8 +1,7 @@
 id: PANW IoT Incident Handling with ServiceNow
 version: -1
 name: PANW IoT Incident Handling with ServiceNow
-description: This playbook creates a ServiceNow ticket after the incident is enriched by
-Palo Alto Networks IoT security portal (previously Zingbox Cloud).
+description: This playbook creates a ServiceNow ticket after the incident is enriched by Palo Alto Networks IoT security portal (previously Zingbox Cloud).
 starttaskid: "0"
 tasks:
   "0":

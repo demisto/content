@@ -1,4 +1,4 @@
-To close the XSOAR incident if the IoT ServiceNow ticket was closed. This command should be run in a Job.
+Close the XSOAR incident if the IoT ServiceNow ticket was closed. This command should be run in a Job.
 ## Script Data
 ---
 

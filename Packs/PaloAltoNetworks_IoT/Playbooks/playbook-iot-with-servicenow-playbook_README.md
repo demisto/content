@@ -1,29 +1,38 @@
-Enrich the IoT incident with device details. RACI model is returned for the incident if configured.
-ServiceNow ticket can be created if ServiceNow integration is enabled.
+This playbook creates a ServiceNow ticket after the incident is enriched by Palo Alto Networks IoT security portal (previously Zingbox Cloud).
 
 ## Dependencies
-This playbook uses the following integration, and script.
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Integrations
+### Sub-playbooks
+This playbook does not use any sub-playbooks.
+
+### Integrations
+* Palo Alto Networks IoT
 * ServiceNow v2
 
-## Scripts
+### Scripts
 * iot-security-get-raci
+* Exists
 
-## Commands
-This playbook does not use any commands.
+### Commands
+* iot-security-get-device
+* servicenow-create-record
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IoTConfigListName | The IOT_CONFIG variable name in the XSOAR Lists. | IOT_CONFIG | Optional |
-| CreateServiceNowTicket | ServiceNow ticket will be created if this is true. | false | Optional |
+| IoTConfigListName | The list name defined in the XSOAR Lists for the RACI and ServiceNow calculation. | IOT_CONFIG | Optional |
+| CreateServiceNowTicket | Determines if a ServiceNow ticket should be created based on the RACI calculation. Set to True to create an incident. | false | Optional |
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| PaloAltoNetworksIoT | This path will have field "device" for the device details and "raci" if the command "iot\-security\-get\-raci" has output. | string |
+| ServiceNow.Record | The ServiceNow record after creating the ServiceNow ticket. | string |
 
 ## Playbook Image
 ---

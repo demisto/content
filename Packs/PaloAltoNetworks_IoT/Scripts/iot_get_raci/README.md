@@ -104,13 +104,13 @@ This script is used in the following playbooks and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| alert_name | The name of the IoT alert |
-| raw_type | The raw type of the incident |
-| category | The device category |
-| profile | The device profile |
-| vendor | The device vendor |
-| model | The device model |
-| iot_config_list_name | The variable name for IOT\_CONFIG |
+| alert_name | The name of the IoT alert. |
+| raw_type | The raw type of the incident. |
+| category | The device category. |
+| profile | The device profile. |
+| vendor | The device vendor. |
+| model | The device model. |
+| iot_config_list_name | The variable name for IOT\_CONFIG. |
 
 ## Outputs
 ---

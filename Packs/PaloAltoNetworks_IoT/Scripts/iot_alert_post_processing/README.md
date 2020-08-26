@@ -12,7 +12,10 @@ This script is executing a command 'iot-security-resolve-alert' to resolve an al
 
 ## Inputs
 ---
-There are no inputs for this script.
+
+| **Argument Name** | **Description** |
+| --- | --- |
+| close_reason | The reason the alert was closed \(either 'Resolved' or 'No Action Needed'\). |
 
 ## Outputs
 ---

@@ -1,17 +1,18 @@
-This is to run the command 'iot-security-check-servicenow' in the playbook, that's run in a recurring XSOAR job.
-The use case is to loop all the opened IoT incidents and query their corresponding ServiceNow ticket status.
-If the ticket is closed, the XSOAR incident will be closed.
+This playbook should be used in a recurring Job to check the ServiceNow ticket status for the Palo Alto Networks IoT (previously Zingbox) alerts or vulnerabilties.
 
 ## Dependencies
-This playbook uses the following integration, and script.
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Integrations
+### Sub-playbooks
+This playbook does not use any sub-playbooks.
+
+### Integrations
 * ServiceNow v2
 
-## Scripts
+### Scripts
 * iot-security-check-servicenow
 
-## Commands
+### Commands
 * closeInvestigation
 
 ## Playbook Inputs
