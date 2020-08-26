@@ -1,6 +1,7 @@
 from copy import deepcopy
 
-from ThreatConnect_v2 import calculate_freshness_time, create_context, demisto, associate_indicator_request
+from ThreatConnect_v2 import calculate_freshness_time, create_context, demisto,\
+    associate_indicator_request, get_indicators
 from freezegun import freeze_time
 import pytest
 from requests import Response
@@ -213,6 +214,29 @@ FILE_CONTEXT = (
     }]
 )
 
+GET_XINDAPI_OWNER1 = [{'id': 1, 'owner': 'Demisto Inc.', 'dateAdded': '2020-08-26T10:14:55Z',
+                       'lastModified': '2020-08-26T10:14:55Z', 'rating': 0.0, 'confidence': 0,
+                       'threatAssessRating': 1.29,
+                       'threatAssessConfidence': 5.29,
+                       'webLink': '',
+                       'ip': '127.0.0.1', 'type': 'Address'}]
+
+GET_XINDAPI_OWNER2 = [{'id': 2, 'owner': 'PhishTank', 'dateAdded': '2020-08-26T10:14:55Z',
+                       'lastModified': '2020-08-26T10:14:55Z', 'rating': 0.0, 'confidence': 0,
+                       'threatAssessRating': 1.29,
+                       'threatAssessConfidence': 5.29,
+                       'webLink': '',
+                       'ip': '127.0.0.1', 'type': 'Address'}]
+
+EXPECTED_INDOCATORS_OUTPUT = [
+    {"id": 1, "owner": "Demisto Inc.", "dateAdded": "2020-08-26T10:14:55Z", "lastModified": "2020-08-26T10:14:55Z",
+     "rating": 0.0, "confidence": 0, "threatAssessRating": 1.29, "threatAssessConfidence": 5.29, "webLink": "",
+     "ip": "127.0.0.1", "type": "Address"},
+    {"id": 2, "owner": "PhishTank", "dateAdded": "2020-08-26T10:14:55Z", "lastModified": "2020-08-26T10:14:55Z",
+     "rating": 0.0, "confidence": 0, "threatAssessRating": 1.29, "threatAssessConfidence": 5.29, "webLink": "",
+     "ip": "127.0.0.1", "type": "Address"}]
+
+
 PARAMS = {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 0, "confidence": 0}
 data_test_create_context = [
     ({}, ({}, []), PARAMS),
@@ -274,3 +298,9 @@ def test_associate_indicator_request(indicator_type, indicator, expected_url, mo
     associate_indicator_request(indicator_type, indicator, 'test', '0')
     url = f'/v2/indicators/{expected_url}/groups/test/0'
     assert api_request.call_args[0][0].request_uri == url
+
+
+def test_ip_get_indicators_multiple_owners(mocker):
+    mocker.patch('ThreatConnect_v2.get_xindapi', side_effect=[GET_XINDAPI_OWNER1, GET_XINDAPI_OWNER2])
+    indicators = get_indicators('127.0.0.1', 'Address', 'Demisto Inc.,PhishTank', -1, -1)
+    assert indicators == EXPECTED_INDOCATORS_OUTPUT

@@ -42,6 +42,9 @@ def calculate_freshness_time(freshness):
 
 
 def create_context(indicators, include_dbot_score=False):
+    params = demisto.params()
+    rating_threshold = int(params.get('rating', '3'))
+    confidence_threshold = int(params.get('confidence', '50'))
     context = {
         'DBotScore': [],
         outputPaths['ip']: [],
@@ -63,6 +66,7 @@ def create_context(indicators, include_dbot_score=False):
         'File': 'md5'
     }
 
+    highest_score = 0
     for ind in indicators:
         indicator_type = tc_type_to_demisto_type.get(ind['type'], ind['type'])
         value_field = type_to_value_field.get(ind['type'], 'summary')
@@ -80,7 +84,7 @@ def create_context(indicators, include_dbot_score=False):
             # returned in general indicator request - REST API
             rating = int(ind.get('threatAssessRating', 0))
 
-        if confidence >= int(demisto.params()['confidence']) and rating >= int(demisto.params()['rating']):
+        if confidence >= confidence_threshold and rating >= rating_threshold:
             dbot_score = 3
             desc = ''
             if hasattr(ind, 'description'):
@@ -114,13 +118,15 @@ def create_context(indicators, include_dbot_score=False):
         else:
             dbot_score = 1
 
-        if include_dbot_score:
-            context['DBotScore'].append({
+        # if there is more than one indicator results - take the one with the highest score
+        if include_dbot_score and dbot_score > highest_score:
+            highest_score = dbot_score
+            context['DBotScore'] = [{
                 'Indicator': value,
                 'Score': dbot_score,
                 'Type': indicator_type,
                 'Vendor': 'ThreatConnect'
-            })
+            }]
 
         context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
             'ID': ind['id'],
@@ -240,10 +246,9 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
     if owners and owners.find(",") > -1:
         owners = owners.split(",")
         for owner in owners:
-            raw_indicators = get_xindapi(tc, indicator_value, indicator_type, owner)
-            if raw_indicators:
-                owners = owner
-                break
+            indicator = get_xindapi(tc, indicator_value, indicator_type, owner)
+            if indicator:
+                raw_indicators.append(indicator)
     else:
         raw_indicators = get_xindapi(tc, indicator_value, indicator_type, owners)
         if raw_indicators and loopowners is True:
@@ -259,26 +264,31 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
             else:
                 demisto.results("Unable to indentify the owner for the given indicator")
 
-    indicators = raw_indicators
+    indicators = []
     associatedIndicators = []
     indicator_observations = []
 
-    if raw_indicators:
+    for raw_indicator in raw_indicators:
+        if isinstance(raw_indicator, list):
+            indicator_to_add = raw_indicator[0]
+        else:
+            indicator_to_add = raw_indicator
+
         if associated_groups:
-            indicators[0]['group_associations'] = tc_associated_groups(tc, owners, indicator_value, raw_indicators[0]['type'])
+            indicator_to_add['group_associations'] = tc_associated_groups(tc, owners, indicator_value, raw_indicator['type'])
 
         if include_tags:
-            indicators[0]['indicator_tags'] = tc_indicator_get_tags(tc, owners, indicator_value, raw_indicators[0]['type'])
+            indicator_to_add['indicator_tags'] = tc_indicator_get_tags(tc, owners, indicator_value, raw_indicator['type'])
 
         if include_observations:
             try:
                 for indicator in raw_indicators:
                     for observation in indicator.observations:
                         indicator_observations.append({"count": observation.count, "date_observed": observation.date_observed})
-                indicators[0]['indicator_observations'] = indicator_observations
+                indicator_to_add['indicator_observations'] = indicator_observations
             except Exception as error:
                 demisto.error(str(error))
-                indicators[0]['indicator_observations'] = indicator_observations
+                indicator_to_add['indicator_observations'] = indicator_observations
 
         if associated_indicators:
             try:
@@ -294,11 +304,11 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                                                      "date_added": associated_indicator.date_added,
                                                      "last_modified": associated_indicator.last_modified,
                                                      "weblink": associated_indicator.weblink})
-                indicators[0]['indicator_associations'] = associatedIndicators
+                indicator_to_add['indicator_associations'] = associatedIndicators
             except Exception as error:
                 demisto.error(str(error))
-                indicators[0]['indicator_associations'] = associatedIndicators
-
+                indicator_to_add['indicator_associations'] = associatedIndicators
+        indicators.append(indicator_to_add)
     return indicators
 
 
