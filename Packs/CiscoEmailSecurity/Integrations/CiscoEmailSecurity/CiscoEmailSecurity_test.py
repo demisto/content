@@ -1,4 +1,5 @@
 import json
+import pytest
 from CiscoEmailSecurity import Client
 
 
@@ -14,6 +15,20 @@ def test_date_to_cisco_date():
     from CiscoEmailSecurity import date_to_cisco_date
     res = date_to_cisco_date('2019-11-20 09:36:09')
     assert res == '2019-11-20T09:36:09.000Z'
+
+
+@pytest.mark.parametrize(
+    "limit, expected",
+    [
+        ('', 50),
+        ('100', 50),
+        ('20', 20)
+    ]
+)
+def test_set_limit(limit, expected):
+    from CiscoEmailSecurity import set_limit
+    res = set_limit(limit)
+    assert res == expected
 
 
 def test_build_url_params_for_list_report():
@@ -64,8 +79,6 @@ def test_messages_to_human_readable():
 
 def test_list_get_message_details_command(requests_mock):
     from CiscoEmailSecurity import list_get_message_details_command
-    mock_response = {'data': {"jwtToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6ImFkbWluIiwiaXM"}}
-    requests_mock.post('https://ciscoemailsecurity/esa/api/v2.0/login', json=mock_response)
     requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/message-tracking/details?"
                       "startDate=2017-02-14T09:51:46.000-0600.000Z&endDate=2017-02-14T09:51:46.000-0600.000Z&"
                       "mid=None&icid=None",
