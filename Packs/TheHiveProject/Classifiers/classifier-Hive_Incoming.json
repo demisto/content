@@ -1,0 +1,19 @@
+{
+ "description": "Default incoming mapper for TheHiveProject cases",
+ "feed": false,
+ "id": "68b6e2cd-4eb2-41b2-8e3c-2fdd564ee245",
+ "name": "Hive_Incoming",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": null,
+  "simple": ""
+ },
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "keyTypeMap": {
+
+ }
+}

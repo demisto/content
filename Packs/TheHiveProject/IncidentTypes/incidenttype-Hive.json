@@ -1,0 +1,21 @@
+{
+ "autorun": false,
+ "color": "#FB8C00",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Hive",
+ "layout": "2772b108-f1f6-43ad-829e-d3621f08f5ef",
+ "locked": false,
+ "name": "Hive",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

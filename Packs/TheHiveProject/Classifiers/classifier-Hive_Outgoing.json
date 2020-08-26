@@ -1,0 +1,19 @@
+{
+ "description": "Default outbound mapping for The Hive Project cases.",
+ "feed": false,
+ "id": "46270041-06b5-4c55-899a-9a6356659071",
+ "name": "Hive_Outgoing",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": null,
+  "simple": ""
+ },
+ "type": "mapping-outgoing",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "keyTypeMap": {
+
+ }
+}

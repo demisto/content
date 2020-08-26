@@ -1,0 +1,20 @@
+{
+ "defaultIncidentType": "Hive",
+ "feed": false,
+ "id": "30778892-2dca-4b17-884f-3b67babe3170",
+ "keyTypeMap": {
+  "case": "Hive"
+ },
+ "name": "Hive_Classifier",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": null,
+  "simple": "_type"
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "description": ""
+}
