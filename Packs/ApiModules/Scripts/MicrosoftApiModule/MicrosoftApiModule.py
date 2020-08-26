@@ -53,8 +53,7 @@ class MicrosoftClient(BaseClient):
             auth_id_and_token_retrieval_url = auth_id.split('@')
             auth_id = auth_id_and_token_retrieval_url[0]
             if len(auth_id_and_token_retrieval_url) != 2:
-                self.token_retrieval_url = 'https://us-central1-oproxy-dev.cloudfunctions.net/add-scope-atp_ProvideAccessTokenFunction'  # guardrails-disable-line
-                # self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
+                self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
             else:
                 self.token_retrieval_url = auth_id_and_token_retrieval_url[1]
 

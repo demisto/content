@@ -2263,7 +2263,176 @@ script:
     deprecated: false
     description: Lists all indicators by ID
     execution: false
-    name: microsoft-atp-indicators-list
+    name: microsoft-atp-list-indicators
+    outputs:
+    - contextPath: MicrosoftATP.Indicators.id
+      type: String
+      description: Created by the system when the indicator is ingested. Generated GUID/unique identifier.
+    - contextPath: MicrosoftATP.Indicators.action
+      type: String
+      description: "The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert."
+    - contextPath: MicrosoftATP.Indicators.additionalInformation
+      type: String
+      description: A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be utilized by the targetProduct security tool.
+    - contextPath: MicrosoftATP.Indicators.azureTenantId
+      type: String
+      description: Stamped by the system when the indicator is ingested. The Azure Active Directory tenant id of submitting client.
+    - contextPath: MicrosoftATP.Indicators.confidence
+      type: Number
+      description: An integer representing the confidence the data within the indicator accurately identifies malicious behavior. Values are 0 – 100 with 100 being the highest.
+    - contextPath: MicrosoftATP.Indicators.description
+      type: String
+      description: Brief description (100 characters or less) of the threat represented by the indicator.
+    - contextPath: MicrosoftATP.Indicators.diamondModel
+      type: Unknown
+      description: "The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim."
+    - contextPath: MicrosoftATP.Indicators.domainName
+      type: String
+      description: Domain name associated with this indicator. Should be of the format subdomain.domain.topleveldomain.
+    - contextPath: MicrosoftATP.Indicators.emailEncoding
+      type: String
+      description: The type of text encoding used in the email.
+    - contextPath: MicrosoftATP.Indicators.emailLanguage
+      type: String
+      description: The language of the email.
+    - contextPath: MicrosoftATP.Indicators.emailRecipient
+      type: String
+      description: Recipient email address.
+    - contextPath: MicrosoftATP.Indicators.emailSenderAddress
+      type: String
+      description: Email address of the attacker|victim.
+    - contextPath: MicrosoftATP.Indicators.emailSenderName
+      type: String
+      description: Displayed name of the attacker|victim.
+    - contextPath: MicrosoftATP.Indicators.emailSourceDomain
+      type: String
+      description: Domain used in the email.
+    - contextPath: MicrosoftATP.Indicators.emailSourceIpAddress
+      type: String
+      description: Source IP address of email.
+    - contextPath: MicrosoftATP.Indicators.emailSubject
+      type: String
+      description: Subject line of email.
+    - contextPath: MicrosoftATP.Indicators.emailXMailer
+      type: String
+      description: X-Mailer value used in the email.
+    - contextPath: MicrosoftATP.Indicators.expirationDateTime
+      type: Date
+      description: "DateTime string indicating when the Indicator expires. All indicators must have an expiration date to avoid stale indicators persisting in the system. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'"
+    - contextPath: MicrosoftATP.Indicators.externalId
+      type: String
+      description: An identification number that ties the indicator back to the indicator provider’s system (e.g. a foreign key).
+    - contextPath: MicrosoftATP.Indicators.fileCompileDateTime
+      type: Date
+      description: "DateTime when the file was compiled. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'"
+    - contextPath: MicrosoftATP.Indicators.fileCreatedDateTime
+      type: Date
+      description: "DateTime when the file was created.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'"
+    - contextPath: MicrosoftATP.Indicators.fileHashType
+      type: String
+      description: "The type of hash stored in fileHashValue. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph."
+    - contextPath: MicrosoftATP.Indicators.fileHashValue
+      type: String
+      description: The file hash value.
+    - contextPath: MicrosoftATP.Indicators.fileMutexName
+      type: String
+      description: Mutex name used in file-based detections.
+    - contextPath: MicrosoftATP.Indicators.fileName
+      type: String
+      description: Name of the file if the indicator is file-based. Multiple file names may be delimited by commas.
+    - contextPath: MicrosoftATP.Indicators.filePacker
+      type: String
+      description: The packer used to build the file in question.
+    - contextPath: MicrosoftATP.Indicators.filePath
+      type: String
+      description: Path of file indicating compromise. May be a Windows or *nix style path.
+    - contextPath: MicrosoftATP.Indicators.fileSize
+      type: Number
+      description: Size of the file in bytes.
+    - contextPath: MicrosoftATP.Indicators.fileType
+      type: String
+      description: Text description of the type of file. For example, “Word Document” or “Binary”.
+    - contextPath: MicrosoftATP.Indicators.ingestedDateTime
+      type: Date
+      description: "Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'"
+    - contextPath: MicrosoftATP.Indicators.isActive
+      type: Boolean
+      description: Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system.
+    - contextPath: MicrosoftATP.Indicators.knownFalsePositives
+      type: String
+      description: Scenarios in which the indicator may cause false positives. This should be human-readable text.
+    - contextPath: MicrosoftATP.Indicators.lastReportedDateTime
+      type: Date
+      description: "The last time the indicator was seen. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'"
+    - contextPath: MicrosoftATP.Indicators.networkCidrBlock
+      type: String
+      description: CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified.
+    - contextPath: MicrosoftATP.Indicators.networkDestinationAsn
+      type: Number
+      description: The destination autonomous system identifier of the network referenced in the indicator.
+    - contextPath: MicrosoftATP.Indicators.networkDestinationCidrBlock
+      type: String
+      description: CIDR Block notation representation of the destination network in this indicator.
+    - contextPath: MicrosoftATP.Indicators.networkDestinationIPv4
+      type: String
+      description: IPv4 IP address destination.
+    - contextPath: MicrosoftATP.Indicators.networkDestinationIPv6
+      type: String
+      description: IPv6 IP address destination.
+    - contextPath: MicrosoftATP.Indicators.networkDestinationPort
+      type: Number
+      description: TCP port destination.
+    - contextPath: MicrosoftATP.Indicators.networkIPv4
+      type: String
+      description: IPv4 IP address.
+    - contextPath: MicrosoftATP.Indicators.networkIPv6
+      type: String
+      description: IPv6 IP address.
+    - contextPath: MicrosoftATP.Indicators.networkPort
+      type: Number
+      description: TCP port.
+    - contextPath: MicrosoftATP.Indicators.networkProtocol
+      type: Number
+      description: Decimal representation of the protocol field in the IPv4 header.
+    - contextPath: MicrosoftATP.Indicators.networkSourceAsn
+      type: Number
+      description: The source autonomous system identifier of the network referenced in the indicator.
+    - contextPath: MicrosoftATP.Indicators.networkSourceCidrBlock
+      type: String
+      description: CIDR Block notation representation of the source network in this indicator.
+    - contextPath: MicrosoftATP.Indicators.networkSourceIPv4
+      type: String
+      description: IPv4 IP Address source.
+    - contextPath: MicrosoftATP.Indicators.networkSourceIPv6
+      type: String
+      description: IPv6 IP Address source.
+    - contextPath: MicrosoftATP.Indicators.networkSourcePort
+      type: Number
+      description: TCP port source.
+    - contextPath: MicrosoftATP.Indicators.passiveOnly
+      type: Boolean
+      description: "Determines if the indicator should trigger an event that is visible to an end-user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false."
+    - contextPath: MicrosoftATP.Indicators.severity
+      type: Number
+      description: An integer representing the severity of the malicious behavior identified by the data within the indicator. Values are 0 – 5 where 5 is the most severe and zero is not severe at all.
+    - contextPath: MicrosoftATP.Indicators.targetProduct
+      type: String
+      description: A string value representing a single security product to which the indicator should be applied.
+    - contextPath: MicrosoftATP.Indicators.threatType
+      type: String
+      description: "Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList."
+    - contextPath: MicrosoftATP.Indicators.tlpLevel
+      type: String
+      description: "Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, amber, red."
+    - contextPath: MicrosoftATP.Indicators.url
+      type: String
+      description: Uniform Resource Locator. This URL comply with RFC 1738.
+    - contextPath: MicrosoftATP.Indicators.userAgent
+      type: String
+      description: User-Agent string from a web request that could indicate compromise.
+    - contextPath: MicrosoftATP.Indicators.vendorInformation
+      type: String
+      description: Information about the vendor.
   - arguments:
     - default: true
       description: The ID of the indicator to get.
@@ -2653,8 +2822,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    execution: false
     description: Creates a file indicator
+    execution: false
     name: microsoft-atp-network-indicator-create
   - arguments:
     - default: false
@@ -2689,6 +2858,17 @@ script:
     description: Updates a given indicator
     execution: false
     name: microsoft-atp-indicator-update
+  - arguments:
+    - default: false
+      isArray: false
+      description: The ID of the indicator to get.
+      name: indicator_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes and indicator
+    execution: false
+    name: microsoft-atp-indicator-delete
   dockerimage: demisto/crypto:1.0.0.10743
   feed: false
   isfetch: true

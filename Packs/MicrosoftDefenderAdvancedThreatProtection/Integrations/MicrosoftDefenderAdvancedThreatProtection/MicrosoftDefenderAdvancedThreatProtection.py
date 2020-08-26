@@ -571,7 +571,10 @@ class MsClient:
             cmd_url = urljoin(cmd_url, indicator_id)
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
-        resp = self.ms_client.http_request('GET', full_url=cmd_url, url_suffix=None, scope='graph', timeout=100, ok_codes=(200, 204, 206, 404), resp_type='response')
+        resp = self.ms_client.http_request(
+            'GET', full_url=cmd_url, url_suffix=None, scope='graph', timeout=1000,
+            ok_codes=(200, 204, 206, 404), resp_type='response'
+        )
         # 404 - No indicators found, an empty list.
         if resp.status_code == 404:
             return []
@@ -597,7 +600,9 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        resp = self.ms_client.http_request('POST', full_url=self.indicators_endpoint, json_data=body, url_suffix=None, scope='graph')
+        resp = self.ms_client.http_request(
+            'POST', full_url=self.indicators_endpoint, json_data=body, url_suffix=None, scope='graph'
+        )
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
         return resp
@@ -627,12 +632,26 @@ class MsClient:
             description=description,
             severity=severity
         ))
-        resp =  self.ms_client.http_request(
+        resp = self.ms_client.http_request(
             'PATCH', full_url=cmd_url, json_data=body, url_suffix=None, scope='graph', headers=header
         )
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
         return resp
+
+    def delete_indicator(self, indicator_id):
+        """Deletes a given indicator
+
+        Args:
+            indicator_id: ID of the indicator to delete
+
+        Returns:
+            A response from the API.
+        """
+        cmd_url = urljoin(self.indicators_endpoint, indicator_id)
+        return self.ms_client.http_request(
+            'DELETE', None, full_url=cmd_url, scope='graph', ok_codes=(204, ), resp_type='response'
+        )
 
 
 ''' Commands '''
@@ -1954,7 +1973,7 @@ def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) 
 
 
 def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Optional[Dict]]:
-    """
+    """Creates a file indicator
 
     Args:
         client: MsClient
@@ -2003,13 +2022,13 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Op
 
 
 def create_network_indicator_command(client, args) -> Tuple[str, Dict]:
-    """
+    """Creates a network indicator
 
     Args:
         client: MsClient
         args: arguments from CortexSOAR.
             Should contain an email observable:
-            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---network
+            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-betaindicator-observables---network  # noqa: E501
     Returns:
         human readable, outputs, raw response
 
@@ -2095,6 +2114,12 @@ def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, dict]:
         removeNull=True
     )
     return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': resp}
+
+
+def delete_indicator_command(client: MsClient, args: dict) -> str:
+    indicator_id = args.get('indicator_id', '')
+    client.delete_indicator(indicator_id)
+    return f'Indicator ID: {indicator_id} was successfully deleted'
 
 
 def main():
@@ -2221,7 +2246,7 @@ def main():
         elif command == 'microsoft-atp-add-remove-machine-tag':
             return_outputs(*add_remove_machine_tag_command(client, args))
 
-        elif command in ('microsoft-atp-indicators-list', 'microsoft-atp-get-indicator-by-id'):
+        elif command in ('microsoft-atp-list-indicators', 'microsoft-atp-get-indicator-by-id'):
             return_outputs(*list_indicators_command(client, args))
         elif command == 'microsoft-atp-file-indicator-create':
             return_outputs(*create_file_indicator_command(client, args))
@@ -2229,12 +2254,13 @@ def main():
             return_outputs(*create_network_indicator_command(client, args))
         elif command == 'microsoft-atp-indicator-update':
             return_outputs(*update_indicator_command(client, args))
+        elif command == 'microsoft-atp-indicator-delete':
+            return_outputs(delete_indicator_command(client, args))
     except Exception as err:
         return_error(str(err))
 
 
 from MicrosoftApiModule import *  # noqa: E402
-
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
