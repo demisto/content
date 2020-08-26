@@ -1,8 +1,8 @@
 id: PANW IoT Incident Handling with ServiceNow
 version: -1
 name: PANW IoT Incident Handling with ServiceNow
-description: This playbook creates a ServiceNow ticket after the incident enrichment
-  from Palo Alto Networks IoT security portal (previously Zingbox Cloud).
+description: This playbook creates a ServiceNow ticket after the incident is enriched by
+Palo Alto Networks IoT security portal (previously Zingbox Cloud).
 starttaskid: "0"
 tasks:
   "0":
@@ -68,7 +68,7 @@ tasks:
       id: 4fb395f3-072b-4719-8cec-be1f6dc702c0
       version: -1
       name: Get Device Details from IoT Server
-      description: IoT get device command - get a single device details
+      description: IoT get device command - get a single device details.
       script: Palo Alto Networks IoT|||iot-security-get-device
       type: regular
       iscommand: true
@@ -198,7 +198,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: 'to check whether the IOT_CONFIG is defined'
+      description: 'Check whether the IOT_CONFIG is defined.'
     nexttasks:
       '#default#':
       - "9"
@@ -232,7 +232,7 @@ tasks:
     task:
       id: be71d420-9199-41ce-8cee-31f7db39a642
       version: -1
-      name: ServiceNow Table Existed?
+      name: ServiceNow Table Exists?
       description: Check if a given value exists in the context. Will return 'no'
         for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
@@ -311,7 +311,7 @@ tasks:
       id: 849b6d99-d818-4697-8eef-f34dcf7068cc
       version: -1
       name: Manual investigation
-      description: Please check the device and incident details.
+      description: Check the device and incident details.
       type: regular
       iscommand: false
       brand: ""
@@ -468,13 +468,13 @@ inputs:
     simple: IOT_CONFIG
   required: false
   description: The list name defined in the XSOAR Lists for the RACI and ServiceNow
-    calculation
+    calculation.
   playbookInputQuery: null
 - key: CreateServiceNowTicket
   value:
     simple: "false"
   required: false
-  description: True if a ServiceNow ticket should be created based on the RACI calculation
+  description: Determines if a ServiceNow ticket should be created based on the RACI calculation. Set to True to create an incident.
   playbookInputQuery: null
 outputs:
 - contextPath: PaloAltoNetworksIoT
