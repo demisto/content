@@ -484,7 +484,7 @@ tasks:
       {
         "position": {
           "x": -370,
-          "y": 300
+          "y": 440
         }
       }
     note: false
@@ -514,7 +514,7 @@ tasks:
       {
         "position": {
           "x": -370,
-          "y": 440
+          "y": 590
         }
       }
     note: false
@@ -823,15 +823,53 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "25":
+    id: "25"
+    taskid: c0057266-ebd8-4436-8164-0aeb7f20ec4f
+    type: condition
+    task:
+      id: c0057266-ebd8-4436-8164-0aeb7f20ec4f
+      version: -1
+      name: check alarms
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${McAfeeESM.Alarm}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1295,
+        "height": 1505,
         "width": 2020,
         "x": -370,
-        "y": -120
+        "y": -330
       }
     }
   }
