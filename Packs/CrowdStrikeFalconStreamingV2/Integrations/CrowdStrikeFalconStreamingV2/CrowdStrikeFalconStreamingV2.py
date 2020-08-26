@@ -37,7 +37,15 @@ class Client(BaseClient):
     def __init__(self, base_url: str, app_id: str, verify_ssl: bool, proxy: bool) -> None:
         self.app_id = app_id
         self.refresh_stream_url = None
-        super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
+        super().__init__(
+            base_url=base_url,
+            verify=verify_ssl,
+            proxy=proxy,
+            headers={
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        )
 
     async def set_access_token(self, refresh_token: 'RefreshToken') -> None:
         await refresh_token.set_access_token(self)
@@ -452,7 +460,7 @@ def main():
     base_url: str = params.get('base_url', '')
     client_id: str = params.get('client_id', '')
     client_secret: str = params.get('client_secret', '')
-    event_type = ','.join(params.get('event_type', []))
+    event_type = ','.join(params.get('event_type', []) or [])
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     offset = params.get('offset', '0')
