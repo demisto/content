@@ -851,7 +851,7 @@ def configure_servers_and_restart(build, prints_manager):
                 input('restart your server and then press enter.')
             else:
                 restart_server(server)
-        if not Build.run_environment == Running.WITH_LOCAL_SERVER:
+        if Build.run_environment != Running.WITH_LOCAL_SERVER:
             prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
             prints_manager.execute_thread_prints(0)
             sleep(60)
