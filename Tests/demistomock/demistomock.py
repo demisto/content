@@ -757,7 +757,15 @@ def setContext(contextPath, value):
 
 
 def demistoUrls():
-    """Retrieves Demisto server URLs of incident ran in
+    """Retrieves the following URLs related to the incident:
+        - evidenceBoard
+        - investigation
+        - relatedIncidents
+        - server
+        - warRoom
+        - workPlan
+        You can use these URLs when you send notifications outside the system over email or slack
+         and would like to include a link to the incident.
 
     Returns:
       dict: Object contains server URLs with page as key and URL as value
