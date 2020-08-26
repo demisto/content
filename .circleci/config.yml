@@ -844,7 +844,7 @@ jobs:
                     then
                       python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
                   else
-                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
+                      python3 ./Tests/scripts/wait_until_server_ready.py "master"
                   fi
             - run:
                 name: Run Tests - Demisto Master
