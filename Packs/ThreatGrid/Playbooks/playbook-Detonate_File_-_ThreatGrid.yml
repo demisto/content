@@ -514,8 +514,8 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: If the value is set to 'False', then the sample will not be private.
-    Any value other than 'False' will set the sample to be private.
+  description: If the value is set to 'False', the sample will not be private.
+    Any value other than 'False' will set the sample to private.
   playbookInputQuery:
 - key: Source
   value: {}
