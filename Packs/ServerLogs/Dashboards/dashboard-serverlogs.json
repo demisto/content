@@ -1,5 +1,6 @@
 {
 	"id": "4c34131e-0b65-4158-804f-e962ea019a27",
+	"description": "Dashboard to tail the latest server and docker logs",
 	"version": 7,
 	"modified": "2020-08-24T19:02:25.377841573Z",
 	"sortValues": null,
