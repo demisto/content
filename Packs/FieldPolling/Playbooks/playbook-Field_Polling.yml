@@ -1,0 +1,162 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f8b9ffe8-ddd9-4b92-855e-2f0ea69d4f23
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: This playbook will poll a field for whether a value exists and whether
+  it contains a specific value.
+id: da8b7575-8018-4793-8303-2fe3ea72496f
+inputs:
+- description: The field to poll for a value. Ensure that you use the lower case version
+    of the field. For example; the Details field should be details
+  key: field
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: The regex to check the field for. By default this is .+ which matches
+    anything other than None.
+  key: value
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: .+
+- description: How often to check (in minutes)
+  key: frequency
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: "1"
+- description: When to timeout (in minutes)
+  key: timeout
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: "10"
+name: Field Polling
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d66a3885-27e3-439d-8855-b5522c6dde35
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d66a3885-27e3-439d-8855-b5522c6dde35
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: regex
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.value}
+      Ids:
+        simple: ${inputs.field}
+      Interval:
+        simple: ${inputs.frequency}
+      PollingCommandArgName:
+        simple: field
+      PollingCommandName:
+        simple: pollingField
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: PollingCheckField(val.field=='${inputs.field}' && val.exists==false).field
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: e285c518-5c22-471a-83a7-9e6a756396eb
+      iscommand: false
+      name: Poll Field
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: e285c518-5c22-471a-83a7-9e6a756396eb
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f86bcb49-d18e-43d1-8c28-278d0e2e7a2d
+      iscommand: false
+      name: Complete
+      type: title
+      version: -1
+    taskid: f86bcb49-d18e-43d1-8c28-278d0e2e7a2d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
