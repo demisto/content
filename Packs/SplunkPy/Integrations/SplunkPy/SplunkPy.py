@@ -867,6 +867,53 @@ def get_store_data(service):
         yield store.data.query(**query)
 
 
+def get_mapping_fields_command(service):
+    # Create the query to get unique objects
+    index = demisto.params().get('fetch_index', 'notable')
+    type_field = demisto.params().get('type_field', 'source')
+
+    # If fetchQuery is not populated, default to index=<indexname> as the prefix
+    fetch_query = demisto.params().get('fetchQuery', 'index="{}"'.format(index))
+    args = {'query': '{} | dedup {}'.format(fetch_query, type_field)}
+    query = build_search_query(args)
+
+    # Set the earliest time for the query scope - how far back to search
+    fetch_time_in_minutes = parse_time_to_minutes()
+    now = datetime.utcnow()
+    start_time_for_fetch = now - timedelta(minutes=fetch_time_in_minutes)
+    start_time = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    search_kwargs = {
+        "earliest_time": start_time,
+        "exec_mode": "blocking"  # A blocking search runs synchronously, and returns a job when it's finished.
+    }
+
+    # Perform the search
+    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+
+    # Parse the results
+    num_of_results_from_query = search_job["resultCount"]
+    results_limit = float("inf")
+    batch_size = 25000
+    results_offset = 0
+    total_parsed_results = []  # type: List[Dict[str,Any]]
+
+    while len(total_parsed_results) < int(num_of_results_from_query) and len(total_parsed_results) < results_limit:
+        current_batch_of_results = get_current_results_batch(search_job, batch_size, results_offset)
+        max_results_to_add = results_limit - len(total_parsed_results)
+        parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add,
+                                                                         search_kwargs.get('app', ''))
+        total_parsed_results.extend(parsed_batch_results)
+
+        results_offset += batch_size
+
+    types_map = {}
+    for obj in total_parsed_results:
+        type_field_value = obj.get(type_field, '')
+        if type_field_value:
+            types_map[type_field_value] = obj
+    demisto.results(types_map)
+
+
 def main():
     if demisto.command() == 'splunk-parse-raw':
         splunk_parse_raw_command()
@@ -947,6 +994,8 @@ def main():
             kv_store_collection_data_delete(service)
         elif demisto.command() == 'splunk-kv-store-collection-delete-entry':
             kv_store_collection_delete_entry(service)
+    if demisto.command() == 'get-mapping-fields':
+        get_mapping_fields_command(service)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

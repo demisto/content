@@ -105,6 +105,20 @@ configuration:
   name: use_requests_handler
   required: false
   type: 8
+- additionalinfo: Name of the field that includes the Event Type (classifier field)
+  defaultvalue: source
+  display: Event Type Field Name
+  hidden: false
+  name: type_field
+  required: false
+  type: 0
+- additionalinfo: The Splunk index where the fetched objects reside.
+  defaultvalue: notable
+  display: Fetch index Name
+  hidden: false
+  name: fetch_index
+  required: false
+  type: 0
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
