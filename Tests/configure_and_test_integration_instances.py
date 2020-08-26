@@ -1043,7 +1043,6 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
             continue
         prints_manager.execute_thread_prints(0)
 
-
         module_instances = []
         for integration in integrations_to_configure:
             placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
