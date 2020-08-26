@@ -585,11 +585,12 @@ class MsClient:
             resp['value'] = list(
                 filter(lambda item: item.get('targetProduct') == 'Microsoft Defender ATP', resp.get('value', []))
             )
-            return resp['value']
+            resp = resp['value']
         # If a single object - should remove the '@odata.context' key.
         else:
             resp.pop('@odata.context')
-            return [resp]
+            resp = [resp]
+        return [assign_params(values_to_ignore=[None], **item) for item in resp]
 
     def create_indicator(self, body: Dict) -> Dict:
         """Creates indicator from the given body.
@@ -605,7 +606,7 @@ class MsClient:
         )
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
-        return resp
+        return assign_params(values_to_ignore=[None], **resp)
 
     def update_indicator(
             self, indicator_id: str, expiration_date_time: str,
@@ -637,7 +638,7 @@ class MsClient:
         )
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
-        return resp
+        return assign_params(values_to_ignore=[None], **resp)
 
     def delete_indicator(self, indicator_id):
         """Deletes a given indicator
