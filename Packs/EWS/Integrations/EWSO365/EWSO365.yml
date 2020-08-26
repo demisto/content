@@ -1038,19 +1038,19 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Email addresses for the 'To' field
+      description: Email addresses for the 'To' field. Supports comma-separated values
       isArray: true
       name: to
       required: false
       secret: false
     - default: false
-      description: Email addresses for the 'Cc' field
+      description: Email addresses for the 'Cc' field. Supports comma-separated values
       isArray: true
       name: cc
       required: false
       secret: false
     - default: false
-      description: Email addresses for the 'Bcc' field
+      description: Email addresses for the 'Bcc' field. Supports comma-separated values
       isArray: true
       name: bcc
       required: false
@@ -1074,7 +1074,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of war room entries that contain
+      description: A comma-separated list of IDs of war room entries that contains
         the files that should be attached to the email
       isArray: true
       name: attachments_ids
@@ -1123,13 +1123,13 @@ script:
       description: 'Replace {varname} variables with values from this argument. Expected
       values are in the form of a JSON document like {"varname": {"value": "some
       value", "key": "context key"}}. Each var name can either be provided with
-      the value or a context key to retrieve the value from.'
+      the value or a context key to retrieve the value from'
       isArray: false
       name: template_params
       required: false
       secret: false
     - default: false
-      description: 'A CSV list of additional headers in the format: headerName=headerValue.
+      description: 'A comma-separated list list of additional headers in the format: headerName=headerValue.
       For example: "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
       name: additional_headers
