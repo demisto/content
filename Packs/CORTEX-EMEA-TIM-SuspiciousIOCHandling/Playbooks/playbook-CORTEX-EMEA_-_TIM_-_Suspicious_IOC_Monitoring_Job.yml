@@ -1,0 +1,692 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4c45ebf8-749a-4837-84a2-0be40c6459c2
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: CORTEX-EMEA - TIM - Suspicious IOC Monitoring Job
+inputs:
+- description: ""
+  key: ""
+  playbookInputQuery:
+    daterange:
+      fromdate: "0001-01-01T00:00:00Z"
+      fromdatelicenseval: "0001-01-01T00:00:00Z"
+      period:
+        by: ""
+        byfrom: ""
+        byto: ""
+        field: ""
+        fromvalue: null
+        tovalue: null
+      todate: "0001-01-01T00:00:00Z"
+    query: manualScore:T or value:2.181.179.55 or value:www.btblb2wsk8.com
+    queryEntity: indicators
+    results: null
+    runFromLastJobTime: false
+  required: false
+  value: {}
+name: CORTEX-EMEA - TIM - Suspicious IOC Monitoring Job
+outputs: []
+sourceplaybookid: 8e517b31-439e-4550-88e5-ddf3bdce60ac
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fc08f30d-e307-4700-8380-5d3ce12d68c3
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: fc08f30d-e307-4700-8380-5d3ce12d68c3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 76dab4b3-0b56-4999-8403-22045c04bc4b
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 76dab4b3-0b56-4999-8403-22045c04bc4b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cfbc2e9c-da7b-4137-8c44-41e75d4d8879
+      iscommand: false
+      name: Hunt
+      type: title
+      version: -1
+    taskid: cfbc2e9c-da7b-4137-8c44-41e75d4d8879
+    timertriggers:
+    - action: start
+      fieldname: detectionsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+  "38":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: TIM-HuntELK.hits
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 66408e41-b8e2-4706-864f-e5bae6c4a94d
+      iscommand: false
+      name: Are there ELK hits?
+      type: condition
+      version: -1
+    taskid: 66408e41-b8e2-4706-864f-e5bae6c4a94d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      alertname: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      attorneygeneralnotification: {}
+      blockedaction: {}
+      breachconfirmation: {}
+      bugtraq: {}
+      changeme: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      consumerreportingagenciesnotification: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details:
+        complex:
+          accessor: indicatorValues
+          root: TIM-HuntELK
+          transformers:
+          - operator: uniq
+          - args:
+              prefix:
+                value:
+                  simple: value:"
+              suffix:
+                value:
+                  simple: '"'
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ' or '
+            operator: join
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicehash: {}
+      devicename: {}
+      digitalguardianactivity: {}
+      digitalguardianalarmname: {}
+      digitalguardianarcuid: {}
+      digitalguardianattachmentfilename: {}
+      digitalguardianclassification: {}
+      digitalguardiancommandline: {}
+      digitalguardiancomputername: {}
+      digitalguardiandestinationaddress: {}
+      digitalguardiandestinationdnsdomain: {}
+      digitalguardianemailrecipient: {}
+      digitalguardianemailsender: {}
+      digitalguardianemailsubject: {}
+      digitalguardianfilename: {}
+      digitalguardianparentprocessname: {}
+      digitalguardianpolicy: {}
+      digitalguardianprocessname: {}
+      digitalguardianremoteport: {}
+      digitalguardiansensitivity: {}
+      digitalguardiansourceaddress: {}
+      digitalguardiansourceip: {}
+      digitalguardianthreattype: {}
+      digitalguardianusername: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      entryIDs: {}
+      eventid: {}
+      eventtype: {}
+      exactlywhathappenedandatwhattimes: {}
+      exfiltratedfiles: {}
+      expansebehaviorrule: {}
+      expansebusinessunit: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      externaladdresses: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstname: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      illusivenetworkshasforensics: {}
+      illusivenetworkshostname: {}
+      illusivenetworksid: {}
+      illusivenetworkslastseenuser: {}
+      illusivenetworkssourceoperatingsystem: {}
+      illusivenetworksstepstocrownjewel: {}
+      illusivenetworksstepstodomainadmin: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      individualsnotification: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      logsource: {}
+      logzioalerteventid: {}
+      logzioalertid: {}
+      logzioalertsummary: {}
+      logziotags: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      managementnotification: {}
+      manageremail: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      mobiledevicemodel: {}
+      name:
+        simple: 'Suspicious IOC Investigation (from JobID: ${incident.id})'
+      niststage: {}
+      numberofports: {}
+      numberofuniqueports: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      offenseid: {}
+      offenseurl: {}
+      oktaaccountstatus: {}
+      os: {}
+      osversion: {}
+      otherpiidatabreached: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      penteraoperationdetails: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      safebreachsimulationid: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      severity:
+        simple: "0.5"
+      signature: {}
+      signindatetime: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      statecisonotification: {}
+      statewherethebreachtookplace: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type:
+        simple: Suspicious IOC Handling
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdroperatingsystem: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Create a new incident
+      id: 9fe90693-7de4-4ebb-8173-9a77e1ff6df7
+      iscommand: true
+      name: Create New Suspicious IOC Investigation
+      script: Builtin|||createNewIncident
+      type: regular
+      version: -1
+    taskid: 9fe90693-7de4-4ebb-8173-9a77e1ff6df7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 720
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicator:
+        complex:
+          root: playbookQuery
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4372d243-23ce-4f68-82b8-cef639347936
+      iscommand: false
+      name: CORTEX-EMEA - TIM - Hunt IOC in ELK
+      playbookId: CORTEX-EMEA - TIM - Hunt IOC in ELK
+      type: playbook
+      version: -1
+    taskid: 4372d243-23ce-4f68-82b8-cef639347936
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "38_14_#default#": 0.22
+    },
+    "paper": {
+      "dimensions": {
+        "height": 895,
+        "width": 600,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }

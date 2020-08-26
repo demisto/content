@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#fea743",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Suspicious IOC Handling",
+ "layout": "Suspicious IOC Handling",
+ "locked": false,
+ "name": "Suspicious IOC Handling",
+ "playbookId": "CORTEX-EMEA - TIM - Suspicious IOC Handling",
+ "readonly": false,
+ "reputationCalc": 1,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

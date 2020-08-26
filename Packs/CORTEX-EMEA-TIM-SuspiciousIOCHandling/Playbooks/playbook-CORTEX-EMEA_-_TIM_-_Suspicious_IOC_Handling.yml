@@ -1,0 +1,617 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4c45ebf8-749a-4837-84a2-0be40c6459c2
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Playbook inputs are set into the incident field 'details' by the Suspicious
+  IOC Monitoring Job when IOC(s) hit(s) has(have) been found in ELK.
+id: CORTEX-EMEA - TIM - Suspicious IOC Handling
+inputs: []
+name: CORTEX-EMEA - TIM - Suspicious IOC Handling
+outputs: []
+sourceplaybookid: 8e517b31-439e-4550-88e5-ddf3bdce60ac
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 15981ab0-cae5-40cc-861c-0b1723791273
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 15981ab0-cae5-40cc-861c-0b1723791273
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 65
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "47"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 94e6546f-e719-4b09-80d7-6dc5b0b3e639
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 94e6546f-e719-4b09-80d7-6dc5b0b3e639
+    timertriggers:
+    - action: stop
+      fieldname: remediationsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+  "22":
+    defaultassigneecomplex:
+      simple: ${incident.owner}
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b49df00b-2b82-4501-84a9-baa4f38c49a0
+      iscommand: false
+      name: Review SIEM hits & Analyze impact
+      tags:
+      - analyst-notes
+      type: regular
+      version: -1
+    taskid: b49df00b-2b82-4501-84a9-baa4f38c49a0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assignBy:
+        simple: random
+      email: {}
+      onCall: {}
+      roles: {}
+      username:
+        simple: admin
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      id: 8abc6d1a-9afe-406d-8e19-57d27acda08b
+      iscommand: false
+      name: Assign Analyst
+      script: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: 8abc6d1a-9afe-406d-8e19-57d27acda08b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    message:
+      bcc: null
+      body:
+        simple: Select indicators reputation update strategy
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - One by One (Manually)
+      - Bulk update (Fully-automated)
+      subject: null
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      Bulk update (Fully-automated):
+      - "28"
+      One by One (Manually):
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: daec95a6-b612-4960-837d-3b185793ecc6
+      iscommand: false
+      name: Select indicators reputation update strategy
+      type: condition
+      version: -1
+    taskid: daec95a6-b612-4960-837d-3b185793ecc6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+  "26":
+    defaultassigneecomplex:
+      simple: ${incident.owner}
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a88379e4-2b8d-48bd-8c84-373910eba4c9
+      iscommand: false
+      name: Help yourself!
+      type: regular
+      version: -1
+    taskid: a88379e4-2b8d-48bd-8c84-373910eba4c9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+  "28":
+    formDisplay:
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    id: "28"
+    ignoreworker: false
+    message:
+      bcc: null
+      body:
+        simple: What is the new reputation (Good or Bad)?
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - Good
+      - Bad
+      subject: null
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      Bad:
+      - "46"
+      Good:
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a4969e56-4676-4a9c-8d2c-98ee83428829
+      iscommand: false
+      name: What is the new reputation (Good or Bad)?
+      type: condition
+      version: -1
+    taskid: a4969e56-4676-4a9c-8d2c-98ee83428829
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1390
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a569be31-7569-44bc-861c-64ed14c78619
+      iscommand: false
+      name: Analysis
+      type: title
+      version: -1
+    taskid: a569be31-7569-44bc-861c-64ed14c78619
+    timertriggers:
+    - action: start
+      fieldname: remediationsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 225
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 80fc57f8-6a90-48a0-815a-cc45041063fc
+      iscommand: false
+      name: IOC Handling
+      type: title
+      version: -1
+    taskid: 80fc57f8-6a90-48a0-815a-cc45041063fc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: IndicatorsWithElkHits=.
+      fromdate: {}
+      page: {}
+      query:
+        simple: tags:"SUSPICIOUS-IOC-ELK-HIT" AND investigationIDs:${incident.id}
+      size: {}
+      todate: {}
+      value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.find.indicators
+      id: 64d78bfa-8d8c-49d4-8cad-9cdf2db38053
+      iscommand: true
+      name: Find tagged indicators (SUSPICIOUS-IOC-ELK-HIT)
+      script: Builtin|||findIndicators
+      type: regular
+      version: -1
+    taskid: 64d78bfa-8d8c-49d4-8cad-9cdf2db38053
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+  "43":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: List of suspicious indicators with hits found
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "44"
+      - "48"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: IndicatorsWithElkHits=.
+      fromdate: {}
+      page: {}
+      query:
+        complex:
+          accessor: details
+          root: incident
+          transformers:
+          - operator: trim
+      size: {}
+      todate: {}
+      value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.find.indicators
+      id: badbac4f-7e01-4e7c-8939-8806570f15fe
+      iscommand: true
+      name: Find Indicator Hits from incident details field that was set by the Suspicious
+        IOC Monitoring Job
+      script: Builtin|||findIndicators
+      type: regular
+      version: -1
+    taskid: badbac4f-7e01-4e7c-8939-8806570f15fe
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      incidentId:
+        complex:
+          accessor: id
+          root: incident
+      indicatorsIDs: {}
+      indicatorsValues:
+        complex:
+          accessor: value
+          root: IndicatorsWithElkHits
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.associate.indicators
+      id: a5ef2caa-423e-4bf9-8ba7-601e5feadc17
+      iscommand: true
+      name: Associate indicators found to the incident
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      version: -1
+    taskid: a5ef2caa-423e-4bf9-8ba7-601e5feadc17
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicator:
+        complex:
+          root: IndicatorsWithElkHits
+      reputation:
+        simple: Good
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fee550f8-e8bd-44a0-80d1-ffbc8027d50b
+      iscommand: false
+      name: CORTEX-EMEA - TIM - Set Indicator Reputation (Good)
+      playbookId: CORTEX-EMEA - TIM - Set Indicator Reputation
+      type: playbook
+      version: -1
+    taskid: fee550f8-e8bd-44a0-80d1-ffbc8027d50b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1565
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicator:
+        complex:
+          root: IndicatorsWithElkHits
+      reputation:
+        simple: Bad
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bdc933fd-a356-4bfb-8153-bb68cb8032f7
+      iscommand: false
+      name: CORTEX-EMEA - TIM - Set Indicator Reputation (Bad)
+      playbookId: CORTEX-EMEA - TIM - Set Indicator Reputation
+      type: playbook
+      version: -1
+    taskid: bdc933fd-a356-4bfb-8153-bb68cb8032f7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+  "47":
+    id: "47"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 82330e8d-038a-4411-8ffc-1337c1f8a08e
+      iscommand: false
+      name: 'TODO: Close Incident - ITSM integration - Generate report - Make notes
+        & evidences - Etc'
+      type: title
+      version: -1
+    taskid: 82330e8d-038a-4411-8ffc-1337c1f8a08e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1885
+        }
+      }
+  "48":
+    id: "48"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SUSPICIOUS-IOC-ELK-HIT
+      indicatorsValues:
+        complex:
+          accessor: value
+          root: IndicatorsWithElkHits
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      id: a05c8680-7b6b-455b-828d-4ced25a548bc
+      iscommand: true
+      name: Tag IOC as being found (hit) in ELK (SUSPICIOUS-IOC-ELK-HIT)
+      script: Builtin|||appendIndicatorField
+      type: regular
+      version: -1
+    taskid: a05c8680-7b6b-455b-828d-4ced25a548bc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "25_26_One by One (Manually)": 0.46,
+      "25_28_Bulk update (Fully-automated)": 0.84,
+      "28_45_Good": 0.49,
+      "28_46_Bad": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1900,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
