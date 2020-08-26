@@ -1,0 +1,15 @@
+{
+ "name": "BMCHelixRemedyforce - Classifier",
+ "defaultIncidentType": "Bmc Remedyforce Service Request",
+ "id": "BMCHelixRemedyforce",
+ "keyTypeMap": {
+  "Service Request": "Bmc Remedyforce Service Request",
+  "Incident": "Bmc Remedyforce Incident"
+ },
+ "transformer": {
+  "complex": null,
+  "simple": "BMCServiceDesk__Type__c"
+ },
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

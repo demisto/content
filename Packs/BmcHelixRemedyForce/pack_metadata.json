@@ -8,9 +8,10 @@
     "email": "",
     "created": "2020-06-23T06:53:01Z",
     "categories": [
-        "Utilities"
+        "IT Services"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {}
 }
