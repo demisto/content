@@ -1,19 +1,33 @@
 {
     "name": "SafeBreach - Breach and Attack Simulation platform",
-    "description": "SafeBreach automatically executes thousands of breach methods from its\n  extensive and growing Hacker\u2019s Playbook\u2122 to validate security control effectiveness.",
+    "description": "SafeBreach automates validation and remediation of your security controls to ensure you detect and prevent known indicators of compromise (IOCs).",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.5",
     "author": "SafeBreach",
     "url": "https://www.safebreach.com",
     "email": "support@safebreach.com",
     "created": "2020-03-11T12:59:01Z",
     "categories": [
+        "Breach and Attack Simulation",
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Breach",
+        "Simulation",
+        "Risk",
+        "Attack",
+        "TIM"
+    ],
+    "useCases": [
+        "Breach Notification",
+        "Threat Intelligence Management",
+        "Breach and Attack Simulation"
+    ],
     "keywords": [
         "SafeBreach",
         "Feed"
+    ],
+    "githubUser": [
+        "gtsafeB"
     ]
 }

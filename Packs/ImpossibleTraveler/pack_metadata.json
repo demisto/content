@@ -1,8 +1,8 @@
 {
     "name": "Impossible Traveler",
-    "description": " ",
+    "description": "Catch the impossible traveler. This Content Pack helps you quickly determine the legitimacy of remote access attempts and contain malicious activity.",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.2.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,11 +10,223 @@
     "categories": [
         "Forensics & Malware Analysis"
     ],
-    "tags": [
-        "Remote Access"
-    ],
+    "tags": [],
     "useCases": [
         "Impossible Traveler"
     ],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "GoogleChronicleBackstory": {
+            "mandatory": false,
+            "display_name": "Chronicle"
+        },
+        "Zscaler": {
+            "mandatory": false,
+            "display_name": "Zscaler"
+        },
+        "XFE": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "ThreatMiner": {
+            "mandatory": false,
+            "display_name": "ThreatMiner"
+        },
+        "Maltiverse": {
+            "mandatory": false,
+            "display_name": "Maltiverse"
+        },
+        "XForceExchange": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange"
+        },
+        "Symantec_Deepsight": {
+            "mandatory": false,
+            "display_name": "Symantec Deepsight Intelligence (Beta)"
+        },
+        "SlashNextPhishingIncidentResponse": {
+            "mandatory": false,
+            "display_name": "SlashNext Phishing Incident Response"
+        },
+        "PassiveTotal": {
+            "mandatory": false,
+            "display_name": "PassiveTotal"
+        },
+        "isight": {
+            "mandatory": false,
+            "display_name": "FireEye iSIGHT"
+        },
+        "APIVoid": {
+            "mandatory": false,
+            "display_name": "APIVoid"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "PolySwarm": {
+            "mandatory": false,
+            "display_name": "PolySwarm"
+        },
+        "Expanse": {
+            "mandatory": false,
+            "display_name": "Expanse"
+        },
+        "Anomali_ThreatStream": {
+            "mandatory": false,
+            "display_name": "Anomali ThreatStream"
+        },
+        "ipinfo": {
+            "mandatory": false,
+            "display_name": "ipinfo"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "AbuseDB": {
+            "mandatory": false,
+            "display_name": "AbuseIPDB"
+        },
+        "AlienVault_OTX": {
+            "mandatory": false,
+            "display_name": "AlienVault OTX"
+        },
+        "MaxMind_GeoIP2": {
+            "mandatory": false,
+            "display_name": "MaxMind GeoIP2"
+        },
+        "Flashpoint": {
+            "mandatory": false,
+            "display_name": "Flashpoint"
+        },
+        "TruSTAR": {
+            "mandatory": false,
+            "display_name": "TruSTAR"
+        },
+        "EclecticIQ": {
+            "mandatory": false,
+            "display_name": "EclecticIQ Platform"
+        },
+        "ThreatExchange": {
+            "mandatory": false,
+            "display_name": "ThreatExchange"
+        },
+        "illuminate": {
+            "mandatory": false,
+            "display_name": "illuminate"
+        },
+        "ThreatConnect": {
+            "mandatory": false,
+            "display_name": "ThreatConnect"
+        },
+        "rasterize": {
+            "mandatory": false,
+            "display_name": "Rasterize"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "Cofense-Intelligence": {
+            "mandatory": false,
+            "display_name": "Cofense Intelligence"
+        },
+        "ThreatQ": {
+            "mandatory": false,
+            "display_name": "ThreatQ"
+        },
+        "iDefense": {
+            "mandatory": false,
+            "display_name": "iDefense"
+        },
+        "HelloWorld": {
+            "mandatory": false,
+            "display_name": "HelloWorld"
+        },
+        "AwakeSecurity": {
+            "mandatory": false,
+            "display_name": "Awake Security"
+        },
+        "MISP": {
+            "mandatory": false,
+            "display_name": "MISP"
+        },
+        "VirusTotal": {
+            "mandatory": false,
+            "display_name": "VirusTotal"
+        },
+        "Recorded_Future": {
+            "mandatory": false,
+            "display_name": "Recorded Future"
+        },
+        "TCPIPUtils": {
+            "mandatory": false,
+            "display_name": "TCPIPUtils"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CrowdStrikeIntel": {
+            "mandatory": false,
+            "display_name": "CrowdStrike Falcon Intel"
+        },
+        "Ipstack": {
+            "mandatory": false,
+            "display_name": "Ipstack"
+        },
+        "Shodan": {
+            "mandatory": false,
+            "display_name": "Shodan"
+        }
+    },
+    "displayedImages": [
+        "GoogleChronicleBackstory",
+        "Zscaler",
+        "XFE",
+        "Active_Directory_Query",
+        "ThreatMiner",
+        "Maltiverse",
+        "XForceExchange",
+        "Symantec_Deepsight",
+        "SlashNextPhishingIncidentResponse",
+        "PassiveTotal",
+        "isight",
+        "APIVoid",
+        "CommonPlaybooks",
+        "PolySwarm",
+        "Expanse",
+        "Anomali_ThreatStream",
+        "ipinfo",
+        "CommonTypes",
+        "AbuseDB",
+        "AlienVault_OTX",
+        "MaxMind_GeoIP2",
+        "Flashpoint",
+        "TruSTAR",
+        "EclecticIQ",
+        "ThreatExchange",
+        "illuminate",
+        "ThreatConnect",
+        "rasterize",
+        "AutoFocus",
+        "Cofense-Intelligence",
+        "ThreatQ",
+        "iDefense",
+        "HelloWorld",
+        "AwakeSecurity",
+        "MISP",
+        "VirusTotal",
+        "Recorded_Future",
+        "TCPIPUtils",
+        "CommonScripts",
+        "CrowdStrikeIntel",
+        "Ipstack",
+        "Shodan"
+    ]
 }

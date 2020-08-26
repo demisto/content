@@ -5,7 +5,11 @@
 <li>Manage alerts</li>
 <li>Manage users</li>
 </ol>
-<h2>Required Permissions in the MS Graph Security App:</h2>
+
+<h2>Authentication</h2>
+For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
+<h3>Required Permissions</h3>
 <li>SecurityEvents.ReadWrite.All - Application</li>
 <li>User.Read.All - Application</li>
 <li>User.Read - Delegated</li>
@@ -13,26 +17,8 @@
 <li>Directory.Read.All - Delegated</li>
 <li>Directory.ReadWrite.All - Application</li>
 
-<h2>Generate Authentication Parameters</h2>
-<p>To use this integration, you have to grant access to Demisto from Microsoft Graph.</p>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Microsoft Graph Security.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.</li>
-<li>Click the question mark button in the upper-right corner and read the information, and click the link.</li>
-<li>Click the <strong>Start Authorization</strong> <strong>Process</strong> button.</li>
-<li>Log in with Microsoft admin user credentials.</li>
-<li>Authorize Demisto application to access data.</li>
-<li>When you are redirected, copy the parameter values, which you will need when configuring the integration instance in Demisto.
-<ul>
-<li>ID</li>
-<li>Key</li>
-<li>Token</li>
-</ul>
-</li>
-</ol>
 
-<h2>Configure Microsoft Graph on Demisto</h2>
+<h2>Configure Microsoft Graph on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Microsoft Graph.</li>
@@ -51,17 +37,8 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 
-<h2>Use a Self-Deployed Azure Application</h2>
-<p>To use a self-configured Azure application, a need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following Microsoft article:
-<a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app</a></p>
-<p>The Tenant ID, Client ID, and Client secret are required for the integration.
-To configure the integration in Demisto to use the application, place those parameters in the following manner (instead of how you received them from the admin consent in the current doc):
-<p>ID - Client ID<br>
-Token - Tenant ID<br>
-Key - Client Secret</p></p>
-
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_842458104521538470633978">Search alerts: msg-search-alerts</a></li>
 <li><a href="#h_3611731291071538470639531">Get details for an alert: msg-get-alert-details</a></li>
@@ -571,4 +548,7 @@ Key - Client Secret</p></p>
 <p><a href="https://user-images.githubusercontent.com/31018228/46080581-fa1f0600-c1a2-11e8-894b-38055e85c840.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/31018228/46080581-fa1f0600-c1a2-11e8-894b-38055e85c840.png" alt="screen shot 2018-09-26 at 15 43 39"></a></p>
 <p> </p>
 <h2>Troubleshooting</h2>
-<p>If not all expected alerts were returned, it is possible that partial content was returned from Microsoft Graph. If so, the response headers will be printed to Demisto logs, and you can find more details under the Warning header. For more information, see the <a href="https://docs.microsoft.com/en-us/graph/api/resources/security-error-codes?view=graph-rest-1.0" target="_blank" rel="noopener">Microsoft Graph documentation</a>.</p>
+<p>If not all expected alerts were returned, it is possible that partial content was returned from Microsoft Graph. If so, the response headers will be printed to Cortex XSOAR logs, and you can find more details under the **Warning** header. For more information, see the <a href="https://docs.microsoft.com/en-us/graph/api/resources/security-error-codes?view=graph-rest-1.0" target="_blank" rel="noopener">Microsoft Graph documentation</a>.</p>
+
+<h2>Known Limitations</h2>
+<p>Microsoft does not support updating alerts with Office 365 Security and Compliance set as provider.</p>

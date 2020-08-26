@@ -390,7 +390,7 @@ tasks:
         simple: Global
       rule_id:
         complex:
-          root: CiscoASA
+          root: CiscoASA.Rules
           filters:
           - - operator: isEqualString
               left:
@@ -416,7 +416,7 @@ tasks:
               right:
                 value:
                   simple: 2.2.2.2
-          accessor: Rules.ID
+          accessor: ID
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 720\n  }\n}"
     note: false

@@ -83,7 +83,7 @@ script: |-
   return {
       Type : entryTypes.note,
       Contents : timeStr,
-      ContentsFormat : formats.json,
+      ContentsFormat : formats.text,
       HumanReadable : timeStr,
       EntryContext : context
   };

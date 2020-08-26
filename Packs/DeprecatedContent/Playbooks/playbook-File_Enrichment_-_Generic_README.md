@@ -1,4 +1,4 @@
-Enriches a file using one or more integrations.
+DEPRECATED. Use "File Enrichment - Generic v2" playbook instead. Enriches a file using one or more integrations.
 
 File enrichment includes:
 * File history

@@ -1,208 +1,128 @@
 {
-	"typeId": "Phishing",
-	"kind": "quickView",
-	"layout": {
-		"id": "Phishing",
-		"version": -1,
-		"modified": "2018-12-18T09:27:21.43610162Z",
-		"name": "",
-		"sections": [
+    "typeId": "Phishing",
+    "kind": "quickView",
+    "layout": {
+        "id": "Phishing",
+        "version": -1,
+        "modified": "2018-12-18T09:27:21.43610162Z",
+        "name": "",
+        		"sections": [
 			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Basic Information",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
+				"description": "Information about the phishing email that was received.",
 				"fields": [
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_type",
+						"fieldId": "incident_emailfrom",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_severity",
+						"fieldId": "incident_emailto",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_owner",
+						"fieldId": "incident_reporteremailaddress",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_dbotstatus",
+						"fieldId": "incident_emailsubject",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_sourcebrand",
+						"fieldId": "incident_emailbody",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_sourceinstance",
+						"fieldId": "incident_attachmentname",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_playbookid",
+						"fieldId": "incident_attachmenttype",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_detectionsla",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_remediationsla",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_phase",
-						"isVisible": true
-					},
-					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_roles",
+						"fieldId": "incident_attachmentsize",
 						"isVisible": true
 					}
 				],
-				"description": "",
+				"isVisible": true,
+				"name": "Email Information",
 				"query": null,
-				"queryType": ""
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
 			},
 			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Timeline Information",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
+				"description": "",
 				"fields": [
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_dbotcreated",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_occurred",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_dbotduedate",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_dbotmodified",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_dbottotaltime",
 						"isVisible": true
 					}
 				],
-				"description": "",
+				"isVisible": true,
+				"name": "Timeline Information",
 				"query": null,
-				"queryType": ""
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
 			},
 			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Custom Fields",
-				"type": "",
-				"isVisible": true,
-				"readOnly": false,
+				"description": "Information about Service Level Agreements (SLAs).",
 				"fields": [
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_detectionsla",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_remediationsla",
 						"isVisible": true
 					},
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_timetoassignment",
 						"isVisible": true
 					}
 				],
-				"description": "",
+				"isVisible": true,
+				"name": "SLA",
 				"query": null,
-				"queryType": ""
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
 			},
 			{
-				"id": "",
-				"version": 0,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Labels",
-				"type": "labels",
-				"isVisible": true,
-				"readOnly": true,
+				"description": "",
 				"fields": [
 					{
-						"id": "",
-						"version": 0,
-						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_labels",
 						"isVisible": true
 					}
 				],
-				"description": "",
+				"isVisible": true,
+				"name": "Labels",
 				"query": null,
-				"queryType": ""
+				"queryType": "",
+				"readOnly": true,
+				"type": "labels"
 			}
-		]
-	}
+		],
+	    "typeId": "Phishing"
+    },
+    "toVersion": "5.9.9",
+    "version": -1,
+    "fromVersion": "4.1.0"
 }

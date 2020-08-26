@@ -81,7 +81,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: An OData query.
+      description: An OData query. See REDAME for OData usage examples.
       isArray: false
       name: odata
       required: false
@@ -178,7 +178,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The message ID.
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
@@ -190,7 +191,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: OData.
+      description: An OData query. See REDAME for OData usage examples.
       isArray: false
       name: odata
       required: false
@@ -282,7 +283,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message ID.
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
@@ -306,7 +308,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message ID.
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
@@ -346,7 +349,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message ID.
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
@@ -586,7 +590,8 @@ script:
     name: msgraph-mail-delete-folder
   - arguments:
     - default: false
-      description: Message ID.
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
@@ -627,7 +632,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The message ID.
+      description: 'The unique ID of the mail. You cannot use the the ''MessageID'' key in the
+        form ''<message-id>''.'
       isArray: false
       name: message_id
       required: true
@@ -1012,7 +1018,7 @@ script:
     description: Sends a draft email using Microsoft Graph.
     execution: false
     name: msgraph-mail-send-draft
-  dockerimage: demisto/crypto:1.0.0.8854
+  dockerimage: demisto/crypto:1.0.0.10277
   feed: false
   isfetch: true
   longRunning: false

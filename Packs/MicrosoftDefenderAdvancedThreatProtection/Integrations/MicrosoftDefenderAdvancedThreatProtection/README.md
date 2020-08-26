@@ -13,7 +13,11 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 2. Managing machines and performing actions on them.
 3. Blocking files and applications.
 
-## Required Permissions
+## Authentication
+---
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
+
+### Required Permissions
 * AdvancedQuery.Read.All - Application
 * Alert.ReadWrite.All - Application
 * File.Read.All - Application
@@ -37,7 +41,7 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
     | **Parameter** | **Description** | **Example** |
     | ---------             | -----------           | -------            |
     | Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
-    | Host URL | The URL to the Microsoft Defender Advanced Threat Protection server, including the scheme. | https://api.securitycenter.windows.com |
+    | Host URL | The URL to the Microsoft Defender Advanced Threat Protection server, including the scheme. | `https://api.securitycenter.windows.com` |
      | ID | The ID used to gain access to the integration. | N/A |
      | Token | A piece of data that servers use to verify for authenticity | eea810f5-a6f6 |
     | Fetch Incidents | Whether to fetch the incidents or not. | N/A |
@@ -51,14 +55,6 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 
 
 4. Click __Test__ to validate the URLs, token, and connection.
-
-## Use a Self-Deployed Azure Application
-
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
-<br/>The Tenant ID, Client ID, and Client secret are required for the integration. When you configure the integration in Demisto enter those parameters in the appropriate fields (instead of how you received them from the admin consent in the current doc).
-* ID - Client ID
-* Token - Tenant ID
-* Key - Client Secret
 
 ## Fetched Incidents Data
 1. id
@@ -1416,8 +1412,8 @@ Machine.CollectForensics
 ```
 
 ##### Human Readable Output
-Success. This link is valid for a very short time and should be used immediately for downloading the package to a local storagehttps:
-//userrequests-us.securitycenter.windows.com:443/safedownload/WDATP_Investigation_Package.zip?token=MIICYwYJKoZIhvcNAQcCoIICV
+Success. This link is valid for a very short time and should be used immediately for downloading the package to a local storage: `https:
+//userrequests-us.securitycenter.windows.com:443/safedownload/WDATP_Investigation_Package.zip?token=MIICYwYJKoZIhvcNAQcCoIICV`
 
 
 ### 18. microsoft-atp-restrict-app-execution

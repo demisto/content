@@ -1,6 +1,11 @@
-from ThreatConnect_v2 import calculate_freshness_time, create_context, demisto
+from copy import deepcopy
+
+from ThreatConnect_v2 import calculate_freshness_time, create_context, demisto, associate_indicator_request
 from freezegun import freeze_time
 import pytest
+from requests import Response
+from threatconnect import ThreatConnect
+
 
 data_test_calculate_freshness_time = [
     (0, '2020-04-20'),
@@ -208,18 +213,64 @@ FILE_CONTEXT = (
     }]
 )
 
+PARAMS = {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 0, "confidence": 0}
 data_test_create_context = [
-    ({}, ({}, [])),
-    (DOMAIN_INDICATOR, DOMAIN_CONTEXT),
-    (IP_INDICATOR, IP_CONTEXT),
-    (URL_INDICATOR, URL_CONTEXT),
-    (FILE_INDICATOR, FILE_CONTEXT),
+    ({}, ({}, []), PARAMS),
+    (DOMAIN_INDICATOR, DOMAIN_CONTEXT, PARAMS),
+    (IP_INDICATOR, IP_CONTEXT, PARAMS),
+    (URL_INDICATOR, URL_CONTEXT, PARAMS),
+    (FILE_INDICATOR, FILE_CONTEXT, PARAMS),
 ]
 
 
-@ pytest.mark.parametrize('indicators, expected_output', data_test_create_context)
-def test_create_context(indicators, expected_output, mocker):
-    params = {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 0, "confidence": 0}
+@ pytest.mark.parametrize('indicators, expected_output, params', data_test_create_context)
+def test_create_context(indicators, expected_output, params, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     output = create_context(indicators)
     assert output == expected_output, f'expected_output({indicators})\n\treturns: {output}\n\tinstead: {expected_output}'
+
+
+data_test_create_context_debotscore = [
+    (
+        {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 0, "confidence": 0}, 3, 3
+    ),
+    (
+        {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 2, "confidence": 0}, 2, 3
+    ),
+    (
+        {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 2, "confidence": 0}, 3, 3
+    ),
+    (
+        {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 3, "confidence": 60}, 3, 2
+    ),
+    (
+        {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 1, "confidence": 100}, 0, 1
+    )
+]
+
+
+@ pytest.mark.parametrize('params, rate, expected_score', data_test_create_context_debotscore)
+def test_create_context_debotscore(params, rate, expected_score, mocker):
+    expected_output = {'Indicator': '88.88.88.88', 'Score': expected_score, 'Type': 'ip', 'Vendor': 'ThreatConnect'}
+    indicator = deepcopy(IP_INDICATOR)
+    indicator[0]['rating'] = float(rate)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    output = create_context(indicator, True)[0].get('DBotScore', [{}])[0]
+    assert output == expected_output, f'expected_output({indicator}, True)[0].get(\'DBotScore\')\n\treturns: {output}' \
+                                      f'\n\tinstead: {expected_output}'
+
+
+data_test_associate_indicator_request = [
+    ('addresses', '0.0.0.0', 'addresses/0.0.0.0'),
+    ('urls', 'http://test.com', 'urls/http%3A%2F%2Ftest.com')
+]
+
+
+@ pytest.mark.parametrize('indicator_type, indicator, expected_url', data_test_associate_indicator_request)
+def test_associate_indicator_request(indicator_type, indicator, expected_url, mocker):
+    mocker.patch.object(Response, 'json', return_value={})
+    api_request = mocker.patch.object(ThreatConnect, 'api_request', return_value=Response())
+    mocker.patch('ThreatConnect_v2.get_client', return_value=ThreatConnect())
+    associate_indicator_request(indicator_type, indicator, 'test', '0')
+    url = f'/v2/indicators/{expected_url}/groups/test/0'
+    assert api_request.call_args[0][0].request_uri == url
