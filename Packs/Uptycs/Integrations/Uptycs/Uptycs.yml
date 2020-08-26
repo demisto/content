@@ -956,7 +956,7 @@ script:
       description: Tag value that will be set on the asset
       isArray: false
       name: tag_value
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Sets a tag on a particular asset

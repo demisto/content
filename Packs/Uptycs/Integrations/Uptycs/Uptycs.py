@@ -57,7 +57,7 @@ def restcall(method, api, **kwargs):
 
     header = generate_headers(KEY, SECRET)
 
-    url = ("https://%s.uptycs.io/public/api/customers/%s%s" %
+    url = ("https://%s/public/api/customers/%s%s" %
            (DOMAIN, CUSTOMER_ID, api))
 
     try:
@@ -1994,7 +1994,7 @@ def uptycs_get_threat_vendors_command():
 def uptycs_post_threat_source():
     """post a new threat source"""
 
-    url = ("https://%s.uptycs.io/public/api/customers/%s/threatSources" %
+    url = ("https://%s/public/api/customers/%s/threatSources" %
            (DOMAIN, CUSTOMER_ID))
     header = generate_headers(KEY, SECRET)
 
