@@ -24,10 +24,14 @@ SYNC_CONTEXT = True
 EVENTS_INTERVAL_SECS = 15
 EVENTS_FAILURE_LIMIT = 3
 FETCH_SLEEP = 60
+BATCH_SIZE = 100
+BATCH_LIMIT = BATCH_SIZE * 10
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
     "EVENTS_FAILURE_LIMIT",
-    "FETCH_SLEEP"
+    "FETCH_SLEEP",
+    "BATCH_SIZE",
+    "BATCH_LIMIT"
 ]
 
 """ Header names transformation maps """
@@ -513,13 +517,13 @@ class QRadarClient:
         """
         helper function: Enriches the source addresses ids dictionary with the source addresses values corresponding to the ids
         """
-        src_ids_str = dict_values_to_comma_separated_string(src_adrs)
-        source_url = (
-            f"{self._server}/api/siem/source_addresses?filter=id in ({src_ids_str})"
-        )
-        src_res = self.send_request("GET", source_url, self._auth_headers)
-        for src_adr in src_res:
-            src_adrs[src_adr["id"]] = convert_to_str(src_adr["source_ip"])
+        batch_size = BATCH_SIZE
+        for b in batch(list(src_adrs.values())[:BATCH_LIMIT], batch_size=int(batch_size)):
+            src_ids_str = ','.join(map(str, b))
+            source_url = f"{self._server}/api/siem/source_addresses?filter=id in ({src_ids_str})"
+            src_res = self.send_request("GET", source_url, self._auth_headers)
+            for src_adr in src_res:
+                src_adrs[src_adr['id']] = convert_to_str(src_adr['source_ip'])
         return src_adrs
 
     def enrich_destination_addresses_dict(self, dst_adrs):
@@ -527,11 +531,13 @@ class QRadarClient:
         helper function: Enriches the destination addresses ids dictionary with the source addresses values corresponding to
         the ids
         """
-        dst_ids_str = dict_values_to_comma_separated_string(dst_adrs)
-        destination_url = f"{self._server}/api/siem/local_destination_addresses?filter=id in ({dst_ids_str})"
-        dst_res = self.send_request("GET", destination_url, self._auth_headers)
-        for dst_adr in dst_res:
-            dst_adrs[dst_adr["id"]] = convert_to_str(dst_adr["local_destination_ip"])
+        batch_size = BATCH_SIZE
+        for b in batch(list(dst_adrs.values())[:BATCH_LIMIT], batch_size=int(batch_size)):
+            dst_ids_str = ','.join(map(str, b))
+            destination_url = f"{self._server}/api/siem/local_destination_addresses?filter=id in ({dst_ids_str})"
+            dst_res = self.send_request("GET", destination_url, self._auth_headers)
+            for dst_adr in dst_res:
+                dst_adrs[dst_adr['id']] = convert_to_str(dst_adr['local_destination_ip'])
         return dst_adrs
 
 
