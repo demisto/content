@@ -1,4 +1,3 @@
-import mimetypes
 import random
 import string
 from typing import Dict
@@ -1779,6 +1778,28 @@ def handle_template_params(template_params):
     return actual_params
 
 
+def create_message_object(to, cc, bcc, subject, body, additional_headers):
+    """Creates the message object according to the existence of additional custom headers.
+    """
+    if additional_headers:
+        return Message(
+                to_recipients=to,
+                cc_recipients=cc,
+                bcc_recipients=bcc,
+                subject=subject,
+                body=body,
+                **additional_headers
+            )
+
+    return Message(
+        to_recipients=to,
+        cc_recipients=cc,
+        bcc_recipients=bcc,
+        subject=subject,
+        body=body
+    )
+
+
 def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=None,
                    additional_headers=None):
     """Creates the Message object that will be sent.
@@ -1798,14 +1819,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
     """
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
-        message = Message(
-            to_recipients=to,
-            cc_recipients=cc,
-            bcc_recipients=bcc,
-            subject=subject,
-            body=body,
-            **additional_headers
-        )
+        message = create_message_object(to, cc, bcc, subject, body, additional_headers)
 
         for attachment in attachments:
             if not attachment.get('cid'):
@@ -1819,14 +1833,7 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         if body:
             html_body = f'{body}<br/><br/>{html_body}'
 
-        message = Message(
-            to_recipients=to,
-            cc_recipients=cc,
-            bcc_recipients=bcc,
-            subject=subject,
-            body=HTMLBody(html_body),
-            **additional_headers
-        )
+        message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers)
 
         for attachment in attachments:
             if not attachment.get('cid'):
