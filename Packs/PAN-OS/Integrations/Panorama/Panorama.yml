@@ -3964,6 +3964,40 @@ script:
     description: Show anti-spyware best practices.
     execution: false
     name: panorama-get-anti-spyware-best-practice
+    outputs:
+    - contextPath: Panorama.Spyware.BotentDomain.Name
+      description: Botnet domain name.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Action
+      description: Botnet domain action.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Packet-capture
+      description: Is packet capture enabled.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Sinkhole.ipv4-address
+      description: Botnet domain ipv4 address.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Sinkhole.ipv6-address
+      description: Botnet domain ipv6 address.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Cateogry
+      description: Rule category.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Action
+      description: Rule action.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Name
+      description: Rule name.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Severity
+      description: Rule severity.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Threat-name
+      description: Rule threat name.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Max_version
+      description: Botnet domain max version.
+      type: String
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false

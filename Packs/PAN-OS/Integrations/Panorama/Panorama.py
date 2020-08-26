@@ -5595,7 +5595,7 @@ def get_ssl_decryption_rules_command():
             'Name': item.get('@name'),
             'UUID': item.get('@uuid'),
             'Target': item.get('target'),
-            'Category': item.get('categoty'),
+            'Category': item.get('category'),
             'Service': item.get('service').get('member'),
             'Type': item.get('type'),
             'From': item.get('from').get('member'),
@@ -5620,6 +5620,44 @@ def get_ssl_decryption_rules_command():
     })
 
 
+def prettify_profiles_rule(rule):
+    pretty_rule = {
+        'Name': rule['@name'],
+        'Action': rule['action']
+    }
+    if 'category' in rule and 'member' in rule['category']:
+        pretty_rule['Category'] = rule['category']['member']
+    elif 'category' in rule:
+        pretty_rule['Cateogry'] = rule['category']
+    if 'severity' in rule and 'member' in rule['severity']:
+        pretty_rule['Severity'] = rule['severity']['member']
+    if 'threat-name' in rule and 'member' in rule['threat-name']:
+        pretty_rule['Threat-name'] = rule['threat-name']['member']
+    elif 'threat-name' in rule:
+        pretty_rule['Threat-name'] = rule['threat-name']
+    if 'packet-capture' in rule:
+        pretty_rule['Packet-capture'] = rule['packet-capture']
+    if '@maxver' in rule:
+        pretty_rule['Max_version'] = rule['@maxver']
+    if 'sinkhole' in rule and 'ipv4-address' in rule['sinkhole']:
+        pretty_rule['Sinkhole'] = rule['sinkhole']['ipv4-address']
+    if 'sinkhole' in rule and 'ipv6-address' in rule['sinkhole']:
+        pretty_rule['Sinkhole'] = rule['sinkhole']['ipv6-address']
+
+    return pretty_rule
+
+
+def prettify_profiles_rules(rules):
+    if not isinstance(rules, list):
+        return prettify_profiles_rules(rules)
+    pretty_rules_arr = []
+    for rule in rules:
+        pretty_rule = prettify_profiles_rule(rule)
+        pretty_rules_arr.append(pretty_rule)
+
+    return pretty_rules_arr
+
+
 def get_anti_spyware_best_practice():
     params = {
         'action': 'get',
@@ -5639,7 +5677,39 @@ def get_anti_spyware_best_practice_command():
     spyware_profile = result['response']['result']['spyware']
     strict_profile = spyware_profile.get('entry')[1]
 
-    demisto.results(strict_profile)
+    botnet_domains = strict_profile.get('botnet-domains', {}).get('lists', {}).get('entry', [])
+    pretty_botnet_domains = prettify_profiles_rules(botnet_domains)
+
+    sinkhole = strict_profile.get('botnet-domains', {}).get('sinkhole', {})
+    sinkhole_content = []
+    if sinkhole:
+        sinkhole_content = [
+            {'ipv6-address': sinkhole['ipv6-address'], 'ipv4-address': sinkhole['ipv4-address']}
+        ]
+
+    botnent_output = pretty_botnet_domains + sinkhole_content
+
+    human_readable = tableToMarkdown('Anti Spyware Botent-Domains Best Practice', botnent_output,
+                                     ['Name', 'Action', 'Packet-capture', 'ipv4-address', 'ipv6-address'],
+                                     removeNull=True)
+
+    rules = strict_profile.get('rules').get('entry')
+    profile_rules = prettify_profiles_rules(rules)
+    human_readable += tableToMarkdown('Anti Spyware Best Practice Rules', profile_rules,
+                                      ['Name', 'Severity', 'Action', 'Category', 'Threat-name'], removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': strict_profile,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            "Panorama.Spyware.Rule(val.Name == obj.Name)": profile_rules,
+            "Panorama.Spyware.BotentDomain(val.Name == obj.Name)": pretty_botnet_domains,
+            "Panorama.Spyware.BotentDomain.Sinkhole(val.ipv4-address == obj.ipv4-address)": sinkhole_content
+        }
+    })
 
 
 def set_xpath_wildfire(template: str = None) -> str:
