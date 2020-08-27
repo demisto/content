@@ -355,6 +355,7 @@ def url_lookup(args):
             data['urlClassificationsWithSecurityAlert'] = ''
         else:
             data['urlClassificationsWithSecurityAlert'] = ''.join(data['urlClassificationsWithSecurityAlert'])
+            ioc_context['urlClassificationsWithSecurityAlert'] = data['urlClassificationsWithSecurityAlert']
             if data['urlClassificationsWithSecurityAlert'] in suspicious_categories:
                 score = 2
             else:

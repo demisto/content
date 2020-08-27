@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-from typing import Dict, List, Any, Callable
+from typing import Dict, List, Set, Any, Callable
 from collections import OrderedDict
 import traceback
 import requests
@@ -42,6 +42,11 @@ HASH_MAPPING = {"hashes.md5": "md5", "hashes.\'sha-1\'": "sha1", "hashes.\'sha-2
 ''' HELPER FUNCTIONS '''
 
 stix_regex_parser = re.compile(r"([\w-]+?):(\w.+?) (?:[!><]?=|IN|MATCHES|LIKE) '(.*?)' *[OR|AND|FOLLOWEDBY]?")
+
+
+class ExternalReferenceSourceTypes:
+    MITRE_ATTACK = 'mitre-attack'
+    VIRUS_TOTAL = 'VirusTotal'
 
 
 def strip_http(url):
@@ -85,18 +90,62 @@ def get_description(stix_obj):
     return description_string
 
 
-def to_demisto_indicator(value, indicators_name, stix2obj):
-    return {
+def extract_external_reference_field(stix2obj, source_name, field_to_extract):
+    for reference in stix2obj.get("external_reference", []):
+        if reference.get("source_name") == source_name:
+            return reference.get(field_to_extract, None)
+
+
+def post_id_to_full_url(post_id):
+    return f'https://portal.cybersixgill.com/#/search?q=_id:{post_id}'
+
+
+def to_demisto_indicator(value, indicators_name, stix2obj, tags: list = []):
+    indicator = {
         "value": value,
         "type": indicators_name,
         "rawJSON": stix2obj,
         "fields": {
             "name": stix2obj.get("sixgill_feedname"),
             "actor": stix2obj.get("sixgill_actor"),
-            "tags": stix2obj.get("labels"),
+            "tags": list((set(stix2obj.get("labels")).union(set(tags)))),
             "firstseenbysource": stix2obj.get("created"),
-            "description": get_description(stix2obj)},
+            "description": get_description(stix2obj),
+            "sixgillactor": stix2obj.get("sixgill_actor"),
+            "sixgillfeedname": stix2obj.get("sixgill_feedname"),
+            "sixgillsource": stix2obj.get("sixgill_source"),
+            "sixgilllanguage": stix2obj.get("lang"),
+            "sixgillposttitle": stix2obj.get("sixgill_posttitle"),
+            "sixgillfeedid": stix2obj.get("sixgill_feedid"),
+            "sixgillpostreference": post_id_to_full_url(stix2obj.get("sixgill_postid", "")),
+            "sixgillindicatorid": stix2obj.get("id"),
+            "sixgilldescription": stix2obj.get("description"),
+            "sixgillvirustotaldetectionrate": extract_external_reference_field(stix2obj,
+                                                                               ExternalReferenceSourceTypes.VIRUS_TOTAL,
+                                                                               "positive_rate"),
+            "sixgillvirustotalurl": extract_external_reference_field(stix2obj,
+                                                                     ExternalReferenceSourceTypes.VIRUS_TOTAL,
+                                                                     "url"),
+            "sixgillmitreattcktactic": extract_external_reference_field(stix2obj,
+                                                                        ExternalReferenceSourceTypes.MITRE_ATTACK,
+                                                                        "mitre_attack_tactic"),
+            "sixgillmitreattcktechnique": extract_external_reference_field(stix2obj,
+                                                                           ExternalReferenceSourceTypes.MITRE_ATTACK,
+                                                                           "mitre_attack_technique"),
+        },
         "score": to_demisto_score(stix2obj.get("sixgill_feedid"), stix2obj.get("revoked", False))}
+
+    mitre_id = extract_external_reference_field(stix2obj, ExternalReferenceSourceTypes.MITRE_ATTACK,
+                                                "mitre_attack_tactic_id")
+    mitre_url = extract_external_reference_field(stix2obj, ExternalReferenceSourceTypes.MITRE_ATTACK,
+                                                 "mitre_attack_tactic_url")
+    if mitre_id and mitre_url:
+        indicator['fields']['feedrelatedindicators'] = [{
+            "type": "MITRE ATT&CK",
+            "value": mitre_id,
+            "description": mitre_url
+        }]
+    return indicator
 
 
 def get_limit(str_limit, default_limit):
@@ -106,7 +155,7 @@ def get_limit(str_limit, default_limit):
         return default_limit
 
 
-def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
+def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: list = []):
     indicators = []
     pattern = stix2obj.get("pattern", "")
     sixgill_feedid = stix2obj.get("sixgill_feedid", "")
@@ -119,7 +168,7 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
             if demisto_indicator_map:
                 indicators_name = demisto_indicator_map.get('name')
                 value = run_pipeline(value, demisto_indicator_map.get('pipeline', []), log)
-                demisto_indicator = to_demisto_indicator(value, indicators_name, stix2obj)
+                demisto_indicator = to_demisto_indicator(value, indicators_name, stix2obj, tags)
 
                 if demisto_indicator.get("type") == FeedIndicatorType.File and \
                         HASH_MAPPING.get(sub_type.lower()) in hashes.keys():
@@ -133,6 +182,10 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
 
     if all(ioc.get("type") == FeedIndicatorType.File for ioc in indicators):
         temp_indicator = indicators[0].copy()
+
+        if hashes["sha256"] is not None:
+            temp_indicator["value"] = hashes["sha256"]
+
         temp_indicator["fields"].update({hash_k: hash_v for hash_k, hash_v in hashes.items() if hash_v is not None})
         indicators = [temp_indicator]
 
@@ -150,6 +203,7 @@ demisto_mapping: Dict[str, Dict[str, Any]] = {
     'darkfeed_008': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_009': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_010': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
+    'darkfeed_011': {'name': FeedIndicatorType.File, 'pipeline': []},
     'darkfeed_012': {'name': FeedIndicatorType.File, 'pipeline': []},
 
 }
@@ -163,7 +217,7 @@ def test_module_command(*args):
     Performs basic Auth request
     """
     response = SESSION.send(request=SixgillAuthRequest(demisto.params()['client_id'],
-                                                       demisto.params()['client_secret']).prepare(), verify=VERIFY)
+                                                       demisto.params()['client_secret'], CHANNEL_CODE).prepare(), verify=VERIFY)
     if not response.ok:
         raise Exception("Auth request failed - please verify client_id, and client_secret.")
     return 'ok', None, 'ok'
@@ -178,14 +232,20 @@ def get_indicators_command(client: SixgillFeedClient, args):
     return human_readable, {}, indicators
 
 
-def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indicators_mode: bool = False):
+def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indicators_mode: bool = False,
+                             tags: list = []):
     bundle = client.get_bundle()
     indicators_to_create: List = []
+    indicator_values_set: Set = set()
 
     for stix_indicator in bundle.get("objects"):
         if is_indicator(stix_indicator):
-            demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto)
-            indicators_to_create.extend(demisto_indicators)
+            demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto, tags)
+
+            for indicator in demisto_indicators:
+                if indicator.get("value") not in indicator_values_set:
+                    indicator_values_set.add(indicator.get("value"))
+                    indicators_to_create.append(indicator)
 
         if get_indicators_mode and len(indicators_to_create) == limit:
             break
@@ -212,14 +272,14 @@ def main():
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
-
+    tags = argToList(demisto.params().get('feedTags', []))
     commands: Dict[str, Callable] = {
         'test-module': test_module_command,
         'sixgill-get-indicators': get_indicators_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
+            indicators = fetch_indicators_command(client, tags=tags)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:

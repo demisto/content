@@ -95,15 +95,12 @@ def main():
         } for shift in shifts_of_user_readable
     ]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': tableToMarkdown(
-            name=f'{user.get("name", user_id)}\'s Shifts',
-            t=shifts_table,
-            headers=HEADERS
-        )
-    })
+    widget = TextWidget(text=tableToMarkdown(
+        name=f'{user.get("name", user_id)}\'s Shifts',
+        t=shifts_table,
+        headers=HEADERS
+    ))
+    return_results(widget)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
