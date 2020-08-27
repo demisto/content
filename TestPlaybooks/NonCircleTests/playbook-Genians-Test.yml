@@ -1,0 +1,258 @@
+id: Genians Test
+version: -1
+name: Genians Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    type: start
+    task:
+      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    type: title
+    task:
+      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 42389934-e0b1-4eec-88d8-c21d3b28e808
+    type: title
+    task:
+      id: 42389934-e0b1-4eec-88d8-c21d3b28e808
+      version: -1
+      name: Block IPs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 803e5ba8-b16f-4811-8765-ac56fe9aa1f3
+    type: condition
+    task:
+      id: 803e5ba8-b16f-4811-8765-ac56fe9aa1f3
+      version: -1
+      name: Is there an IP to block?
+      description: Verify that the playbook input includes at least one IP to block.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 4304f2b1-1c7e-43a4-8f3b-2e4c0f61c9c4
+    type: condition
+    task:
+      id: 4304f2b1-1c7e-43a4-8f3b-2e4c0f61c9c4
+      version: -1
+      name: Is Genians enabled?
+      description: Verify that there is a valid instance of Genians enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Genians
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ddb19333-14f2-4337-87d5-257896a3e0a4
+    type: regular
+    task:
+      id: ddb19333-14f2-4337-87d5-257896a3e0a4
+      version: -1
+      name: Block IP with Genian NAC of Genians
+      description: Assigns a tag to the Node specified.
+      script: Genians|||genians-assign-ip-tag
+      type: regular
+      iscommand: true
+      brand: Genians
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: e8673881-2d4d-4bdf-8647-fa72906e47a9
+    type: title
+    task:
+      id: e8673881-2d4d-4bdf-8647-fa72906e47a9
+      version: -1
+      name: Genians
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.51,
+      "8_2_#default#": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1075,
+        "width": 630,
+        "x": 250,
+        "y": 10
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
