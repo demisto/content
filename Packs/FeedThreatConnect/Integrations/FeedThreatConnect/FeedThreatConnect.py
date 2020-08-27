@@ -140,7 +140,7 @@ class Client:
             owners: Filter indicators belongs to specific owner.
 
         Returns:
-            Iterator: indicatrs objects.
+            Iterator: indicator objects.
         """
         indicators = self._client.ti.indicator().many(params={"includes": ['additional', 'attributes'],
                                                               'owner': owners})
@@ -231,7 +231,8 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
 def main():
     client = Client(demisto.getParam("api_access_id"),
                     demisto.getParam("api_secret_key"),
-                    demisto.getParam("tc_api_path"),)
+                    demisto.getParam("tc_api_path"),
+                    )
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     commands = {
