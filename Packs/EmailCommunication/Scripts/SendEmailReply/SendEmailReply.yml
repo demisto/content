@@ -14,8 +14,8 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: avishai@demistodev.onmicrosoft.com
-  description: The service mail address.
+  defaultValue: 
+  description: The mailbox through which emails are received in Cortex XSOAR.
   isArray: false
   name: service_mail
   required: true
