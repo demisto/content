@@ -14,9 +14,9 @@ args:
   secret: false
 comment: |-
   Preprocessing script for email communication layout.
-  This script will check if the incoming mail contains an Incident ID to link the mail to existing incident and will tag the email as "email-thread".
+  This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".
 
-  For more information about the preprocessing rules, please refer to: https://demisto.developers.paloaltonetworks.com/docs/incidents/incident-pre-processing
+  For more information about the preprocessing rules, refer to: https://demisto.developers.paloaltonetworks.com/docs/incidents/incident-pre-processing
 commonfields:
   id: PreprocessEmail
   version: -1

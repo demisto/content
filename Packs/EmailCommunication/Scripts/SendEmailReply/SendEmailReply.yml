@@ -14,8 +14,8 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: avishai@demistodev.onmicrosoft.com
-  description: The service mail address.
+  defaultValue: 
+  description: The mailbox from which emails are sent from the 3rd party integration. 
   isArray: false
   name: service_mail
   required: true
