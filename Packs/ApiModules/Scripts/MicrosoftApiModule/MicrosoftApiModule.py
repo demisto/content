@@ -18,8 +18,12 @@ AUTHORIZATION_CODE = 'authorization_code'
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 
 
-class MicrosoftClient(BaseClient):
+class Scopes:
+    graph = "https://graph.microsoft.com/.default"
+    security_center = "https://api.securitycenter.windows.com/.default"
 
+
+class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',
                  enc_key: str = '',
@@ -53,7 +57,9 @@ class MicrosoftClient(BaseClient):
             auth_id_and_token_retrieval_url = auth_id.split('@')
             auth_id = auth_id_and_token_retrieval_url[0]
             if len(auth_id_and_token_retrieval_url) != 2:
-                self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
+                # self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
+                # TODO: remove in the end
+                self.token_retrieval_url = 'https://us-central1-oproxy-dev.cloudfunctions.net/add-scope-atp_ProvideAccessTokenFunction'
             else:
                 self.token_retrieval_url = auth_id_and_token_retrieval_url[1]
 
@@ -127,9 +133,10 @@ class MicrosoftClient(BaseClient):
             str: Access token that will be added to authorization header.
         """
         integration_context = demisto.getIntegrationContext()
-        if scope == 'graph':
-            access_token = integration_context.get('graph_access_token')
-            valid_until = integration_context.get('graph_valid_until')
+        # Saves separate access token per scope.
+        if scope:
+            access_token = integration_context.get(f'{scope}_access_token')
+            valid_until = integration_context.get(f'{scope}_valid_until')
         else:
             access_token = integration_context.get('access_token')
             valid_until = integration_context.get('valid_until')
@@ -150,10 +157,10 @@ class MicrosoftClient(BaseClient):
             # err on the side of caution with a slightly shorter access token validity period
             expires_in = expires_in - time_buffer
         valid_until = time_now + expires_in
-        if scope == 'graph':
+        if scope:
             integration_context.update({
-                'graph_access_token': access_token,
-                'graph_valid_until': valid_until
+                f'{scope}_access_token': access_token,
+                f'{scope}_valid_until': valid_until
             })
         else:
             integration_context.update({

@@ -34,6 +34,7 @@ def get_future_time(expiration_time: str) -> str:
     future_time: datetime = end + (end - start)
     return future_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
+
 def alert_to_incident(alert, alert_creation_time):
     incident = {
         'rawJSON': json.dumps(alert),
@@ -60,6 +61,12 @@ class MsClient:
         self.alert_time_to_fetch = alert_time_to_fetch
         # TODO: Replace with v1 endpoint when out.
         self.indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
+
+    def indicators_http_request(self, *args, **kwargs):
+        """ Wraps the ms_client.http_request with scope=Scopes.graph
+        """
+        kwargs['scope'] = Scopes.graph
+        return self.ms_client.http_request(*args, **kwargs)
 
     def isolate_machine(self, machine_id, comment, isolation_type):
         """Isolates a machine from accessing external network.
@@ -591,8 +598,8 @@ class MsClient:
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
-        resp = self.ms_client.http_request(
-            'GET', full_url=cmd_url, url_suffix=None, scope='graph', timeout=1000,
+        resp = self.indicators_http_request(
+            'GET', full_url=cmd_url, url_suffix=None, timeout=1000,
             ok_codes=(200, 204, 206, 404), resp_type='response'
         )
         # 404 - No indicators found, an empty list.
@@ -621,8 +628,8 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        resp = self.ms_client.http_request(
-            'POST', full_url=self.indicators_endpoint, json_data=body, url_suffix=None, scope='graph'
+        resp = self.indicators_http_request(
+            'POST', full_url=self.indicators_endpoint, json_data=body, url_suffix=None
         )
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
@@ -653,8 +660,8 @@ class MsClient:
             description=description,
             severity=severity
         ))
-        resp = self.ms_client.http_request(
-            'PATCH', full_url=cmd_url, json_data=body, url_suffix=None, scope='graph', headers=header
+        resp = self.indicators_http_request(
+            'PATCH', full_url=cmd_url, json_data=body, url_suffix=None, headers=header
         )
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
@@ -670,8 +677,8 @@ class MsClient:
             A response from the API.
         """
         cmd_url = urljoin(self.indicators_endpoint, indicator_id)
-        return self.ms_client.http_request(
-            'DELETE', None, full_url=cmd_url, scope='graph', ok_codes=(204, ), resp_type='response'
+        return self.indicators_http_request(
+            'DELETE', None, full_url=cmd_url, ok_codes=(204, ), resp_type='response'
         )
 
 
@@ -1957,7 +1964,7 @@ def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) 
     description = args.get('description', '')
     assert 1 <= len(description) <= 100, 'The description argument must contain at' \
                                          ' least 1 character and not more than 100'
-    expiration_time = get_future_time(args.get('expiration_time'))
+    expiration_time = get_future_time(args.get('expiration_time', ''))
     threat_type = args.get('threat_type', '')
     tlp_level = args.get('tlp_level', '')
     confidence = args.get('confidence', None)
@@ -2112,7 +2119,7 @@ def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, dict]:
             assert 0 <= severity <= 5, 'The severity argument must be between 0 and 5'
         except ValueError:
             raise DemistoException('The severity argument must be an integer.')
-    expiration_time = get_future_time(args.get('expiration_time'))
+    expiration_time = get_future_time(args.get('expiration_time', ''))
     description = args.get('description')
     if description is not None:
         assert 1 <= len(
@@ -2152,6 +2159,8 @@ def test_module(client: MsClient):
         raise DemistoException(
             "API call to Windows Advanced Threat Protection failed. \n Please check authentication related parameters")
     demisto.results('ok')
+
+
 ''' EXECUTION CODE '''
 
 
