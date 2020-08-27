@@ -42,6 +42,7 @@ class TestUtils(object):
         commands = [
             "fake-command"
         ]
+
         if with_commands:
             commands = with_commands
 
