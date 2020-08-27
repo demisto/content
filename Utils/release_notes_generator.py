@@ -315,6 +315,7 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
 
     pack_rn_blocks = []
     for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
+        print(f"pack name: {pack_name}\n pack metadata {packs_metadata_dict.get(pack_name)}")
         partner = 'Partner' if packs_metadata_dict[pack_name].get('support') == 'partner' else ''
         pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0 {partner}\n'
                               f'{pack_summary}')
