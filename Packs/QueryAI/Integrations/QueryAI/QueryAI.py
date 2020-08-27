@@ -98,7 +98,7 @@ def generate_drilldown_url(query, alias, time_text=None, workflow_params=None):
     return drilldown_url
 
 
-def queryai_run_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def queryai_run_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # type: ignore
     """queryai-run-query command: Returns response for the query being run on QueryAI
 
     :type client: ``Client``
@@ -125,19 +125,23 @@ def queryai_run_query_command(client: Client, args: Dict[str, Any]) -> CommandRe
     if not query:
         raise ValueError('Missing argument: "query"')
 
-    result = client.run_query(query=query, connection_params=connection_params, workflow_params=workflow_params,
-                              time_text=time_text, alias=alias)
+    try:
+        result = client.run_query(query=query, connection_params=connection_params, workflow_params=workflow_params,
+                                  time_text=time_text, alias=alias)
 
-    drilldown_url = f'### Click here to [see details]({generate_drilldown_url(query, alias, time_text, workflow_params)})'
-    readable_output = tableToMarkdown(f'Query.AI Result for the query: {query}', result['data']) if result['data'] else ''
-    readable_output += drilldown_url
-    reply = {'result': result['data'] if result['data'] else result['reply'], 'markdown_string': readable_output}
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='QueryAI.query',
-        outputs_key_field='',
-        outputs=reply
-    )
+        drilldown_url = f'### Click here to [see details]({generate_drilldown_url(query, alias, time_text, workflow_params)})'
+        readable_output = tableToMarkdown(f'Query.AI Result for the query: {query}', result['data']) if result.get('data') else ''
+        readable_output = readable_output + '### ' + result['reply'] + '\n' if result.get('reply') else readable_output
+        readable_output += drilldown_url
+        reply = {'result': result['data'] if result.get('data') else result['reply'], 'markdown_string': readable_output}
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='QueryAI.query',
+            outputs_key_field='',
+            outputs=reply
+        )
+    except DemistoException as e:
+        return_error(str(e))
 
 
 def test_module(client: Client) -> str:
@@ -159,6 +163,8 @@ def test_module(client: Client) -> str:
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure License Key and Email is correctly set'
+        elif 'requests.exceptions.ConnectionError' in str(e) or 'Error in API call' in str(e):
+            return 'Connection Error - Check that the Query.AI Proxy URL parameter is correct.'
         else:
             raise e
     return 'ok'
