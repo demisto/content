@@ -414,7 +414,7 @@ def main():
     new_packs_metadata = {}
     new_packs
     for pack in new_packs:
-        pack_metadata = get_pack_metdata(pack)
+        pack_metadata = get_pack_metadata(pack)
         pack_name = pack_metadata.get('name')
         new_packs_release_notes[pack_name] = get_pack_entities(pack)
         new_packs_metadata[pack_name] = pack_metadata
