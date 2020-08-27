@@ -4171,15 +4171,15 @@ class SchemeTypeMapping:
     :type type_name: ``str``
     :param type_name: The name of the remote incident type.
 
-    :type fields: ``list``
-    :param fields: The list of fields to their description.
+    :type fields: ``dict``
+    :param fields: The dict of fields to their description.
 
     :return: No data returned
     :rtype: ``None``
     """
     def __init__(self, type_name='', fields=None):
         self.type_name = type_name
-        self.fields = fields if fields else []
+        self.fields = fields if fields else {}
 
     def add_field(self, name, description=''):
         """Adds a field to the incident type mapping.
@@ -4193,7 +4193,7 @@ class SchemeTypeMapping:
         :return: No data returned
         :rtype: ``None``
         """
-        self.fields.append({
+        self.fields.update({
             name: description
         })
 
