@@ -12,7 +12,6 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 * iot-security-get-raci
-* Exists
 
 ### Commands
 * iot-security-get-device
