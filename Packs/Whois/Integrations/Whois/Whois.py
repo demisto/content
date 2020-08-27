@@ -7241,7 +7241,7 @@ def get_root_server(domain):
                 'Contents': 'The domain - {} - is not supported by the Whois service'.format(domain),
                 'EntryContext': context
             })
-            sys.exit(-1)
+            sys.exit()
 
         return host
 
@@ -7271,7 +7271,7 @@ def whois_request(domain, server, port=43):
                 'EntryContext': context
             }
         )
-        sys.exit(-1)
+        sys.exit()
 
     else:
         sock.send(("%s\r\n" % domain).encode("utf-8"))

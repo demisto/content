@@ -326,7 +326,7 @@ PUBLIC_FOLDERS_ERROR = 'Please update your docker image to use public folders'
 if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
     if demisto.command() == 'test-module':
         demisto.results(PUBLIC_FOLDERS_ERROR)
-        exit(3)
+        sys.exit()
     raise Exception(PUBLIC_FOLDERS_ERROR)
 
 

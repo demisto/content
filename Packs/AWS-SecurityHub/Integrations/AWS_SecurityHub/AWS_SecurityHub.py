@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 # flake8: noqa
+import sys
 import boto3
 import json
 from botocore.config import Config
@@ -866,7 +867,7 @@ def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('ok')
-        exit(0)
+        sys.exit()
 
 
 def main():  # pragma: no cover
