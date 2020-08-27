@@ -334,6 +334,7 @@ def collect_tests_and_content_packs(
     :return: (test_ids, missing_ids) - All the names of possible tests, the ids we didn't match a test for.
     """
     caught_missing_test = False
+
     catched_intergrations = set([])
 
     test_ids = conf.get_test_playbook_ids()
