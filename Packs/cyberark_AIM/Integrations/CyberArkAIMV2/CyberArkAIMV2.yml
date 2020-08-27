@@ -28,16 +28,17 @@ configuration:
   name: credential_names
   required: false
   type: 12
-- display: Username
+- additionalinfo: Used to perform windows authentication
+  display: Username
   hidden: false
   name: credentials
   required: false
   type: 9
-- display: Fetches credentials
+- defaultvalue: 'true'
+  display: Fetches credentials
   name: isFetchCredentials
-  defaultvalue: "true"
-  type: 8
   required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -55,7 +56,23 @@ script:
     description: Lists all credentials available
     execution: false
     name: cyberark-aim-list-credentials
-  dockerimage: demisto/py3ews:1.0.0.10664
+    outputs:
+    - contextPath: CyberArkAIM.AccountType
+      description: The type of the account.
+      type: String
+    - contextPath: CyberArkAIM.Address
+      description: The address of the account.
+      type: String
+    - contextPath: CyberArkAIM.CPMStatus
+      description: The CMP status.
+      type: String
+    - contextPath: CyberArkAIM.Domain
+      description: The domain.
+      type: String
+    - contextPath: CyberArkAIM.Name
+      description: The provided name.
+      type: String
+  dockerimage: demisto/ntlm:1.0.0.10980
   feed: false
   isfetch: false
   longRunning: false
@@ -64,5 +81,3 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests:
-- No tests

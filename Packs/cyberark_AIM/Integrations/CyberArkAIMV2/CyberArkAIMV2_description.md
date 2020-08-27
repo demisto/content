@@ -1,3 +1,7 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+## CyberArk AIM
+The CyberArk Application Identity Manager (AIM) for credential management.
+Use it to store your passwords and other sensitive information and use them for authentication.
+
+Please notice that currently the **username** and **password** in the integration are optional and used in
+ order to perform windows authentication.
+ 

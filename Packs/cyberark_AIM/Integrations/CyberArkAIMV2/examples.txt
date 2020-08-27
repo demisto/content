@@ -1,0 +1,1 @@
+!cyberark-aim-list-credentials

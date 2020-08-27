@@ -38,14 +38,30 @@ class Client(BaseClient):
 
 
 def list_credentials_command(client):
+    """Lists all credentials available.
+    :param client: the client object with the given params
+    :return: the credentials info without the explicit password
+    """
     res = client.list_credentials()
+    demisto.log(str(res))
     # the password value in the json appears under the key "Content"
     if "Content" in res:
         del res["Content"]
-    return res
+    # notice that the raw_response doesn't contain the password either
+    results = CommandResults(
+        outputs=res,
+        raw_response=res,
+        outputs_prefix='CyberArkAIM',
+        outputs_key_field='Name',
+    )
+    return results
 
 
 def fetch_credentials(client):
+    """Fetches the available credentials.
+    :param client: the client object with the given params
+    :return: a credentials object
+    """
     res = client.list_credentials()
 
     credentials = {
@@ -57,7 +73,10 @@ def fetch_credentials(client):
 
 
 def test_module(client: Client) -> str:
-    # try to get to the aim server with the current params
+    """Performing a request to the AIM server with the given params
+    :param client: the client object with the given params
+    :return: ok if the request succeeded
+    """
     client.list_credentials()
     return "ok"
 
