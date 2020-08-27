@@ -5620,11 +5620,17 @@ def get_ssl_decryption_rules_command():
     })
 
 
-def prettify_profiles_rule(rule):
+def prettify_profile_rule(rule):
     pretty_rule = {
         'Name': rule['@name'],
         'Action': rule['action']
     }
+    if 'application' in rule and 'member' in rule['application']:
+        pretty_rule['Application'] = rule['application']['member']
+    if 'file-type' in rule and 'member' in rule['file-type']:
+        pretty_rule['File-type'] = rule['file-type']['member']
+    if 'wildfire-action' in rule:
+        pretty_rule['WildFire-action'] = rule['wildfire-action']
     if 'category' in rule and 'member' in rule['category']:
         pretty_rule['Category'] = rule['category']['member']
     elif 'category' in rule:
@@ -5643,16 +5649,22 @@ def prettify_profiles_rule(rule):
         pretty_rule['Sinkhole'] = rule['sinkhole']['ipv4-address']
     if 'sinkhole' in rule and 'ipv6-address' in rule['sinkhole']:
         pretty_rule['Sinkhole'] = rule['sinkhole']['ipv6-address']
+    if 'host' in rule:
+        pretty_rule['Host'] = rule['host']
+    if 'cve' in rule and 'member' in rule['cve']:
+        pretty_rule['CVE'] = rule['cve']['member']
+    if 'vendor-id' in rule and 'member' in rule['vendor-id']:
+        pretty_rule['Vendor-id'] = rule['vendor-id']['member']
 
     return pretty_rule
 
 
 def prettify_profiles_rules(rules):
     if not isinstance(rules, list):
-        return prettify_profiles_rules(rules)
+        return prettify_profile_rule(rules)
     pretty_rules_arr = []
     for rule in rules:
-        pretty_rule = prettify_profiles_rule(rule)
+        pretty_rule = prettify_profile_rule(rule)
         pretty_rules_arr.append(pretty_rule)
 
     return pretty_rules_arr
@@ -5708,6 +5720,114 @@ def get_anti_spyware_best_practice_command():
             "Panorama.Spyware.Rule(val.Name == obj.Name)": profile_rules,
             "Panorama.Spyware.BotentDomain(val.Name == obj.Name)": pretty_botnet_domains,
             "Panorama.Spyware.BotentDomain.Sinkhole(val.ipv4-address == obj.ipv4-address)": sinkhole_content
+        }
+    })
+
+
+def get_file_blocking_best_practice():
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': '/config/predefined/profiles/file-blocking',
+        'key': API_KEY
+    }
+
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_file_blocking_best_practice_command():
+
+    results = get_file_blocking_best_practice()
+    file_blocking_profile = results.get('response', {}).get('result', {}).get('file-blocking', {})
+    strict_profile = file_blocking_profile.get('entry')[1]
+    file_blocking_rules = strict_profile.get('rules', {}).get('entry', [])
+
+    rules = prettify_profiles_rules(file_blocking_rules)
+    human_readable = tableToMarkdown('File Blocking Profile Best Practice', rules,
+                                     ['Name', 'Action', 'File-type', 'Application'], removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': strict_profile,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            "Panorama.FileBlocking.Rule(val.Name == obj.Name)": rules,
+        }
+    })
+
+
+def get_antivirus_best_practice():
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': '/config/predefined/profiles/virus',
+        'key': API_KEY
+    }
+
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_antivirus_best_practice_command():
+
+    results = get_antivirus_best_practice()
+    antivirus_profile = results.get('response', {}).get('result', {}).get('virus', {})
+    strict_profile = antivirus_profile.get('entry')
+    antivirus_rules = strict_profile.get('decoder', {}).get('entry', [])
+
+    rules = prettify_profiles_rules(antivirus_rules)
+    human_readable = tableToMarkdown('Antivirus Best Practice Profile', rules, ['Name', 'Action', 'WildFire-action'],
+                                     removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': strict_profile,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            "Panorama.Antivirus.Decoder(val.Name == obj.Name)": rules,
+        }
+    })
+
+
+def get_vulnerability_protection_best_practice():
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': '/config/predefined/profiles/vulnerability',
+        'key': API_KEY
+    }
+
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_vulnerability_protection_best_practice_command():
+
+    results = get_vulnerability_protection_best_practice()
+    vulnerability_protection = results.get('response', {}).get('result', {}).get('vulnerability', {})
+    strict_profile = vulnerability_protection.get('entry', [])[0]
+    vulnerability_rules = strict_profile.get('rules', {}).get('entry', [])
+    rules = prettify_profiles_rules(vulnerability_rules)
+    human_readable = tableToMarkdown('vulnerability Protection Best Practice Profile', rules,
+                                     ['Name', 'Action', 'Host', 'Severity', 'Category', 'Threat-name', 'CVE',
+                                      'Vendor-id'], removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': strict_profile,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            "Panorama.Vulnerability.Rule(val.Name == obj.Name)": rules,
         }
     })
 
@@ -6128,6 +6248,15 @@ def main():
 
         elif demisto.command() == 'panorama-get-anti-spyware-best-practice':
             get_anti_spyware_best_practice_command()
+
+        elif demisto.command() == 'panorama-get-file-blocking-best-practice':
+            get_file_blocking_best_practice_command()
+
+        elif demisto.command() == 'panorama-get-antivirus-best-practice':
+            get_antivirus_best_practice_command()
+
+        elif demisto.command() == 'panorama-get-vulnerability-protection-best-practice':
+            get_vulnerability_protection_best_practice_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

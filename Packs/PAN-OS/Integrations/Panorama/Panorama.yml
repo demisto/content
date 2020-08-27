@@ -3998,6 +3998,66 @@ script:
     - contextPath: Panorama.Spyware.BotentDomain.Max_version
       description: Botnet domain max version.
       type: String
+  - deprecated: false
+    description: Show file-blocking best practices.
+    execution: false
+    name: panorama-get-file-blocking-best-practice
+    outputs:
+    - contextPath: Panorama.FileBlocking.Rule.Action
+      description: Rule action.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rule.Application
+      description: Rule application.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rule.File-type
+      description: Rule file type.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rule.Name
+      description: Rule name.
+      type: String
+  - deprecated: false
+    description: Show anti-virus best practices.
+    execution: false
+    name: panorama-get-antivirus-best-practice
+    outputs:
+    - contextPath: Panorama.Antivirus.Decoder.Action
+      description: Rule action.
+      type: String
+    - contextPath: Panorama.Antivirus.Decoder.Name
+      description: Rule name.
+      type: String
+    - contextPath: Panorama.Antivirus.Decoder.WildFire-action
+      description: WildFire action.
+      type: String
+  - deprecated: false
+    description: Show vulnerability-protection best practices.
+    execution: false
+    name: panorama-get-vulnerability-protection-best-practice
+    outputs:
+    - contextPath: Panorama.Vulnerability.Rule.Action
+      description: Rule action.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.CVE
+      description: Rule CVE.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Cateogry
+      description: Rule category.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Host
+      description: The rule host.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Name
+      description: Rule name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Severity
+      description: The rule severity.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Threat-name
+      description: The threat name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Vendor-id
+      description: The vendor ID.
+      type: String
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false
