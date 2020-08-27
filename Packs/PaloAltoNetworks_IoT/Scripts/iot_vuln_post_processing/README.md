@@ -1,4 +1,4 @@
-IoT vulnerability post processing script to resolve the vulnerability incident in IoT security portal using API
+An IoT vulnerability post processing script to resolve the vulnerability incident in IoT security portal using the API.
 ## Script Data
 ---
 
@@ -8,7 +8,7 @@ IoT vulnerability post processing script to resolve the vulnerability incident i
 | Tags | iot, post-processing |
 | Demisto Version | 5.5.0 |
 
-This script is executing a command 'iot-security-resolve-vuln' to resolve a vulnerability in PANW IoT security portal during post-processing.
+This script is executing the 'iot-security-resolve-vuln' command to resolve a vulnerability in the Palo Alto Networks IoT security portal during post-processing.
 
 ## Inputs
 ---
