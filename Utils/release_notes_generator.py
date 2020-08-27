@@ -315,7 +315,6 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
 
     pack_rn_blocks = []
     for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
-        print(f"pack name: {pack_name}\n pack metadata {packs_metadata_dict.get(pack_name)}")
         partner = 'Partner' if packs_metadata_dict[pack_name].get('support') == 'partner' else ''
         pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0 {partner}\n'
                               f'{pack_summary}')
@@ -421,11 +420,11 @@ def main():
         new_packs_release_notes[pack_name] = get_pack_entities(pack)
         new_packs_metadata[pack_name] = pack_metadata
 
-
-
+    packs_metadata_dict = {}
     modified_release_notes = get_all_modified_release_note_files(args.git_sha1)
     modified_release_notes_dict, modified_packs_metadata = get_release_notes_dict(modified_release_notes)
-    packs_metadata_dict = new_packs_metadata.update(modified_packs_metadata)
+    packs_metadata_dict.update(new_packs_metadata)
+    packs_metadata_dict.update(modified_packs_metadata)
     release_notes = generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict,
                                                    packs_metadata_dict, args.version, args.asset_id, args.output)
     create_content_descriptor(release_notes, args.version, args.asset_id, args.github_token)
