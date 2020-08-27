@@ -2261,7 +2261,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists all indicators by ID
+    description: Lists all indicators.
     execution: false
     name: microsoft-atp-list-indicators
     outputs:
@@ -2284,7 +2284,7 @@ script:
       type: String
       description: Brief description (100 characters or less) of the threat represented by the indicator.
     - contextPath: MicrosoftATP.Indicators.diamondModel
-      type: Unknown
+      type: String
       description: "The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim."
     - contextPath: MicrosoftATP.Indicators.domainName
       type: String
@@ -2866,7 +2866,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes and indicator
+    description: Deletes an indicator
     execution: false
     name: microsoft-atp-indicator-delete
   dockerimage: demisto/crypto:1.0.0.10743

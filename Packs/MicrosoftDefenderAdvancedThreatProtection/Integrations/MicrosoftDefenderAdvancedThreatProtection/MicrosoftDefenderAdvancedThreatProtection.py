@@ -2,6 +2,7 @@ from typing import Optional, Dict, Tuple, List
 from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
+from requests import Response
 
 # Disable insecure warnings
 
@@ -12,6 +13,26 @@ APP_NAME = 'ms-defender-atp'
 
 ''' HELPER FUNCTIONS '''
 
+
+def get_future_time(expiration_time: str) -> str:
+    """ Gets a time and returns a string of the future time of it.
+
+    Args:
+        expiration_time: (3 days, 1 hour etc)
+
+    Returns:
+        time now + the expiration time
+
+    Examples:
+        time now: 20:00
+        function get expiration_time=1 hour
+        returns: 21:00 (format '%Y-%m-%dT%H:%M:%SZ')
+    """
+    start, end = parse_date_range(
+        expiration_time
+    )
+    future_time: datetime = end + (end - start)
+    return future_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 def alert_to_incident(alert, alert_creation_time):
     incident = {
@@ -37,6 +58,7 @@ class MsClient:
         self.alert_severities_to_fetch = alert_severities_to_fetch,
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
+        # TODO: Replace with v1 endpoint when out.
         self.indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
     def isolate_machine(self, machine_id, comment, isolation_type):
@@ -563,12 +585,10 @@ class MsClient:
             indicator_id: if provided, will get only this specific id.
 
         Returns:
-            json of a response.
+            List of responses.
         """
-        cmd_url = self.indicators_endpoint
+        cmd_url = urljoin(self.indicators_endpoint, indicator_id) if indicator_id else self.indicators_endpoint
         # For getting one indicator
-        if indicator_id is not None:
-            cmd_url = urljoin(cmd_url, indicator_id)
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
         resp = self.ms_client.http_request(
@@ -611,7 +631,7 @@ class MsClient:
     def update_indicator(
             self, indicator_id: str, expiration_date_time: str,
             description: Optional[str], severity: Optional[str]
-    ):
+    ) -> Dict:
         """Updates a given indicator
 
         Args:
@@ -640,7 +660,7 @@ class MsClient:
         resp.pop('@odata.context')
         return assign_params(values_to_ignore=[None], **resp)
 
-    def delete_indicator(self, indicator_id):
+    def delete_indicator(self, indicator_id: str) -> Response:
         """Deletes a given indicator
 
         Args:
@@ -1890,7 +1910,7 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
     indicators = indicators[:limit]
     if indicators:
         human_readable = tableToMarkdown(
-            'Indicators from Microsoft ATP:',
+            'Microsoft Defender ATP Indicators:',
             indicators,
             headers=[
                 'id',
@@ -1909,14 +1929,6 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
         return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicators}, indicators
     else:
         return 'No indicators found', None, None
-
-
-def get_future_time(expiration_time) -> str:
-    start, end = parse_date_range(
-        expiration_time
-    )
-    future_time: datetime = end + (end - start)
-    return future_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) -> Dict:
@@ -1943,14 +1955,18 @@ def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) 
     """
     action = args.get('action', '')
     description = args.get('description', '')
-    assert 1 <= len(description) <= 100, 'The description argument must contain at least 1 letter and less than 100.'
+    assert 1 <= len(description) <= 100, 'The description argument must contain at' \
+                                         ' least 1 character and not more than 100'
     expiration_time = get_future_time(args.get('expiration_time'))
     threat_type = args.get('threat_type', '')
     tlp_level = args.get('tlp_level', '')
     confidence = args.get('confidence', None)
-    if confidence is not None:
-        confidence = int(confidence)
-        assert 0 <= confidence <= 100, 'The confidence argument must be between 0 and 100'
+    try:
+        if confidence is not None:
+            confidence = int(confidence)
+            assert 0 <= confidence <= 100, 'The confidence argument must be between 0 and 100'
+    except ValueError:
+        raise DemistoException('The confidence argument must be an integer.')
     severity = args.get('severity', 3)
     try:
         severity = int(severity)
@@ -1979,7 +1995,7 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Op
     Args:
         client: MsClient
         args: arguments from CortexSOAR.
-            Should contain an email observable:
+            Should contain a file observable:
             - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---file
 
     Returns:
@@ -2028,7 +2044,7 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict]:
     Args:
         client: MsClient
         args: arguments from CortexSOAR.
-            Should contain an email observable:
+            Should contain a a network observable:
             - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-betaindicator-observables---network  # noqa: E501
     Returns:
         human readable, outputs, raw response
@@ -2078,19 +2094,16 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict]:
     return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
 
 
-def test_module(client: MsClient):
-    try:
-        client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
-    except Exception:
-        raise DemistoException(
-            "API call to Windows Advanced Threat Protection failed. \n Please check authentication related parameters")
-    demisto.results('ok')
-
-
-''' EXECUTION CODE '''
-
-
 def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, dict]:
+    """Updates an indicator
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+            Must contains 'indicator_id' and 'expiration_time'
+    Returns:
+        human readable, outputs
+    """
     indicator_id = args.get('indicator_id', '')
     severity = args.get('severity')
     if severity is not None:
@@ -2103,7 +2116,7 @@ def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, dict]:
     description = args.get('description')
     if description is not None:
         assert 1 <= len(
-            description) <= 100, 'The description argument must contain at least 1 letter and less than 100.'
+            description) <= 100, 'The description argument must contain at least 1 character and not more than 100'
 
     resp = client.update_indicator(
         indicator_id=indicator_id, expiration_date_time=expiration_time,
@@ -2118,9 +2131,28 @@ def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, dict]:
 
 
 def delete_indicator_command(client: MsClient, args: dict) -> str:
+    """Deletes an indicator
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+            Must contains 'indicator_id'
+    Returns:
+        human readable
+    """
     indicator_id = args.get('indicator_id', '')
     client.delete_indicator(indicator_id)
     return f'Indicator ID: {indicator_id} was successfully deleted'
+
+
+def test_module(client: MsClient):
+    try:
+        client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
+    except Exception:
+        raise DemistoException(
+            "API call to Windows Advanced Threat Protection failed. \n Please check authentication related parameters")
+    demisto.results('ok')
+''' EXECUTION CODE '''
 
 
 def main():
