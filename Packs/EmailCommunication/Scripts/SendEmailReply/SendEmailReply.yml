@@ -15,7 +15,7 @@ args:
   secret: false
 - default: false
   defaultValue: 
-  description: The mailbox through which emails are received in Cortex XSOAR.
+  description: The mailbox from which emails are sent from the 3rd party integration. 
   isArray: false
   name: service_mail
   required: true
