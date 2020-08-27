@@ -8,9 +8,9 @@ IoT RACI model script
 | Tags | iot |
 | Demisto Version | 5.5.0 |
 
-This script is using the device and the incident attributes to evaluate the Responsible (R) and Informed (I) parties in the RACI model.
+This script is using the device and incident attributes to evaluate the Responsible (R) and Informed (I) parties in the RACI model.
 
-A list variable needs to be created with a fixed format JSON. You can create a new XSOAR list variable at Settings > Advanced > Lists.
+A list variable needs to be created with a fixed format JSON. You can create a new XSOAR list variable under Settings > Advanced > Lists.
 
 By default, the name of the list variable is IOT_CONFIG.
 
