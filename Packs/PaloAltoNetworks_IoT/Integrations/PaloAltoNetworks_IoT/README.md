@@ -1,5 +1,5 @@
 This is the Palo Alto Networks IoT integration (previously Zingbox).
-This integration was integrated and tested with Banff release of Palo Alto Networks IoT
+This integration was integrated and tested with the Banff release of Palo Alto Networks IoT
 ## Configure Palo Alto Networks IoT on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
