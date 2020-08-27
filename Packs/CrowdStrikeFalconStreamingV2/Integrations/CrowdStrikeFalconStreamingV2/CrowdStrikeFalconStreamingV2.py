@@ -401,7 +401,7 @@ async def long_running_loop(
                             demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')
                             sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
                             sample_events += sample_events_to_store
-                            integration_context['sample_events'] = json.dumps(list(sample_events))
+                            integration_context['sample_events'] = list(sample_events)
                         except Exception as e:
                             demisto.error(f'Failed storing sample events - {e}')
                     demisto.debug(f'Storing offset {offset_to_store}')
@@ -411,9 +411,7 @@ async def long_running_loop(
         demisto.error(f'An error occurred in the long running loop: {e}')
     finally:
         # store latest fetched event offset in case the loop crashes and we did not reach the 1 minute to store it
-        integration_context = get_integration_context()
-        integration_context['offset'] = offset_to_store
-        set_to_integration_context_with_retries(integration_context)
+        set_to_integration_context_with_retries({'offset': offset_to_store})
 
 
 async def test_module(base_url: str, client_id: str, client_secret: str, verify_ssl: bool, proxy: bool) -> None:
