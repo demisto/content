@@ -81,6 +81,20 @@ class Client(BaseClient):
             url_suffix=url_suffix
         )
 
+    def list_delete_quarantine_messages(self, url_suffix, request_body):
+        return self.http_request(
+            method='GET',
+            url_suffix=url_suffix,
+            json_data=request_body
+        )
+
+    def list_release_quarantine_messages(self, url_suffix, request_body):
+        return self.http_request(
+            method='GET',
+            url_suffix=url_suffix,
+            json_data=request_body
+        )
+
 
 def test_module(client: Client) -> str:
     suffix_url = "/sma/api/v2.0/message-tracking/messages?startDate=2018-01-01T00:00:00.000Z&" \
@@ -407,6 +421,37 @@ def list_get_quarantine_message_details_command(client, args):
     )
 
 
+def list_delete_quarantine_messages_command(client, args):
+    messages_ids = args.get('messages_ids')
+    url_suffix = f'/sma/api/v2.0/quarantine/messages'
+    request_body = {
+        "quarantineType": "spam",
+        "mids": messages_ids
+    }
+    delete_quarantine_messages_response = client.list_delete_quarantine_messages(url_suffix, request_body)
+    return CommandResults(
+        readable_output=delete_quarantine_messages_response,
+        outputs_prefix='CiscoEmailSecurity.QuarantineDeleteMessages',
+        outputs_key_field='mid'
+    )
+
+
+def list_release_quarantine_messages_command(client, args):
+    messages_ids = args.get('messages_ids')
+    url_suffix = f'/sma/api/v2.0/quarantine/messages'
+    request_body = {
+        "action": "release",
+        "quarantineType": "spam",
+        "mids": messages_ids
+    }
+    release_quarantine_messages_response = client.list_release_quarantine_messages(url_suffix, request_body)
+    return CommandResults(
+        readable_output=release_quarantine_messages_response,
+        outputs_prefix='CiscoEmailSecurity.QuarantineDeleteMessages',
+        outputs_key_field='mid'
+    )
+
+
 def main() -> None:
 
     params = demisto.params()
@@ -432,6 +477,10 @@ def main() -> None:
             return_results(list_search_spam_quarantine_command(client, args))
         elif demisto.command() == 'cisco-email-security-spam-quarantine-message-details-get':
             return_results(list_get_quarantine_message_details_command(client, args))
+        elif demisto.command() == 'cisco-email-security-spam-quarantine-messages-delete':
+            return_results(list_delete_quarantine_messages_command(client, args))
+        elif demisto.command() == 'cisco-email-security-spam-quarantine-messages-release':
+            return_results(list_release_quarantine_messages_command(client, args))
         elif demisto.command() == 'cisco-email-security-dlp-details-get':
             return_results(list_get_dlp_details_command(client, args))
         elif demisto.command() == 'cisco-email-security-amp-details-get':

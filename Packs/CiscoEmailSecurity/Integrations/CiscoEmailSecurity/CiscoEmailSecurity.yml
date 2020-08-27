@@ -676,6 +676,28 @@ script:
     description: Cisco Email Security get details on a url
     execution: false
     name: cisco-email-security-url-details-get
+  - arguments:
+    - default: false
+      description: A list of ID's to delete, comma separated.
+      isArray: true
+      name: messages_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Cisco Email Security delete quarantine messages
+    execution: false
+    name: cisco-email-security-spam-quarantine-messages-delete
+  - arguments:
+    - default: false
+      description: A list of ID's to release, comma separated.
+      isArray: true
+      name: messages_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Cisco Email Security release quarantine messages
+    execution: false
+    name: cisco-email-security-spam-quarantine-messages-release
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
