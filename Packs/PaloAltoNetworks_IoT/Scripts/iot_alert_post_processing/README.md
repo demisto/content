@@ -1,4 +1,4 @@
-IoT alert post processing script to resolve the alert in IoT security portal using API
+IoT alert post processing script to resolve the alert in IoT security portal using API.
 ## Script Data
 ---
 
@@ -8,7 +8,7 @@ IoT alert post processing script to resolve the alert in IoT security portal usi
 | Tags | iot, post-processing |
 | Demisto Version | 5.5.0 |
 
-This script is executing a command 'iot-security-resolve-alert' to resolve an alert in PANW IoT security portal during post-processing.
+This script executes the 'iot-security-resolve-alert' command to resolve an alert in PANW IoT security portal during post-processing.
 
 ## Inputs
 ---
