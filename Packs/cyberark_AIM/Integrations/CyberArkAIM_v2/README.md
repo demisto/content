@@ -1,9 +1,9 @@
 Query CyberArk Application Identity Manager for accounts and credentials.
 This integration was integrated and tested with version xx of CyberArkAIMV2
-## Configure CyberArkAIMV2 on Cortex XSOAR
+## Configure CyberArkAIM v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CyberArkAIMV2.
+2. Search for CyberArkAIM v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |

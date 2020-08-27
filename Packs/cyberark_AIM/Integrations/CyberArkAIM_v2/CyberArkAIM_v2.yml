@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: CyberArkAIMV2
+  id: CyberArkAIM v2
   version: -1
 configuration:
 - defaultvalue: https://example.net:1234
@@ -49,7 +49,7 @@ configuration:
   type: 8
 description: Query CyberArk Application Identity Manager for accounts and credentials.
 display: CyberArk AIM v2
-name: CyberArkAIMV2
+name: CyberArkAIM v2
 script:
   commands:
   - deprecated: false

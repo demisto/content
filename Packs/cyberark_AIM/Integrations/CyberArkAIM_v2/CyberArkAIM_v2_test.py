@@ -1,6 +1,6 @@
 import pytest
 
-from CyberArkAIMV2 import Client, list_credentials_command
+from CyberArkAIM_v2 import Client, list_credentials_command
 from test_data.context import LIST_CREDENTIALS_CONTEXT
 from test_data.http_resonses import LIST_CREDENTIALS_RAW
 
