@@ -1,15 +1,16 @@
 import datetime
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from CofenseTriagev2.CofenseTriagev2 import TriageReport
-from CofenseTriagev2.CofenseTriagev2 import TriageReporter
-from CofenseTriagev2.CofenseTriagev2 import TriageRequestFailedError
+from CofenseTriagev2 import TriageReport
+from CofenseTriagev2 import TriageReporter
+from CofenseTriagev2 import TriageRequestFailedError
 from freezegun import freeze_time
 
 
 def fixture_from_file(fname):
-    with open(f"test/fixtures/{fname}", "r") as file:
+    with (Path(__file__).parent / 'test' / 'fixtures' / fname).open() as file:
         return file.read()
 
 
@@ -38,15 +39,15 @@ set_demisto_arg("token", "api_token")
 set_demisto_arg("user", "user")
 patch("demistomock.getParam", get_demisto_arg)  # args ≡ params in tests
 
-from CofenseTriagev2 import CofenseTriagev2  # noqa: 402
-from CofenseTriagev2.CofenseTriagev2 import parse_triage_date  # noqa: 402
+import CofenseTriagev2  # noqa: 402
+from CofenseTriagev2 import parse_triage_date  # noqa: 402
 
 
 @pytest.fixture(autouse=True)
 def stub_demisto_setup(mocker):
-    mocker.patch("CofenseTriagev2.CofenseTriagev2.return_error")
+    mocker.patch("CofenseTriagev2.return_error")
     mocker.patch(
-        "CofenseTriagev2.CofenseTriagev2.fileResult",
+        "CofenseTriagev2.fileResult",
         lambda filename="file_result_name", data="file_result_id": {
             "Contents": "",
             "ContentsFormat": "text",
@@ -261,7 +262,7 @@ class TestCofenseTriage:
             "|---|---|---|---|---|---|---|---|\n"
             "| 2019-04-12T02:58:17.401Z | 0 | reporter1@example.com | 111 | 2016-02-18T00:24:45.000Z | 3 | 2019-04-12T02:59:22.287Z | false |\n"  # noqa: 501
         )
-        assert demisto_results[0]["Contents"] == {
+        assert demisto_results[0]["EntryContext"] == {
             "Cofense.Reporter(val.Id && val.Id == obj.Id)": {
                 "ID": 111,
                 "Email": "reporter1@example.com",
@@ -460,7 +461,7 @@ class TestTriageReport:
             text=fixture_from_file("single_report.json"),
         )
         stubbed_triagereporter_init = mocker.patch(
-            "CofenseTriagev2.CofenseTriagev2.TriageReporter"
+            "CofenseTriagev2.TriageReporter"
         )
 
         TriageReport.fetch(triage_instance, "6").reporter
