@@ -62,7 +62,7 @@ configuration:
   name: timezone
   required: false
   type: 0
-description: Deprecated. use McAfee ESM v2 instead.
+description: Deprecated - We recommend using McAfee ESM v2 instead.
 display: McAfee ESM v10 and v11
 name: McAfee ESM-v10
 script:
