@@ -140,7 +140,7 @@ class Client:
             owners: Filter indicators belongs to specific owner.
 
         Returns:
-            Iterator: indicatrs objects.
+            Iterator: indicator objects.
         """
         indicators = self._client.ti.indicator().many(params={"includes": ['additional', 'attributes'],
                                                               'owner': owners})
