@@ -9,6 +9,9 @@ from datetime import timezone
 import functools
 import json
 
+from urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
 TERSE_FIELDS = [
     'id',
     'cluster_id',
