@@ -129,6 +129,9 @@ class MicrosoftClient(BaseClient):
         until expiration time. After expiration, new refresh token and access token are obtained and stored in the
         integration context.
 
+        Args:
+            scope: A scope to get instead of the default on the API.
+
         Returns:
             str: Access token that will be added to authorization header.
         """
