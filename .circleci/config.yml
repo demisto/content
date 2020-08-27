@@ -640,7 +640,7 @@ jobs:
                   echo "Demisto GA filter=$TEMP"
                   if [[ "$TEMP" == "false" ]];
                     then
-                      echo "Skipping - Instance was not setup"
+                      echo "Skipping - instance was not setup"
                       exit 0
                   fi
                   if ./Tests/scripts/is_ami.sh ;
