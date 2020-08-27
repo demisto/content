@@ -35,6 +35,9 @@
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
+<h2>Using API Token authentication</h2>
+<p>In order to use the integration with an API token you'll first need to change the Username / API Key (see '?') field to `_api_token_key`. Following this step, you can now enter the API Token into the `Password` field - this value will be used as an API key.
+</p>
 <h2>Commands</h2>
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>

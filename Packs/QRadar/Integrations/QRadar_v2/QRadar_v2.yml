@@ -7,20 +7,16 @@ configuration:
   name: server
   required: true
   type: 0
-- display: Username
+- display: Username / API Key (see '?')
   name: credentials
   required: false
   type: 9
-- display: Authentication token
-  name: token
-  required: false
-  type: 4
 - display: Query to fetch offenses
   name: query
   required: false
   type: 0
 - defaultvalue: '50'
-  display: Number of offenses to pull per API call
+  display: Number of offenses to pull per API call (max 50)
   name: offenses_per_fetch
   required: false
   type: 0
@@ -48,13 +44,13 @@ configuration:
   type: 8
 - display: Long running instance
   name: longRunning
+  required: false
   type: 8
-  required: false
-- display: Event columns to return from the events query
+- defaultvalue: '*,LOGSOURCETYPENAME(devicetype) AS ''DeviceNames'''
+  display: Event columns to return from the events query
   name: events_columns
-  defaultvalue: "*,LOGSOURCETYPENAME(devicetype) AS 'DeviceNames'"
-  type: 0
   required: false
+  type: 0
 - defaultvalue: Fetch With All Events
   display: Fetch mode
   hidden: false
@@ -70,11 +66,12 @@ configuration:
   name: events_limit
   required: false
   type: 0
-- display: Advanced Parameters
+- additionalinfo: Comma separated configuration for managing advanved parameters values.
+    e.g. EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
+  display: Advanced Parameters
   name: adv_params
-  type: 12
-  additionalinfo: Comma separated configuration for managing advanved parameters values. e.g. EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   required: false
+  type: 12
 description: Fetch offenses as incidents and search QRadar
 display: IBM QRadar V2
 name: QRadar_v2
@@ -1314,9 +1311,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: ' A comma-separated list of values to add or update in the reference set. Date
-        values must be represented in milliseconds since the Unix Epoch January 1st
-        1970.'
+      description: ' A comma-separated list of values to add or update in the reference
+        set. Date values must be represented in milliseconds since the Unix Epoch
+        January 1st 1970.'
       isArray: true
       name: value
       required: true
@@ -1535,7 +1532,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The name of the reference set to add or update a value in. To create a new reference set, you need to set the element type.
+      description: The name of the reference set to add or update a value in. To create
+        a new reference set, you need to set the element type.
       isArray: false
       name: ref_name
       required: true
@@ -1543,10 +1541,10 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The element type for the values premitted in the reference set.
-        Only required when creating a new reference set. The valid values
-        are: ALN (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address),
-        NUM (numeric), PORT (port number) or DATE. Note that date values need to be
-        represented in milliseconds since the Unix Epoch January 1st 1970.'
+        Only required when creating a new reference set. The valid values are: ALN
+        (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address), NUM (numeric),
+        PORT (port number) or DATE. Note that date values need to be represented in
+        milliseconds since the Unix Epoch January 1st 1970.'
       isArray: false
       name: element_type
       predefined:
@@ -1560,9 +1558,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The timeout_type can be "FIRST_SEEN", "LAST_SEEN", or "UNKNOWN". The
-        default value is UNKNOWN. Only required for creating a new refernce
-        set.
+      description: The timeout_type can be "FIRST_SEEN", "LAST_SEEN", or "UNKNOWN".
+        The default value is UNKNOWN. Only required for creating a new refernce set.
       isArray: false
       name: timeout_type
       predefined:
@@ -1586,7 +1583,8 @@ script:
       secret: false
     - default: false
       defaultValue: '1000'
-      description: The maximum number of indicators to return. The default value is 1000.
+      description: The maximum number of indicators to return. The default value is
+        1000.
       isArray: false
       name: limit
       required: false
@@ -1602,17 +1600,16 @@ script:
     description: Uploads indicators from Demisto to Qradar.
     execution: false
     name: qradar-upload-indicators
+  dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: false
   longRunning: true
   longRunningPort: false
   runonce: false
   script: '-'
-  dockerimage: demisto/python3:3.8.5.10455
   subtype: python3
   type: python
-  isFetchSamples: true
+defaultmapperin: QRadar-mapper
+defaultclassifier: QRadar
 sourcemoduleid: QRadar_v2
 fromversion: 6.0.0
-defaultclassifier: QRadar
-defaultmapperin: QRadar-mapper

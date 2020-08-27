@@ -19,6 +19,10 @@ urllib3.disable_warnings()
 
 """ GLOBAL VARS """
 SYNC_CONTEXT = True
+RESET_KEY = 'reset'
+LAST_FETCH_KEY = 'id'
+API_USERNAME = "_api_token_key"
+TERMINATING_SEARCH_STATUSES = {"CANCELED", "ERROR", "COMPLETED"}
 
 """ ADVANCED GLOBAL PARAMETERS """
 EVENTS_INTERVAL_SECS = 15
@@ -26,12 +30,13 @@ EVENTS_FAILURE_LIMIT = 3
 FETCH_SLEEP = 60
 BATCH_SIZE = 100
 BATCH_LIMIT = BATCH_SIZE * 10
+
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
     "EVENTS_FAILURE_LIMIT",
     "FETCH_SLEEP",
     "BATCH_SIZE",
-    "BATCH_LIMIT"
+    "BATCH_LIMIT",
 ]
 
 """ Header names transformation maps """
@@ -130,6 +135,9 @@ DEVICE_MAP = {
 
 
 class LongRunningIntegrationLogger(IntegrationLogger):
+    """
+    LOG class that ignores LOG calls if long_running
+    """
     def __init__(self, long_running=False):
         super().__init__()
         self.long_running = long_running
@@ -152,30 +160,31 @@ class FetchMode:
 
 
 class QRadarClient:
+    """
+    Client for sending QRadar requests
+    """
     def __init__(
         self,
         server: str,
         proxies,
         credentials,
-        token,
         offenses_per_fetch=50,
         insecure=False,
     ):
         self._server = server[:-1] if server.endswith("/") else server
         self._proxies = proxies
+        self._auth_headers = {"Content-Type": "application/json"}
+        self._use_ssl = not insecure
         self._username = credentials.get("identifier", "")
         self._password = credentials.get("password", "")
-        self._use_ssl = not insecure
-        self._auth_headers = {"Content-Type": "application/json"}
-        if token:
-            self._auth_headers["SEC"] = token
+        if self._username == API_USERNAME:
+            self._auth_headers["SEC"] = self._password
         self._offenses_per_fetch = min(
             int(offenses_per_fetch) if offenses_per_fetch else 50, 50
         )
+        if not (self._username and self._password):
+            raise Exception("Please provide a username/password or an API token.")
         self.lock = Lock()
-
-        if not token and not (self._username and self._password):
-            raise Exception("Either credentials or auth token should be provided.")
 
     @property
     def offenses_per_fetch(self):
@@ -189,18 +198,28 @@ class QRadarClient:
             headers = self._auth_headers
         res = None
         try:
-            try:
-                res = self.send_request_no_error_handling(
-                    headers, method, params, url, data=data
-                )
-                res.raise_for_status()
-            except ConnectionError:
-                # single try to immediate recover if encountered a connection error (could happen due to load on qradar)
-                res = self.send_request_no_error_handling(
-                    headers, method, params, url, data=data
-                )
-                res.raise_for_status()
-
+            log_hdr = deepcopy(headers)
+            sec_hdr = log_hdr.pop("SEC", None)
+            formatted_params = json.dumps(params, indent=4)
+            # default on sec_hdr, else, try username/password
+            auth = (
+                (self._username, self._password)
+                if not sec_hdr and self._username and self._password
+                else None
+            )
+            LOG(
+                f"qradar is attempting {method} to {url} with headers:\n{headers}\nparams:\n{formatted_params}"
+            )
+            res = requests.request(
+                method,
+                url,
+                proxies=self._proxies,
+                headers=headers,
+                params=params,
+                verify=self._use_ssl,
+                data=data,
+                auth=auth,
+            )
         except HTTPError:
             if res is not None:
                 try:
@@ -233,33 +252,10 @@ class QRadarClient:
             raise DemistoException("Got unexpected response from QRadar")
         return json_body
 
-    def send_request_no_error_handling(self, headers, method, params, url, data):
-        """
-            Send request with no error handling, so the error handling can be done via wrapper function
-        """
-        log_hdr = deepcopy(headers)
-        log_hdr.pop("SEC", None)
-        formatted_params = json.dumps(params, indent=4)
-        auth = (
-            (self._username, self._password)
-            if self._username and self._password
-            else None
-        )
-        LOG(
-            f"qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{formatted_params}"
-        )
-        return requests.request(
-            method,
-            url,
-            proxies=self._proxies,
-            headers=headers,
-            params=params,
-            verify=self._use_ssl,
-            data=data,
-            auth=auth,
-        )
-
     def test_connection(self):
+        """
+        Test connection with databases (should always be up)
+        """
         full_url = f"{self._server}/api/ariel/databases"
         self.send_request("GET", full_url, self._auth_headers)
         # If encountered error, send_request will return_error
@@ -523,7 +519,7 @@ class QRadarClient:
             source_url = f"{self._server}/api/siem/source_addresses?filter=id in ({src_ids_str})"
             src_res = self.send_request("GET", source_url, self._auth_headers)
             for src_adr in src_res:
-                src_adrs[src_adr['id']] = convert_to_str(src_adr['source_ip'])
+                src_adrs[src_adr['id']] = src_adr['source_ip']
         return src_adrs
 
     def enrich_destination_addresses_dict(self, dst_adrs):
@@ -537,7 +533,7 @@ class QRadarClient:
             destination_url = f"{self._server}/api/siem/local_destination_addresses?filter=id in ({dst_ids_str})"
             dst_res = self.send_request("GET", destination_url, self._auth_headers)
             for dst_adr in dst_res:
-                dst_adrs[dst_adr['id']] = convert_to_str(dst_adr['local_destination_ip'])
+                dst_adrs[dst_adr['id']] = dst_adr['local_destination_ip']
         return dst_adrs
 
 
@@ -601,13 +597,16 @@ def epoch_to_iso(ms_passed_since_epoch):
 
 
 def print_debug_msg(msg, lock: Lock = None):
+    """
+    Prints a debug message with QRadarMsg prefix, while handling lock.acquire (if available)
+    """
     err_msg = f"QRadarMsg - {msg}"
     if lock:
         if lock.acquire(timeout=0.5):
-            demisto.error(err_msg)
+            demisto.debug(err_msg)
             lock.release()
     else:
-        demisto.error(err_msg)
+        demisto.debug(err_msg)
 
 
 def filter_dict_null(d):
@@ -625,16 +624,6 @@ def filter_dict_null(d):
             return list(map(filter_dict_null, d))
         return None
     return d
-
-
-def convert_to_str(obj):
-    """
-    Converts to an str
-    """
-    try:
-        return str(obj)
-    except ValueError:
-        return obj
 
 
 def filter_dict_non_intersection_key_to_value(d1, d2):
@@ -672,7 +661,7 @@ def dict_values_to_comma_separated_string(dic):
     """
     Transforms flat dictionary to comma separated values
     """
-    return ",".join(convert_to_str(v) for v in dic.values())
+    return ",".join(str(v) for v in dic.values())
 
 
 """ Command functions """
@@ -682,18 +671,14 @@ def test_module(client: QRadarClient):
     return client.test_connection()
 
 
-def enrich_offense_with_events(client: QRadarClient, offense, fetch_mode):
-    params = demisto.params()
-    events_columns = params.get("events_columns")
-    events_limit = int(params.get("events_limit") or 20)
-    # TODO: get params from args?
+def enrich_offense_with_events(client: QRadarClient, offense, fetch_mode, events_columns, events_limit):
     additional_where = (
-        "AND LOGSOURCETYPENAME(devicetype) != 'Custom Rule Engine'"
+        "AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine'"
         if fetch_mode == FetchMode.correlations_only
         else ""
     )
     try:
-        return perform_offense_enrichment(
+        return perform_offense_events_enrichment(
             offense, additional_where, events_columns, events_limit, client,
         )
     except Exception as e:
@@ -705,9 +690,18 @@ def enrich_offense_with_events(client: QRadarClient, offense, fetch_mode):
     return offense
 
 
-def perform_offense_enrichment(
+def perform_offense_events_enrichment(
     offense, additional_where, events_columns, events_limit, client: QRadarClient,
 ):
+    """
+    Performs an offense enrichment by:
+        try to create events search via AQL
+        if search created successfully:
+            try to get search results
+            if successfully:
+                enrich offense with event
+        return offense
+    """
     offense_start_time = offense["start_time"]
     query_expression = (
         f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense["id"]})'
@@ -718,75 +712,77 @@ def perform_offense_enrichment(
         f'(1) Starting events fetch for offense {offense["id"]}.', client.lock
     )
     try:
-        query_status = ""
-        failures = 0
-        search_created_successfully = False
-        # try to create search EVENTS_FAILURE_LIMIT times
-        while not search_created_successfully and failures <= EVENTS_FAILURE_LIMIT:
-            try:
-                raw_search = client.search(events_query)
-                search_res_events = deepcopy(raw_search)
-                search_res_events = filter_dict_non_intersection_key_to_value(
-                    replace_keys(search_res_events, SEARCH_ID_NAMES_MAP),
-                    SEARCH_ID_NAMES_MAP,
-                )
-                search_id = search_res_events.get("ID")
-                query_status = search_res_events.get("Status")
-                search_created_successfully = True
-            except Exception:
-                failures += 1
-
-        if failures >= EVENTS_FAILURE_LIMIT:
-            raise DemistoException(
-                f"Unable to create search for offense: {offense['id']}."
-            )
-
-        i = 1
-        failures = 0
-        # try get search results with failures up to EVENTS_FAILURE_LIMIT consecutive fails
-        while not (
-            query_status == "COMPLETED"
-            or query_status == "ERROR"
-            or query_status == "CANCELED"
-            or failures >= EVENTS_FAILURE_LIMIT
-        ):
-            try:
-                raw_search = client.get_search(search_id)
-                search_res_query = deepcopy(raw_search)
-                search_res_query = filter_dict_non_intersection_key_to_value(
-                    replace_keys(search_res_query, SEARCH_ID_NAMES_MAP),
-                    SEARCH_ID_NAMES_MAP,
-                )
-                query_status = search_res_query.get("Status")
-                # failures are relevant only when consecutive
-                failures = 0
-                if query_status == "COMPLETED":
-                    raw_search_results = client.get_search_results(search_id)
-                    offense["events"] = raw_search_results.get("events", [])
-                    print_debug_msg(
-                        f'(3) Events fetched successfully for offense {offense["id"]}.',
-                        client.lock,
-                    )
-                    break
-                else:
-                    # prepare next run
-                    i = i % FETCH_SLEEP + EVENTS_INTERVAL_SECS
-                    if (
-                        i >= FETCH_SLEEP
-                    ):  # print status debug every fetch sleep (or after)
-                        print_debug_msg(
-                            f'(2) Still fetching offense {offense["id"]} events, search_id: {search_id}.',
-                            client.lock,
-                        )
-                    time.sleep(EVENTS_INTERVAL_SECS)
-            except Exception as e:
-                print_debug_msg(
-                    f'(5) Failed fetching event for offense {offense["id"]}: {str(e)}.',
-                    client.lock,
-                )
-                failures += 1
+        query_status, search_id = try_create_search_with_retry(client, events_query, offense)
+        offense['events'] = try_get_offense_events_with_retry(client, offense["id"], query_status, search_id)
+    except Exception as e:
+        print_debug_msg(
+            f'(5) Failed fetching event for offense {offense["id"]}: {str(e)}.',
+            client.lock,
+        )
     finally:
         return offense
+
+
+def try_get_offense_events_with_retry(client, offense_id, query_status, search_id, max_retries=None):
+    """
+    Polls search until the search is done (completed/canceled/error), and then returns the search result
+    will retry up to max_retries consecutive failures
+    """
+    if not max_retries:
+        max_retries = EVENTS_FAILURE_LIMIT
+    i = 1
+    failures = 0
+    while not (query_status in TERMINATING_SEARCH_STATUSES or failures >= max_retries):
+        try:
+            raw_search = client.get_search(search_id)
+            query_status = raw_search.get('status')
+            # failures are relevant only when consecutive
+            failures = 0
+            if query_status in TERMINATING_SEARCH_STATUSES:
+                raw_search_results = client.get_search_results(search_id)
+                print_debug_msg(f'(3) Events fetched for offense {offense_id}.',client.lock)
+                return raw_search_results.get("events", [])
+            else:
+                # prepare next run
+                i = i % FETCH_SLEEP + EVENTS_INTERVAL_SECS
+                if (
+                        i >= FETCH_SLEEP
+                ):  # print status debug every fetch sleep (or after)
+                    print_debug_msg(
+                        f'(2) Still fetching offense {offense_id} events, search_id: {search_id}.',
+                        client.lock,
+                    )
+                time.sleep(EVENTS_INTERVAL_SECS)
+        except Exception:
+            failures += 1
+    return []
+
+
+def try_create_search_with_retry(client, events_query, offense, max_retries=None):
+    if not max_retries:
+        max_retries = EVENTS_FAILURE_LIMIT
+    failures = 0
+    search_created_successfully = False
+    query_status = ""
+    search_id = ""
+    while not search_created_successfully and failures <= max_retries:
+        try:
+            raw_search = client.search(events_query)
+            search_res_events = deepcopy(raw_search)
+            search_res_events = filter_dict_non_intersection_key_to_value(
+                replace_keys(search_res_events, SEARCH_ID_NAMES_MAP),
+                SEARCH_ID_NAMES_MAP,
+            )
+            search_id = search_res_events.get("ID")
+            query_status = search_res_events.get("Status")
+            search_created_successfully = True
+        except Exception:
+            failures += 1
+    if failures >= EVENTS_FAILURE_LIMIT:
+        raise DemistoException(
+            f"Unable to create search for offense: {offense['id']}."
+        )
+    return query_status, search_id
 
 
 def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich):
@@ -813,7 +809,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich
     if raw_offenses:
         print_debug_msg(f"(7) Fetched {fetch_query}successfully.", client.lock)
         if full_enrich:
-            print_debug_msg(f"(8) Enriching {fetch_query}.")
+            print_debug_msg(f"(8) Enriching {fetch_query}")
             enrich_offense_res_with_source_and_destination_address(client, raw_offenses)
             print_debug_msg(f"(9) Enriched {fetch_query}successfully.")
 
@@ -821,6 +817,9 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich
 
 
 def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
+    """
+    Look for offenses in QRadar using the startIncrease the search window until
+    """
     raw_offenses = []
     fetch_query = ""
     lim_id = None
@@ -832,7 +831,7 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
             end_offense_id,
             "AND ({})".format(user_query) if user_query else "",
         )
-        print_debug_msg(f"(10) Fetching {fetch_query}")
+        print_debug_msg(f"(10) Fetching {fetch_query}.")
         raw_offenses = client.get_offenses(
             _range="0-{0}".format(client.offenses_per_fetch - 1), _filter=fetch_query
         )
@@ -854,27 +853,13 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
     return raw_offenses, fetch_query
 
 
-def fetch_incidents_long_running_samples(
-    client: QRadarClient, user_query, full_enrich, fetch_mode
-):
-    offense_id = 0
-
-    if fetch_mode in (FetchMode.all_events, FetchMode.correlations_only):
-        last_run = get_integration_context(SYNC_CONTEXT)
-        return last_run.get("samples", [])  # type: ignore [attr-defined]
-    elif fetch_mode == FetchMode.no_events:
-        raw_offenses = fetch_raw_offenses(client, offense_id, user_query, full_enrich)
-
-        incidents_batch = []
-        for offense in raw_offenses:
-            incidents_batch.append(create_incident_from_offense(offense))
-
-        return incidents_batch
-    return []
+def fetch_incidents_long_running_samples():
+    last_run = get_integration_context(SYNC_CONTEXT)
+    return last_run.get("samples", [])  # type: ignore [attr-defined]
 
 
 def fetch_incidents_long_running_events(
-    client: QRadarClient, user_query, full_enrich, fetch_mode
+    client: QRadarClient, user_query, full_enrich, fetch_mode, events_columns, events_limit
 ):
     last_run = get_integration_context(SYNC_CONTEXT)
     offense_id = last_run["id"] if last_run and "id" in last_run else 0
@@ -898,6 +883,8 @@ def fetch_incidents_long_running_events(
                     client=client,
                     offense=offense,
                     fetch_mode=fetch_mode,
+                    events_columns=events_columns,
+                    events_limit=events_limit
                 )
             )
         for future in concurrent.futures.as_completed(futures):
@@ -910,7 +897,7 @@ def fetch_incidents_long_running_events(
         new_incidents_samples if new_incidents_samples else last_run.get("samples", [])
     )
 
-    context = {"id": offense_id, "samples": incidents_batch_for_sample}
+    context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
     set_integration_context(context, SYNC_CONTEXT)
 
 
@@ -946,7 +933,7 @@ def fetch_incidents_long_running_no_events(
         incidents_batch if incidents_batch else last_run.get("samples", [])
     )
 
-    context = {"id": offense_id, "samples": incidents_batch_for_sample}
+    context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
     set_integration_context(context, SYNC_CONTEXT)
 
 
@@ -958,7 +945,7 @@ def create_incident_from_offense(offense):
     keys = list(offense.keys())
     labels = []
     for i in range(len(keys)):
-        labels.append({"type": keys[i], "value": convert_to_str(offense[keys[i]])})
+        labels.append({"type": keys[i], "value": str(offense[keys[i]])})
     return {
         "name": "{id} {description}".format(
             id=offense["id"], description=offense["description"]
@@ -1212,7 +1199,7 @@ def get_search_command(client: QRadarClient, search_id=None):
 def get_search_results_command(client: QRadarClient, search_id=None, range=None):
     raw_search_results = client.get_search_results(search_id, range)
     result_key = list(raw_search_results.keys())[0]
-    title = "QRadar Search Results from {}".format(convert_to_str(result_key))
+    title = "QRadar Search Results from {}".format(str(result_key))
     context_key = (
         demisto.args().get("output_path")
         if demisto.args().get("output_path")
@@ -1728,10 +1715,10 @@ def get_indicators_list(indicator_query, limit, page):
     return indicators_values_list, indicators_data_list
 
 
-def fetch_loop_with_events(client: QRadarClient, user_query, full_enrich, fetch_mode):
+def fetch_loop_with_events(client: QRadarClient, user_query, full_enrich, fetch_mode, events_columns, events_limit):
     while True:
         print_debug_msg(f"(14) Starting fetch loop with events.")
-        fetch_incidents_long_running_events(client, user_query, full_enrich, fetch_mode)
+        fetch_incidents_long_running_events(client, user_query, full_enrich, fetch_mode, events_columns, events_limit)
         time.sleep(FETCH_SLEEP)
 
 
@@ -1741,16 +1728,18 @@ def fetch_loop_no_events(client: QRadarClient, user_query, full_enrich):
         time.sleep(FETCH_SLEEP)
 
 
-def long_running_main(client: QRadarClient, user_query, full_enrich, fetch_mode):
+def long_running_main(client: QRadarClient, user_query, full_enrich, fetch_mode, events_columns, events_limit):
     print_debug_msg(f'(15) Starting fetch with "{fetch_mode}".')
     if fetch_mode in (FetchMode.all_events, FetchMode.correlations_only):
-        fetch_loop_with_events(client, user_query, full_enrich, fetch_mode)
+        fetch_loop_with_events(client, user_query, full_enrich, fetch_mode, events_columns, events_limit)
     elif fetch_mode == FetchMode.no_events:
         fetch_loop_no_events(client, user_query, full_enrich)
 
 
 def main():
     params = demisto.params()
+
+    # handle allowed advanced parameters
     adv_params = params.get("adv_params")
     if adv_params:
         globals_ = globals()
@@ -1761,7 +1750,6 @@ def main():
 
     server = params.get("server")
     credentials = params.get("credentials")
-    token = params.get("token")
     insecure = params.get("insecure", False)
     offenses_per_fetch = params.get("offenses_per_fetch")
     proxies = handle_proxy()
@@ -1769,7 +1757,6 @@ def main():
         server=server,
         proxies=proxies,
         credentials=credentials,
-        token=token,
         offenses_per_fetch=offenses_per_fetch,
         insecure=insecure,
     )
@@ -1777,6 +1764,8 @@ def main():
     fetch_mode = params.get("fetch_mode")
     user_query = params.get("query")
     full_enrich = params.get("full_enrich")
+    events_columns = params.get("events_columns")
+    events_limit = int(params.get("events_limit") or 20)
 
     # Command selector
     command = demisto.command()
@@ -1809,13 +1798,11 @@ def main():
             args = demisto.args()
             demisto.results(commands[command](client, **args))
         elif command == "fetch-incidents":
-            fetch_incidents_long_running_samples(
-                client, user_query, full_enrich, fetch_mode
-            )
+            fetch_incidents_long_running_samples()
         elif command == "long-running-execution":
-            long_running_main(client, user_query, full_enrich, fetch_mode)
+            long_running_main(client, user_query, full_enrich, fetch_mode, events_columns, events_limit)
     except Exception as e:
-        message = e.message if hasattr(e, "message") else convert_to_str(e)
+        message = e.message if hasattr(e, "message") else str(e)
         error = "Error has occurred in the QRadar Integration: {error}\n {message}".format(
             error=type(e), message=message
         )
