@@ -301,6 +301,7 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
     Args:
         new_packs_release_notes (dict): A mapping from pack names to pack summary.
         modified_release_notes_dict (dict): A mapping from pack names to dictionaries of pack versions to release notes.
+        packs_metadata_dict (dict): A mapping from pack names to the packs metadata
         version (str): Content version.
         asset_id (str): The asset ID.
         release_notes_file (str): release notes output file path
@@ -314,7 +315,7 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
 
     pack_rn_blocks = []
     for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
-        partner = "Partner" if packs_metadata_dict["support"] == "partner" else ""
+        partner = 'Partner' if packs_metadata_dict[pack_name].get('support') == 'partner' else ''
         pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0 {partner}\n'
                               f'{pack_summary}')
 
