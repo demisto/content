@@ -2,7 +2,7 @@ Microsoft Cloud App Security is a Cloud Access Security Broker that supports var
 
 ## Grant Demisto Authorization in Microsoft Cloud App Security API
 To access the Microsoft Cloud App Security API, you need to grant authorization.
-To grant authorization, click [here](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication) to view a detailed explanation of how to create the Server URL and User key (token).
+See the [Microsoft documentation](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication) to view a detailed explanation of how to create the Server URL and User key (token).
 
 ## Custom Filters
 To filter the call results of the API, make sure it matches the Microsoft Cloud App Security filtering format. Click [here](https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters) for details.
