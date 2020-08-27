@@ -1907,6 +1907,19 @@ def refresh_session_command():
     return create_entry_object(contents=response, hr=f'CrowdStrike Session Refreshed: {session_id}')
 
 
+def get_indicator_device_id():
+    args = demisto.args()
+    indicator_type = args.get('type')
+    indicator_value = args.get('value')
+    raw_res = http_request('GET', f'/indicators/queries/devices/v1?type={indicator_type}&value={indicator_value}')
+    return CommandResults(
+        readable_output=raw_res,
+        outputs_prefix='CrowdStrike.DeviceID',
+        outputs_key_field='',
+        outputs=raw_res
+    )
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1921,6 +1934,8 @@ def main():
         if demisto.command() == 'test-module':
             get_token(new_token=True)
             demisto.results('ok')
+        elif demisto.command() == 'cs-device-ran-on':
+            return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
             demisto.results(search_device_command())
         elif demisto.command() == 'cs-falcon-get-behavior':
