@@ -258,9 +258,6 @@ script:
       description: Gives the user information if the API is success else error information
       type: string
     description: This command enables the user.
-  - name: test-module
-    arguments: []
-    description: test module
   dockerimage: demisto/python3:3.8.5.10845
   runonce: false
   subtype: python3
