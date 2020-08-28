@@ -5,12 +5,13 @@
     "currentVersion": "1.0.1",
     "author": "Uptycs Inc.",
     "url": "https://xsoar.pan.dev/docs/reference/integrations/uptycs",
-    "email": "support@uptycs.com",
+    "email": "bschmoll@uptycs.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "githubUser": "bkschmoll-uptycs"
 }
