@@ -32,6 +32,7 @@ class Client(BaseClient):   # type: ignore
             params=params,
             json_data=json_data,
             data=data,
+            timeout=60,
             **kwargs
         )
 
