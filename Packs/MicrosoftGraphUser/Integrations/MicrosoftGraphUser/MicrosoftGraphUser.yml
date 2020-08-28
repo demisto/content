@@ -489,3 +489,4 @@ script:
   type: python
 tests:
 - Microsoft Graph - Test
+fromversion: 4.1.0

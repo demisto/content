@@ -1313,8 +1313,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Restrict the execution of all applications on the machine except a predefined
-      set.
+    description: Restrict the execution of all applications on the machine except
+      a predefined set.
     execution: false
     name: microsoft-atp-restrict-app-execution
     outputs:
@@ -2252,7 +2252,7 @@ script:
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags
       type: String
-  dockerimage: demisto/crypto:1.0.0.8854
+  dockerimage: demisto/crypto:1.0.0.10743
   feed: false
   isfetch: true
   longRunning: false
@@ -2261,3 +2261,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+  dockerimage45: demisto/crypto:1.0.0.8854
+fromversion: 4.1.0
