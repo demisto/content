@@ -2970,6 +2970,11 @@
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Talos Feed",
+            "playbookID": "TalosFeed_Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
