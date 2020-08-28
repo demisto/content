@@ -1,4 +1,4 @@
-fromversion: "4.0.0"
+fromversion: 4.0.0
 category: Analytics & SIEM
 commonfields:
   id: Uptycs
