@@ -110,7 +110,7 @@ def get_gcp_compliance_assessment():
     project_id = demisto.args().get('project_id')
     report_type = demisto.args().get('report_type', 'GCP_CIS')
 
-    response = lacework_client.compliance.get_latest_aws_report(organization_id,
+    response = lacework_client.compliance.get_latest_gcp_report(organization_id,
                                                                 project_id,
                                                                 file_format="json",
                                                                 report_type=report_type)
@@ -232,7 +232,32 @@ def get_container_vulnerabilities():
         raise Exception('Invalid Container Image ID Type.')
 
     ec = {"Lacework.Vulnerability.Container(val.last_evaluation_time === obj.last_evaluation_time)": response['data']}
-    return create_entry("Lacework Event " + str(event_id),
+    return create_entry("Lacework Vulnerability Data for Container " + str(image_digest) + str(image_id),
+                        response['data'],
+                        ec)
+
+
+def get_host_vulnerabilities():
+    """
+    Get Host Vulnerabilities
+    """
+
+    fixable = demisto.args().get('fixable', None)
+    namespace = demisto.args().get('namespace', None)
+    severity = demisto.args().get('severity', None)
+    start_time = demisto.args().get('start_time', None)
+    end_time = demisto.args().get('end_time', None)
+    cve = demisto.args().get('cve', None)
+
+    response = lacework_client.vulnerabilities.get_host_vulnerabilities(fixable=fixable,
+                                                                        namespace=namespace,
+                                                                        severity=severity,
+                                                                        start_time=start_time,
+                                                                        end_time=end_time,
+                                                                        cve=cve)
+
+    ec = {"Lacework.Vulnerability.Host(val.last_evaluation_time === obj.last_evaluation_time)": response['data']}
+    return create_entry("Lacework Host Vulnerability Data",
                         response['data'],
                         ec)
 
@@ -346,6 +371,8 @@ try:
         demisto.results(run_gcp_compliance_assessment())
     elif demisto.command() == 'lw-get-container-vulnerabilities':
         demisto.results(get_container_vulnerabilities())
+    elif demisto.command() == 'lw-get-host-vulnerabilities':
+        demisto.results(get_host_vulnerabilities())
     elif demisto.command() == 'lw-get-event-details':
         demisto.results(get_event_details())
     elif demisto.command() == 'fetch-incidents':
