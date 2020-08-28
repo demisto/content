@@ -1,0 +1,874 @@
+id: SlackITAdmin-Test
+version: -1
+name: SlackITAdmin-Test
+starttaskid: "0"
+description: ''
+tasks:
+  "0":
+    id: "0"
+    taskid: ccac24cc-9668-4c7c-8e3a-fae4af0821a7
+    type: start
+    task:
+      id: ccac24cc-9668-4c7c-8e3a-fae4af0821a7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1a46a203-e4e3-4f8c-8bb9-e02937ab66a7
+    type: regular
+    task:
+      id: 1a46a203-e4e3-4f8c-8bb9-e02937ab66a7
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 6f720351-d126-4308-822d-009ba5e69133
+    type: regular
+    task:
+      id: 6f720351-d126-4308-822d-009ba5e69133
+      version: -1
+      name: slack-create-group
+      description: Creates a group.
+      script: Slack IT Admin|||slack-create-group
+      type: regular
+      iscommand: true
+      brand: Slack IT Admin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      groupName:
+        simple: DemistoTest
+      memberIds: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8ce6b7fe-7266-474b-8605-c34bd89671c9
+    type: regular
+    task:
+      id: 8ce6b7fe-7266-474b-8605-c34bd89671c9
+      version: -1
+      name: slack-get-group
+      description: Retrieves the group information including members
+      script: Slack IT Admin|||slack-get-group
+      type: regular
+      iscommand: true
+      brand: Slack IT Admin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      groupId: {}
+      groupName:
+        simple: DemistoTest
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 368a2083-867a-4b23-8cb2-bdd24a03e586
+    type: condition
+    task:
+      id: 368a2083-867a-4b23-8cb2-bdd24a03e586
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Slack.Group.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Slack.Group.DisplayName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 71057c63-0fb5-464f-89dc-b023a3fd89b0
+    type: regular
+    task:
+      id: 71057c63-0fb5-464f-89dc-b023a3fd89b0
+      version: -1
+      name: slack-delete-group
+      description: Permanently removes a group (members are not deleted, only the
+        group).
+      script: Slack IT Admin|||slack-delete-group
+      type: regular
+      iscommand: true
+      brand: Slack IT Admin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      groupId:
+        simple: ${group_id}
+      groupName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: ef72dfd7-55e3-4785-8dff-c6d683b4f23c
+    type: regular
+    task:
+      id: ef72dfd7-55e3-4785-8dff-c6d683b4f23c
+      version: -1
+      name: slack-update-group-members
+      description: Updates an existing group resource. This command allows individual
+        (or groups of) users to be added or removed from the group with a single operation.
+        A max of 15,000 users can be modified in 1 call
+      script: Slack IT Admin|||slack-update-group-members
+      type: regular
+      iscommand: true
+      brand: Slack IT Admin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      groupId:
+        simple: ${group_id}
+      groupName: {}
+      memberIdsToAdd: {}
+      memberIdsToDelete:
+        simple: '["${user_id}"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: c7a34abd-208f-4f7e-8f2d-93e4468d9022
+    type: condition
+    task:
+      id: c7a34abd-208f-4f7e-8f2d-93e4468d9022
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Slack.Group.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4b785188-d949-4cfd-8679-4783ed3f5ef5
+    type: regular
+    task:
+      id: 4b785188-d949-4cfd-8679-4783ed3f5ef5
+      version: -1
+      name: slack-replace-group
+      description: Updates an existing group resource, overwriting all values for
+        a group even if an attribute is empty or not provided. A maximum of 15,000
+        users per call can be updated using this endpoint. If the member list is not
+        provided, all members will be removed from the group
+      script: Slack IT Admin|||slack-replace-group
+      type: regular
+      iscommand: true
+      brand: Slack IT Admin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      groupId:
+        simple: ${group_id}
+      groupName: {}
+      memberIds:
+        simple: '["${user_id}"]'
+      newGroupName:
+        simple: DemistoTest
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 7377e5d4-7abb-499e-8f89-e83ed54e04e7
+    type: regular
+    task:
+      id: 7377e5d4-7abb-499e-8f89-e83ed54e04e7
+      version: -1
+      name: create-user
+      description: Creates a user.
+      script: Slack IT Admin|||create-user
+      type: regular
+      iscommand: true
+      brand: Slack IT Admin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: c9634233-38a3-49d8-8496-bb305fc71e7e
+    type: condition
+    task:
+      id: c9634233-38a3-49d8-8496-bb305fc71e7e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CreateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: user already exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CreateUser.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 0a0166c3-5278-4ff2-83d7-4554f8dc94b2
+    type: regular
+    task:
+      id: 0a0166c3-5278-4ff2-83d7-4554f8dc94b2
+      version: -1
+      name: enable-user
+      description: Enable active users by setting the active attribute equal to true.
+      script: Slack IT Admin|||enable-user
+      type: regular
+      iscommand: true
+      brand: Slack IT Admin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: '{"id":"${user_id}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 3990f0c0-8122-4f99-8d4b-faed974b4455
+    type: condition
+    task:
+      id: 3990f0c0-8122-4f99-8d4b-faed974b4455
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EnableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 882f8830-fe64-4586-8a3b-8aafd80e1cc1
+    type: regular
+    task:
+      id: 882f8830-fe64-4586-8a3b-8aafd80e1cc1
+      version: -1
+      name: disable-user
+      description: Disable active users by setting the active attribute equal to false.
+      script: Slack IT Admin|||disable-user
+      type: regular
+      iscommand: true
+      brand: Slack IT Admin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: '{"id":"${user_id}"}'
+      user_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 19eac8b9-9cb5-405a-8ed0-731de5e448e3
+    type: condition
+    task:
+      id: 19eac8b9-9cb5-405a-8ed0-731de5e448e3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 2f87e327-b55d-4a8f-89a6-0509f9bd2259
+    type: regular
+    task:
+      id: 2f87e327-b55d-4a8f-89a6-0509f9bd2259
+      version: -1
+      name: update-user
+      description: Updates an existing user resource found with the "oldscim" with
+        the data in the "newscim"
+      script: Slack IT Admin|||update-user
+      type: regular
+      iscommand: true
+      brand: Slack IT Admin
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      customMapping: {}
+      newScim:
+        simple: ${scim}
+      oldScim:
+        simple: '{"id":"${user_id}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: cc24adcb-dce8-4ac6-80ea-feb2d192659b
+    type: condition
+    task:
+      id: cc24adcb-dce8-4ac6-80ea-feb2d192659b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UpdateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: fc67ad34-a84b-4383-8a6b-902121f08985
+    type: regular
+    task:
+      id: fc67ad34-a84b-4383-8a6b-902121f08985
+      version: -1
+      name: get-user
+      description: Retrieves a single user resource.
+      script: Slack IT Admin|||get-user
+      type: regular
+      iscommand: true
+      brand: Slack IT Admin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      scim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: caea0830-75ac-4c7d-8dbd-36fec0716563
+    type: condition
+    task:
+      id: caea0830-75ac-4c7d-8dbd-36fec0716563
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GetUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 4dcc14c2-4a19-49fb-80b6-7fe8d01e3e8f
+    type: title
+    task:
+      id: 4dcc14c2-4a19-49fb-80b6-7fe8d01e3e8f
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 69cd7862-edd5-4d7f-8fe4-2e20dc3689f8
+    type: regular
+    task:
+      id: 69cd7862-edd5-4d7f-8fe4-2e20dc3689f8
+      version: -1
+      name: set instance name
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      append: {}
+      key:
+        simple: appInstanceName
+      stringify: {}
+      value:
+        simple: SlackITAdmin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: a2b4caaf-d49d-4291-86d7-2029ef512d85
+    type: regular
+    task:
+      id: a2b4caaf-d49d-4291-86d7-2029ef512d85
+      version: -1
+      name: set scim data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append: {}
+      key:
+        simple: scim
+      stringify: {}
+      value:
+        simple: '{"userName":"demistotest5@paloaltonetworks.com","emails":[{"type":"work","primary":true,"value":"demistotest5@paloaltonetworks.com"}],"name":{"familyName":"Test","givenName":"Demisto"}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: cf733f62-229f-4c6a-834d-d880a3bd0dd3
+    type: regular
+    task:
+      id: cf733f62-229f-4c6a-834d-d880a3bd0dd3
+      version: -1
+      name: set user_id
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append: {}
+      key:
+        simple: user_id
+      stringify: {}
+      value:
+        simple: ${GetUser.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 9a0261ef-a6bf-41e5-8df9-66871072d687
+    type: regular
+    task:
+      id: 9a0261ef-a6bf-41e5-8df9-66871072d687
+      version: -1
+      name: set group id
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append: {}
+      key:
+        simple: group_id
+      stringify: {}
+      value:
+        simple: ${Slack.Group.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4060,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

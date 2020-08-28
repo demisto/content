@@ -1,0 +1,10 @@
+!create-user scim=`{"userName":"demistotest7@paloaltonetworks.com","emails":[{"type":"work","primary":true,"value":"demistotest7@paloaltonetworks.com"}],"name":{"familyName":"Test","givenName":"Demisto"}}`  using=SlackITAdmin
+!get-user scim=`{"id":"W01ABAMTWHW"}` using=SlackITAdmin
+!update-user oldScim=`{"id":"W01ABAMTWHW"}` newScim=`{"name":{"familyName":"Test","givenName":"XSOAR"}}` using=SlackITAdmin
+!disable-user scim=`{"id":"W01ABAMTWHW"}` using=SlackITAdmin
+!enable-user scim=`{"id":"W01ABAMTWHW"}` using=SlackITAdmin
+!slack-create-group groupName="testGroup2" memberIds=`["W01A08KR5A5"]` using=SlackITAdmin
+!slack-get-group groupId="S0196Q89WG7" using=SlackITAdmin
+!slack-update-group-members groupId="S0196Q89WG7" memberIdsToAdd=`["W019TNVDYG4"]` memberIdsToDelete=`["W01A08KR5A5"]` using=SlackITAdmin
+!slack-replace-group newGroupName="TestGroup" groupId="S0196Q89WG7" memberIds=`["W01A08KR5A5"]` using=SlackITAdmin
+!slack-delete-group groupId="S019MMT3UBC"  using=SlackITAdmin
