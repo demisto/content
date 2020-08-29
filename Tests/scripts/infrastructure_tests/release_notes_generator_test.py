@@ -96,8 +96,12 @@ class TestGenerateReleaseNotesSummary:
             'FakePack3': get_pack_entities(os.path.join(TEST_DATA_PATH, 'FakePack3')),
             'FakePack4': get_pack_entities(os.path.join(TEST_DATA_PATH, 'FakePack4')),
         }
+        packs_metadta_dict = {
+            'FakePack3': {},
+            'FakePack4': {}
+        }
 
-        rn_summary = generate_release_notes_summary(new_packs_rn, {}, self._version, self._asset_id, 'temp.md')
+        rn_summary = generate_release_notes_summary(new_packs_rn, {}, packs_metadta_dict, self._version, self._asset_id, 'temp.md')
 
         assert '## New: FakePack3 Pack v1.0.0' in rn_summary
         assert '## New: FakePack4 Pack v1.0.0' in rn_summary
@@ -125,13 +129,18 @@ class TestGenerateReleaseNotesSummary:
             os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md'),
         ]
 
-        rn_dict = get_release_notes_dict(release_notes_files)
+        rn_dict, _ = get_release_notes_dict(release_notes_files)
+
+        packs_metadta_dict = {
+            'FakePack1': {},
+            'FakePack2': {}
+        }
 
         assert '1.1.0' in rn_dict['FakePack1'].keys()
         assert '2.0.0' in rn_dict['FakePack1'].keys()
         assert '1.1.0' in rn_dict['FakePack2'].keys()
 
-        rn_summary = generate_release_notes_summary({}, rn_dict, self._version, self._asset_id, self._outfile)
+        rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
         assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
         assert '### FakePack1 Pack v2.0.0' in rn_summary
@@ -159,12 +168,16 @@ class TestGenerateReleaseNotesSummary:
             os.path.join(TEST_DATA_PATH, 'FakePack3', 'ReleaseNotes', '1_0_1.md')
         ]
 
-        rn_dict = get_release_notes_dict(release_notes_files)
+        packs_metadta_dict = {
+            'FakePack3': {}
+        }
+
+        rn_dict, _ = get_release_notes_dict(release_notes_files)
 
         assert '1.0.1' in rn_dict['FakePack3'].keys()
         assert len(rn_dict) == 1
 
-        rn_summary = generate_release_notes_summary({}, rn_dict, self._version, self._asset_id, self._outfile)
+        rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
         print(rn_summary)
 
@@ -191,13 +204,16 @@ class TestGenerateReleaseNotesSummary:
             os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_1.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_1_0.md'),
         ]
+        packs_metadta_dict = {
+            'FakePack4': {}
+        }
 
-        rn_dict = get_release_notes_dict(release_notes_files)
+        rn_dict, _ = get_release_notes_dict(release_notes_files)
 
         assert '1.1.0' in rn_dict['FakePack4'].keys()
         assert len(rn_dict) == 1
 
-        rn_summary = generate_release_notes_summary({}, rn_dict, self._version, self._asset_id, self._outfile)
+        rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
         assert '### FakePack4 Pack v1.1.0' in rn_summary
         assert '##### FakePack4_Script1' in rn_summary
@@ -225,7 +241,7 @@ class TestMergeVersionBlocks:
             with open(path) as file_:
                 pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
 
-        rn_block = merge_version_blocks('FakePack', pack_versions_dict)
+        rn_block = merge_version_blocks('FakePack', pack_versions_dict, {})
 
         assert 'FakePack1_Playbook1' in rn_block
         assert 'FakePack1_Playbook2' in rn_block
@@ -256,7 +272,7 @@ class TestMergeVersionBlocks:
             with open(path) as file_:
                 pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
 
-        rn_block = merge_version_blocks('FakePack', pack_versions_dict)
+        rn_block = merge_version_blocks('FakePack', pack_versions_dict,{})
 
         assert rn_block.count('Integrations') == 1
         assert rn_block.count('FakePack1_Integration1') == 1
