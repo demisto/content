@@ -193,6 +193,9 @@ def get_pack_metadata(pack_path):
 
     return pack_metadata
 
+def is_partner_supported_in_metadata(metadata):
+    return metadata and metadata.get('support') == 'partner'
+
 
 def get_pack_path_from_release_note(file_path):
     match = re.search(r'(.*)/ReleaseNotes/.*', file_path)
@@ -226,7 +229,7 @@ def get_release_notes_dict(release_notes_files):
 
     Returns:
         (dict) A mapping from pack names to dictionaries of pack versions to release notes.
-        todo: add docs here
+        (dict) A mapping from pack name to the pack metadata object
     """
     release_notes_dict = {}
     packs_metadata_dict = {}
@@ -315,7 +318,8 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
 
     pack_rn_blocks = []
     for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
-        partner = 'Partner' if packs_metadata_dict[pack_name].get('support') == 'partner' else ''
+        pack_metadata = packs_metadata_dict[pack_name]
+        partner = '(Partner)' if is_partner_supported_in_metadata(pack_metadata) else ''
         pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0 {partner}\n'
                               f'{pack_summary}')
 
