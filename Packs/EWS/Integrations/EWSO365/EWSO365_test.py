@@ -187,7 +187,7 @@ TRANSIENT_PACKAGE = [
             },
         ]
     ),
-(
+    (
         'file1, file2', 'content1, content2', ',cid2',
         [
             {
@@ -208,7 +208,7 @@ TRANSIENT_PACKAGE = [
 @pytest.mark.parametrize('transient_files, transient_files_contents, transient_files_cids, expected_output',
                          TRANSIENT_PACKAGE)
 def test_handle_transient_files(transient_files, transient_files_contents, transient_files_cids, expected_output):
-    assert handle_transient_files(transient_files, transient_files_contents,  transient_files_cids) == expected_output
+    assert handle_transient_files(transient_files, transient_files_contents, transient_files_cids) == expected_output
 
 
 HTML_PACKAGE = [
