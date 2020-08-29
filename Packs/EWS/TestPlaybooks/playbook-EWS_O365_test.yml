@@ -803,7 +803,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+      - "39"
     scriptarguments:
       folder-path:
         simple: test_p
@@ -816,35 +816,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 3520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "42":
-    id: "42"
-    taskid: 5048d9fd-e52f-4e67-81d2-ee8fbe0d9173
-    type: playbook
-    task:
-      id: 5048d9fd-e52f-4e67-81d2-ee8fbe0d9173
-      version: -1
-      name: EWS_O365_send_mail_test
-      playbookName: EWS_O365_send_mail_test
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "39"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3695
         }
       }
     note: false
