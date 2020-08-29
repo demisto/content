@@ -224,7 +224,6 @@ class TestGenerateReleaseNotesSummary:
         assert '### FakePack2 Pack v1.1.0' in rn_summary
         assert '### FakePack2 Pack v1.1.0 (Partner)' not in rn_summary
 
-
     def test_release_notes_summary_with_empty_lines_in_rn(self):
         """
         Given
