@@ -250,7 +250,7 @@ def get_release_notes_dict(release_notes_files):
     return release_notes_dict, packs_metadata_dict
 
 
-def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
+def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata: dict):
     """
     merge several pack release note versions into a single block.
 
@@ -293,7 +293,9 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
                     entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
 
     pack_release_notes = construct_entities_block(entities_data)
-    return (f'### {pack_name} Pack v{latest_version}\n'
+
+    partner = '(Partner)' if is_partner_supported_in_metadata(pack_metadata) else ''
+    return (f'### {pack_name} Pack v{latest_version}{partner}\n'
             f'{pack_release_notes.strip()}')
 
 
@@ -324,7 +326,8 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
                               f'{pack_summary}')
 
     for pack_name, pack_versions_dict in sorted(modified_release_notes_dict.items()):
-        pack_rn_blocks.append(merge_version_blocks(pack_name, pack_versions_dict))
+        pack_metadata = packs_metadata_dict[pack_name]
+        pack_rn_blocks.append(merge_version_blocks(pack_name, pack_versions_dict, pack_metadata))
         # for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
         #                                                key=lambda pack_item: LooseVersion(pack_item[0])):
         #     pack_rn_blocks.append(f'### {pack_name} Pack v{pack_version}\n'
