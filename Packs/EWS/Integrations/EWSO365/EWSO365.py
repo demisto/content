@@ -1866,8 +1866,11 @@ def add_additional_headers(additional_headers):
             property_name = header_name
             property_type = 'String'
 
-        Message.register(header_name, TempClass)
-        headers[header_name] = header_value
+        try:
+            Message.register(header_name, TempClass)
+            headers[header_name] = header_value
+        except ValueError as e:
+            demisto.debug('EWSO365 - Header ' + header_name + ' could not be registered. ' + str(e))
 
     return headers
 
