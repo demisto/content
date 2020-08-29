@@ -296,7 +296,7 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata
 
     pack_release_notes = construct_entities_block(entities_data)
 
-    partner = '(Partner)' if is_partner_supported_in_metadata(pack_metadata) else ''
+    partner = ' (Partner)' if is_partner_supported_in_metadata(pack_metadata) else ''
     return (f'### {pack_name} Pack v{latest_version}{partner}\n'
             f'{pack_release_notes.strip()}')
 
@@ -323,8 +323,8 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
     pack_rn_blocks = []
     for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
         pack_metadata = packs_metadata_dict[pack_name]
-        partner = '(Partner)' if is_partner_supported_in_metadata(pack_metadata) else ''
-        pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0 {partner}\n'
+        partner = ' (Partner)' if is_partner_supported_in_metadata(pack_metadata) else ''
+        pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0{partner}\n'
                               f'{pack_summary}')
 
     for pack_name, pack_versions_dict in sorted(modified_release_notes_dict.items()):
