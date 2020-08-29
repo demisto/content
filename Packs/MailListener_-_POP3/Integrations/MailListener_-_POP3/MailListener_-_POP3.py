@@ -61,7 +61,7 @@ def get_user_emails():
             msg = Parser().parsestr(msg_content)
             msg['index'] = index
             mails.append(msg)
-        except Exception as e:
+        except Exception:
             demisto.error("Failed to get email with index " + index + 'from the server.')
             raise
 
@@ -314,7 +314,7 @@ def fetch_incidents():
     for msg in messages:
         try:
             incident = mail_to_incident(msg)
-        except Exception as e:
+        except Exception:
             demisto.error("failed to create incident from email, index = {}, subject = {}, date = {}".format(
                 msg['index'], msg['subject'], msg['date']))
             raise
