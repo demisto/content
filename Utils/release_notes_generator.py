@@ -186,12 +186,14 @@ def get_pack_name_from_metadata(pack_path):
     pack_metadata = get_pack_metadata(pack_path)
     return pack_metadata.get('name')
 
+
 def get_pack_metadata(pack_path):
     pack_metadata_path = os.path.join(pack_path, PACK_METADATA)
     with open(pack_metadata_path, 'r') as json_file:
         pack_metadata = json.load(json_file)
 
     return pack_metadata
+
 
 def is_partner_supported_in_metadata(metadata):
     return metadata and metadata.get('support') == 'partner'

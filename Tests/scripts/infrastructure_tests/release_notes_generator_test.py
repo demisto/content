@@ -101,7 +101,8 @@ class TestGenerateReleaseNotesSummary:
             'FakePack4': {}
         }
 
-        rn_summary = generate_release_notes_summary(new_packs_rn, {}, packs_metadta_dict, self._version, self._asset_id, 'temp.md')
+        rn_summary = generate_release_notes_summary(
+            new_packs_rn, {}, packs_metadta_dict, self._version, self._asset_id, 'temp.md')
 
         assert '## New: FakePack3 Pack v1.0.0' in rn_summary
         assert '## New: FakePack4 Pack v1.0.0' in rn_summary
@@ -272,7 +273,7 @@ class TestMergeVersionBlocks:
             with open(path) as file_:
                 pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
 
-        rn_block = merge_version_blocks('FakePack', pack_versions_dict,{})
+        rn_block = merge_version_blocks('FakePack', pack_versions_dict, {})
 
         assert rn_block.count('Integrations') == 1
         assert rn_block.count('FakePack1_Integration1') == 1
