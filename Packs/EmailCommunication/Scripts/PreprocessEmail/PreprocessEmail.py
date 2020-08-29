@@ -123,8 +123,8 @@ def get_attachments_using_instance(email_related_incident, labels):
             message_id = label.get('value')
         elif label.get('type') == 'Instance':
             instance_name = label.get('value')
-        elif label.get('type') == 'Instance':
-            integration_name = label.get('Brand')
+        elif label.get('type') == 'Brand':
+            integration_name = label.get('value')
 
     if integration_name == 'EWS v2':
         demisto.executeCommand("executeCommandAt",
