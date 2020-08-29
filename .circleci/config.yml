@@ -546,67 +546,6 @@ jobs:
                   fi
             - *store_artifacts
       - *persist_to_workspace
-  Server 4_1:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
-      - unless:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.demisto_sdk_nightly >>
-              - << pipeline.parameters.nightly >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - *attach_workspace
-            - *restore_cache
-            - *add_ssh_keys
-            - *prepare_environment
-            - run:
-                name: Wait until server ready
-                shell: /bin/bash
-                when: always
-                command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "Demisto two before GA"
-            - run:
-                name: Run Tests - Server 4.1
-                shell: /bin/bash
-                when: always
-                command: |
-                  echo 'export INSTANCE_ROLE="Demisto two before GA"' >> $BASH_ENV
-                  source $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto two before GA"')
-                  echo "Demisto two before GA filter=$TEMP"
-                  if [[ "$TEMP" == "false" ]];
-                    then
-                      echo "Skipping - instance was not setup"
-                      exit 0
-                  fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-
-                    else
-                      echo "Not AMI run, can't run on this version"
-                  fi
-            - *destroy_instances
-            - *store_artifacts
   Server 4_5:
     <<: *container_config
     resource_class: medium
@@ -664,6 +603,7 @@ jobs:
 
                     else
                       echo "Not AMI run, can't run on this version"
+                      exit 0
                   fi
             - *destroy_instances
             - *store_artifacts
@@ -716,7 +656,7 @@ jobs:
                   echo "Demisto GA filter=$TEMP"
                   if [[ "$TEMP" == "false" ]];
                     then
-                      echo "Skipping - instance was not setup"
+                      echo "Skipping - Instance was not setup"
                       exit 0
                   fi
                   if ./Tests/scripts/is_ami.sh ;
@@ -724,6 +664,7 @@ jobs:
                       echo 'export INSTANCE_ROLE="Demisto GA"' >> $BASH_ENV
                     else
                       echo "Not AMI run, can't run on this version"
+                      exit 0
                   fi
                   ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
 
@@ -789,10 +730,103 @@ jobs:
 
                   else
                       echo "Not AMI run, can't run on this version"
+                      exit 0
                   fi
             - *destroy_instances
             - *store_artifacts
   Server 6_0:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.nightly >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - run:
+                name: Not running this job
+                when: always
+                command: |
+                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.nightly >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - *attach_workspace
+            - *add_ssh_keys
+            - *prepare_environment
+            - run:
+                name: Wait until server ready
+                shell: /bin/bash
+                when: always
+                command: |
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto 6.0"
+                  else
+                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
+                  fi
+            - run:
+                name: Run Tests - Demisto 6.0
+                shell: /bin/bash
+                when: always
+                no_output_timeout: 5h
+                command: |
+                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto 6.0"')
+                  echo "Demisto 6.0 filter=$TEMP"
+                  if [[ "$TEMP" == "false" ]];
+                    then
+                      echo "Skipping - instance was not setup"
+                      exit 0
+                  fi
+                  if ./Tests/scripts/is_ami.sh ;
+                    then
+                      echo 'export INSTANCE_ROLE="Demisto 6.0"' >> $BASH_ENV
+                  else
+                    echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
+                  fi
+                  source $BASH_ENV
+                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+                  export RETVAL=$?
+                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                  exit $RETVAL
+            - run:
+                name: Upload Packs To Marketplace Storage
+                command: |
+                  # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
+                  if [[ $CIRCLE_BRANCH != master ]]; then
+                    echo "Skipping packs uploading on non master branch"
+                    exit 0
+                  fi
+
+                  EXTRACT_FOLDER=$(mktemp -d)
+                  PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+                  PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+                  ID_SET=$CIRCLE_ARTIFACTS/id_set.json
+                  GCS_PATH=$(mktemp)
+                  echo $GCS_MARKET_KEY > $GCS_PATH
+                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
+                  rm $GCS_PATH
+                when: on_success
+            - run:
+                name: Slack Notifier
+                shell: /bin/bash
+                command: |
+                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
+                when: always
+            - *destroy_instances
+            - *store_artifacts
+  Server Master:
     <<: *container_config
     resource_class: medium
     <<: *environment
@@ -826,10 +860,10 @@ jobs:
                     then
                       python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
                   else
-                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto"
+                      python3 ./Tests/scripts/wait_until_server_ready.py "master"
                   fi
             - run:
-                name: Run Tests - Demisto 6.0
+                name: Run Tests - Demisto Master
                 shell: /bin/bash
                 when: always
                 no_output_timeout: 5h
@@ -852,24 +886,6 @@ jobs:
                   export RETVAL=$?
                   cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
                   exit $RETVAL
-            - run:
-                name: Upload Packs To Marketplace Storage
-                command: |
-                  # IMPORTANT! By removing this condition, branch changes will be uploaded to production bucket.
-                  if [[ $CIRCLE_BRANCH != master ]]; then
-                    echo "Skipping packs uploading on non master branch"
-                    exit 0
-                  fi
-
-                  EXTRACT_FOLDER=$(mktemp -d)
-                  PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-                  PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
-                  ID_SET=$CIRCLE_ARTIFACTS/id_set.json
-                  GCS_PATH=$(mktemp)
-                  echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private'
-                  rm $GCS_PATH
-                when: on_success
             - run:
                 name: Slack Notifier
                 shell: /bin/bash
@@ -916,6 +932,7 @@ jobs:
           when: on_success
       - *destroy_instances
       - *store_artifacts
+
   Instance Test:
     <<: *container_config
     resource_class: medium
@@ -997,12 +1014,6 @@ workflows:
       - Run Validations:
           requires:
             - Setup Environment
-      - Server 4_1:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
       - Server 4_5:
           filters:
             branches:
@@ -1022,6 +1033,12 @@ workflows:
           requires:
             - Create Instances
       - Server 6_0:
+          filters:
+            branches:
+              ignore: /pull\/[0-9]+/
+          requires:
+            - Create Instances
+      - Server Master:
           filters:
             branches:
               ignore: /pull\/[0-9]+/
@@ -1092,7 +1109,7 @@ workflows:
       - Run Validations:
           requires:
             - Setup Environment
-      - Server 6_0:
+      - Server Master:
           requires:
             - Create Instances
           context: nightly_env

@@ -1640,6 +1640,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
 
@@ -1662,6 +1663,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert outputs == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
 
@@ -1676,6 +1678,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert timeline == results['IndicatorTimeline']
@@ -1691,6 +1694,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert 'Category' in results['IndicatorTimeline'][0].keys()
@@ -1707,9 +1711,21 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert ignore_auto_extract == results['IgnoreAutoExtract']
+
+    def test_return_outputs_text_raw_response(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        raw_response = 'string'
+        return_outputs(md, raw_response=raw_response)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert raw_response == results['Contents']
+        assert 'text' == results['ContentsFormat']
 
 
 def test_argToBoolean():
