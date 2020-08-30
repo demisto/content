@@ -1750,12 +1750,6 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "Infocyte",
-            "playbookID": "Infocyte-Test",
-            "timeout": 1200,
-            "fromversion": "5.5.0"
-        },
-        {
             "integrations": "Qualys",
             "playbookID": "Qualys-Test"
         },
@@ -3020,7 +3014,6 @@
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "SMB test": "Issue 26454",
-        "Infocyte-Test": "Issue 26445",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
         "Office365_Feed_Test": "Issue 26455",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
@@ -3197,7 +3190,6 @@
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "AWS - Security Hub": "Issue 24926",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
-        "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
