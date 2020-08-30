@@ -223,7 +223,7 @@ def edit_pack(new_from_version, pack_name):
     click.secho("Checking for empty dirs")
     found_dirs = subprocess.check_output(["find", pack_path, "-type", "d", "-empty"])
     if found_dirs:
-        click.secho(f"Found empty dirs: {found_dirs}")
+        click.secho("Found empty dirs: {}".format(found_dirs.split('\n')))
         subprocess.call(["find", pack_path, "-type", "d", "-empty", "-delete"])
         check_clear_pack(pack_path)
 
