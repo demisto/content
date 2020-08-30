@@ -13,17 +13,17 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'The start date by which to filter incidents. Date format is the
-    same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+  description: The start date by which to filter incidents. Date format is the same
+    as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00
+    +0200").
   isArray: false
   name: fromDate
   required: false
   secret: false
 - default: false
-  description: 'The end date by which to filter incidents. Date format is the
-    same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+  description: The end date by which to filter incidents. Date format is the same
+    as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00
+    +0200").
   isArray: false
   name: toDate
   required: false
@@ -70,6 +70,74 @@ args:
   description: A comma-separated list of fields to populate in the object.
   isArray: false
   name: populateFields
+  required: false
+  secret: false
+- default: false
+  description: The field name with the label
+  isArray: false
+  name: tagField
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: emailsubject
+  description: Subject of the email.
+  isArray: false
+  name: emailSubject
+  predefined:
+  - Subject of the email.
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbody
+  description: Body of the email.
+  isArray: false
+  name: emailBody
+  predefined:
+  - ''
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbodyhtml
+  description: HTML body of the email.
+  isArray: false
+  name: emailBodyHTML
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailheaders
+  description: Headers of the email.
+  isArray: false
+  name: emailHeaders
+  required: false
+  secret: false
+- default: false
+  defaultValue: attachment
+  description: Attachments of the email.
+  isArray: false
+  name: emailAttachments
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'True'
+  description: Whether to compress the fetched data. Default is True
+  isArray: false
+  name: compress
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Wheter to return a file entry. Default is "False".
+  isArray: false
+  name: toFile
+  predefined:
+  - 'True'
+  - 'False'
   required: false
   secret: false
 comment: Collect telemetry data from the environment.

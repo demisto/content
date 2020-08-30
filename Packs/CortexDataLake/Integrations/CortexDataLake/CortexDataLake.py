@@ -266,7 +266,9 @@ def traffic_context_transformer(row_content: dict) -> dict:
         'ToZone': row_content.get('to_zone'),
         'URLCategory': row_content.get('url_category', {}).get('value'),
         'SourcePort': row_content.get('source_port'),
-        'Tunnel': row_content.get('tunnel', {}).get('value')
+        'Tunnel': row_content.get('tunnel', {}).get('value'),
+        'SourceDeviceHost': row_content.get('source_device_host'),
+        'DestDeviceHost': row_content.get('dest_device_host')
     }
 
 
@@ -322,7 +324,9 @@ def threat_context_transformer(row_content: dict) -> dict:
         'URLDomain': row_content.get('url_domain'),
         'URLCategory': row_content.get('url_category', {}).get('value'),
         'SourcePort': row_content.get('source_port'),
-        'FileSHA256': row_content.get('file_sha_256')
+        'FileSHA256': row_content.get('file_sha_256'),
+        'SourceDeviceHost': row_content.get('source_device_host'),
+        'DestDeviceHost': row_content.get('dest_device_host')
     }
 
 
@@ -376,6 +380,8 @@ def url_context_transformer(row_content: dict) -> dict:
         'DstUser': row_content.get('dest_user'),
         'DstUserInfo': row_content.get('dest_user_info'),
         'TechnologyOfApp': row_content.get('technology_of_app'),
+        'SourceDeviceHost': row_content.get('source_device_host'),
+        'DestDeviceHost': row_content.get('dest_device_host')
     }
 
 
@@ -583,8 +589,8 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
         SQL query that matches the arguments
     """
     query = 'SELECT * FROM `firewall.threat` '  # guardrails-disable-line
-    query += f'WHERE (TIME(time_generated) Between TIME(TIMESTAMP("{fetch_timestamp}")) ' \
-             f'AND TIME(CURRENT_TIMESTAMP))'
+    query += f'WHERE time_generated Between TIMESTAMP("{fetch_timestamp}") ' \
+             f'AND CURRENT_TIMESTAMP'
     if fetch_subtype and 'all' not in fetch_subtype:
         sub_types = [f'sub_type.value = "{sub_type}"' for sub_type in fetch_subtype]
         query += f' AND ({" OR ".join(sub_types)})'
@@ -659,8 +665,8 @@ def get_critical_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str
     logs_amount = args.get('limit')
     query_start_time, query_end_time = query_timestamp(args)
     query = 'SELECT * FROM `firewall.threat` WHERE severity = "Critical" '  # guardrails-disable-line
-    query += f'AND (TIME(time_generated) BETWEEN TIME(TIMESTAMP("{query_start_time}")) AND ' \
-             f'TIME(TIMESTAMP("{query_end_time}"))) LIMIT {logs_amount}'
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
+             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
 
     records, raw_results = client.query_loggings(query)
 
@@ -693,8 +699,8 @@ def get_social_applications_command(args: dict,
     logs_amount = args.get('limit')
     query_start_time, query_end_time = query_timestamp(args)
     query = 'SELECT * FROM `firewall.traffic` WHERE app_sub_category = "social-networking" '  # guardrails-disable-line
-    query += f' AND (TIME(time_generated) BETWEEN TIME(TIMESTAMP("{query_start_time}")) AND ' \
-             f'TIME(TIMESTAMP("{query_end_time}"))) LIMIT {logs_amount}'
+    query += f' AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
+             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
 
     records, raw_results = client.query_loggings(query)
 
@@ -716,8 +722,8 @@ def search_by_file_hash_command(args: dict, client: Client) -> Tuple[str, Dict[s
 
     query_start_time, query_end_time = query_timestamp(args)
     query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line
-    query += f'AND (TIME(time_generated) BETWEEN TIME(TIMESTAMP("{query_start_time}")) AND ' \
-             f'TIME(TIMESTAMP("{query_end_time}"))) LIMIT {logs_amount}'
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
+             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
 
     records, raw_results = client.query_loggings(query)
 
@@ -796,8 +802,8 @@ def build_query(args, table_name):
     fields = '*' if 'all' in fields else fields
     where = build_where_clause(args)
     query_start_time, query_end_time = query_timestamp(args)
-    timestamp_limitation = f'(TIME(time_generated) BETWEEN TIME(TIMESTAMP("{query_start_time}")) AND ' \
-                           f'TIME(TIMESTAMP("{query_end_time}"))) '
+    timestamp_limitation = f'time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
+                           f'TIMESTAMP("{query_end_time}") '
     limit = args.get('limit', '5')
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
     query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'

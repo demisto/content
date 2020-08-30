@@ -2,21 +2,22 @@ id: CheckPhish-Test
 version: -1
 name: CheckPhish-Test
 starttaskid: "0"
+description: Test Playbook for CheckPhish integration
 tasks:
   "0":
     id: "0"
-    taskid: d6304948-03e1-4ab0-8196-ca82afce0ced
+    taskid: 12b7cde2-d5d4-4c2a-8c30-e41904914635
     type: start
     task:
-      id: d6304948-03e1-4ab0-8196-ca82afce0ced
+      id: 12b7cde2-d5d4-4c2a-8c30-e41904914635
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
-      - "2"
+      - "13"
     separatecontext: false
     view: |-
       {
@@ -28,12 +29,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 1a7cf7f6-399e-4d2e-88ad-8985a2f249b9
+    taskid: 21d34889-a141-4bbd-82a9-81533a18a4f2
     type: regular
     task:
-      id: 1a7cf7f6-399e-4d2e-88ad-8985a2f249b9
+      id: 21d34889-a141-4bbd-82a9-81533a18a4f2
       version: -1
       name: CheckPhish-check-urls
       description: Get the results of the check in CheckPhish
@@ -58,12 +61,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 1e79c560-6058-4d51-8485-b9643fc72420
+    taskid: 764a2702-f52d-42b1-8f7e-f2042c791d15
     type: regular
     task:
-      id: 1e79c560-6058-4d51-8485-b9643fc72420
+      id: 764a2702-f52d-42b1-8f7e-f2042c791d15
       version: -1
       name: CheckPhish-check-urls
       description: Get the results of the check in CheckPhish
@@ -81,19 +86,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 40,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: eef8c65a-0d56-4ef0-8dfc-eca3af72f84f
+    taskid: 8e46356a-dbb2-449b-8eac-84a49800cd5a
     type: condition
     task:
-      id: eef8c65a-0d56-4ef0-8dfc-eca3af72f84f
+      id: 8e46356a-dbb2-449b-8eac-84a49800cd5a
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -137,12 +144,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: f2df02c6-ef6f-4e6f-8058-697e3bac499f
+    taskid: fe25f51d-093b-4cd1-8429-8c5a6f3daddd
     type: condition
     task:
-      id: f2df02c6-ef6f-4e6f-8058-697e3bac499f
+      id: fe25f51d-093b-4cd1-8429-8c5a6f3daddd
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -186,12 +195,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 37e74bd6-f864-43ca-8692-725f38991ea2
+    taskid: 6e4276ec-723e-4eaa-8311-eeb649f1f4d6
     type: condition
     task:
-      id: 37e74bd6-f864-43ca-8692-725f38991ea2
+      id: 6e4276ec-723e-4eaa-8311-eeb649f1f4d6
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -221,7 +232,7 @@ tasks:
                 value:
                   simple: disposition
       right:
-        simple: phish
+        simple: clean
     results:
     - AreValuesEqual
     separatecontext: false
@@ -235,12 +246,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: f28a998a-9371-40e0-8273-1632f29401e8
+    taskid: f4fd148c-3f36-405e-832a-3fd3ab148377
     type: condition
     task:
-      id: f28a998a-9371-40e0-8273-1632f29401e8
+      id: f4fd148c-3f36-405e-832a-3fd3ab148377
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -284,12 +297,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: b61a816e-9a33-4bfb-8e4b-5ff783dc958c
+    taskid: 7d27b6bb-868d-4d72-8c19-4816fd1647d9
     type: regular
     task:
-      id: b61a816e-9a33-4bfb-8e4b-5ff783dc958c
+      id: 7d27b6bb-868d-4d72-8c19-4816fd1647d9
       version: -1
       name: Print
       description: Prints text to war room (Markdown supported)
@@ -311,12 +326,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: f74b3940-d2f6-403e-8a89-00c35b2ccdc6
+    taskid: 3f53cf70-42c8-412c-8fc8-fa2df836aad5
     type: regular
     task:
-      id: f74b3940-d2f6-403e-8a89-00c35b2ccdc6
+      id: 3f53cf70-42c8-412c-8fc8-fa2df836aad5
       version: -1
       name: Print
       description: Prints text to war room (Markdown supported)
@@ -324,6 +341,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
     scriptarguments:
       value:
         simple: '*CheckPhish single URL is done and correct*'
@@ -331,19 +351,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 40,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 412ec2de-ff5a-44e7-8eb6-ccbfb5b76765
+    taskid: 01facdeb-8f1b-4684-81e4-67f801086703
     type: condition
     task:
-      id: 412ec2de-ff5a-44e7-8eb6-ccbfb5b76765
+      id: 01facdeb-8f1b-4684-81e4-67f801086703
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -380,19 +402,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 40,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: e13ccc1b-fda4-448c-82db-b5428c56de50
+    taskid: 683fc5e7-956b-4e4e-82fd-53ebd62e0bc3
     type: condition
     task:
-      id: e13ccc1b-fda4-448c-82db-b5428c56de50
+      id: 683fc5e7-956b-4e4e-82fd-53ebd62e0bc3
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -436,12 +460,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 02591242-3427-4eb2-8d66-505ec05efd90
+    taskid: ba309d4c-da11-4b19-8497-facdcae092cf
     type: condition
     task:
-      id: 02591242-3427-4eb2-8d66-505ec05efd90
+      id: ba309d4c-da11-4b19-8497-facdcae092cf
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -485,12 +511,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: b7d7cbb6-312d-48b0-8c44-c996eef9750d
+    taskid: 1dafcee3-fc03-4de2-82e9-408bfecf1830
     type: condition
     task:
-      id: b7d7cbb6-312d-48b0-8c44-c996eef9750d
+      id: 1dafcee3-fc03-4de2-82e9-408bfecf1830
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -534,17 +562,56 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: de35b375-2a52-47c4-89f8-c19808ada7ce
+    type: regular
+    task:
+      id: de35b375-2a52-47c4-89f8-c19808ada7ce
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1640,
-        "width": 810,
-        "x": 50,
+        "width": 820,
+        "x": 40,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

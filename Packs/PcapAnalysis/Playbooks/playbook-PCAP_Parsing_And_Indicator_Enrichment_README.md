@@ -27,7 +27,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| PcapFilter | This input specifies a search filter to be used on the pcap file. Filters can be used to search only for a specific IP, protocols, and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man\-pages/wireshark\-filter.html
+| PcapFilter | This input specifies a search filter to be used on the pcap file. Filters can be used to search only for a specific IP, protocols, and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html
 
 Using a filter can improve performance and decrease the output results.
  |  | Optional |
@@ -83,4 +83,4 @@ ip,url,email
 
 ## Playbook Image
 ---
-![PCAP Parsing And Indicator Enrichment](https://raw.githubusercontent.com/demisto/content/54896aca3196d6e5639b461308e3f138e7fc56f9/Packs/PcapAnalysis/doc_files/PCAP_Parsing_And_Indicator_Enrichment.png)
+![PCAP Parsing And Indicator Enrichment](https://raw.githubusercontent.com/demisto/content/4aafc23b561dbda28a476869e411829e5de23214/Packs/PcapAnalysis/doc_files/PCAP_Parsing_And_Indicator_Enrichment.png)
