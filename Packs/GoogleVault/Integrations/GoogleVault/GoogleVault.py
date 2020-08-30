@@ -19,6 +19,7 @@ from multiprocessing import Process
 SCOPES = ['https://www.googleapis.com/auth/ediscovery', 'https://www.googleapis.com/auth/devstorage.full_control']
 DEMISTO_MATTER = 'test_search_phishing'
 
+#TODO: add
 ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier'].encode('utf-8')
 PRIVATE_KEY_CONTENT = demisto.params()['auth_json'].encode('utf-8')
 USE_SSL = not demisto.params().get('insecure', False)
@@ -1320,6 +1321,7 @@ def download_export_command():
         download_ID = demisto.getArg('downloadID')
         out_file = download_storage_object(download_ID, bucket_name)
         demisto.results(fileResult(demisto.uniqueFile() + '.zip', out_file.getvalue()))
+        out_file.close()
     except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
@@ -1342,7 +1344,9 @@ def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
     if type(documents) is dict:
         documents = [documents]
 
+    #TODO: THE ISSUE IS HERE!!!
     dictList = build_dict_list(documents)
+
     if len(dictList) > max_results:
         out_file.close()
         return dictList[0:max_results]
@@ -1405,7 +1409,6 @@ def get_mail_and_groups_results_command(inquiryType):
         view_ID = demisto.getArg('viewID')
         bucket_name = demisto.getArg('bucketName')
         output = download_and_sanitize_export_results(view_ID, bucket_name, max_results)
-
         if not (output[0].get('From') or output[0].get('To') or output[0].get('Subject')):
             return_error(
                 'Error displaying results: Corpus of the invoked command and the supplied ViewID does not match')
@@ -1460,7 +1463,6 @@ def test_module():
             return_error('Quota for Google Vault API exceeded')
         else:
             return_error(str(ex))
-
 
 def sub_main():
     """Main Execution Block"""
