@@ -21,6 +21,10 @@ PLAYBOOK_FOLDERS = ['Playbooks', 'TestPlaybooks']
 
 SCRIPT_FOLDERS = ['Scripts', 'Integrations']
 
+ALL_DIRS = JSON_FOLDERS.copy()
+ALL_DIRS = ALL_DIRS + PLAYBOOK_FOLDERS.copy()
+ALL_DIRS = ALL_DIRS + SCRIPT_FOLDERS.copy()
+
 
 def should_keep_yml_file(yml_content, new_from_version):
     # if the file's toversion is lower than the new from version we should delete it
@@ -196,10 +200,8 @@ def edit_playbooks_directory(new_from_version, dir_path):
 
 
 def check_clear_pack(pack_path):
-    content_entity_dirs = PLAYBOOK_FOLDERS.extend(JSON_FOLDERS)
-    content_entity_dirs = content_entity_dirs.extend(SCRIPT_FOLDERS)
     dirs_in_pack = os.listdir(pack_path)
-    check = [True for entity in content_entity_dirs if entity in dirs_in_pack]
+    check = [True for entity in ALL_DIRS if entity in dirs_in_pack]
     if len(check) == 0:
         click.secho(f"Deleting empty pack {pack_path}\n")
         shutil.rmtree(pack_path)
