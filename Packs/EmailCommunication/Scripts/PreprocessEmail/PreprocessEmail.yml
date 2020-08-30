@@ -27,7 +27,7 @@ subtype: python3
 system: false
 tags:
 - email
-- ' preProcessing'
+- preProcessing
 timeout: '0'
 type: python
 tests:

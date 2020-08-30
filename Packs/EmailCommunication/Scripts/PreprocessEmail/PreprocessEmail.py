@@ -119,7 +119,7 @@ def get_attachments_using_instance(email_related_incident, labels):
     integration_name = ''
 
     for label in labels:
-        if label.get('type') == 'Email/itemId':
+        if label.get('type') == 'Email/ID':
             message_id = label.get('value')
         elif label.get('type') == 'Instance':
             instance_name = label.get('value')

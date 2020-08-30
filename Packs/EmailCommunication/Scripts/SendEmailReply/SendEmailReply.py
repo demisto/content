@@ -167,7 +167,8 @@ def get_email_recipients(email_to, email_from, service_mail):
         The email recipients.
     """
     email_to_set = {email_from}
-    email_to_set = email_to_set.union(set(ast.literal_eval(email_to)))
+    email_to = argToList(email_to)
+    email_to_set = email_to_set.union(set(email_to))
     if service_mail in email_to_set:
         email_to_set.remove(service_mail)
 
