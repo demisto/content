@@ -28,8 +28,7 @@ configuration:
   name: credential_names
   required: false
   type: 12
-- additionalinfo: Used to perform windows authentication
-  display: Username
+- display: Username
   hidden: false
   name: credentials
   required: false
