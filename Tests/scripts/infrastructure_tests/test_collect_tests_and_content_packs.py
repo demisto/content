@@ -921,4 +921,3 @@ def test_collect_test_playbooks_no_results():
     test_conf = TestConf(MOCK_CONF)
     content_packs = test_conf.get_packs_of_collected_tests(['TestCommonPython'], MOCK_ID_SET)
     assert set() == content_packs
-
