@@ -21,8 +21,8 @@ import demisto_client
 from ruamel import yaml
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-    run_command, checked_type, get_yaml, str2bool, format_version, find_type
-from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, RUN_ALL_TESTS_FORMAT
+    run_command, get_yaml, str2bool, format_version, find_type
+from demisto_sdk.commands.common.constants import RUN_ALL_TESTS_FORMAT, FileType
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
 from Tests.test_content import extract_filtered_tests, ParallelPrintsManager, \
@@ -247,15 +247,15 @@ def get_new_and_modified_integration_files(build):
     file_validator = ValidateManager()
     file_validator.branch_name = build.branch_name
     modified_files, added_files, _, _, _ = file_validator.get_modified_and_added_files('...', 'origin/master')
-    all_integration_regexes = YML_INTEGRATION_REGEXES
 
     new_integration_files = [
-        file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
+        file_path for file_path in added_files if
+        find_type(file_path) in [FileType.INTEGRATION, FileType.BETA_INTEGRATION]
     ]
 
     modified_integration_files = [
         file_path for file_path in modified_files if
-        isinstance(file_path, str) and checked_type(file_path, all_integration_regexes)
+        isinstance(file_path, str) and find_type(file_path) in [FileType.INTEGRATION, FileType.BETA_INTEGRATION]
     ]
 
     return new_integration_files, modified_integration_files
