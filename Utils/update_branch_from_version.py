@@ -14,6 +14,13 @@ ryaml.width = 50000  # make sure long lines will not break (relevant for code se
 
 DOCKERIMAGE_45_TOP_VERSION = '4.5.9'
 
+JSON_FOLDERS = ['IncidentFields', 'IncidentTypes', 'IndicatorFields', 'Layouts', 'Classifiers',
+                'Connections', 'Dashboards', 'IndicatorTypes', 'Reports', 'Widgets']
+
+PLAYBOOK_FOLDERS = ['Playbooks', 'TestPlaybooks']
+
+SCRIPT_FOLDERS = ['Scripts', 'Integrations']
+
 
 def should_keep_yml_file(yml_content, new_from_version):
     # if the file's toversion is lower than the new from version we should delete it
@@ -96,9 +103,6 @@ def rewrite_yml(file_path, yml_content, new_from_version):
 
             elif yml_content.get('script').get('script') not in ('-', ''):
                 yml_content['script']['script'] = FoldedScalarString(yml_content.get('script').get('script'))
-
-        # resetting the tests associated with each yml
-        yml_content['tests'] = ['No test']
 
         with open(file_path, mode='w', encoding='utf-8') as f:
             ryaml.dump(yml_content, f)
@@ -191,20 +195,33 @@ def edit_playbooks_directory(new_from_version, dir_path):
                         delete_playbook(file_path)
 
 
+def check_clear_pack(pack_path):
+    content_entity_dirs = PLAYBOOK_FOLDERS.extend(JSON_FOLDERS)
+    content_entity_dirs = content_entity_dirs.extend(SCRIPT_FOLDERS)
+    dirs_in_pack = os.listdir(pack_path)
+    check = [True for entity in content_entity_dirs if entity in dirs_in_pack]
+    if len(check) == 0:
+        click.secho(f"Deleting empty pack {pack_path}\n")
+        shutil.rmtree(pack_path)
+
+
 def edit_pack(new_from_version, pack_name):
     pack_path = os.path.join('Packs', pack_name)
     click.secho(f"Starting process for {pack_path}:")
     for content_dir in os.listdir(pack_path):
         dir_path = os.path.join(pack_path, content_dir)
-        if content_dir in ['Playbooks', 'TestPlaybooks']:
+        if content_dir in PLAYBOOK_FOLDERS:
             edit_playbooks_directory(new_from_version, dir_path)
 
-        elif content_dir in ['Scripts', 'Integrations']:
+        elif content_dir in SCRIPT_FOLDERS:
             edit_scripts_or_integrations_directory(new_from_version, dir_path)
 
-        elif content_dir in ['IncidentFields', 'IncidentTypes', 'IndicatorFields', 'Layouts', 'Classifiers',
-                             'Connections', 'Dashboards', 'IndicatorTypes', 'Reports', 'Widgets']:
+        elif content_dir in JSON_FOLDERS:
             edit_json_content_entity_directory(new_from_version, dir_path)
+
+    # clearing empty pack folders
+    subprocess.call(["find", pack_path, "-type", "d", "-empty", "-delete"])
+    check_clear_pack(pack_path)
 
     click.secho(f"Finished process for {pack_path}\n")
 
