@@ -890,7 +890,7 @@ def test_collect_content_packs_to_install(mocker):
         collect_tests_and_content_packs._FAILED = False
 
 
-def test_collect_tests_with_playbooks():
+def test_collect_test_playbooks():
     """
     Given
     - Modified playbook list
@@ -905,6 +905,22 @@ def test_collect_tests_with_playbooks():
     content_packs = test_conf.get_packs_of_collected_tests(['fake_playbook_in_fake_pack',
                                                             'TestCommonPython'], MOCK_ID_SET)
     assert 'FakePack' in content_packs
+
+
+def test_collect_test_playbooks_no_results():
+    """
+    Given
+    - Modified playbook list with no test playbooks
+
+    When
+    - Collecting content packs to install - running `get_test_list_and_content_packs_to_install()`.
+    Then
+    - returns an empty set
+    """
+
+    test_conf = TestConf(MOCK_CONF)
+    content_packs = test_conf.get_packs_of_collected_tests(['TestCommonPython'], MOCK_ID_SET)
+    assert set() == content_packs
 
 
 
