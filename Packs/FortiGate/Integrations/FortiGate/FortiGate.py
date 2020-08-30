@@ -28,7 +28,7 @@ if not demisto.params().get('proxy'):
 
 ''' HELPER FUNCTIONS '''
 
-
+@logger
 def login():
     """
     Due to token not providing the right level of access, we are going to create a session
@@ -43,7 +43,10 @@ def login():
         'secretkey': PASSWORD,
         'ajax': 1
     }
+    demisto.debug("################")
+    demisto.debug("Logging into FortiGate")
     session.post(SERVER + url_suffix, data=params, verify=USE_SSL)  # type: ignore
+    demisto.debug("Logged into Fortigate")
     # check for the csrf token in cookies we got, add it to headers of session,
     # or else we can't perform HTTP request that is not get.
     for cookie in session.cookies:
@@ -56,6 +59,7 @@ def login():
 SESSION = login()
 
 
+@logger
 def http_request(method, url_suffix, params={}, data=None):
 
     res = SESSION.request(
@@ -69,9 +73,14 @@ def http_request(method, url_suffix, params={}, data=None):
         return_error('Error in API call to FortiGate [%d] - %s' % (res.status_code, res.reason))
     if method.upper() != 'GET':
         return res.status_code
+    demisto.debug("################################")
+    demisto.debug("status_code: "+str(res.status_code))
+    demisto.debug("################################")
+    demisto.debug("full res: " + res.content)
     return res.json()
 
 
+@logger
 def does_path_exist(target_url):
     """
     Check if the path itself already exists in the instance, if it does we will not want to resume with certain requests.
@@ -82,6 +91,7 @@ def does_path_exist(target_url):
     return False
 
 
+@logger
 def create_addr_string(list_of_addr_data_dicts):
     addr_string = ""
     for addr_index in range(0, len(list_of_addr_data_dicts)):
@@ -94,6 +104,7 @@ def create_addr_string(list_of_addr_data_dicts):
     return addr_string
 
 
+@logger
 def convert_arg_to_int(arg_str, arg_name_str):
     try:
         arg_int = int(arg_str)
@@ -102,6 +113,7 @@ def convert_arg_to_int(arg_str, arg_name_str):
     return arg_int
 
 
+@logger
 def prettify_date(date_string):
     """
     This function receives a string representing a date, for example 2018-07-28T10:47:55.000Z.
@@ -112,6 +124,7 @@ def prettify_date(date_string):
     return date_prettified
 
 
+@logger
 def create_banned_ips_entry_context(ips_data_array):
     ips_contexts_array = []
     for ip_data in ips_data_array:
@@ -129,16 +142,19 @@ def create_banned_ips_entry_context(ips_data_array):
     return ips_contexts_array
 
 
+@logger
 def create_banned_ips_human_readable(entry_context):
     banned_ip_headers = ["IP", "Created", "Expires", "Source"]
     human_readable = tableToMarkdown("Banned IP Addresses", entry_context, banned_ip_headers)
     return human_readable
 
 
+@logger
 def str_to_bool(str_representing_bool):
     return str_representing_bool and str_representing_bool.lower() == 'true'
 
 
+@logger
 def generate_src_or_dst_request_data(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove):
     address_list_for_request = policy_field_value.split(",")
     if str_to_bool(keep_original_data):
@@ -156,6 +172,7 @@ def generate_src_or_dst_request_data(policy_id, policy_field, policy_field_value
     return address_data_dicts_for_request
 
 
+@logger
 def logout(session):
     """
     Due to limited amount of simultaneous connections we log out after each API request.
@@ -166,6 +183,7 @@ def logout(session):
     session.post(SERVER + url_suffix, data=params, verify=USE_SSL)
 
 
+@logger
 def policy_addr_array_from_arg(policy_addr_data, is_data_string=True):
     # if the data isn't in string format, it's already an array and requires no formatting
     policy_adr_str_array = policy_addr_data.split(",") if is_data_string else policy_addr_data
@@ -181,6 +199,7 @@ def policy_addr_array_from_arg(policy_addr_data, is_data_string=True):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
+@logger
 def test_module():
     """
     Perform basic login and logout operation, validate connection.
@@ -189,6 +208,7 @@ def test_module():
     return True
 
 
+@logger
 def get_addresses_command():
     contents = []
     context = {}
@@ -225,6 +245,7 @@ def get_addresses_command():
     })
 
 
+@logger
 def get_addresses_request(address, name):
     uri_suffix = 'cmdb/firewall/address/' + name
     params = {
@@ -237,6 +258,7 @@ def get_addresses_request(address, name):
     return response.get('results')
 
 
+@logger
 def get_service_groups_command():
     contents = []
     context = {}
@@ -269,12 +291,14 @@ def get_service_groups_command():
     })
 
 
+@logger
 def get_service_groups_request(name):
     uri_suffix = 'cmdb/firewall.service/group/' + name
     response = http_request('GET', uri_suffix)
     return response.get('results')
 
 
+@logger
 def update_service_group_command():
     context = {}
 
@@ -331,6 +355,7 @@ def update_service_group_command():
     })
 
 
+@logger
 def update_service_group_request(group_name, members_list):
     uri_suffix = 'cmdb/firewall.service/group/' + group_name
     if not does_path_exist(uri_suffix):
@@ -344,6 +369,7 @@ def update_service_group_request(group_name, members_list):
     return response
 
 
+@logger
 def delete_service_group_command():
     context = {}
     group_name = demisto.args().get('groupName').encode('utf-8')
@@ -368,12 +394,14 @@ def delete_service_group_command():
     })
 
 
+@logger
 def delete_service_group_request(group_name):
     uri_suffix = 'cmdb/firewall.service/group/' + group_name
     response = http_request('DELETE', uri_suffix)
     return response
 
 
+@logger
 def get_firewall_service_command():
     contents = []
     context = {}
@@ -412,12 +440,14 @@ def get_firewall_service_command():
     })
 
 
+@logger
 def get_firewall_service_request(service_name):
     uri_suffix = 'cmdb/firewall.service/custom/' + service_name
     response = http_request('GET', uri_suffix)
     return response.get('results')
 
 
+@logger
 def create_firewall_service_command():
     contents = []
     context = {}
@@ -455,6 +485,7 @@ def create_firewall_service_command():
     })
 
 
+@logger
 def create_firewall_service_request(service_name, tcp_range, udp_range):
     uri_suffix = 'cmdb/firewall.service/custom/'
     if does_path_exist(uri_suffix + service_name):
@@ -470,6 +501,7 @@ def create_firewall_service_request(service_name, tcp_range, udp_range):
     return response
 
 
+@logger
 def ban_ip(ip_addresses_array, time_to_expire=0):
     uri_suffix = 'monitor/user/banned/add_users/'
 
@@ -482,6 +514,7 @@ def ban_ip(ip_addresses_array, time_to_expire=0):
     return response
 
 
+@logger
 def ban_ip_command():
     ip_addresses_string = demisto.args()['ip_address']
     ip_addresses_array = argToList(ip_addresses_string)
@@ -506,6 +539,7 @@ def ban_ip_command():
     })
 
 
+@logger
 def unban_ip(ip_addresses_array):
     uri_suffix = 'monitor/user/banned/clear_users/'
 
@@ -516,6 +550,7 @@ def unban_ip(ip_addresses_array):
     return response
 
 
+@logger
 def unban_ip_command():
     ip_addresses_string = demisto.args()['ip_address']
     ip_addresses_array = argToList(ip_addresses_string)
@@ -533,12 +568,14 @@ def unban_ip_command():
     })
 
 
+@logger
 def get_banned_ips():
     uri_suffix = 'monitor/user/banned/select/'
     response = http_request('GET', uri_suffix)
     return response
 
 
+@logger
 def get_banned_ips_command():
     response = get_banned_ips()
     ips_data_array = response.get('results')
@@ -553,6 +590,7 @@ def get_banned_ips_command():
     )
 
 
+@logger
 def get_policy_command():
     contents = []
     context = {}
@@ -624,6 +662,7 @@ def get_policy_command():
     })
 
 
+@logger
 def get_policy_request(policy_id):
     uri_suffix = 'cmdb/firewall/policy/'
     if policy_id:
@@ -639,6 +678,7 @@ def get_policy_request(policy_id):
     return response.get('results')
 
 
+@logger
 def update_policy_command():
     contents = []
     context = {}
@@ -712,6 +752,7 @@ def update_policy_command():
     })
 
 
+@logger
 def update_policy_request(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove):
     uri_suffix = 'cmdb/firewall/policy/' + policy_id
     if not does_path_exist(uri_suffix):
@@ -741,6 +782,7 @@ def update_policy_request(policy_id, policy_field, policy_field_value, keep_orig
     return response
 
 
+@logger
 def create_policy_command():
     contents = []
     context = {}
@@ -809,6 +851,7 @@ def create_policy_command():
     })
 
 
+@logger
 def create_policy_request(policy_name, policy_description, policy_srcintf, policy_dstintf,
                           policy_source_address, policy_destination_address, policy_service,
                           policy_action, policy_status, policy_log, policy_nat):
@@ -836,6 +879,7 @@ def create_policy_request(policy_name, policy_description, policy_srcintf, polic
     return response
 
 
+@logger
 def move_policy_command():
     contents = []
     context = {}
@@ -866,6 +910,7 @@ def move_policy_command():
     })
 
 
+@logger
 def move_policy_request(policy_id, position, neighbour):
     uri_suffix = 'cmdb/firewall/policy/' + policy_id
     params = {
@@ -877,6 +922,7 @@ def move_policy_request(policy_id, position, neighbour):
     return response
 
 
+@logger
 def delete_policy_command():
     contents = []
     context = {}
@@ -905,12 +951,14 @@ def delete_policy_command():
     })
 
 
+@logger
 def delete_policy_request(policy_id):
     uri_suffix = 'cmdb/firewall/policy/' + policy_id
     response = http_request('DELETE', uri_suffix)
     return response
 
 
+@logger
 def get_address_groups_command():
     contents = []
     context = {}
@@ -949,12 +997,14 @@ def get_address_groups_command():
     })
 
 
+@logger
 def get_address_groups_request(address_group_name):
     uri_suffix = 'cmdb/firewall/addrgrp/' + address_group_name
     response = http_request('GET', uri_suffix)
     return response.get('results')
 
 
+@logger
 def update_address_group_command():
     contents = []
     context = {}
@@ -1011,6 +1061,7 @@ def update_address_group_command():
     })
 
 
+@logger
 def update_address_group_request(group_name, new_address_group_members):
     uri_suffix = 'cmdb/firewall/addrgrp/' + group_name
     # Check whether target object already exists
@@ -1023,6 +1074,7 @@ def update_address_group_request(group_name, new_address_group_members):
     return result
 
 
+@logger
 def create_address_group_command():
     contents = []
     context = {}
@@ -1053,6 +1105,7 @@ def create_address_group_command():
     })
 
 
+@logger
 def create_address_group_request(group_name, address):
     uri_suffix = 'cmdb/firewall/addrgrp/'
     if does_path_exist(uri_suffix + group_name):
@@ -1064,6 +1117,7 @@ def create_address_group_request(group_name, address):
     return result
 
 
+@logger
 def delete_address_group_command():
     contents = []
     context = {}
@@ -1093,6 +1147,7 @@ def delete_address_group_command():
     })
 
 
+@logger
 def delete_address_group_request(name):
     uri_suffix = 'cmdb/firewall/addrgrp/' + name
     response = http_request('DELETE', uri_suffix)
