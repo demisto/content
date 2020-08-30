@@ -1,4 +1,7 @@
 ## [Unreleased]
+- Fix bug where File Category would not map correctly when creating incidents from Code42 alerts.
+
+## [20.8.0] - 2020-08-04
 - Internal code improvements.
 - Added new commands:
     - **code42-departingemployee-get-all**
