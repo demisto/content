@@ -108,7 +108,7 @@ def prisma_access_query():
 
 def prisma_access_active_users():
     limit = demisto.args().get('limit', 20)
-    cmd = 'request plugins cloud_services gpcs query querystring limit={} action getGPaaSActiveUsers'.format(limit)
+    cmd = 'debug plugins cloud_services gpcs query querystring limit={} action getGPaaSActiveUsers'.format(limit)
     sshRes = panos_ssh(cmd)
     jsonStartPos = sshRes.find('{"@status')
     if jsonStartPos < 0:
