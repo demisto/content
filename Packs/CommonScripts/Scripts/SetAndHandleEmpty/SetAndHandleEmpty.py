@@ -7,7 +7,7 @@ def main():
     value = args.get('value')
     if value:
         human_readable = 'Key ' + args.get('key') + ' set'
-        context_entry = {args.get('key'): value}
+        context_entry = {args.get('key'): json.loads(value)}
     else:
         context_entry = {}
         human_readable = 'value is None'
