@@ -19,7 +19,6 @@ from multiprocessing import Process
 SCOPES = ['https://www.googleapis.com/auth/ediscovery', 'https://www.googleapis.com/auth/devstorage.full_control']
 DEMISTO_MATTER = 'test_search_phishing'
 
-#TODO: add
 ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier'].encode('utf-8')
 PRIVATE_KEY_CONTENT = demisto.params()['auth_json'].encode('utf-8')
 USE_SSL = not demisto.params().get('insecure', False)
@@ -1334,23 +1333,20 @@ def download_export_command():
 def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
     out_file = download_storage_object(object_ID, bucket_name)
     out_file_json = json.loads(xml2json(out_file.getvalue()))
+    out_file.close()
 
     if not out_file_json['Root']['Batch'].get('Documents'):
         demisto.results('The export given contains 0 documents')
-        out_file.close()
         sys.exit(0)
     documents = out_file_json['Root']['Batch']['Documents']['Document']
 
     if type(documents) is dict:
         documents = [documents]
 
-    #TODO: THE ISSUE IS HERE!!!
+    if len(documents) > max_results:
+        documents = documents[:max_results]
+
     dictList = build_dict_list(documents)
-
-    if len(dictList) > max_results:
-        out_file.close()
-        return dictList[0:max_results]
-
     return dictList
 
 
@@ -1464,7 +1460,8 @@ def test_module():
         else:
             return_error(str(ex))
 
-def sub_main():
+
+def main():
     """Main Execution Block"""
 
     try:
@@ -1511,29 +1508,6 @@ def sub_main():
             get_mail_and_groups_results_command('GROUPS')
     except Exception as e:
         return_error(str(e))
-
-
-def process_main():
-    """setup stdin to fd=0 so we can read from the server"""
-    sys.stdin = os.fdopen(0, "r")
-    sub_main()
-
-
-def main():
-    # When running big queries, like 'gvault-get-mail' the memory might not freed by the garbage
-    # collector. `separate_process` flag will run the integration on a separate process that will prevent
-    # memory leakage.
-    separate_process = demisto.params().get("separate_process", False)
-    demisto.debug("Running as separate_process: {}".format(separate_process))
-    if separate_process:
-        try:
-            p = Process(target=process_main)
-            p.start()
-            p.join()
-        except Exception as ex:
-            demisto.error("Failed starting Process: {}".format(ex))
-    else:
-        sub_main()
 
 
 # python2 uses __builtin__ python3 uses builtins
