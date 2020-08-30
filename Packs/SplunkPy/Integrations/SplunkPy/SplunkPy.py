@@ -678,6 +678,16 @@ def test_module(service):
             service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
         except HTTPError as error:
             return_error(str(error))
+    if demisto.params().get('hec_url') and demisto.params().get('hec_token'):
+        headers = {
+            'Authorization': 'Splunk {}'.format(demisto.params().get('hec_token')),
+            'Content-Type': 'application/json'
+        }
+        try:
+            requests.post(demisto.params().get('hec_url') + '/services/collector/health', headers=headers,
+                          verify=VERIFY_CERTIFICATE)
+        except Exception as e:
+            return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
 
 def replace_keys(data):
