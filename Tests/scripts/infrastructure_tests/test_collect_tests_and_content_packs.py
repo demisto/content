@@ -125,6 +125,11 @@ class TestUtils(object):
                             ))
 
     @staticmethod
+    def mock_get_test_list_and_content_packs_to_install(mocker):
+        return mocker.patch('Tests.scripts.collect_tests_and_content_packs.get_test_list_and_content_packs_to_install',
+                            return_value='Detonate URL - Generic Test')
+
+    @staticmethod
     def mock_run_command(mocker, on_command, return_value):
         def on_run_command(*args):
             command = args[0]
@@ -883,3 +888,14 @@ def test_collect_content_packs_to_install(mocker):
         ])
 
         collect_tests_and_content_packs._FAILED = False
+
+
+def test_collect_tests_with_playbooks():
+    file_string = 'M	Packs/Lastline/Integrations/Lastline_v2/Lastline_v2.py'
+    # file_string = 'M	Tests/scripts/infrastructure_tests/tests_data/mock_integrations/fake_integration.yml'
+    filterd_tests, content_packs = get_mock_test_list(git_diff_ret=file_string)
+    test_util = TestUtils()
+    a = get_test_list_and_content_packs_to_install(file_string, 'master')
+
+    #  tested function: get_test_list_and_content_packs_to_install
+    #
