@@ -611,11 +611,14 @@ def get_ip_dns_history_command():
     limit = int(demisto.args().get('limit'))
     # Fetch data
     response_object = get_ip_dns_history(ip)
+    response_contents = []
+    features_contents = {}
+
     if response_object:
         response = response_object['response']
         features = response_object['features']
         # Process response - build context and markdown table
-        response_contents = []
+
         if limit:
             response = response[:limit]
         for item in response:
@@ -627,7 +630,6 @@ def get_ip_dns_history_command():
                 'Name': item['name']
             })
 
-        features_contents = {}
         features_context = {}
         for key in IP_DNS_FEATURE_INFO:
             # table_key = format_string_to_table_header_format(key)

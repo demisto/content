@@ -2,6 +2,7 @@ category: Analytics & SIEM
 commonfields:
   id: McAfee ESM-v10
   version: -1
+deprecated: true
 configuration:
 - display: ESM IP (e.g. 78.125.0.209)
   name: ip
@@ -61,7 +62,7 @@ configuration:
   name: timezone
   required: false
   type: 0
-description: Run queries and receive alarms from Intel Security ESM. Support version 10 and above.
+description: Deprecated - We recommend using McAfee ESM v2 instead.
 display: McAfee ESM v10 and v11
 name: McAfee ESM-v10
 script:
@@ -725,3 +726,5 @@ script:
   script: '-'
   type: python
   subtype: python2
+tests:
+- No tests
