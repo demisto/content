@@ -1,6 +1,5 @@
 from CommonServerPython import *
 import json
-import ast
 
 FAIL_STATUS_MSG = "Command send-mail in module EWS Mail Sender requires argument to that is missing (7)"
 
