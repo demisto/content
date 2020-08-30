@@ -189,7 +189,7 @@ class TestChangedPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks"}
+        assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks", "FakePack"}
 
 
 class TestChangedTestPlaybook:
@@ -350,7 +350,7 @@ class TestChangedIntegrationAndPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
-        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty'}
+        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty', 'FakePack'}
 
 
 class TestChangedScript:
@@ -891,11 +891,20 @@ def test_collect_content_packs_to_install(mocker):
 
 
 def test_collect_tests_with_playbooks():
-    file_string = 'M	Packs/Lastline/Integrations/Lastline_v2/Lastline_v2.py'
-    # file_string = 'M	Tests/scripts/infrastructure_tests/tests_data/mock_integrations/fake_integration.yml'
-    filterd_tests, content_packs = get_mock_test_list(git_diff_ret=file_string)
-    test_util = TestUtils()
-    a = get_test_list_and_content_packs_to_install(file_string, 'master')
+    """
+    Given
+    - Modified playbook list
 
-    #  tested function: get_test_list_and_content_packs_to_install
-    #
+    When
+    - Collecting content packs to install - running `get_test_list_and_content_packs_to_install()`.
+    Then
+    - Finds all tests playbooks of the modified playbooks and returns the former pack names
+    """
+
+    test_conf = TestConf(MOCK_CONF)
+    content_packs = test_conf.get_packs_of_collected_tests(['fake_playbook_in_fake_pack',
+                                                            'TestCommonPython'], MOCK_ID_SET)
+    assert 'FakePack' in content_packs
+
+
+
