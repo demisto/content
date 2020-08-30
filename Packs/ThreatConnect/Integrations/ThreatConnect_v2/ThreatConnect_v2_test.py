@@ -305,3 +305,19 @@ def test_ip_get_indicators_multiple_owners(mocker):
     mocker.patch('ThreatConnect_v2.get_client', return_value=ThreatConnect())
     indicators = get_indicators('127.0.0.1', 'Address', 'Demisto Inc.,PhishTank', -1, -1)
     assert indicators == EXPECTED_INDOCATORS_OUTPUT
+
+
+def test_create_context_debotscore_samilar_indicator(mocker):
+    indicator = deepcopy(IP_INDICATOR)
+    indicator.extend(deepcopy(IP_INDICATOR))
+    indicator[0]['confidence'] = 0
+    mocker.patch.object(demisto, 'params', return_value={"defaultOrg": "Demisto Inc.",
+                                                         "freshness": 7, "rating": 0, "confidence": 50})
+
+    # passing 2 ip indicators with the same address, one of them should gets the score 2 and the second one the score 3
+    context, _ = create_context(indicator, True)
+    # validate there is one indicator with the highest score - 3
+    assert context
+    assert len(context['DBotScore']) == 1
+    assert context['DBotScore'][0]['Indicator'] == '88.88.88.88'
+    assert context['DBotScore'][0]['Score'] == 3

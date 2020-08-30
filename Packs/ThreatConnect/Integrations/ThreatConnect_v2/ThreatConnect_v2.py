@@ -42,6 +42,7 @@ def calculate_freshness_time(freshness):
 
 
 def create_context(indicators, include_dbot_score=False):
+    indicators_dbot_score = {}
     params = demisto.params()
     rating_threshold = int(params.get('rating', '3'))
     confidence_threshold = int(params.get('confidence', '50'))
@@ -66,7 +67,6 @@ def create_context(indicators, include_dbot_score=False):
         'File': 'md5'
     }
 
-    highest_score = 0
     for ind in indicators:
         indicator_type = tc_type_to_demisto_type.get(ind['type'], ind['type'])
         value_field = type_to_value_field.get(ind['type'], 'summary')
@@ -119,14 +119,17 @@ def create_context(indicators, include_dbot_score=False):
             dbot_score = 1
 
         # if there is more than one indicator results - take the one with the highest score
-        if include_dbot_score and dbot_score > highest_score:
-            highest_score = dbot_score
-            context['DBotScore'] = [{
-                'Indicator': value,
-                'Score': dbot_score,
-                'Type': indicator_type,
-                'Vendor': 'ThreatConnect'
-            }]
+        if include_dbot_score:
+            old_val = indicators_dbot_score.get(value)
+            if old_val and old_val['Score'] < dbot_score:
+                indicators_dbot_score[value]['Score'] = dbot_score
+            else:
+                indicators_dbot_score[value] = {
+                    'Indicator': value,
+                    'Score': dbot_score,
+                    'Type': indicator_type,
+                    'Vendor': 'ThreatConnect'
+                }
 
         context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
             'ID': ind['id'],
@@ -166,6 +169,7 @@ def create_context(indicators, include_dbot_score=False):
                 context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorsObservations'] = ind[
                     'indicator_observations']
 
+    context['DBotScore'] = list(indicators_dbot_score.values())
     context = {k: createContext(v, removeNull=True)[:MAX_CONTEXT] for k, v in context.items() if v}
     return context, context.get('TC.Indicator(val.ID && val.ID === obj.ID)', [])
 
