@@ -576,7 +576,7 @@
     </tr>
     <tr>
       <td>parameters</td>
-      <td>The question parameters. For example, sensor1{key1=val1,key2=val2},sensor2{key1=val1}.</td>
+      <td>The question parameters. For example, sensor1{key1=val1;key2=val2};sensor2{key1=val1}.</td>
       <td>Optional</td>
     </tr>
   </tbody>
