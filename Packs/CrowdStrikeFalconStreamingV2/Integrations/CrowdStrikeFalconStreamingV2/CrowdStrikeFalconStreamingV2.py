@@ -37,7 +37,15 @@ class Client(BaseClient):
     def __init__(self, base_url: str, app_id: str, verify_ssl: bool, proxy: bool) -> None:
         self.app_id = app_id
         self.refresh_stream_url = None
-        super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
+        super().__init__(
+            base_url=base_url,
+            verify=verify_ssl,
+            proxy=proxy,
+            headers={
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        )
 
     async def set_access_token(self, refresh_token: 'RefreshToken') -> None:
         await refresh_token.set_access_token(self)
@@ -151,7 +159,10 @@ class EventStream:
             last_fetch_stats_print = datetime.utcnow()
             async with ClientSession(
                 connector=TCPConnector(ssl=self.verify_ssl),
-                headers={'Authorization': f'Token {self.session_token}'},
+                headers={
+                    'Authorization': f'Token {self.session_token}',
+                    'Connection': 'keep-alive'
+                },
                 trust_env=self.proxy,
                 timeout=None
             ) as session:
@@ -452,7 +463,7 @@ def main():
     base_url: str = params.get('base_url', '')
     client_id: str = params.get('client_id', '')
     client_secret: str = params.get('client_secret', '')
-    event_type = ','.join(params.get('event_type', []))
+    event_type = ','.join(params.get('event_type', []) or [])
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     offset = params.get('offset', '0')
@@ -462,7 +473,7 @@ def main():
         offset = 0
     incident_type = params.get('incidentType', '')
     store_samples = params.get('store_samples', False)
-    first_fetch_time, _ = parse_date_range(params.get('first_fetch', '1 hour'))
+    first_fetch_time, _ = parse_date_range(params.get('fetch_time', '1 hour'))
 
     stream = EventStream(base_url=base_url, app_id='Demisto', verify_ssl=verify_ssl, proxy=proxy)
 

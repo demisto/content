@@ -506,6 +506,19 @@ UPDATE_ACCOUNT_CONTEXT = {
   }
 }
 
+GET_ACCOUNT_CONTEXT = {
+  'CyberArkPAS.Accounts(val.id == obj.id)': {'categoryModificationTime': 1597581174, 'id': '11_1',
+                                             'name': 'Operating System-UnixSSH', 'address': 'address',
+                                             'userName': 'firecall2', 'platformId': 'UnixSSH',
+                                             'safeName': 'Linux Accounts', 'secretType': 'password',
+                                             'platformAccountProperties': {'UseSudoOnReconcile': 'No',
+                                                                           'Tags': 'SSH'},
+                                             'secretManagement': {'automaticManagementEnabled': True,
+                                                                  'status': 'success',
+                                                                  'lastModifiedTime': 1595417469,
+                                                                  'lastReconciledTime': 1576120341},
+                                             'createdTime': 1595431869}}
+
 GET_LIST_ACCOUNT_CONTEXT = {
   "CyberArkPAS.Accounts(val.id == obj.id)": [
     {
