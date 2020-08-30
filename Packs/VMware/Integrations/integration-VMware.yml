@@ -66,7 +66,7 @@ script:
     def get_vm(uuid):
         vm = si.content.searchIndex.FindByUuid(None, uuid, True, True)
         if vm is None:
-            raise SystemExit('Unable to locate Virtual Machine.')
+            return_error('Unable to locate Virtual Machine.')
         return vm
 
     def get_vms():
@@ -113,7 +113,7 @@ script:
         vm = get_vm(uuid)
 
         if vm.runtime.powerState == 'poweredOn':
-            raise SystemExit('Virtual Machine is already powered on.')
+            return_error('Virtual Machine is already powered on.')
         task = vm.PowerOn()
         while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
             time.sleep(1)
@@ -133,12 +133,12 @@ script:
                 'EntryContext': ec
             }
         elif task.info.state == 'error':
-            raise SystemExit('Error occured while trying to power on Virtual Machine.')
+            return_error('Error occured while trying to power on Virtual Machine.')
 
     def power_off(uuid):
         vm = get_vm(uuid)
         if vm.runtime.powerState == 'poweredOff':
-            raise SystemExit('Virtual Machine is already powered off.')
+            return_error('Virtual Machine is already powered off.')
         task = vm.PowerOff()
         while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
             time.sleep(1)
@@ -158,12 +158,12 @@ script:
                 'EntryContext': ec
             }
         elif task.info.state == 'error':
-            raise SystemExit('Error occured while trying to power off Virtual Machine.')
+            return_error('Error occured while trying to power off Virtual Machine.')
 
     def suspend(uuid):
         vm = get_vm(uuid)
         if vm.runtime.powerState == 'suspended':
-             raise SystemExit('Virtual Machine is already suspended.')
+             return_error('Virtual Machine is already suspended.')
         task = vm.Suspend()
         while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:
             time.sleep(1)
@@ -183,7 +183,7 @@ script:
                 'EntryContext': ec
             }
         elif task.info.state == 'error':
-            raise SystemExit('Error occured while trying to power on Virtual Machine.')
+            return_error('Error occured while trying to power on Virtual Machine.')
 
     def hard_reboot(uuid):
         vm = get_vm(uuid)
@@ -205,7 +205,7 @@ script:
                 'EntryContext': ec
             }
         elif task.info.state == 'error':
-            raise SystemExit('Error occured while trying to reboot Virtual Machine.')
+            return_error('Error occured while trying to reboot Virtual Machine.')
 
     def wait_for_tasks(si, tasks):
         propertyCollector = si.content.propertyCollector

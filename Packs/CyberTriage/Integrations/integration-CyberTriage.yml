@@ -111,7 +111,7 @@ script:
         except AttributeError:
             ret_msg = 'Invalid requests method: {0}'.format(method)
             return_error(ret_msg)
-            sys.exit(1)
+            return_error(ret_msg)
 
         # Attempt to make the rest API call and get data from response
         try:
