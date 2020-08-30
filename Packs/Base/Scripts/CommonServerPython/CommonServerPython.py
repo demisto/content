@@ -3249,6 +3249,22 @@ def is_demisto_version_ge(version):
         raise
 
 
+def is_demisto_version_build_ge(build_number):
+    """Utility function to check if current running integration is at a server with build number greater or equal to the passed build
+
+    :type build_number: ``str``
+    :param build_number: Build number to check
+
+    :return: True if running within a Server build number greater or equal than the passed build
+    :rtype: ``bool``
+    """
+    try:
+        server_version = get_demisto_version()
+        return server_version.get('buildNumber') >= build_number
+    except AttributeError:
+        raise
+
+
 def is_debug_mode():
     """Return if this script/command was passed debug-mode=true option
 
@@ -3885,6 +3901,7 @@ def dict_safe_get(dict_object, keys, default_return_value=None):
 
 CONTEXT_UPDATE_RETRY_TIMES = 3
 MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
+MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT = '82511'
 
 
 def merge_lists(original_list, updated_list, key):
@@ -3979,7 +3996,8 @@ def is_versioned_context_available():
     :rtype: ``bool``
     :return: Whether versioned integration context is available
     """
-    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
+    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT) or \
+           (is_demisto_version_build_ge('5.5.0') and is_demisto_version_build_ge(MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT))
 
 
 def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
