@@ -1241,6 +1241,7 @@ def create_test_file(is_nightly, skip_save=False, file_string=''):
 
         logging.info("Getting changed files from the branch: {0}".format(branch_name))
         if file_string:
+            print(f"entered file string if statement. file string is: {file_string}")
             files_string = file_string
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
