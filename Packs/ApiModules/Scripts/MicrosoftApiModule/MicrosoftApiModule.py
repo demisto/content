@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import requests
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 
 # authorization types
 OPROXY_AUTH_TYPE = 'oproxy'
@@ -136,15 +136,16 @@ class MicrosoftClient(BaseClient):
             str: Access token that will be added to authorization header.
         """
         integration_context = demisto.getIntegrationContext()
-        # Saves separate access token per scope.
-        if scope:
-            access_token = integration_context.get(f'{scope}_access_token')
-            valid_until = integration_context.get(f'{scope}_valid_until')
-        else:
-            access_token = integration_context.get('access_token')
-            valid_until = integration_context.get('valid_until')
+        # Set keywords. Default without the scope prefix.
+        access_token_keyword = f'{scope}_access_token' if scope else 'access_token'
+        valid_until_keyword = f'{scope}_valid_until' if scope else 'valid_until'
+
+        # Get tokens from context
+        access_token = integration_context.get(access_token_keyword)
+        valid_until = integration_context.get(valid_until_keyword)
         refresh_token = integration_context.get('current_refresh_token', '')
 
+        # If the access token is valid, will return it.
         if access_token and valid_until:
             if self.epoch_seconds() < valid_until:
                 return access_token
@@ -160,17 +161,11 @@ class MicrosoftClient(BaseClient):
             # err on the side of caution with a slightly shorter access token validity period
             expires_in = expires_in - time_buffer
         valid_until = time_now + expires_in
-        if scope:
-            integration_context.update({
-                f'{scope}_access_token': access_token,
-                f'{scope}_valid_until': valid_until
-            })
-        else:
-            integration_context.update({
-                'access_token': access_token,
-                'valid_until': time_now + expires_in,
-            })
-        integration_context.update({'current_refresh_token': refresh_token})
+        integration_context.update({
+            access_token_keyword: access_token,
+            valid_until_keyword: valid_until,
+            'current_refresh_token': refresh_token
+        })
 
         demisto.setIntegrationContext(integration_context)
         return access_token
@@ -228,14 +223,14 @@ class MicrosoftClient(BaseClient):
         return (parsed_response.get('access_token', ''), parsed_response.get('expires_in', 3595),
                 parsed_response.get('refresh_token', ''))
 
-    def _get_self_deployed_token(self, refresh_token: str = ''):
+    def _get_self_deployed_token(self, refresh_token: str = '', scope: Optional[str] = None):
         if self.grant_type == AUTHORIZATION_CODE:
-            return self._get_self_deployed_token_auth_code(refresh_token)
+            return self._get_self_deployed_token_auth_code(refresh_token, scope)
         else:
             # by default, grant_type is CLIENT_CREDENTIALS
-            return self._get_self_deployed_token_client_credentials()
+            return self._get_self_deployed_token_client_credentials(scope)
 
-    def _get_self_deployed_token_client_credentials(self) -> Tuple[str, int, str]:
+    def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application in client credentials grant type.
 
@@ -248,8 +243,10 @@ class MicrosoftClient(BaseClient):
             'grant_type': CLIENT_CREDENTIALS
         }
 
-        if self.scope:
-            data['scope'] = self.scope
+        # Set scope.
+        if self.scope or scope:
+            data['scope'] = scope if scope else self.scope
+
         if self.resource:
             data['resource'] = self.resource
 
@@ -268,7 +265,7 @@ class MicrosoftClient(BaseClient):
 
         return access_token, expires_in, ''
 
-    def _get_self_deployed_token_auth_code(self, refresh_token: str = '') -> Tuple[str, int, str]:
+    def _get_self_deployed_token_auth_code(self, refresh_token: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
 
@@ -281,6 +278,8 @@ class MicrosoftClient(BaseClient):
             'resource': self.resource,
             'redirect_uri': self.redirect_uri
         }
+        if scope:
+            data['scope'] = scope
         refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
         if refresh_token:
             data['grant_type'] = REFRESH_TOKEN
