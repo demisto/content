@@ -109,7 +109,8 @@ def option_handler():
                         help="CircleCi build number (will be used as hash revision at index file)", required=True)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
-                        required=False)
+                        required=False),
+    parser.add_argument('-p', '--pack_name', help="Modified pack to upload to gcs.")
 
     # disable-secrets-detection-end
     return parser.parse_args()
@@ -124,6 +125,7 @@ def main():
     storage_base_path = upload_config.storage_base_path
     extract_public_index_path = upload_config.extract_path
     extract_private_index_path = os.path.join(extract_public_index_path, 'private')
+    changed_pack = upload_config.pack_name
 
     storage_client = init_storage_client(service_account)
     public_storage_bucket = storage_client.bucket(public_bucket_name)
@@ -138,7 +140,8 @@ def main():
     #                                                                               extract_private_index_path)
 
     # merge_private_index_into_public_index(public_index_folder_path, private_index_folder_path)
-    update_index_with_priced_packs(private_storage_bucket, extract_public_index_path, public_index_folder_path)
+    update_index_with_priced_packs(private_storage_bucket, extract_public_index_path, public_index_folder_path,
+                                   changed_pack, True)
     change_packs_price_to_zero(public_index_folder_path)
     edit_index_json_file(public_index_folder_path, build_number)
     upload_modified_index(public_index_folder_path, extract_public_index_path, public_index_blob, build_number)
