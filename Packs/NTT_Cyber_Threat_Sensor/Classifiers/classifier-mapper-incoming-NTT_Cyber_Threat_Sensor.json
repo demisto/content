@@ -1,0 +1,99 @@
+{
+	"id": "NTT Cyber Threat Sensor - mapper",
+    "name": "NTT Cyber Threat Sensor - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming NTT Cyber Threat Sensor fields.",
+	"version": -1,
+	"defaultIncidentType": "",
+	"mapping": {
+        "TD Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Event ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "sha",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Graph Plot": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "graphPlotImage",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\u003cimg src=\""
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\" alt=\"Red dot\" width=\"720\"/\u003e"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "FAERE Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "longdesc",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "font-size:\\s+(\\d+)px"
+                                        }
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "font-size: 12px"
+                                        }
+                                    }
+                                },
+                                "operator": "replaceMatch"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "faereseverity"
+                },
+                "shortdesc": {
+                    "complex": null,
+                    "simple": "FAERE Description"
+                },
+                "sourceBrand": {
+                    "complex": null,
+                    "simple": "CTS"
+                },
+                "sourceInstance": {
+                    "complex": null,
+                    "simple": "devicephysical"
+                }
+            }
+        }
+    },
+	"fromVersion": "6.0.0"
+}
