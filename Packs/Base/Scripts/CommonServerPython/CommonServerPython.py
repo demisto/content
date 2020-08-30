@@ -3230,38 +3230,26 @@ class GetDemistoVersion:
 get_demisto_version = GetDemistoVersion()
 
 
-def is_demisto_version_ge(version):
+def is_demisto_version_ge(version, build_number=''):
     """Utility function to check if current running integration is at a server greater or equal to the passed version
 
     :type version: ``str``
     :param version: Version to check
+
+    :type build_number: ``str``
+    :param build_number: Build number to check
 
     :return: True if running within a Server version greater or equal than the passed version
     :rtype: ``bool``
     """
     try:
         server_version = get_demisto_version()
-        return server_version.get('version') >= version
+        return server_version.get('version') >= version and \
+               (not build_number or server_version.get('buildNumber') >= build_number)
     except AttributeError:
         # demistoVersion was added in 5.0.0. We are currently running in 4.5.0 and below
         if version >= "5.0.0":
             return False
-        raise
-
-
-def is_demisto_version_build_ge(build_number):
-    """Utility function to check if current running integration is at a server with build number greater or equal to the passed build
-
-    :type build_number: ``str``
-    :param build_number: Build number to check
-
-    :return: True if running within a Server build number greater or equal than the passed build
-    :rtype: ``bool``
-    """
-    try:
-        server_version = get_demisto_version()
-        return server_version.get('buildNumber') >= build_number
-    except AttributeError:
         raise
 
 
@@ -3997,7 +3985,7 @@ def is_versioned_context_available():
     :return: Whether versioned integration context is available
     """
     return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT) or \
-           (is_demisto_version_build_ge('5.5.0') and is_demisto_version_build_ge(MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT))
+           is_demisto_version_ge('5.5.0', MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT)
 
 
 def set_to_integration_context_with_retries(context, object_keys=None, sync=True,

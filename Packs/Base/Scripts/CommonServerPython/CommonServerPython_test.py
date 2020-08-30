@@ -15,7 +15,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, is_demisto_version_build_ge, MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT
+    appendContext, auto_detect_indicator_type, handle_proxy, MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT
 
 try:
     from StringIO import StringIO
@@ -844,9 +844,11 @@ def test_is_demisto_version_build_ge(mocker):
             'buildNumber': '50000'
         }
     )
-    assert is_demisto_version_build_ge('49999')
-    assert is_demisto_version_build_ge('50000')
-    assert not is_demisto_version_build_ge('50001')
+    assert is_demisto_version_ge('6.0.0', '49999')
+    assert is_demisto_version_ge('6.0.0', '50000')
+    assert not is_demisto_version_ge('6.0.0', '50001')
+    assert not is_demisto_version_ge('6.1.0', '49999')
+    assert not is_demisto_version_ge('5.5.0', '50001')
 
 
 def test_assign_params():
