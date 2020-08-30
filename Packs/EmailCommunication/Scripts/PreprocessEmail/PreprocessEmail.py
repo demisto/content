@@ -73,38 +73,6 @@ def check_incident_status(incident_details, email_related_incident):
             raise DemistoException
 
 
-def mark_files_as_evidences(email_related_incident):
-    """Marks new fetched files as evidences in the related incident.
-
-    Args:
-        email_related_incident (int): ID of the incident to attach the files to.
-
-    """
-    incident_context = demisto.executeCommand("getContext", {"id": email_related_incident})[0]
-
-    files = incident_context.get('Contents').get('context').get('File')
-    if not files:
-        return
-
-    last_entry_id = incident_context.get('Contents').get('context').get('last_entry_id')
-    if not last_entry_id:
-        last_entry_id = 0
-
-    if not isinstance(files, list):
-        files = [files]
-
-    for f in files:
-        if int(f.get('EntryID').split('@')[0]) > last_entry_id:
-            demisto.executeCommand("executeCommandAt",
-                                   {'command': 'markAsEvidence', 'incidents': str(email_related_incident),
-                                    'arguments': {"id": f.get('EntryID'), 'description': f.get('Name')}})
-
-    # Update the context key to hold the last entry id added to the evidences of the incident
-    last_entry_id = files[-1].get('EntryID').split('@')[0]
-    demisto.executeCommand("executeCommandAt", {'command': 'Set', 'incidents': str(email_related_incident),
-                                                'arguments': {"key": 'last_entry_id', 'value': last_entry_id}})
-
-
 def get_attachments_using_instance(email_related_incident, labels):
     """Use the instance from which the email was received to fetch the attachments.
         Only supported with: EWS V2, Gmail
@@ -156,11 +124,7 @@ def main():
         check_incident_status(incident_details, str(email_related_incident))
         email_reply = set_email_reply(email_from, email_to, email_cc, email_body)
         add_entries(email_reply, str(email_related_incident))
-
         get_attachments_using_instance(email_related_incident, incident.get('labels'))
-        # Need to wait for attachments to be added to context
-        time.sleep(10)
-        mark_files_as_evidences(email_related_incident)
 
         # False - to not create new incident
         demisto.results(False)
