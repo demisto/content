@@ -182,11 +182,6 @@ def get_all_modified_release_note_files(git_sha1):
     return release_notes_files
 
 
-def get_pack_name_from_metadata(pack_path):
-    pack_metadata = get_pack_metadata(pack_path)
-    return pack_metadata.get('name')
-
-
 def get_pack_metadata(pack_path):
     pack_metadata_path = os.path.join(pack_path, PACK_METADATA)
     with open(pack_metadata_path, 'r') as json_file:
@@ -296,7 +291,7 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata
 
     pack_release_notes = construct_entities_block(entities_data)
 
-    partner = ' (Partner)' if is_partner_supported_in_metadata(pack_metadata) else ''
+    partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
     return (f'### {pack_name} Pack v{latest_version}{partner}\n'
             f'{pack_release_notes.strip()}')
 
@@ -323,7 +318,7 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
     pack_rn_blocks = []
     for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
         pack_metadata = packs_metadata_dict[pack_name]
-        partner = ' (Partner)' if is_partner_supported_in_metadata(pack_metadata) else ''
+        partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
         pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0{partner}\n'
                               f'{pack_summary}')
 

@@ -120,8 +120,8 @@ class TestGenerateReleaseNotesSummary:
         Then
         - Ensure release notes generator creates a valid summary, by checking:
           - the release notes summary contains two packs:
-            - FakePack3 with version 1.0.0 and has the string "(Partner)" after the version
-            - FakePack4 with version 1.0.0 dose not have the string "(Partner)" after the version
+            - FakePack3 with version 1.0.0 and has the string "(Partner Supported)" after the version
+            - FakePack4 with version 1.0.0 dose not have the string "(Partner Supported)" after the version
         """
         new_packs_rn = {
             'FakePack3': get_pack_entities(os.path.join(TEST_DATA_PATH, 'FakePack3')),
@@ -135,9 +135,9 @@ class TestGenerateReleaseNotesSummary:
         rn_summary = generate_release_notes_summary(
             new_packs_rn, {}, packs_metadta_dict, self._version, self._asset_id, 'temp.md')
 
-        assert '## New: FakePack3 Pack v1.0.0 (Partner)' in rn_summary
+        assert '## New: FakePack3 Pack v1.0.0 (Partner Supported)' in rn_summary
         assert '## New: FakePack4 Pack v1.0.0' in rn_summary
-        assert '## New: FakePack4 Pack v1.0.0 (Partner)' not in rn_summary
+        assert '## New: FakePack4 Pack v1.0.0 (Partner Supported)' not in rn_summary
 
     def test_two_packs(self):
         """
@@ -198,8 +198,8 @@ class TestGenerateReleaseNotesSummary:
         - Ensure release notes generator creates a valid summary, by checking:
           - the output of get_release_notes_dict() is a valid dict of (pack_name, dict(pack_version, release_note)).
           - the release notes summary contains two packs with the flowing:
-            - FakePack1 with version 2.0.0 and has the string "(Partner)" after the version
-            - FakePack2 with version 1.1.0 dose not have the string "(Partner)" after the version
+            - FakePack1 with version 2.0.0 and has the string "(Partner Supported)" after the version
+            - FakePack2 with version 1.1.0 dose not have the string "(Partner Supported)" after the version
         """
         release_notes_files = [
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
@@ -220,9 +220,9 @@ class TestGenerateReleaseNotesSummary:
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
         assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
-        assert '### FakePack1 Pack v2.0.0 (Partner)' in rn_summary
+        assert '### FakePack1 Pack v2.0.0 (Partner Supported)' in rn_summary
         assert '### FakePack2 Pack v1.1.0' in rn_summary
-        assert '### FakePack2 Pack v1.1.0 (Partner)' not in rn_summary
+        assert '### FakePack2 Pack v1.1.0 (Partner Supported)' not in rn_summary
 
     def test_release_notes_summary_with_empty_lines_in_rn(self):
         """
