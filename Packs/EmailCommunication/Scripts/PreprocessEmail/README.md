@@ -1,9 +1,9 @@
 Preprocessing script for Email Communication layout.
-This script checks incoming emails from the incident type. If those emails contain an Incident ID in the email subject, then the preprocessing will not open a new incident for this email But will add the email response to the existing incident war room with the tag the  "email-thread."
+This script checks incoming emails from the incident type. If those emails contain an Incident ID in the email subject, then the preprocessing will not open a new incident for this email. Instead, it will add the email response to the existing incident war room with the  "email-thread" tag.
 
-The script is a part of a pack name Email Communication.
+The script is a part of the Email Communication pack.
 
-For more information about the preprocessing rules, please refer to https://demisto.developers.paloaltonetworks.com/docs/incidents/incident-pre-processing
+For more information about the preprocessing rules, please refer to https://xsoar.pan.dev/docs/incidents/incident-pre-processing.
 ## Script Data
 ---
 
