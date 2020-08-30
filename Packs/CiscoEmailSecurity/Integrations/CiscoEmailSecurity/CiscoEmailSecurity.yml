@@ -698,6 +698,152 @@ script:
     description: Cisco Email Security release quarantine messages
     execution: false
     name: cisco-email-security-spam-quarantine-messages-release
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Llist type
+      isArray: false
+      name: list_type
+      predefined:
+      - safelist
+      - blocklist
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Specify the number of records to retrieve.
+        If you use a limit you should also use a offset.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Specify an offset value to retrieve a subset of records starting with the offset value.
+        If you use a offset you should also use a limit.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: View by sender or recipient.
+      isArray: false
+      name: view_by
+      predefined:
+      - sender
+      - recipient
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Order by sender or recipient.
+      isArray: false
+      name: order_by
+      predefined:
+      - sender
+      - recipient
+      required: false
+      secret: false
+    deprecated: false
+    description: Cisco email security get list entries
+    execution: false
+    name: cisco-email-security-list-entries-get
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: List type
+      isArray: false
+      name: list_type
+      predefined:
+      - safelist/blocklist
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Select the action to do on the list.
+      isArray: false
+      name: action
+      predefined:
+      - add/edit/append
+      required: true
+      secret: false
+    - default: false
+      description: Recipient addresses list to do the action on. (list with comma
+        separated)
+      isArray: true
+      name: recipient_addresses
+      required: false
+      secret: false
+    - default: false
+      description: Recipient list to do the action on. (list with comma separated)
+      isArray: true
+      name: recipient_list
+      required: false
+      secret: false
+    - default: false
+      description: Sender addresses list to do the action on. (list with comma separated)
+      isArray: true
+      name: sender_addresses
+      required: false
+      secret: false
+    - default: false
+      description: Sender list to do the action on. (list with comma separated)
+      isArray: true
+      name: sender_list
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: View by sender or recipient.
+      isArray: false
+      name: view_by
+      predefined:
+      - sender
+      - recipient
+      required: true
+      secret: false
+    deprecated: false
+    description: Cisco email security - add, edit, and append list entry
+    execution: false
+    name: cisco-email-security-list-entry-add
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: List type
+      isArray: false
+      name: list_type
+      predefined:
+      - safelist
+      - blocklist
+      required: true
+      secret: false
+    - default: false
+      description: Recipient list to do the delete. (list with comma separated)
+      isArray: false
+      name: recipient_list
+      required: false
+      secret: false
+    - default: false
+      description: Sender list to do the delete. (list with comma separated)
+      isArray: false
+      name: sender_list
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: View by sender or recipient.
+      isArray: false
+      name: view_by
+      predefined:
+      - sender
+      - recipient
+      required: true
+      secret: false
+    deprecated: false
+    description: Cisco email security delete list entry
+    execution: false
+    name: cisco-email-security-list-entry-delete
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
