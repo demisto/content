@@ -2,8 +2,8 @@ import re
 import sys
 
 from Tests.scripts.spell_checker import spell_checker
-from demisto_sdk.commands.common.tools import run_command, checked_type
-from demisto_sdk.commands.common.constants import SPELLCHECK_FILE_TYPES, DESCRIPTION_REGEX
+from demisto_sdk.commands.common.tools import run_command, find_type
+from demisto_sdk.commands.common.constants import DESCRIPTION_REGEX, FileType
 
 
 def get_modified_files(files_string):
@@ -32,7 +32,8 @@ def get_modified_files(files_string):
             file_path = file_data[2]
 
         if file_status.lower() == 'm' or file_status.lower() == 'a' or file_status.lower().startswith('r'):
-            if checked_type(file_path, SPELLCHECK_FILE_TYPES):
+            if find_type(file_path) in [FileType.INTEGRATION, FileType.BETA_INTEGRATION, FileType.SCRIPT,
+                                        FileType.PLAYBOOK]:
                 yml_files.add(file_path)
             elif re.match(DESCRIPTION_REGEX, file_path, re.IGNORECASE):
                 md_files.add(file_path)
