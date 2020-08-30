@@ -379,7 +379,7 @@ def upload_id_set(storage_bucket, id_set_local_path=None):
     print_color("Finished uploading id_set.json to storage.", LOG_COLORS.GREEN)
 
 
-def get_private_packs(private_index_path):
+def get_private_packs(private_index_path, pack_names, is_private_build, extract_destination_path):
     """ Get the list of ID and price of the private packs.
 
     Args:
@@ -402,10 +402,15 @@ def get_private_packs(private_index_path):
         try:
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
+            pack_id = metadata.get('id')
+            is_changed_private_pack = is_private_build and pack_id in pack_names
+            if is_changed_private_pack:  # Should take metadata from artifacts.
+                with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"), "r") as metadata_file:
+                    metadata = json.load(metadata_file)
             if metadata:
                 print_error(f"private pack {metadata.get('id')} metadata is: {metadata}")
                 private_packs.append({
-                    'id': metadata.get('id'),
+                    'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName')
@@ -429,7 +434,8 @@ def add_private_packs_to_index(index_folder_path, private_index_path):
             update_index_folder(index_folder_path, d.name, d.path)
 
 
-def update_index_with_priced_packs(private_storage_bucket, extract_destination_path, index_folder_path):
+def update_index_with_priced_packs(private_storage_bucket, extract_destination_path, index_folder_path, pack_names,
+                                   is_private_build):
     """ Updates index with priced packs and returns list of priced packs data.
 
     Args:
@@ -449,7 +455,7 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
                                                                             os.path.join(extract_destination_path, 'private'))
         print_error(f"ls: {subprocess.check_output('ls')}")
 
-        private_packs = get_private_packs(private_index_path)
+        private_packs = get_private_packs(private_index_path, pack_names, is_private_build, extract_destination_path)
         add_private_packs_to_index(index_folder_path, private_index_path)
         print("Finished updating index with priced packs")
     except Exception as e:
@@ -852,7 +858,9 @@ def main():
     if private_bucket_name:  # Add private packs to the index
         private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
                                                                                                extract_destination_path,
-                                                                                               index_folder_path)
+                                                                                               index_folder_path,
+                                                                                               pack_names,
+                                                                                               is_private_build)
         print_error(f"private packs are: {private_packs}")
     else:  # skipping private packs
         print("Skipping index update of priced packs")
