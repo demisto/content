@@ -33,7 +33,12 @@ parameters:
   contrib_pack_name:
     type: string
     default: ""
-
+  force_pack_upload:
+    type: string
+    default: ""
+  packs_to_upload:
+    type: string
+    default: ""
 
 references:
   environment: &environment
@@ -54,6 +59,8 @@ references:
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
       DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
+      FORCE_PACK_UPLOAD_PARAMETER: << pipeline.parameters.force_pack_upload >>
+      PACKS_TO_UPLOAD_PARAMETER: << pipeline.parameters.packs_to_upload >>
 
   container_config: &container_config
     docker:
@@ -103,6 +110,15 @@ references:
         then
             echo "export TIME_TO_LIVE=$TIME_TO_LIVE_PARAMETER" >> $BASH_ENV
         fi
+        if [ -n "${FORCE_PACK_UPLOAD_PARAMETER}" ];
+        then
+            echo "export FORCE_PACK_UPLOAD=$FORCE_PACK_UPLOAD_PARAMETER" >> $BASH_ENV
+        fi
+        if [ -n "${PACKS_TO_UPLOAD_PARAMETER}" ];
+        then
+            echo "export PACKS_TO_UPLOAD=$PACKS_TO_UPLOAD_PARAMETER" >> $BASH_ENV
+        fi
+
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
         sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
@@ -129,7 +145,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH="
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD="
         python --version
         python3 --version
         demisto-sdk --version
@@ -878,6 +894,40 @@ jobs:
                 when: always
             - *destroy_instances
             - *store_artifacts
+  Force Pack Upload:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - run:
+          name: Check User Permissions to Force Upload Pack
+          command: |
+            CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
+            LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
+            if [[ -z "${CIRCLE_USERNAME}" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
+                echo -e "User '${CIRCLE_USERNAME}' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
+                exit 1
+            else
+                echo "User '${CIRCLE_USERNAME}' is allowed to force pack uploads."
+            fi
+
+      - run:
+          name: Upload Packs To Marketplace Storage
+          command: |
+            EXTRACT_FOLDER=$(mktemp -d)
+            PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+            PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+            ID_SET=$CIRCLE_ARTIFACTS/id_set.json
+            GCS_PATH=$(mktemp)
+            echo $GCS_MARKET_KEY > $GCS_PATH
+            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o
+            rm $GCS_PATH
+          when: on_success
+      - *destroy_instances
+      - *store_artifacts
 
   Instance Test:
     <<: *container_config
@@ -947,6 +997,7 @@ jobs:
 workflows:
   version: 2
   commit:
+    unless: << pipeline.parameters.force_pack_upload >>
     jobs:
       - Setup Environment
       - Create Instances:
@@ -990,6 +1041,26 @@ workflows:
           requires:
             - Create Instances
       - Instance Test:
+          requires:
+            - Create Instances
+
+  force_pack_upload:
+    when: << pipeline.parameters.force_pack_upload >>
+    jobs:
+      - Setup Environment
+      - Run Validations:
+          requires:
+            - Setup Environment
+      - Create Instances:
+          filters:
+            branches:
+              only:
+                - master
+      - Force Pack Upload:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - Create Instances
 
