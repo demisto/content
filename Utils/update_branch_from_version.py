@@ -21,9 +21,7 @@ PLAYBOOK_FOLDERS = ['Playbooks', 'TestPlaybooks']
 
 SCRIPT_FOLDERS = ['Scripts', 'Integrations']
 
-ALL_DIRS = JSON_FOLDERS.copy()
-ALL_DIRS = ALL_DIRS + PLAYBOOK_FOLDERS.copy()
-ALL_DIRS = ALL_DIRS + SCRIPT_FOLDERS.copy()
+ALL_NON_TEST_DIRS = JSON_FOLDERS.copy() + SCRIPT_FOLDERS.copy() + ['Playbooks']
 
 
 def should_keep_yml_file(yml_content, new_from_version):
@@ -201,7 +199,7 @@ def edit_playbooks_directory(new_from_version, dir_path):
 
 def check_clear_pack(pack_path):
     dirs_in_pack = os.listdir(pack_path)
-    check = [True for entity in ALL_DIRS if entity in dirs_in_pack]
+    check = [True for entity in ALL_NON_TEST_DIRS if entity in dirs_in_pack]
     if len(check) == 0:
         click.secho(f"Deleting empty pack {pack_path}\n")
         shutil.rmtree(pack_path)
@@ -222,8 +220,12 @@ def edit_pack(new_from_version, pack_name):
             edit_json_content_entity_directory(new_from_version, dir_path)
 
     # clearing empty pack folders
-    subprocess.call(["find", pack_path, "-type", "d", "-empty", "-delete"])
-    check_clear_pack(pack_path)
+    click.secho("Checking for empty dirs")
+    found_dirs = subprocess.check_output(["find", pack_path, "-type", "d", "-empty"])
+    if found_dirs:
+        click.secho(f"Found empty dirs: {found_dirs}")
+        subprocess.call(["find", pack_path, "-type", "d", "-empty", "-delete"])
+        check_clear_pack(pack_path)
 
     click.secho(f"Finished process for {pack_path}\n")
 
@@ -244,9 +246,6 @@ def main():
 
     click.secho("Starting Branch Editing")
     edit_all_packs(new_from_version)
-
-    click.secho("Deleting empty directories\n")
-    subprocess.call(["find", "Packs", "-type", "d", "-empty", "-delete"])
 
     click.secho("Finished updating branch", fg="green")
 
