@@ -44,3 +44,21 @@ def test_set_and_handle_empty_without_value(value, mocker):
     output = mocker.patch('SetAndHandleEmpty.return_outputs')
     set_and_handle_empty()
     assert output.call_args.args[1].get('test') is None
+
+
+data_test_set_and_handle_empty_append_arg = [
+    ('true', {'key': 'test', 'value': 'test'}, False),
+    (None, {'key': 'test', 'value': 'test'}, False),
+    ('false', {'key': 'test', 'value': 'test'}, True),
+    ('false', {'key': 'test', 'value': ''}, False),
+    ('false', {'key': 'test', 'value': None}, False)
+]
+
+
+@pytest.mark.parametrize('append, args, expected_delete', data_test_set_and_handle_empty_append_arg)
+def test_set_and_handle_empty_append_arg(append, args, expected_delete, mocker):
+    args.update({'append': append})
+    mocker.patch.object(SetAndHandleEmpty.demisto, 'args', return_value=args)
+    output = mocker.patch.object(SetAndHandleEmpty.demisto, 'executeCommand')
+    set_and_handle_empty()
+    assert bool(output.call_args) == bool(expected_delete)

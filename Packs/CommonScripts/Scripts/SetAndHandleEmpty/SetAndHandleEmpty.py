@@ -5,19 +5,23 @@ from CommonServerPython import *
 def main():
     args = demisto.args()
     value = args.get('value')
+    key = args.get('key')
     context_entry = {}
     if value:
-        human_readable = 'Key ' + args.get('key') + ' set'
+        human_readable = f'Key {key} set'
         stringify = args.get('stringify') == 'true'
         if not stringify:
             try:
-                context_entry = {args.get('key'): json.loads(value)}
+                context_entry = {key: json.loads(value)}
             except json.decoder.JSONDecodeError:
                 stringify = True
         if stringify:
-            context_entry = {args.get('key'): value}
+            context_entry = {key: value}
     else:
         human_readable = 'value is None'
+    if args.get('append') == 'false' and context_entry:
+        demisto.executeCommand('DeleteContext', {'key': key})
+
     return_outputs(human_readable, context_entry)
 
 
