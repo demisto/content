@@ -4058,6 +4058,10 @@ script:
     - contextPath: Panorama.Vulnerability.Rule.Vendor-id
       description: The vendor ID.
       type: String
+  - deprecated: false
+    description: Show WildFire best practices.
+    execution: false
+    name: panorama-get-wildfire-best-practice
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false

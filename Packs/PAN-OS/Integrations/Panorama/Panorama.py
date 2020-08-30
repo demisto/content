@@ -5486,40 +5486,127 @@ def get_security_profiles_command():
     """
     Get information about profiles.
     """
-    content = []
-    rules_content = []
     security_profile = demisto.args().get('security_profile')
     if security_profile:
         xpath = f'{XPATH_RULEBASE}profiles/{security_profile}'
     else:
         xpath = f'{XPATH_RULEBASE}profiles'
+
     result = get_security_profile(xpath)
+    if security_profile:
+        security_profiles = result.get('response', {}).get('result', {})
+    else:
+        security_profiles = result.get('response', {}).get('result', {}).get('profiles', {})
 
-    security_profiles = result['response']['result']['profiles']
+    if '@dirtyId' in security_profiles:
+        LOG(f'Found uncommitted item:\n{security_profiles}')
+        raise Exception('Please commit the instance prior to getting the security profiles.')
+    human_readable = ''
+    content = []
+    context = {}
     if 'spyware' in security_profiles:
-        rules = security_profiles.get('spyware').get('entry', {}).get('rules', {}).get('entry', {})
-        for rule in rules:
-            rules_content.append({
-                'Name': rule.get('@name'),
-                'Action': rule.get('action'),
-                'Severity': rule.get('severity'),
-                'Threat-name': rule.get('threat-name'),
-                'Category': rule.get('category'),
-                'Packet-capture': rule.get('packet-capture')
-            })
-        content.append({
-            'Name': security_profiles.get('spyware').get('entry').get('@name'),
-            'Rules': rules_content,
-            'Description': security_profiles.get('spyware').get('entry').get('description')
-        })
+        profiles = security_profiles.get('spyware').get('entry', {})
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('rules', {}).get('entry', [])
+                spyware_rules = prettify_profiles_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': spyware_rules
+                })
+        else:
+            rules = profiles.get('rules', {}).get('entry', [])
+            spyware_rules = prettify_profiles_rules(rules)
+            content = {
+                'Name': profiles['@name'],
+                'Rules': spyware_rules
+            }
 
-        human_readable = tableToMarkdown('Anti-spyware Profiles:', content, ['Name', 'Description', 'Rules'], removeNull=True)
-    # for profile in security_profiles:
-    #     content.append({
-    #         'Profile': profile,
-    #         'Name': security_profiles.get(profile).get('entry').get('@name'),
-    #         'Rules': security_profiles.get(profile).get('entry').get('rules').get('entry')
-    #     })
+        human_readable = tableToMarkdown('Anti Spyware Profiles', content)
+
+    if 'virus' in security_profiles:
+        profiles = security_profiles.get('virus').get('entry', [])
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('decoder', {}).get('entry', [])
+                antivirus_rules = prettify_profiles_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Decoder': antivirus_rules
+                })
+        else:
+            rules = profiles.get('decoder', {}).get('entry', [])
+            antivirus_rules = prettify_profiles_rules(rules)
+            content = {
+                'Name': profiles['@name'],
+                'Rules': antivirus_rules
+            }
+
+        human_readable += tableToMarkdown('Antivirus Profiles', content)
+
+    if 'file-blocking' in security_profiles:
+        profiles = security_profiles.get('file-blocking').get('entry', {})
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('rules', {}).get('entry', [])
+                file_blocking_rules = prettify_profiles_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': file_blocking_rules
+                })
+        else:
+            rules = profiles.get('rules', {}).get('entry', [])
+            file_blocking_rules = prettify_profiles_rules(rules)
+            content = {
+                'Name': profiles['@name'],
+                'Rules': file_blocking_rules
+            }
+
+        human_readable += tableToMarkdown('File Blocking Profiles', content)
+
+    if 'vulnerability' in security_profiles:
+        profiles = security_profiles.get('vulnerability').get('entry', {})
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('rules', {}).get('entry', [])
+                vulnerability_rules = prettify_profiles_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': vulnerability_rules
+                })
+        else:
+            rules = profiles.get('rules', {}).get('entry', [])
+            vulnerability_rules = prettify_profiles_rules(rules)
+            content = {
+                'Name': profiles['@name'],
+                'Rules': vulnerability_rules
+            }
+
+        human_readable += tableToMarkdown('vulnerability Protection Profiles', content)
+
+    if 'data-filtering' in security_profiles:
+        profiles = security_profiles.get('data-filtering').get('entry', {})
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('rules', {}).get('entry', [])
+                data_filtering_rules = prettify_profiles_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': data_filtering_rules
+                })
+        else:
+            rules = profiles.get('rules', {}).get('entry', [])
+            data_filtering_rules = prettify_profiles_rules(rules)
+            content = {
+                'Name': profiles['@name'],
+                'Rules': data_filtering_rules
+            }
+
+        human_readable += tableToMarkdown('Data Filtering Profiles', content)
+
+    if human_readable == '':
+        human_readable = 'Could not find security profiles'
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -5655,6 +5742,8 @@ def prettify_profile_rule(rule):
         pretty_rule['CVE'] = rule['cve']['member']
     if 'vendor-id' in rule and 'member' in rule['vendor-id']:
         pretty_rule['Vendor-id'] = rule['vendor-id']['member']
+    if 'analysis' in rule:
+        pretty_rule['Analysis'] = rule['analysis']
 
     return pretty_rule
 
@@ -5824,6 +5913,39 @@ def get_vulnerability_protection_best_practice_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': strict_profile,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            "Panorama.Vulnerability.Rule(val.Name == obj.Name)": rules,
+        }
+    })
+
+
+def get_wildfire_best_practice():
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': '/config/predefined/profiles/wildfire-analysis',
+        'key': API_KEY
+    }
+
+    result = http_request(URL, 'GET', params=params)
+
+    return result
+
+
+def get_wildfire_best_practice_command():
+
+    result = get_wildfire_best_practice()
+    wildfire_profile = result.get('response', {}).get('result', {}).get('wildfire-analysis', {})
+    best_practice = wildfire_profile.get('entry', {}).get('rules', {}).get('entry', {})
+
+    rules = prettify_profiles_rules(best_practice)
+    human_readable = tableToMarkdown('WildFire Best Practice Profile', rules, removeNull=True)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': wildfire_profile,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
         'EntryContext': {
@@ -6230,8 +6352,8 @@ def main():
         elif demisto.command() == 'panorama-get-licences':
             panorama_get_licence_command()
 
-        # elif demisto.command() == 'panorama-get-security-profiles':
-        #     get_security_profiles_command()
+        elif demisto.command() == 'panorama-get-security-profiles':
+            get_security_profiles_command()
 
         elif demisto.command() == 'panorama-apply-security-profile':
             apply_security_profile_command()
@@ -6242,6 +6364,9 @@ def main():
         elif demisto.command() == 'panorama-get-wildfire-configuration':
             get_wildfire_system_config_command()
             get_wildfire_update_schedule_command()
+
+        elif demisto.command() == 'panorama-get-wildfire-best-practice':
+            get_wildfire_best_practice_command()
 
         elif demisto.command() == 'panorama-url-filtering-block-default-categories':
             url_filtering_block_default_categories_command()
