@@ -30,6 +30,7 @@ EVENTS_FAILURE_LIMIT = 3
 FETCH_SLEEP = 60
 BATCH_SIZE = 100
 BATCH_LIMIT = BATCH_SIZE * 10
+LOCK_WAIT_TIME = 0.5
 
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
@@ -220,6 +221,7 @@ class QRadarClient:
                 data=data,
                 auth=auth,
             )
+            res.raise_for_status()
         except HTTPError:
             if res is not None:
                 try:
@@ -602,7 +604,7 @@ def print_debug_msg(msg, lock: Lock = None):
     """
     err_msg = f"QRadarMsg - {msg}"
     if lock:
-        if lock.acquire(timeout=0.5):
+        if lock.acquire(timeout=LOCK_WAIT_TIME):
             demisto.debug(err_msg)
             lock.release()
     else:
@@ -702,6 +704,9 @@ def perform_offense_events_enrichment(
                 enrich offense with event
         return offense
     """
+    if is_reset_triggered(client.lock):
+        return offense
+
     offense_start_time = offense["start_time"]
     query_expression = (
         f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense["id"]})'
@@ -713,7 +718,7 @@ def perform_offense_events_enrichment(
     )
     try:
         query_status, search_id = try_create_search_with_retry(client, events_query, offense)
-        offense['events'] = try_get_offense_events_with_retry(client, offense["id"], query_status, search_id)
+        offense['events'] = try_poll_offense_events_with_retry(client, offense["id"], query_status, search_id)
     except Exception as e:
         print_debug_msg(
             f'(5) Failed fetching event for offense {offense["id"]}: {str(e)}.',
@@ -723,7 +728,7 @@ def perform_offense_events_enrichment(
         return offense
 
 
-def try_get_offense_events_with_retry(client, offense_id, query_status, search_id, max_retries=None):
+def try_poll_offense_events_with_retry(client, offense_id, query_status, search_id, max_retries=None):
     """
     Polls search until the search is done (completed/canceled/error), and then returns the search result
     will retry up to max_retries consecutive failures
@@ -734,6 +739,9 @@ def try_get_offense_events_with_retry(client, offense_id, query_status, search_i
     failures = 0
     while not (query_status in TERMINATING_SEARCH_STATUSES or failures >= max_retries):
         try:
+            if is_reset_triggered(client.lock):
+                return []
+
             raw_search = client.get_search(search_id)
             query_status = raw_search.get('status')
             # failures are relevant only when consecutive
@@ -744,9 +752,9 @@ def try_get_offense_events_with_retry(client, offense_id, query_status, search_i
                 return raw_search_results.get("events", [])
             else:
                 # prepare next run
-                i = i % FETCH_SLEEP + EVENTS_INTERVAL_SECS
+                i = i % 60 + EVENTS_INTERVAL_SECS
                 if (
-                        i >= FETCH_SLEEP
+                        i >= 60
                 ):  # print status debug every fetch sleep (or after)
                     print_debug_msg(
                         f'(2) Still fetching offense {offense_id} events, search_id: {search_id}.',
@@ -858,6 +866,22 @@ def fetch_incidents_long_running_samples():
     return last_run.get("samples", [])  # type: ignore [attr-defined]
 
 
+def is_reset_triggered(lock, handle_reset=False):
+    """
+    Returns if reset signal is set. If handle_reset=True, will also reset the integration context
+    """
+    if lock.acquire(timeout=LOCK_WAIT_TIME):
+        ctx = get_integration_context(SYNC_CONTEXT)
+        if RESET_KEY in ctx:
+            if handle_reset:
+                print_debug_msg('(16) Reset fetch-incidents.')
+                set_integration_context({"samples": ctx.get("samples", [])}, sync=SYNC_CONTEXT)
+            lock.release()
+            return True
+        lock.release()
+    return False
+
+
 def fetch_incidents_long_running_events(
     client: QRadarClient, user_query, full_enrich, fetch_mode, events_columns, events_limit
 ):
@@ -891,6 +915,10 @@ def fetch_incidents_long_running_events(
             enriched_offenses.append(future.result())
         executor._threads.clear()
     concurrent.futures.thread._threads_queues.clear()
+
+    if is_reset_triggered(client.lock, handle_reset=True):
+        return
+
     enriched_offenses.sort(key=lambda offense: offense.get("id", 0))
     new_incidents_samples = try_create_incidents(enriched_offenses)
     incidents_batch_for_sample = (
@@ -898,7 +926,7 @@ def fetch_incidents_long_running_events(
     )
 
     context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
-    set_integration_context(context, SYNC_CONTEXT)
+    set_integration_context(context, sync=SYNC_CONTEXT)
 
 
 def try_create_incidents(enriched_offenses):
@@ -928,13 +956,16 @@ def fetch_incidents_long_running_no_events(
         offense_id = max(offense_id, offense["id"])
         incidents_batch.append(create_incident_from_offense(offense))
 
+    # handle reset signal
+    if is_reset_triggered(client.lock, handle_reset=True):
+        return
     demisto.createIncidents(incidents_batch)
     incidents_batch_for_sample = (
         incidents_batch if incidents_batch else last_run.get("samples", [])
     )
 
     context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
-    set_integration_context(context, SYNC_CONTEXT)
+    set_integration_context(context, sync=SYNC_CONTEXT)
 
 
 def create_incident_from_offense(offense):
@@ -1056,7 +1087,7 @@ def enrich_offense_res_with_source_and_destination_address(
 
 def extract_source_and_destination_addresses_ids(response):
     """
-    helper function: Extracts all source and destination addresses ids from an offense result 
+    helper function: Extracts all source and destination addresses ids from an offense result
     """
     src_ids = {}  # type: dict
     dst_ids = {}  # type: dict
@@ -1450,12 +1481,12 @@ def create_note_command(
     )
 
 
-def get_reference_by_name_command(client: QRadarClient, ref_name=None):
+def get_reference_by_name_command(client: QRadarClient, ref_name=None, date_value=None):
     raw_ref = client.get_ref_set(ref_name)
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
     convert_date_elements = (
         True
-        if demisto.args().get("date_value") == "True" and ref["ElementType"] == "DATE"
+        if date_value == "True" and ref["ElementType"] == "DATE"
         else False
     )
     enrich_reference_set_result(ref, convert_date_elements)
@@ -1622,50 +1653,37 @@ def upload_indicators_command(
         page = int(page)
         if not check_ref_set_exist(client, ref_name):
             if element_type:
-                client.create_reference_set(
-                    ref_name, element_type, timeout_type, time_to_live
-                )
+                client.create_reference_set(ref_name, element_type, timeout_type, time_to_live)
             else:
-                return_error(
-                    "There isn't a reference set with the name {0}. To create one,"
-                    " please enter an element type".format(ref_name)
-                )
+                return_error("There isn't a reference set with the name {0}. To create one,"
+                             " please enter an element type".format(ref_name))
         else:
             if element_type or time_to_live or timeout_type:
-                return_error(
-                    "The reference set {0} is already exist. Element type, time to live or timeout type "
-                    "cannot be modified".format(ref_name)
-                )
-        indicators_values_list, indicators_data_list = get_indicators_list(
-            query, limit, page
-        )
+                return_error("The reference set {0} is already exist. Element type, time to live or timeout type "
+                             "cannot be modified".format(ref_name))
+        indicators_values_list, indicators_data_list = get_indicators_list(query, limit, page)
         if len(indicators_values_list) == 0:
-            return f"No indicators found, Reference set {ref_name} didn't change"
+            return "No indicators found, Reference set {0} didn't change".format(ref_name), {}, {}
         else:
-            client.upload_indicators_list_request(ref_name, indicators_values_list)
+            raw_response = client.upload_indicators_list_request(ref_name, indicators_values_list)
             ref_set_data = client.get_ref_set(ref_name)
             ref = replace_keys(ref_set_data, REFERENCE_NAMES_MAP)
             enrich_reference_set_result(ref)
-            indicator_headers = ["Value", "Type"]
-            ref_set_headers = [
-                "Name",
-                "ElementType",
-                "TimeoutType",
-                "CreationTime",
-                "NumberOfElements",
-            ]
-            hr = tableToMarkdown(
-                "reference set {0} was updated".format(ref_name),
-                ref,
-                headers=ref_set_headers,
-            ) + tableToMarkdown(
-                "Indicators list", indicators_data_list, headers=indicator_headers
-            )
-            return hr
+            indicator_headers = ['Value', 'Type']
+            ref_set_headers = ['Name', 'ElementType', 'TimeoutType', 'CreationTime', 'NumberOfElements']
+            hr = tableToMarkdown("reference set {0} was updated".format(ref_name), ref,
+                                 headers=ref_set_headers) + tableToMarkdown("Indicators list", indicators_data_list,
+                                                                            headers=indicator_headers)
+            return {
+                "Type": entryTypes["note"],
+                "HumanReadable": hr,
+                "ContentsFormat": formats["json"],
+                "Contents": raw_response,
+            }
 
     # Gets an error if the user tried to add indicators that dont match to the reference set type
     except Exception as e:
-        if "1005" in str(e):
+        if '1005' in str(e):
             return "You tried to add indicators that dont match to reference set type"
         raise e
 
@@ -1717,6 +1735,8 @@ def get_indicators_list(indicator_query, limit, page):
 
 def fetch_loop_with_events(client: QRadarClient, user_query, full_enrich, fetch_mode, events_columns, events_limit):
     while True:
+        is_reset_triggered(client.lock, handle_reset=True)
+
         print_debug_msg(f"(14) Starting fetch loop with events.")
         fetch_incidents_long_running_events(client, user_query, full_enrich, fetch_mode, events_columns, events_limit)
         time.sleep(FETCH_SLEEP)
@@ -1724,6 +1744,9 @@ def fetch_loop_with_events(client: QRadarClient, user_query, full_enrich, fetch_
 
 def fetch_loop_no_events(client: QRadarClient, user_query, full_enrich):
     while True:
+        is_reset_triggered(client.lock, handle_reset=True)
+
+        print_debug_msg(f"(14) Starting fetch loop with no events.")
         fetch_incidents_long_running_no_events(client, user_query, full_enrich)
         time.sleep(FETCH_SLEEP)
 
@@ -1734,6 +1757,13 @@ def long_running_main(client: QRadarClient, user_query, full_enrich, fetch_mode,
         fetch_loop_with_events(client, user_query, full_enrich, fetch_mode, events_columns, events_limit)
     elif fetch_mode == FetchMode.no_events:
         fetch_loop_no_events(client, user_query, full_enrich)
+
+
+def reset_fetch_incidents():
+    ctx = get_integration_context(SYNC_CONTEXT)
+    ctx[RESET_KEY] = True
+    set_integration_context(ctx, sync=SYNC_CONTEXT)
+    return "fetch-incidents was reset successfully."
 
 
 def main():
@@ -1771,7 +1801,7 @@ def main():
     command = demisto.command()
     try:
         demisto.debug(f"Command being called is {command}")
-        commands = {
+        normal_commands = {
             "test-module": test_module,
             "qradar-offenses": get_offenses_command,
             "qradar-offense-by-id": get_offense_by_id_command,
@@ -1794,13 +1824,15 @@ def main():
             "qradar-get-domain-by-id": get_domains_by_id_command,
             "qradar-upload-indicators": upload_indicators_command,
         }
-        if command in commands:
+        if command in normal_commands:
             args = demisto.args()
-            demisto.results(commands[command](client, **args))
+            demisto.results(normal_commands[command](client, **args))
         elif command == "fetch-incidents":
             fetch_incidents_long_running_samples()
         elif command == "long-running-execution":
             long_running_main(client, user_query, full_enrich, fetch_mode, events_columns, events_limit)
+        elif command == "qradar-reset-last-run":
+            demisto.results(reset_fetch_incidents())
     except Exception as e:
         message = e.message if hasattr(e, "message") else str(e)
         error = "Error has occurred in the QRadar Integration: {error}\n {message}".format(

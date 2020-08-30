@@ -66,7 +66,7 @@ configuration:
   name: events_limit
   required: false
   type: 0
-- additionalinfo: Comma separated configuration for managing advanved parameters values.
+- additionalinfo: Comma separated configuration for advanced parameters values.
     e.g. EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   display: Advanced Parameters
   name: adv_params
@@ -1600,6 +1600,11 @@ script:
     description: Uploads indicators from Demisto to Qradar.
     execution: false
     name: qradar-upload-indicators
+  - deprecated: false
+    description: Reset fetch incidents last run value, which resets the fetch to its
+      initial fetch state (will try to fetch first available offense).
+    execution: false
+    name: qradar-reset-last-run
   dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: false

@@ -59,6 +59,7 @@
 <li><a href="#h_38204499011231542805639258">Add or update a value in a reference set: qradar-update-reference-set-value</a></li>
 <li><a href="#h_54862502414121542805968008">Delete a value from a reference set: qradar-delete-reference-set-value</a></li>
 <li><a href="#h_43243249324939494949493493">Uploads indicators from Demisto to Qradar: qradar-upload-indicators</a></li>
+<li><a href="#h_63243249324737494949493493">Reset fetch incidents to its initial fetch state (will try to fetch first available offense): qradar-reset-last-run</a></li>
 </ol>
 <h3 id="h_63925473610281540896013759">1. Get offenses</h3>
 <hr>
@@ -1960,3 +1961,65 @@
 </pre>
 <h5>Human Readable Output</h5>
 <p><a href="https://user-images.githubusercontent.com/20818773/49081012-1811f100-f24e-11e8-81e6-af9cdf4f1a5a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/49081012-1811f100-f24e-11e8-81e6-af9cdf4f1a5a.png" alt="image" width="755" height="188"></a></p>
+<h3 id="h_43243249324939494949493493">18. Upload indicators</h3>
+<hr>
+<p>Uploads indicators from Demisto to Qradar.</p>
+<h5>Base Command</h5>
+<p><code>qradar-upload-indicators</code></p>
+<h5>Input</h5>
+<table style="width: 747px;">
+<thead>
+<tr>
+<th style="width: 196px;"><strong>Argument Name</strong></th>
+<th style="width: 471px;"><strong>Description</strong></th>
+<th style="width: 41px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 196px;">ref_name</td>
+<td style="width: 471px;">The name of the reference set to add or update a value in. To create a new reference set, you need to set the element type.
+</td>
+<td style="width: 41px;">Required</td>
+</tr>
+<tr>
+<td style="width: 196px;">query</td>
+<td style="width: 471px;">The query for getting indicators.</td>
+<td style="width: 41px;">Required</td>
+</tr>
+<tr>
+<td style="width: 149px;">element_type</td>
+<td style="width: 528px;">The element type for the values allowed in the reference set. The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address), NUM (numeric), PORT (port number) or DATE.<br> Note that date values need to be represented in milliseconds since the Unix Epoch January 1st 1970.</td>
+<td style="width: 31px;">Required</td>
+</tr>
+<tr>
+<td style="width: 149px;">timeout_type</td>
+<td style="width: 528px;">The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The default value is UNKNOWN.</td>
+<td style="width: 31px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 149px;">time_to_live</td>
+<td style="width: 528px;">The time to live interval, for example: "1 month" or "5 minutes"</td>
+<td style="width: 31px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Context Output</h5>
+<p>There is no context output for this command.</p>
+<h5>Command Example</h5>
+<pre>!qradar-upload-indicators query=type:IP ref_name=readme element_type=ALNIC
+</pre>
+<h3 id="h_43243249324939494949493493">19. Reset fetch incidents</h3>
+<hr>
+<p>Reset fetch incidents to its initial fetch state (will try to fetch first available offense)</p>
+<h5>Base Command</h5>
+<p><code>qradar-upload-indicators</code></p>
+<h5>Input</h5>
+<p>There is no input for this command.</p>
+<p> </p>
+<h5>Context Output</h5>
+<p>There is no context output for this command.</p>
+<h5>Command Example</h5>
+<pre>!qradar-reset-last-run
+</pre>
