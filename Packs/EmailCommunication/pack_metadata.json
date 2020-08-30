@@ -20,9 +20,5 @@
             "mandatory": true,
             "display_name": "Common Types"
         }
-    },
-    "displayedImages": [
-        "Phishing",
-        "CommonTypes"
-    ]
+    }
 }
