@@ -12,7 +12,7 @@ import concurrent.futures
 from threading import Lock
 
 import requests
-from requests.exceptions import HTTPError, ConnectionError
+from requests.exceptions import HTTPError
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -684,7 +684,6 @@ def enrich_offense_with_events(client: QRadarClient, offense, fetch_mode, events
             offense, additional_where, events_columns, events_limit, client,
         )
     except Exception as e:
-        pass
         print_debug_msg(
             f"(0) Failed events fetch for offense {offense['id']}: {str(e)}.",
             client.lock,
