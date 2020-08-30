@@ -472,8 +472,9 @@ def main():
     incident_type = params.get('incidentType', '')
     store_samples = params.get('store_samples', False)
     first_fetch_time, _ = parse_date_range(params.get('fetch_time', '1 hour'))
+    app_id = params.get('app_id') or 'Demisto'
 
-    stream = EventStream(base_url=base_url, app_id='Demisto', verify_ssl=verify_ssl, proxy=proxy)
+    stream = EventStream(base_url=base_url, app_id=app_id, verify_ssl=verify_ssl, proxy=proxy)
 
     LOG(f'Command being called is {demisto.command()}')
     try:
