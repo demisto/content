@@ -46,7 +46,8 @@
         },
         {
             "integrations": "ThreatConnect Feed",
-            "playbookID": "FeedThreatConnect-Test"
+            "playbookID": "FeedThreatConnect-Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Group-IB TDS Polygon",
