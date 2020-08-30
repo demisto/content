@@ -90,7 +90,7 @@ script:
     - contextPath: PrismaAccess.ActiveUsers
       description: Active Users on Prisma Access
     description: Query currently active users.
-  dockerimage: demisto/netmiko:1.0.0.7647
+  dockerimage: demisto/netmiko:1.0.0.10955
   runonce: false
   subtype: python3
 fromversion: 5.5.0
