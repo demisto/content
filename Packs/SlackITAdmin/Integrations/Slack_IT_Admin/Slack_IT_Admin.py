@@ -302,10 +302,14 @@ def get_primary(arr, val):
 
 def test_module(client, args):
     """
-    Attempts to acquire schema from Enterprise Grid to verify authentication
+    Attempts to get a user to verify authentication
     """
-    res = client.http_request('get', 'Users/id')
-    if res.status_code == 200 or res.status_code == 404:
+    uri = '/Users?count=1'
+    res = client.http_request(
+        method='GET',
+        url_suffix=uri
+    )
+    if res.status_code == 200:
         return 'ok', None, None
     else:
         return_error(f'Failed: Error Code: {res.status_code}. Error Response: {res.json()}')
