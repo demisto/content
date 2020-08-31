@@ -2056,7 +2056,9 @@
         },
         {
             "integrations": "DUO Admin",
-            "playbookID": "DuoAdmin API test playbook"
+            "playbookID": "DuoAdmin API test playbook",
+            "fromversion": "5.0.0"
+
         },
         {
             "integrations": [
