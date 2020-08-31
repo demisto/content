@@ -13,7 +13,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-USERNAME = demisto.params().get('client_id')
+CLIENT_ID = demisto.params().get('client_id')
 PASSWORD = demisto.params().get('secret_key')
 SERVER = "https://api.wootuno.wootcloud.com"
 SSL_VERIFY = True
@@ -195,7 +195,7 @@ def main():
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
-        client = Client(SERVER, SSL_VERIFY, API_VERSION, HEADERS, USERNAME, PASSWORD)
+        client = Client(SERVER, SSL_VERIFY, API_VERSION, HEADERS, CLIENT_ID, PASSWORD)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
