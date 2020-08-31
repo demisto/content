@@ -110,10 +110,13 @@ class Client(BaseClient):
         """
         if type == "packet":
             url = 'packetalerts'
+            prefix = 'WootCloud.PacketAlert'
         elif type == "bluetooth":
             url = 'btalerts'
+            prefix = 'WootCloud.BluetoothAlert'
         elif type == "anomaly":
             url = 'anomalies'
+            prefix = 'WootCloud.AnomalyAlert'
         else:
             raise ValueError('Type error: {} is not one of the types'.format(type))
 
@@ -127,7 +130,12 @@ class Client(BaseClient):
             "limit": int(limit) if limit else None,
             "site_id": str(site_id) if site_id else None
         }
-        return self.http_request('POST', 'events/' + url, json=payload)
+        
+        result = self.http_request('POST', 'events/' + url, json=payload)
+        if type == 'packet':
+            return CommandResults(outputs=result['packet_alerts'], outputs_prefix=prefix, outputs_key_field='id')
+        else:
+            return CommandResults(outputs=result['alerts'], outputs_prefix=prefix, outputs_key_field='id')
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -142,21 +150,25 @@ def test_module(client):
         client.http_request('GET', 'wootassets')
         return 'ok'
     except Exception as e:
-        LOG(e)
-        return 'not ok'
+        return 'not ok: {}'.format(e)
 
 
 def fetch_single_alert(client, alert_id, type):
     """ Fetches single packet by ID. """
     if type == "packet":
         url = 'packetalerts'
+        prefix = 'WootCloud.PacketAlert'
     elif type == "bluetooth":
         url = 'btalerts'
+        prefix = 'WootCloud.BluetoothAlert'
     elif type == "anomaly":
         url = 'anomalies'
+        prefix = 'WootCloud.AnomalyAlert'
     else:
-        return_error('Type error: %s is not one of the types' % type)
-    return client.http_request('GET', 'events/%s/%s' % (url, alert_id))
+        raise ValueError('{} is not one of the types'.format(type))
+    
+    result = client.http_request('GET', f'events/{url}/{alert_id}')
+    return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
 
 
 def fetch_incidents(client, alert_type):
@@ -209,9 +221,7 @@ def main():
             alerts = client.get_woot_alerts('packet', starttime, endtime, severity=demisto.args().get('severity'),
                                             skip=demisto.args().get('skip'), limit=demisto.args().get('limit'),
                                             site_id=demisto.args().get('site_id'))
-            return_results(CommandResults(outputs=alerts['packet_alerts'],
-                                          outputs_prefix='WootCloud.PacketAlert',
-                                          outputs_key_field='id'))
+            return_results(alerts)
         elif demisto.command() == 'wootcloud-get-bt-alerts':
             starttime, endtime = parse_date_range(demisto.args().get('date_range'), DATE_FORMAT)
             alerts = client.get_woot_alerts('bluetooth', starttime, endtime,
@@ -219,9 +229,7 @@ def main():
                                             skip=demisto.args().get('skip'),
                                             limit=demisto.args().get('limit'),
                                             site_id=demisto.args().get('site_id'))
-            return_results(CommandResults(outputs=alerts['alerts'],
-                                          outputs_prefix='WootCloud.BluetoothAlert',
-                                          outputs_key_field='id'))
+            return_results(alerts)
         elif demisto.command() == 'wootcloud-get-anomaly-alerts':
             starttime, endtime = parse_date_range(demisto.args().get('date_range'), DATE_FORMAT)
             alerts = client.get_woot_alerts('anomaly', starttime, endtime,
@@ -229,27 +237,20 @@ def main():
                                             skip=demisto.args().get('skip'),
                                             limit=demisto.args().get('limit'),
                                             site_id=demisto.args().get('site_id'))
-            return_results(CommandResults(outputs=alerts['alerts'],
-                                          outputs_prefix='WootCloud.AnomalyAlert',
-                                          outputs_key_field='id'))
+            return_results(alerts)
         elif demisto.command() == 'wootcloud-fetch-packet-alert':
             alert = fetch_single_alert(client, demisto.args().get('alert_id'), 'packet')
-            return_results(CommandResults(outputs=alert, outputs_prefix='WootCloud.PacketAlert',
-                                          outputs_key_field='id'))
+            return_results(alert)
         elif demisto.command() == 'wootcloud-fetch-bt-alert':
             alert = fetch_single_alert(client, demisto.args().get('alert_id'), 'bluetooth')
-            return_results(CommandResults(outputs=alert, outputs_prefix='WootCloud.BluetoothAlert',
-                                          outputs_key_field='id'))
+            return_results(alert)
         elif demisto.command() == 'wootcloud-fetch-anomaly-alert':
             alert = fetch_single_alert(client, demisto.args().get('alert_id'), 'anomaly')
-            return_results(CommandResults(outputs=alert, outputs_prefix='WootCloud.AnomalyAlert',
-                                          outputs_key_field='id'))
+            return_results(alert)
     # Log exceptions
     except Exception as e:
-        LOG(e)
-        LOG.print_log()
-        raise
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
-if __name__ == "builtins":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
