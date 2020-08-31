@@ -1,8 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+<<<<<<< HEAD
 import json
 
+=======
+# import requests
+import json
+import time
+>>>>>>> 37395afe028ef9b378a3ef11830a077c85a4f26a
 
 class Client(BaseClient):
 
@@ -67,6 +73,10 @@ def submit_sample(client: Client, **args):
 
         file_path = demisto.getFilePath(demisto.args().get('data')).get('path')
         with open(file_path, 'rb') as f:
+<<<<<<< HEAD
+=======
+            # TODO: Add in optional file name
+>>>>>>> 37395afe028ef9b378a3ef11830a077c85a4f26a
             files = {
                 'file': f,
                 '_json': (None, '{"kind":"file","interactive":false}')
@@ -89,7 +99,11 @@ def get_sample(client: Client, **args):
     r = client.http_request('GET', f'samples/{sample_id}')
 
     results = CommandResults(
+<<<<<<< HEAD
         outputs_prefix = 'Triage.samples',
+=======
+        outputs_prefix = 'Triage.sample.single',
+>>>>>>> 37395afe028ef9b378a3ef11830a077c85a4f26a
         outputs_key_field = 'data',
         outputs = r
     )
@@ -461,6 +475,7 @@ def get_profile(client: Client, **args):
 
 # Working
 def create_profile(client: Client, **args):
+<<<<<<< HEAD
 
     data = json.dumps({
         "name": args.get('name'),
@@ -468,6 +483,19 @@ def create_profile(client: Client, **args):
         "timeout": int(args.get('timeout', 120)),
         "network": args.get('network'),
         "browser": args.get('browser')
+=======
+    '''
+    TODO
+    - Need to add options argument (e.g. browser: chrome)
+    '''
+
+    data = json.dumps({
+        "name": args.get('name'),
+        "tags": argToList(args.get('tags')), #["foo","bar"],
+        "timeout": int(args.get('timeout', 120)),
+        "network": args.get('network')
+        # "options": argToList(args.get('options'))
+>>>>>>> 37395afe028ef9b378a3ef11830a077c85a4f26a
     })
 
     r = client.http_request('POST', f'profiles', data=data)
