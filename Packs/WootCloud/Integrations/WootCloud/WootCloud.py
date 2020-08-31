@@ -77,33 +77,7 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
-    def __init__(self, server, ssl_verify, api_version, headers, username, password):
-        self.server = server
-        self.ssl_verify = ssl_verify
-        self.api_version = api_version
-        self.headers = headers
-        self.username = username
-        self.password = password
-
-    def http_request(self, method, url_suffix, params=None, json=None):
-        # A wrapper for requests lib to send our requests and handle requests and responses better
-        res = requests.request(
-            method,
-            self.server + self.api_version + url_suffix,
-            verify=self.ssl_verify,
-            params=params,
-            json=json,
-            headers=self.headers,
-            auth=requests.auth.HTTPBasicAuth(self.username, self.password)
-        )
-        # Handle error responses gracefully
-        if res.status_code == 401:
-            raise Exception("API credentials failed to authenticate. Please verify Client ID and API key are correct.")
-        elif res.status_code not in {200}:
-            raise Exception('Error in API call to WootCloud [{}] - {}'.format(res.status_code, res.reason))
-
-        return res.json()
-
+    
     def get_woot_alerts(self, type, start, end, severity=None, skip=None, limit=None, site_id=None):
         """
         Lists/fetches packet, bluetooth, or anomaly alerts generated in requested time span.
@@ -131,7 +105,7 @@ class Client(BaseClient):
             "site_id": str(site_id) if site_id else None
         }
         
-        result = self.http_request('POST', 'events/' + url, json=payload)
+        result = self._http_request('POST', 'events/' + url, json=payload)
         if type == 'packet':
             return CommandResults(outputs=result['packet_alerts'], outputs_prefix=prefix, outputs_key_field='id')
         else:
@@ -147,7 +121,7 @@ def test_module(client):
     """
     # using wootassets to test API
     try:
-        client.http_request('GET', 'wootassets')
+        client._http_request('GET', 'wootassets')
         return 'ok'
     except Exception as e:
         return 'not ok: {}'.format(e)
@@ -167,7 +141,7 @@ def fetch_single_alert(client, alert_id, type):
     else:
         raise ValueError('{} is not one of the types'.format(type))
     
-    result = client.http_request('GET', f'events/{url}/{alert_id}')
+    result = client._http_request('GET', f'events/{url}/{alert_id}')
     return CommandResults(outputs=result, outputs_prefix=prefix, outputs_key_field='id')
 
 
@@ -207,7 +181,7 @@ def main():
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
-        client = Client(SERVER, SSL_VERIFY, API_VERSION, HEADERS, CLIENT_ID, SECRET_KEY)
+        client = Client(SERVER + API_VERSION, verify=SSL_VERIFY, headers=HEADERS, auth=(CLIENT_ID, SECRET_KEY))
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
