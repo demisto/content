@@ -1,50 +1,53 @@
 args:
-  - default: false
-    description: The indicators query.
-    isArray: false
-    name: query
-    required: false
-    secret: false
-  - default: false
-    description: A comma-separated list of fields in the object to ignore.
-    isArray: false
-    name: dontPopulateFields
-    required: false
-    secret: false
-  - default: false
-    defaultValue: '10000'
-    description: The maximum number of indicators to fetch.
-    isArray: false
-    name: limit
-    required: false
-    secret: false
-  - default: false
-    defaultValue: '0'
-    description: The results offset page. Need to be changed only when there are number
-      of the results exceed the limit.
-    isArray: false
-    name: offset
-    required: false
-    secret: false
-  - default: false
-    description: Seed for the hash function
-    isArray: false
-    name: addRandomSeed
-    required: false
-    secret: true
-  - default: false
-    description: A comma-separated list of fields to hash.
-    isArray: false
-    name: fieldsToHash
-    required: false
-    secret: false
-  - default: false
-    defaultValue: id,score,investigationIDs
-    description: A comma-separated list of fields in the object to poplulate.
-    isArray: false
-    name: populateFields
-    required: false
-    secret: false
+- default: false
+  description: The indicators query.
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  description: A comma-separated list of fields in the object to ignore.
+  isArray: false
+  name: dontPopulateFields
+  required: false
+  secret: false
+- default: false
+  defaultValue: '10000'
+  description: The maximum number of indicators to fetch.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0'
+  description: The results offset page. Need to be changed only when there are number
+    of the results exceed the limit.
+  isArray: false
+  name: offset
+  required: false
+  secret: false
+- default: false
+  description: Seed for the hash function.
+  isArray: false
+  name: addRandomSeed
+  required: false
+  secret: true
+- default: false
+  description: A comma-separated list of fields to hash. Support "*" wildcard
+  isArray: false
+  name: fieldsToHash
+  required: false
+  secret: false
+- default: false
+  defaultValue: id,score,investigationIDs
+  description: A comma-separated list of fields in the object to poplulate.
+  isArray: false
+  name: populateFields
+  required: false
+  secret: false
+comment: Gets a list of indicator objects and the associated indicator outputs that
+  match the specified query and filters. The results are returned in a structured
+  data file.
 commonfields:
   id: GetIndicatorsByQuery
   version: -1
@@ -53,6 +56,8 @@ name: GetIndicatorsByQuery
 script: '-'
 subtype: python3
 system: false
+tags:
+- ml
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.8.3.9324
