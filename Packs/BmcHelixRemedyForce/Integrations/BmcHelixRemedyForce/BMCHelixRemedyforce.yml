@@ -1194,7 +1194,7 @@ script:
   subtype: python3
   type: python
 tests:
-- BMCHelixRemedyforce-Test
+- no test - no access, test is in noncircletests folder
 fromversion: 5.0.0
 defaultclassifier: BMCHelixRemedyforce
 defaultmapperin: BMCHelixRemedyforce - mapper
