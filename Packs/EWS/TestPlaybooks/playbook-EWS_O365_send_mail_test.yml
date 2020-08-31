@@ -183,9 +183,9 @@ tasks:
     task:
       id: f17cb84e-1996-4bfb-8471-1144f22ef23d
       version: -1
-      name: ews-send-mail
+      name: send-mail
       description: Send an email
-      script: EWSO365|||ews-send-mail
+      script: EWSO365|||send-mail
       type: regular
       iscommand: true
       brand: EWSO365
