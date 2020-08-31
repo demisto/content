@@ -5,14 +5,7 @@ name: Genians
 display: Genians
 category: Network Security
 description: Use the Genians integration to block IP using assign tag and unassign tag.
-<<<<<<< HEAD
-detaileddescription: |-
-  Generating and obtaining an API Token
-  - You can generate an API Key in the Genian NAC web console.
-  - Go to Management > User > Administrator tab > API Key to generate a key and save it.
-=======
 detaileddescription:
->>>>>>> upstream/master
 configuration:
 - display: Server IP (e.g. 172.29.62.26)
   name: server_ip
@@ -67,11 +60,7 @@ script:
       description: Tag name
       type: string
     description: Removes the tag(s) from the Node specified.
-<<<<<<< HEAD
-  dockerimage: demisto/python3:3.8.5.10455
-=======
   dockerimage: demisto/python3:3.8.5.10845
->>>>>>> upstream/master
   feed: false
   isfetch: false
   longRunning: false
@@ -80,11 +69,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-<<<<<<< HEAD
-tests:
-- Genians Test
-=======
 fromversion: 5.5.0
 tests:
 - No tests- test in NonCircleTests
->>>>>>> upstream/master
