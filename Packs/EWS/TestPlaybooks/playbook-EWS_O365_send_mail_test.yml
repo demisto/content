@@ -1,6 +1,6 @@
-id: EWS_O365_send_mail_test
+id: EWS_O365_send_mail_test1
 version: -1
-name: EWS_O365_send_mail_test
+name: EWS_O365_send_mail_test1
 starttaskid: "0"
 tasks:
   "0":
@@ -193,29 +193,29 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      additional_headers:
+      additionalHeader:
         simple: some_header=header_value
-      attachments_cids: {}
-      attachments_ids:
+      attachCIDs: {}
+      attachIDs:
         simple: ${File.EntryID}
-      attachments_names:
+      attachNames:
         simple: changed_name.txt
       bcc: {}
       body:
         simple: some body
       cc: {}
-      html_body:
+      htmlBody:
         simple: <html><body>Hello <b>World</b></body></html>
       raw_message: {}
       subject:
         simple: ${RandomString}
-      template_params: {}
+      templateParams: {}
       to:
         simple: testbox@demistodev.onmicrosoft.com
-      transient_files:
+      transientFile:
         simple: tansient_file.txt
-      transient_files_cids: {}
-      transient_files_contents:
+      transientFileCID: {}
+      transientFileContent:
         simple: content of file
     separatecontext: false
     view: |-
