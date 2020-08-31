@@ -476,16 +476,21 @@ def list_release_quarantine_messages_command(client, args):
     )
 
 
-def list_entries_get_command(client, args):
+def build_url_filter_for_get_list_entries(args):
     url_suffix = SAFELIST_AND_BLOCKLIST_TO_FILTER_URL[args.get('list_type')]
-
     limit = set_limit(args.get('limit'))
     offset = int(args.get('offset', '0'))
     view_by = args.get('view_by')
+    url_params = f"?action=view&limit={limit}&offset={offset}&quarantineType=spam&viewBy={view_by}"
     order_by = args.get('order_by')
-    url_params = f"?action=view&limit={limit}&offset={offset}&orderBy={order_by}&quarantineType=spam&viewBy={view_by}"
-
+    if order_by:
+        url_params += f"&orderBy={order_by}"
     url_suffix_to_filter_by = url_suffix + url_params
+    return url_suffix_to_filter_by
+
+
+def list_entries_get_command(client, args):
+    url_suffix_to_filter_by = build_url_filter_for_get_list_entries(args)
     list_entries_response = client.list_entries_get(url_suffix_to_filter_by)
     list_entries = list_entries_response.get('data')
     return CommandResults(
@@ -496,7 +501,7 @@ def list_entries_get_command(client, args):
     )
 
 
-def list_entries_add_command(client, args):
+def build_url_and_request_body_for_add_list_entries(args):
     url_suffix = SAFELIST_AND_BLOCKLIST_TO_FILTER_URL[args.get('list_type')]
 
     request_body = {
@@ -504,6 +509,7 @@ def list_entries_add_command(client, args):
         "quarantineType": "spam",
         "viewBy": args.get('view_by')
     }
+
     if args.get('recipient_addresses'):
         request_body["recipientAddresses"] = args.get('recipient_addresses')
     if args.get('recipient_list'):
@@ -512,7 +518,11 @@ def list_entries_add_command(client, args):
         request_body["senderAddresses"] = args.get('sender_addresses')
     if args.get('sender_list'):
         request_body["senderList"] = args.get('sender_list')
+    return url_suffix, request_body
 
+
+def list_entries_add_command(client, args):
+    url_suffix, request_body = build_url_and_request_body_for_add_list_entries(args)
     list_entries_response = client.list_entries_add(url_suffix, request_body)
     list_entries = list_entries_response.get('data')
     return CommandResults(
@@ -523,7 +533,7 @@ def list_entries_add_command(client, args):
     )
 
 
-def list_entries_delete_command(client, args):
+def build_url_and_request_body_for_delete_list_entries(args):
     url_suffix = SAFELIST_AND_BLOCKLIST_TO_FILTER_URL[args.get('list_type')]
 
     request_body = {
@@ -534,12 +544,16 @@ def list_entries_delete_command(client, args):
         request_body["recipientList"] = args.get('recipient_list')
     if args.get('sender_list'):
         request_body["senderList"] = args.get('sender_list')
+    return url_suffix, request_body
 
+
+def list_entries_delete_command(client, args):
+    url_suffix, request_body = build_url_and_request_body_for_delete_list_entries(args)
     list_entries_response = client.list_entries_delete(url_suffix, request_body)
     list_entries = list_entries_response.get('data')
     return CommandResults(
         readable_output=list_entries,
-        outputs_prefix='CiscoEmailSecurity.listEntriesAdd',
+        outputs_prefix='CiscoEmailSecurity.listEntriesDelete',
         outputs_key_field='mid',
         outputs=list_entries
     )
@@ -553,8 +567,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(params)
-
-        return_error("Authorization Ok")
 
         if demisto.command() == 'test-module':
             result = test_module(client)

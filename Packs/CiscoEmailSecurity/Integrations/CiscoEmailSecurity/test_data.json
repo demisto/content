@@ -724,6 +724,98 @@
                                                           },
                                           "mid": 1755
                                 },
-  "quarantine_message_details_human_readable": "### CiscoEmailSecurity QuarantineMessageDetails\n|recipient|to_address|from_address|subject|date|\n|---|---|---|---|---|\n| av_deliver@vm30bsd0004.ibqa | Surya Allena <sallena@cisco.com> | testuser <testuser@cisco.com> | [SUSPICIOUS MESSAGE] [SUSPECTED SPAM] Testing VOF | 16 Nov 2018 13:58 (GMT) |\n"
+  "quarantine_message_details_human_readable": "### CiscoEmailSecurity QuarantineMessageDetails\n|recipient|to_address|from_address|subject|date|\n|---|---|---|---|---|\n| av_deliver@vm30bsd0004.ibqa | Surya Allena <sallena@cisco.com> | testuser <testuser@cisco.com> | [SUSPICIOUS MESSAGE] [SUSPECTED SPAM] Testing VOF | 16 Nov 2018 13:58 (GMT) |\n",
+
+  "quarantine_delete_message_response_data": {
+                                              "data": {
+                                              "action": "delete",
+                                              "totalCount": 1
+                                              }
+  },
+
+  "quarantine_release_message_response_data": {
+    "data": {
+              "action": "release",
+              "totalCount": 1
+    }
+  },
+
+  "get_list_entries_response": {
+    "meta": {
+      "totalCount": 1
+    },
+    "data": [
+      {
+        "senderList": [
+          "space.com",
+          "xyz.com",
+          "abc.com"
+    ],
+         "recipientAddress": "u1@space.com"
+       }
+      ]
+    },
+
+  "get_list_entries_context": [
+  {
+    "senderList": [
+      "space.com",
+      "xyz.com",
+      "abc.com"
+    ],
+    "recipientAddress": "u1@space.com"
+    }
+  ],
+
+  "add_list_entries_response": {
+    "meta": {
+      "totalCount": 1
+    },
+    "data": [
+      {
+        "action": "add",
+        "recipientAddresses": [
+          "user1@acme.com",
+          "user2@acme.com"
+        ],
+        "senderList": [
+          "acme.com"
+        ]
+       }
+      ]
+    },
+
+  "add_list_entries_context": [
+  {
+    "action": "add",
+    "recipientAddresses": [
+        "user1@acme.com",
+        "user2@acme.com"
+    ],
+    "senderList": [
+        "acme.com"
+      ]
+    }
+  ],
+
+  "delete_list_entries_response": {
+    "data": {
+      "action": "delete",
+      "recipientList": [
+        "user@cronos.com",
+        "user3@cosco.com"
+      ],
+      "totalCount": 2
+    }
+  },
+
+  "delete_list_entries_context": {
+    "action": "delete",
+      "recipientList": [
+        "user@cronos.com",
+        "user3@cosco.com"
+      ],
+      "totalCount": 2
+  }
 
 }

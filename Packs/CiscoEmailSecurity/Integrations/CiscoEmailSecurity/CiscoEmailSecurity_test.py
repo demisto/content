@@ -138,3 +138,93 @@ def test_quarantine_message_details_data_to_human_readable():
     from CiscoEmailSecurity import quarantine_message_details_data_to_human_readable
     res = quarantine_message_details_data_to_human_readable(test_data['quarantine_message_details_context'])
     assert res == test_data['quarantine_message_details_human_readable']
+
+
+def test_list_delete_quarantine_messages_command(requests_mock):
+    from CiscoEmailSecurity import list_delete_quarantine_messages_command
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages",
+                       json=test_data['quarantine_delete_message_response_data'])
+
+    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+                     "insecure": False, "proxy": False})
+    res = list_delete_quarantine_messages_command(client, {"messages_ids": "1234"})
+    assert res.readable_output == test_data['quarantine_delete_message_response_data']
+    assert res.outputs_prefix == 'CiscoEmailSecurity.QuarantineDeleteMessages'
+
+
+def test_list_release_quarantine_messages_command(requests_mock):
+    from CiscoEmailSecurity import list_release_quarantine_messages_command
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages",
+                       json=test_data['quarantine_release_message_response_data'])
+
+    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+                     "insecure": False, "proxy": False})
+    res = list_release_quarantine_messages_command(client, {"messages_ids": "1234"})
+    assert res.readable_output == test_data['quarantine_release_message_response_data']
+    assert res.outputs_prefix == 'CiscoEmailSecurity.QuarantineDeleteMessages'
+
+
+def test_build_url_filter_for_get_list_entries():
+    from CiscoEmailSecurity import build_url_filter_for_get_list_entries
+    res = build_url_filter_for_get_list_entries({"list_type": "safelist", "view_by": "bla"})
+    assert res == "/sma/api/v2.0/quarantine/safelist?action=view&limit=50&offset=0&quarantineType=spam&viewBy=bla"
+
+
+def test_list_entries_get_command(requests_mock):
+    from CiscoEmailSecurity import list_entries_get_command
+    requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/quarantine/safelist",
+                      json=test_data['get_list_entries_response'])
+
+    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+                     "insecure": False, "proxy": False})
+    res = list_entries_get_command(client, {"list_type": "safelist", "limit": "25", "order_by": "recipient", "view_by": "recipient"})
+    assert res.outputs == test_data['get_list_entries_context']
+    assert res.outputs_prefix == 'CiscoEmailSecurity.ListEntriesGet'
+
+
+def test_build_url_and_request_body_for_add_list_entries():
+    from CiscoEmailSecurity import build_url_and_request_body_for_add_list_entries
+    res_url, res_request_body = build_url_and_request_body_for_add_list_entries({"list_type": "safelist",
+                                                                                 "action": "add", "recipient_addresses":
+                                                                                ["user1@acme.com", "user2@acme.com"],
+                                                                                "sender_list": ["acme.com"],
+                                                                                 "view_by": "recipient"})
+    assert res_url == "/sma/api/v2.0/quarantine/safelist"
+    assert res_request_body == {"action": "add", "quarantineType": "spam", "viewBy": "recipient",
+                                "recipientAddresses": ["user1@acme.com", "user2@acme.com"], "senderList": ["acme.com"]}
+
+
+def test_list_entries_add_command(requests_mock):
+    from CiscoEmailSecurity import list_entries_add_command
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/quarantine/safelist",
+                       json=test_data['add_list_entries_response'])
+
+    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+                     "insecure": False, "proxy": False})
+    res = list_entries_add_command(client, {"list_type": "safelist", "action": "add", "limit": "25",
+                                            "recipient_addresses": ["user1@acme.com", "user2@acme.com"],
+                                            "sender_list": ["acme.com"], "view_by": "recipient"})
+    assert res.outputs == test_data['add_list_entries_context']
+    assert res.outputs_prefix == 'CiscoEmailSecurity.listEntriesAdd'
+
+
+def test_build_url_and_request_body_for_delete_list_entries():
+    from CiscoEmailSecurity import build_url_and_request_body_for_delete_list_entries
+    res_url, res_request_body = build_url_and_request_body_for_delete_list_entries({"list_type": "safelist",
+                                                                                    "sender_list": ["acme.com"],
+                                                                                    "view_by": "recipient"})
+    assert res_url == "/sma/api/v2.0/quarantine/safelist"
+    assert res_request_body == {"quarantineType": "spam", "viewBy": "recipient", "senderList": ["acme.com"]}
+
+
+def test_list_entries_delete_command(requests_mock):
+    from CiscoEmailSecurity import list_entries_delete_command
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/quarantine/safelist",
+                       json=test_data['delete_list_entries_response'])
+
+    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+                     "insecure": False, "proxy": False})
+    res = list_entries_delete_command(client, {"list_type": "safelist", "sender_list": ["acme.com"],
+                                               "view_by": "recipient"})
+    assert res.outputs == test_data['delete_list_entries_context']
+    assert res.outputs_prefix == 'CiscoEmailSecurity.listEntriesDelete'
