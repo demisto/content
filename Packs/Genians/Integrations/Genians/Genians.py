@@ -185,10 +185,7 @@ def main():
         LOG("Command being called is {0}".format(demisto.command()))
 
         if demisto.command() == "test-module":
-<<<<<<< HEAD
-=======
             get_ip_nodeid('8.8.8.8')
->>>>>>> upstream/master
             demisto.results('ok')
         elif demisto.command() == 'genians-assign-ip-tag':
             assign_ip_tag_command()
