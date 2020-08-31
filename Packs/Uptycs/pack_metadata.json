@@ -2,7 +2,7 @@
     "name": "Uptycs",
     "description": "Fetches data from the Uptycs database.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Uptycs Inc.",
     "url": "https://xsoar.pan.dev/docs/reference/integrations/uptycs",
     "email": "bschmoll@uptycs.com",
