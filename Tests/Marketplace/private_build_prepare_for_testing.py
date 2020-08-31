@@ -60,7 +60,7 @@ def main():
     extract_destination_path = upload_config.extract_path
     service_account = upload_config.service_account
     pack_name = upload_config.pack_names
-    storage_base_path = upload_config.storage_base_path  # TODO: should be content / builds /$GIT_BRANCH /$GITHUB_RUN_NUMBER / content / packs
+    storage_base_path = upload_config.storage_base_path
 
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
