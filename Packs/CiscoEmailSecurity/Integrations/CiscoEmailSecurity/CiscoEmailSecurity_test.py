@@ -177,7 +177,8 @@ def test_list_entries_get_command(requests_mock):
 
     client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
-    res = list_entries_get_command(client, {"list_type": "safelist", "limit": "25", "order_by": "recipient", "view_by": "recipient"})
+    res = list_entries_get_command(client, {"list_type": "safelist", "limit": "25", "order_by": "recipient",
+                                            "view_by": "recipient"})
     assert res.outputs == test_data['get_list_entries_context']
     assert res.outputs_prefix == 'CiscoEmailSecurity.ListEntriesGet'
 

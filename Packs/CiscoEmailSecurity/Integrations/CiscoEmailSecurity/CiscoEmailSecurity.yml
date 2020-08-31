@@ -855,3 +855,5 @@ script:
   type: python
 defaultmapperin: HelloWorld-mapper
 defaultclassifier: HelloWorld
+tests:
+- No tests
