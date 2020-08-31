@@ -21,11 +21,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Run as a separate process (protects against memory depletion)
-  hidden: false
-  name: separate_process
-  required: false
-  type: 8
 description: Archiving and eDiscovery for G Suite.
 display: Google Vault
 name: google-vault
@@ -856,7 +851,6 @@ script:
     - contextPath: GoogleVault.Matter.Export.Results.To
       description: The address the message was sent to
       type: string
-  dockerimage45: demisto/gvault:1.0.0.7608
   dockerimage: demisto/gvault:1.0.0.11050
   feed: false
   isfetch: false
