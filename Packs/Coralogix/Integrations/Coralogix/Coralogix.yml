@@ -1,0 +1,131 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Coralogix
+  version: -1
+configuration:
+- defaultvalue: https://webapi.coralogix.com
+  display: Coralogix WebAPI Endpoint URL
+  name: webapi_url
+  required: true
+  type: 0
+- display: Private Key
+  name: privatekey
+  required: true
+  type: 0
+- defaultvalue: Demisto
+  display: Application Name (for tags)
+  hidden: false
+  name: app_name
+  required: true
+  type: 0
+- defaultvalue: Demisto
+  display: Subsystem Name (for tags)
+  hidden: false
+  name: subsystem_name
+  required: true
+  type: 0
+- defaultvalue: https://coralogix-esapi.coralogix.com:9443
+  display: Coralogix ES-API Endpoint URL
+  hidden: false
+  name: esapi_url
+  required: true
+  type: 0
+- display: Basic incidents query
+  hidden: false
+  name: incidents_query
+  required: false
+  type: 0
+- display: Incidents Application Name
+  hidden: false
+  name: incidents_application_name
+  required: false
+  type: 0
+- display: Incidents Severity
+  hidden: false
+  name: incidents_severity
+  required: false
+  type: 0
+- display: incidents Name Field
+  hidden: false
+  name: incident_description_field
+  required: false
+  type: 0
+- display: Incidents Subsystem Name
+  hidden: false
+  name: incidents_subsystem_name
+  required: false
+  type: 0
+description: Coralogix Integration
+display: Coralogix
+name: Coralogix
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The name of whom you want to say hello to.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: timestamp
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: icon_url
+      required: false
+      secret: false
+    deprecated: false
+    description: Tag timestamp in Coralogix
+    execution: false
+    name: coralogix_tag
+  - arguments:
+    - default: false
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: exclude
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: as_table
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: app_name
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: subsystem_name
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: severity
+      required: false
+      secret: false
+    deprecated: false
+    description: Query Coralogix for information
+    execution: false
+    name: coralogix_search
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
