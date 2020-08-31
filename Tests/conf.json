@@ -3020,7 +3020,6 @@
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
-        "SMB test": "Issue 26454",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
         "Office365_Feed_Test": "Issue 26455",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
