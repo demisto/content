@@ -1,0 +1,54 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 8864cb0c-b583-4487-8e01-9e6ad200d05a
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: contribplaybook
+inputs: []
+name: contribplaybook
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 420b2ab3-33d5-4558-8e84-5e5016376668
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 420b2ab3-33d5-4558-8e84-5e5016376668
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 65,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
