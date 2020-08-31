@@ -3829,6 +3829,136 @@ script:
     description: Get information about profiles.
     execution: false
     name: panorama-get-security-profiles
+    outputs:
+    - contextPath: Panorama.Spyware.Name
+      description: Profile Name.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Action
+      description: The rule action
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Cateogry
+      description: The category to apply the rule on.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Name
+      description: Rule name.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Packet-capture
+      description: Is packet capture enabled.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Severity
+      description: Rule severity.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Threat-name
+      description: Threat name to apply the rule.
+      type: String
+    - contextPath: Panorama.URLFilter.Name
+      description: Profile name.
+      type: String
+    - contextPath: Panorama.URLFilter.Rules.Category.Action
+      description: Rule action to apply on the category.
+      type: String
+    - contextPath: Panorama.URLFilter.Rules.Category.Name
+      description: Category name.
+      type: String
+    - contextPath: Panorama.WildFire.Name
+      description: WildFire profile name.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.Analysis
+      description: Rule analysis.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.Application
+      description: Application to apply the rule on.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.File-type
+      description: File type to apply the rule on.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.Name
+      description: Rule name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Name
+      description: Vulnerability profile name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Vendor-id
+      description: Vendor ID to apply the rule on.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Packet-capture
+      description: Is packet capture enabled.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Host
+      description: Rule host.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Name
+      description: Rule name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Cateogry
+      description: Category to apply the rule on.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.CVE
+      description: CVE to apply the rule on.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Action
+      description: Rule action.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Severity
+      description: Rule severity.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Threat-name
+      description: Threat to apply the rule on.
+      type: String
+    - contextPath: Panorama.Antivirus.Name
+      description: Antivirus profile name.
+      type: String
+    - contextPath: Panorama.Antivirus.Rules.Action
+      description: Rule action.
+      type: String
+    - contextPath: Panorama.Antivirus.Rules.Name
+      description: Rule name.
+      type: String
+    - contextPath: Panorama.Antivirus.Rules.WildFire-action
+      description: WildFire action.
+      type: String
+    - contextPath: Panorama.FileBlocking.Name
+      description: File blocking profile name.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.Action
+      description: Rule action.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.Application
+      description: Application to apply the rule.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.File-type
+      description: File type to apply the rule.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.Name
+      description: Rule name.
+      type: String
+    - contextPath: Panorama.DataFiltering.Name
+      description: Data filtering profile name.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Alert-threshold
+      description: Alert threshold.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Application
+      description: Application to apply the rule.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Block-threshold
+      description: Block threshold.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Data-object
+      description: Data object.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Direction
+      description: Rule direction.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.File-type
+      description: File type to apply the rule on.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Log-severity
+      description: Log severity.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Name
+      description: Rule name.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -4062,6 +4192,34 @@ script:
     description: Show WildFire best practices.
     execution: false
     name: panorama-get-wildfire-best-practice
+    outputs:
+    - contextPath: Panorama.WildFire.Analysis
+      description: WildFire analysis.
+      type: String
+    - contextPath: Panorama.WildFire.Application
+      description: WildFire application.
+      type: String
+    - contextPath: Panorama.WildFire.File.File-size
+      description: Recommended file size.
+      type: String
+    - contextPath: Panorama.WildFire.File.Name
+      description: File name.
+      type: String
+    - contextPath: Panorama.WildFire.File-type
+      description: WildFire profile file type.
+      type: String
+    - contextPath: Panorama.WildFire.Name
+      description: WildFire profile name.
+      type: String
+    - contextPath: Panorama.WildFire.SSLDecrypt
+      description: SSL decrypt content.
+      type: String
+    - contextPath: Panorama.WildFire.Schedule.Action
+      description: WildFire schedule action.
+      type: String
+    - contextPath: Panorama.WildFire.Schedule.Recurring
+      description: WildFire schedule recurring.
+      type: String
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false

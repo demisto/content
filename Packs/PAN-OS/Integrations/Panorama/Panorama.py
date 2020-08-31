@@ -5469,6 +5469,41 @@ def panorama_get_licence_command():
     })
 
 
+def prettify_data_filtering_rule(rule):
+    pretty_rule = {
+        'Name': rule['@name'],
+    }
+    if 'application' in rule and 'member' in rule['application']:
+        pretty_rule['Application'] = rule['application']['member']
+    if 'file-type' in rule and 'member' in rule['file-type']:
+        pretty_rule['File-type'] = rule['file-type']['member']
+    if 'direction' in rule:
+        pretty_rule['Direction'] = rule['direction']
+    if 'alert-threshold' in rule:
+        pretty_rule['Alert-threshold'] = rule['alert-threshold']
+    if 'block-threshold' in rule:
+        pretty_rule['Block-threshold'] = rule['block-threshold']
+    if 'data-object' in rule:
+        pretty_rule['Data-object'] = rule['data-object']
+    if 'log-severity' in rule:
+        pretty_rule['Log-severity'] = rule['log-severity']
+    if 'description' in rule:
+        pretty_rule['Description'] = rule['description']
+
+    return pretty_rule
+
+
+def prettify_data_filtering_rules(rules):
+    if not isinstance(rules, list):
+        return prettify_data_filtering_rule(rules)
+    pretty_rules_arr = []
+    for rule in rules:
+        pretty_rule = prettify_data_filtering_rule(rule)
+        pretty_rules_arr.append(pretty_rule)
+
+    return pretty_rules_arr
+
+
 def get_security_profile(xpath):
     params = {
         'action': 'get',
@@ -5501,6 +5536,7 @@ def get_security_profiles_command():
     if '@dirtyId' in security_profiles:
         LOG(f'Found uncommitted item:\n{security_profiles}')
         raise Exception('Please commit the instance prior to getting the security profiles.')
+
     human_readable = ''
     content = []
     context = {}
@@ -5523,6 +5559,7 @@ def get_security_profiles_command():
             }
 
         human_readable = tableToMarkdown('Anti Spyware Profiles', content)
+        context.update({"Panorama.Spyware(val.Name == obj.Name)": content})
 
     if 'virus' in security_profiles:
         profiles = security_profiles.get('virus').get('entry', [])
@@ -5543,6 +5580,7 @@ def get_security_profiles_command():
             }
 
         human_readable += tableToMarkdown('Antivirus Profiles', content)
+        context.update({"Panorama.Antivirus(val.Name == obj.Name)": content})
 
     if 'file-blocking' in security_profiles:
         profiles = security_profiles.get('file-blocking').get('entry', {})
@@ -5563,6 +5601,7 @@ def get_security_profiles_command():
             }
 
         human_readable += tableToMarkdown('File Blocking Profiles', content)
+        context.update({"Panorama.FileBlocking(val.Name == obj.Name)": content})
 
     if 'vulnerability' in security_profiles:
         profiles = security_profiles.get('vulnerability').get('entry', {})
@@ -5583,29 +5622,68 @@ def get_security_profiles_command():
             }
 
         human_readable += tableToMarkdown('vulnerability Protection Profiles', content)
+        context.update({"Panorama.Vulnerability(val.Name == obj.Name)": content})
 
     if 'data-filtering' in security_profiles:
         profiles = security_profiles.get('data-filtering').get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('rules', {}).get('entry', [])
-                data_filtering_rules = prettify_profiles_rules(rules)
+                data_filtering_rules = prettify_data_filtering_rules(rules)
                 content.append({
                     'Name': profile['@name'],
                     'Rules': data_filtering_rules
                 })
         else:
             rules = profiles.get('rules', {}).get('entry', [])
-            data_filtering_rules = prettify_profiles_rules(rules)
+            data_filtering_rules = prettify_data_filtering_rules(rules)
             content = {
                 'Name': profiles['@name'],
                 'Rules': data_filtering_rules
             }
 
         human_readable += tableToMarkdown('Data Filtering Profiles', content)
+        context.update({"Panorama.DataFiltering(val.Name == obj.Name)": content})
 
-    if human_readable == '':
-        human_readable = 'Could not find security profiles'
+    if 'url-filtering' in security_profiles:
+        profiles = security_profiles.get('url-filtering').get('entry', [])
+        if isinstance(profiles, list):
+            for profile in profiles:
+                url_filtering_rules = prettify_get_url_filter(profile)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': url_filtering_rules
+                })
+        else:
+            url_filtering_rules = prettify_get_url_filter(profiles)
+            content = {
+                'Name': profiles['@name'],
+                'Rules': url_filtering_rules
+            }
+
+        human_readable += tableToMarkdown('URL Filtering Profiles', content)
+        context.update({"Panorama.URLFilter(val.Name == obj.Name)": content})
+
+    if 'wildfire-analysis' in security_profiles:
+        profiles = security_profiles.get('wildfire-analysis').get('entry', [])
+        if isinstance(profiles, list):
+            for profile in profiles:
+                rules = profile.get('rules', {}).get('entry', [])
+                wildfire_rules = prettify_wildfire_rules(rules)
+                content.append({
+                    'Name': profile['@name'],
+                    'Rules': wildfire_rules
+                })
+        else:
+            rules = profiles.get('rules', {}).get('entry', [])
+            wildfire_rules = prettify_wildfire_rules(rules)
+            content = {
+                'Name': profiles['@name'],
+                'Rules': wildfire_rules
+            }
+
+        human_readable += tableToMarkdown('WildFire Profiles', content)
+        context.update({"Panorama.WildFire(val.Name == obj.Name)": content})
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -5613,7 +5691,7 @@ def get_security_profiles_command():
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
-        'EntryContext': {"Panorama.Profile(val.Profile == obj.Profile)": security_profiles}
+        'EntryContext': context
     })
 
 
@@ -5934,14 +6012,63 @@ def get_wildfire_best_practice():
     return result
 
 
+def prettify_wildfire_rule(rule):
+    pretty_rule = {
+        'Name': rule['@name'],
+    }
+    if 'application' in rule and 'member' in rule['application']:
+        pretty_rule['Application'] = rule['application']['member']
+    if 'file-type' in rule and 'member' in rule['file-type']:
+        pretty_rule['File-type'] = rule['file-type']['member']
+    if 'analysis' in rule:
+        pretty_rule['Analysis'] = rule['analysis']
+
+    return pretty_rule
+
+
+def prettify_wildfire_rules(rules):
+    if not isinstance(rules, list):
+        return prettify_wildfire_rule(rules)
+    pretty_rules_arr = []
+    for rule in rules:
+        pretty_rule = prettify_wildfire_rule(rule)
+        pretty_rules_arr.append(pretty_rule)
+
+    return pretty_rules_arr
+
+
 def get_wildfire_best_practice_command():
 
     result = get_wildfire_best_practice()
     wildfire_profile = result.get('response', {}).get('result', {}).get('wildfire-analysis', {})
     best_practice = wildfire_profile.get('entry', {}).get('rules', {}).get('entry', {})
 
-    rules = prettify_profiles_rules(best_practice)
-    human_readable = tableToMarkdown('WildFire Best Practice Profile', rules, removeNull=True)
+    rules = prettify_wildfire_rules(best_practice)
+    wildfire_schedule = {
+        'Recurring': 'every-minute',
+        'Action': 'download-and-install'
+    }
+    ssl_decrypt_settings = {'allow-forward-decrypted-content': 'yes'}
+    system_settings = [
+        {'Name': 'pe', 'File-size': '10'},
+        {'Name': 'apk', 'File-size': '30'},
+        {'Name': 'pdf', 'File-size': '1000'},
+        {'Name': 'ms-office', 'File-size': '2000'},
+        {'Name': 'jar', 'File-size': '5'},
+        {'Name': 'flash', 'File-size': '5'},
+        {'Name': 'MacOS', 'File-size': '1'},
+        {'Name': 'archive', 'File-size': '10'},
+        {'Name': 'linux', 'File-size': '2'},
+        {'Name': 'script', 'File-size': '20'}
+    ]
+
+    human_readable = tableToMarkdown('WildFire Best Practice Profile', rules, ['Name', 'Analysis', 'Application',
+                                                                               'File-type'], removeNull=True)
+    human_readable += tableToMarkdown('Wildfire Best Practice Schedule', wildfire_schedule)
+    human_readable += tableToMarkdown('Wildfire SSL Decrypt Settings', ssl_decrypt_settings)
+    human_readable += tableToMarkdown('Wildfire System Settings\n report-grayware-file: yes', system_settings,
+                                      ['Name', 'File-size'])
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -5949,7 +6076,10 @@ def get_wildfire_best_practice_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
         'EntryContext': {
-            "Panorama.Vulnerability.Rule(val.Name == obj.Name)": rules,
+            "Panorama.WildFire": rules,
+            "Panorama.WildFire.File(val.Name == obj.Name)": system_settings,
+            "Panorama.WildFire.Schedule": wildfire_schedule,
+            "Panorama.WildFire.SSLDecrypt": ssl_decrypt_settings
         }
     })
 
