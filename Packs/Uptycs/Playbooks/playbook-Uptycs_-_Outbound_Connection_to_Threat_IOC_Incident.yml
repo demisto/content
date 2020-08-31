@@ -3,7 +3,7 @@ version: -1
 name: Uptycs - Outbound Connection to Threat IOC Incident
 description: Get information about connections from IOC incidents.
 starttaskid: "0"
-fromversion: 4.0.0
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"

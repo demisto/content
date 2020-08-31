@@ -2,10 +2,10 @@
     "name": "Uptycs",
     "description": "Fetches data from the Uptycs database.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Uptycs Inc.",
-    "url": "https://xsoar.pan.dev/docs/reference/integrations/uptycs",
-    "email": "bschmoll@uptycs.com",
+    "url": "https://www.uptycs.com",
+    "email": "support@uptycs.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Analytics & SIEM"
