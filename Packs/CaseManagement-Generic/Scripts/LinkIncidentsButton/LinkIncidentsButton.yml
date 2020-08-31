@@ -36,3 +36,5 @@ subtype: python3
 tags:
 - incident-action-button
 type: python
+tests:
+  - No test

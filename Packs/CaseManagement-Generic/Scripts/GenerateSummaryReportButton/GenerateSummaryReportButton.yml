@@ -21,3 +21,5 @@ tags:
 - incident-action-button
 type: python
 fromversion: 5.0.0
+tests:
+  - No test
