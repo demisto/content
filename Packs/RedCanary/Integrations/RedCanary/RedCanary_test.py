@@ -1,7 +1,6 @@
 import demistomock as demisto
 import json
 import RedCanary
-from TestData.full_timeline_raw_responses import res1, res2
 
 last_run_dict = {"time": "2019-12-13T17:23:22Z", "last_event_ids": []}
 latest_time_of_occurrence_of_incidents1 = "2019-12-30T22:00:50Z"
@@ -28,6 +27,12 @@ with open("./TestData/incidents.json") as f:
 
 with open("TestData/incidents2.json") as f2:
     data2 = json.load(f2)
+
+with open("./TestData/get_full_timeline_raw1.json") as f3:
+    res1 = json.load(f3)
+
+with open("./TestData/get_full_timeline_raw2.json") as f4:
+    res2 = json.load(f4)
 
 
 def test_fetch_when_last_run_is_time(mocker):
@@ -215,3 +220,6 @@ def test_def_get_full_timeline(mocker):
     assert result1['data'] == result2['data']
     # make sure the loop ends
     assert activities
+
+
+
