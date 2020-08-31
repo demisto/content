@@ -401,21 +401,19 @@ def query_connections(machine, ip):
             {
                 'requestedType': 'Connection',
                 'filters': [],
-                'connectionFeature':
-                    {
-                        'elementInstanceType': 'Connection',
-                        'featureName': 'ownerMachine'
-                    },
+                'connectionFeature': {
+                    'elementInstanceType': 'Connection',
+                    'featureName': 'ownerMachine'
+                },
                 'isResult': True
             },
             {
                 'requestedType': 'Machine',
-                'filters':
-                    [{
-                        'facetName': 'elementDisplayName',
-                        'values': [machine],
-                        'filterType': 'Equals'
-                    }]
+                'filters': [{
+                    'facetName': 'elementDisplayName',
+                    'values': [machine],
+                    'filterType': 'Equals'
+                }]
             }
         ]
     elif ip:
