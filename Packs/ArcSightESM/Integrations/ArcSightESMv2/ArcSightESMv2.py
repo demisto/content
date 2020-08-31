@@ -125,7 +125,36 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
                 elif key in TIMESTAMP_FIELDS:
                     key = key.replace('Time', 'Date').replace('stamp', '')
                     d[key] = parse_timestamp_to_datestring(value)
+                elif key in ['eventId', 'baseEventIds']:
+                    d[key] = str(value)
     return d
+
+
+@logger
+def filter_entries(entries, entry_filter):
+    """ Filters the entries according to the entry_filter given """
+    if not entry_filter:
+        return entries
+
+    filtered_entries = []
+    filters = entry_filter.split(',')
+    for entry in entries:
+        append_flag = True
+
+        for f in filters:
+            k, v = f.split(':')
+            if k:
+                if not entry.get(k) == v:
+                    # if there is a key and its value is not equal to the entry_filter value
+                    append_flag = False
+            elif v not in entry.values():
+                # if there is no key check that the value exists in one of the entry's keys
+                append_flag = False
+
+        if append_flag:
+            filtered_entries.append(entry)
+
+    return filtered_entries
 
 
 def login():
@@ -728,13 +757,9 @@ def get_entries_command():
         # if the user wants only entries that contain certain 'field:value' sets (filters)
         # e.g., "name:myName,eventId:0,:ValueInUnknownField"
         # if the key is empty, search in every key
-        filtered = entries
-        if entry_filter:
-            for f in entry_filter.split(','):
-                k, v = f.split(':')
-                filtered = [entry for entry in filtered if ((entry.get(k) == v) if k else (v in entry.values()))]
+        filtered_entries = filter_entries(entries, entry_filter)
 
-        contents = decode_arcsight_output(filtered)
+        contents = decode_arcsight_output(filtered_entries)
         ActiveListContext = {
             'ResourceID': resource_id,
             'Entries': contents,
@@ -743,9 +768,9 @@ def get_entries_command():
             'ArcSightESM.ActiveList.{id}'.format(id=resource_id): contents,
             'ArcSightESM.ActiveList(val.ResourceID===obj.ResourceID)': ActiveListContext
         }
-        human_readable = tableToMarkdown(name='Active List entries: {}'.format(resource_id), t=filtered,
+        human_readable = tableToMarkdown(name='Active List entries: {}'.format(resource_id), t=filtered_entries,
                                          removeNull=True)
-        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=entries)
 
     else:
         demisto.results('Active List has no entries')

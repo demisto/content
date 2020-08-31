@@ -29,6 +29,7 @@ def get_client():
     proxy_port = params.get('proxyPort')
 
     tc = ThreatConnect(access, secret, default_org, url)
+    tc._proxies = handle_proxy()
     if proxy_ip and proxy_port and len(proxy_ip) > 0 and len(proxy_port) > 0:
         tc.set_proxies(proxy_ip, int(proxy_port))
 
@@ -79,7 +80,7 @@ def create_context(indicators, include_dbot_score=False):
             # returned in general indicator request - REST API
             rating = int(ind.get('threatAssessRating', 0))
 
-        if confidence >= int(demisto.params()['rating']) and rating >= int(demisto.params()['confidence']):
+        if confidence >= int(demisto.params()['confidence']) and rating >= int(demisto.params()['rating']):
             dbot_score = 3
             desc = ''
             if hasattr(ind, 'description'):
@@ -2068,6 +2069,27 @@ def download_document():
     demisto.results(fileResult(file_name, file_content))
 
 
+def download_report(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri(f'/v2/groups/{group_type}/{group_id}/pdf')
+    return tc.api_request(ro)
+
+
+def tc_download_report():
+    args = demisto.args()
+    group_type = args.get('group_type', '').lower()
+    group_id = args.get('group_id')
+    allowed_types = ['adversaries', 'campaigns', 'emails', 'incidents', 'signatures', 'threats']
+    if group_type not in allowed_types:
+        raise DemistoException(f'{group_type} is not an allowed type for tc-download-report command.')
+
+    response = download_report(group_type, group_id)
+    file_entry = fileResult(filename=f'{group_type}_report_{group_id}.pdf', data=response.content)
+    demisto.results(file_entry)
+
+
 def test_integration():
     tc = get_client()
     owners = tc.owners()
@@ -2119,6 +2141,7 @@ COMMANDS = {
     'tc-get-associated-groups': get_group_associated,
     'tc-associate-group-to-group': associate_group_to_group,
     'tc-get-indicator-owners': tc_get_indicator_owners,
+    'tc-download-report': tc_download_report,
 }
 
 
