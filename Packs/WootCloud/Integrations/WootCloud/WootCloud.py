@@ -98,9 +98,9 @@ class Client(BaseClient):
         )
         # Handle error responses gracefully
         if res.status_code == 401:
-            return_error("API credentials failed to authenticate. Please verify Client ID and API key are correct.")
+            raise Exception("API credentials failed to authenticate. Please verify Client ID and API key are correct.")
         elif res.status_code not in {200}:
-            return_error('Error in API call to WootCloud [{}] - {}'.format(res.status_code, res.reason))
+            raise Exception('Error in API call to WootCloud [{}] - {}'.format(res.status_code, res.reason))
 
         return res.json()
 
@@ -115,7 +115,7 @@ class Client(BaseClient):
         elif type == "anomaly":
             url = 'anomalies'
         else:
-            return_error('Type error: %s is not one of the types' % type)
+            raise ValueError('Type error: {} is not one of the types'.format(type))
 
         payload = {
             "starttime": str(start),
