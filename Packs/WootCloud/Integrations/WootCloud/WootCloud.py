@@ -100,7 +100,7 @@ class Client(BaseClient):
         if res.status_code == 401:
             return_error("API credentials failed to authenticate. Please verify Client ID and API key are correct.")
         elif res.status_code not in {200}:
-            return_error('Error in API call to WootCloud [%d] - %s' % (res.status_code, res.reason))
+            return_error('Error in API call to WootCloud [{}] - {}'.format(res.status_code, res.reason))
 
         return res.json()
 
