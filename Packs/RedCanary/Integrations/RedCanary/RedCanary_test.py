@@ -204,7 +204,8 @@ def test_fetch_multiple_times_with_new_incidents(mocker):
 def test_def_get_full_timeline(mocker):
     """Unit test
     Given
-    - raw response of the http request
+    - raw response of the http request from 2 different requests
+    - the data is the same but the page number is different
     When
     - keep getting the same data in different pages
     Then
@@ -215,7 +216,7 @@ def test_def_get_full_timeline(mocker):
     activities = RedCanary.get_full_timeline(1)
     result1 = response.execute()
     result2 = response.execute()
-    # make sure the results are not the same but the data is
+    # make sure the results are not the same, they are from different pages, but the data is
     assert not result1 == result2
     assert result1['data'] == result2['data']
     # make sure the loop ends
