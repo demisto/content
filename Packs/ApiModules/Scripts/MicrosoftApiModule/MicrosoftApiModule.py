@@ -154,7 +154,7 @@ class MicrosoftClient(BaseClient):
         if auth_type == OPROXY_AUTH_TYPE:
             access_token, expires_in, refresh_token = self._oproxy_authorize(scope)
         else:
-            access_token, expires_in, refresh_token = self._get_self_deployed_token(refresh_token)
+            access_token, expires_in, refresh_token = self._get_self_deployed_token(refresh_token, scope)
         time_now = self.epoch_seconds()
         time_buffer = 5  # seconds by which to shorten the validity period
         if expires_in - time_buffer > 0:
