@@ -1,5 +1,5 @@
 Append HyperContext™ insights to your SIEM data and feed them into your orchestration workflows.
-This integration was integrated and tested with version xx of WootCloud
+This integration was integrated and tested with version 1.0 of WootCloud
 ## Configure WootCloud on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
