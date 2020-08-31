@@ -220,6 +220,3 @@ def test_def_get_full_timeline(mocker):
     assert result1['data'] == result2['data']
     # make sure the loop ends
     assert activities
-
-
-
