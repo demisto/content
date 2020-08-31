@@ -4228,6 +4228,37 @@ class GetMappingFieldsResponse:
         return all_mappings
 
 
+def get_mirror_error_cache(incident_id):
+    integration_instance = demisto.integrationInstance()
+    integration_cache = demisto.getIntegrationContext()
+
+    if integration_instance not in integration_cache or incident_id not in integration_cache[integration_instance]:
+        return {}
+
+    else:
+        return integration_cache[integration_instance][incident_id]
+
+
+def save_mirror_error_cache(incident_id, mirror_error_cache):
+
+    integration_instance = demisto.integrationInstance()
+    integration_cache = demisto.getIntegrationContext()
+
+    if integration_instance not in integration_cache:
+        integration_cache[integration_instance] = {
+            incident_id: mirror_error_cache
+        }
+
+    elif incident_id not in integration_cache[integration_instance]:
+        instance_cache = integration_cache[integration_instance]
+        instance_cache[incident_id] = mirror_error_cache
+
+    else:
+        integration_cache[integration_instance][incident_id] = mirror_error_cache
+
+    demisto.setIntegrationContext(integration_cache)
+
+
 def handle_incoming_error_in_mirror(incident_data, error):
     """Handle incoming mirror error.
 
@@ -4241,7 +4272,7 @@ def handle_incoming_error_in_mirror(incident_data, error):
     :rtype: ``GetRemoteDataResponse``
     """
     error_entries = []
-    integration_cache = demisto.getIntegrationContext()
+    integration_cache = get_mirror_error_cache(incident_data['id'])
 
     # setup new error if needed
     if integration_cache.get('in_mirror_error') is None or integration_cache.get('in_mirror_error') != error:
@@ -4266,7 +4297,7 @@ def handle_incoming_error_in_mirror(incident_data, error):
             })
             integration_cache['in_error_printed'] = True
 
-    demisto.setIntegrationContext(integration_cache)
+    save_mirror_error_cache(incident_data['id'], integration_cache)
 
     # check for outgoing error
     out_error_entry = handle_outgoing_error_in_mirror(incident_data)
@@ -4289,7 +4320,7 @@ def handle_outgoing_error_in_mirror(incident_data):
     :rtype: ``dict``
     """
     out_error_entry = {}
-    integration_cache = demisto.getIntegrationContext()
+    integration_cache = get_mirror_error_cache(incident_data['id'])
 
     # handle incoming error
     if integration_cache.get('out_mirror_error'):
@@ -4307,7 +4338,7 @@ def handle_outgoing_error_in_mirror(incident_data):
                 'ContentsFormat': EntryFormat.TEXT,
             }
             integration_cache['out_error_printed'] = integration_cache.get('out_mirror_error')
-            demisto.setIntegrationContext(integration_cache)
+            save_mirror_error_cache(incident_data['id'], integration_cache)
 
     return out_error_entry
 
@@ -4321,14 +4352,14 @@ def reset_incoming_and_outgoing_mirror_errors(incident_data):
     :return: No data returned
     :rtype: ``None``
     """
-    integration_cache = demisto.getIntegrationContext()
+    integration_cache = get_mirror_error_cache(incident_data['id'])
     integration_cache['in_mirror_error'] = None
     incident_data['in_mirror_error'] = ''
 
     if integration_cache.get('out_mirror_error') is None:
         incident_data['out_mirror_error'] = ''
 
-    demisto.setIntegrationContext(integration_cache)
+    save_mirror_error_cache(incident_data['id'], integration_cache)
 
 
 def setup_outgoing_mirror_error(incident_id, error):
@@ -4343,26 +4374,30 @@ def setup_outgoing_mirror_error(incident_id, error):
     :return: the mirrored incident id that had an outgoing error.
     :rtype: ``str``
     """
-    integration_cache = demisto.getIntegrationContext()
+    integration_cache = get_mirror_error_cache(incident_id)
     if integration_cache.get('out_mirror_error') is None or integration_cache.get('out_mirror_error') != error:
         demisto.debug("Error in outgoing mirror for incident {0}: {1}".format(incident_id, error))
         integration_cache['out_mirror_error'] = error
         integration_cache['out_error_printed'] = False
 
-    demisto.setIntegrationContext(integration_cache)
+    save_mirror_error_cache(incident_id, integration_cache)
     return incident_id
 
 
-def clear_outgoing_mirror_error():
+def clear_outgoing_mirror_error(incident_id):
     """clear any existing outgoing error data in integration cache.
+
+
+    :type incident_id: ``str``
+    :param incident_id: the mirrored incident id that we are clearing errors for.
 
     :return: No data returned
     :rtype: ``None``
     """
-    integration_cache = demisto.getIntegrationContext()
+    integration_cache = get_mirror_error_cache(incident_id)
     integration_cache['out_mirror_error'] = None
     integration_cache['out_error_printed'] = False
-    demisto.setIntegrationContext(integration_cache)
+    save_mirror_error_cache(incident_id, integration_cache)
 
 
 class BaseWidget:
