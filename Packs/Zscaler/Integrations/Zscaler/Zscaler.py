@@ -1,3 +1,5 @@
+import re
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -453,6 +455,7 @@ def lookup_request(ioc, multiple=True):
         ioc_list = ioc.split(',')
     else:
         ioc_list = [ioc]
+    ioc_list = [re.sub(r'https?://', '', url) for url in ioc_list]
     json_data = json.dumps(ioc_list)
     response = http_request('POST', cmd_url, json_data, DEFAULT_HEADERS)
     return response
