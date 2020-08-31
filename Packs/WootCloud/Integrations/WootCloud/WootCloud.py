@@ -50,7 +50,7 @@ def iter_all_alerts(client, type, start, end, severity=None, skip=None, limit=10
     """
     Iterate through packet, bluetooth, or anomaly alerts generated in requested time span.
     """
-    first = client.get_woot_alerts(type, start, end, severity, skip, limit, site_id)
+    first = client.get_woot_alerts(type, start, end, severity, skip, limit, site_id, getAll=True)
 
     alert_type = ''
     if type == 'packet':
@@ -64,7 +64,7 @@ def iter_all_alerts(client, type, start, end, severity=None, skip=None, limit=10
     alerts = first[alert_type]
     step = limit
     while step < total:
-        alerts += client.get_woot_alerts(type, start, end, severity, step, limit, site_id)[alert_type]
+        alerts += client.get_woot_alerts(type, start, end, severity, step, limit, site_id, getAll=True)[alert_type]
         step += limit
     return alerts
 
@@ -78,7 +78,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
     
-    def get_woot_alerts(self, type, start, end, severity=None, skip=None, limit=None, site_id=None):
+    def get_woot_alerts(self, type, start, end, severity=None, skip=None, limit=None, site_id=None, getAll=False):
         """
         Lists/fetches packet, bluetooth, or anomaly alerts generated in requested time span.
         """
@@ -106,7 +106,9 @@ class Client(BaseClient):
         }
         
         result = self._http_request('POST', 'events/' + url, json=payload)
-        if type == 'packet':
+        if getAll:
+            return result
+        elif type == 'packet':
             return CommandResults(outputs=result['packet_alerts'], outputs_prefix=prefix, outputs_key_field='id')
         else:
             return CommandResults(outputs=result['alerts'], outputs_prefix=prefix, outputs_key_field='id')
