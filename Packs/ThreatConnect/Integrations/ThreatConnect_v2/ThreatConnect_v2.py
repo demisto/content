@@ -45,7 +45,7 @@ def create_context(indicators, include_dbot_score=False):
     indicators_dbot_score = {}  # type: dict
     params = demisto.params()
     rating_threshold = int(params.get('rating', '3'))
-    confidence_threshold = int(params.get('confidence', '50'))
+    confidence_threshold = int(params.get('confidence', '3'))
     context = {
         'DBotScore': [],
         outputPaths['ip']: [],
