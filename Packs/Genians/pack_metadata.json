@@ -1,11 +1,7 @@
 {
     "name": "Genians",
     "description": "Use the Genians integration to block IP using assign tag and unassign tag.",
-<<<<<<< HEAD
-    "support": "community",
-=======
     "support": "partner",
->>>>>>> upstream/master
     "currentVersion": "1.0.0",
     "author": "Genians",
     "url": "https://docs.genians.com/release/en/",
@@ -16,10 +12,6 @@
     ],
     "tags": [],
     "useCases": [],
-<<<<<<< HEAD
-    "keywords": []
-=======
     "keywords": [],
     "githubUser": "genians-rnd"
->>>>>>> upstream/master
 }
