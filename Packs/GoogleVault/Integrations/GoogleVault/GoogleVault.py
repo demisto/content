@@ -1314,12 +1314,12 @@ def get_export_command(export_id, matter_id):
 
 
 def download_export_command():
+    out_file = None
     try:
         bucket_name = demisto.getArg('bucketName')
         download_ID = demisto.getArg('downloadID')
         out_file = download_storage_object(download_ID, bucket_name)
         demisto.results(fileResult(demisto.uniqueFile() + '.zip', out_file.getvalue()))
-        out_file.close()
     except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
@@ -1327,6 +1327,9 @@ def download_export_command():
             return_error('Unable to download export. Error: {}'.format(err_msg))
         else:
             raise ex
+    finally:
+        if out_file:
+            out_file.close()
 
 
 def download_and_sanitize_export_results(object_ID, bucket_name, max_results):

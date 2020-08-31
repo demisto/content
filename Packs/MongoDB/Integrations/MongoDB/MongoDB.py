@@ -140,9 +140,7 @@ class Client:
         return self.db.drop_collection(collection)
 
 
-def convert_id_to_object_id(
-        entries: Union[List[dict], dict]
-) -> Union[List[dict], dict]:
+def convert_id_to_object_id(entries: Union[List[dict], dict]) -> Union[List[dict], dict]:
     """ Converts list or dict with `_id` key of type str to ObjectID
 
     Args:
@@ -248,9 +246,7 @@ def get_entry_by_id_command(
         return 'MongoDB: No results found', {}, raw_response
 
 
-def search_query(
-        client: Client, collection: str, query: str, limit: str, **kwargs
-) -> Tuple[str, dict, list]:
+def search_query(client: Client, collection: str, query: str, limit: str, **kwargs) -> Tuple[str, dict, list]:
     # test if query is a valid json
     try:
         query_json = validate_json_objects(json.loads(query))
@@ -273,9 +269,7 @@ def search_query(
         return 'MongoDB: No results found', {}, raw_response
 
 
-def insert_entry_command(
-        client: Client, collection: str, entry: str, **kwargs
-) -> Tuple[str, dict, list]:
+def insert_entry_command(client: Client, collection: str, entry: str, **kwargs) -> Tuple[str, dict, list]:
     # test if query is a valid json
     try:
         entry_json = validate_json_objects(json.loads(entry))
