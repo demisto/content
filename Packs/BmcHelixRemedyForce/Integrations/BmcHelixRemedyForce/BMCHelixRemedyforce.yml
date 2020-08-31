@@ -1196,3 +1196,5 @@ script:
 tests:
 - BMCHelixRemedyforce-Test
 fromversion: 5.0.0
+defaultclassifier: BMCHelixRemedyforce
+defaultmapperin: BMCHelixRemedyforce - mapper
