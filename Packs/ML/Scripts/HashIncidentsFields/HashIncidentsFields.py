@@ -1,11 +1,11 @@
-import codecs
+from CommonServerPython import *
+
 import hashlib
 import pickle
 import uuid
+import base64
 
-from CommonServerPython import *
-
-RANDOM_UUID = str(demisto.args().get('addRandomSeed', '').encode('utf8'))
+RANDOM_UUID = str(demisto.args().get('addRandomSeed', ''))
 # Memo for key matching
 CACHE = {}  # type: ignore
 
@@ -15,7 +15,9 @@ def hash_value(simple_value):
         simple_value = str(simple_value)
     if simple_value.lower() in ["none", "null"]:
         return None
-    return hashlib.md5(simple_value.encode('utf8') + RANDOM_UUID.encode('utf8')).hexdigest()
+    if RANDOM_UUID:
+        simple_value += RANDOM_UUID
+    return hashlib.md5(simple_value.encode('utf8')).hexdigest()
 
 
 def pattern_match(pattern, s):
@@ -60,16 +62,16 @@ def hash_multiple(value, fields_to_hash, to_hash=False):
         return value
     else:
         try:
-            if isinstance(value, (int, float, long, bool)):
+            if isinstance(value, (int, float, bool)):
                 to_hash = False
-            if not isinstance(value, (str, unicode)):
+            if not isinstance(value, str):
                 value = str(value)
         except Exception:
             value = ""
         if to_hash and value:
             return hash_value(value)
         else:
-            return value.encode('utf-8')
+            return value
 
 
 def output_file(data, description, output_format):
@@ -77,7 +79,7 @@ def output_file(data, description, output_format):
     if output_format == 'pickle':
         pickled_incidents = []
         for i in data:
-            pickled_incident = codecs.encode(pickle.dumps(i), "base64").decode()
+            pickled_incident = base64.b64encode(pickle.dumps(i))
             pickled_incidents.append(pickled_incident)
         data_encoded = pickle.dumps(pickled_incidents)
     elif output_format == 'json':

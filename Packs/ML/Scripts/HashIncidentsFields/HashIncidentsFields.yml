@@ -126,3 +126,4 @@ type: python
 tests:
 - hashIncidentFields-test
 fromversion: 4.5.0
+dockerimage: demisto/python3:3.8.3.9324
