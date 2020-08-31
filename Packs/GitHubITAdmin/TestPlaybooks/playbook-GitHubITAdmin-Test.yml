@@ -1,0 +1,562 @@
+id: GitHubITAdmin-Test
+name: GitHubITAdmin-Test
+version: -1
+fromversion: 6.0.0
+starttaskid: "0"
+description: ''
+tasks:
+  "0":
+    id: "0"
+    taskid: 9a0682a6-c6b8-43dd-8651-e0ca1bfb0ea6
+    type: start
+    task:
+      id: 9a0682a6-c6b8-43dd-8651-e0ca1bfb0ea6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 26365414-a59d-4611-84ba-c5a1ad02eec9
+    type: regular
+    task:
+      id: 26365414-a59d-4611-84ba-c5a1ad02eec9
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b954630c-b65a-4d54-8f7b-7f2e8275d5bb
+    type: regular
+    task:
+      id: b954630c-b65a-4d54-8f7b-7f2e8275d5bb
+      version: -1
+      name: get-user
+      description: Get a user detail
+      script: GitHub IT Admin|||get-user
+      type: regular
+      iscommand: true
+      brand: GitHub IT Admin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      scim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 40cfaf31-dfd1-4cf0-8a3d-e959fac1f07a
+    type: condition
+    task:
+      id: 40cfaf31-dfd1-4cf0-8a3d-e959fac1f07a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CreateUser.Success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CreateUser.errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "409"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 8727dd15-0677-405a-89a8-b407ee3c6e37
+    type: regular
+    task:
+      id: 8727dd15-0677-405a-89a8-b407ee3c6e37
+      version: -1
+      name: create-user
+      description: Creates a user
+      script: GitHub IT Admin|||create-user
+      type: regular
+      iscommand: true
+      brand: GitHub IT Admin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      customMap: {}
+      customMapping: {}
+      scim:
+        simple: ${scim}
+      using:
+        simple: ${appInstanceName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d1ec8bf2-ab66-4a11-8835-69e6ec30441d
+    type: condition
+    task:
+      id: d1ec8bf2-ab66-4a11-8835-69e6ec30441d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GetUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GetUser.errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "404"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 7cc95e97-e450-4c6c-84dc-0a3036366c7d
+    type: regular
+    task:
+      id: 7cc95e97-e450-4c6c-84dc-0a3036366c7d
+      version: -1
+      name: update-user
+      description: Update a user
+      script: GitHub IT Admin|||update-user
+      type: regular
+      iscommand: true
+      brand: GitHub IT Admin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      customMap: {}
+      customMapping: {}
+      newScim:
+        simple: ${scim}
+      oldScim:
+        simple: '{"id": "${id}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 859bbb1d-0f07-4504-83ab-b3d5ca4b8b9b
+    type: condition
+    task:
+      id: 859bbb1d-0f07-4504-83ab-b3d5ca4b8b9b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UpdateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UpdateUser.errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "404"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f1f1d71c-eaa6-4e5c-8c8e-9d19e8692cc3
+    type: regular
+    task:
+      id: f1f1d71c-eaa6-4e5c-8c8e-9d19e8692cc3
+      version: -1
+      name: disable-user
+      description: Disable a user
+      script: GitHub IT Admin|||disable-user
+      type: regular
+      iscommand: true
+      brand: GitHub IT Admin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: '{"id": "${id}"}'
+      user_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 13e27dc6-31af-4262-83ed-a2f76643fdfc
+    type: condition
+    task:
+      id: 13e27dc6-31af-4262-83ed-a2f76643fdfc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "404"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 2339ba91-42bb-4e6c-8388-5b3da5e9266e
+    type: title
+    task:
+      id: 2339ba91-42bb-4e6c-8388-5b3da5e9266e
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 79139800-7873-4360-8366-cd8232c3064e
+    type: regular
+    task:
+      id: 79139800-7873-4360-8366-cd8232c3064e
+      version: -1
+      name: Set Instance Name
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append: {}
+      key:
+        simple: appInstanceName
+      stringify: {}
+      value:
+        simple: GitHubITAdmin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 5cf85cb0-8371-48b7-8d82-cf3733ca2326
+    type: regular
+    task:
+      id: 5cf85cb0-8371-48b7-8d82-cf3733ca2326
+      version: -1
+      name: set scim data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: scim
+      stringify: {}
+      value:
+        simple: |-
+          {
+             "userName":"Xoar.test000000@paloaltonetworks.com",
+             "name":{
+                "familyName":"Xoar00000",
+                "givenName":"cotex00000"
+             },
+             "emails":[
+                {
+                   "value":"xoar00000@paloaltonetworks.com",
+                   "type":"work",
+                   "primary":true
+                }
+             ]
+          }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 593a1d89-f8d9-4a75-86a4-ee8cfea23adc
+    type: regular
+    task:
+      id: 593a1d89-f8d9-4a75-86a4-ee8cfea23adc
+      version: -1
+      name: Set id for Update
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: id
+      stringify:
+        simple: "true"
+      value:
+        simple: ${GetUser.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2325,
+        "width": 380,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }
+inputs: []
+outputs: []
