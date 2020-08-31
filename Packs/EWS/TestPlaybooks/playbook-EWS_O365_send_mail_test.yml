@@ -1,6 +1,6 @@
-id: EWS_O365_send_mail_test1
+id: EWS_O365_send_mail_test
 version: -1
-name: EWS_O365_send_mail_test1
+name: EWS_O365_send_mail_test
 starttaskid: "0"
 tasks:
   "0":
