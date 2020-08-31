@@ -2,6 +2,7 @@ id: ADPITAdmin-Test
 name: ADPITAdmin-Test
 version: -1
 fromversion: 6.0.0
+starttaskid: "0"
 description: ''
 tasks:
   '0':
