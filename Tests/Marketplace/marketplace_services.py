@@ -1,5 +1,6 @@
 import json
 import os
+import stat
 import subprocess
 import fnmatch
 import re
@@ -35,6 +36,8 @@ class GCPConfig(object):
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     PRODUCTION_BUCKET = "marketplace-dist"
+    PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
+    PRODUCTION_PRIVATE_CI_BUCKET = "marketplace-ci-build-private"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
@@ -518,6 +521,12 @@ class Pack(object):
         pack_metadata['certification'] = Pack._get_certification(support_type=pack_metadata['support'],
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
+        if pack_metadata['price'] > 0:
+            print_error(f"Price is bigger than 0. User metadata is: {user_metadata}")
+            pack_metadata['premium'] = True
+            pack_metadata['previewOnly'] = True
+            pack_metadata['vendorId'] = user_metadata.get('vendorId')
+            pack_metadata['vendorName'] = user_metadata.get('vendorName')
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
         pack_metadata['versionInfo'] = build_number
@@ -660,6 +669,9 @@ class Pack(object):
             if signature_string:
                 with open("keyfile", "wb") as keyfile:
                     keyfile.write(signature_string.encode())
+                print_error(f'pack path is: {self._pack_path}')
+                print_error(f'pwd result is: {subprocess.check_output("pwd")}')
+                print_error(f'ls result is: {subprocess.check_output("ls")}')
                 arg = f'./signDirectory {self._pack_path} keyfile base64'
                 signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 output, err = signing_process.communicate()
@@ -677,14 +689,29 @@ class Pack(object):
         finally:
             return task_status
 
-    def zip_pack(self):
+    def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
+        # The path below is custom made for the private repo's build.
+        # path_to_directory = self._pack_path
+        shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
+        os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
+        current_working_dir = os.getcwd()
+        os.chdir(extract_destination_path)
+        subprocess.call('chmod +x ./encryptor', shell=True)
+        print_error(f'ls result is: {subprocess.check_output("ls")}')
+        # zip_and_encrypt_script_path = os.path.join(extract_destination_path, 'zipAndEncryptDirectory')
+        output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+        full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
+        subprocess.call(full_command, shell=True)
+        os.chdir(current_working_dir)
+
+    def zip_pack(self, extract_destination_path, pack_name, should_encrypt=False, encryption_key=""):
         """ Zips pack folder.
 
         Returns:
             bool: whether the operation succeeded.
             str: full path to created pack zip.
         """
-        zip_pack_path = f"{self._pack_path}.zip"
+        zip_pack_path = f"{self._pack_path}.zip" if not should_encrypt else f"{self._pack_path}_not_encrypted.zip"
         task_status = False
 
         try:
@@ -695,11 +722,15 @@ class Pack(object):
                         relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
+            if should_encrypt:
+                self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
+                zip_pack_path = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             task_status = True
             print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
         except Exception as e:
             print_error(f"Failed in zipping {self._pack_name} folder. Additional info:\n {e}")
         finally:
+            print_error(f'zip_pack_path is: {zip_pack_path}')
             return task_status, zip_pack_path
 
     def detect_modified(self, content_repo, index_folder_path, current_commit_hash, remote_previous_commit_hash):
@@ -812,6 +843,8 @@ class Pack(object):
         not_updated_build = False
 
         try:
+            print_error(
+                f"path for release notes is: {os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)}")
             if os.path.exists(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)):
                 print_color(f"Found Changelog for: {self._pack_name}", LOG_COLORS.NATIVE)
                 # load changelog from downloaded index
@@ -820,6 +853,7 @@ class Pack(object):
                     changelog = json.load(changelog_file)
 
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
+                print_error(f"release notes dir is: {release_notes_dir}")
 
                 if os.path.exists(release_notes_dir):
                     found_versions = []
@@ -1075,16 +1109,19 @@ class Pack(object):
 
         try:
             user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
-
+            print_error(f'user_metadata_path: {user_metadata_path}')
+            print_error(f'self._pack_path: {self._pack_path}')
+            print_error(f'Pack.USER_METADATA: {Pack.USER_METADATA}')
             if not os.path.exists(user_metadata_path):
                 print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
                 return task_status, user_metadata
 
             with open(user_metadata_path, "r") as user_metadata_file:
                 user_metadata = json.load(user_metadata_file)  # loading user metadata
+                print_error(f'User Metadata is: {user_metadata}')
                 # part of old packs are initialized with empty list
                 user_metadata = {} if isinstance(user_metadata, list) else user_metadata
-
+                print_error(f'User Metadata changed to: {user_metadata}')
             # store important user metadata fields
             self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
             self.current_version = user_metadata.get('currentVersion', '')
@@ -1148,6 +1185,7 @@ class Pack(object):
                                                            downloads_count=self.downloads_count,
                                                            is_feed_pack=self._is_feed)
 
+            print_error(f"formatted pack metadata is: {formatted_metadata}")
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
 
