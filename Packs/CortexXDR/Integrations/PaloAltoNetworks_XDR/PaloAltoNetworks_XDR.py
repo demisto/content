@@ -1762,6 +1762,7 @@ def get_mapping_fields_command():
 
 def get_remote_data_command(client, args):
     remote_args = GetRemoteDataArgs(args)
+    incident_data = {}
     try:
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
                                                                  "alerts_limit": 1000})[2].get('incident')
@@ -1790,14 +1791,14 @@ def get_remote_data_command(client, args):
                 sync_incoming_incident_owners(incident_data)
 
             # handle closed issue in XDR and handle outgoing error entry
-            entries = [handle_incoming_closing_incident(incident_data), handle_outgoing_error_in_mirror(incident_data)]
+            entries = [handle_incoming_closing_incident(incident_data)]
 
             reformatted_entries = []
             for entry in entries:
                 if entry:
                     reformatted_entries.append(entry)
 
-            reset_incoming_and_outgoing_mirror_errors(incident_data)
+            incident_data['in_mirror_error'] = ''
 
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
@@ -1806,26 +1807,33 @@ def get_remote_data_command(client, args):
 
         else:
             # no new data modified - resetting error if needed
-            reset_incoming_and_outgoing_mirror_errors(incident_data)
+            incident_data['in_mirror_error'] = ''
 
-            # checking for outgoing error
-            # if there is a new error entry print it
-            outgoing_error_entry = handle_outgoing_error_in_mirror(incident_data)
-            if outgoing_error_entry:
-                return GetRemoteDataResponse(
-                    mirrored_object=incident_data,
-                    entries=[outgoing_error_entry]
-                )
-
-            # no error, not updating the incident
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
                 entries=[]
             )
 
     except Exception as e:
-        return handle_incoming_error_in_mirror({'incident_id': remote_args.remote_incident_id,
-                                                'id': remote_args.remote_incident_id}, str(e))
+        demisto.debug(f"Error in XDR incoming mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+        if incident_data:
+            incident_data['in_mirror_error'] = str(e)
+            sort_all_list_incident_fields(incident_data)
+
+            # deleting creation time as it keeps updating in the system
+            del incident_data['creation_time']
+
+        else:
+            incident_data = {
+                'id': remote_args.remote_incident_id,
+                'in_mirror_error': str(e)
+            }
+
+        return GetRemoteDataResponse(
+            mirrored_object=incident_data,
+            entries=[]
+        )
 
 
 def handle_outgoing_incident_owner_sync(update_args):
@@ -1865,8 +1873,8 @@ def get_update_args(delta, inc_status):
 
 
 def update_remote_system_command(client, args):
+    remote_args = UpdateRemoteSystemArgs(args)
     try:
-        remote_args = UpdateRemoteSystemArgs(args)
         if remote_args.delta and remote_args.incident_changed:
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
                           f'incident {remote_args.remote_incident_id}')
@@ -1876,9 +1884,6 @@ def update_remote_system_command(client, args):
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}] to XDR\n')
             update_incident_command(client, update_args)
 
-            # no outgoing mirror error
-            clear_outgoing_mirror_error()
-
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
                           f'as it is not new nor changed')
@@ -1886,8 +1891,10 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
     except Exception as e:
-        # setup outgoing mirror error
-        return setup_outgoing_mirror_error(remote_args.remote_incident_id, str(e))
+        demisto.debug(f"Error in XDR outgoing mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        return remote_args.remote_incident_id
 
 
 def fetch_incidents(client, first_fetch_time, last_run: dict = None):
