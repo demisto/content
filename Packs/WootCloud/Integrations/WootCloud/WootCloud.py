@@ -105,7 +105,7 @@ class Client(BaseClient):
             "site_id": str(site_id) if site_id else None
         }
         
-        result = self._http_request('POST', 'events/' + url, json=payload)
+        result = self._http_request('POST', 'events/' + url, json_data=payload)
         if getAll:
             return result
         elif type == 'packet':
