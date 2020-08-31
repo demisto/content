@@ -1,24 +1,32 @@
 import demistomock as demisto
 from CommonServerPython import *
+from typing import Text
+
+
+def get_value(value, stringify=False):
+    if stringify:
+        return str(value)
+    elif not value or not isinstance(value, (Text, bytes, bytearray)):
+        return value
+    else:
+        try:
+            return json.loads(value)
+        except (json.decoder.JSONDecodeError, TypeError):
+            return value
 
 
 def main():
     args = demisto.args()
     value = args.get('value')
     key = args.get('key')
-    context_entry = {}
+    value = get_value(value, args.get('stringify') == 'true')
     if value:
         human_readable = f'Key {key} set'
-        stringify = args.get('stringify') == 'true'
-        if not stringify:
-            try:
-                context_entry = {key: json.loads(value)}
-            except json.decoder.JSONDecodeError:
-                stringify = True
-        if stringify:
-            context_entry = {key: value}
+        context_entry = {key: value}
     else:
         human_readable = 'value is None'
+        context_entry = {}
+
     if args.get('append') == 'false' and context_entry:
         demisto.executeCommand('DeleteContext', {'key': key})
 

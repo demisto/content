@@ -7,6 +7,8 @@ data_test_set_and_handle_empty_with_value = [
     ('key', 'value', {'key': 'value'}),
     ('key', '["val0", "val1", "val2"]', {'key': ['val0', 'val1', 'val2']}),
     ('key', '{"key_inside": "val_inside"}', {'key': {"key_inside": "val_inside"}}),
+    ('key', ["val0", "val1", "val2"], {'key': ['val0', 'val1', 'val2']}),
+    ('key', {'key_inside': 'val_inside'}, {'key': {'key_inside': 'val_inside'}}),
 ]
 
 
@@ -22,6 +24,8 @@ data_test_set_and_handle_empty_with_value_and_stringify = [
     ('key', 'value', {'key': 'value'}),
     ('key', '["val0", "val1", "val2"]', {'key': '["val0", "val1", "val2"]'}),
     ('key', '{"key_inside": "val_inside"}', {'key': '{"key_inside": "val_inside"}'}),
+    ('key', ["val0", "val1", "val2"], {'key': "['val0', 'val1', 'val2']"}),
+    ('key', {"key_inside": "val_inside"}, {'key': "{'key_inside': 'val_inside'}"}),
 ]
 
 
@@ -62,3 +66,25 @@ def test_set_and_handle_empty_append_arg(append, args, expected_delete, mocker):
     output = mocker.patch.object(SetAndHandleEmpty.demisto, 'executeCommand')
     set_and_handle_empty()
     assert bool(output.call_args) == bool(expected_delete)
+
+
+data_test_get_value = [
+    ({}, {}),
+    ('{}', {}),
+    ('[]', []),
+    (u'{}', {}),
+    (b'{"test": "test"}', {'test': 'test'}),
+    (None, None),
+    ('', ''),
+    (False, False),
+    ('{"test": "test"}', {'test': 'test'}),
+    ('["test", "test"]', ['test', 'test']),
+    ({"test": "test"}, {'test': 'test'}),
+    (["test", "test"], ['test', 'test']),
+]
+
+
+@pytest.mark.parametrize('value, expected_output', data_test_get_value)
+def test_get_value(value, expected_output):
+    output = SetAndHandleEmpty.get_value(value)
+    assert output == expected_output
