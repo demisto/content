@@ -1,0 +1,5 @@
+!get-user scim={"id":"testxsoar@paloaltonetworks.com"} using=PrismaCloud
+!create-user scim={"name":{"familyName":"test","givenName":"demisto"},"emails":[{"type":"work","primary":true,"value":"testdemistouser@paloaltonetworks.com"}],"timezone":"America/Los_Angeles","urn:scim:schemas:extension:custom:1.0:user":{"roleId":"58f9779b-5420-4319-b1c8-b735e4cebc86","timezone":"America/Los_Angeles"}} customMapping={"roleId":"roleId","timezone":"timeZone"} using=PrismaCloud
+!update-user oldScim={"id":"testdemistouser@paloaltonetworks.com"} newScim={"name":{"familyName":"test","givenName":"demistouser"},"emails":[{"type":"work","primary":true,"value":"testdemistouser@paloaltonetworks.com"}],"timezone":"America/Los_Angeles","urn:scim:schemas:extension:custom:1.0:user":{"roleId":"58f9779b-5420-4319-b1c8-b735e4cebc86","timezone":"America/Los_Angeles"}} customMapping={"roleId":"roleId","timezone":"timeZone"} using=PrismaCloud
+!enable-user scim={"id":"testdemistouser@paloaltonetworks.com"} using=PrismaCloud
+!disable-user scim={"id":"testdemistouser@paloaltonetworks.com"} using=PrismaCloud
