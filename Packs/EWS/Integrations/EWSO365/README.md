@@ -1373,7 +1373,7 @@ None.
 ##### Command Example
 
 ```
-!send-mail to=demisto@demisto.onmicrosoft.com subject=some_subject body=some_text attachments_ids=110@457,116@457 html_body="<html><body>Hello <b>World</b></body></html>" additional_headers="some_header_name=some_header_value" transient_files=some_file.txt transient_files_contents="Some file content"
+!send-mail to=demisto@demisto.onmicrosoft.com subject=some_subject body=some_text attachIDs=110@457,116@457 htmlBody="<html><body>Hello <b>World</b></body></html>" additionalHeader="some_header_name=some_header_value" transientFile=some_file.txt transientFileContent="Some file content"
 ```
 
 ##### Human Readable Output

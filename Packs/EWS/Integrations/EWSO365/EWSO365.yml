@@ -1070,14 +1070,14 @@ script:
     - default: false
       description: The contents (body) of the email to be sent in HTML format
       isArray: false
-      name: html_body
+      name: htmlBody
       required: false
       secret: false
     - default: false
       description: A comma-separated list of IDs of war room entries that contains
         the files that should be attached to the email
       isArray: true
-      name: attachments_ids
+      name: attachIDs
       required: false
       secret: false
     - default: false
@@ -1085,14 +1085,14 @@ script:
         IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename
         first and third file - attachNames=file_name1,,file_name3)
       isArray: true
-      name: attachments_names
+      name: attachNames
       required: false
       secret: false
     - default: false
       description: A comma-separated list of CIDs to embed attachments inside the
         email itself
       isArray: true
-      name: attachments_cids
+      name: attachCIDs
       required: false
       secret: false
     - default: false
@@ -1100,7 +1100,7 @@ script:
         comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
         2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
-      name: transient_files
+      name: transientFile
       required: false
       secret: false
     - default: false
@@ -1108,7 +1108,7 @@ script:
         list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
         2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
-      name: transient_files_contents
+      name: transientFileContent
       required: false
       secret: false
     - default: false
@@ -1116,7 +1116,7 @@ script:
         supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
         transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
-      name: transient_files_cids
+      name: transientFileCID
       required: false
       secret: false
     - default: false
@@ -1125,14 +1125,14 @@ script:
       value", "key": "context key"}}. Each var name can either be provided with
       the value or a context key to retrieve the value from'
       isArray: false
-      name: template_params
+      name: templateParams
       required: false
       secret: false
     - default: false
       description: 'A comma-separated list list of additional headers in the format: headerName=headerValue.
       For example: "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
-      name: additional_headers
+      name: additionalHeader
       required: false
       secret: false
     - default: false
