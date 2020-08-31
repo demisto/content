@@ -3861,6 +3861,12 @@ def batch(iterable, batch_size=1):
 
 def dict_safe_get(dict_object, keys, default_return_value=None):
     """Recursive safe get query, If keys found return value otherwise return None or default value.
+    Example:
+    >>> dict = {"something" : {"test": "A"}}
+    >>> dict_safe_get(dict, ['something', 'test'])
+    >>> A
+    >>> dict_safe_get(dict, ['something', 'else'], 'default value')
+    >>> 'default value'
 
     :type dict_object: ``dict``
     :param dict_object: dictionary to query.
