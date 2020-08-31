@@ -175,6 +175,11 @@ script:
       name: update
       required: false
       secret: false
+    - default: false
+      isArray: false
+      name: from_date
+      required: false
+      secret: false
     deprecated: false
     execution: false
     name: opencti-update-indicators
