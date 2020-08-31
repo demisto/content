@@ -626,7 +626,7 @@ def test_pt_whois_search_command_success(request_mocker, mock_cr, client):
     # get human readable via dummy response
     readable_output = get_human_readable_for_whois_commands(domains)
     # get custom context via dummy response
-    _, custom_context = get_context_for_whois_commands(domains)
+    custom_context = get_context_for_whois_commands(domains)[1]
     pt_whois_search_command(client, args)
 
     # Assert
@@ -871,3 +871,120 @@ def test_init():
     with mock.patch.object(PassiveTotal_v2, "main", return_value=42):
         with mock.patch.object(PassiveTotal_v2, "__name__", "__main__"):
             PassiveTotal_v2.init()
+
+
+def test_domain_reputation_command_empty_domain_arguments_values(client):
+    """
+        When multiple empty value enter for command argument then should raise error with proper message
+    """
+    from PassiveTotal_v2 import domain_reputation_command
+
+    # Configure
+    args = {
+        'domain': ',,'
+    }
+
+    # Execute
+    with pytest.raises(ValueError) as e:
+        domain_reputation_command(client, args)
+
+    # Assert
+    assert 'domain argument should not be empty.' == str(e.value)
+
+
+def test_domain_reputation_command_not_specify_domain_arguments_values(client):
+    """
+        When no value enter for command argument then should raise error with proper message
+    """
+    from PassiveTotal_v2 import domain_reputation_command
+
+    # Configure
+    args = {
+        'domain': ''
+    }
+
+    # Execute
+    with pytest.raises(ValueError) as e:
+        domain_reputation_command(client, args)
+
+    # Assert
+    assert 'domain(s) not specified' == str(e.value)
+
+
+@patch('PassiveTotal_v2.CommandResults')
+@patch('PassiveTotal_v2.Client.http_request')
+def test_domain_reputatoin_command_success(request_mocker, mock_cr, client):
+    """
+        Proper Readable output and context should be set via CommonResults in case of proper response from whois-search
+    API endpoint
+    """
+    from PassiveTotal_v2 import domain_reputation_command
+    from PassiveTotal_v2 import get_human_readable_for_whois_commands
+    from PassiveTotal_v2 import get_context_for_whois_commands
+
+    # Configure
+    args = {
+        'domain': 'somedomain.com'
+    }
+    with open('TestData/domain_reputatoin/domain_reputatoin_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+    with open('TestData/domain_reputatoin/domain_reputatoin_context.json', 'rb') as f:
+        dummy_custom_context = json.load(f)
+    with open('TestData/domain_reputatoin/domain_reputatoin_command_readable_output.md', 'r') as f:
+        dummy_readable_output = f.read()
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    domains = dummy_response.get('results')
+    # get human readable via dummy response
+    readable_output = get_human_readable_for_whois_commands(
+        domains,
+        is_reputation_command=True
+    )
+    # get custom context via dummy response
+    custom_context = get_context_for_whois_commands(domains)[1]
+    domain_reputation_command(client, args)
+
+    # Assert
+    # asserts the readable output
+    assert readable_output == dummy_readable_output
+    # asserts the custom context
+    assert custom_context == dummy_custom_context
+    # assert overall command output
+    mock_cr.assert_called_once_with(
+        outputs_prefix='PassiveTotal.Domain',
+        outputs_key_field='domain',
+        outputs=dummy_custom_context,
+        indicators=mock.ANY,
+        readable_output=dummy_readable_output
+    )
+
+
+@patch('PassiveTotal_v2.CommandResults')
+@patch('PassiveTotal_v2.Client.http_request')
+def test_domain_reputatoin_command_empty_response(request_mocker, mock_cr, client):
+    """
+        Proper message should be display in case of empty response from whois-search API endpoint
+    """
+    from PassiveTotal_v2 import domain_reputation_command
+
+    # Configure
+    args = {
+        'domain': 'somedomain.com'
+    }
+    empty_response = '{"results": []}'
+    dummy_response = json.loads(empty_response)
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    domain_reputation_command(client, args)
+
+    # Assert
+    mock_cr.assert_called_once_with(
+        outputs_prefix='PassiveTotal.Domain',
+        outputs_key_field='domain',
+        outputs=[],
+        indicators=mock.ANY,
+        readable_output='### Domain(s)\n**No entries.**\n'
+    )
