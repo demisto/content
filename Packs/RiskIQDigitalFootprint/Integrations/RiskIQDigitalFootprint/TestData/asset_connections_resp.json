@@ -6,7 +6,7 @@
             "last": true,
             "numberOfElements": 0,
             "first": true,
-            "size": 20,
+            "size": 2,
             "number": 0,
             "content": [],
             "mark": null,
@@ -18,7 +18,7 @@
             "last": true,
             "numberOfElements": 1,
             "first": true,
-            "size": 20,
+            "size": 2,
             "number": 0,
             "content": [
                 {
@@ -80,7 +80,7 @@
             "last": true,
             "numberOfElements": 0,
             "first": true,
-            "size": 20,
+            "size": 2,
             "number": 0,
             "content": [],
             "mark": null,
@@ -92,7 +92,7 @@
             "last": true,
             "numberOfElements": 1,
             "first": true,
-            "size": 20,
+            "size": 2,
             "number": 0,
             "content": [
                 {
@@ -124,7 +124,7 @@
             "last": true,
             "numberOfElements": 0,
             "first": true,
-            "size": 20,
+            "size": 2,
             "number": 0,
             "content": [],
             "mark": null,
@@ -136,19 +136,19 @@
             "last": true,
             "numberOfElements": 0,
             "first": true,
-            "size": 20,
+            "size": 2,
             "number": 0,
             "content": [],
             "mark": null,
             "facets": []
         },
         "PAGE": {
-            "totalElements": 2,
-            "totalPages": 1,
+            "totalElements": 20,
+            "totalPages": 10,
             "last": true,
             "numberOfElements": 2,
             "first": true,
-            "size": 20,
+            "size": 2,
             "number": 0,
             "content": [
                 {

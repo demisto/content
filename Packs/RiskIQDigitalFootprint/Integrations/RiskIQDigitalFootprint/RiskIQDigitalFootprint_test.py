@@ -14,7 +14,7 @@ MOCK_URL = 'http://123-fake-api.com'
 @pytest.fixture()
 def client():
     from RiskIQDigitalFootprint import Client
-    return Client(MOCK_URL, 40, False, False, ('API_TOKEN', 'API_SECRET'))
+    return Client(MOCK_URL, 30, False, False, ('API_TOKEN', 'API_SECRET'))
 
 
 def mock_http_response(status=200, json_data=None, raise_for_status=None):
@@ -220,8 +220,7 @@ def test_http_request_connection_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Connectivity failed. Check your internet connection, the API URL or try increasing the HTTP(s) Request' \
-           ' Timeout.' == str(e.value)
+    assert 'Connectivity failed. Check your internet connection or the API URL.' == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -238,8 +237,26 @@ def test_http_request_connect_timeout_error(mock_base_http_request, client):
         client.http_request('GET', '/test/url/suffix')
 
     # Assert
-    assert 'Connectivity failed. Check your internet connection, the API URL or try increasing the HTTP(s) Request' \
-           ' Timeout.' == str(e.value)
+    assert 'Connection timed out. Check your internet connection or try decreasing the' \
+           ' value of the size argument if specified.' == str(e.value)
+
+
+@patch('RiskIQDigitalFootprint.Client._http_request')
+def test_http_request_read_timeout_error(mock_base_http_request, client):
+    """
+        When http request return read timeout error with Demisto exception then appropriate error message
+        should match.
+    """
+    # Configure
+    mock_base_http_request.side_effect = DemistoException('ReadTimeoutError')
+
+    # Execute
+    with pytest.raises(ConnectionError) as e:
+        client.http_request('GET', '/test/url/suffix')
+
+    # Assert
+    assert 'Connection timed out. Check your internet connection or try decreasing the' \
+           ' value of the size argument if specified.' == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client._http_request')
@@ -274,156 +291,6 @@ def test_function_success(request_mocker, client):
     assert test_function(client) == 'ok'
 
 
-def test_request_timeout_success(mocker):
-    """
-        When valid value is passed for request_timeout param it should pass
-    """
-    from RiskIQDigitalFootprint import get_timeout_and_max_records
-    request_timeout = 5
-    params = {
-        'request_timeout': str(request_timeout)
-    }
-
-    mocker.patch.object(demisto, 'params', return_value=params)
-    get_timeout_and_max_records()
-    assert int(request_timeout) == request_timeout
-
-
-def test_request_timeout_failure(mocker):
-    """
-        When invalid value(of same data type) is passed for request_timeout param it should return an error message
-    """
-    from RiskIQDigitalFootprint import get_timeout_and_max_records
-    request_timeout = -5
-
-    params = {
-        'request_timeout': str(request_timeout)
-    }
-    mocker.patch.object(demisto, 'params', return_value=params)
-
-    with pytest.raises(ValueError) as e:
-        get_timeout_and_max_records()
-
-    assert 'HTTP(s) Request timeout parameter must be a positive integer.' == str(e.value)
-
-
-def test_request_timeout_exception(mocker):
-    """
-        When invalid value(of different data type) is passed for request_timeout param it should return an error message
-    """
-    from RiskIQDigitalFootprint import get_timeout_and_max_records
-    request_timeout = 0.5
-
-    params = {
-        'request_timeout': str(request_timeout)
-    }
-    mocker.patch.object(demisto, 'params', return_value=params)
-
-    with pytest.raises(ValueError) as e:
-        get_timeout_and_max_records()
-
-    assert 'HTTP(s) Request timeout parameter must be a positive integer.' == str(e.value)
-
-
-def test_request_timeout_large_value_failure(mocker):
-    """
-        When too large value provided for request timeout then raised value error and
-        appropriate error message should display.
-    """
-    from RiskIQDigitalFootprint import get_timeout_and_max_records
-    request_timeout = 990000000000000000
-
-    params = {
-        'request_timeout': str(request_timeout)
-    }
-    mocker.patch.object(demisto, 'params', return_value=params)
-
-    # Execute
-    with pytest.raises(ValueError) as e:
-        get_timeout_and_max_records()
-
-    assert 'Value is too large for HTTP(S) Request Timeout.' == str(e.value)
-
-
-def test_max_records_success(mocker):
-    """
-         When valid value is passed for max_records param it should pass
-    """
-    from RiskIQDigitalFootprint import get_timeout_and_max_records
-    max_records = 5
-    params = {
-        'max_records': str(max_records)
-    }
-
-    mocker.patch.object(demisto, 'params', return_value=params)
-    get_timeout_and_max_records()
-    assert int(max_records) == max_records
-
-
-def test_max_records_failure(mocker):
-    """
-        When invalid value(of same data type) is passed for max_records param it should return an error message
-    """
-    from RiskIQDigitalFootprint import get_timeout_and_max_records
-    max_records = -5
-
-    params = {
-        'max_records': str(max_records)
-    }
-    mocker.patch.object(demisto, 'params', return_value=params)
-
-    with pytest.raises(ValueError) as e:
-        get_timeout_and_max_records()
-
-    assert 'Maximum records parameter must be a positive integer.' \
-           ' The value of this parameter should be between 1 and 10000.' == str(e.value)
-
-
-def test_max_records_exception(mocker):
-    """
-        When invalid value(of different data type) is passed for max_records param it should return an error message
-    """
-    from RiskIQDigitalFootprint import get_timeout_and_max_records
-    max_records = 0.5
-
-    params = {
-        'max_records': str(max_records)
-    }
-    mocker.patch.object(demisto, 'params', return_value=params)
-
-    with pytest.raises(ValueError) as e:
-        get_timeout_and_max_records()
-
-    assert 'Maximum records parameter must be a positive integer.' \
-           ' The value of this parameter should be between 1 and 10000.' == str(e.value)
-
-
-def test_command_with_max_records_called_from_main_success(mocker, client):
-    """
-        When main function is called asset_connections_command should be called if that command is triggered.
-    """
-    import RiskIQDigitalFootprint
-
-    mocker.patch.object(demisto, 'command', return_value='df-asset-connections')
-    mocker.patch.object(RiskIQDigitalFootprint, 'asset_connections_command', return_value='No connected assets were '
-                                                                                          'found for the given '
-                                                                                          'argument(s).')
-    RiskIQDigitalFootprint.main()
-    assert RiskIQDigitalFootprint.asset_connections_command.called
-
-
-def test_command_without_max_records_called_from_main_success(mocker, client):
-    """
-        When main function is called asset_changes_summary_command should be called if that command is triggered.
-    """
-    import RiskIQDigitalFootprint
-
-    mocker.patch.object(demisto, 'command', return_value='df-asset-changes-summary')
-    mocker.patch.object(RiskIQDigitalFootprint, 'asset_changes_summary_command', return_value='')
-    RiskIQDigitalFootprint.main()
-    assert RiskIQDigitalFootprint.asset_changes_summary_command.called
-
-
 @patch('RiskIQDigitalFootprint.Client.http_request')
 def test_asset_connections_success(mocker_http_request, client):
     """
@@ -432,21 +299,21 @@ def test_asset_connections_success(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_connections_command
 
     # Fetching expected raw response from file
-    with open('TestData/asset_connections_resp.json', encoding='utf-8') as f:
+    with open('./TestData/asset_connections_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('success')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/asset_connections_custom_ec.json', encoding='utf-8') as f:
+    with open('./TestData/asset_connections_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/asset_connections_hr.md') as f:
+    with open('./TestData/asset_connections_hr.md') as f:
         expected_hr = f.read()
 
-    result = asset_connections_command(client, args={'name': 'dummy', 'type': 'ASN', 'global': 'true'},
-                                       max_records=2000)
+    result = asset_connections_command(client, args={'name': 'dummy', 'type': 'ASN', 'global': 'true',
+                                                     'size': 2})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -464,29 +331,24 @@ def test_asset_connections_no_record_found(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_connections_command
 
     # Fetching expected raw response from file
-    with open('TestData/asset_connections_resp.json', encoding='utf-8') as f:
+    with open('./TestData/asset_connections_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('zeroRecords')
     mocker_http_request.return_value = expected_res
 
-    result = asset_connections_command(client, args={'name': 'dummy', 'type': 'ASN', 'global': 'false'},
-                                       max_records=2000)
-    assert result == 'No connected assets were found for the given argument(s).'
+    result = asset_connections_command(client, args={'name': 'dummy', 'type': 'ASN', 'global': 'false'})
+    assert result == 'No connected assets were found for the given argument(s). If the page argument is specified, try' \
+                     ' decreasing its value.'
 
 
 def test_asset_connections_invalid_type(client):
     """
         When df-asset-connections command is provided invalid type argument it should give an error message
     """
-    from RiskIQDigitalFootprint import validate_asset_connections_args
-
-    args = {
-        'type': 'dummy',
-        'global': 'false'
-    }
+    from RiskIQDigitalFootprint import validate_asset_connections_args_and_get_params
 
     with pytest.raises(ValueError) as e:
-        validate_asset_connections_args(args['type'], args['global'])
+        validate_asset_connections_args_and_get_params(args={'type': 'dummy'})
 
     assert 'The given value for type is invalid. Valid Types: Domain, Host,' \
            ' IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only.' \
@@ -497,17 +359,41 @@ def test_asset_connections_invalid_global(client):
     """
         When df-asset-connections command is provided invalid global argument it should give an error message
     """
-    from RiskIQDigitalFootprint import validate_asset_connections_args
+    from RiskIQDigitalFootprint import validate_asset_connections_args_and_get_params
 
-    args = {
-        'type': 'DOMAIN',
-        'global': 'dummy'
-    }
     with pytest.raises(ValueError) as e:
-        validate_asset_connections_args(args['type'], args['global'])
+        validate_asset_connections_args_and_get_params(args={'type': 'DOMAIN', 'global': 'dummy'})
 
     assert 'The given value for global argument is invalid. Valid values: true, false.' \
            ' This argument supports a single value only.' == str(e.value)
+
+
+def test_asset_connections_exceeding_page_lower_limit(client):
+    """
+        When df-asset-connections command is provided with a value that exceeds lower limit of page
+         argument it should give an error message
+    """
+    from RiskIQDigitalFootprint import validate_asset_connections_args_and_get_params
+
+    with pytest.raises(ValueError) as e:
+        validate_asset_connections_args_and_get_params(args={'type': 'DOMAIN', 'page': '-2'})
+
+    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
+           == str(e.value)
+
+
+def test_asset_connections_invalid_page(client):
+    """
+        When df-asset-connections command is provided with an invalid value of page
+         argument it should give an error message
+    """
+    from RiskIQDigitalFootprint import validate_asset_connections_args_and_get_params
+
+    with pytest.raises(ValueError) as e:
+        validate_asset_connections_args_and_get_params(args={'type': 'DOMAIN', 'page': '-2'})
+
+    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
+           == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -518,16 +404,16 @@ def test_asset_changes_summary_success(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_summary_command
 
     # Fetching expected raw response from file
-    with open('TestData/asset_changes_summary_resp.json', encoding='utf-8') as f:
+    with open('./TestData/asset_changes_summary_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/asset_changes_summary_custom_ec.json', encoding='utf-8') as f:
+    with open('./TestData/asset_changes_summary_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/asset_changes_summary_hr.md') as f:
+    with open('./TestData/asset_changes_summary_hr.md') as f:
         expected_hr = f.read()
 
     result = asset_changes_summary_command(client, args={'date': '2020-05-12', 'range': '7', 'tag': 'Dummy',
@@ -552,7 +438,7 @@ def test_asset_changes_summary_deep_link_with_only_date(client):
     }
 
     # Fetching expected raw response from file
-    with open('TestData/asset_changes_summary_resp.json', encoding='utf-8') as f:
+    with open('./TestData/asset_changes_summary_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
 
     deep_link = prepare_deep_link_for_asset_changes_summary(resp, args['date'], args['range'])
@@ -572,7 +458,7 @@ def test_asset_changes_summary_deep_link_with_only_range(client):
     }
 
     # Fetching expected raw response from file
-    with open('TestData/asset_changes_summary_resp.json', encoding='utf-8') as f:
+    with open('./TestData/asset_changes_summary_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
 
     deep_link = prepare_deep_link_for_asset_changes_summary(resp, args['date'], args['range'])
@@ -640,29 +526,28 @@ def test_asset_changes_success_asset_type(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_command
 
     # Fetching expected raw response from file
-    with open('TestData/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('./TestData/asset_changes_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successAssetType')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/asset_changes_custom_ec.json', encoding='utf-8') as f:
+    with open('./TestData/asset_changes_custom_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successAssetType')
 
     # Fetching expected human readable from file
-    with open('TestData/asset_changes_hr.md') as f:
+    with open('./TestData/asset_changes_hr.md') as f:
         expected_hr = f.read()
 
     result = asset_changes_command(client, args={'range': '30', 'type': 'DOMAIN', 'organization': 'dummy',
-                                                 'measure': 'Added'}, max_records=2000)
+                                                 'measure': 'Added', 'size': 1})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
     assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ''
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges(val.{0} == obj.{0} ' \
-                                    '&& val.{1} == obj.{1})'.format('name', 'type')
+    assert result.outputs_key_field == ['name', 'type']
+    assert result.outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -673,28 +558,28 @@ def test_asset_changes_success_asset_detail_type(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_command
 
     # Fetching expected raw response from file
-    with open('TestData/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('./TestData/asset_changes_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successAssetDetailType')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/asset_changes_custom_ec.json', encoding='utf-8') as f:
+    with open('./TestData/asset_changes_custom_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successAssetDetailType')
 
     # Fetching expected human readable from file
-    with open('TestData/asset_changes_resource_hr.md') as f:
+    with open('./TestData/asset_changes_resource_hr.md') as f:
         expected_hr = f.read()
 
-    result = asset_changes_command(client, args={'type': 'SELF_HOSTED_RESOURCE', 'range': '1', 'measure': 'Added'},
-                                   max_records=2000)
+    result = asset_changes_command(client, args={'type': 'SELF_HOSTED_RESOURCE', 'range': '1', 'measure': 'Added',
+                                                 'size': 200})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
     assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ''
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges(val.{0} == obj.{0})'.format('id')
+    assert result.outputs_key_field == ['id', 'resource']
+    assert result.outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -706,12 +591,12 @@ def test_asset_changes_no_record_found(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_command
 
     # Fetching expected raw response from file
-    with open('TestData/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('./TestData/asset_changes_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('zeroRecords')
     mocker_http_request.return_value = expected_res
 
-    result = asset_changes_command(client, args={'type': 'DOMAIN'}, max_records=2000)
+    result = asset_changes_command(client, args={'type': 'DOMAIN', 'size': 200})
     assert result == 'No inventory change(s) were found for the given argument(s).'
 
 
@@ -729,7 +614,7 @@ def test_asset_changes_deep_link_with_only_date(client):
     }
 
     # Fetching expected raw response from file
-    with open('TestData/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('./TestData/asset_changes_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
     resp = resp.get('successAssetType')
 
@@ -754,7 +639,7 @@ def test_asset_changes_deep_link_with_date_and_range(client):
     }
 
     # Fetching expected raw response from file
-    with open('TestData/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('./TestData/asset_changes_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
     resp = resp.get('successAssetType')
 
@@ -772,7 +657,7 @@ def test_asset_changes_invalid_type(client):
     from RiskIQDigitalFootprint import get_asset_changes_params
 
     with pytest.raises(ValueError) as e:
-        get_asset_changes_params(args={'type': 'dummy'}, max_records=2000)
+        get_asset_changes_params(args={'type': 'dummy'})
 
     assert 'The given value for type is invalid. Valid asset types: Domain, Host, IP Address, IP Block, ASN, Page,' \
            ' SSL Cert, Contact. Valid asset detail types: Self Hosted Resource, ThirdParty Hosted Resource.' \
@@ -787,7 +672,7 @@ def test_asset_changes_invalid_date_exception(client):
     from RiskIQDigitalFootprint import get_asset_changes_params
 
     with pytest.raises(ValueError) as e:
-        get_asset_changes_params(args={'type': 'ASN', 'date': '2020-5-222'}, max_records=2000)
+        get_asset_changes_params(args={'type': 'ASN', 'date': '2020-5-222'})
 
     assert 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
            ' This argument supports a single value only.' == str(e.value)
@@ -800,7 +685,7 @@ def test_asset_changes_invalid_date(client):
     from RiskIQDigitalFootprint import get_asset_changes_params
 
     with pytest.raises(ValueError) as e:
-        get_asset_changes_params(args={'type': 'ASN', 'date': '2020-05-2'}, max_records=2000)
+        get_asset_changes_params(args={'type': 'ASN', 'date': '2020-05-2'})
 
     assert 'The given value for date is invalid. The accepted format for date is YYYY-MM-DD.' \
            ' This argument supports a single value only.' == str(e.value)
@@ -814,8 +699,7 @@ def test_asset_changes_invalid_range_for_asset_type(client):
 
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'range': '5', 'tag': 'dummy', 'brand': 'dummy',
-                                       'organization': 'dummy', 'type': 'DOMAIN', 'date': '2020-05-20'},
-                                 max_records=2000)
+                                       'organization': 'dummy', 'type': 'DOMAIN', 'date': '2020-05-20'})
 
     assert 'The given value for range is invalid. Valid values: 1, 7, 30.' \
            ' This argument supports a single value only.' == str(e.value)
@@ -829,7 +713,7 @@ def test_asset_changes_invalid_range_for_asset_detail_type(client):
 
     with pytest.raises(ValueError) as e:
         get_asset_changes_params(args={'range': '30', 'tag': 'dummy', 'brand': 'dummy',
-                                       'organization': 'dummy', 'type': 'SELF_HOSTED_RESOURCE'}, max_records=2000)
+                                       'organization': 'dummy', 'type': 'SELF_HOSTED_RESOURCE'})
 
     assert 'The given value for range is invalid. Only single day changes can be shown for Self Hosted Resource type.' \
            ' Valid value: 1. This argument supports a single value only.' == str(e.value)
@@ -842,7 +726,7 @@ def test_asset_changes_invalid_measure_for_asset_type(client):
     from RiskIQDigitalFootprint import get_asset_changes_params
 
     with pytest.raises(ValueError) as e:
-        get_asset_changes_params(args={'measure': 'CHANGED', 'type': 'DOMAIN'}, max_records=2000)
+        get_asset_changes_params(args={'measure': 'CHANGED', 'type': 'DOMAIN'})
 
     assert 'The given value for measure(type of change) is invalid. Valid options are Added or Removed.' \
            ' This argument supports a single value only.' == str(e.value)
@@ -855,10 +739,38 @@ def test_asset_changes_invalid_measure_for_asset_detail_type(client):
     from RiskIQDigitalFootprint import get_asset_changes_params
 
     with pytest.raises(ValueError) as e:
-        get_asset_changes_params(args={'measure': 'REMOVED', 'type': 'SELF_HOSTED_RESOURCE'}, max_records=2000)
+        get_asset_changes_params(args={'measure': 'REMOVED', 'type': 'SELF_HOSTED_RESOURCE'})
 
     assert 'The given value for measure(type of change) is invalid. Valid options are Added or Changed.' \
            ' This argument supports a single value only.' == str(e.value)
+
+
+def test_asset_changes_exceeding_page_lower_limit(client):
+    """
+        When df-asset-changes command is provided with a value that exceeds lower limit of page
+         argument it should give an error message
+    """
+    from RiskIQDigitalFootprint import get_asset_changes_params
+
+    with pytest.raises(ValueError) as e:
+        get_asset_changes_params(args={'type': 'DOMAIN', 'size': 100, 'page': '-2'})
+
+    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
+           == str(e.value)
+
+
+def test_asset_changes_invalid_page(client):
+    """
+        When df-asset-changes command is provided with an invalid value of page
+         argument it should give an error message
+    """
+    from RiskIQDigitalFootprint import get_asset_changes_params
+
+    with pytest.raises(ValueError) as e:
+        get_asset_changes_params(args={'type': 'DOMAIN', 'size': 100, 'page': 'dummy'})
+
+    assert 'Page argument must be 0 or a positive integer. The index is zero based so the first page is page 0.'\
+           == str(e.value)
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -878,11 +790,11 @@ def test_get_asset_success_for_domain(mocker_http_request, client):
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/get_asset_domain_hr.md') as f:
+    with open('./TestData/get_asset_domain_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': '42696470-7b2a-617b-2f5e-ab674438e4f5', 'global': 'true',
-                                             'recent': 'true'}, max_records=2000)
+                                             'recent': 'true'})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -908,11 +820,10 @@ def test_get_asset_success_for_host(mocker_http_request, client):
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/get_asset_host_hr.md') as f:
+    with open('./TestData/get_asset_host_hr.md') as f:
         expected_hr = f.read()
 
-    result = get_asset_command(client, args={'uuid': 'dffa643e-7d39-4687-d35d-f37a217f339c', 'global': 'true'},
-                               max_records=2000)
+    result = get_asset_command(client, args={'uuid': 'dffa643e-7d39-4687-d35d-f37a217f339c', 'global': 'true'})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -938,10 +849,10 @@ def test_get_asset_success_for_ip_address(mocker_http_request, client):
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/get_asset_ip_address_hr.md') as f:
+    with open('./TestData/get_asset_ip_address_hr.md') as f:
         expected_hr = f.read()
 
-    result = get_asset_command(client, args={'uuid': '72ca2677-2276-90cc-048a-546ebed63e2f'}, max_records=2000)
+    result = get_asset_command(client, args={'uuid': '72ca2677-2276-90cc-048a-546ebed63e2f'})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -967,10 +878,10 @@ def test_get_asset_success_for_ip_block(mocker_http_request, client):
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/get_asset_ip_block_hr.md') as f:
+    with open('./TestData/get_asset_ip_block_hr.md') as f:
         expected_hr = f.read()
 
-    result = get_asset_command(client, args={'uuid': '92b3f425-d5ba-385a-f10c-6c6678d6369f'}, max_records=2000)
+    result = get_asset_command(client, args={'uuid': '92b3f425-d5ba-385a-f10c-6c6678d6369f'})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -996,10 +907,10 @@ def test_get_asset_success_for_as(mocker_http_request, client):
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/get_asset_as_hr.md') as f:
+    with open('./TestData/get_asset_as_hr.md') as f:
         expected_hr = f.read()
 
-    result = get_asset_command(client, args={'uuid': '9ca2cd53-af69-cbca-f398-e891ecf413d3'}, max_records=2000)
+    result = get_asset_command(client, args={'uuid': '9ca2cd53-af69-cbca-f398-e891ecf413d3'})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -1025,10 +936,10 @@ def test_get_asset_success_for_page(mocker_http_request, client):
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/get_asset_page_hr.md') as f:
+    with open('./TestData/get_asset_page_hr.md') as f:
         expected_hr = f.read()
 
-    result = get_asset_command(client, args={'uuid': '8dfdd21e-5012-3bd6-f9a5-c3151f1b9e40'}, max_records=2000)
+    result = get_asset_command(client, args={'uuid': '8dfdd21e-5012-3bd6-f9a5-c3151f1b9e40'})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -1054,10 +965,10 @@ def test_get_asset_success_for_ssl_cert(mocker_http_request, client):
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/get_asset_ssl_cert_hr.md') as f:
+    with open('./TestData/get_asset_ssl_cert_hr.md') as f:
         expected_hr = f.read()
 
-    result = get_asset_command(client, args={'uuid': 'd02ea1d1-7129-094a-50b0-3b285798d28d'}, max_records=2000)
+    result = get_asset_command(client, args={'uuid': 'd02ea1d1-7129-094a-50b0-3b285798d28d'})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -1083,10 +994,10 @@ def test_get_asset_success_for_contact(mocker_http_request, client):
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/get_asset_contact_hr.md') as f:
+    with open('./TestData/get_asset_contact_hr.md') as f:
         expected_hr = f.read()
 
-    result = get_asset_command(client, args={'uuid': 'd02ea1d1-7129-094a-50b0-3b285798d28d'}, max_records=2000)
+    result = get_asset_command(client, args={'uuid': 'd02ea1d1-7129-094a-50b0-3b285798d28d'})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -1098,7 +1009,7 @@ def test_get_asset_success_for_contact(mocker_http_request, client):
 @patch('RiskIQDigitalFootprint.Client.http_request')
 def test_get_asset_by_name_and_type_success_for_host(mocker_http_request, client):
     """
-        When df-get_asset command is provided valid arguments with valid Host name and type it should pass
+        When df-get_asset command isa provided valid arguments with valid Host name and type it should pass
     """
     from RiskIQDigitalFootprint import get_asset_command
 
@@ -1112,11 +1023,11 @@ def test_get_asset_by_name_and_type_success_for_host(mocker_http_request, client
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/get_asset_by_name_host_hr.md') as f:
+    with open('./TestData/get_asset_by_name_host_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'name': 'www.dummy.com', 'type': 'HOST', 'global': 'true',
-                                             'recent': 'true'}, max_records=2000)
+                                             'recent': 'true'})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -1142,11 +1053,11 @@ def test_get_asset_by_name_and_type_success_for_ip_address(mocker_http_request, 
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/get_asset_by_name_ip_address_hr.md') as f:
+    with open('./TestData/get_asset_by_name_ip_address_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'name': 'dummy.ip', 'type': 'IP_ADDRESS',
-                                             'recent': 'true'}, max_records=2000)
+                                             'recent': 'true'})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -1172,11 +1083,11 @@ def test_get_asset_by_name_and_type_success_for_as(mocker_http_request, client):
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('TestData/get_asset_by_name_as_hr.md') as f:
+    with open('./TestData/get_asset_by_name_as_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'name': '63245', 'type': 'ASN',
-                                             'recent': 'true'}, max_records=2000)
+                                             'recent': 'true'})
 
     assert result.raw_response == expected_res
     assert result.outputs == expected_custom_ec
@@ -1197,7 +1108,7 @@ def test_get_asset_invalid_global(client):
     }
 
     with pytest.raises(ValueError) as e:
-        get_asset_params(args, max_records=2000)
+        get_asset_params(args)
 
     assert 'The given value for global argument is invalid. Valid values: true, false.' \
            ' This argument supports a single value only.' == str(e.value)
@@ -1215,7 +1126,7 @@ def test_get_asset_invalid_recent(client):
     }
 
     with pytest.raises(ValueError) as e:
-        get_asset_params(args, max_records=2000)
+        get_asset_params(args)
 
     assert 'The given value for recent argument is invalid. Valid values: true, false.' \
            ' This argument supports a single value only.' == str(e.value)
@@ -1762,12 +1673,19 @@ def test_add_and_update_asset_required_keys_in_asset_json(client):
            " them are not present in the asset JSON." == str(e.value)
 
 
+def task_status(client, resp):
+    with open('TestData/add_and_update_assets_resp.json', encoding='utf-8') as f:
+        expected_res = json.load(f)
+    task_resp = expected_res['taskRunning']
+    return task_resp
+
+
 @patch('RiskIQDigitalFootprint.Client.http_request')
-def test_add_asset_success_for_asset_json_retries(mocker_http_request, client):
+def test_add_asset_success_for_asset_json_retries(mocker_http_request, client, mocker):
     """
-        When df-add-assets command is provided valid arguments with valid Contact uuid it should pass
+        When df-add-assets command is provided valid arguments with valid arguments it should pass
     """
-    from RiskIQDigitalFootprint import add_assets_command
+    import RiskIQDigitalFootprint
 
     # Fetching expected raw response from file
     with open('TestData/add_and_update_assets_resp.json', encoding='utf-8') as f:
@@ -1783,7 +1701,9 @@ def test_add_asset_success_for_asset_json_retries(mocker_http_request, client):
     with open('TestData/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
-    result = add_assets_command(client, args={'asset_json': asset_json_arg})
+    mocker.patch.object(RiskIQDigitalFootprint, 'check_task_status', side_effect=task_status)
+
+    result = RiskIQDigitalFootprint.add_assets_command(client, args={'asset_json': asset_json_arg})
 
     assert result.raw_response == expected_res['taskRunning']
     assert result.outputs == expected_custom_ec
@@ -1792,3 +1712,96 @@ def test_add_asset_success_for_asset_json_retries(mocker_http_request, client):
                                      '3fa02425-f8d8-4f75-a630-4a4b92222153 in RiskIQ Digital Footprint.'
     assert result.outputs_key_field == 'uuid'
     assert result.outputs_prefix == 'RiskIQDigitalFootprint.Task'
+
+
+def args_validation(client, args):
+    assert args == {'name': 'dummy', 'type': 'ASN', 'global': 'true'}
+
+
+def test_command_with_strip_args_from_main_success(mocker, client):
+    """
+        When main function is called get_asset_command should be called and the arguments should be stripped.
+    """
+    import RiskIQDigitalFootprint
+
+    mocker.patch.object(demisto, 'command', return_value='df-get-asset')
+    mocker.patch.object(demisto, 'args', return_value={'name': 'dummy', 'type': '      ASN          ',
+                                                       'global': '   true'})
+    mocker.patch.object(RiskIQDigitalFootprint, 'get_asset_command', side_effect=args_validation)
+    RiskIQDigitalFootprint.main()
+
+
+@patch('RiskIQDigitalFootprint.return_error')
+def test_command_with_strip_args_from_main_failure(mock_return_error, mocker, client, capfd):
+    """
+        When main function is called get_asset_command should be called with invalid arguments that cannot stripped
+         and appropriate error message should be given.
+    """
+    import RiskIQDigitalFootprint
+
+    mocker.patch.object(demisto, 'command', return_value='df-asset-connections')
+    mocker.patch.object(demisto, 'args', return_value={'name': 'dummy', 'type': 'AS  N'})
+    mocker.patch.object(RiskIQDigitalFootprint, 'asset_connections_command',
+                        side_effect=ValueError('The given value for type is invalid. Valid Types: Domain, Host,'
+                                               ' IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument'
+                                               ' supports a single value only.'))
+
+    with capfd.disabled():
+        RiskIQDigitalFootprint.main()
+
+    mock_return_error.assert_called_once_with('Error: The given value for type is invalid. Valid Types: Domain, Host,'
+                                              ' IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument'
+                                              ' supports a single value only.')
+
+
+def test_request_timeout_and_size_success():
+    """
+         When valid value for size is passed it should pass
+    """
+    from RiskIQDigitalFootprint import get_timeout_and_size
+    expected_request_timeout, expected_size = 60, 501
+    actual_request_timeout_and_size = get_timeout_and_size('501')
+    assert actual_request_timeout_and_size == (expected_request_timeout, expected_size)
+
+
+def test_request_timeout_and_size_failure():
+    """
+        When invalid value exceeding upper limit is passed for size param it should return an error message
+    """
+    from RiskIQDigitalFootprint import get_timeout_and_size
+
+    with pytest.raises(ValueError) as e:
+        get_timeout_and_size('1001')
+
+    assert 'Size argument must be a positive integer. The value of this argument should be between 1 and 1000.'\
+           == str(e.value)
+
+
+def test_request_timeout_and_size_invalid_value():
+    """
+        When invalid value is passed for size param it should return an error message
+    """
+    from RiskIQDigitalFootprint import get_timeout_and_size
+
+    with pytest.raises(ValueError) as e:
+        get_timeout_and_size('dummy')
+
+    assert 'Size argument must be a positive integer. The value of this argument should be between 1 and 1000.'\
+           == str(e.value)
+
+
+def validate_size(client, args):
+    assert args == {'name': 'dummy', 'type': 'ASN', 'global': 'true', 'size': 400}
+
+
+def test_command_with_size_arg_from_main_success(mocker, client):
+    """
+        When main function is called get_asset_command should be called with size argument and it should pass.
+    """
+    import RiskIQDigitalFootprint
+
+    mocker.patch.object(demisto, 'command', return_value='df-get-asset')
+    mocker.patch.object(demisto, 'args', return_value={'name': 'dummy', 'type': '      ASN          ',
+                                                       'global': '   true', 'size': '400'})
+    mocker.patch.object(RiskIQDigitalFootprint, 'get_asset_command', side_effect=validate_size)
+    RiskIQDigitalFootprint.main()

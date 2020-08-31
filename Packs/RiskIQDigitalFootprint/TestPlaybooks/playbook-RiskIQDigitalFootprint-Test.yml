@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -465,6 +466,7 @@ tasks:
       name: {}
       recent: {}
       type: {}
+      size: {}
       uuid:
         simple: 78c63cee-18bb-d342-f00d-81bdbcf53be8
     separatecontext: false
@@ -937,6 +939,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -965,3 +968,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

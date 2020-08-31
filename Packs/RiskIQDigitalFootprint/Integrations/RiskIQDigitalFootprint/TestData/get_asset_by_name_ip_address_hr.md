@@ -10,7 +10,7 @@
 ### IP Reputation
 |List|Threat Type|List Last Updated|First Seen (GMT)|Last Seen (GMT)|Recent|
 |---|---|---|---|---|---|
-| firehol_webserver | Aggregate/Ignore | 2017-02-02 21:54:25 | 2016-12-07 15:44:40 | 2020-06-19 11:30:22 | true |
+| dummy_webserver | Aggregate/Ignore | 2017-02-02 21:54:25 | 2016-12-07 15:44:40 | 2020-06-19 11:30:22 | true |
 ### Open Ports
 |Port|First Seen (GMT)|Last Seen (GMT)|Last Scanned|Scan Type|Recent|
 |---|---|---|---|---|---|

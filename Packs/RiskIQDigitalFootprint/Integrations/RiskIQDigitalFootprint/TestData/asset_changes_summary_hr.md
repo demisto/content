@@ -1,4 +1,5 @@
 ### [INVENTORY CHANGES](https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/2020-05-12/7)
+#### Note: If the range argument is specified, a list of table(s) containing a daily, weekly and monthly changes summary identified over the given period of time will be presented. For example, there will be an individual table for all the dates from the last run date to the date provided in the range value representing a daily, weekly and monthly changes summary.
 ### Date of the run in which following changes were identified: 2020-05-26
 |Asset Type|1 Day|7 Days|30 Days|
 |---|---|---|---|

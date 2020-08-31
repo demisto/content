@@ -8,7 +8,7 @@
   "description": "www.dummyhost.com",
   "asset": {
     "host": "www.dummyhost.com",
-    "domain": "redcross.org",
+    "domain": "dummy.org",
     "ipAddresses": [
       {
         "value": "162.6.217.33",
@@ -353,9 +353,9 @@
         "sha1": "a33fc7ab5ab26b33dd23fce194dc47a9904c6e70",
         "serialNumber": "4f219e40599f0dfad05ad0ec72c55fc",
         "subjectAlternativeNames": [
-          "dsars.redcross.org",
-          "test.dsars.redcross.org",
-          "train.dsars.redcross.org"
+          "dsars.dummy.org",
+          "test.dsars.dummy.org",
+          "train.dsars.dummy.org"
         ],
         "issuerAlternativeNames": [],
         "firstSeen": 1563888637711,
@@ -380,7 +380,7 @@
           "country": "US",
           "unit": "IT Infrastructure Service Delivery",
           "organization": "American Red Cross",
-          "common name": "dsars.redcross.org",
+          "common name": "dsars.dummy.org",
           "state": "District of Columbia",
           "locale": "Washington"
         },
@@ -389,7 +389,7 @@
     ],
     "hostCore": {
       "host": "www.dummyhost.com",
-      "domain": "redcross.org",
+      "domain": "dummy.org",
       "firstSeen": 1563583176558,
       "lastSeen": 1584554298754,
       "count": 2878,
@@ -453,7 +453,7 @@
     ],
     "cnames": [
       {
-        "value": "mkbks.x.incapdns.net",
+        "value": "dummy.net",
         "firstSeen": 1476123597000,
         "lastSeen": 1591570576000,
         "recent": true,
@@ -695,28 +695,28 @@
     "alexaRank": "Top 100k",
     "nameServers": [
       {
-        "value": "ns-1502.awsdns-59.org",
+        "value": "dummy.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-1837.awsdns-37.co.uk",
+        "value": "dummy1.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-295.awsdns-36.com",
+        "value": "dummy2.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-625.awsdns-14.net",
+        "value": "dummy3.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
@@ -733,12 +733,12 @@
       "domainUnicode": "dummydomain.com",
       "tld": "com",
       "nameservers": [
-        "ns-1502.awsdns-59.org",
-        "ns-295.awsdns-36.com",
-        "ns-625.awsdns-14.net",
-        "ns-1837.awsdns-37.co.uk"
+        "dummy.nameserver.com",
+        "dummy1.nameserver.com",
+        "dummy2.nameserver.com",
+        "dummy3.nameserver.com"
       ],
-      "whoisServer": "rdap.dummy.com",
+      "whoisServer": "dummy.com",
       "registrarIanaID": 146,
       "registrarName": "Dummy, LLC",
       "registrarEmail": "abuse@dummydomain.com",
@@ -750,14 +750,14 @@
         "email": "dummy@whoisdummydomain.com",
         "name": "DUMMY, LLC",
         "organization": "DUMMY, LLC.",
-        "street": "157, Archbishop Makarios Ave, office 1",
+        "street": "157, Dummy street, office 1",
         "city": "limassol",
         "zip": "3026",
         "country": "cyprus",
-        "phone": "35795713635",
-        "fax": "35795713635",
+        "phone": "12345678901",
+        "fax": "12345678901",
         "state": "cyprus",
-        "address": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
         "id": 0
       },
       "admin": {
@@ -765,13 +765,13 @@
         "email": "dummy@whoisdummydomain.com",
         "name": "DUMMY, LLC",
         "organization": "DUMMY, LLC.",
-        "street": "157, Archbishop Makarios Ave, office 1",
+        "street": "157, Dummy street, office 1",
         "city": "limassol",
         "zip": "3026",
         "country": "cyprus",
-        "phone": "35795713635",
-        "fax": "35795713635",
-        "address": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
         "id": 0
       },
       "technical": {
@@ -779,13 +779,13 @@
         "email": "dummy@whoisdummydomain.com",
         "name": "DUMMY, LLC",
         "organization": "DUMMY, LLC.",
-        "street": "157, Archbishop Makarios Ave, office 1",
+        "street": "157, Dummy street, office 1",
         "city": "limassol",
         "zip": "3026",
         "country": "cyprus",
-        "phone": "35795713635",
-        "fax": "35795713635",
-        "address": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
         "id": 0
       },
       "billing": {
@@ -793,13 +793,13 @@
         "email": "dummy@whoisdummydomain.com",
         "name": "DUMMY, LLC",
         "organization": "DUMMY, LLC.",
-        "street": "157, Archbishop Makarios Ave, office 1",
+        "street": "157, Dummy street, office 1",
         "city": "limassol",
         "zip": "3026",
         "country": "cyprus",
-        "phone": "35795713635",
-        "fax": "35795713635",
-        "address": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
         "id": 0
       },
       "domainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",
@@ -832,8 +832,7 @@
         "united states"
       ],
       "compositeParseCode": 36643,
-      "id": 6674824394369493291,
-      "raw": "Registrar: \n  Handle: 314061295_DOMAIN_COM-VRSN\n  LDH Name: dummydomain.com\n  Nameserver: \n    LDH Name: NS-1502.AWSDNS-59.ORG\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:06.743Z\n      Status: active\n  Nameserver: \n    LDH Name: NS-295.AWSDNS-36.COM\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:06.84Z\n      Status: active\n  Nameserver: \n    LDH Name: NS-625.AWSDNS-14.NET\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:07.107Z\n      Status: active\n  Nameserver: \n    LDH Name: NS-1837.AWSDNS-37.CO.UK\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:07.163Z\n      Status: active\n  SecureDNS: \n    Delegation Signed: false\n  Event: \n    Action: last update of RDAP database\n    Date: 2020-06-06T00:09:07.492949419Z\n  Event: \n    Action: expiration\n    Date: 2026-01-12T14:33:26Z\n  Event: \n    Action: registration\n    Date: 2006-01-12T14:33:26Z\n  Event: \n    Action: last update\n    Date: 2017-01-05T12:22:52Z\n  Status: \n    delete prohibited\n    transfer prohibited\n    renew prohibited\n    update prohibited\n  Entity: \n    Handle: 1\n    Role: \n      REGISTRANT\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 2\n    Role: \n      ADMINISTRATIVE\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 3\n    Role: \n      TECHNICAL\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 4\n    Role: \n      BILLING\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 146\n    Role: \n      REGISTRAR\n    VCard: \n      Formatted Name: Dummy, LLC\n      Address: \n          Street: 14455 N Hayden Suite 226\n          Locale: Scottsdale\n          Region: AZ\n          Postal Code: 85260\n          Country: US\n      Email: abuse@dummydomain.com\n          TYPE: work\n    Entity: \n      Handle: \n      Role: \n        ABUSE\n      VCard: \n            TYPE: voice\n        Email: abuse@dummydomain.com\n            TYPE: work\n    RDAP Conformance: \n      rdap_level_0\n      icann_rdap_response_profile_0\n      icann_rdap_technical_implementation_guide_0\n  Link: \n    Rel: self\n    Value: https://rdap.dummy.com/v1/domain/dummydomain.com\n    Type: application/rdap+json\n    Href: https://rdap.dummy.com/v1/domain/dummydomain.com\n  Notice: \n    Title: Epp Status Codes\n      Description: For more information on domain status codes, please visit https://icann.org/epp.\n      Link: \n        Rel: related\n        Value: https://icann.org/epp\n        Type: text/html\n        Href: https://icann.org/epp\n  Notice: \n    Title: Whois Inaccuracy Complaint Form\n      Description: URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf.\n      Link: \n        Rel: related\n        Value: https://www.icann.org/wicf\n        Type: text/html\n        Href: https://www.icann.org/wicf\n  Notice: \n    Title: Terms of Use\n    Description: \n      By submitting an inquiry, you agree to these Universal Terms of Service\n      and limitations of warranty. In particular, you agree not to use this\n      data to allow, enable, or otherwise make possible, dissemination or\n      collection of this data, in part or in its entirety, for any purpose,\n      such as the transmission of unsolicited advertising and solicitations of\n      any kind, including spam. You further agree not to use this data to enable\n      high volume, automated or robotic electronic processes designed to collect\n      or compile this data for any purpose, including mining this data for your\n      own personal or commercial purposes, or use this data in any way that violates\n      applicable laws and regulations.\n      Link: \n        Rel: related\n        Value: https://www.dummy.com/agreements/showdoc?pageid=5403\n        Type: text/html\n        Href: https://www.dummy.com/agreements/showdoc?pageid=5403\n  RDAP Conformance: \n    rdap_level_0\n    icann_rdap_response_profile_0\n    icann_rdap_technical_implementation_guide_0\n\n\n  Registry: \n    Handle: 314061295_DOMAIN_COM-VRSN\n    LDH Name: dummydomain.com\n    Nameserver: \n      LDH Name: NS-1502.AWSDNS-59.ORG\n    Nameserver: \n      LDH Name: NS-1837.AWSDNS-37.CO.UK\n    Nameserver: \n      LDH Name: NS-295.AWSDNS-36.COM\n    Nameserver: \n      LDH Name: NS-625.AWSDNS-14.NET\n    SecureDNS: \n      Delegation Signed: false\n    Event: \n      Action: registration\n      Date: 2006-01-12T19:33:26Z\n    Event: \n      Action: expiration\n      Date: 2026-01-12T19:33:26Z\n    Event: \n      Action: last update of RDAP database\n      Date: 2020-06-05T17:49:42Z\n    Status: \n      client delete prohibited\n      client renew prohibited\n      client transfer prohibited\n      client update prohibited\n    Entity: \n      Handle: 146\n      Role: \n        REGISTRAR\n      VCard: \n        Formatted Name: Dummy, LLC\n      Entity: \n        Role: \n          ABUSE\n        VCard: \n          Formatted Name: \n              TYPE: voice\n          Email: abuse@dummydomain.com\n    Link: \n      Rel: self\n      Value: https://rdap.verisign.com/com/v1/domain/dummydomain.com\n      Type: application/rdap+json\n      Href: https://rdap.verisign.com/com/v1/domain/dummydomain.com\n    Link: \n      Rel: related\n      Value: https://rdap.dummy.com/v1/domain/dummydomain.com\n      Type: application/rdap+json\n      Href: https://rdap.dummy.com/v1/domain/dummydomain.com\n    Notice: \n      Title: Terms of Use\n        Description: Service subject to Terms of Use.\n        Link: \n          Type: text/html\n          Href: https://www.verisign.com/domain-names/registration-data-access-protocol/terms-service/index.xhtml\n    Notice: \n      Title: Status Codes\n        Description: For more information on domain status codes, please visit https://icann.org/epp\n        Link: \n          Type: text/html\n          Href: https://icann.org/epp\n    Notice: \n      Title: RDDS Inaccuracy Complaint Form\n        Description: URL of the ICANN RDDS Inaccuracy Complaint Form: https://icann.org/wicf\n        Link: \n          Type: text/html\n          Href: https://icann.org/wicf\n    RDAP Conformance: \n      rdap_level_0\n      icann_rdap_technical_implementation_guide_0\n      icann_rdap_response_profile_0\n"
+      "id": 6674824394369493291
     }
   },
   "discoveryRun": {
@@ -912,9 +911,9 @@
           "firstSeen": 1588834637755,
           "lastSeen": 1591661598496,
           "count": 1142,
-          "id": "org.redcross.afescdms.ksgltd04$Microsoft IIS httpd$Server$7.0",
+          "id": "org.dummy.afescdms.ksgltd04$Microsoft IIS httpd$Server$7.0",
           "hostname": "www.dummyhost.com",
-          "domain": "redcross.org",
+          "domain": "dummy.org",
           "webComponentVersion": "7.0",
           "webComponentName": "Microsoft IIS httpd",
           "webComponentCategory": "Server",
@@ -932,9 +931,9 @@
           "firstSeen": 1563583176558,
           "lastSeen": 1591661598496,
           "count": 364,
-          "id": "org.redcross.afescdms.ksgltd04$BigIP$Server$",
+          "id": "org.dummy.afescdms.ksgltd04$BigIP$Server$",
           "hostname": "www.dummyhost.com",
-          "domain": "redcross.org",
+          "domain": "dummy.org",
           "webComponentName": "BigIP",
           "webComponentCategory": "Server",
           "cves": [],
@@ -974,9 +973,9 @@
             "common name": "DigiCert SHA2 Secure Server CA"
           },
           "issuerAlternativeNames": [
-            "dsars.redcross.org",
-            "test.dsars.redcross.org",
-            "train.dsars.redcross.org"
+            "dsars.dummy.org",
+            "test.dsars.dummy.org",
+            "train.dsars.dummy.org"
           ],
           "notBefore": 1561939200000,
           "notAfter": 1593604800000,
@@ -984,14 +983,14 @@
             "country": "US",
             "unit": "IT Infrastructure Service Delivery",
             "organization": "American Red Cross",
-            "common name": "dsars.redcross.org",
+            "common name": "dsars.dummy.org",
             "state": "District of Columbia",
             "locale": "Washington"
           },
           "subjectAlternativeNames": [
-            "dsars.redcross.org",
-            "test.dsars.redcross.org",
-            "train.dsars.redcross.org"
+            "dsars.dummy.org",
+            "test.dsars.dummy.org",
+            "train.dsars.dummy.org"
           ],
           "publicKeyAlgorithm": "RSA",
           "certificateAuthority": false,
@@ -1012,9 +1011,9 @@
           "firstSeen": 1563583177205,
           "lastSeen": 1591539545817,
           "count": 422,
-          "id": "org.redcross.afescdms.ksgltd04$www.dummyhost.com$1e236db3ef6510dfb39647ea90b4aec7",
+          "id": "org.dummy.afescdms.ksgltd04$www.dummyhost.com$1e236db3ef6510dfb39647ea90b4aec7",
           "hostname": "www.dummyhost.com",
-          "domain": "redcross.org",
+          "domain": "dummy.org",
           "cookieDomain": "www.dummyhost.com",
           "cookieName": "ASP.NET_SessionId"
         },
@@ -1022,9 +1021,9 @@
           "firstSeen": 1563583177205,
           "lastSeen": 1591539545817,
           "count": 707,
-          "id": "org.redcross.afescdms.ksgltd04$www.dummyhost.com$aa3dade2f131605183ccbab3b53dabf7",
+          "id": "org.dummy.afescdms.ksgltd04$www.dummyhost.com$aa3dade2f131605183ccbab3b53dabf7",
           "hostname": "www.dummyhost.com",
-          "domain": "redcross.org",
+          "domain": "dummy.org",
           "cookieDomain": "www.dummyhost.com",
           "cookieName": "BIGipServerdsars_dsars_trn-l5-rule"
         }

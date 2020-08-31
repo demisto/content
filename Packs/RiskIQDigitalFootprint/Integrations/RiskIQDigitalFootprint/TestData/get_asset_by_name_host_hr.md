@@ -2,30 +2,30 @@
 ### Basic Details
 |Name|Type|Inventory Status|UUID|Last Seen (GMT)|Added To Inventory (GMT)|Last Updated (GMT)|Confidence|Enterprise Asset|Priority|Organization(s)|
 |---|---|---|---|---|---|---|---|---|---|---|
-| www.riskiq.com | HOST | CONFIRMED | 7aab9cfd-839d-ad37-f05f-ba7a2d586e56 | 2020-06-22 14:42:02 | 2020-04-30 23:48:29 | 2020-06-24 11:47:50 | ABSOLUTE | false | NONE | RiskIQ |
+| www.dummy.com | HOST | CONFIRMED | 7aab9cfd-839d-ad37-f05f-ba7a2d586e56 | 2020-06-22 14:42:02 | 2020-04-30 23:48:29 | 2020-06-24 11:47:50 | ABSOLUTE | false | NONE | RiskIQ |
 ### Host Details
 |Domain|IP Address|CName|Alexa Rank|
 |---|---|---|---|
-| riskiq.com | 107.154.108.154 | mkbks.x.incapdns.net | Not in Alexa |
+| dummy.com | 0.0.0.0 | dummy.net | Not in Alexa |
 ### Observed IPs
 |Value|First Seen (GMT)|Last Seen (GMT)|Recent|
 |---|---|---|---|
-| 107.154.108.154 | 2019-07-24 07:33:41 | 2020-06-21 06:59:21 | true |
-| 107.154.106.154 | 2019-07-24 08:40:58 | 2020-06-20 06:30:47 | true |
-| 23.253.11.94 | 2020-06-14 05:12:37 | 2020-06-14 05:12:37 | true |
-| 107.154.102.154 | 2018-03-29 00:13:11 | 2020-01-15 22:06:12 |  |
-| 107.154.103.154 | 2018-05-30 17:36:17 | 2018-05-30 17:36:17 |  |
+| 0.0.0.0 | 2019-07-24 07:33:41 | 2020-06-21 06:59:21 | true |
+| 0.0.0.1 | 2019-07-24 08:40:58 | 2020-06-20 06:30:47 | true |
+| 0.0.0.2 | 2020-06-14 05:12:37 | 2020-06-14 05:12:37 | true |
+| 0.0.0.3 | 2018-03-29 00:13:11 | 2020-01-15 22:06:12 |  |
+| 0.0.0.4 | 2018-05-30 17:36:17 | 2018-05-30 17:36:17 |  |
 ### Name Servers
 |Name|First Seen (GMT)|Last Seen (GMT)|Recent|Current|
 |---|---|---|---|---|
-| ns-1502.awsdns-59.org | 2016-10-07 17:58:12 | 2020-06-07 22:24:38 | true | true |
-| ns-1837.awsdns-37.co.uk | 2016-10-07 17:58:12 | 2020-06-07 22:24:38 | true | true |
-| ns-295.awsdns-36.com | 2016-10-07 17:58:12 | 2020-06-07 22:24:38 | true | true |
-| ns-625.awsdns-14.net | 2016-10-07 17:58:12 | 2020-06-07 22:24:38 | true | true |
+| dummy.nameserver.com | 2016-10-07 17:58:12 | 2020-06-07 22:24:38 | true | true |
+| dummy1.nameserver.com | 2016-10-07 17:58:12 | 2020-06-07 22:24:38 | true | true |
+| dummy2.nameserver.com | 2016-10-07 17:58:12 | 2020-06-07 22:24:38 | true | true |
+| dummy3.nameserver.com | 2016-10-07 17:58:12 | 2020-06-07 22:24:38 | true | true |
 ### Trackers
 |Type|Value|First Seen (GMT)|Last Seen (GMT)|
 |---|---|---|---|
-| address | 107.154.108.154 | 2019-05-19 07:00:25 | 2020-06-21 07:10:20 |
+| address | 0.0.0.0 | 2019-05-19 07:00:25 | 2020-06-21 07:10:20 |
 | BitlyId | 30DRmhQ | 2020-06-18 23:20:27 | 2020-06-21 07:10:20 |
 | BitlyId | 35SkTom | 2020-06-18 20:47:44 | 2020-06-21 07:10:20 |
 | BitlyId | 3bSVE7E | 2020-06-17 08:48:12 | 2020-06-21 07:10:20 |
@@ -61,4 +61,4 @@
 ### WHOIS
 |Whois Server|Registrar|Email|Name|Organization|Street|City|State|Postal Code|Country|Phone|Name Servers|
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| rdap.dummy.com | Dummy, LLC | Registrant: dummy@whoisdummydomain.com<br>Admin: dummy@whoisdummydomain.com<br>Technical: dummy@whoisdummydomain.com<br>Billing: dummy@whoisdummydomain.com<br> | Registrant: DUMMY, LLC<br>Admin: DUMMY, LLC<br>Technical: DUMMY, LLC<br>Billing: DUMMY, LLC<br> | Registrant: DUMMY, LLC.<br>Admin: DUMMY, LLC.<br>Technical: DUMMY, LLC.<br>Billing: DUMMY, LLC.<br> | Registrant: 157, Archbishop Makarios Ave, office 1<br>Admin: 157, Archbishop Makarios Ave, office 1<br>Technical: 157, Archbishop Makarios Ave, office 1<br>Billing: 157, Archbishop Makarios Ave, office 1<br> | Registrant: limassol<br>Admin: limassol<br>Technical: limassol<br>Billing: limassol<br> | Registrant: cyprus<br> | Registrant: 3026<br>Admin: 3026<br>Technical: 3026<br>Billing: 3026<br> | Registrant: cyprus<br>Admin: cyprus<br>Technical: cyprus<br>Billing: cyprus<br> | Registrant: 35795713635<br>Admin: 35795713635<br>Technical: 35795713635<br>Billing: 35795713635<br> | ns-1502.awsdns-59.org, ns-295.awsdns-36.com, ns-625.awsdns-14.net, ns-1837.awsdns-37.co.uk |
+| dummy.com | Dummy, LLC | Registrant: dummy@whoisdummydomain.com<br>Admin: dummy@whoisdummydomain.com<br>Technical: dummy@whoisdummydomain.com<br>Billing: dummy@whoisdummydomain.com<br> | Registrant: DUMMY, LLC<br>Admin: DUMMY, LLC<br>Technical: DUMMY, LLC<br>Billing: DUMMY, LLC<br> | Registrant: DUMMY, LLC.<br>Admin: DUMMY, LLC.<br>Technical: DUMMY, LLC.<br>Billing: DUMMY, LLC.<br> | Registrant: 157, Dummy street, office 1<br>Admin: 157, Dummy street, office 1<br>Technical: 157, Dummy street, office 1<br>Billing: 157, Dummy street, office 1<br> | Registrant: limassol<br>Admin: limassol<br>Technical: limassol<br>Billing: limassol<br> | Registrant: cyprus<br> | Registrant: 3026<br>Admin: 3026<br>Technical: 3026<br>Billing: 3026<br> | Registrant: cyprus<br>Admin: cyprus<br>Technical: cyprus<br>Billing: cyprus<br> | Registrant: 12345678901<br>Admin: 12345678901<br>Technical: 12345678901<br>Billing: 12345678901<br> | dummy.nameserver.com, dummy1.nameserver.com, dummy2.nameserver.com, dummy3.nameserver.com |

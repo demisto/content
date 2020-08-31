@@ -24,21 +24,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: All the RiskIQ Digital Footprint API calls would timeout if the
-    response is not returned within the configured time interval.
-  defaultvalue: '40'
-  display: HTTP(S) Request Timeout (in seconds)
-  hidden: false
-  name: request_timeout
-  required: false
-  type: 0
-- additionalinfo: The maximum number of records to fetch.
-  defaultvalue: '2000'
-  display: Maximum records
-  hidden: false
-  name: max_records
-  required: false
-  type: 0
 description: RiskIQ Digital Footprint integration enables your security team to manage
   assets outside your firewall, by bringing its details, providing you to add or update
   assets and analyze your digital footprint from the view of the global adversary
@@ -86,6 +71,22 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The index of the page to retrieve. The index is zero based so the
+        first page is page 0. The default value for this argument from RiskIQ platform
+        is 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The response contains a page of assets for each related asset type.
+        Size determines the number of associated assets of each type that are returned.
+        The default value for this argument from RiskIQ platform is 20.
+      isArray: false
+      name: size
       required: false
       secret: false
     deprecated: false
@@ -148,7 +149,7 @@ script:
       description: Priority of the connected asset.
       type: String
     - contextPath: RiskIQDigitalFootprint.Asset.autoConfirmed
-      description: Date and Time when the connected asset was first observed.
+      description: Was the connected asset auto-confirmed.
       type: Boolean
     - contextPath: RiskIQDigitalFootprint.Asset.enterprise
       description: Has the connected asset been designated as an enterprise asset.
@@ -240,7 +241,7 @@ script:
       description: ID of the connected asset.
       type: Number
     - contextPath: RiskIQDigitalFootprint.Asset.source
-      description: If the source of connected the asset is known.
+      description: If the source of the connected asset is known.
       type: String
   - arguments:
     - default: false
@@ -254,9 +255,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The period of time over which the changes were identified. Supported
-        ranges are 1, 7, and 30 days. The default value for this argument from RiskIQ
-        platform is 1. This argument supports a single value only.
+      description: The period of time for which the changes summary is to be fetched.
+        Supported ranges are 1, 7, and 30 days. The default value for this argument
+        from RiskIQ platform is 1. This argument supports a single value only.
       isArray: false
       name: range
       predefined:
@@ -397,6 +398,21 @@ script:
         This argument supports a single value only.
       isArray: false
       name: tag
+      required: false
+      secret: false
+    - default: false
+      description: The index of the page to retrieve. The index is zero based so the
+        first page is page 0. The default value for this argument from RiskIQ platform
+        is 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The number of matching assets to return per page. The default value
+        for this argument from RiskIQ platform is 20.
+      isArray: false
+      name: size
       required: false
       secret: false
     deprecated: false
@@ -677,6 +693,15 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Digital Footprint (Global Inventory) assets potentially contain
+        pages of related data, for example attributes, cookies and host pairs. Size
+        determines the number for each of these associated items that are returned.
+        The default value for this argument from RiskIQ platform is 20.
+      isArray: false
+      name: size
       required: false
       secret: false
     deprecated: false
@@ -3563,8 +3588,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Asset type. Possible values: Domain, Host, IP Address, IP Block,
-        ASN, Page, SSL Cert, Contact. This argument supports a single value only.'
+      description: 'The type of the asset to be updated. Possible values: Domain,
+        Host, IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports
+        a single value only.'
       isArray: true
       name: type
       predefined:
@@ -3715,7 +3741,7 @@ script:
     - contextPath: RiskIQDigitalFootprint.Task.totalUpdates
       description: Number of total asset(s) that have been updated.
       type: Number
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: false
   longRunning: false

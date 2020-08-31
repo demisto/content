@@ -15,7 +15,7 @@
         "issuer": {
           "common name": "dummy IT TLS CA 1",
           "country": "US",
-          "locale": "Redmond",
+          "locale": "Dummy street",
           "organization": "dummy Corporation",
           "state": "Washington",
           "unit": "dummy IT"
@@ -55,28 +55,28 @@
   "assetId": "393d40623205b0afd4bc110291306888656e7bf4",
   "assetNameServers": [
     {
-      "value": "ns-1502.awsdns-59.org",
+      "value": "dummy.nameserver.com",
       "firstSeen": 1475863092000,
       "lastSeen": 1591568678000,
       "recent": true,
       "current": true
     },
     {
-      "value": "ns-1837.awsdns-37.co.uk",
+      "value": "dummy1.nameserver.com",
       "firstSeen": 1475863092000,
       "lastSeen": 1591568678000,
       "recent": true,
       "current": true
     },
     {
-      "value": "ns-295.awsdns-36.com",
+      "value": "dummy2.nameserver.com",
       "firstSeen": 1475863092000,
       "lastSeen": 1591568678000,
       "recent": true,
       "current": true
     },
     {
-      "value": "ns-625.awsdns-14.net",
+      "value": "dummy3.nameserver.com",
       "firstSeen": 1475863092000,
       "lastSeen": 1591568678000,
       "recent": true,
@@ -94,13 +94,13 @@
   "issuerOrganization": "dummy Corporation",
   "issuerCommonname": "dummy IT TLS CA 1",
   "issuerState": "Washington",
-  "issuerLocale": "Redmond",
+  "issuerLocale": "Dummy street",
   "subjectCommonname": "stamp2.login.dummyonline.com",
   "subjectCountry": "US",
   "subjectUnit": "dummy IT",
   "subjectOrganization": "dummy Corporation",
   "subjectState": "Washington",
-  "subjectLocale": "Redmond",
+  "subjectLocale": "Dummy street",
   "issuerAlternativeNames": "login.dummyonline-int.com, login.dummyonline-p.com, login.dummyonline.com",
   "subjectAlternativeNames": "login.dummyonline-int.com, login.dummyonline-p.com, login.dummyonline.com, login2.dummyonline-int.com, login2.dummyonline.com, loginex.dummyonline-int.com, loginex.dummyonline.com, stamp2.login.dummyonline-int.com, stamp2.login.dummyonline.com"
 }

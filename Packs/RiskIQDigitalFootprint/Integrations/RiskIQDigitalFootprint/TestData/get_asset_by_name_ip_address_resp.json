@@ -10,7 +10,7 @@
     "ipAddress": "69.22.137.99",
     "reputations": [
       {
-        "listName": "firehol_webserver",
+        "listName": "dummy_webserver",
         "threatType": "Aggregate/Ignore",
         "trusted": false,
         "cidr": "69.22.128.0/18",

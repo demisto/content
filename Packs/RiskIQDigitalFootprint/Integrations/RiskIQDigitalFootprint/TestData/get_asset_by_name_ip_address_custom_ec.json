@@ -251,7 +251,7 @@
       "current": true,
       "firstSeen": 1481125480000,
       "lastSeen": 1592566222000,
-      "listName": "firehol_webserver",
+      "listName": "dummy_webserver",
       "listUpdatedAt": 1486072465000,
       "recent": true,
       "threatType": "Aggregate/Ignore",

@@ -10,7 +10,7 @@
     "ipAddress": "52.112.64.75",
     "reputations": [
       {
-        "listName": "firehol_anonymous",
+        "listName": "dummy_anonymous",
         "threatType": "Aggregate/Ignore",
         "trusted": false,
         "cidr": "52.112.64.75",
@@ -21,7 +21,7 @@
         "current": true
       },
       {
-        "listName": "firehol_proxies",
+        "listName": "dummy_proxies",
         "threatType": "Aggregate/Ignore",
         "trusted": false,
         "cidr": "52.112.64.75",
@@ -2244,28 +2244,28 @@
     ],
     "nameServers": [
       {
-        "value": "ns-1502.awsdns-59.org",
+        "value": "dummy.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-1837.awsdns-37.co.uk",
+        "value": "dummy1.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-295.awsdns-36.com",
+        "value": "dummy2.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-625.awsdns-14.net",
+        "value": "dummy3.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
@@ -2282,12 +2282,12 @@
       "domainUnicode": "dummydomain.com",
       "tld": "com",
       "nameservers": [
-        "ns-1502.awsdns-59.org",
-        "ns-295.awsdns-36.com",
-        "ns-625.awsdns-14.net",
-        "ns-1837.awsdns-37.co.uk"
+        "dummy.nameserver.com",
+        "dummy1.nameserver.com",
+        "dummy2.nameserver.com",
+        "dummy3.nameserver.com"
       ],
-      "whoisServer": "rdap.dummy.com",
+      "whoisServer": "dummy.com",
       "registrarIanaID": 146,
       "registrarName": "Dummy, LLC",
       "registrarEmail": "abuse@dummydomain.com",
@@ -2299,14 +2299,14 @@
         "email": "dummy@whoisdummydomain.com",
         "name": "DUMMY, LLC",
         "organization": "DUMMY, LLC.",
-        "street": "157, Archbishop Makarios Ave, office 1",
+        "street": "157, Dummy street, office 1",
         "city": "limassol",
         "zip": "3026",
         "country": "cyprus",
-        "phone": "35795713635",
-        "fax": "35795713635",
+        "phone": "12345678901",
+        "fax": "12345678901",
         "state": "cyprus",
-        "address": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
         "id": 0
       },
       "admin": {
@@ -2314,13 +2314,13 @@
         "email": "dummy@whoisdummydomain.com",
         "name": "DUMMY, LLC",
         "organization": "DUMMY, LLC.",
-        "street": "157, Archbishop Makarios Ave, office 1",
+        "street": "157, Dummy street, office 1",
         "city": "limassol",
         "zip": "3026",
         "country": "cyprus",
-        "phone": "35795713635",
-        "fax": "35795713635",
-        "address": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
         "id": 0
       },
       "technical": {
@@ -2328,13 +2328,13 @@
         "email": "dummy@whoisdummydomain.com",
         "name": "DUMMY, LLC",
         "organization": "DUMMY, LLC.",
-        "street": "157, Archbishop Makarios Ave, office 1",
+        "street": "157, Dummy street, office 1",
         "city": "limassol",
         "zip": "3026",
         "country": "cyprus",
-        "phone": "35795713635",
-        "fax": "35795713635",
-        "address": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
         "id": 0
       },
       "billing": {
@@ -2342,13 +2342,13 @@
         "email": "dummy@whoisdummydomain.com",
         "name": "DUMMY, LLC",
         "organization": "DUMMY, LLC.",
-        "street": "157, Archbishop Makarios Ave, office 1",
+        "street": "157, Dummy street, office 1",
         "city": "limassol",
         "zip": "3026",
         "country": "cyprus",
-        "phone": "35795713635",
-        "fax": "35795713635",
-        "address": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
         "id": 0
       },
       "domainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",

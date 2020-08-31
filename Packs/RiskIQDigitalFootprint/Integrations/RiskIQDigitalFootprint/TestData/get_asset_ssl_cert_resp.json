@@ -44,7 +44,7 @@
             "organization": "dummy Corporation",
             "common name": "dummy IT TLS CA 1",
             "state": "Washington",
-            "locale": "Redmond"
+            "locale": "Dummy street"
         },
         "subject": {
             "common name": "stamp2.login.dummyonline.com",
@@ -52,32 +52,32 @@
             "unit": "dummy IT",
             "organization": "dummy Corporation",
             "state": "Washington",
-            "locale": "Redmond"
+            "locale": "Dummy street"
         },
         "nameServers": [
       {
-        "value": "ns-1502.awsdns-59.org",
+        "value": "dummy.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-1837.awsdns-37.co.uk",
+        "value": "dummy1.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-295.awsdns-36.com",
+        "value": "dummy2.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-625.awsdns-14.net",
+        "value": "dummy3.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
@@ -143,7 +143,7 @@
                         "organization": "dummy Corporation",
                         "common name": "dummy IT TLS CA 1",
                         "state": "Washington",
-                        "locale": "Redmond"
+                        "locale": "Dummy street"
                     },
                     "issuerAlternativeNames": [],
                     "notBefore": 1589228115000,

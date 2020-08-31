@@ -18,7 +18,7 @@
   ],
   "assetNetNames": [
     {
-      "value": "TRAFBIZ-01",
+      "value": "DUMMY-01",
       "firstSeen": 1532409234529,
       "lastSeen": 1589545672345,
       "recent": true,
@@ -27,7 +27,7 @@
   ],
   "assetRegistrantOrgs": [
     {
-      "value": "Trafbiz.com",
+      "value": "dummy.com",
       "firstSeen": 1532409234529,
       "lastSeen": 1588746462072,
       "recent": true,
@@ -36,14 +36,14 @@
   ],
   "assetAdminContacts": [
     {
-      "value": "net-admin@trafbiz.com",
+      "value": "net-admin@dummy.com",
       "firstSeen": 1559541177000,
       "lastSeen": 1589545672345,
       "recent": true,
       "current": true
     },
     {
-      "value": "net-abuse@trafbiz.com",
+      "value": "net-abuse@dummy.com",
       "firstSeen": 1532409234529,
       "lastSeen": 1588746462072,
       "recent": true,
@@ -52,21 +52,21 @@
   ],
   "assetTechnicalContacts": [
     {
-      "value": "net-tech@trafbiz.com",
+      "value": "net-tech@dummy.com",
       "firstSeen": 1532409234529,
       "lastSeen": 1589545672345,
       "recent": true,
       "current": true
     },
     {
-      "value": "net-tech@trafbiz.com net-noc@trafbiz.com",
+      "value": "net-tech@dummy.com net-noc@dummy.com",
       "firstSeen": 1559593232000,
       "lastSeen": 1588746462072,
       "recent": true,
       "current": true
     },
     {
-      "value": "net-noc@trafbiz.com net-tech@trafbiz.com",
+      "value": "net-noc@dummy.com net-tech@dummy.com",
       "firstSeen": 1559541177000,
       "lastSeen": 1574249910829
     }
@@ -136,45 +136,45 @@
   "assetAsns": [
     {
       "asnID": 63245,
-      "description": "TRAFBIZ-01, united states",
-      "registry": "ARIN",
+      "description": "DUMMY-01, united states",
+      "registry": "DUMMYREG",
       "countryCode": "united states",
       "name": "AS63245",
       "id": 63245,
-      "fullName": "AS63245 - united states - TRAFBIZ-01, united states"
+      "fullName": "AS63245 - united states - DUMMY-01, united states"
     }
   ],
   "assetMailServers": [
     {
-      "value": "alt1.aspmx.l.google.com",
+      "value": "dummy.mailserver.com",
       "firstSeen": 1322692530000,
       "lastSeen": 1591530037000,
       "recent": true,
       "current": true
     },
     {
-      "value": "alt2.aspmx.l.google.com",
+      "value": "dummy1.mailserver.com",
       "firstSeen": 1322692530000,
       "lastSeen": 1591530037000,
       "recent": true,
       "current": true
     },
     {
-      "value": "aspmx.l.google.com",
+      "value": "dummy2.mailserver.com",
       "firstSeen": 1322692530000,
       "lastSeen": 1591530037000,
       "recent": true,
       "current": true
     },
     {
-      "value": "aspmx2.googlemail.com",
+      "value": "dummy3.mailserver.com",
       "firstSeen": 1322692530000,
       "lastSeen": 1591530037000,
       "recent": true,
       "current": true
     },
     {
-      "value": "aspmx3.googlemail.com",
+      "value": "dummy4.mailserver.com",
       "firstSeen": 1322692530000,
       "lastSeen": 1591530037000,
       "recent": true,
@@ -189,8 +189,8 @@
   "whoisDomainMd5": "9b4f498908b61ea0887cdfdca9f47542",
   "whoisDomainUnicode": "dummydomain.com",
   "whoisTld": "com",
-  "whoisNameservers": "ns-1502.awsdns-59.org, ns-295.awsdns-36.com, ns-625.awsdns-14.net, ns-1837.awsdns-37.co.uk",
-  "whoisServer": "rdap.dummy.com",
+  "whoisNameservers": "dummy.nameserver.com, dummy1.nameserver.com, dummy2.nameserver.com, dummy3.nameserver.com",
+  "whoisServer": "dummy.com",
   "whoisRegistrarIanaID": 146,
   "whoisRegistrarName": "Dummy, LLC",
   "whoisRegistrarEmail": "abuse@dummydomain.com",
@@ -201,50 +201,50 @@
   "whoisRegistrantEmail": "dummy@whoisdummydomain.com",
   "whoisRegistrantName": "DUMMY, LLC",
   "whoisRegistrantOrganization": "DUMMY, LLC.",
-  "whoisRegistrantStreet": "157, Archbishop Makarios Ave, office 1",
+  "whoisRegistrantStreet": "157, Dummy street, office 1",
   "whoisRegistrantCity": "limassol",
   "whoisRegistrantZip": "3026",
   "whoisRegistrantCountry": "cyprus",
-  "whoisRegistrantPhone": "35795713635",
-  "whoisRegistrantFax": "35795713635",
+  "whoisRegistrantPhone": "12345678901",
+  "whoisRegistrantFax": "12345678901",
   "whoisRegistrantState": "cyprus",
-  "whoisRegistrantAddress": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisRegistrantAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
   "whoisRegistrantId": 0,
   "whoisAdminWhoisContactID": 0,
   "whoisAdminEmail": "dummy@whoisdummydomain.com",
   "whoisAdminName": "DUMMY, LLC",
   "whoisAdminOrganization": "DUMMY, LLC.",
-  "whoisAdminStreet": "157, Archbishop Makarios Ave, office 1",
+  "whoisAdminStreet": "157, Dummy street, office 1",
   "whoisAdminCity": "limassol",
   "whoisAdminZip": "3026",
   "whoisAdminCountry": "cyprus",
-  "whoisAdminPhone": "35795713635",
-  "whoisAdminFax": "35795713635",
-  "whoisAdminAddress": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisAdminPhone": "12345678901",
+  "whoisAdminFax": "12345678901",
+  "whoisAdminAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
   "whoisAdminId": 0,
   "whoisTechnicalWhoisContactID": 0,
   "whoisTechnicalEmail": "dummy@whoisdummydomain.com",
   "whoisTechnicalName": "DUMMY, LLC",
   "whoisTechnicalOrganization": "DUMMY, LLC.",
-  "whoisTechnicalStreet": "157, Archbishop Makarios Ave, office 1",
+  "whoisTechnicalStreet": "157, Dummy street, office 1",
   "whoisTechnicalCity": "limassol",
   "whoisTechnicalZip": "3026",
   "whoisTechnicalCountry": "cyprus",
-  "whoisTechnicalPhone": "35795713635",
-  "whoisTechnicalFax": "35795713635",
-  "whoisTechnicalAddress": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisTechnicalPhone": "12345678901",
+  "whoisTechnicalFax": "12345678901",
+  "whoisTechnicalAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
   "whoisTechnicalId": 0,
   "whoisBillingWhoisContactID": 0,
   "whoisBillingEmail": "dummy@whoisdummydomain.com",
   "whoisBillingName": "DUMMY, LLC",
   "whoisBillingOrganization": "DUMMY, LLC.",
-  "whoisBillingStreet": "157, Archbishop Makarios Ave, office 1",
+  "whoisBillingStreet": "157, Dummy street, office 1",
   "whoisBillingCity": "limassol",
   "whoisBillingZip": "3026",
   "whoisBillingCountry": "cyprus",
-  "whoisBillingPhone": "35795713635",
-  "whoisBillingFax": "35795713635",
-  "whoisBillingAddress": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisBillingPhone": "12345678901",
+  "whoisBillingFax": "12345678901",
+  "whoisBillingAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
   "whoisBillingId": 0,
   "whoisDomainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",
   "whoisAuditCreatedAt": 1591402147834,

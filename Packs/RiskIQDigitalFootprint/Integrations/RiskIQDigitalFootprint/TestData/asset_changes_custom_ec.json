@@ -2,12 +2,12 @@
   "successAssetType": [
     {
       "autoConfirmed": false,
-      "description": "domaintest.com",
+      "description": "dummy.com",
       "enterprise": false,
       "hostExcluded": false,
       "keystone": false,
       "measure": "added",
-      "name": "domaintest.com",
+      "name": "dummy.com",
       "priority": "NONE",
       "runDate": "2020-05-27",
       "state": "CANDIDATE",

@@ -6,4 +6,4 @@
 ### ASN Details
 |AS Number|Full Name|Description|Organizations|Countries|Registries|
 |---|---|---|---|---|---|
-| 63245 | AS63245 - united states - TRAFBIZ-01, united states | TRAFBIZ-01, united states | Trafbiz.com | united states | ARIN |
+| 63245 | AS63245 - united states - DUMMY-01, united states | DUMMY-01, united states | dummy.com | united states | DUMMYREG |

@@ -13,8 +13,6 @@ This integration was integrated and tested with enterprise version of RiskIQDigi
 | secret | API Secret | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
-| request_timeout | HTTP\(S\) Request Timeout \(in seconds\) | False |
-| max_records | Maximum records | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -35,7 +33,8 @@ Retrieve the set of assets that are connected to the requested asset.
 | type | The type of the asset for which connections are to be fetched.Valid Types: Domain, Host, IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only. | Required | 
 | name | The name of the asset for which connections are to be fetched. For example riskiq.com, 8.8.8.8, mail.net, etc. This argument supports a single value only. | Required | 
 | global | Setting this value to true will search all of the global inventory. Setting it to false will search for assets in the workspace associated with the authentication token. The default value for this argument from RiskIQ platform is false. This argument supports a single value only. | Optional | 
-
+| page | The index of the page to retrieve. The index is zero based so the first page is page 0. The default value for this argument from RiskIQ platform is 0. | Optional |
+| size | The response contains a page of assets for each related asset type. Size determines the number of associated assets of each type that are returned. The default value for this argument from RiskIQ platform is 20. | Optional |
 
 #### Context Output
 
@@ -59,7 +58,7 @@ Retrieve the set of assets that are connected to the requested asset.
 | RiskIQDigitalFootprint.Asset.description | String | Description of the connected asset. | 
 | RiskIQDigitalFootprint.Asset.confidence | String | Discovery confidence level of the connected asset. | 
 | RiskIQDigitalFootprint.Asset.priority | String | Priority of the connected asset. | 
-| RiskIQDigitalFootprint.Asset.autoConfirmed | Boolean | Date and Time when the connected asset was first observed. | 
+| RiskIQDigitalFootprint.Asset.autoConfirmed | Boolean | Was the connected asset auto\-confirmed. | 
 | RiskIQDigitalFootprint.Asset.enterprise | Boolean | Has the connected asset been designated as an enterprise asset. | 
 | RiskIQDigitalFootprint.Asset.keystone | Boolean | Was the connected asset designated as a discovery keystone. | 
 | RiskIQDigitalFootprint.Asset.organizations.createdAt | Date | Date and Time when the organization applied to the asset was created. | 
@@ -89,24 +88,24 @@ Retrieve the set of assets that are connected to the requested asset.
 | RiskIQDigitalFootprint.Asset.updatedAt | Date | The date of the most recent update performed by a user action for the connected asset. | 
 | RiskIQDigitalFootprint.Asset.hostExcluded | Boolean | If true then only IP Addresses associated with confirmed IP Blocks will be included in the results. Possible Values: True, False. | 
 | RiskIQDigitalFootprint.Asset.id | Number | ID of the connected asset. | 
-| RiskIQDigitalFootprint.Asset.source | String | If the source of connected the asset is known. | 
+| RiskIQDigitalFootprint.Asset.source | String | If the source of the connected asset is known. | 
 
 
 #### Command Example
-```!df-asset-connections type="Domain" name="riskiq.com"```
+```!df-asset-connections type="Domain" name="dummy.com" size="2"```
 
 #### Context Example
 ```
 {
     "DBotScore": [
         {
-            "Indicator": "https://go.riskiq.com/ZHtg60rBU0000r0Jf10uFNo",
+            "Indicator": "https://dummyurl.com",
             "Score": 0,
             "Type": "url",
             "Vendor": "RiskIQ Digital Footprint"
         },
         {
-            "Indicator": "https://go.riskiq.com/WN0rstHlu0O1FUp00w0xp00",
+            "Indicator": "http://dummyurl.com",
             "Score": 0,
             "Type": "url",
             "Vendor": "RiskIQ Digital Footprint"
@@ -118,14 +117,14 @@ Retrieve the set of assets that are connected to the requested asset.
                 "autoConfirmed": true,
                 "confidence": "ABSOLUTE",
                 "createdAt": 1594469523567,
-                "description": "dgo.ext.riskiq.com",
+                "description": "host.dummy.com",
                 "enterprise": false,
                 "firstSeen": 1594168047000,
                 "id": 230123528,
                 "keystone": false,
-                "label": "dgo.ext.riskiq.com",
+                "label": "host.dummy.com",
                 "lastSeen": 1594508906149,
-                "name": "dgo.ext.riskiq.com",
+                "name": "host.dummy.com",
                 "priority": "NONE",
                 "state": "CONFIRMED",
                 "type": "HOST",
@@ -137,14 +136,14 @@ Retrieve the set of assets that are connected to the requested asset.
                 "autoConfirmed": true,
                 "confidence": "ABSOLUTE",
                 "createdAt": 1594468714807,
-                "description": "test123h32k2hrgzs.ext.riskiq.com",
+                "description": "host1.dummy.com",
                 "enterprise": false,
                 "firstSeen": 1593899022000,
                 "id": 230123266,
                 "keystone": false,
-                "label": "test123h32k2hrgzs.ext.riskiq.com",
+                "label": "host1.dummy.com",
                 "lastSeen": 1594508906149,
-                "name": "test123h32k2hrgzs.ext.riskiq.com",
+                "name": "host1.dummy.com",
                 "priority": "NONE",
                 "state": "CONFIRMED",
                 "type": "HOST",
@@ -155,13 +154,13 @@ Retrieve the set of assets that are connected to the requested asset.
             {
                 "autoConfirmed": false,
                 "createdAt": 1594456489831,
-                "description": "https://go.riskiq.com/ZHtg60rBU0000r0Jf10uFNo",
+                "description": "https://dummyurl.com",
                 "enterprise": false,
                 "firstSeen": 1594301578052,
                 "keystone": false,
-                "label": "https://go.riskiq.com/ZHtg60rBU0000r0Jf10uFNo",
+                "label": "https://dummyurl.com",
                 "lastSeen": 1594301578052,
-                "name": "https://go.riskiq.com/ZHtg60rBU0000r0Jf10uFNo",
+                "name": "https://dummyurl.com",
                 "state": "CONFIRMED",
                 "type": "PAGE",
                 "updatedAt": 1594456489831,
@@ -171,13 +170,13 @@ Retrieve the set of assets that are connected to the requested asset.
             {
                 "autoConfirmed": false,
                 "createdAt": 1594456489831,
-                "description": "https://go.riskiq.com/WN0rstHlu0O1FUp00w0xp00",
+                "description": "http://dummyurl.com",
                 "enterprise": false,
                 "firstSeen": 1594301577733,
                 "keystone": false,
-                "label": "https://go.riskiq.com/WN0rstHlu0O1FUp00w0xp00",
+                "label": "http://dummyurl.com",
                 "lastSeen": 1594301577733,
-                "name": "https://go.riskiq.com/WN0rstHlu0O1FUp00w0xp00",
+                "name": "http://dummyurl.com",
                 "state": "CONFIRMED",
                 "type": "PAGE",
                 "updatedAt": 1594456489831,
@@ -188,10 +187,10 @@ Retrieve the set of assets that are connected to the requested asset.
     },
     "URL": [
         {
-            "Data": "https://go.riskiq.com/ZHtg60rBU0000r0Jf10uFNo"
+            "Data": "https://dummyurl.com"
         },
         {
-            "Data": "https://go.riskiq.com/WN0rstHlu0O1FUp00w0xp00"
+            "Data": "http://dummyurl.com"
         }
     ]
 }
@@ -200,16 +199,18 @@ Retrieve the set of assets that are connected to the requested asset.
 #### Human Readable Output
 
 >### CONNECTED ASSETS
->### Hosts (2)
+>### Total Hosts: 20
+>### Fetched Hosts: 2
 >|Name|State|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|
->| dgo.ext.riskiq.com | CONFIRMED | 2020-07-08 00:27:27 | 2020-07-11 23:08:26 |
->| test123h32k2hrgzs.ext.riskiq.com | CONFIRMED | 2020-07-04 21:43:42 | 2020-07-11 23:08:26 |
->### Pages (2)
+>| host.dummy.com | CONFIRMED | 2020-07-08 00:27:27 | 2020-07-11 23:08:26 |
+>| host1.dummy.com | CONFIRMED | 2020-07-04 21:43:42 | 2020-07-11 23:08:26 |
+>### Total Pages: 50
+>### Fetched Pages: 2
 >|Name|State|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|
->| https://go.riskiq.com/ZHtg60rBU0000r0Jf10uFNo | CONFIRMED | 2020-07-09 13:32:58 | 2020-07-09 13:32:58 |
->| https://go.riskiq.com/WN0rstHlu0O1FUp00w0xp00 | CONFIRMED | 2020-07-09 13:32:57 | 2020-07-09 13:32:57 |
+>| https://dummyurl.com | CONFIRMED | 2020-07-09 13:32:58 | 2020-07-09 13:32:58 |
+>| http://dummyurl.com | CONFIRMED | 2020-07-09 13:32:57 | 2020-07-09 13:32:57 |
 
 
 ### df-asset-changes-summary
@@ -225,7 +226,7 @@ Retrieve summary information describing counts of confirmed assets that have bee
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | date | The date of the run in which the changes were identified (YYYY-MM-DD). If not passed it would consider the most recently run date when the discovery was run on RiskIQ Digital Footprint. This argument supports a single value only. | Optional | 
-| range | The period of time over which the changes were identified. Supported ranges are 1, 7, and 30 days. The default value for this argument from RiskIQ platform is 1. This argument supports a single value only. | Optional | 
+| range | The period of time for which the changes summary is to be fetched. Supported ranges are 1, 7, and 30 days. The default value for this argument from RiskIQ platform is 1. This argument supports a single value only. | Optional | 
 | brand | Filter summary of changed assets based on the brand associated with the assets. This argument supports a single value only. | Optional | 
 | organization | Filter summary of changed assets based on the organization associated with the assets. This argument supports a single value only. | Optional | 
 | tag | Filter summary of changed assets based on the tag associated with the assets. This argument supports a single value only. | Optional | 
@@ -472,6 +473,7 @@ Retrieve summary information describing counts of confirmed assets that have bee
 #### Human Readable Output
 
 >### [INVENTORY CHANGES](https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/2020-07-11)
+>#### Note: If the range argument is specified, a list of tables containing a daily, weekly and monthly changes summary identified over the given period of time will be presented i.e. there will be an individual table for all the dates from the last run date to the date derived from the range.
 >### Date of the run in which following changes were identified: 2020-07-11
 >|Asset Type|1 Day|7 Days|30 Days|
 >|---|---|---|---|
@@ -504,7 +506,8 @@ Retrieve the list of confirmed assets that have been added or removed from inven
 | brand | Filter changed assets based on the brand associated with the assets. This argument supports a single value only. | Optional | 
 | organization | Filter changed assets based on the organization associated with the assets. This argument supports a single value only. | Optional | 
 | tag | Filter changed assets based on the tag associated with the assets. This argument supports a single value only. | Optional | 
-
+| page | The index of the page to retrieve. The index is zero based so the first page is page 0. The default value for this argument from RiskIQ platform is 0. | Optional |
+| size | The number of matching assets to return per page. The default value for this argument from RiskIQ platform is 20. | Optional |
 
 #### Context Output
 
@@ -584,20 +587,20 @@ Retrieve the list of confirmed assets that have been added or removed from inven
 
 
 #### Command Example
-```!df-asset-changes type="Page" range="30"```
+```!df-asset-changes type="Page" range="30" size="2"```
 
 #### Context Example
 ```
 {
     "DBotScore": [
         {
-            "Indicator": "http://104.riskiq.com/",
+            "Indicator": "http://dummy.com/",
             "Score": 0,
             "Type": "url",
             "Vendor": "RiskIQ Digital Footprint"
         },
         {
-            "Indicator": "http://1234.riskiq.com/",
+            "Indicator": "http://dummy1.com/",
             "Score": 0,
             "Type": "url",
             "Vendor": "RiskIQ Digital Footprint"
@@ -607,11 +610,11 @@ Retrieve the list of confirmed assets that have been added or removed from inven
         "AssetChanges": [
             {
                 "autoConfirmed": false,
-                "description": "http://104.riskiq.com/",
+                "description": "http://dummy.com/",
                 "enterprise": false,
                 "keystone": false,
                 "measure": "added",
-                "name": "http://104.riskiq.com/",
+                "name": "http://dummy.com/",
                 "priority": "NONE",
                 "runDate": "2020-07-11",
                 "source": false,
@@ -621,11 +624,11 @@ Retrieve the list of confirmed assets that have been added or removed from inven
             },
             {
                 "autoConfirmed": false,
-                "description": "http://1234.riskiq.com/",
+                "description": "http://dummy1.com/",
                 "enterprise": false,
                 "keystone": false,
                 "measure": "added",
-                "name": "http://1234.riskiq.com/",
+                "name": "http://dummy1.com/",
                 "priority": "NONE",
                 "runDate": "2020-07-11",
                 "source": false,
@@ -637,10 +640,10 @@ Retrieve the list of confirmed assets that have been added or removed from inven
     },
     "URL": [
         {
-            "Data": "http://104.riskiq.com/"
+            "Data": "http://dummy.com/"
         },
         {
-            "Data": "http://1234.riskiq.com/"
+            "Data": "http://dummy1.com/"
         }
     ]
 }
@@ -650,10 +653,12 @@ Retrieve the list of confirmed assets that have been added or removed from inven
 
 >### [INVENTORY CHANGES: DETAILS](https://app.riskiq.net/a/main/index#/dashboard/inventorychanges/details/date=2020-07-11&measure=ADDED&range=30&type=PAGE)
 >### Added Inventory Assets: 2
+>### Total: 600
+>### Fetched: 2
 >|Name|Description|State|Priority|Measure|RunDate|
 >|---|---|---|---|---|---|
->| http://104.riskiq.com/ | http://104.riskiq.com/ | CONFIRMED | NONE | added | 2020-07-11 |
->| http://1234.riskiq.com/ | http://1234.riskiq.com/ | CONFIRMED | NONE | added | 2020-07-11 |
+>| http://dummy.com/ | http://dummy.com/ | CONFIRMED | NONE | added | 2020-07-11 |
+>| http://dummy1.com/ | http://dummy1.com/ | CONFIRMED | NONE | added | 2020-07-11 |
 
 
 ### df-get-asset
@@ -673,7 +678,7 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
 | type | The type of the asset to retrieve. Valid Types: Domain, Host, IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only. | Optional | 
 | global | Setting this value to true will search all of the global inventory. Setting it to false will search for assets in the workspace associated with the authentication token. The default value for this argument from RiskIQ platform is false. This argument supports a single value only. | Optional | 
 | recent | If specified and 'true', then only return recent data on the asset. The default value for this argument from RiskIQ platform is false. This argument supports a single value only. | Optional | 
-
+| size | Digital Footprint (Global Inventory) assets potentially contain pages of related data, for example attributes, cookies and host pairs. Size determines the number for each of these associated items that are returned. The default value for this argument from RiskIQ platform is 20. | Optional |
 
 #### Context Output
 
@@ -1521,13 +1526,13 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
 
 
 #### Command Example
-```!df-get-asset name="riskiq.is" type="Domain" global="true"```
+```!df-get-asset name="dummy.com" type="Domain" global="true"```
 
 #### Context Example
 ```
 {
     "DBotScore": {
-        "Indicator": "riskiq.is",
+        "Indicator": "dummy.com",
         "Score": 0,
         "Type": "domain",
         "Vendor": "RiskIQ Digital Footprint"
@@ -1535,31 +1540,31 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
     "Domain": {
         "Admin": {
             "Country": "",
-            "Email": "admin@comlaude.com",
+            "Email": "admin@dummy.com",
             "Name": "Domain Manager",
-            "Phone": "44 2074218250"
+            "Phone": "12 3456789101"
         },
-        "Name": "riskiq.is",
-        "NameServers": "parking00.isnic.is",
+        "Name": "dummy.com",
+        "NameServers": "dummy.nameserver.com",
         "Registrant": {
             "Country": "",
-            "Email": "domains@riskiq.net",
+            "Email": "domains@dummy.com",
             "Name": "RiskIQ, Inc.",
-            "Phone": "1 8884154447"
+            "Phone": "1 2345678901"
         },
         "WHOIS": {
             "Admin": {
                 "Country": "",
-                "Email": "admin@comlaude.com",
+                "Email": "admin@dummy.com",
                 "Name": "Domain Manager",
-                "Phone": "44 2074218250"
+                "Phone": "12 3456789101"
             },
-            "NameServers": "parking00.isnic.is",
+            "NameServers": "dummy.nameserver.com",
             "Registrant": {
                 "Country": "",
-                "Email": "domains@riskiq.net",
+                "Email": "domains@dummy.com",
                 "Name": "RiskIQ, Inc.",
-                "Phone": "1 8884154447"
+                "Phone": "1 2345678901"
             }
         }
     },
@@ -1571,13 +1576,13 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
                     "firstSeen": 1558844749884,
                     "lastSeen": 1592699566724,
                     "recent": true,
-                    "value": "admin@comlaude.com"
+                    "value": "admin@dummy.com"
                 }
             ],
             "assetAlexaRank": "Not in Alexa",
             "assetCount": 1063,
             "assetDetailedFromWhoisAt": 1592699566724,
-            "assetDomain": "riskiq.is",
+            "assetDomain": "dummy.com",
             "assetFirstSeen": 1558769518000,
             "assetLastSeen": 1593124040000,
             "assetNameServers": [
@@ -1586,14 +1591,14 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
                     "firstSeen": 1558769518000,
                     "lastSeen": 1593124040000,
                     "recent": true,
-                    "value": "parking00.isnic.is"
+                    "value": "dummy.nameserver.com"
                 },
                 {
                     "current": true,
                     "firstSeen": 1558769518000,
                     "lastSeen": 1593124040000,
                     "recent": true,
-                    "value": "parking01.isnic.is"
+                    "value": "dummy1.nameserver.com"
                 }
             ],
             "assetParkedDomain": [
@@ -1609,7 +1614,7 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
                     "firstSeen": 1558844749884,
                     "lastSeen": 1592699566724,
                     "recent": true,
-                    "value": "domains@riskiq.net"
+                    "value": "domains@dummy.com"
                 }
             ],
             "assetRegistrantOrgs": [
@@ -1647,10 +1652,10 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
             "assetSoaRecords": [
                 {
                     "current": true,
-                    "email": "parkadm@isnic.is",
+                    "email": "dummyadm@dummy.com",
                     "firstSeen": 1558769518000,
                     "lastSeen": 1593124040000,
-                    "nameServer": "parking00.isnic.is",
+                    "nameServer": "dummy.nameserver.com",
                     "recent": true,
                     "serialNumber": 1587126286
                 }
@@ -1661,7 +1666,7 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
                     "firstSeen": 1558844749884,
                     "lastSeen": 1592699566724,
                     "recent": true,
-                    "value": "hostmaster@comlaude.com"
+                    "value": "technical@dummy.com"
                 }
             ],
             "assetWhoisId": 6668186720435795000,
@@ -1671,50 +1676,50 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
                     "firstSeen": 1558844749884,
                     "lastSeen": 1592699566724,
                     "recent": true,
-                    "value": "whois.isnic.is"
+                    "value": "whois.dummy.com"
                 }
             ],
-            "description": "riskiq.is",
+            "description": "dummy.com",
             "firstSeen": 1558769518000,
-            "label": "riskiq.is",
+            "label": "dummy.com",
             "lastSeen": 1593362239046,
-            "name": "riskiq.is",
+            "name": "dummy.com",
             "type": "DOMAIN",
             "uuid": "78c63cee-18bb-d342-f00d-81bdbcf53be8",
-            "whoisAdminEmail": "admin@comlaude.com",
+            "whoisAdminEmail": "admin@dummy.com",
             "whoisAdminId": 0,
             "whoisAdminOrganization": "Domain Manager",
-            "whoisAdminPhone": "44 2074218250",
+            "whoisAdminPhone": "12 3456789101",
             "whoisAdminWhoisContactID": 0,
             "whoisAuditCreatedAt": 1589819603039,
             "whoisAuditUpdatedAt": 1589819603039,
             "whoisCompositeParseCode": 7619,
-            "whoisContactEmails": "domains@riskiq.net, admin@comlaude.com, hostmaster@comlaude.com, parkadm@isnic.is",
+            "whoisContactEmails": "domains@dummy.com, admin@dummy.com, technical@dummy.com, dummyadm@dummy.com",
             "whoisContactOrganizations": "RiskIQ, Inc., Domain Manager, Technical Manager, Domain Parking Admin",
             "whoisContacts": [
                 {
-                    "email": "domains@riskiq.net",
+                    "email": "domains@dummy.com",
                     "id": 0,
                     "organization": "RiskIQ, Inc.",
-                    "phone": "1 8884154447",
+                    "phone": "1 2345678901",
                     "whoisContactID": 0
                 },
                 {
-                    "email": "admin@comlaude.com",
+                    "email": "admin@dummy.com",
                     "id": 0,
                     "organization": "Domain Manager",
-                    "phone": "44 2074218250",
+                    "phone": "12 3456789101",
                     "whoisContactID": 0
                 },
                 {
-                    "email": "hostmaster@comlaude.com",
+                    "email": "technical@dummy.com",
                     "id": 0,
                     "organization": "Technical Manager",
-                    "phone": "44 2074218250",
+                    "phone": "12 3456789101",
                     "whoisContactID": 0
                 },
                 {
-                    "email": "parkadm@isnic.is",
+                    "email": "dummyadm@dummy.com",
                     "id": 0,
                     "organization": "Domain Parking Admin",
                     "phone": "354 5782030",
@@ -1722,30 +1727,30 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
                 }
             ],
             "whoisCreatedAt": 1589819603070,
-            "whoisDomain": "riskiq.is",
+            "whoisDomain": "dummy.com",
             "whoisDomainAvailable": false,
             "whoisDomainMd5": "63dfc67f70ed3fb8f2fa1b26fa52cadc",
-            "whoisDomainUnicode": "riskiq.is",
+            "whoisDomainUnicode": "dummy.com",
             "whoisExpired": false,
             "whoisID": 6668186720435795000,
             "whoisId": 6668186720435795000,
-            "whoisNameservers": "parking00.isnic.is",
+            "whoisNameservers": "dummy.nameserver.com",
             "whoisNoRecord": false,
-            "whoisRegistrantEmail": "domains@riskiq.net",
+            "whoisRegistrantEmail": "domains@dummy.com",
             "whoisRegistrantId": 0,
             "whoisRegistrantOrganization": "RiskIQ, Inc.",
-            "whoisRegistrantPhone": "1 8884154447",
+            "whoisRegistrantPhone": "1 2345678901",
             "whoisRegistrantWhoisContactID": 0,
             "whoisRegistrarCreatedAt": 1494374400000,
             "whoisRegistrarExpiresAt": 1620604800000,
             "whoisRegistrarParseCode": 0,
             "whoisRegistryParseCode": 7619,
-            "whoisServer": "whois.isnic.is",
+            "whoisServer": "whois.dummy.com",
             "whoisStatus": "ACTIVE",
-            "whoisTechnicalEmail": "hostmaster@comlaude.com",
+            "whoisTechnicalEmail": "technical@dummy.com",
             "whoisTechnicalId": 0,
             "whoisTechnicalOrganization": "Technical Manager",
-            "whoisTechnicalPhone": "44 2074218250",
+            "whoisTechnicalPhone": "12 3456789101",
             "whoisTechnicalWhoisContactID": 0,
             "whoisTld": "is",
             "whoisUpdatedAt": 1592699566724
@@ -1760,20 +1765,20 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
 >### Basic Details
 >|Name|Type|UUID|First Seen (GMT)|Last Seen (GMT)|
 >|---|---|---|---|---|
->| riskiq.is | DOMAIN | 78c63cee-18bb-d342-f00d-81bdbcf53be8 | 2019-05-25 07:31:58 | 2020-06-28 16:37:19 |
+>| dummy.com | DOMAIN | 78c63cee-18bb-d342-f00d-81bdbcf53be8 | 2019-05-25 07:31:58 | 2020-06-28 16:37:19 |
 >### Domain Details
 >|Domain Name|Alexa Rank|
 >|---|---|
->| riskiq.is | Not in Alexa |
+>| dummy.com | Not in Alexa |
 >### Name Servers
 >|Name|First Seen (GMT)|Last Seen (GMT)|Recent|Current|
 >|---|---|---|---|---|
->| parking00.isnic.is | 2019-05-25 07:31:58 | 2020-06-25 22:27:20 | true | true |
->| parking01.isnic.is | 2019-05-25 07:31:58 | 2020-06-25 22:27:20 | true | true |
+>| dummy.nameserver.com | 2019-05-25 07:31:58 | 2020-06-25 22:27:20 | true | true |
+>| dummy1.nameserver.com | 2019-05-25 07:31:58 | 2020-06-25 22:27:20 | true | true |
 >### WHOIS
 >|Whois Server|Email|Organization|Phone|Name Servers|
 >|---|---|---|---|---|
->| whois.isnic.is | Registrant: domains@riskiq.net<br/>Admin: admin@comlaude.com<br/>Technical: hostmaster@comlaude.com<br/> | Registrant: RiskIQ, Inc.<br/>Admin: Domain Manager<br/>Technical: Technical Manager<br/> | Registrant: 1 8884154447<br/>Admin: 44 2074218250<br/>Technical: 44 2074218250<br/> | parking00.isnic.is |
+>| whois.dummy.com | Registrant: domains@dummy.com<br/>Admin: admin@dummy.com<br/>Technical: technical@dummy.com<br/> | Registrant: RiskIQ, Inc.<br/>Admin: Domain Manager<br/>Technical: Technical Manager<br/> | Registrant: 1 2345678901<br/>Admin: 12 3456789101<br/>Technical: 12 3456789101<br/> | dummy.nameserver.com |
 
 
 ### df-add-assets
@@ -1847,7 +1852,7 @@ Update one or more assets in Global Inventory with provided set of properties.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the asset to be updated. This argument supports a single value only. | Optional | 
-| type | Asset type. Possible values: Domain, Host, IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only. | Optional | 
+| type | The type of the asset to be updated. Possible values: Domain, Host, IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only. | Optional | 
 | state | Set the asset state. Possible values: Candidate, Approved Inventory, Requires Investigation, Dependencies, Monitor Only. This argument supports a single value only. | Optional | 
 | priority | Set the asset priority. Possible values: High, Medium, Low, None. The default value for this argument from RiskIQ platform is None. This argument supports a single value only. | Optional | 
 | removed_state | Remove an asset from inventory. Possible values: Dismissed. This argument supports a single value only. | Optional | 
@@ -1873,7 +1878,7 @@ Update one or more assets in Global Inventory with provided set of properties.
 
 
 #### Command Example
-```!df-update-assets name="riskiq.is" type="Domain" organization="RiskIQ" action="Add"```
+```!df-update-assets name="dummy.com" type="Domain" organization="RiskIQ" action="Add"```
 
 #### Context Example
 ```

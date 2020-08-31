@@ -14,12 +14,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Scripts
 * DeleteContext
 * GetServerURL
-* EmailAskUser
 
 ### Commands
 * setIncident
 * df-update-assets
 * df-get-asset
+* send-mail
 
 ## Playbook Inputs
 ---

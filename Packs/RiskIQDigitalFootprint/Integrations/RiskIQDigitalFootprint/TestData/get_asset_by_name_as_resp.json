@@ -9,7 +9,7 @@
     "asset": {
         "asNames": [
             {
-                "value": "TRAFBIZ-01",
+                "value": "DUMMY-01",
                 "firstSeen": 1532708763182,
                 "lastSeen": 1587456222572,
                 "recent": true,
@@ -18,7 +18,7 @@
         ],
         "orgNames": [
             {
-                "value": "Trafbiz.com",
+                "value": "dummy.com",
                 "firstSeen": 1532708763182,
                 "lastSeen": 1586212561931,
                 "recent": true,
@@ -27,7 +27,7 @@
         ],
         "orgIds": [
             {
-                "value": "RISKI-1",
+                "value": "DUMMY-ORG",
                 "firstSeen": 1532708763182,
                 "lastSeen": 1586212561931,
                 "recent": true,
@@ -55,7 +55,7 @@
         ],
         "registries": [
             {
-                "value": "ARIN",
+                "value": "DUMMYREG",
                 "firstSeen": 1532708763182,
                 "lastSeen": 1587456222572,
                 "recent": true,
@@ -68,12 +68,12 @@
         "asnNumber": 63245,
         "asn": {
             "asnID": 63245,
-            "description": "TRAFBIZ-01, united states",
-            "registry": "ARIN",
+            "description": "DUMMY-01, united states",
+            "registry": "DUMMYREG",
             "countryCode": "united states",
             "name": "AS63245",
             "id": 63245,
-            "fullName": "AS63245 - united states - TRAFBIZ-01, united states"
+            "fullName": "AS63245 - united states - DUMMY-01, united states"
         }
     },
     "history": [],

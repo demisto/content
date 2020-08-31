@@ -1,11 +1,11 @@
 {
-  "name": "domains@riskiq.com",
+  "name": "dummy@contact.com",
   "type": "CONTACT",
   "firstSeen": 1474994431102,
   "lastSeen": 1591634267273,
   "uuid": "3ae11a55-2925-c271-7806-f0839ce24350",
-  "label": "domains@riskiq.com",
-  "description": "domains@riskiq.com",
+  "label": "dummy@contact.com",
+  "description": "dummy@contact.com",
   "_meta": {
     "labels": {
       "Bucket1": "Top 100k",
@@ -30,10 +30,10 @@
     }
   },
   "asset": {
-    "email": "domains@riskiq.com",
+    "email": "dummy@contact.com",
     "names": [
       {
-        "value": "Elias Manousos",
+        "value": "Dummy Person",
         "firstSeen": 1515223308119,
         "lastSeen": 1569768302096
       },
@@ -55,28 +55,28 @@
     "count": 18,
     "nameServers": [
       {
-        "value": "ns-1502.awsdns-59.org",
+        "value": "dummy.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-1837.awsdns-37.co.uk",
+        "value": "dummy1.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-295.awsdns-36.com",
+        "value": "dummy2.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,
         "current": true
       },
       {
-        "value": "ns-625.awsdns-14.net",
+        "value": "dummy3.nameserver.com",
         "firstSeen": 1475863092000,
         "lastSeen": 1591568678000,
         "recent": true,

@@ -61,6 +61,7 @@ tasks:
         complex:
           root: inputs.asset_type
       uuid: {}
+      size: {}
     reputationcalc: 3
     separatecontext: false
     view: |-
@@ -1405,22 +1406,34 @@ tasks:
       id: 4263e446-90f2-402f-8503-67c044f46ce5
       version: -1
       name: Email the contact about the owner's information
-      description: Ask a user a question via email and process the reply directly
-        into the investigation.
-      scriptName: EmailAskUser
+      description: Send an email that contains the owner's information to the contact
+        of the asset.
+      script: '|||send-mail'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
       - "20"
     scriptarguments:
-      additionalOptions: {}
-      attachIds: {}
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
       bcc: {}
-      bodyType: {}
+      body:
+        simple: |-
+          Hello,
+
+          The owner(s) of the asset ${inputs.asset_name} of type ${inputs.asset_type}: ${incident.riskiqassetowner}
       cc: {}
-      email:
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'RiskIQ Digital Footprint XSOAR: Enrich incident, organization found.'
+      templateParams: {}
+      to:
         complex:
           root: incident
           filters:
@@ -1430,19 +1443,9 @@ tasks:
                   simple: incident.riskiqassetcontact
                 iscontext: true
           accessor: riskiqassetcontact
-      message:
-        simple: 'The owner(s) of the asset ${inputs.asset_name}: ${incident.riskiqassetowner}'
-      option1: {}
-      option2: {}
-      persistent: {}
-      playbookTaskID: {}
-      replyAddress: {}
-      replyEntriesTag: {}
-      retries: {}
-      roles: {}
-      subject:
-        simple: 'RiskIQ Digital Footprint XSOAR: Enrich incident, organization found.'
-      task: {}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
     continueonerror: true
     separatecontext: false
     view: |-

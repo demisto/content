@@ -1,20 +1,20 @@
 {
-  "name": "http://www.minotredcross.org/",
+  "name": "http://www.dummy.org/",
   "type": "PAGE",
   "firstSeen": 1539018024251,
   "lastSeen": 1591634124324,
   "uuid": "8dfdd21e-5012-3bd6-f9a5-c3151f1b9e40",
-  "label": "http://www.minotredcross.org/",
-  "description": "http://www.minotredcross.org/",
+  "label": "http://www.dummy.org/",
+  "description": "http://www.dummy.org/",
   "data": {
     "hostPairs": [
         {
           "firstSeen": 1587240574392,
           "lastSeen": 1591682405138,
           "count": 5071,
-          "id": "www.minotredcross.org$ae01.alicdn.com$parentPage",
+          "id": "www.dummy.org$ae01.alicdn.com$parentPage",
           "childHostname": "ae01.alicdn.com",
-          "parentHostname": "www.minotredcross.org",
+          "parentHostname": "www.dummy.org",
           "cause": "parentPage",
           "childCount": 136290652,
           "parentCount": 507584,
@@ -26,9 +26,9 @@
           "firstSeen": 1587278424091,
           "lastSeen": 1591555747171,
           "count": 474022,
-          "id": "www.minotredcross.org$ae01.alicdn.com$img.src",
+          "id": "www.dummy.org$ae01.alicdn.com$img.src",
           "childHostname": "ae01.alicdn.com",
-          "parentHostname": "www.minotredcross.org",
+          "parentHostname": "www.dummy.org",
           "cause": "img.src",
           "childCount": 136290652,
           "parentCount": 507584,
@@ -42,9 +42,9 @@
           "firstSeen": 1588571785721,
           "lastSeen": 1590537939334,
           "count": 401,
-          "id": "org.minotredcross.www$GoogleAnalyticsAccountNumber$ua-908",
-          "hostname": "www.minotredcross.org",
-          "domain": "minotredcross.org",
+          "id": "org.dummy.www$GoogleAnalyticsAccountNumber$ua-908",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
           "attributeValue": "ua-908",
           "attributeType": "GoogleAnalyticsAccountNumber"
         },
@@ -52,9 +52,9 @@
           "firstSeen": 1587332054055,
           "lastSeen": 1590399084776,
           "count": 19,
-          "id": "org.minotredcross.www$GoogleAnalyticsAccountNumber$ua-853",
-          "hostname": "www.minotredcross.org",
-          "domain": "minotredcross.org",
+          "id": "org.dummy.www$GoogleAnalyticsAccountNumber$ua-853",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
           "attributeValue": "ua-853",
           "attributeType": "GoogleAnalyticsAccountNumber"
         }
@@ -64,9 +64,9 @@
           "firstSeen": 1587240574392,
           "lastSeen": 1591682405138,
           "count": 359218,
-          "id": "org.minotredcross.www$CloudFlare$DDOS Protection$",
-          "hostname": "www.minotredcross.org",
-          "domain": "minotredcross.org",
+          "id": "org.dummy.www$CloudFlare$DDOS Protection$",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
           "webComponentName": "CloudFlare",
           "webComponentCategory": "DDOS Protection",
           "ports": [
@@ -88,9 +88,9 @@
           "firstSeen": 1587240574392,
           "lastSeen": 1591682405138,
           "count": 62864,
-          "id": "org.minotredcross.www$CloudFlare$Server$",
-          "hostname": "www.minotredcross.org",
-          "domain": "minotredcross.org",
+          "id": "org.dummy.www$CloudFlare$Server$",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
           "webComponentName": "CloudFlare",
           "webComponentCategory": "Server",
           "ports": [
@@ -136,7 +136,7 @@
             "state": "CA",
             "locale": "San Francisco"
           },
-          "subjectAlternativeNames": "minotredcross.org, *.minotredcross.org, sni.cloudflaressl.com",
+          "subjectAlternativeNames": "dummy.org, *.dummy.org, sni.cloudflaressl.com",
           "publicKeyAlgorithm": "EC",
           "certificateAuthority": false,
           "selfSigned": false
@@ -147,27 +147,27 @@
           "firstSeen": 1587240574392,
           "lastSeen": 1591595881794,
           "count": 64122,
-          "id": "org.minotredcross.www$.minotredcross.org$9f13ed63618f434b8389cd737292c591",
-          "hostname": "www.minotredcross.org",
-          "domain": "minotredcross.org",
-          "cookieDomain": ".minotredcross.org",
+          "id": "org.dummy.www$.dummy.org$9f13ed63618f434b8389cd737292c591",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "cookieDomain": ".dummy.org",
           "cookieName": "__cfduid"
         },
         {
           "firstSeen": 1587278381401,
           "lastSeen": 1591555686897,
           "count": 940,
-          "id": "org.minotredcross.www$.rsms.me$9f13ed63618f434b8389cd737292c591",
-          "hostname": "www.minotredcross.org",
-          "domain": "minotredcross.org",
+          "id": "org.dummy.www$.rsms.me$9f13ed63618f434b8389cd737292c591",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
           "cookieDomain": ".rsms.me",
           "cookieName": "__cfduid"
         }
       ]
   },
-  "assetUrl": "http://www.minotredcross.org/",
+  "assetUrl": "http://www.dummy.org/",
   "assetHttpMethod": "GET",
-  "assetService": "http://www.minotredcross.org:80",
+  "assetService": "http://www.dummy.org:80",
   "assetIpAddresses": [
     {
       "value": "104.28.12.78",
@@ -488,7 +488,7 @@
     },
     {
       "headerName": "Set-Cookie",
-      "headerValue": "__cfduid=d08757163fb72ae75df81aae5757da6f01591595880; expires=Wed, 08-Jul-20 05:58:00 GMT; path=/; domain=.minotredcross.org; HttpOnly; SameSite=Lax",
+      "headerValue": "__cfduid=d08757163fb72ae75df81aae5757da6f01591595880; expires=Wed, 08-Jul-20 05:58:00 GMT; path=/; domain=.dummy.org; HttpOnly; SameSite=Lax",
       "firstSeen": 1591595881794,
       "lastSeen": 1591595881794
     },
@@ -508,7 +508,7 @@
   "assetCookies": [
     {
       "cookieName": "__cfduid",
-      "cookieDomain": "minotredcross.org",
+      "cookieDomain": "dummy.org",
       "firstSeen": 1590661399485,
       "lastSeen": 1591595881794,
       "recent": true,
@@ -785,9 +785,9 @@
       "sha1": "a33fc7ab5ab26b33dd23fce194dc47a9904c6e70",
       "serialNumber": "4f219e40599f0dfad05ad0ec72c55fc",
       "subjectAlternativeNames": [
-        "dsars.redcross.org",
-        "test.dsars.redcross.org",
-        "train.dsars.redcross.org"
+        "dsars.dummy.org",
+        "test.dsars.dummy.org",
+        "train.dsars.dummy.org"
       ],
       "firstSeen": 1563888637711,
       "lastSeen": 1591473937119,
@@ -811,7 +811,7 @@
         "country": "US",
         "unit": "IT Infrastructure Service Delivery",
         "organization": "American Red Cross",
-        "common name": "dsars.redcross.org",
+        "common name": "dsars.dummy.org",
         "state": "District of Columbia",
         "locale": "Washington"
       },
@@ -824,16 +824,16 @@
   "assetCause": {
     "causepageguid": "En4ObZVNRueBKmCVuEovPQ==",
     "cause": "redirect",
-    "location": "http://www.minotredcross.org/",
+    "location": "http://www.dummy.org/",
     "possiblematches": 0,
     "loopdetected": false,
     "version": 103
   },
-  "assetReferrer": "http://minotredcross.org/",
+  "assetReferrer": "http://dummy.org/",
   "assetRedirectType": "FINAL",
   "assetFinalUrls": [
     {
-      "value": "http://www.minotredcross.org/",
+      "value": "http://www.dummy.org/",
       "firstSeen": 1543430385561,
       "lastSeen": 1591595881794,
       "recent": true,
@@ -870,7 +870,7 @@
   ],
   "assetResourceUrls": [
     {
-      "url": "http://www.minotredcross.org/plugins/slickslider/slick.min.js",
+      "url": "http://www.dummy.org/plugins/slickslider/slick.min.js",
       "resources": [
         {
           "md5": "29065e3aefec2f239f60f5d121bf0dfb",
@@ -888,9 +888,9 @@
           "sha256": "JrrvXATohmgu/ndLA0htWZ8Y85YdaNXNhl7lh/HEcwY=",
           "sha384": "mt4VQN6XDRstFYbic8mSw5SwvknKpOVBJJT3eVhu8/ge1ub4414oxJi+xj52kciQ",
           "sha512": "TSAq8pK7wJFP9JMBQ434BT8gZpRpEx00go5EQfujQf7iFg3Zr6htxW5Ac/aBS+oEgeGnBzP6EHnsYrJHsOftgg==",
-          "url": "http://www.minotredcross.org/plugins/slickslider/slick.min.js",
+          "url": "http://www.dummy.org/plugins/slickslider/slick.min.js",
           "cached": false,
-          "host": "www.minotredcross.org"
+          "host": "www.dummy.org"
         }
       ],
       "firstSeen": 1587471222547,
@@ -899,7 +899,7 @@
       "current": true
     },
     {
-      "url": "http://www.minotredcross.org/js/bootstrap.bundle.min.js",
+      "url": "http://www.dummy.org/js/bootstrap.bundle.min.js",
       "resources": [
         {
           "md5": "ef58fee438cd2da2c3b33ff6f1cfeebf",
@@ -917,9 +917,9 @@
           "sha256": "E/V4cWE4qvAeO5MOhjtGtqDzPndRO1LBk8lJ/PR7CA4=",
           "sha384": "pjaaA8dDz/5BgdFUPX6M/9SUZv4d12SUPF0axWc+VRZkx5xU3daN+lYb49+Ax+Tl",
           "sha512": "U85Jq47KunKegjv6gVMAnQwtQjovdXz/DQOvQoxrD6j3aGfDDbp5AAJuOdnQx1sefM90D9KBKSQkZGR5hrLbtg==",
-          "url": "http://www.minotredcross.org/js/bootstrap.bundle.min.js",
+          "url": "http://www.dummy.org/js/bootstrap.bundle.min.js",
           "cached": false,
-          "host": "www.minotredcross.org"
+          "host": "www.dummy.org"
         }
       ],
       "firstSeen": 1587471222185,
@@ -1139,35 +1139,35 @@
   ],
   "assetMailServers": [
     {
-      "value": "alt1.aspmx.l.google.com",
+      "value": "dummy.mailserver.com",
       "firstSeen": 1322692530000,
       "lastSeen": 1591530037000,
       "recent": true,
       "current": true
     },
     {
-      "value": "alt2.aspmx.l.google.com",
+      "value": "dummy1.mailserver.com",
       "firstSeen": 1322692530000,
       "lastSeen": 1591530037000,
       "recent": true,
       "current": true
     },
     {
-      "value": "aspmx.l.google.com",
+      "value": "dummy2.mailserver.com",
       "firstSeen": 1322692530000,
       "lastSeen": 1591530037000,
       "recent": true,
       "current": true
     },
     {
-      "value": "aspmx2.googlemail.com",
+      "value": "dummy3.mailserver.com",
       "firstSeen": 1322692530000,
       "lastSeen": 1591530037000,
       "recent": true,
       "current": true
     },
     {
-      "value": "aspmx3.googlemail.com",
+      "value": "dummy4.mailserver.com",
       "firstSeen": 1322692530000,
       "lastSeen": 1591530037000,
       "recent": true,
@@ -1182,8 +1182,8 @@
   "whoisDomainMd5": "9b4f498908b61ea0887cdfdca9f47542",
   "whoisDomainUnicode": "dummydomain.com",
   "whoisTld": "com",
-  "whoisNameservers": "ns-1502.awsdns-59.org, ns-295.awsdns-36.com, ns-625.awsdns-14.net, ns-1837.awsdns-37.co.uk",
-  "whoisServer": "rdap.dummy.com",
+  "whoisNameservers": "dummy.nameserver.com, dummy1.nameserver.com, dummy2.nameserver.com, dummy3.nameserver.com",
+  "whoisServer": "dummy.com",
   "whoisRegistrarIanaID": 146,
   "whoisRegistrarName": "Dummy, LLC",
   "whoisRegistrarEmail": "abuse@dummydomain.com",
@@ -1194,50 +1194,50 @@
   "whoisRegistrantEmail": "dummy@whoisdummydomain.com",
   "whoisRegistrantName": "DUMMY, LLC",
   "whoisRegistrantOrganization": "DUMMY, LLC.",
-  "whoisRegistrantStreet": "157, Archbishop Makarios Ave, office 1",
+  "whoisRegistrantStreet": "157, Dummy street, office 1",
   "whoisRegistrantCity": "limassol",
   "whoisRegistrantZip": "3026",
   "whoisRegistrantCountry": "cyprus",
-  "whoisRegistrantPhone": "35795713635",
-  "whoisRegistrantFax": "35795713635",
+  "whoisRegistrantPhone": "12345678901",
+  "whoisRegistrantFax": "12345678901",
   "whoisRegistrantState": "cyprus",
-  "whoisRegistrantAddress": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisRegistrantAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
   "whoisRegistrantId": 0,
   "whoisAdminWhoisContactID": 0,
   "whoisAdminEmail": "dummy@whoisdummydomain.com",
   "whoisAdminName": "DUMMY, LLC",
   "whoisAdminOrganization": "DUMMY, LLC.",
-  "whoisAdminStreet": "157, Archbishop Makarios Ave, office 1",
+  "whoisAdminStreet": "157, Dummy street, office 1",
   "whoisAdminCity": "limassol",
   "whoisAdminZip": "3026",
   "whoisAdminCountry": "cyprus",
-  "whoisAdminPhone": "35795713635",
-  "whoisAdminFax": "35795713635",
-  "whoisAdminAddress": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisAdminPhone": "12345678901",
+  "whoisAdminFax": "12345678901",
+  "whoisAdminAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
   "whoisAdminId": 0,
   "whoisTechnicalWhoisContactID": 0,
   "whoisTechnicalEmail": "dummy@whoisdummydomain.com",
   "whoisTechnicalName": "DUMMY, LLC",
   "whoisTechnicalOrganization": "DUMMY, LLC.",
-  "whoisTechnicalStreet": "157, Archbishop Makarios Ave, office 1",
+  "whoisTechnicalStreet": "157, Dummy street, office 1",
   "whoisTechnicalCity": "limassol",
   "whoisTechnicalZip": "3026",
   "whoisTechnicalCountry": "cyprus",
-  "whoisTechnicalPhone": "35795713635",
-  "whoisTechnicalFax": "35795713635",
-  "whoisTechnicalAddress": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisTechnicalPhone": "12345678901",
+  "whoisTechnicalFax": "12345678901",
+  "whoisTechnicalAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
   "whoisTechnicalId": 0,
   "whoisBillingWhoisContactID": 0,
   "whoisBillingEmail": "dummy@whoisdummydomain.com",
   "whoisBillingName": "DUMMY, LLC",
   "whoisBillingOrganization": "DUMMY, LLC.",
-  "whoisBillingStreet": "157, Archbishop Makarios Ave, office 1",
+  "whoisBillingStreet": "157, Dummy street, office 1",
   "whoisBillingCity": "limassol",
   "whoisBillingZip": "3026",
   "whoisBillingCountry": "cyprus",
-  "whoisBillingPhone": "35795713635",
-  "whoisBillingFax": "35795713635",
-  "whoisBillingAddress": "157, Archbishop Makarios Ave, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisBillingPhone": "12345678901",
+  "whoisBillingFax": "12345678901",
+  "whoisBillingAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
   "whoisBillingId": 0,
   "whoisDomainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",
   "whoisAuditCreatedAt": 1591402147834,

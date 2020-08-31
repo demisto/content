@@ -2,19 +2,19 @@
 ### Basic Details
 |Name|Type|UUID|First Seen (GMT)|Last Seen (GMT)|
 |---|---|---|---|---|
-| http://www.minotredcross.org/ | PAGE | 8dfdd21e-5012-3bd6-f9a5-c3151f1b9e40 | 2018-10-08 17:00:24 | 2020-06-08 16:35:24 |
+| http://www.dummy.org/ | PAGE | 8dfdd21e-5012-3bd6-f9a5-c3151f1b9e40 | 2018-10-08 17:00:24 | 2020-06-08 16:35:24 |
 ### Page Details
 |Title|Initial URL|Initial Response Code|Final URL|Final Response Code|Response Time (in milliseconds)|Latest Final IP Address|Cause|Error|Content Type|Charset|Language|Parked|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| ja tarvikud - e-pood | http://www.minotredcross.org/ | 200 | http://www.minotredcross.org/ | 200 | 414 | 104.28.12.78 | redirect | DNS lookup failed | text/html | UTF-8 | et | false |
+| ja tarvikud - e-pood | http://www.dummy.org/ | 200 | http://www.dummy.org/ | 200 | 414 | 104.28.12.78 | redirect | DNS lookup failed | text/html | UTF-8 | et | false |
 ### Mail Servers
 |Name|First Seen (GMT)|Last Seen (GMT)|Recent|Current|
 |---|---|---|---|---|
-| alt1.aspmx.l.google.com | 2011-11-30 22:35:30 | 2020-06-07 11:40:37 | true | true |
-| alt2.aspmx.l.google.com | 2011-11-30 22:35:30 | 2020-06-07 11:40:37 | true | true |
-| aspmx.l.google.com | 2011-11-30 22:35:30 | 2020-06-07 11:40:37 | true | true |
-| aspmx2.googlemail.com | 2011-11-30 22:35:30 | 2020-06-07 11:40:37 | true | true |
-| aspmx3.googlemail.com | 2011-11-30 22:35:30 | 2020-06-07 11:40:37 | true | true |
+| dummy.mailserver.com | 2011-11-30 22:35:30 | 2020-06-07 11:40:37 | true | true |
+| dummy1.mailserver.com | 2011-11-30 22:35:30 | 2020-06-07 11:40:37 | true | true |
+| dummy2.mailserver.com | 2011-11-30 22:35:30 | 2020-06-07 11:40:37 | true | true |
+| dummy3.mailserver.com | 2011-11-30 22:35:30 | 2020-06-07 11:40:37 | true | true |
+| dummy4.mailserver.com | 2011-11-30 22:35:30 | 2020-06-07 11:40:37 | true | true |
 ### Trackers
 |Type|Value|First Seen (GMT)|Last Seen (GMT)|
 |---|---|---|---|
@@ -35,8 +35,8 @@
 ### Resources (observed within last month)
 |Resource|Resource Host|MD5|First Seen (GMT)|Last Seen (GMT)|Size (in bytes)|Observed|Recent|
 |---|---|---|---|---|---|---|---|
-| http://www.minotredcross.org/plugins/slickslider/slick.min.js | www.minotredcross.org | 29065e3aefec2f239f60f5d121bf0dfb | 2020-04-21 12:13:42 | 2020-06-07 18:48:09 | 42851 | 21 | true |
-| http://www.minotredcross.org/js/bootstrap.bundle.min.js | www.minotredcross.org | ef58fee438cd2da2c3b33ff6f1cfeebf | 2020-04-21 12:13:42 | 2020-06-07 18:48:08 | 70966 | 21 | true |
+| http://www.dummy.org/plugins/slickslider/slick.min.js | www.dummy.org | 29065e3aefec2f239f60f5d121bf0dfb | 2020-04-21 12:13:42 | 2020-06-07 18:48:09 | 42851 | 21 | true |
+| http://www.dummy.org/js/bootstrap.bundle.min.js | www.dummy.org | ef58fee438cd2da2c3b33ff6f1cfeebf | 2020-04-21 12:13:42 | 2020-06-07 18:48:08 | 70966 | 21 | true |
 | https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.min.js | ajax.aspnetcdn.com | 2f6b11a7e914718e0290410e85366fe9 | 2020-04-21 12:13:41 | 2020-06-07 18:48:07 | 85578 | 21 | true |
 ### SSL Certificates
 |SHA1|Issued|Expires|First Seen (GMT)|Last Seen (GMT)|Recent|
@@ -52,4 +52,4 @@
 ### WHOIS
 |Whois Server|Registrar|Email|Name|Organization|Street|City|State|Postal Code|Country|Phone|Name Servers|
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| rdap.dummy.com | Dummy, LLC | Registrant: dummy@whoisdummydomain.com<br>Admin: dummy@whoisdummydomain.com<br>Technical: dummy@whoisdummydomain.com<br>Billing: dummy@whoisdummydomain.com<br> | Registrant: DUMMY, LLC<br>Admin: DUMMY, LLC<br>Technical: DUMMY, LLC<br>Billing: DUMMY, LLC<br> | Registrant: DUMMY, LLC.<br>Admin: DUMMY, LLC.<br>Technical: DUMMY, LLC.<br>Billing: DUMMY, LLC.<br> | Registrant: 157, Archbishop Makarios Ave, office 1<br>Admin: 157, Archbishop Makarios Ave, office 1<br>Technical: 157, Archbishop Makarios Ave, office 1<br>Billing: 157, Archbishop Makarios Ave, office 1<br> | Registrant: limassol<br>Admin: limassol<br>Technical: limassol<br>Billing: limassol<br> | Registrant: cyprus<br> | Registrant: 3026<br>Admin: 3026<br>Technical: 3026<br>Billing: 3026<br> | Registrant: cyprus<br>Admin: cyprus<br>Technical: cyprus<br>Billing: cyprus<br> | Registrant: 35795713635<br>Admin: 35795713635<br>Technical: 35795713635<br>Billing: 35795713635<br> | ns-1502.awsdns-59.org, ns-295.awsdns-36.com, ns-625.awsdns-14.net, ns-1837.awsdns-37.co.uk |
+| dummy.com | Dummy, LLC | Registrant: dummy@whoisdummydomain.com<br>Admin: dummy@whoisdummydomain.com<br>Technical: dummy@whoisdummydomain.com<br>Billing: dummy@whoisdummydomain.com<br> | Registrant: DUMMY, LLC<br>Admin: DUMMY, LLC<br>Technical: DUMMY, LLC<br>Billing: DUMMY, LLC<br> | Registrant: DUMMY, LLC.<br>Admin: DUMMY, LLC.<br>Technical: DUMMY, LLC.<br>Billing: DUMMY, LLC.<br> | Registrant: 157, Dummy street, office 1<br>Admin: 157, Dummy street, office 1<br>Technical: 157, Dummy street, office 1<br>Billing: 157, Dummy street, office 1<br> | Registrant: limassol<br>Admin: limassol<br>Technical: limassol<br>Billing: limassol<br> | Registrant: cyprus<br> | Registrant: 3026<br>Admin: 3026<br>Technical: 3026<br>Billing: 3026<br> | Registrant: cyprus<br>Admin: cyprus<br>Technical: cyprus<br>Billing: cyprus<br> | Registrant: 12345678901<br>Admin: 12345678901<br>Technical: 12345678901<br>Billing: 12345678901<br> | dummy.nameserver.com, dummy1.nameserver.com, dummy2.nameserver.com, dummy3.nameserver.com |

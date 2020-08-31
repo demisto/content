@@ -25,15 +25,12 @@ COMMAND_URL_SUFFIX = {
     'TASK_STATUS': '/v1/globalinventory/task/{}'
 }
 
-DEFAULT_REQUEST_TIMEOUT = '40'
-DEFAULT_MAX_RECORDS = '2000'
-REQUEST_TIMEOUT_MAX_VALUE = 9223372036
-
 MESSAGES = {
     'MISSING_SCHEMA_ERROR': 'Invalid API URL. No schema supplied: http(s).',
     'INVALID_SCHEMA_ERROR': 'Invalid API URL. Supplied schema is invalid, supports http(s).',
-    'CONNECTION_ERROR': 'Connectivity failed. Check your internet connection, the API URL or'
-                        ' try increasing the HTTP(s) Request Timeout.',
+    'CONNECTION_ERROR': 'Connectivity failed. Check your internet connection or the API URL.',
+    'TIMEOUT_ERROR': 'Connection timed out. Check your internet connection or try decreasing the value of the'
+                     ' size argument if specified.',
     'PROXY_ERROR': 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or '
                    'check the host, authentication details and connection details for the proxy.',
     'AUTHENTICATION_ERROR': 'Unauthenticated. Check the configured API token and API secret.',
@@ -42,10 +39,10 @@ MESSAGES = {
                              'complete your request.',
     'BAD_REQUEST_ERROR': 'An error occurred while fetching the data.',
     'NO_RESPONSE_BODY': 'An unexpected error occurred. Failed to parse json object from response.',
-    'REQUEST_TIMEOUT_VALIDATION': 'HTTP(s) Request timeout parameter must be a positive integer.',
-    'REQUEST_TIMEOUT_EXCEED_ERROR': 'Value is too large for HTTP(S) Request Timeout.',
-    'MAX_RECORDS_VALIDATION': 'Maximum records parameter must be a positive integer. The value of this parameter '
-                              'should be between 1 and 10000.',
+    'SIZE_VALIDATION': 'Size argument must be a positive integer. The value of this argument'
+                       ' should be between 1 and 1000.',
+    'PAGE_VALIDATION': 'Page argument must be 0 or a positive integer. The index is zero based so the first page'
+                       ' is page 0.',
     'INVALID_ASSET_TYPE_ERROR': 'The given value for type is invalid. Valid Types: Domain, Host, IP Address, IP Block,'
                                 ' ASN, Page, SSL Cert, Contact. This argument supports a single value only.',
     'INVALID_ASSET_TYPE_AND_ASSET_DETAIL_TYPE_ERROR': 'The given value for type is invalid. '
@@ -138,28 +135,28 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
         self.request_timeout = request_timeout
 
-    def populate_error_message_according_to_status_code(self, resp, status_code):
+    @staticmethod
+    def raise_error_according_to_status_code(resp, status_code):
         if status_code == 407:
-            demisto.info('Response code: {}. {}'.format(status_code, MESSAGES['PROXY_ERROR']))
+            demisto.info(f'Response code: {status_code}. {MESSAGES["PROXY_ERROR"]}')
             raise ValueError(MESSAGES['PROXY_ERROR'])
 
         error_message = ''
         try:
             if resp.json().get('error', ''):
-                error_message = 'Reason: {}'.format(resp.json().get('error', ''))
+                error_message = f'Reason: {resp.json().get("error", "")}'
         except ValueError:
             raise ValueError(MESSAGES['NO_RESPONSE_BODY'])
         status_code_message_map = {
-            400: '{} {}'.format(MESSAGES['BAD_REQUEST_ERROR'], error_message),
+            400: f'{MESSAGES["BAD_REQUEST_ERROR"]} {error_message}',
             401: MESSAGES['AUTHENTICATION_ERROR'],
-            404: '{} {}'.format(MESSAGES['PAGE_NOT_FOUND_ERROR'], error_message),
+            404: f'{MESSAGES["PAGE_NOT_FOUND_ERROR"]} {error_message}'
         }
         if status_code in status_code_message_map:
-            demisto.info('Response code: {}. {}'.format(status_code, status_code_message_map[status_code]))
+            demisto.info(f'Response code: {status_code}. {status_code_message_map[status_code]}')
             raise ValueError(status_code_message_map[status_code])
         elif status_code >= 500:
-            demisto.info('Response code: {}. {} {} '.
-                format(status_code, MESSAGES['INTERNAL_SERVER_ERROR'], error_message))
+            demisto.info(f'Response code: {status_code}. {MESSAGES["INTERNAL_SERVER_ERROR"]} {error_message}')
             raise ValueError(MESSAGES['INTERNAL_SERVER_ERROR'])
         else:
             resp.raise_for_status()
@@ -174,7 +171,8 @@ class Client(BaseClient):
         :param params: URL parameters to specify the query.
         :param headers: Headers to send in the request. If None, will use self._headers.
         :param json_data: The dictionary to send in a 'POST' request.
-        :return: Depends on the resp_type parameter
+        :return: List of dictionaries, a Dictionary or an error message fetched as
+         response of the API call made.
         """
 
         try:
@@ -190,7 +188,9 @@ class Client(BaseClient):
         except DemistoException as e:
             if 'ProxyError' in str(e):
                 raise ConnectionError(MESSAGES['PROXY_ERROR'])
-            elif 'ConnectionError' in str(e) or 'ConnectTimeout' in str(e):
+            elif 'ConnectTimeout' in str(e) or 'ReadTimeoutError' in str(e):
+                raise ConnectionError(MESSAGES['TIMEOUT_ERROR'])
+            elif 'ConnectionError' in str(e):
                 raise ConnectionError(MESSAGES['CONNECTION_ERROR'])
             else:
                 raise e
@@ -198,7 +198,7 @@ class Client(BaseClient):
         status_code = resp.status_code
 
         if status_code != 200:
-            self.populate_error_message_according_to_status_code(resp, status_code)
+            self.raise_error_according_to_status_code(resp, status_code)
 
         return resp.json()
 
@@ -226,37 +226,28 @@ def remove_empty_entities(d):
                                               for key, value in d.items()) if not empty(value)}
 
 
-def get_timeout_and_max_records() -> Tuple[int, int]:
+def get_timeout_and_size(size) -> Tuple[int, int]:
     """
-    Validate and return the request timeout and size parameter.
-    The parameter must be a positive integer.
+    Validate and return the request_timeout and size parameters.
+    The parameters must be a positive integer.
     Default value is set to 40 seconds for API request timeout and 2000 for size.
-
-    :return: request_timeout & max_records values or message describing error that occurred in parameter validation
+    :param size: Value of size argument passed by the user
+    :return: request_timeout & size values or message describing error that occurred in while validating
     """
 
     try:
-        request_timeout = demisto.params().get('request_timeout', DEFAULT_REQUEST_TIMEOUT)
-        request_timeout = DEFAULT_REQUEST_TIMEOUT if not request_timeout else request_timeout
-        request_timeout = int(request_timeout)
+        size = int(size)
+        if size <= 0 or size > 1000:
+            raise ValueError(MESSAGES['SIZE_VALIDATION'])
     except ValueError:
-        raise ValueError(MESSAGES['REQUEST_TIMEOUT_VALIDATION'])
+        raise ValueError(MESSAGES['SIZE_VALIDATION'])
 
-    if request_timeout <= 0:
-        raise ValueError(MESSAGES['REQUEST_TIMEOUT_VALIDATION'])
-    elif request_timeout > REQUEST_TIMEOUT_MAX_VALUE:
-        raise ValueError(MESSAGES['REQUEST_TIMEOUT_EXCEED_ERROR'])
-
-    try:
-        max_records = demisto.params().get('max_records', DEFAULT_MAX_RECORDS)
-        max_records = DEFAULT_MAX_RECORDS if not max_records else max_records
-        max_records = int(max_records)
-        if max_records <= 0 or max_records > 10000:
-            raise ValueError(MESSAGES['MAX_RECORDS_VALIDATION'])
-    except ValueError:
-        raise ValueError(MESSAGES['MAX_RECORDS_VALIDATION'])
-
-    return request_timeout, max_records
+    request_timeout = 10
+    if 50 < size <= 500:
+        request_timeout = 30
+    elif size > 500:
+        request_timeout = 60
+    return request_timeout, size
 
 
 def nested_to_flat(src: Dict[str, Any], key: str) -> Dict[str, Any]:
@@ -273,7 +264,7 @@ def nested_to_flat(src: Dict[str, Any], key: str) -> Dict[str, Any]:
         parent_key = key
         if ' ' in sub_key:
             sub_key = ''.join(sub_key.split(' '))
-        pascal_key = '{}{}'.format(parent_key, sub_key[0].upper() + sub_key[1:])
+        pascal_key = f'{parent_key}{sub_key[0].upper() + sub_key[1:]}'
         if parent_key in sub_key:
             pascal_key = sub_key
         flat_dict[pascal_key] = sub_value
@@ -301,32 +292,46 @@ def prepare_context_dict(response_dict: Dict[str, Any],
     return simple_dict
 
 
-def validate_asset_connections_args(type_arg: str, global_arg: str) -> Tuple[str, Any]:
+def validate_asset_connections_args_and_get_params(args: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
     """
-    Validate the arguments passed by the user
+    Validate the arguments passed by the user and prepare params
 
-    :param type_arg: asset_type
-    :param global_arg: argument which defines if connected assets are to be fetched from global inventory
-    :return: type_arg, global_arg: asset_type and global arguments passed by user or message describing error that
-     occurred in parameter validation
-     occurred during validation
+    :param args: arguments passed by the user
+    :return: type_args, params: type of asset and params dictionary to be passed in the API Call
     """
+    type_arg = str(args.get('type')).replace(' ', '_').upper()
     if type_arg not in VALID_ASSET_TYPES:
         raise ValueError(MESSAGES['INVALID_ASSET_TYPE_ERROR'])
-    if global_arg:
-        global_arg = global_arg.lower()
-        try:
-            global_arg = argToBoolean(global_arg)
-        except ValueError:
-            raise ValueError(MESSAGES['INVALID_BOOLEAN_VALUE_ERROR'].format('global'))
-
     if type_arg == 'ASN':
         type_arg = 'AS'
 
-    return type_arg, global_arg
+    # prepare params
+    params: Dict[str, Any] = {'name': args.get('name')}
+    global_arg = args.get('global', '').lower()
+    if global_arg:
+        try:
+            params['global'] = argToBoolean(global_arg)
+        except ValueError:
+            raise ValueError(MESSAGES['INVALID_BOOLEAN_VALUE_ERROR'].format('global'))
+
+    page = args.get('page')
+    if page:
+        try:
+            page = int(page)
+            if page < 0:
+                raise ValueError(MESSAGES['PAGE_VALIDATION'])
+            params['page'] = page
+        except ValueError:
+            raise ValueError(MESSAGES['PAGE_VALIDATION'])
+
+    size = args.get('size')
+    if size:
+        params['size'] = size
+
+    return type_arg, params
 
 
-def get_comma_separated_values(values: List[Dict[str, Any]], key: str) -> str:
+def convert_list_to_comma_separated_string(values: List[Dict[str, Any]], key: str) -> str:
     """
     Retrieve values of an attribute in comma separated manner from response to populate human readable output
 
@@ -350,7 +355,7 @@ def get_comma_separated_values_only_current(values: List[Dict[str, Any]], key: s
     """
     value_list = set()
     for value in values:
-        if value.get('current', None):
+        if value.get('current'):
             value_list.add(str(value.get(key, '')))
     return ', '.join(value_list)
 
@@ -366,8 +371,8 @@ def get_attribute_details_hr(attributes: List[Dict[str, Any]]) -> List[Dict[str,
         'Name': attribute.get('value', ''),
         'First Seen (GMT)': epochToTimestamp(attribute.get('firstSeen', '')) if attribute.get('firstSeen') else None,
         'Last Seen (GMT)': epochToTimestamp(attribute.get('lastSeen', '')) if attribute.get('lastSeen') else None,
-        'Current': attribute.get('current', None),
-        'Recent': attribute.get('recent', None)
+        'Current': attribute.get('current'),
+        'Recent': attribute.get('recent')
     } for attribute in attributes]
 
 
@@ -385,7 +390,7 @@ def get_asset_connections_hr(asset_details: Dict[str, Any]) -> Dict[str, Any]:
             'firstSeen') else None,
         'Last Seen (GMT)': epochToTimestamp(asset_details.get('lastSeen', '')) if asset_details.get(
             'lastSeen') else None,
-        'Tag(s)': get_comma_separated_values(asset_details.get('tags', []), 'name')
+        'Tag(s)': convert_list_to_comma_separated_string(asset_details.get('tags', []), 'name')
     }
 
 
@@ -409,7 +414,7 @@ def get_asset_connections_outputs(resp: Dict[str, Any],
 
     hr += '### CONNECTED ASSETS\n'
     for asset_type in total_elements:
-        if total_elements.get(asset_type, None) != 0:
+        if total_elements.get(asset_type) != 0:
             asset_connections_hr: List[Dict[str, Any]] = []
             for asset_details in resp.get(asset_type, {}).get('content', []):
                 asset_connections_custom_context.append(asset_details)
@@ -417,8 +422,10 @@ def get_asset_connections_outputs(resp: Dict[str, Any],
                     asset_connections_standard_context.append(asset_type_standard_context_map[asset_type]
                                                               (asset_details))
                 asset_connections_hr.append(get_asset_connections_hr(asset_details))
-            hr += tableToMarkdown('{0} ({1})'.format(ASSET_TYPE_PLURAL_HR.get(asset_type), len(asset_connections_hr)),
-                                  asset_connections_hr,
+            hr += f'### Total {ASSET_TYPE_PLURAL_HR.get(asset_type)}:' \
+                  f' {resp.get(asset_type, {}).get("totalElements")}\n'
+            hr += tableToMarkdown(f'Fetched {ASSET_TYPE_PLURAL_HR.get(asset_type)}:'
+                                  f' {len(asset_connections_hr)}', asset_connections_hr,
                                   ['Name', 'State', 'First Seen (GMT)', 'Last Seen (GMT)', 'Tag(s)'], removeNull=True)
     standard_ec = asset_connections_standard_context
     custom_ec = createContext(remove_empty_entities(asset_connections_custom_context), removeNull=True)
@@ -455,21 +462,21 @@ def prepare_hr_cell_for_changes_summary(attribute: List[Dict[str, Any]], order: 
     hr_cell_info = []
 
     # Fetch all keys
-    added = attribute[order].get('added', None)
-    changed = attribute[order].get('changed', None)
-    removed = attribute[order].get('removed', None)
-    count = attribute[order].get('count', None)
-    difference = attribute[order].get('difference', None)
+    added = attribute[order].get('added')
+    changed = attribute[order].get('changed')
+    removed = attribute[order].get('removed')
+    count = attribute[order].get('count')
+    difference = attribute[order].get('difference')
     if added:
-        hr_cell_info.append('**Added:** {}'.format(added))
+        hr_cell_info.append(f'**Added:** {added}')
     if changed:
-        hr_cell_info.append('**Changed:** {}'.format(changed))
+        hr_cell_info.append(f'**Changed:** {changed}')
     if removed:
-        hr_cell_info.append('**Removed:** {}'.format(removed))
+        hr_cell_info.append(f'**Removed:** {removed}')
     if count:
-        hr_cell_info.append('**Count:** {}'.format(count))
+        hr_cell_info.append(f'**Count:** {count}')
     if difference:
-        hr_cell_info.append('**Difference:** {}'.format(difference))
+        hr_cell_info.append(f'**Difference:** {difference}')
     return '\n'.join(hr_cell_info)
 
 
@@ -491,7 +498,7 @@ def get_asset_changes_summary_hr(summary: Dict[str, Any]) -> List[Dict[str, Any]
             if delta.get('aggregations') else ''
         }
         if not all(value == '' for value in result.values()):
-            human_readable_dict = {'Asset Type': '**{}**'.format(ASSET_TYPE_HR.get(delta.get('type', ''), '')),
+            human_readable_dict = {'Asset Type': f'**{ASSET_TYPE_HR.get(delta.get("type", ""), "")}**',
                                    '1 Day': result['range_1'],
                                    '7 Days': result['range_7'],
                                    '30 Days': result['range_30']
@@ -510,13 +517,13 @@ def prepare_deep_link_for_asset_changes_summary(resp: List[Dict[str, Any]], date
     :return: deep_link: Deep link to RiskIQ platform
     """
     last_run_date = resp[0].get('runDate', '')
-    deep_link = '{}/{}'.format(DEEP_LINK_PREFIX['ASSET_CHANGES_SUMMARY'], last_run_date)
+    deep_link = f'{DEEP_LINK_PREFIX["ASSET_CHANGES_SUMMARY"]}/{last_run_date}'
     if date_arg and range_arg:
-        deep_link = '{}/{}/{}'.format(DEEP_LINK_PREFIX['ASSET_CHANGES_SUMMARY'], date_arg, range_arg)
+        deep_link = f'{DEEP_LINK_PREFIX["ASSET_CHANGES_SUMMARY"]}/{date_arg}/{range_arg}'
     elif date_arg:
-        deep_link = '{}/{}'.format(DEEP_LINK_PREFIX['ASSET_CHANGES_SUMMARY'], date_arg)
+        deep_link = f'{DEEP_LINK_PREFIX["ASSET_CHANGES_SUMMARY"]}/{date_arg}'
     elif range_arg:
-        deep_link += '/{}'.format(range_arg)
+        deep_link += f'/{range_arg}'
     return deep_link
 
 
@@ -534,11 +541,15 @@ def get_asset_changes_summary_outputs(resp: List[Dict[str, Any]], date_arg: str,
     custom_ec: List[Dict[str, Any]] = []
     if resp:
         deep_link = encode_string_results(prepare_deep_link_for_asset_changes_summary(resp, date_arg, range_arg))
-        hr += '### [INVENTORY CHANGES]({})\n'.format(deep_link)
+        hr += f'### [INVENTORY CHANGES]({deep_link})\n#### Note: If the range argument is specified, a list of' \
+              f' table(s) containing a daily, weekly and monthly changes summary identified over the given period of' \
+              f' time will be presented. For example, there will be an individual table for all the dates from the' \
+              f' last run date to the date provided in the range value representing a daily, weekly and monthly' \
+              f' changes summary.\n'
         for summary in resp:
             asset_changes_summary_hr = get_asset_changes_summary_hr(summary)
-            hr += tableToMarkdown('Date of the run in which following changes were identified: {}'
-                                  .format(summary.get('runDate', '')), asset_changes_summary_hr,
+            hr += tableToMarkdown(f'Date of the run in which following changes were identified:'
+                                  f' {summary.get("runDate", "")}', asset_changes_summary_hr,
                                   ['Asset Type', '1 Day', '7 Days', '30 Days'], removeNull=True)
         custom_ec = createContext(remove_empty_entities(resp), removeNull=True)
     return hr, custom_ec
@@ -552,7 +563,7 @@ def get_standard_context_domain(record: Dict[str, Any]) -> Common.Domain:
     """
     return Common.Domain(
         domain=record.get('name', ''),
-        organization=get_comma_separated_values(record.get('organizations', []), 'name')
+        organization=convert_list_to_comma_separated_string(record.get('organizations', []), 'name')
         if record.get('organizations') else None,
         dbot_score=Common.DBotScore(
             indicator=record.get('name', ''),
@@ -572,7 +583,7 @@ def get_standard_context_domain_for_get_asset(record: Dict[str, Any]) -> list:
     whois = record.get('asset', {}).get('whois', {})
     return [Common.Domain(
         domain=record.get('name', ''),
-        organization=get_comma_separated_values(record.get('organizations', []), 'name')
+        organization=convert_list_to_comma_separated_string(record.get('organizations', []), 'name')
         if record.get('organizations') else None,
         domain_status=whois.get('domainStatus', ''),
         name_servers=', '.join(whois.get('nameservers', [])),
@@ -642,7 +653,7 @@ def get_standard_context_ip_for_get_asset(record: Dict[str, Any]) -> list:
     """
     standard_context_ip: List[Union[Common.IP, Common.CVE]] = [Common.IP(
         ip=record.get('name'),
-        asn=get_comma_separated_values(record.get('asset', {}).get('asns', []), 'name'),
+        asn=convert_list_to_comma_separated_string(record.get('asset', {}).get('asns', []), 'name'),
         dbot_score=Common.DBotScore(
             indicator=record.get('name', ''),
             indicator_type=DBotScoreType.IP,
@@ -773,18 +784,16 @@ def prepare_deep_link_for_asset_changes(last_run_date: str, asset_type: str, mea
     :return: deep_link: Deep link to RiskIQ platform
     """
     measure = measure.upper()
-    deep_link = '{}/date={}&measure={}&range={}&type={}'.format(DEEP_LINK_PREFIX['ASSET_CHANGES'],
-                                                                last_run_date, measure, '1', asset_type)
+    deep_link = f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={last_run_date}&measure={measure}&range=1&type={asset_type}'
 
     if date_arg and range_arg:
-        deep_link = '{}/date={}&measure={}&range={}&type={}'.format(DEEP_LINK_PREFIX['ASSET_CHANGES'],
-                                                                    date_arg, measure, range_arg, asset_type)
+        deep_link = f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={date_arg}&measure={measure}&range={range_arg}' \
+                    f'&type={asset_type}'
     elif date_arg:
-        deep_link = '{}/date={}&measure={}&range={}&type={}'.format(DEEP_LINK_PREFIX['ASSET_CHANGES'],
-                                                                    date_arg, measure, '1', asset_type)
+        deep_link = f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={date_arg}&measure={measure}&range=1&type={asset_type}'
     elif range_arg:
-        deep_link = '{}/date={}&measure={}&range={}&type={}'.format(DEEP_LINK_PREFIX['ASSET_CHANGES'],
-                                                                    last_run_date, measure, range_arg, asset_type)
+        deep_link = f'{DEEP_LINK_PREFIX["ASSET_CHANGES"]}/date={last_run_date}&measure={measure}&range={range_arg}' \
+                    f'&type={asset_type}'
 
     if asset_type in VALID_ASSET_DETAIL_TYPES:
         deep_link += '&deltaType=micro'
@@ -800,7 +809,7 @@ def get_asset_changes_hr(asset_changes_records: List[Dict[str, Any]], asset_type
     :param measure: The type operation which captured change in asset. Eg. Added, Removed, Changed
     :return: Human readable for asset changes command
     """
-    hr_title = ''
+    hr_title = f'Fetched: {len(asset_changes_records)}'
     hr_headers = []
     hr_table = []
 
@@ -815,8 +824,6 @@ def get_asset_changes_hr(asset_changes_records: List[Dict[str, Any]], asset_type
                 'RunDate': record.get('runDate', '')
             }
             hr_table.append(hr_row)
-
-        hr_title = '{0} Inventory Assets: {1}'.format(measure, len(asset_changes_records))
         hr_headers = ['Name', 'Description', 'State', 'Priority', 'Measure', 'RunDate']
 
     elif asset_type in VALID_ASSET_DETAIL_TYPES:
@@ -831,7 +838,6 @@ def get_asset_changes_hr(asset_changes_records: List[Dict[str, Any]], asset_type
                 'RunDate': record.get('runDate', '')
             }
             hr_table.append(hr_row)
-        hr_title = '{0} Inventory Resources: {1}'.format(measure, len(asset_changes_records))
         hr_headers = ['Type', 'Parent Host', 'Resource Host', 'Resource',
                       'MD5', 'Description', 'RunDate']
     return tableToMarkdown(hr_title, hr_table, hr_headers, removeNull=True)
@@ -891,16 +897,23 @@ def validate_measure_for_asset_changes(asset_type: str, measure: str) -> str:
     return valid_measure
 
 
-def get_asset_changes_params(args: Dict[str, Any], max_records: int) -> Dict[str, Any]:
+def validate_page_for_asset_changes(page: str) -> int:
+    try:
+        valid_page = int(page)
+        if valid_page < 0:
+            raise ValueError(MESSAGES['PAGE_VALIDATION'])
+        return valid_page
+    except ValueError:
+        raise ValueError(MESSAGES['PAGE_VALIDATION'])
+
+
+def get_asset_changes_params(args: Dict[str, Any]) -> Dict[str, Any]:
     """
     Validates the command arguments and creates parameter dictionary
     :param args: The command arguments
-    :param max_records: The number of records to fetch
     :return: parameters for API call or message describing error that occurred in parameter validation
     """
-    params: Dict[str, Any] = {
-        'size': max_records
-    }
+    params: Dict[str, Any] = {}
 
     asset_type = args.get('type', '').replace(' ', '_').upper()
     if asset_type not in VALID_ASSET_DETAIL_TYPES and asset_type not in VALID_ASSET_TYPES:
@@ -920,9 +933,13 @@ def get_asset_changes_params(args: Dict[str, Any], max_records: int) -> Dict[str
     if args.get('measure'):
         params['measure'] = validate_measure_for_asset_changes(asset_type, args.get('measure', ''))
 
-    for argument in ['brand', 'organization', 'tag']:
+    for argument in ['brand', 'organization', 'tag', 'size']:
         if args.get(argument):
             params[argument] = args.get(argument, '')
+
+    page = args.get('page')
+    if page:
+        params['page'] = validate_page_for_asset_changes(page)
 
     return params
 
@@ -951,21 +968,22 @@ def validate_and_fetch_get_asset_arguments(args: Dict[str, Any]) -> Tuple[str, s
     return uuid, asset_type
 
 
-def get_asset_params(args: Dict[str, Any], max_records: int) -> Dict[str, Any]:
+def get_asset_params(args: Dict[str, Any]) -> Dict[str, Any]:
     """
     Validates the command arguments and creates parameter dictionary
     :param args: The command arguments
-    :param max_records: The number of records to fetch
     :return: parameters for API call or message describing error that occurred in parameter validation
     """
     params: Dict[str, Any] = {}
     name = args.get('name', '')
     global_arg = args.get('global', '')
     recent = args.get('recent', '')
+    size = args.get('size')
 
     if name:
         params['name'] = name
-        params['size'] = max_records
+        if size:
+            params['size'] = size
     if global_arg:
         global_arg = global_arg.lower()
         try:
@@ -997,7 +1015,7 @@ def get_attribute_details_from_given_lists(source_dict: Dict[str, Any], key: str
     value = ''
     for single_list in source_dict and lists:
         if key in source_dict.get(single_list, []):
-            value += '{}: {}\n'.format(single_list.capitalize(), source_dict.get(single_list, []).get(key, ''))
+            value += f'{single_list.capitalize()}: {source_dict.get(single_list, []).get(key, "")}\n'
     return value
 
 
@@ -1067,7 +1085,7 @@ def get_asset_domain_hr(asset_details: Dict[str, Any]) -> str:
         'Domain Name': asset_details.get('domain', ''),
         'Parked': get_comma_separated_values_only_current(asset_details.get('parkedDomain', []), 'value'),
         'Alexa Rank': asset_details.get('alexaRank', ''),
-        'Domain Status': get_comma_separated_values(asset_details.get('domainStatuses', []), 'value')
+        'Domain Status': convert_list_to_comma_separated_string(asset_details.get('domainStatuses', []), 'value')
     }
 
     if not all(value == '' or value == [] for value in asset_specific_details.values()):
@@ -1096,7 +1114,7 @@ def get_ip_hr(ip_details: List[Dict[str, Any]]) -> str:
         'Value': ip_info.get('value', ''),
         'First Seen (GMT)': epochToTimestamp(ip_info.get('firstSeen', '')) if ip_info.get('firstSeen') else None,
         'Last Seen (GMT)': epochToTimestamp(ip_info.get('lastSeen', '')) if ip_info.get('lastSeen') else None,
-        'Recent': ip_info.get('recent', None)
+        'Recent': ip_info.get('recent')
     } for ip_info in ip_details]
 
     return tableToMarkdown('Observed IPs', ip_hr, ['Value', 'First Seen (GMT)', 'Last Seen (GMT)', 'Recent'],
@@ -1132,12 +1150,12 @@ def get_web_components_hr(web_components: List[Dict[str, Any]]) -> str:
         'Category': web_component.get('webComponentCategory', ''),
         'Name': web_component.get('webComponentName', ''),
         'Version': web_component.get('webComponentVersion', ''),
-        'CVEs': get_comma_separated_values(web_component.get('cves', []), 'name'),
+        'CVEs': convert_list_to_comma_separated_string(web_component.get('cves', []), 'name'),
         'First Seen (GMT)': epochToTimestamp(web_component.get('firstSeen', '')) if web_component.get(
             'firstSeen') else None,
         'Last Seen (GMT)': epochToTimestamp(web_component.get('lastSeen', '')) if web_component.get(
             'lastSeen') else None,
-        'Recent': web_component.get('recent', None)
+        'Recent': web_component.get('recent')
     } for web_component in web_components]
 
     return tableToMarkdown('Web Components', web_components_hr,
@@ -1163,7 +1181,7 @@ def get_resources_hr(resources: List[Dict[str, Any]]) -> str:
         'Size (in bytes)': resource.get('resources', [])[0].get('responseBodySize', '')
         if resource.get('resources', []) else None,
         'Observed': resource.get('resources', [])[0].get('count', '') if resource.get('resources', []) else None,
-        'Recent': resource.get('recent', None)
+        'Recent': resource.get('recent')
     } for resource in resources]
 
     return tableToMarkdown('Resources (observed within last month)', resources_hr,
@@ -1184,7 +1202,7 @@ def get_ssl_certs_associated_with_other_asset_hr(ssl_certs: List[Dict[str, Any]]
         'Expires': epochToTimestamp(ssl_cert.get('notAfter', '')) if ssl_cert.get('notAfter') else None,
         'First Seen (GMT)': epochToTimestamp(ssl_cert.get('firstSeen', '')) if ssl_cert.get('firstSeen') else None,
         'Last Seen (GMT)': epochToTimestamp(ssl_cert.get('lastSeen', '')) if ssl_cert.get('lastSeen') else None,
-        'Recent': ssl_cert.get('recent', None)
+        'Recent': ssl_cert.get('recent')
     } for ssl_cert in ssl_certs]
 
     return tableToMarkdown('SSL Certificates', ssl_certs_hr,
@@ -1254,7 +1272,7 @@ def get_ip_reputation_hr(ip_reputations: List[Dict[str, Any]]) -> str:
         if ip_reputation.get('firstSeen') else None,
         'Last Seen (GMT)': epochToTimestamp(ip_reputation.get('lastSeen', ''))
         if ip_reputation.get('lastSeen') else None,
-        'Recent': ip_reputation.get('recent', None)
+        'Recent': ip_reputation.get('recent')
     } for ip_reputation in ip_reputations]
 
     return tableToMarkdown('IP Reputation', reputation_hr,
@@ -1277,7 +1295,7 @@ def get_ports_hr(ports: List[Dict[str, Any]]) -> str:
         if port.get('lastSeen') else None,
         'Last Scanned': epochToTimestamp(port.get('lastSeen', '')) if port.get('lastSeen') else None,
         'Scan Type': port.get('banners', [])[0].get('scanType', '') if port.get('banners', []) else '',
-        'Recent': port.get('recent', None),
+        'Recent': port.get('recent'),
         'Banner': port.get('banners', [])[0].get('banner', '') if port.get('banners', []) else '',
     } for port in ports]
 
@@ -1296,7 +1314,7 @@ def get_asset_ip_address_hr(asset_details: Dict[str, Any]) -> str:
     asset_specific_hr = ''
     asset_specific_details = {
         'IP Blocks': get_comma_separated_values_only_current(asset_details.get('ipBlocks', []), 'ipBlock'),
-        'ASNs': get_comma_separated_values(asset_details.get('asns', []), 'fullName')
+        'ASNs': convert_list_to_comma_separated_string(asset_details.get('asns', []), 'fullName')
     }
 
     if not all(value == '' or value == [] for value in asset_specific_details.values()):
@@ -1341,8 +1359,8 @@ def get_asset_ip_block_hr(asset_details: Dict[str, Any]) -> str:
         'CIDR': asset_details.get('ipBlock', '').split('/')[-1],
         'Network Name': get_comma_separated_values_only_current(asset_details.get('netNames', []), 'value'),
         'Organisation Name': get_comma_separated_values_only_current(asset_details.get('registrantOrgs', []), 'value'),
-        'ASN': get_comma_separated_values(asset_details.get('asns', []), 'fullName'),
-        'Country': get_comma_separated_values(asset_details.get('asns', []), 'countryCode'),
+        'ASN': convert_list_to_comma_separated_string(asset_details.get('asns', []), 'fullName'),
+        'Country': convert_list_to_comma_separated_string(asset_details.get('asns', []), 'countryCode'),
         'Net Range': get_comma_separated_values_only_current(asset_details.get('netRanges', []), 'value')
     }
 
@@ -1422,8 +1440,8 @@ def get_security_policies_hr(security_policies: List[Dict[str, Any]]) -> str:
         if security_policy.get('firstSeen') else None,
         'Last Seen (GMT)': epochToTimestamp(security_policy.get('lastSeen', '')) if security_policy.get(
             'lastSeen') else None,
-        'Recent': security_policy.get('recent', None)
-    } for security_policy in security_policies if security_policy.get('isAffected', None)]
+        'Recent': security_policy.get('recent')
+    } for security_policy in security_policies if security_policy.get('isAffected')]
 
     return tableToMarkdown('Affected Security Policies', security_policies_hr,
                            ['Policy', 'Description', 'First Seen (GMT)', 'Last Seen (GMT)', 'Recent'], removeNull=True)
@@ -1500,26 +1518,26 @@ def prepare_issuer_subject_cell(asset_details: Dict[str, Any], key: str) -> str:
 
     # Fetch all keys
     common_name = asset_details.get(key, {}).get('common name', '')
-    alternative_names = ', '.join(asset_details.get('{}{}'.format(key, 'AlternativeNames'), []))
+    alternative_names = ', '.join(asset_details.get(f'{key}AlternativeNames', []))
     organization_name = asset_details.get(key, {}).get('organization', '')
     organization_unit = asset_details.get(key, {}).get('unit', '')
     locality = asset_details.get(key, {}).get('locale', '')
     state = asset_details.get(key, {}).get('state', '')
     country = asset_details.get(key, {}).get('country', '')
     if common_name:
-        hr_cell_info.append('Common Name: {}'.format(common_name))
+        hr_cell_info.append(f'Common Name: {common_name}')
     if alternative_names:
-        hr_cell_info.append('Alternate Names: {}'.format(alternative_names))
+        hr_cell_info.append(f'Alternate Names: {alternative_names}')
     if organization_name:
-        hr_cell_info.append('Organization Name: {}'.format(organization_name))
+        hr_cell_info.append(f'Organization Name: {organization_name}')
     if organization_unit:
-        hr_cell_info.append('Organization Unit: {}'.format(organization_unit))
+        hr_cell_info.append(f'Organization Unit: {organization_unit}')
     if locality:
-        hr_cell_info.append('Locality: {}'.format(locality))
+        hr_cell_info.append(f'Locality: {locality}')
     if state:
-        hr_cell_info.append('State: {}'.format(state))
+        hr_cell_info.append(f'State: {state}')
     if country:
-        hr_cell_info.append('Country: {}'.format(country))
+        hr_cell_info.append(f'Country: {country}')
     return '\n'.join(hr_cell_info)
 
 
@@ -1537,12 +1555,12 @@ def get_asset_ssl_hr(asset_details: Dict[str, Any]) -> str:
         'Certificate Expires': epochToTimestamp(asset_details.get('notAfter', ''))
         if asset_details.get('notAfter') else None,
         'Serial Number': asset_details.get('serialNumber', ''),
-        'SSL Version': asset_details.get('version', None),
+        'SSL Version': asset_details.get('version'),
         'Certificate Key Algorithm': asset_details.get('publicKeyAlgorithm', ''),
-        'Certificate Key Size': asset_details.get('keySize', None),
+        'Certificate Key Size': asset_details.get('keySize'),
         'Signature Algorithm': asset_details.get('signatureAlgorithm', ''),
         'Signature Algorithm Oid': asset_details.get('signatureAlgorithmOid', ''),
-        'Self Signed': asset_details.get('selfSigned', None),
+        'Self Signed': asset_details.get('selfSigned'),
         'Subject': prepare_issuer_subject_cell(asset_details, 'subject') if asset_details.get('subject') else '',
         'Issuer': prepare_issuer_subject_cell(asset_details, 'issuer') if asset_details.get('issuer') else ''
     }
@@ -1783,11 +1801,11 @@ def get_asset_basic_hr(resp: Dict[str, Any]) -> Dict[str, Any]:
         'Added To Inventory (GMT)': epochToTimestamp(resp.get('createdAt', '')) if resp.get('createdAt') else None,
         'Last Updated (GMT)': epochToTimestamp(resp.get('updatedAt', '')) if resp.get('updatedAt') else None,
         'Confidence': resp.get('confidence', ''),
-        'Enterprise Asset': resp.get('enterprise', None),
+        'Enterprise Asset': resp.get('enterprise'),
         'Priority': resp.get('priority', ''),
-        'Organization(s)': get_comma_separated_values(resp.get('organizations', []), 'name'),
-        'Tag(s)': get_comma_separated_values(resp.get('tags', []), 'name'),
-        'Brand(s)': get_comma_separated_values(resp.get('brands', []), 'name')
+        'Organization(s)': convert_list_to_comma_separated_string(resp.get('organizations', []), 'name'),
+        'Tag(s)': convert_list_to_comma_separated_string(resp.get('tags', []), 'name'),
+        'Brand(s)': convert_list_to_comma_separated_string(resp.get('brands', []), 'name')
     }
 
 
@@ -1850,10 +1868,11 @@ def get_add_and_update_assets_params(args: Dict[str, Any]) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
 
     if args.get('fail_on_error'):
-        fail_on_error = args.get('fail_on_error')
-        if fail_on_error not in ['true', 'false']:
+        try:
+            fail_on_error = argToBoolean(args.get('fail_on_error'))
+        except ValueError:
             raise ValueError(MESSAGES['INVALID_BOOLEAN_VALUE_ERROR'].format('fail_on_error'))
-        params['failOnError'] = argToBoolean(fail_on_error)
+        params['failOnError'] = fail_on_error
     return params
 
 
@@ -1869,17 +1888,16 @@ def prepare_add_and_update_asset_hr(task_resp: Dict[str, Any], operation_bool: b
     task_reason = task_resp.get('reason') if task_resp.get('reason') is not None else 'An unexpected error occurred.'
     operation = 'add' if operation_bool else 'updat'
     state_hr_map = {
-        'COMPLETE': '### The requested asset(s) have been successfully {0}ed.'.format(operation),
-        'FAILED': '### The request for {0}ing asset(s) failed. Reason: {1}'.format(operation, task_reason),
-        'INCOMPLETE': '### The request for {0}ing asset(s) is incomplete. Reason: {1}'.format(operation, task_reason),
-        'WARNING': '### The request for {0}ing asset(s) is completed with a warning. Reason: {1}'.format(operation,
-                                                                                                         task_reason),
-        'RUNNING': '### The request for {0}ing asset(s) has been successfully submitted. '
-                   'You can check its status using this task identifier/reference: {1} '
-                   'in RiskIQ Digital Footprint.'.format(operation, task_resp['key']['uuid']),
-        'PENDING': '### The request for {0}ing asset(s) has been successfully submitted. '
-                   'You can check its status using this task identifier/reference: {1} '
-                   'in RiskIQ Digital Footprint.'.format(operation, task_resp['key']['uuid'])
+        'COMPLETE': f'### The requested asset(s) have been successfully {operation}ed.',
+        'FAILED': f'### The request for {operation}ing asset(s) failed. Reason: {task_reason}',
+        'INCOMPLETE': f'### The request for {operation}ing asset(s) is incomplete. Reason: {task_reason}',
+        'WARNING': f'### The request for {operation}ing asset(s) is completed with a warning. Reason: {task_reason}',
+        'RUNNING': f'### The request for {operation}ing asset(s) has been successfully submitted. '
+                   f'You can check its status using this task identifier/reference: {task_resp["key"]["uuid"]} '
+                   f'in RiskIQ Digital Footprint.',
+        'PENDING': f'### The request for {operation}ing asset(s) has been successfully submitted. '
+                   f'You can check its status using this task identifier/reference: {task_resp["key"]["uuid"]} '
+                   f'in RiskIQ Digital Footprint.'
     }
     return state_hr_map.get(task_state, '')
 
@@ -1895,8 +1913,8 @@ def prepare_add_and_update_asset_context(task_resp: Dict[str, Any]) -> List[Dict
         'uuid': task_resp.get('key', '').get('uuid', ''),
         'state': task_resp.get('state', ''),
         'reason': task_resp.get('reason', ''),
-        'estimated': task_resp.get('data', {}).get('estimated', None),
-        'totalUpdates': task_resp.get('data', {}).get('totalUpdates', None)
+        'estimated': task_resp.get('data', {}).get('estimated'),
+        'totalUpdates': task_resp.get('data', {}).get('totalUpdates')
     }
     return createContext(data=custom_ec, removeNull=True)
 
@@ -2024,7 +2042,7 @@ def check_task_status(client: Client, resp: Dict[str, Any]) -> Dict[str, Any]:
         if task_resp.get('state', '') in COMPLETE_TASK_STATES:
             break
         else:
-            demisto.debug('Fetching the task status. Retry number: {0}'.format(retries))
+            demisto.debug(f'Fetching the task status. Retry number: {retries}')
             wait = retries * 30
             time.sleep(wait)
             retries += 1
@@ -2074,7 +2092,7 @@ def validate_asset_json(args: Dict[str, Any], operation: str) -> Dict[str, Any]:
     :param operation: operation being performed i.e. add or update
     :return: payload to be passed as request body for adding or updating the requested asset.
     """
-    asset_json = args.get('asset_json', None)
+    asset_json = args.get('asset_json')
     # Validate the input JSON is valid or not
     try:
         valid_json = safe_load_json(asset_json)
@@ -2090,13 +2108,13 @@ def validate_asset_json(args: Dict[str, Any], operation: str) -> Dict[str, Any]:
     elif operation == 'update' and not validate_required_keys_for_update_asset(valid_json, required_keys,
                                                                                required_keys_for_bulk_update):
         raise ValueError(MESSAGES['ASSET_PAYLOAD_MISSING_KEYS_ERROR']
-                         .format(operation, '{} or {}'.format(required_keys, required_keys_for_bulk_update)))
+                         .format(operation, f'{required_keys} or {required_keys_for_bulk_update}'))
 
     asset_required_keys = {'name', 'type'}
     if 'assets' in valid_json.keys() and not validate_required_keys_for_assets_key(valid_json['assets'],
                                                                                    asset_required_keys):
         raise ValueError(MESSAGES['ASSET_PAYLOAD_MISSING_KEYS_ERROR']
-                         .format(operation, '{} in assets key'.format(['name', 'type'])))
+                         .format(operation, '[\'name\', \'type\'] in assets key'))
 
     return valid_json
 
@@ -2114,7 +2132,7 @@ def validate_asset_payload(args: Dict[str, Any], operation: str) -> Dict[str, An
     if 'asset_json' in args.keys() and args.keys() - {'asset_json', 'fail_on_error'} != set():
         raise ValueError(MESSAGES['INVALID_ARGUMENTS_ADD_ASSET'])
 
-    asset_json = args.get('asset_json', None)
+    asset_json = args.get('asset_json')
     if asset_json:
         valid_json = validate_asset_json(args, operation)
     elif args.get('name') and args.get('type'):
@@ -2139,39 +2157,29 @@ def test_function(client: Client) -> str:
 
 
 @logger
-def asset_connections_command(client: Client, args: Dict[str, Any], max_records: int) -> Union[str, CommandResults]:
+def asset_connections_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
     """
     Retrieve the set of assets that are connected to the requested asset.
 
     :param client: client object which is used to get response from api
     :param args: parameters required to generate the api request
-    :param max_records: number of elements to be returned per page
     :return: standard output: standard output required for XSOAR platform
     """
 
-    # Trim the arguments
-    for argument in args:
-        args[argument] = args[argument].strip()
+    # fetch and validate command arguments and params
+    type_arg, params = validate_asset_connections_args_and_get_params(args)
 
-    # fetch and validate command arguments
-    type_arg, global_arg = validate_asset_connections_args(args['type'].replace(' ', '_').upper(),
-                                                           args.get('global', ''))
-    name = args.get('name')
-
-    # prepare params
-    params = {'size': max_records, 'name': name}
-    if global_arg:
-        params['global'] = global_arg
     resp = client.http_request('GET',
                                url_suffix=COMMAND_URL_SUFFIX['ASSET_CONNECTIONS'].format(type_arg),
                                params=params)
 
-    total_elements = {}
+    total_elements, content = {}, {}
     for asset_type in VALID_ASSET_TYPES and resp:
-        total_elements[asset_type] = resp.get(asset_type).get('totalElements', None)
-
-    if all(value == 0 for value in total_elements.values()):
-        return MESSAGES['NO_RECORDS_FOUND'].format('connected assets')
+        total_elements[asset_type] = resp.get(asset_type).get('totalElements', 0)
+        content[asset_type] = resp.get(asset_type).get('content', [])
+    if all(value == 0 for value in total_elements.values()) or all(value == [] for value in content.values()):
+        return f'{MESSAGES["NO_RECORDS_FOUND"].format("connected assets")} If the page argument is specified,' \
+               f' try decreasing its value.'
 
     hr, standard_ec, custom_ec = get_asset_connections_outputs(resp, total_elements)
     return CommandResults(
@@ -2194,10 +2202,6 @@ def asset_changes_summary_command(client: Client, args: Dict[str, Any]) -> Union
     :param args: parameters required to generate the api request
     :return: standard output: standard output required for XSOAR platform
     """
-
-    # Trim the arguments
-    for argument in args:
-        args[argument] = args[argument].strip()
 
     # fetch and validate command arguments
     date_arg, range_arg = validate_asset_changes_summary_args(args.get('date', ''), args.get('range', ''))
@@ -2227,22 +2231,17 @@ def asset_changes_summary_command(client: Client, args: Dict[str, Any]) -> Union
 
 
 @logger
-def asset_changes_command(client: Client, args: Dict[str, Any], max_records: int) -> Union[str, CommandResults]:
+def asset_changes_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
     """
     Retrieve the list of confirmed assets that have been added,
     removed or changes in asset properties in the inventory over the given time period.
 
     :param client: The Client object used for request
     :param args: The command arguments
-    :param max_records: The number of records to fetch
     :return: CommandResults
     """
 
-    # Trim the arguments
-    for argument in args:
-        args[argument] = args[argument].strip()
-
-    params: Dict[str, Any] = get_asset_changes_params(args, max_records)
+    params: Dict[str, Any] = get_asset_changes_params(args)
 
     resp = client.http_request(method='GET', url_suffix=COMMAND_URL_SUFFIX['ASSET_CHANGES'], params=params)
 
@@ -2263,18 +2262,21 @@ def asset_changes_command(client: Client, args: Dict[str, Any], max_records: int
                                                                           params.get('range', '')))
 
     asset_type = args.get('type', '').replace(' ', '_').upper()
-    hr = '### [INVENTORY CHANGES: DETAILS]({})\n'.format(deep_link)
-    hr += get_asset_changes_hr(asset_changes_records, asset_type, params.get('measure', 'Added'))
+    measure = params.get('measure', 'Added')
 
-    output_path = ''
+    output_key_fields = ['name', 'type']
+    changed_entity = 'Assets'
     if asset_type in VALID_ASSET_DETAIL_TYPES:
-        output_path = 'RiskIQDigitalFootprint.AssetChanges(val.{0} == obj.{0})'.format('id')
-    elif asset_type in VALID_ASSET_TYPES:
-        output_path = 'RiskIQDigitalFootprint.AssetChanges(val.{0} == obj.{0} ' \
-                      '&& val.{1} == obj.{1})'.format('name', 'type')
+        output_key_fields = ['id', 'resource']
+        changed_entity = 'Resources'
+
+    hr = f'### [INVENTORY CHANGES: DETAILS]({deep_link})\n### {measure} Inventory {changed_entity}\n' \
+         f'### Total: {resp.get("totalElements")}\n'
+    hr += get_asset_changes_hr(asset_changes_records, asset_type, measure)
+
     return CommandResults(
-        outputs_prefix=output_path,
-        outputs_key_field='',
+        outputs_prefix="RiskIQDigitalFootprint.AssetChanges",
+        outputs_key_field=output_key_fields,
         outputs=custom_ec,
         indicators=standard_ec,
         readable_output=hr,
@@ -2283,23 +2285,18 @@ def asset_changes_command(client: Client, args: Dict[str, Any], max_records: int
 
 
 @logger
-def get_asset_command(client: Client, args: Dict[str, Any], max_records: int) -> Union[str, CommandResults]:
+def get_asset_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
     """
     Retrieve the asset of the specified UUID from Global Inventory.
 
     :param client: The Client object used for request
     :param args: The command arguments
     :return: CommandResults
-    :param max_records: The number of records to fetch
     :return: CommandResults
     """
 
-    # Trim the arguments
-    for argument in args:
-        args[argument] = args[argument].strip()
-
     uuid, asset_type = validate_and_fetch_get_asset_arguments(args)
-    params = get_asset_params(args, max_records)
+    params = get_asset_params(args)
 
     if uuid:
         resp = client.http_request(method='GET', url_suffix=COMMAND_URL_SUFFIX['GET_ASSET_BY_UUID'].format(uuid),
@@ -2328,10 +2325,6 @@ def add_assets_command(client: Client, args: Dict[str, Any]) -> Union[str, Comma
     :param args: The command arguments
     :return: CommandResults
     """
-    # Trim the arguments
-    for argument in args:
-        if isinstance(args[argument], str):
-            args[argument] = args[argument].strip()
 
     # Validate arguments
     valid_json = validate_asset_payload(args, 'add')
@@ -2366,10 +2359,6 @@ def update_assets_command(client: Client, args: Dict[str, Any]) -> Union[str, Co
     :param args: The command arguments
     :return: CommandResults
     """
-    # Trim the arguments
-    for argument in args:
-        if isinstance(args[argument], str):
-            args[argument] = args[argument].strip()
 
     # Validate arguments
     valid_json = validate_asset_payload(args, 'update')
@@ -2401,13 +2390,10 @@ def main() -> None:
     """
 
     # Commands dict
-    commands_without_max_records_param = {
+    commands = {
         'df-asset-changes-summary': asset_changes_summary_command,
         'df-add-assets': add_assets_command,
-        'df-update-assets': update_assets_command
-    }
-
-    commands_with_max_records_param = {
+        'df-update-assets': update_assets_command,
         'df-asset-connections': asset_connections_command,
         'df-asset-changes': asset_changes_command,
         'df-get-asset': get_asset_command,
@@ -2421,7 +2407,19 @@ def main() -> None:
         secret = demisto.params().get('secret')
         verify_certificate = not demisto.params().get('insecure', False)
         proxy = demisto.params().get('proxy', False)
-        request_timeout, max_records = get_timeout_and_max_records()
+
+        # Trim the arguments
+        args = demisto.args()
+        for argument in args:
+            if isinstance(args[argument], str):
+                args[argument] = args[argument].strip()
+
+        # Fetch the request_timeout according to the value of size argument
+        request_timeout = 10
+        size = args.get('size')
+        if size:
+            request_timeout, size = get_timeout_and_size(size)
+            args['size'] = size
 
         client = Client(base_url=url, request_timeout=request_timeout, verify=verify_certificate, proxy=proxy,
                         auth=(token, secret))
@@ -2429,13 +2427,11 @@ def main() -> None:
         command = demisto.command()
 
         # This is the call made when pressing the integration Test button.
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             result = test_function(client)
             demisto.results(result)
-        elif command in commands_with_max_records_param:
-            return_results(commands_with_max_records_param[command](client, demisto.args(), max_records))
-        elif command in commands_without_max_records_param:
-            return_results(commands_without_max_records_param[command](client, demisto.args()))
+        elif command in commands:
+            return_results(commands[command](client, args))
 
     # Log exceptions
     except Exception as e:

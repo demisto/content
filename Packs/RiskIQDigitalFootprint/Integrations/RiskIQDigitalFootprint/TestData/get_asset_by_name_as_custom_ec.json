@@ -5,17 +5,17 @@
       "firstSeen": 1532708763182,
       "lastSeen": 1587456222572,
       "recent": true,
-      "value": "TRAFBIZ-01"
+      "value": "DUMMY-01"
     }
   ],
   "assetAsn": {
     "asnID": 63245,
     "countryCode": "united states",
-    "description": "TRAFBIZ-01, united states",
-    "fullName": "AS63245 - united states - TRAFBIZ-01, united states",
+    "description": "DUMMY-01, united states",
+    "fullName": "AS63245 - united states - DUMMY-01, united states",
     "id": 63245,
     "name": "AS63245",
-    "registry": "ARIN"
+    "registry": "DUMMYREG"
   },
   "assetAsnNumber": 63245,
   "assetCount": 3747,
@@ -46,7 +46,7 @@
       "firstSeen": 1532708763182,
       "lastSeen": 1586212561931,
       "recent": true,
-      "value": "RISKI-1"
+      "value": "DUMMY-ORG"
     }
   ],
   "assetOrgNames": [
@@ -55,7 +55,7 @@
       "firstSeen": 1532708763182,
       "lastSeen": 1586212561931,
       "recent": true,
-      "value": "Trafbiz.com"
+      "value": "dummy.com"
     }
   ],
   "assetRegistries": [
@@ -64,7 +64,7 @@
       "firstSeen": 1532708763182,
       "lastSeen": 1587456222572,
       "recent": true,
-      "value": "ARIN"
+      "value": "DUMMYREG"
     }
   ],
   "description": "AS63245",
