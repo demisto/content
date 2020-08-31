@@ -1875,10 +1875,10 @@ def add_additional_headers(additional_headers):
     return headers
 
 
-def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, html_body=None,
-               attachments_ids="", attachments_cids="", attachments_names="", manualAttachObj=None,
-               transient_files=None, transient_files_contents=None, transient_files_cids=None, template_params=None,
-               additional_headers=None, raw_message=None):
+def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
+               attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
+               transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
+               additionalHeader=None, raw_message=None):
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
@@ -1897,21 +1897,21 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
         )
 
     else:
-        if additional_headers:
-            additional_headers = add_additional_headers(additional_headers)
+        if additionalHeader:
+            additionalHeader = add_additional_headers(additionalHeader)
 
         # collect all types of attachments
-        attachments = collect_attachments(attachments_ids, attachments_cids, attachments_names)
+        attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
         attachments.extend(collect_manual_attachments(manualAttachObj))
-        attachments.extend(handle_transient_files(transient_files, transient_files_contents, transient_files_cids))
+        attachments.extend(handle_transient_files(transientFile, transientFileContent, transientFileCID))
 
         # update body and html_body with the templated params, if exists
-        template_params = handle_template_params(template_params)
+        template_params = handle_template_params(templateParams)
         if template_params:
             body = body.format(**template_params)
-            html_body = html_body.format(**template_params)
+            htmlBody = htmlBody.format(**template_params)
 
-        message = create_message(to, subject, body, bcc, cc, html_body, attachments, additional_headers)
+        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader)
 
     client.send_email(message)
 
@@ -2265,7 +2265,7 @@ def sub_main():
             "ews-get-folder": get_folder,
             "ews-expand-group": get_expanded_group,
             "ews-mark-items-as-read": mark_item_as_read,
-            "ews-send-mail": send_email,
+            "send-mail": send_email,
         }
 
         # commands that may return multiple results or non-note result

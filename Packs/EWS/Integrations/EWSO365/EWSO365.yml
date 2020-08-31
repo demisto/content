@@ -1145,7 +1145,7 @@ script:
     deprecated: false
     description: Send an email
     execution: false
-    name: ews-send-mail
+    name: send-mail
   dockerimage: demisto/py3ews:1.0.0.10664
   feed: false
   isfetch: true
