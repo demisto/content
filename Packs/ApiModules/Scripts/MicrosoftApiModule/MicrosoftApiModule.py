@@ -52,14 +52,11 @@ class MicrosoftClient(BaseClient):
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
-
         if not self_deployed:
             auth_id_and_token_retrieval_url = auth_id.split('@')
             auth_id = auth_id_and_token_retrieval_url[0]
             if len(auth_id_and_token_retrieval_url) != 2:
-                # self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
-                # TODO: remove in the end
-                self.token_retrieval_url = 'https://us-central1-oproxy-dev.cloudfunctions.net/add-scope-atp_ProvideAccessTokenFunction'
+                self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
             else:
                 self.token_retrieval_url = auth_id_and_token_retrieval_url[1]
 
