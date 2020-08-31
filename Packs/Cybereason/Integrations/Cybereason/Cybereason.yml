@@ -398,6 +398,13 @@ script:
       name: malopGuid
       required: false
       secret: false
+    - default: false
+      defaultValue: MalopProcess
+      description: The request type of the query.
+      isArray: false
+      name: requestType
+      required: false
+      secret: false
     deprecated: false
     description: Returns a list of all Malops and details on the Malops.
     execution: false
@@ -726,10 +733,13 @@ script:
     - contextPath: Cybereason.User.Organization
       description: User organization
       type: string
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - Cybereason Test

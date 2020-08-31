@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 ''' IMPORTS '''
 import requests
 import os
@@ -93,7 +94,6 @@ HEADERS = {
 
 
 def build_query(query_fields, path, template_context='SPECIFIC'):
-
     limit = demisto.args().get('limit')
     results_limit = int(limit) if limit else 10000
     group_limit = int(limit) if limit else 100
@@ -153,7 +153,6 @@ def update_output(output, simple_values, element_values, info_dict):
 
 
 def get_pylum_id(machine):
-
     query_fields = ['pylumId']
     path = [
         {
@@ -179,7 +178,6 @@ def get_pylum_id(machine):
 
 
 def get_machine_guid(machine_name):
-
     query_fields = ['elementDisplayName']
     path = [
         {
@@ -204,7 +202,6 @@ def get_machine_guid(machine_name):
 
 
 def is_probe_connected_command(is_remediation_commmand=False):
-
     machine = demisto.args().get('machine')
     is_connected = False
 
@@ -256,7 +253,6 @@ def is_probe_connected(machine):
 
 
 def query_processes_command():
-
     machine = demisto.args().get('machine')
     process_name = demisto.args().get('processName')
     only_suspicious = demisto.args().get('onlySuspicious')
@@ -307,7 +303,6 @@ def query_processes_command():
 def query_processes(machine, process_name, only_suspicious=None, has_incoming_connection=None,
                     has_outgoing_connection=None, has_external_connection=None, unsigned_unknown_reputation=None,
                     from_temporary_folder=None, privileges_escalation=None, maclicious_psexec=None):
-
     machine_filters = []
     process_filters = []
 
@@ -361,7 +356,6 @@ def query_processes(machine, process_name, only_suspicious=None, has_incoming_co
 
 
 def query_connections_command():
-
     machine = demisto.args().get('machine')
     ip = demisto.args().get('ip')
     if ip and machine:
@@ -376,7 +370,6 @@ def query_connections_command():
     outputs = []
 
     for element in elements:
-
         simple_values = elements[element]['simpleValues']
         element_values = elements[element]['elementValues']
 
@@ -403,27 +396,26 @@ def query_connections_command():
 
 
 def query_connections(machine, ip):
-
     if machine:
         path = [
             {
                 'requestedType': 'Connection',
                 'filters': [],
                 'connectionFeature':
-                {
-                    'elementInstanceType': 'Connection',
-                    'featureName': 'ownerMachine'
-                },
+                    {
+                        'elementInstanceType': 'Connection',
+                        'featureName': 'ownerMachine'
+                    },
                 'isResult': True
             },
             {
                 'requestedType': 'Machine',
                 'filters':
-                [{
-                    'facetName': 'elementDisplayName',
-                    'values': [machine],
-                    'filterType': 'Equals'
-                }]
+                    [{
+                        'facetName': 'elementDisplayName',
+                        'values': [machine],
+                        'filterType': 'Equals'
+                    }]
             }
         ]
     elif ip:
@@ -431,10 +423,10 @@ def query_connections(machine, ip):
             {
                 'requestedType': 'Connection',
                 'filters':
-                [{
-                    'facetName': 'elementDisplayName',
-                    'values': [ip]
-                }],
+                    [{
+                        'facetName': 'elementDisplayName',
+                        'values': [ip]
+                    }],
                 'isResult': True
             }
         ]
@@ -446,20 +438,20 @@ def query_connections(machine, ip):
 
 
 def query_malops_command():
-
     total_result_limit = demisto.args().get('totalResultLimit')
     per_group_limit = demisto.args().get('perGroupLimit')
-    template_context = demisto.args().get('templateContext')
-    filters = demisto.args().get('filters', [])
+    template_context = demisto.args().get('templasteContext')
+    filters = safe_load_json(demisto.args().get('filters', []))
     within_last_days = demisto.args().get('withinLastDays')
     guid_list = argToList(demisto.args().get('malopGuid'))
+    request_type = demisto.args().get('requestType', 'MalopProcess')
 
     if within_last_days:
         current_timestamp = time.time()
         current_datetime = datetime.fromtimestamp(current_timestamp)
         within_last_days_datetime = current_datetime - timedelta(days=int(within_last_days))
         within_last_days_timestamp = time.mktime(within_last_days_datetime.timetuple()) + \
-            within_last_days_datetime.microsecond / 1E6  # Converting datetime to time
+                                     within_last_days_datetime.microsecond / 1E6  # Converting datetime to time
         within_last_days_timestamp = within_last_days_timestamp * 1000
         filters.append({
             'facetName': 'malopLastUpdateTime',
@@ -467,7 +459,8 @@ def query_malops_command():
             'filterType': 'GreaterThan'
         })
 
-    response = query_malops(total_result_limit, per_group_limit, template_context, filters, guid_list=guid_list)
+    response = query_malops(total_result_limit, per_group_limit, template_context, filters, guid_list=guid_list,
+                            request_type=request_type)
     data = response['data']
     malops_map = data.get('resultIdToElementDataMap')
     if not data or not malops_map:
@@ -530,8 +523,8 @@ def query_malops_command():
     })
 
 
-def query_malops(total_result_limit=None, per_group_limit=None, template_context=None, filters=None, guid_list=[]):
-
+def query_malops(total_result_limit=None, per_group_limit=None, template_context=None, filters=None, guid_list=[],
+                 request_type="MalopProcess"):
     body = {
         'totalResultLimit': int(total_result_limit) if total_result_limit else 10000,
         'perGroupLimit': int(per_group_limit) if per_group_limit else 10000,
@@ -539,7 +532,7 @@ def query_malops(total_result_limit=None, per_group_limit=None, template_context
         'templateContext': template_context or 'MALOP',
         'queryPath': [
             {
-                'requestedType': 'MalopProcess',
+                'requestedType': request_type,
                 'guidList': guid_list,
                 'result': True,
                 'filters': filters or None
@@ -555,7 +548,6 @@ def query_malops(total_result_limit=None, per_group_limit=None, template_context
 
 
 def isolate_machine_command():
-
     machine = demisto.args().get('machine')
     response, pylum_id = isolate_machine(machine)
     result = response.get(pylum_id)
@@ -582,7 +574,6 @@ def isolate_machine_command():
 
 
 def isolate_machine(machine):
-
     pylum_id = get_pylum_id(machine)
 
     cmd_url = '/rest/monitor/global/commands/isolate'
@@ -595,7 +586,6 @@ def isolate_machine(machine):
 
 
 def unisolate_machine_command():
-
     machine = demisto.args().get('machine')
     response, pylum_id = unisolate_machine(machine)
     result = response.get(pylum_id)
@@ -622,7 +612,6 @@ def unisolate_machine_command():
 
 
 def unisolate_machine(machine):
-
     pylum_id = get_pylum_id(machine)
     cmd_url = '/rest/monitor/global/commands/un-isolate'
     json = {
@@ -634,7 +623,6 @@ def unisolate_machine(machine):
 
 
 def malop_processes_command():
-
     malop_guids = demisto.args().get('malopGuids')
     machine_name = demisto.args().get('machineName')
 
@@ -694,7 +682,6 @@ def malop_processes_command():
 
 
 def malop_processes(malop_guids):
-
     json = {
         'queryPath': [
             {
@@ -739,12 +726,12 @@ def add_comment(malop_guid, comment):
 
 
 def update_malop_status_command():
-
     status = demisto.args().get('status')
     malop_guid = demisto.args().get('malopGuid')
 
     if status not in STATUS_MAP:
-        return_error('Invalid status. Given status must be one of the following: To Review,Unread,Remediated or Not Relevant')
+        return_error(
+            'Invalid status. Given status must be one of the following: To Review,Unread,Remediated or Not Relevant')
 
     update_malop_status(malop_guid, status)
 
@@ -763,7 +750,6 @@ def update_malop_status_command():
 
 
 def update_malop_status(malop_guid, status):
-
     api_status = STATUS_MAP[status]
 
     json = {}
@@ -777,7 +763,6 @@ def update_malop_status(malop_guid, status):
 
 
 def prevent_file_command():
-
     file_hash = demisto.args()['md5']
     response = prevent_file(file_hash)
     if response['outcome'] == 'success':
@@ -801,7 +786,6 @@ def prevent_file_command():
 
 
 def prevent_file(file_hash):
-
     json = [{
         'keys': [str(file_hash)],
         'maliciousType': 'blacklist',
@@ -837,7 +821,6 @@ def unprevent_file_command():
 
 
 def unprevent_file(file_hash):
-
     json = [{
         'keys': [str(file_hash)],
         'remove': True,
@@ -849,7 +832,6 @@ def unprevent_file(file_hash):
 
 
 def kill_process_command():
-
     machine_name = demisto.args()['machine']
     file_name = demisto.args()['file']
     malop_guid = demisto.args()['malop']
@@ -874,7 +856,6 @@ def kill_process_command():
 
 
 def kill_process(malop_guid, machine_guid, process_guid):
-
     json = {
         'malopId': malop_guid,
         'actionsByMachine': {
@@ -891,7 +872,6 @@ def kill_process(malop_guid, machine_guid, process_guid):
 
 
 def quarantine_file_command():
-
     machine_name = demisto.args()['machine']
     file_name = demisto.args()['file']
     malop_guid = demisto.args()['malop']
@@ -914,7 +894,6 @@ def quarantine_file_command():
 
 
 def quarantine_file(malop_guid, machine_guid, process_guid):
-
     json = {
         'malopId': malop_guid,
         'actionsByMachine': {
@@ -931,7 +910,6 @@ def quarantine_file(malop_guid, machine_guid, process_guid):
 
 
 def delete_registry_key_command():
-
     machine_name = demisto.args()['machine']
     file_name = demisto.args()['file']
     malop_guid = demisto.args()['malop']
@@ -950,7 +928,6 @@ def delete_registry_key_command():
 
 
 def delete_registry_key(malop_guid, machine_guid, process_guid):
-
     json = {
         'malopId': malop_guid,
         'actionsByMachine': {
@@ -967,7 +944,6 @@ def delete_registry_key(malop_guid, machine_guid, process_guid):
 
 
 def query_file_command():
-
     file_hash = demisto.args().get('file_hash')
 
     filters = []
@@ -1087,7 +1063,6 @@ def query_file_command():
 
 
 def query_file(filters):
-
     query_fields = ['md5String', 'ownerMachine', 'avRemediationStatus', 'isSigned', 'signatureVerified',
                     'sha1String', 'maliciousClassificationType', 'createdTime', 'modifiedTime', 'size', 'correctedPath',
                     'productName', 'productVersion', 'companyName', 'internalName', 'elementDisplayName']
@@ -1108,7 +1083,6 @@ def query_file(filters):
 
 
 def get_file_machine_details(file_guid):
-
     query_fields = ["ownerMachine", "self", "elementDisplayName", "correctedPath", "canonizedPath", "mount",
                     "mountedAs", "createdTime", "modifiedTime", "md5String", "sha1String", "productType", "companyName",
                     "productName", "productVersion", "signerInternalOrExternal", "signedInternalOrExternal",
@@ -1135,7 +1109,6 @@ def get_file_machine_details(file_guid):
 
 
 def query_domain_command():
-
     domain_input = demisto.args().get('domain')
 
     filters = [{
@@ -1151,7 +1124,6 @@ def query_domain_command():
         domain_outputs = []
         domains = data.get('resultIdToElementDataMap')
         for domain in domains.keys():
-
             simple_values = domains[domain]['simpleValues']
 
             reputation = simple_values['maliciousClassificationType']['values'][0]
@@ -1196,7 +1168,6 @@ def query_domain_command():
 
 
 def query_domain(filters):
-
     query_fields = ['maliciousClassificationType', 'isInternalDomain',
                     'everResolvedDomain', 'everResolvedSecondLevelDomain', 'elementDisplayName']
     path = [
@@ -1216,7 +1187,6 @@ def query_domain(filters):
 
 
 def query_user_command():
-
     username = demisto.args().get('username')
 
     filters = [{
@@ -1231,7 +1201,6 @@ def query_user_command():
         cybereason_outputs = []
         users = data.get('resultIdToElementDataMap')
         for user in users.keys():
-
             simple_values = users[user]['simpleValues']
             element_values = users[user]['elementValues']
 
@@ -1267,7 +1236,6 @@ def query_user_command():
 
 
 def query_user(filters):
-
     query_fields = ['domain', 'ownerMachine', 'ownerOrganization', 'isLocalSystem', 'elementDisplayName']
     path = [
         {
@@ -1286,7 +1254,6 @@ def query_user(filters):
 
 
 def malop_to_incident(malop):
-
     incident = {}  # type: Dict[Any, Any]
     incident['rawJSON'] = json.dumps(malop)
     incident['name'] = 'Cybereason Malop ' + malop['guidString']
@@ -1295,7 +1262,6 @@ def malop_to_incident(malop):
 
 
 def fetch_incidents():
-
     last_run = demisto.getLastRun()
 
     if last_run and last_run['creation_time']:
@@ -1400,7 +1366,7 @@ def logout():
 
 ''' EXECUTION CODE '''
 
-LOG('command is %s' % (demisto.command(), ))
+LOG('command is %s' % (demisto.command(),))
 
 session = requests.session()
 
