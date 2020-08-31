@@ -944,5 +944,5 @@ script:
   subtype: python3
   type: python
 tests:
-- PassiveTotal_v2-Test
+- No Tests- non-certified partner, test was moved to non circle folder.
 fromversion: 5.0.0
