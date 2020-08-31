@@ -699,7 +699,6 @@ script:
       description: Digital Footprint (Global Inventory) assets potentially contain
         pages of related data, for example attributes, cookies and host pairs. Size
         determines the number for each of these associated items that are returned.
-        The default value for this argument from RiskIQ platform is 20.
       isArray: false
       name: size
       required: false

@@ -85,6 +85,8 @@ tasks:
         simple: riskiq.com
       type:
         simple: Domain
+      page: {}
+      size: {}
     separatecontext: false
     view: |-
       {
@@ -325,6 +327,8 @@ tasks:
       range:
         simple: "30"
       tag: {}
+      page: {}
+      size: {}
       type:
         simple: Page
     separatecontext: false
@@ -453,8 +457,8 @@ tasks:
       id: 802351da-4a16-486b-86e6-7b80744996d2
       version: -1
       name: df-get-asset
-      description: Retrieve the asset of the specified UUID from Global Inventory.
-      script: RiskIQDigitalFootprint|||df-get-asset
+      description: Retrieve the asset of the specified UUID or type and name from Global Inventory.
+      script: '|||df-get-asset'
       type: regular
       iscommand: true
       brand: RiskIQDigitalFootprint
@@ -600,7 +604,7 @@ tasks:
       id: 28bca671-5e2d-4280-88cf-c529fe9a307a
       version: -1
       name: df-get-asset
-      description: Retrieve the asset of the specified UUID from Global Inventory.
+      description: Retrieve the asset of the specified UUID or type and name from Global Inventory.
       script: '|||df-get-asset'
       type: regular
       iscommand: true
@@ -616,6 +620,7 @@ tasks:
       type:
         simple: Domain
       uuid: {}
+      size: {}
     separatecontext: false
     view: |-
       {

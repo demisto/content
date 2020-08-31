@@ -678,7 +678,7 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
 | type | The type of the asset to retrieve. Valid Types: Domain, Host, IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only. | Optional | 
 | global | Setting this value to true will search all of the global inventory. Setting it to false will search for assets in the workspace associated with the authentication token. The default value for this argument from RiskIQ platform is false. This argument supports a single value only. | Optional | 
 | recent | If specified and 'true', then only return recent data on the asset. The default value for this argument from RiskIQ platform is false. This argument supports a single value only. | Optional | 
-| size | Digital Footprint (Global Inventory) assets potentially contain pages of related data, for example attributes, cookies and host pairs. Size determines the number for each of these associated items that are returned. The default value for this argument from RiskIQ platform is 20. | Optional |
+| size | Digital Footprint (Global Inventory) assets potentially contain pages of related data, for example attributes, cookies and host pairs. Size determines the number for each of these associated items that are returned. | Optional |
 
 #### Context Output
 
