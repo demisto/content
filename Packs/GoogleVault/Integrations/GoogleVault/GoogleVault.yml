@@ -851,7 +851,8 @@ script:
     - contextPath: GoogleVault.Matter.Export.Results.To
       description: The address the message was sent to
       type: string
-  dockerimage: demisto/gvault:1.0.0.11050
+  dockerimage45: demisto/gvault:1.0.0.11050
+  dockerimage: demisto/gvault:1.0.0.11128
   feed: false
   isfetch: false
   longRunning: false
