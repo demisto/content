@@ -3,7 +3,6 @@ import dateparser
 from typing import List, Tuple, Dict, Callable, Any, Optional, Union
 
 from CommonServerPython import *
-from demistomock import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
