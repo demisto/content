@@ -448,8 +448,8 @@ def query_malops_command():
         current_timestamp = time.time()
         current_datetime = datetime.fromtimestamp(current_timestamp)
         within_last_days_datetime = current_datetime - timedelta(days=int(within_last_days))
-        within_last_days_timestamp = time.mktime(within_last_days_datetime.timetuple()) + \
-                                     within_last_days_datetime.microsecond / 1E6  # Converting datetime to time
+        within_last_days_timestamp = time.mktime(  # Converting datetime to time
+            within_last_days_datetime.timetuple()) + within_last_days_datetime.microsecond / 1E6
         within_last_days_timestamp = within_last_days_timestamp * 1000
         filters.append({
             'facetName': 'malopLastUpdateTime',
