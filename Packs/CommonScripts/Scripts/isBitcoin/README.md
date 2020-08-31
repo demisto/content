@@ -1,0 +1,31 @@
+Verifies that a Bitcoin address is valid.
+## Script Data
+---
+
+| **Name** | **Description** |
+| --- | --- |
+| Script Type | python3 |
+| Tags |  |
+| Demisto Version | 0.0.0 |
+
+## Inputs
+---
+
+| **Argument Name** | **Description** |
+| --- | --- |
+| address | The Bitcoin address to check. |
+
+## Outputs
+---
+There are no outputs for this script.
+
+## Script Example
+```!isBitcoin address=1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i```
+
+## Context Example
+```
+{}
+```
+
+## Human Readable Output
+True

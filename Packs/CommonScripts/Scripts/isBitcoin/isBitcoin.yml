@@ -1,0 +1,21 @@
+args:
+- default: false
+  description: The Bitcoin address to check.
+  isArray: false
+  name: address
+  required: true
+  secret: false
+comment: Verifies that a Bitcoin address is valid.
+commonfields:
+  id: isBitcoin
+  version: -1
+enabled: true
+name: isBitcoin
+script: '-'
+subtype: python3
+system: false
+tags:
+- ''
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.5.10455
