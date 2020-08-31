@@ -97,7 +97,7 @@ configuration:
 description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
   Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses
   straight into the Demisto platform.
-display: Sixgill DarkFeed™ Threat Intelligence
+display: Sixgill DarkFeed Threat Intelligence
 name: Sixgill_Darkfeed
 script:
   script: '-'
