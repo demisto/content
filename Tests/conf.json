@@ -15,6 +15,11 @@
             "playbookID": "AWS-securityhub Test"
         },
         {
+            "integrations": "Microsoft Advanced Threat Analytics",
+            "playbookID": "Microsoft Advanced Threat Analytics - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Humio",
             "playbookID": "Humio-Test",
             "fromversion": "5.0.0"
@@ -38,6 +43,11 @@
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus - Generic Polling Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "ThreatConnect Feed",
+            "playbookID": "FeedThreatConnect-Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Group-IB TDS Polygon",
@@ -1745,12 +1755,6 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "Infocyte",
-            "playbookID": "Infocyte-Test",
-            "timeout": 1200,
-            "fromversion": "5.5.0"
-        },
-        {
             "integrations": "Qualys",
             "playbookID": "Qualys-Test"
         },
@@ -3015,7 +3019,6 @@
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "SMB test": "Issue 26454",
-        "Infocyte-Test": "Issue 26445",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
         "Office365_Feed_Test": "Issue 26455",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
@@ -3031,7 +3034,6 @@
         "Google Chronicle Backstory List IOCs - Test": "Issue 26461",
         "hashIncidentFields-test": "Issue 26850",
         "Mail Sender (New) Test": "Issue 25602",
-        "Recorded Future Test": "Issue 26741",
         "CirclIntegrationTest": "Issue 25600",
         "Luminate-TestPlaybook": "Issue 27016",
         "AutoFocus V2 test": "Issue 26464",
@@ -3193,7 +3195,6 @@
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "AWS - Security Hub": "Issue 24926",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
-        "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
@@ -3347,6 +3348,9 @@
                 "pid_threshold": 11
             },
             "demisto/google-k8s-engine:1.0.0.9467": {
+                "pid_threshold": 11
+            },
+            "demisto/threatconnect-tcex:1.0.0.10664": {
                 "pid_threshold": 11
             }
         }
