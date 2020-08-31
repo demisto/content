@@ -88,6 +88,7 @@ Searches items by query
 | --- | --- | --- |
 | collection | Name of the collection do query from. | Required | 
 | query | A JSON query to search in collection. | Required | 
+| sort | Sorting order for the query results. Use the format "field1:asc,field2:desc". | Optional|
 
 
 ##### Context Output

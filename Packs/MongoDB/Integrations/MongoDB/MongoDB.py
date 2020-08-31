@@ -338,9 +338,11 @@ def format_sort(sort_str: str) -> list:
     sort_fields = sort_str.split(',')
     sort_list = list()
     for field in sort_fields:
+        if ':' not in field:
+            raise ValueError("`sort` is not in the correct format.")
         field, type = field.split(':')
         if type not in SORT_TYPE_DICT.keys():
-            raise ValueError("Sort type is not in the correct format. Please make sure it's either 'asc' or 'desc'")
+            raise ValueError("`sort` is not in the correct format. Please make sure it's either 'asc' or 'desc'")
         else:
             sort_list.append((field, SORT_TYPE_DICT[type]))
     return sort_list
