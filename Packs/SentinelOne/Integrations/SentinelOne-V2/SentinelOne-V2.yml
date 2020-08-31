@@ -318,19 +318,7 @@ script:
     - contextPath: SentinelOne.Hash.Hash
       description: The content hash.
       type: String
-    - contextPath: SentinelOne.Hash.Classification
-      description: The hash classification.
-      type: String
-    - contextPath: SentinelOne.Hash.Classification Source
-      description: The hash classification source.
-      type: String
   - arguments:
-    - default: false
-      description: The content hash of the threat.
-      isArray: false
-      name: content_hash
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       description: CSV list of mitigation statuses. Can be "mitigated", "active",
@@ -423,12 +411,6 @@ script:
       - Behavioral
       required: false
       secret: false
-    - default: false
-      description: Risk level threshold to retrieve (1-10).
-      isArray: false
-      name: rank
-      required: false
-      secret: false
     deprecated: false
     description: Returns threats according to specified filters.
     execution: false
@@ -473,49 +455,33 @@ script:
     execution: false
     name: sentinelone-threat-summary
     outputs:
-    - contextPath: SentinelOne.Threat.Active
+    - contextPath: SentinelOne.Threat.NotResolved
+      description: Number of unresolved threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.SuspiciousNotMitigatedNotResolved
+      description: Number of unmitigated suspicious threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.SuspiciousNotResolved
+      description: Number of unresolved suspicious threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.Resolved
+      description: Number of resolved threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.InProgress
       description: Number of active threats in the system.
       type: Number
     - contextPath: SentinelOne.Threat.Total
       description: Total number of threats in the system.
       type: Number
-    - contextPath: SentinelOne.Threat.Mitigated
-      description: Number of mitigated threats in the system.
+    - contextPath: SentinelOne.Threat.NotMitigated
+      description: Number of unmitigated threats in the system.
       type: Number
-    - contextPath: SentinelOne.Threat.Suspicious
-      description: Number of suspicious threats in the system.
+    - contextPath: SentinelOne.Threat.MaliciousNotResolved
+      description: Number of unresolved malicious threats in the system.
       type: Number
-    - contextPath: SentinelOne.Threat.Blocked
-      description: Number of blocked threats in the system.
+    - contextPath: SentinelOne.Threat.NotMitigatedNotResolved
+      description: Number of unmitigated and unresolved threats in the system.
       type: Number
-  - arguments:
-    - default: false
-      description: CSV list of threat IDs.
-      isArray: true
-      name: threat_ids
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Scope to use for exclusions. Can be "site" or "tenant".
-      isArray: false
-      name: target_scope
-      predefined:
-      - site
-      - tenant
-      required: true
-      secret: false
-    deprecated: false
-    description: Mark suspicious threats as threats
-    execution: false
-    name: sentinelone-mark-as-threat
-    outputs:
-    - contextPath: SentinelOne.Threat.ID
-      description: The threat ID.
-      type: String
-    - contextPath: SentinelOne.Threat.MarkedAsThreat
-      description: Whether the suspicious threat was successfully marked as a threat.
-      type: Boolean
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -539,7 +505,8 @@ script:
       secret: false
     deprecated: false
     description: Applies a mitigation action to a group of threats that match the
-      specified input filter.
+      specified input filter. Valid values for mitigation- "kill", "quarantine", "remediate", "rollback",
+      "disconnectFromNetwork". Rollback is applied only on Windows. Remediate is applied only on macOS and Windows.
     execution: false
     name: sentinelone-mitigate-threat
     outputs:
@@ -552,24 +519,6 @@ script:
     - contextPath: SentinelOne.Threat.Mitigation.Action
       description: Number of threats affected.
       type: Number
-  - arguments:
-    - default: false
-      description: CSV list of threat IDs.
-      isArray: true
-      name: threat_ids
-      required: true
-      secret: false
-    deprecated: false
-    description: Resolves threat using the threat ID.
-    execution: false
-    name: sentinelone-resolve-threat
-    outputs:
-    - contextPath: SentinelOne.Threat.ID
-      description: The threat ID.
-      type: String
-    - contextPath: SentinelOne.Threat.Resolved
-      description: Whether the threat was successfully resolved.
-      type: Boolean
   - arguments:
     - default: false
       description: The agent ID.

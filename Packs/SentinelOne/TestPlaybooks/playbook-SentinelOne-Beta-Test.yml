@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 372e23d6-59d4-428e-8fa6-cc39c0a83ac2
+    taskid: ddb07038-1312-448d-80f3-c1c02a0dfe48
     type: start
     task:
-      id: 372e23d6-59d4-428e-8fa6-cc39c0a83ac2
+      id: ddb07038-1312-448d-80f3-c1c02a0dfe48
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 1340,
           "y": 50
         }
       }
@@ -30,10 +30,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 8c69a666-0427-4d4a-8bcf-745e4784b9dc
+    taskid: 092a2fde-1069-44ed-800c-374dd1dad9f8
     type: regular
     task:
-      id: 8c69a666-0427-4d4a-8bcf-745e4784b9dc
+      id: 092a2fde-1069-44ed-800c-374dd1dad9f8
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -48,7 +48,7 @@ tasks:
       - "4"
       - "7"
       - "12"
-      - "13"
+      - "32"
     scriptarguments:
       all:
         simple: "yes"
@@ -60,8 +60,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 1125,
+          "y": 195
         }
       }
     note: false
@@ -69,10 +69,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: ffa0cb5b-302d-48cc-84f2-68fa45140dbf
+    taskid: b5712eae-e134-4325-81a1-2a30f8d34dad
     type: regular
     task:
-      id: ffa0cb5b-302d-48cc-84f2-68fa45140dbf
+      id: b5712eae-e134-4325-81a1-2a30f8d34dad
       version: -1
       name: Get Threats
       description: Get threats using a variety of filters.
@@ -80,9 +80,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
     scriptarguments:
       classifications: {}
       content_hash: {}
@@ -101,8 +98,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 360
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -110,10 +107,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: f0a21eb8-d655-4a4d-8bc9-46a1be03183a
+    taskid: fc5fe210-ca60-4ca9-8073-bfd6b688d72f
     type: regular
     task:
-      id: f0a21eb8-d655-4a4d-8bc9-46a1be03183a
+      id: fc5fe210-ca60-4ca9-8073-bfd6b688d72f
       version: -1
       name: Get Activities
       description: Get a list of activities.
@@ -143,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 360
+          "x": 1565,
+          "y": 895
         }
       }
     note: false
@@ -152,10 +149,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: aa1e18d3-a6c0-4a9e-8a9b-070b09e95501
+    taskid: f6316e23-0270-4323-880d-93da6b66b8b0
     type: regular
     task:
-      id: aa1e18d3-a6c0-4a9e-8a9b-070b09e95501
+      id: f6316e23-0270-4323-880d-93da6b66b8b0
       version: -1
       name: Get All agents
       description: List all agents matching the input filter.
@@ -176,8 +173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 360
+          "x": 1995,
+          "y": 370
         }
       }
     note: false
@@ -185,10 +182,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 192b4a05-e7ac-4342-8329-3521b7c431d0
+    taskid: d6eb3f99-c40f-4d2b-8449-33f5570bbe07
     type: regular
     task:
-      id: 192b4a05-e7ac-4342-8329-3521b7c431d0
+      id: d6eb3f99-c40f-4d2b-8449-33f5570bbe07
       version: -1
       name: Get Agent
       description: Get details of an agent by its ID.
@@ -206,8 +203,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 550
+          "x": 1995,
+          "y": 545
         }
       }
     note: false
@@ -215,10 +212,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 5877b73d-eb2a-45d7-8ecf-eda0eaea13a9
+    taskid: 5822fbe2-a1ba-4850-8d1e-e1e0de0e29e9
     type: regular
     task:
-      id: 5877b73d-eb2a-45d7-8ecf-eda0eaea13a9
+      id: 5822fbe2-a1ba-4850-8d1e-e1e0de0e29e9
       version: -1
       name: Get Agent Processess
       description: Retrieve running processes for a specific agent.
@@ -236,8 +233,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 740
+          "x": 1995,
+          "y": 720
         }
       }
     note: false
@@ -245,10 +242,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: b952481e-cc6a-4bb4-8feb-7a89848eed74
+    taskid: 9848cdae-cbb2-4113-8478-148b687a34e2
     type: regular
     task:
-      id: b952481e-cc6a-4bb4-8feb-7a89848eed74
+      id: 9848cdae-cbb2-4113-8478-148b687a34e2
       version: -1
       name: Get all groups
       description: Gets the group data.
@@ -272,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 360
+          "x": 910,
+          "y": 370
         }
       }
     note: false
@@ -281,10 +278,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 0e99af0e-c732-41ee-8155-1b8828c4a0af
+    taskid: 8360d0ca-1167-4cb0-8438-9b8b87bc7f11
     type: regular
     task:
-      id: 0e99af0e-c732-41ee-8155-1b8828c4a0af
+      id: 8360d0ca-1167-4cb0-8438-9b8b87bc7f11
       version: -1
       name: Get threat summary
       description: Get dashboard threat summary.
@@ -299,37 +296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: eb36a271-0d54-4a49-8f40-fff09e306f1a
-    type: regular
-    task:
-      id: eb36a271-0d54-4a49-8f40-fff09e306f1a
-      version: -1
-      name: Mark as threat
-      description: Mark suspicious threats as threats
-      script: '|||sentinelone-mark-as-threat'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      target_scope:
-        simple: site
-      threat_ids:
-        simple: "513526418089756174"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 570
+          "x": 910,
+          "y": 545
         }
       }
     note: false
@@ -337,10 +305,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: e20a2156-86ea-4a44-861b-16b4e983c73b
+    taskid: a9e14b07-cc52-4634-86af-ac9a4cf1339d
     type: regular
     task:
-      id: e20a2156-86ea-4a44-861b-16b4e983c73b
+      id: a9e14b07-cc52-4634-86af-ac9a4cf1339d
       version: -1
       name: Disconnect agent to network
       description: Disconnect agents from network
@@ -358,8 +326,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 915
+          "x": 1995,
+          "y": 895
         }
       }
     note: false
@@ -367,10 +335,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 6c169566-ebb8-4de5-8da9-c3bc11260722
+    taskid: 6e4a8f69-d0ba-4064-8726-068564ab1297
     type: regular
     task:
-      id: 6c169566-ebb8-4de5-8da9-c3bc11260722
+      id: 6e4a8f69-d0ba-4064-8726-068564ab1297
       version: -1
       name: Broadcast Message
       description: Broadcasts a message to all agents matching the input filter.
@@ -390,8 +358,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -470,
-          "y": 360
+          "x": 1340,
+          "y": 370
         }
       }
     note: false
@@ -399,10 +367,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 2ef96a17-2e6d-4508-8d02-4bf28902641b
+    taskid: 375ba8b8-7c1f-428c-8c14-5ee44681cc2f
     type: regular
     task:
-      id: 2ef96a17-2e6d-4508-8d02-4bf28902641b
+      id: 375ba8b8-7c1f-428c-8c14-5ee44681cc2f
       version: -1
       name: Create Query ID
       description: Start a Deep Visibility Query and get the queryId, use queryId
@@ -416,17 +384,25 @@ tasks:
       - "29"
     scriptarguments:
       from_date:
-        simple: "2020-04-01T04:49:26.257525Z"
+        complex:
+          root: TimeNow
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 90 days ago
       query:
         simple: AgentName Is Not Empty
       to_date:
-        simple: "2020-04-05T04:49:26.257525Z"
+        complex:
+          root: TimeNow
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 360
+          "x": 480,
+          "y": 545
         }
       }
     note: false
@@ -434,10 +410,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 70f10008-7b6b-4aa8-896f-609c861178f9
+    taskid: 2fe3facd-700d-45fc-8e5a-c649c32d1d69
     type: regular
     task:
-      id: 70f10008-7b6b-4aa8-896f-609c861178f9
+      id: 2fe3facd-700d-45fc-8e5a-c649c32d1d69
       version: -1
       name: Get events
       description: Get all Deep Visibility events from query
@@ -457,8 +433,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 895
+          "x": 265,
+          "y": 1070
         }
       }
     note: false
@@ -466,10 +442,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 738cd2ae-d693-4516-8c76-534f2b9ce5ce
+    taskid: 798ac728-7b58-4a60-89e3-1a00f8c49527
     type: regular
     task:
-      id: 738cd2ae-d693-4516-8c76-534f2b9ce5ce
+      id: 798ac728-7b58-4a60-89e3-1a00f8c49527
       version: -1
       name: Get processes
       description: Get Deep Visibility events from query by event type - process
@@ -488,8 +464,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2060,
-          "y": 895
+          "x": 807.5,
+          "y": 1070
         }
       }
     note: false
@@ -497,10 +473,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 07200a42-c98d-4621-80ca-aa1ff851bb02
+    taskid: a52f3530-1f86-4bea-837f-496aef5b1440
     type: regular
     task:
-      id: 07200a42-c98d-4621-80ca-aa1ff851bb02
+      id: a52f3530-1f86-4bea-837f-496aef5b1440
       version: -1
       name: Get agent activities
       description: Returns a list of activities.
@@ -536,8 +512,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 560
+          "x": 1565,
+          "y": 1070
         }
       }
     note: false
@@ -545,10 +521,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: a5eaaea6-9842-4af0-8627-db86976f4e88
+    taskid: e1e2fb56-78e3-4cdd-813a-9796db7e4dbb
     type: condition
     task:
-      id: a5eaaea6-9842-4af0-8627-db86976f4e88
+      id: e1e2fb56-78e3-4cdd-813a-9796db7e4dbb
       version: -1
       name: Verify Context
       type: condition
@@ -574,8 +550,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 1080
+          "x": 265,
+          "y": 1245
         }
       }
     note: false
@@ -583,10 +559,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: bddb32d8-876a-4c8c-8dbf-b6633f87c1a0
+    taskid: 6ab0c8a8-02b3-4177-81dd-dc51fe134103
     type: title
     task:
-      id: bddb32d8-876a-4c8c-8dbf-b6633f87c1a0
+      id: 6ab0c8a8-02b3-4177-81dd-dc51fe134103
       version: -1
       name: Done
       type: title
@@ -596,8 +572,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 1470
+          "x": 807.5,
+          "y": 1435
         }
       }
     note: false
@@ -605,10 +581,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: f3c5d128-78e1-40ae-83a5-43b99cdcad57
+    taskid: ed29a597-4e19-4706-8a50-f27c279ab298
     type: condition
     task:
-      id: f3c5d128-78e1-40ae-83a5-43b99cdcad57
+      id: ed29a597-4e19-4706-8a50-f27c279ab298
       version: -1
       name: Verify context
       type: condition
@@ -634,8 +610,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2060,
-          "y": 1080
+          "x": 807.5,
+          "y": 1245
         }
       }
     note: false
@@ -643,10 +619,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 07701c13-23b1-4762-8319-94e85b2b246c
+    taskid: 9a991b87-063f-4887-8460-1aeded6b0bbb
     type: condition
     task:
-      id: 07701c13-23b1-4762-8319-94e85b2b246c
+      id: 9a991b87-063f-4887-8460-1aeded6b0bbb
       version: -1
       name: Verify outputs
       type: condition
@@ -672,8 +648,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 800
+          "x": 1565,
+          "y": 1245
         }
       }
     note: false
@@ -681,10 +657,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 8f913f4a-2f31-4c94-8044-2e08dc1174cf
+    taskid: ba6149a3-4a32-4eac-8904-4a682df82589
     type: regular
     task:
-      id: 8f913f4a-2f31-4c94-8044-2e08dc1174cf
+      id: ba6149a3-4a32-4eac-8904-4a682df82589
       version: -1
       name: Fetch Incidents
       description: Execute FetchIncident for a given instance
@@ -703,8 +679,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -930,
-          "y": 360
+          "x": 1555,
+          "y": 195
         }
       }
     note: false
@@ -712,10 +688,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 442fb6dd-12b4-4f4a-8fe7-55114a20aede
+    taskid: a02f1580-062f-4ac1-840a-9592bd868a23
     type: regular
     task:
-      id: 442fb6dd-12b4-4f4a-8fe7-55114a20aede
+      id: a02f1580-062f-4ac1-840a-9592bd868a23
       version: -1
       name: Get agent
       description: Returns details of an agent, by agent ID.
@@ -733,8 +709,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 1160
+          "x": 1995,
+          "y": 1070
         }
       }
     note: false
@@ -742,10 +718,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: ec76b698-8fac-444a-8c09-6270f8f8760d
+    taskid: 43dda8f0-8f8f-42cc-8196-4f0509a7f2c9
     type: condition
     task:
-      id: ec76b698-8fac-444a-8c09-6270f8f8760d
+      id: 43dda8f0-8f8f-42cc-8196-4f0509a7f2c9
       version: -1
       name: 'Is the agent disconnected? '
       type: condition
@@ -777,8 +753,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 1390
+          "x": 1995,
+          "y": 1245
         }
       }
     note: false
@@ -786,10 +762,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: f3102884-292b-4dff-8eba-d31c720b771d
+    taskid: 5cc2fc54-a0b0-4583-8c40-9d58d2a5196b
     type: regular
     task:
-      id: f3102884-292b-4dff-8eba-d31c720b771d
+      id: 5cc2fc54-a0b0-4583-8c40-9d58d2a5196b
       version: -1
       name: Connect agent to network
       description: Connects agents to network.
@@ -807,8 +783,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 1640
+          "x": 1995,
+          "y": 1420
         }
       }
     note: false
@@ -816,10 +792,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: f6f4daef-acbe-4598-86d0-c702020db1f6
+    taskid: 993f9294-20b2-49b1-872b-a1a1c4846da4
     type: regular
     task:
-      id: f6f4daef-acbe-4598-86d0-c702020db1f6
+      id: 993f9294-20b2-49b1-872b-a1a1c4846da4
       version: -1
       name: Get agent
       description: Returns details of an agent, by agent ID.
@@ -837,8 +813,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 1840
+          "x": 1995,
+          "y": 1595
         }
       }
     note: false
@@ -846,10 +822,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: d3f8002e-3b0d-418f-82dc-f287af8808f7
+    taskid: e8bd0fec-8778-4f5e-80cd-8f8f5274db40
     type: condition
     task:
-      id: d3f8002e-3b0d-418f-82dc-f287af8808f7
+      id: e8bd0fec-8778-4f5e-80cd-8f8f5274db40
       version: -1
       name: 'Is the agent reconnect? '
       type: condition
@@ -873,8 +849,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 2220
+          "x": 1995,
+          "y": 1945
         }
       }
     note: false
@@ -882,10 +858,10 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 67c1d758-51eb-492b-8e88-559894fe49cb
+    taskid: 873d7672-aac8-4162-82a7-0b384a34b517
     type: title
     task:
-      id: 67c1d758-51eb-492b-8e88-559894fe49cb
+      id: 873d7672-aac8-4162-82a7-0b384a34b517
       version: -1
       name: Done
       type: title
@@ -895,8 +871,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 2480
+          "x": 1995,
+          "y": 2120
         }
       }
     note: false
@@ -904,10 +880,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: d12e6fdc-ad27-460d-8c57-23a3383dda92
+    taskid: 5af56d1d-e117-463b-8c4c-ac65ac92ac02
     type: condition
     task:
-      id: d12e6fdc-ad27-460d-8c57-23a3383dda92
+      id: 5af56d1d-e117-463b-8c4c-ac65ac92ac02
       version: -1
       name: Verify Context
       type: condition
@@ -928,8 +904,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 540
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -937,10 +913,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: 52f9dc7f-7662-4a8f-85c6-2b75c3c75bc5
+    taskid: 585997bb-faea-463a-8242-f2e39fdc9e9d
     type: regular
     task:
-      id: 52f9dc7f-7662-4a8f-85c6-2b75c3c75bc5
+      id: 585997bb-faea-463a-8242-f2e39fdc9e9d
       version: -1
       name: Wait
       description: Sleep for X seconds
@@ -959,8 +935,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 720
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -968,10 +944,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: d88da688-b3ed-40ce-8e59-7a88805701c5
+    taskid: 24a5787e-b483-4226-879f-eae052b16c71
     type: regular
     task:
-      id: d88da688-b3ed-40ce-8e59-7a88805701c5
+      id: 24a5787e-b483-4226-879f-eae052b16c71
       version: -1
       name: Wait
       description: Sleep for X seconds
@@ -989,8 +965,48 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 2040
+          "x": 1995,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 80b7b836-e510-45ad-8158-f1047cd6a7b0
+    type: regular
+    task:
+      id: 80b7b836-e510-45ad-8158-f1047cd6a7b0
+      version: -1
+      name: Set Date
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: ISO
+      daysAgo: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+      yearsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
         }
       }
     note: false
@@ -1001,9 +1017,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2495,
-        "width": 3370,
-        "x": -930,
+        "height": 2135,
+        "width": 2325,
+        "x": 50,
         "y": 50
       }
     }

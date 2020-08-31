@@ -364,7 +364,6 @@ def get_threats_command():
     context_entries = []
 
     # Get arguments
-    content_hash = demisto.args().get('content_hash')
     mitigation_status = argToList(demisto.args().get('mitigation_status'))
     created_before = demisto.args().get('created_before')
     created_after = demisto.args().get('created_after')
@@ -376,56 +375,47 @@ def get_threats_command():
     threat_ids = argToList(demisto.args().get('threat_ids', []))
     limit = int(demisto.args().get('limit', 20))
     classifications = argToList(demisto.args().get('classifications', []))
-    rank = int(demisto.args().get('rank', 0))
 
     # Make request and get raw response
-    threats = get_threats_request(content_hash, mitigation_status, created_before, created_after, created_until,
+    threats = get_threats_request(mitigation_status, created_before, created_after, created_until,
                                   created_from, resolved, display_name, query, threat_ids, limit, classifications)
 
     # Parse response into context & content entries
     if threats:
         for threat in threats:
-            threat_rank = threat.get('rank')
-            try:
-                threat_rank = int(threat_rank)
-            except TypeError:
-                threat_rank = 0
-            if not rank or (rank and threat_rank >= rank):
-                contents.append({
-                    'ID': threat.get('id'),
-                    'Agent Computer Name': threat.get('agentComputerName'),
-                    'Created Date': threat.get('createdDate'),
-                    'Site ID': threat.get('siteId'),
-                    'Classification': threat.get('classification'),
-                    'Mitigation Status': threat.get('mitigationStatus'),
-                    'Agent ID': threat.get('agentId'),
-                    'Site Name': threat.get('siteName'),
-                    'Rank': threat.get('rank'),
-                    'Marked As Benign': threat.get('markedAsBenign'),
-                    'File Content Hash': threat.get('fileContentHash')
-                })
-                context_entries.append({
-                    'ID': threat.get('id'),
-                    'AgentComputerName': threat.get('agentComputerName'),
-                    'CreatedDate': threat.get('createdDate'),
-                    'SiteID': threat.get('siteId'),
-                    'Classification': threat.get('classification'),
-                    'MitigationStatus': threat.get('mitigationStatus'),
-                    'AgentID': threat.get('agentId'),
-                    'Rank': threat.get('rank'),
-                    'MarkedAsBenign': threat.get('markedAsBenign'),
-                    'FileContentHash': threat.get('fileContentHash'),
-                    'InQuarantine': threat.get('inQuarantine'),
-                    'FileMaliciousContent': threat.get('fileMaliciousContent'),
-                    'ThreatName': threat.get('threatName'),
-                    'FileSha256': threat.get('fileSha256'),
-                    'AgentOsType': threat.get('agentOsType'),
-                    'Description': threat.get('description'),
-                    'FileDisplayName': threat.get('fileDisplayName'),
-                    'FilePath': threat.get('filePath'),
-                    'Username': threat.get('username')
+            threat_info = threat.get('threatInfo', {})
+            agent_realtime_info = threat.get('agentRealtimeInfo', {})
+            contents.append({
+                'ID': threat.get('id'),
+                'Agent Computer Name': agent_realtime_info.get('agentComputerName'),
+                'Created Date': threat_info.get('createdAt'),
+                'Site ID': agent_realtime_info.get('siteId'),
+                'Classification': threat_info.get('classification'),
+                'Mitigation Status': threat_info.get('mitigationStatus'),
+                'Agent ID': agent_realtime_info.get('agentId'),
+                'Site Name': agent_realtime_info.get('siteName'),
+                'File Content Hash': threat_info.get('sha1'),
+            })
+            context_entries.append({
+                'ID': threat.get('id'),
+                'AgentComputerName': agent_realtime_info.get('agentComputerName'),
+                'CreatedDate': threat_info.get('createdAt'),
+                'SiteID': agent_realtime_info.get('siteId'),
+                'Classification': threat_info.get('classification'),
+                'ClassificationSource': threat_info.get('classificationSource'),
+                'MitigationStatus': threat_info.get('mitigationStatus'),
+                'AgentID': agent_realtime_info.get('agentId'),
+                'FileContentHash': threat_info.get('sha1'),
+                'ConfidenceLevel': threat_info.get('confidenceLevel'),
+                'ThreatName': threat_info.get('threatName'),
+                'FileSha256': threat_info.get('fileSha256'),
+                'AgentOsType': agent_realtime_info.get('agentOsType'),
+                'FileDisplayName': threat.get('fileDisplayName'),
+                'FilePath': threat_info.get('filePath'),
+                'Username': threat_info.get('processUser'),
+                'indicators': threat.get('indicators'),
 
-                })
+            })
 
         context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
 
@@ -434,34 +424,32 @@ def get_threats_command():
         'ContentsFormat': formats['json'],
         'Contents': threats,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Getting Threat List \n' + 'Provides summary information and '
-                                                                                   'details for all the threats that '
-                                                                                   'matched your search criteria.',
-                                         contents, removeNull=True),
+        'HumanReadable': tableToMarkdown(
+            'Sentinel One - Getting Threat List \n' + 'Provides summary information and details for all the threats'
+                                                      'that matched your search criteria.', contents, removeNull=True),
         'EntryContext': context
     })
 
 
-def get_threats_request(content_hash=None, mitigation_status=None, created_before=None, created_after=None,
+def get_threats_request(mitigation_status=None, created_before=None, created_after=None,
                         created_until=None, created_from=None, resolved=None, display_name=None, query=None,
                         threat_ids=None, limit=None, classifications=None):
     endpoint_url = 'threats'
 
     params = {
-        'contentHash': content_hash,
         'mitigationStatuses': mitigation_status,
         'createdAt__lt': created_before,
         'createdAt__gt': created_after,
         'createdAt__lte': created_until,
         'createdAt__gte': created_from,
         'resolved': resolved,
-        'displayName__like': display_name,
+        'displayName': display_name,
         'query': query,
         'ids': threat_ids,
         'limit': limit,
         'classifications': classifications,
     }
-
+    remove_nulls_from_dictionary(params)
     response = http_request('GET', endpoint_url, params)
     if response.get('errors'):
         return_error(response.get('errors'))
@@ -475,7 +463,7 @@ def get_hash_command():
     Get hash reputation and classification.
     """
     # Init main vars
-    headers = ['Hash', 'Rank', 'ClassificationSource', 'Classification']
+    headers = ['Hash', 'Rank']
     # Get arguments
     hash_ = demisto.args().get('hash')
     type_ = get_hash_type(hash_)
@@ -488,20 +476,9 @@ def get_hash_command():
         'Rank': reputation.get('rank'),
         'Hash': hash_
     }
-    # try get classification - might return 404 (classification is not mandatory)
-    try:
-        hash_classification = get_hash_classification_request(hash_)
-        classification = hash_classification.get('data', {})
-        contents['ClassificationSource'] = classification.get('classificationSource')
-        contents['Classification'] = classification.get('classification')
-    except ValueError as e:
-        if '404' in str(e):  # handling case classification not found for the specific hash
-            contents['Classification'] = 'No classification was found.'
-        else:
-            raise e
 
     # Parse response into context & content entries
-    title = 'Sentinel One - Hash Reputation and Classification \n' + \
+    title = 'Sentinel One - Hash Reputation \n' + \
             'Provides hash reputation (rank from 0 to 10):'
 
     context = {
@@ -523,80 +500,6 @@ def get_hash_reputation_request(hash_):
 
     response = http_request('GET', endpoint_url)
     return response
-
-
-def get_hash_classification_request(hash_):
-    endpoint_url = f'hashes/{hash_}/classification'
-
-    response = http_request('GET', endpoint_url)
-    return response
-
-
-def mark_as_threat_command():
-    """
-    Mark suspicious threats as threats
-    """
-    # Init main vars
-    headers = ['ID', 'Marked As Threat']
-    contents = []
-    context = {}
-    context_entries = []
-
-    # Get arguments
-    threat_ids = argToList(demisto.args().get('threat_ids'))
-    target_scope = demisto.args().get('target_scope')
-
-    # Make request and get raw response
-    affected_threats = mark_as_threat_request(threat_ids, target_scope)
-
-    # Parse response into context & content entries
-    if affected_threats.get('affected') and int(affected_threats.get('affected')) > 0:
-        title = 'Total of ' + str(affected_threats.get('affected')) + ' provided threats were marked successfully'
-        affected = True
-    else:
-        affected = False
-        title = 'No threats were marked'
-    for threat_id in threat_ids:
-        contents.append({
-            'Marked As Threat': affected,
-            'ID': threat_id,
-        })
-        context_entries.append({
-            'MarkedAsThreat': affected,
-            'ID': threat_id,
-        })
-
-    context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Marking suspicious threats as threats \n' + title, contents,
-                                         headers, removeNull=True),
-        'EntryContext': context
-    })
-
-
-def mark_as_threat_request(threat_ids, target_scope):
-    endpoint_url = 'threats/mark-as-threat'
-
-    payload = {
-        "filter": {
-            "ids": threat_ids
-        },
-        "data": {
-            "targetScope": target_scope
-        }
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
 
 
 def mitigate_threat_command():
@@ -652,68 +555,6 @@ def mitigate_threat_command():
 
 def mitigate_threat_request(threat_ids, action):
     endpoint_url = f'threats/mitigate/{action}'
-
-    payload = {
-        "filter": {
-            "ids": threat_ids
-        }
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def resolve_threat_command():
-    """
-    Mark threats as resolved
-    """
-    # Init main vars
-    contents = []
-    context = {}
-    context_entries = []
-
-    # Get arguments
-    threat_ids = argToList(demisto.args().get('threat_ids'))
-
-    # Make request and get raw response
-    resolved_threats = resolve_threat_request(threat_ids)
-
-    # Parse response into context & content entries
-    if resolved_threats.get('affected') and int(resolved_threats.get('affected')) > 0:
-        resolved = True
-        title = 'Total of ' + str(resolved_threats.get('affected')) + ' provided threats were resolved successfully'
-    else:
-        resolved = False
-        title = 'No threats were resolved'
-
-    for threat_id in threat_ids:
-        contents.append({
-            'Resolved': resolved,
-            'ID': threat_id
-        })
-        context_entries.append({
-            'Resolved': resolved,
-            'ID': threat_id
-        })
-
-    context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Resolving threats \n' + title, contents, removeNull=True),
-        'EntryContext': context
-    })
-
-
-def resolve_threat_request(threat_ids):
-    endpoint_url = 'threats/mark-as-resolved'
 
     payload = {
         "filter": {
@@ -981,7 +822,6 @@ def get_sites_request(updated_at, query, site_type, features, state, suite, admi
         "limit": limit,
         "siteIds": site_ids
     }
-
     response = http_request('GET', endpoint_url, params)
     if response.get('errors'):
         return_error(response.get('errors'))
@@ -1018,7 +858,7 @@ def get_site_command():
             'Account Name': site.get('accountName'),
             'State': site.get('state'),
             'Health Status': site.get('healthStatus'),
-            'Suite': site.get('suite'),
+            'Sku': site.get('sku'),
             'Created At': site.get('createdAt'),
             'Expiration': site.get('expiration'),
             'Unlimited Licenses': site.get('unlimitedLicenses'),
@@ -1136,19 +976,26 @@ def get_threat_summary_command():
     if threat_summary:
         title = 'Sentinel One - Dashboard Threat Summary'
         contents = {
-            'Active': threat_summary.get('active'),
-            'Total': threat_summary.get('total'),
-            'Mitigated': threat_summary.get('mitigated'),
-            'Suspicious': threat_summary.get('suspicious'),
-            'Blocked': threat_summary.get('blocked')
+            'In Progress': threat_summary.get('inProgress'),
+            'Malicious Not Resolved': threat_summary.get('maliciousNotResolved'),
+            'Not Mitigated': threat_summary.get('notMitigated'),
+            'Not Mitigated Not Resolved': threat_summary.get('notMitigatedNotResolved'),
+            'Not Resolved': threat_summary.get('notResolved'),
+            'Resolved': threat_summary.get('resolved'),
+            'Suspicious - Not Mitigated Not Resolved': threat_summary.get('suspiciousNotMitigatedNotResolved'),
+            'Suspicious Not Resolved': threat_summary.get('suspiciousNotResolved'),
+            'Total': threat_summary.get('total')
         }
-
         context_entries = {
-            'Active': threat_summary.get('active'),
-            'Total': threat_summary.get('total'),
-            'Mitigated': threat_summary.get('mitigated'),
-            'Suspicious': threat_summary.get('suspicious'),
-            'Blocked': threat_summary.get('blocked')
+            'InProgress': threat_summary.get('inProgress'),
+            'MaliciousNotResolved': threat_summary.get('maliciousNotResolved'),
+            'NotMitigated': threat_summary.get('notMitigated'),
+            'NotMitigatedNotResolved': threat_summary.get('notMitigatedNotResolved'),
+            'NotResolved': threat_summary.get('notResolved'),
+            'Resolved': threat_summary.get('resolved'),
+            'SuspiciousNotMitigatedNotResolved': threat_summary.get('suspiciousNotMitigatedNotResolved'),
+            'SuspiciousNotResolved': threat_summary.get('suspiciousNotResolved'),
+            'Total': threat_summary.get('total')
         }
 
         context['SentinelOne.Threat(val && val === obj)'] = context_entries
@@ -1263,7 +1110,7 @@ def list_agents_request(active_threats, computer_name, scan_status, os_type, cre
         "osType": os_type,
         "createdAt__gte": created_at
     }
-
+    remove_nulls_from_dictionary(params)
     response = http_request('GET', endpoint_url, params)
     if response.get('errors'):
         return_error(response.get('errors'))
@@ -1641,7 +1488,7 @@ def get_events():
     headers = ['EventType', 'AgentName', 'SiteName', 'User', 'Time', 'AgentOS', 'ProcessID', 'ProcessUID',
                'ProcessName', 'MD5', 'SHA256']
     query_id = demisto.args().get('query_id')
-    limit = int(demisto.args().get('limit'))
+    limit = int(demisto.args().get('limit', 50))
 
     events = get_events_request(query_id, limit)
     if events:
@@ -1701,7 +1548,7 @@ def get_processes():
                'ProcessName', 'ParentProcessName', 'ProcessDisplayName', 'ProcessID', 'ProcessUID',
                'SHA1', 'CMD', 'SubsystemType', 'IntegrityLevel', 'ParentProcessStartTime']
     query_id = demisto.args().get('query_id')
-    limit = int(demisto.args().get('limit'))
+    limit = int(demisto.args().get('limit', 50))
 
     processes = get_events_request(query_id, limit)
     if processes:
@@ -1772,8 +1619,9 @@ def fetch_incidents():
 
 def threat_to_incident(threat):
     incident = {}
-    incident['name'] = 'Sentinel One Threat: ' + str(threat.get('classification', 'Not classified'))
-    incident['occurred'] = threat.get('createdDate')
+    threat_info = threat.get('threatInfo', {})
+    incident['name'] = 'Sentinel One Threat: ' + str(threat_info.get('classification', 'Not classified'))
+    incident['occurred'] = threat_info.get('createdAt')
     incident['rawJSON'] = json.dumps(threat)
     return incident
 
@@ -1783,16 +1631,14 @@ def main():
 
     global TOKEN, SERVER, USE_SSL, FETCH_TIME
     global FETCH_THREAT_RANK, FETCH_LIMIT, BASE_URL, HEADERS
-
-    TOKEN = demisto.params().get('token')
-    SERVER = demisto.params().get('url')[:-1] if (demisto.params().get('url')
-                                                  and demisto.params().get('url').endswith('/')) \
-        else demisto.params().get('url')
-    USE_SSL = not demisto.params().get('insecure', False)
-    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-    FETCH_THREAT_RANK = int(demisto.params().get('fetch_threat_rank', 0))
-    FETCH_LIMIT = int(demisto.params().get('fetch_limit', 10))
-    BASE_URL = SERVER + '/web/api/v2.0/'
+    params = demisto.params()
+    TOKEN = params.get('token')
+    SERVER = params.get('url', '').rstrip('/')
+    BASE_URL = urljoin(SERVER, '/web/api/v2.1/')
+    USE_SSL = not params.get('insecure', False)
+    FETCH_TIME = params.get('fetch_time', '3 days')
+    FETCH_THREAT_RANK = int(params.get('fetch_threat_rank', 0))
+    FETCH_LIMIT = int(params.get('fetch_limit', 10))
     HEADERS = {
         'Authorization': 'ApiToken ' + TOKEN if TOKEN else 'ApiToken',
         'Content-Type': 'application/json',
@@ -1815,12 +1661,8 @@ def main():
             get_activities_command()
         elif demisto.command() == 'sentinelone-get-threats':
             get_threats_command()
-        elif demisto.command() == 'sentinelone-mark-as-threat':
-            mark_as_threat_command()
         elif demisto.command() == 'sentinelone-mitigate-threat':
             mitigate_threat_command()
-        elif demisto.command() == 'sentinelone-resolve-threat':
-            resolve_threat_command()
         elif demisto.command() == 'sentinelone-threat-summary':
             get_threat_summary_command()
         elif demisto.command() == 'sentinelone-get-hash':
