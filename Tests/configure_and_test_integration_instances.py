@@ -87,7 +87,7 @@ class Build:
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
-
+        self.is_private = options.is_private
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
         self.skipped_integrations_conf = conf['skipped_integrations']
@@ -114,6 +114,7 @@ def options_handler():
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
+    parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
 
@@ -733,7 +734,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
     return testing_status
 
 
-def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number, is_nightly):
+def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number, is_nightly, is_private):
     """Sets custom marketplace GCP bucket based on branch name and build number
 
     Args:
@@ -757,7 +758,14 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
         'marketplace.initial.sync.delay': '0',
         'content.pack.ignore.missing.warnings.contentpack': 'true'
     }
-    if not is_nightly:
+    if is_private:
+        server_configuration['marketplace.bootstrap.bypass.url'] = 'https://storage.googleapis.com/marketplace-ci-build'
+        server_configuration['marketplace.gcp.path'] = 'content/builds/{}/{}/content/packs'.format(branch_name,
+                                                                                                   ci_build_number)
+        server_configuration['jobs.marketplacepacks.schedule'] = '1m'
+        server_configuration[
+            'marketplace.premium.gateway.service.url'] = 'https://xsoar-premium-content-team-gateway.demisto.works'
+    elif not is_nightly:
         server_configuration['marketplace.bootstrap.bypass.url'] = \
             'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
                 branch_name, ci_build_number)
@@ -845,7 +853,7 @@ def configure_servers_and_restart(build, prints_manager):
             set_docker_hardening_for_build(client, prints_manager)
             if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
                 set_marketplace_gcp_bucket_for_build(client, prints_manager, build.branch_name,
-                                                     build.ci_build_number, build.is_nightly)
+                                                     build.ci_build_number, build.is_nightly, build.is_private)
 
             if Build.run_environment == Running.WITH_LOCAL_SERVER:
                 input('restart your server and then press enter.')
@@ -881,7 +889,7 @@ def restart_server_legacy(server):
         print(exc.output)
 
 
-def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
+def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, is_private=False):
     if Build.run_environment == Running.CIRCLECI_RUN:
         filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
         if run_all_tests:
@@ -917,7 +925,8 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False):
 
 
 def get_changed_integrations(build, prints_manager):
-    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(build)
+    new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(
+        build) if not is_private else [], []
     new_integrations_names, modified_integrations_names = [], []
 
     if new_integrations_files:
@@ -1212,7 +1221,8 @@ def main():
     else:
         installed_content_packs_successfully = True
 
-    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly)
+    tests_for_iteration = get_tests(build.server_numeric_version, prints_manager, build.tests, build.is_nightly,
+                                    build.is_private)
     new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
     all_module_instances, brand_new_integrations = \
         configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
