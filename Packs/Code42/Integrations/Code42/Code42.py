@@ -87,18 +87,18 @@ FILE_CONTEXT_FIELD_MAPPER = {
 }
 
 CODE42_FILE_CATEGORY_MAPPER = {
-    "SourceCode": "SOURCE_CODE",
-    "Audio": "AUDIO",
-    "Executable": "EXECUTABLE",
-    "Document": "DOCUMENT",
-    "Image": "IMAGE",
-    "PDF": "PDF",
-    "Presentation": "PRESENTATION",
-    "Script": "SCRIPT",
-    "Spreadsheet": "SPREADSHEET",
-    "Video": "VIDEO",
-    "VirtualDiskImage": "VIRTUAL_DISK_IMAGE",
-    "Archive": "ARCHIVE",
+    "SourceCode": FileCategory.SOURCE_CODE,
+    "Audio": FileCategory.AUDIO,
+    "Executable": FileCategory.EXECUTABLE,
+    "Document": FileCategory.DOCUMENT,
+    "Image": FileCategory.IMAGE,
+    "PDF": FileCategory.PDF,
+    "Presentation": FileCategory.PRESENTATION,
+    "Script": FileCategory.SCRIPT,
+    "Spreadsheet": FileCategory.SPREADSHEET,
+    "Video": FileCategory.VIDEO,
+    "VirtualDiskImage": FileCategory.VIRTUAL_DISK_IMAGE,
+    "Archive": FileCategory.ZIP,
 }
 
 SECURITY_EVENT_HEADERS = [
