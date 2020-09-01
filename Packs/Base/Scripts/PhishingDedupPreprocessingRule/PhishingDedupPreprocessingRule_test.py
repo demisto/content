@@ -11,13 +11,18 @@ EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
 
 IDS_COUNTER = 0
 
+text = "Imagine there's no countries It isn't hard to do Nothing to kill or die for And no religion too " \
+       "Imagine all the people Living life in peace"
+text2 = "Love of my life, you've hurt me You've broken my heart and now you leave me Love of my life, can't you see?\
+      Bring it back, bring it back Don't take it away from me, because you don't know What it means to me"
 
-def create_incident(subject=None, body=None, html=None, frommail=None):
+
+def create_incident(subject=None, body=None, html=None, emailfrom=None):
     global IDS_COUNTER
     incident = {
         "CustomFields": {},
         "id": str(IDS_COUNTER),
-        "name": ' '.join(str(x) for x in [subject, body, html, frommail, id])
+        "name": ' '.join(str(x) for x in [subject, body, html, emailfrom, id])
     }
     IDS_COUNTER += 1
     if subject is not None:
@@ -26,8 +31,8 @@ def create_incident(subject=None, body=None, html=None, frommail=None):
         incident['CustomFields']['emailbody'] = body
     if html is not None:
         incident['CustomFields']['emailbodyhtml'] = html
-    if frommail is not None:
-        incident['CustomFields']['frommail'] = frommail
+    if emailfrom is not None:
+        incident['CustomFields']['emailfrom'] = emailfrom
     return incident
 
 
@@ -58,13 +63,11 @@ def duplicated_incidents_found(existing_incident):
 def test_same_incidents_text_only(mocker):
     global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
     EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
-    text = "Imagine there's no countries It isn't hard to do Nothing to kill or die for And no religion too " \
-           "Imagine all the people Living life in peace"
-    existing_incident = create_incident(body=text, frommail='mt.kb.user@gmail.com')
+    existing_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
     set_existing_incidents_list([existing_incident])
     mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'TextOnly'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    new_incident = create_incident(body=text, frommail='mt.kb.user@gmail.com')
+    new_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
     mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()
@@ -76,13 +79,114 @@ def test_different_text_only(mocker):
     EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
     text = "Imagine there's no countries It isn't hard to do Nothing to kill or die for And no religion too " \
            "Imagine all the people Living life in peace"
-    text2 = "Love of my life, you've hurt me You've broken my heart and now you leave me Love of my life, can't you see?\
-          Bring it back, bring it back Don't take it away from me, because you don't know What it means to me"
-    existing_incident = create_incident(body=text2, frommail='mt.kb.user@gmail.com')
+
+    existing_incident = create_incident(body=text2, emailfrom='mt.kb.user@gmail.com')
     set_existing_incidents_list([existing_incident])
     mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'TextOnly'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    new_incident = create_incident(body=text, frommail='mt.kb.user@gmail.com')
+    new_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert not duplicated_incidents_found(existing_incident)
+
+
+def test_same_incidents_exact_sender_match_same_senders(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+
+    existing_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'Exact'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert duplicated_incidents_found(existing_incident)
+
+
+def test_same_incidents_exact_sender_match_different_senders(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    text = "Imagine there's no countries It isn't hard to do Nothing to kill or die for And no religion too " \
+           "Imagine all the people Living life in peace"
+    existing_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'Exact'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(body=text, emailfrom='mt.kb.user2@gmail.com')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert not duplicated_incidents_found(existing_incident)
+
+
+def test_same_incidents_exact_sender_match_same_senders_different_texts(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+
+    existing_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'Exact'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(body=text2, emailfrom='mt.kb.user@gmail.com')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert not duplicated_incidents_found(existing_incident)
+
+
+def test_same_incidents_domain_sender_match_same_senders(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    existing_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'Domain'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert duplicated_incidents_found(existing_incident)
+
+
+def test_same_incidents_domain_sender_match_same_domain(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    existing_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'Domain'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(body=text, emailfrom='mt.kb.user2@gmail.com')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert duplicated_incidents_found(existing_incident)
+
+
+def test_same_incidents_domain_sender_match_same_domain_different_texts(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    existing_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'Domain'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(body=text2, emailfrom='mt.kb.user2@gmail.com')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert not duplicated_incidents_found(existing_incident)
+
+
+def test_slightly_different_texts(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    existing_incident = create_incident(body=text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'TextOnly'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(body=text[:-5], emailfrom='mt.kb.user@gmail.co')
     mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()

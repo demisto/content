@@ -85,15 +85,6 @@ def preprocess_text_fields(incident):
         email_html = incident[EMAIL_HTML_FIELD]
     if EMAIL_SUBJECT_FIELD in incident:
         email_subject = incident[EMAIL_SUBJECT_FIELD]
-
-    if "CustomFields" in incident and isinstance(incident["CustomFields"], dict):
-        if EMAIL_BODY_FIELD in incident["CustomFields"]:
-            email_body = incident["CustomFields"][EMAIL_BODY_FIELD]
-        if EMAIL_SUBJECT_FIELD in incident["CustomFields"]:
-            email_subject = incident["CustomFields"][EMAIL_SUBJECT_FIELD]
-        if EMAIL_HTML_FIELD in incident["CustomFields"]:
-            email_html = incident["CustomFields"][EMAIL_HTML_FIELD]
-
     if isinstance(email_html, float):
         email_html = ''
     if email_body is None or isinstance(email_body, float) or email_body.strip() == '':
@@ -107,8 +98,11 @@ def preprocess_incidents_df(existing_incidents):
     global MERGED_TEXT_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD
     incidents_df = pd.DataFrame(existing_incidents)
     incidents_df['CustomFields'] = incidents_df['CustomFields'].fillna(value={})
+    custom_fields_df = incidents_df['CustomFields'].apply(pd.Series)
+    unique_keys = [k for k in custom_fields_df if k not in incidents_df]
+    custom_fields_df = custom_fields_df[unique_keys]
     incidents_df = pd.concat([incidents_df.drop('CustomFields', axis=1),
-                              incidents_df['CustomFields'].apply(pd.Series)], axis=1)
+                              custom_fields_df], axis=1).reset_index()
     incidents_df[MERGED_TEXT_FIELD] = incidents_df.apply(lambda x: preprocess_text_fields(x), axis=1)
     incidents_df = incidents_df[incidents_df[MERGED_TEXT_FIELD].str.len() >= MIN_TEXT_LENGTH]
     incidents_df.reset_index(inplace=True)
