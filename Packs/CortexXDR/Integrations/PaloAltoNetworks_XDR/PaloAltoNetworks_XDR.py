@@ -1809,6 +1809,10 @@ def get_remote_data_command(client, args):
             # no new data modified - resetting error if needed
             incident_data['in_mirror_error'] = ''
 
+            # handle unasignment
+            if incident_data.get('assigned_user_mail') is None:
+                handle_incoming_user_unassignment(incident_data)
+
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
                 entries=[]
