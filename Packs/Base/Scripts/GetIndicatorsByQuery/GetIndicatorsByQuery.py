@@ -37,10 +37,7 @@ def is_key_match_fields_to_hash(key, fields_to_hash):
 
 def hash_multiple(value, fields_to_hash, to_hash=False):
     if isinstance(value, list):
-        if not value:
-            return []
-        else:
-            return list(map(lambda x: hash_multiple(x, fields_to_hash, to_hash), value))
+        return list(map(lambda x: hash_multiple(x, fields_to_hash, to_hash), value))
     if isinstance(value, dict):
         for k, v in value.items():
             _hash = to_hash or is_key_match_fields_to_hash(k, fields_to_hash)
