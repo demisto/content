@@ -87,6 +87,35 @@ configuration:
   name: close_ticket
   required: false
   type: 8
+- defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+- defaultvalue: comments
+  display: Comment Entry Tag
+  hidden: false
+  name: comment_tag
+  required: false
+  type: 0
+- defaultvalue: work_notes
+  display: Work Note Entry Tag
+  hidden: false
+  name: work_notes_tag
+  required: false
+  type: 0
+- defaultvalue: ForServiceNow
+  display: File Entry Tag
+  hidden: false
+  name: file_tag
+  required: false
+  type: 0
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize
   the way you manage and deliver services to your users.
 display: ServiceNow v2
@@ -2303,6 +2332,9 @@ script:
   isfetch: true
   longRunning: false
   longRunningPort: false
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
