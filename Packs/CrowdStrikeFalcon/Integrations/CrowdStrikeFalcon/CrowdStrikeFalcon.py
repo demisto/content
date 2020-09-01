@@ -1115,6 +1115,8 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     # Get the last fetch time, if exists
     last_fetch = last_run.get('first_behavior_time')
+    demisto.debug("############################")
+    demisto.debug(f"last fetch parameters are: {str(last_run)}")
     offset = last_run.get('offset', 0)
 
     # Handle first time fetch, fetch incidents retroactively
@@ -1163,7 +1165,8 @@ def fetch_incidents():
             demisto.setLastRun({'first_behavior_time': prev_fetch, 'offset': offset + INCIDENTS_PER_FETCH})
         else:
             demisto.setLastRun({'first_behavior_time': last_fetch})
-
+    demisto.debug("############################")
+    demisto.debug(f"Fetched: {str(len(incidents))} incidents")
     return incidents
 
 
