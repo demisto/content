@@ -1,4 +1,5 @@
 from requests_ntlm import HttpNtlmAuth
+import tempfile
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -23,7 +24,7 @@ class Client(BaseClient):
         self.auth = self.create_windows_authentication_param()
         self.crt = self.create_crt_param()
 
-    def create_windows_authontocation_param(self):
+    def create_windows_authentication_param(self):
         auth = None
         if self._username:
             # if username and password were added - use ntlm authentication
@@ -36,8 +37,22 @@ class Client(BaseClient):
         elif (self._cert_text and not self._key_text) or (not self._cert_text and self._key_text):
             raise Exception('You can not configure either certificate text or key, both are required.')
         elif self._cert_text and self._key_text:
+            cert_text_list = self._cert_text.split('-----')
+            # replace spaces with newline characters
+            cert_text_fixed = '-----'.join(
+                cert_text_list[:2] + [cert_text_list[2].replace(' ', '\n')] + cert_text_list[3:])
+            cf = tempfile.NamedTemporaryFile(delete=False)
+            cf.write(cert_text_fixed.encode())
+            cf.flush()
 
-
+            key_text_list = self._key_text.split('-----')
+            # replace spaces with newline characters
+            key_text_fixed = '-----'.join(
+                key_text_list[:2] + [key_text_list[2].replace(' ', '\n')] + key_text_list[3:])
+            kf = tempfile.NamedTemporaryFile(delete=False)
+            kf.write(key_text_fixed.encode())
+            kf.flush()
+            return cf.name, kf.name
 
     def list_credentials(self):
         url_suffix = f'/AIMWebService/api/Accounts?AppID={self._app_id}&Safe=' \
@@ -49,9 +64,7 @@ class Client(BaseClient):
             "Object": self._credential_object,
         }
 
-
-
-        return self._http_request("GET", url_suffix, params=params, auth=self.auth)
+        return self._http_request("GET", url_suffix, params=params, auth=self.auth, cert=self.crt)
 
 
 def list_credentials_command(client):
