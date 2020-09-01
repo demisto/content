@@ -45,6 +45,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "ThreatConnect Feed",
+            "playbookID": "FeedThreatConnect-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Group-IB TDS Polygon",
             "playbookID": "Polygon-Test",
             "timeout": 1000,
@@ -1750,12 +1755,6 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "Infocyte",
-            "playbookID": "Infocyte-Test",
-            "timeout": 1200,
-            "fromversion": "5.5.0"
-        },
-        {
             "integrations": "Qualys",
             "playbookID": "Qualys-Test"
         },
@@ -2057,7 +2056,9 @@
         },
         {
             "integrations": "DUO Admin",
-            "playbookID": "DuoAdmin API test playbook"
+            "playbookID": "DuoAdmin API test playbook",
+            "fromversion": "5.0.0"
+
         },
         {
             "integrations": [
@@ -3023,8 +3024,6 @@
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
-        "SMB test": "Issue 26454",
-        "Infocyte-Test": "Issue 26445",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
         "Office365_Feed_Test": "Issue 26455",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
@@ -3187,8 +3186,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "Palo Alto Minemeld": "Issue #26878",
-        "DUO Admin": "Issue #24937"
+        "Palo Alto Minemeld": "Issue #26878"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3201,7 +3199,6 @@
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "AWS - Security Hub": "Issue 24926",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
-        "Infocyte": "Proxy issues",
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
@@ -3355,6 +3352,9 @@
                 "pid_threshold": 11
             },
             "demisto/google-k8s-engine:1.0.0.9467": {
+                "pid_threshold": 11
+            },
+            "demisto/threatconnect-tcex:1.0.0.10664": {
                 "pid_threshold": 11
             }
         }
