@@ -731,7 +731,7 @@ def handle_github_response(response):
 def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
                                        packs_dependencies_mapping,
                                        private_storage_bucket=None, content_repo=None, current_commit_hash='',
-                                       remote_previous_commit_hash=''):
+                                       remote_previous_commit_hash='', packs_statistic_df=None):
     build_number = upload_config.ci_build_number
     remove_test_playbooks = upload_config.remove_test_playbooks
     signature_key = upload_config.key_string
@@ -972,7 +972,8 @@ def main():
                                            packs_dependencies_mapping,
                                            private_storage_bucket=private_storage_bucket, content_repo=content_repo,
                                            current_commit_hash=current_commit_hash,
-                                           remote_previous_commit_hash=remote_previous_commit_hash)
+                                           remote_previous_commit_hash=remote_previous_commit_hash,
+                                           packs_statistic_df=packs_statistic_df)
     # upload core packs json to bucket
 
     if should_upload_core_packs(storage_bucket_name):
