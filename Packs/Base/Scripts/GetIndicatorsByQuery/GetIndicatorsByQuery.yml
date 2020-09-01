@@ -63,6 +63,6 @@ type: python
 dockerimage: demisto/python3:3.8.3.9324
 runas: DBotWeakRole
 runonce: false
-fromVersion: 5.5.0
+fromversion: 5.5.0
 pswd: ''
 vcShouldKeepItemLegacyProdMachine: false
