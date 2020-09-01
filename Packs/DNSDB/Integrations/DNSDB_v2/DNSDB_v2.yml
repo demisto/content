@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: DNSDB
+  id: DNSDB_v2
   version: -1
 configuration:
 - display: API Key
@@ -31,8 +31,8 @@ description: >
   of Farsight’s Security Information
   Exchange (SIE) data-sharing platform and is engineered and operated by leading DNS
   experts.
-display: Farsight DNSDB
-name: DNSDB
+display: Farsight DNSDB v2
+name: DNSDB_v2
 script:
   commands:
   - name: dnsdb-rdata
