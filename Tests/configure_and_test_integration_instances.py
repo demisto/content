@@ -1020,12 +1020,11 @@ def install_nightly_pack(build, prints_manager):
     sleep(45)
 
 
-def install_packs(build, prints_manager):
-    pack_ids = get_pack_ids_to_install()
+def install_packs(build, prints_manager, pack_ids=None):
+    pack_ids = get_pack_ids_to_install() if pack_ids is None else set(get_pack_ids_to_install()) - set(pack_ids)
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
-
             _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, prints_manager)
             if not flag:
                 raise Exception('Failed to search and install packs.')
@@ -1236,6 +1235,15 @@ def set_marketplace_bucket(server: Server, build_number, branch_name):
     server.add_server_configuration(marketplace_url_configuration, 'failed to config marketplace url ', True)
 
 
+def get_modified_packs_ids(build: Build):
+    all_files_changed = run_command(f'git diff --name-status origin/master..refs/heads/{build.branch_name}').split('\n')
+    added_files = filter(lambda x: x.lower().startswith('a') and x.endswith('pack_metadata.json'), all_files_changed)
+    added_pack_ids = []
+    for mata_data_file in added_files:
+        added_pack_ids.append(mata_data_file.split('/')[1])
+    return added_pack_ids
+
+
 def main():
     build = Build(options_handler())
 
@@ -1248,7 +1256,8 @@ def main():
             install_nightly_pack(build, prints_manager)
             installed_content_packs_successfully = True
         else:
-            installed_content_packs_successfully = install_packs(build, prints_manager)
+            pack_ids = get_modified_packs_ids(build)
+            installed_content_packs_successfully = install_packs(build, prints_manager, pack_ids=pack_ids)
     else:
         installed_content_packs_successfully = True
 
@@ -1256,11 +1265,19 @@ def main():
     new_integrations, modified_integrations = get_changed_integrations(build, prints_manager)
     all_module_instances, brand_new_integrations = \
         configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations, prints_manager)
+    successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, prints_manager,
+                                                              pre_update=True)
     if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
-        successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, prints_manager, pre_update=True)
         update_content_till_v6(build)
     else:
-        successful_tests_pre, failed_tests_pre = set(), set()
+        url_suffix = f'{build.branch_name}/{build.ci_build_number}'
+        config_path = 'marketplace.bootstrap.bypass.url'
+        config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
+        for server in build.servers:
+            server.add_server_configuration(config, '', True)
+        sleep(60)
+        installed_content_packs_successfully = install_packs(build, prints_manager)
+
     all_module_instances.extend(brand_new_integrations)
     successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, prints_manager, pre_update=False)
     disable_instances(build, all_module_instances, prints_manager)
