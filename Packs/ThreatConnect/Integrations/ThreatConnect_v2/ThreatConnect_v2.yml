@@ -33,7 +33,7 @@ configuration:
   required: false
 - display: Confidence threshold for Malicious Indicators
   name: confidence
-  defaultvalue: "3"
+  defaultvalue: "50"
   type: 0
   required: false
 - display: Indicator Reputation Freshness (in days)
