@@ -2850,6 +2850,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Bonusly",
+            "playbookID": "Bonusly-Test"
+        },
+        {
             "integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
