@@ -414,7 +414,7 @@ def get_asset_connections_outputs(resp: Dict[str, Any],
 
     hr += '### CONNECTED ASSETS\n'
     for asset_type in total_elements:
-        if total_elements.get(asset_type) != 0:
+        if total_elements.get(asset_type) and total_elements.get(asset_type) != 0:
             asset_connections_hr: List[Dict[str, Any]] = []
             for asset_details in resp.get(asset_type, {}).get('content', []):
                 asset_connections_custom_context.append(asset_details)
