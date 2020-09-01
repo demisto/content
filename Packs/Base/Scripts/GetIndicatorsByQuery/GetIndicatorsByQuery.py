@@ -123,12 +123,13 @@ fields_to_hash, unpopulate_fields, populate_fields = [], [], []  # type: ignore
 
 def main():
     global fields_to_hash, unpopulate_fields, populate_fields
-    fields_to_hash = frozenset([x for x in argToList(demisto.args().get('fieldsToHash', '')) if x])  # type: ignore
-    unpopulate_fields = frozenset([x for x in argToList(demisto.args().get('dontPopulateFields', ''))])  # type: ignore
-    populate_fields = frozenset([x for x in argToList(demisto.args().get('populateFields', ''))])  # type: ignore
-    limit = int(demisto.args().get('limit', PAGE_SIZE))
-    query = demisto.args().get('query', '')
-    offset = int(demisto.args().get('offset', 0))
+    args = demisto.args()
+    fields_to_hash = frozenset([x for x in argToList(args.get('fieldsToHash', '')) if x])  # type: ignore
+    unpopulate_fields = frozenset([x for x in argToList(args.get('dontPopulateFields', ''))])  # type: ignore
+    populate_fields = frozenset([x for x in argToList(args.get('populateFields', ''))])  # type: ignore
+    limit = int(args.get('limit', PAGE_SIZE))
+    query = args.get('query', '')
+    offset = int(args.get('offset', 0))
     indicators = find_indicators_with_limit(query, limit, offset)
 
     entry = fileResult("indicators.json", json.dumps(indicators).encode('utf8'))
