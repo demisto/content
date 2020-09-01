@@ -54,6 +54,35 @@ args:
   name: emailBodyHTML
   required: false
   secret: false
+- default: false
+  isArray: false
+  name: fromComparison
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailFrom
+  description: 'Incident fields contains the email from value '
+  isArray: false
+  name: emailFrom
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: TextOnly
+  description: Whether to take into account the email from field for deduplication.
+    "TextOnly" - incidents will be considered as duplicated based on test similarity
+    only, ignoring the sender's adress. "Exact" - incidented will be considered as
+    duplicated if their text is similar and their sender is the same. "Domain" -  incidented
+    will be considered as duplicated if their text is similar and their senders' adress
+    has the same domain. Default is "Domain"
+  isArray: false
+  name: fromPolicy
+  predefined:
+  - TextOnly
+  - Exact
+  - Domain
+  required: false
+  secret: false
 commonfields:
   id: 7d14bbd7-1da5-4c87-95fc-0be0178879ad
   version: -1
