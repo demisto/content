@@ -46,6 +46,18 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Add a certificate file as text to connect to the CyberArk AIM server.
+  display: Certificate File as Text
+  hidden: false
+  name: cert_text
+  required: false
+  type: 12
+- additionalinfo: Add a key file as text to connect to the CyberArk AIM server.
+  display: Key File as Text
+  hidden: false
+  name: key_text
+  required: false
+  type: 0
 description: Query CyberArk Application Identity Manager for accounts and credentials.
 display: CyberArk AIM v2
 name: CyberArkAIM v2

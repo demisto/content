@@ -10,7 +10,7 @@ requests.packages.urllib3.disable_warnings()
 
 class Client(BaseClient):
     def __init__(self, server_url: str, use_ssl: bool, proxy: bool, app_id: str, folder: str, safe: str,
-                 credential_object: str, username: str, password: str):
+                 credential_object: str, username: str, password: str, cert_text: str, key_text: str):
         super().__init__(base_url=server_url, verify=use_ssl, proxy=proxy)
         self._app_id = app_id
         self._folder = folder
@@ -18,6 +18,26 @@ class Client(BaseClient):
         self._credential_object = credential_object
         self._username = username
         self._password = password
+        self._cert_text = cert_text
+        self._key_text = key_text
+        self.auth = self.create_windows_authentication_param()
+        self.crt = self.create_crt_param()
+
+    def create_windows_authontocation_param(self):
+        auth = None
+        if self._username:
+            # if username and password were added - use ntlm authentication
+            auth = HttpNtlmAuth(self._username, self._password)
+        return auth
+
+    def create_crt_param(self):
+        if not self._cert_text and not self._key_text:
+            return None
+        elif (self._cert_text and not self._key_text) or (not self._cert_text and self._key_text):
+            raise Exception('You can not configure either certificate text or key, both are required.')
+        elif self._cert_text and self._key_text:
+
+
 
     def list_credentials(self):
         url_suffix = f'/AIMWebService/api/Accounts?AppID={self._app_id}&Safe=' \
@@ -29,12 +49,9 @@ class Client(BaseClient):
             "Object": self._credential_object,
         }
 
-        auth = None
-        if self._username:
-            # if username and password were added - use ntlm authentication
-            auth = HttpNtlmAuth(self._username, self._password)
 
-        return self._http_request("GET", url_suffix, params=params, auth=auth)
+
+        return self._http_request("GET", url_suffix, params=params, auth=self.auth)
 
 
 def list_credentials_command(client):
@@ -94,6 +111,9 @@ def main():
     safe = params.get('safe', "")
     credential_object = params.get('credential_names', "")
 
+    cert_text = params.get('cert_text', "")
+    key_text = params.get('key_text', "")
+
     username = ""
     password = ""
     if params.get('credentials'):
@@ -102,7 +122,8 @@ def main():
         password = params.get('credentials').get('password')
 
     client = Client(server_url=url, use_ssl=use_ssl, proxy=proxy, app_id=app_id, folder=folder, safe=safe,
-                    credential_object=credential_object, username=username, password=password)
+                    credential_object=credential_object, username=username, password=password,
+                    cert_text=cert_text,key_text=key_text)
 
     command = demisto.command()
     LOG(f'Command being called in CyberArk AIM is: {command}')
