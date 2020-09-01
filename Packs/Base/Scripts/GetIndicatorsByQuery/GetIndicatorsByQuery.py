@@ -132,7 +132,7 @@ def main():
     entry = fileResult("indicators.json", json.dumps(indicators).encode('utf8'))
     entry['Contents'] = indicators
     entry['ContentsFormat'] = formats['json']
-    entry['HumanReadable'] = "Fetched %d indicators successfully by the query: %s" % (len(indicators), query)
+    entry['HumanReadable'] = f'Fetched {len(indicators)} indicators successfully by the query: {query}'
 
     return entry
 
