@@ -1,10 +1,10 @@
-import hashlib
-
 from CommonServerPython import *
+
+import hashlib
 
 PAGE_SIZE = 500
 
-RANDOM_UUID = str(demisto.args().get('addRandomSeed', '').encode('utf8'))
+RANDOM_UUID = str(demisto.args().get('addRandomSalt', '').encode('utf8'))
 # Memo for key matching
 CACHE = {}  # type: ignore
 
@@ -86,15 +86,24 @@ def parse_ioc(ioc):
     # flat
     cf = ioc.pop('CustomFields', {}) or {}
     ioc.update(cf)
-    # filter empty date
-    ioc = {k: v for k, v in ioc.items() if v and v not in ["0001-01-01T00:00:00Z"]}
-    if populate_fields:
-        ioc = {k: v for k, v in ioc.items() if k in populate_fields}
-    if unpopulate_fields:
-        # filter out fields
-        ioc = {k: v for k, v in ioc.items() if k not in unpopulate_fields}
-    if fields_to_hash:
+    new_ioc = {}
+    for k, v in ioc.items():
+        if v in ["0001-01-01T00:00:00Z"]:
+            continue
+        if populate_fields:
+            if k in populate_fields:
+                new_ioc[k] = v
+        else:
+            if unpopulate_fields:
+                if k not in unpopulate_fields:
+                    new_ioc[k] = v
+            else:
+                new_ioc[k] = v
+
+    ioc = new_ioc
+    if fields_to_hash and is_key_match_fields_to_hash(k, fields_to_hash):
         ioc = hash_multiple(ioc, fields_to_hash)
+
     return ioc
 
 

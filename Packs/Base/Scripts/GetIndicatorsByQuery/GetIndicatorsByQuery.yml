@@ -27,9 +27,9 @@ args:
   required: false
   secret: false
 - default: false
-  description: Seed for the hash function.
+  description: Salt for the hash function.
   isArray: false
-  name: addRandomSeed
+  name: addRandomSalt
   required: false
   secret: true
 - default: false
