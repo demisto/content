@@ -675,8 +675,8 @@ def print_packs_summary(packs_list):
         sys.exit(1)
 
     # for external pull requests -  when there is no failed packs, add the build summary to the pull request
-    branch_name = os.environ['CIRCLE_BRANCH']
-    if branch_name.startswith('pull/'):
+    branch_name = os.environ.get('CIRCLE_BRANCH')
+    if branch_name and branch_name.startswith('pull/'):
         successful_packs_table = build_summary_table_md(successful_packs)
 
         build_num = os.environ['CIRCLE_BUILD_NUM']
