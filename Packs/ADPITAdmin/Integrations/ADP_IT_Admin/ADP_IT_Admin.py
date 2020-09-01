@@ -7,7 +7,7 @@ import tempfile
 
 ''' CONSTANTS '''
 BASE_URL = 'https://api.adp.com/'
-TOKEN_REQUEST_URL = 'https://accounts.adp.com/auth/oauth/v2/token'
+TOKEN_REQUEST_URL = 'https://accounts.adp.com/auth/oauth/v2/token'  # guardrails-disable-line
 GRANT_TYPE_CLIENT_CREDENTIALS = 'client_credentials'
 
 '''CLIENT CLASS'''
