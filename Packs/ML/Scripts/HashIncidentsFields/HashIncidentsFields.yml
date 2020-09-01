@@ -100,6 +100,12 @@ args:
   name: unPopulateFields
   required: false
   secret: false
+- default: false
+  description: Random salt to the hash function
+  isArray: false
+  name: addRandomSalt
+  required: false
+  secret: false
 comment: |-
   Hash fields from the incident list.
   Search for incidents by arguments with an option to hash some of its fields.
@@ -123,7 +129,7 @@ tags:
 - ml
 timeout: '0'
 type: python
+dockerimage: demisto/python3:3.8.3.9324
 tests:
 - hashIncidentFields-test
 fromversion: 4.5.0
-dockerimage: demisto/python3:3.8.3.9324

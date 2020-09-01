@@ -1,11 +1,11 @@
 from CommonServerPython import *
 
+import base64
 import hashlib
 import pickle
 import uuid
-import base64
 
-RANDOM_UUID = str(demisto.args().get('addRandomSeed', ''))
+RANDOM_UUID = str(demisto.args().get('addRandomSalt', ''))
 # Memo for key matching
 CACHE = {}  # type: ignore
 
@@ -35,6 +35,7 @@ def is_key_match_fields_to_hash(key, fields_to_hash):
         if pattern_match(field, key):
             CACHE[key] = True
             return True
+    CACHE[key] = False
     return False
 
 
@@ -50,11 +51,8 @@ def hash_incident_labels(incident_labels, fields_to_hash):
 
 
 def hash_multiple(value, fields_to_hash, to_hash=False):
-    if isinstance(value, (list, set, tuple)):
-        if not value:
-            return []
-        else:
-            return list(map(lambda x: hash_multiple(x, fields_to_hash, to_hash), value))
+    if isinstance(value, list):
+        return list(map(lambda x: hash_multiple(x, fields_to_hash, to_hash), value))
     if isinstance(value, dict):
         for k, v in value.items():
             _hash = to_hash or is_key_match_fields_to_hash(k, fields_to_hash)
@@ -153,7 +151,8 @@ def hash_incident(fields_to_hash, un_populate_fields):
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
-    fields_to_hash = frozenset([x for x in argToList(demisto.args().get('fieldsToHash', '')) if x])
-    un_populate_fields = frozenset([x for x in argToList(demisto.args().get('unPopulateFields', '')) if x])
+    args = demisto.args()
+    fields_to_hash = frozenset([x for x in argToList(args.get('fieldsToHash', '')) if x])
+    un_populate_fields = frozenset([x for x in argToList(args.get('unPopulateFields', '')) if x])
     entry = hash_incident(fields_to_hash, un_populate_fields)
     demisto.results(entry)
