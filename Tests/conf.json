@@ -45,6 +45,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "ThreatConnect Feed",
+            "playbookID": "FeedThreatConnect-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Group-IB TDS Polygon",
             "playbookID": "Polygon-Test",
             "timeout": 1000,
@@ -2051,7 +2056,9 @@
         },
         {
             "integrations": "DUO Admin",
-            "playbookID": "DuoAdmin API test playbook"
+            "playbookID": "DuoAdmin API test playbook",
+            "fromversion": "5.0.0"
+
         },
         {
             "integrations": [
@@ -3013,7 +3020,6 @@
         "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
         "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
-        "SMB test": "Issue 26454",
         "Account Enrichment - Generic v2 - Test": "Issue 26452",
         "Office365_Feed_Test": "Issue 26455",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
@@ -3176,8 +3182,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "Palo Alto Minemeld": "Issue #26878",
-        "DUO Admin": "Issue #24937"
+        "Palo Alto Minemeld": "Issue #26878"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3343,6 +3348,9 @@
                 "pid_threshold": 11
             },
             "demisto/google-k8s-engine:1.0.0.9467": {
+                "pid_threshold": 11
+            },
+            "demisto/threatconnect-tcex:1.0.0.10664": {
                 "pid_threshold": 11
             }
         }
