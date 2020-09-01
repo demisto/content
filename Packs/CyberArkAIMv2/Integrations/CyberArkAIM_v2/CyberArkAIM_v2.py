@@ -136,7 +136,7 @@ def main():
 
     client = Client(server_url=url, use_ssl=use_ssl, proxy=proxy, app_id=app_id, folder=folder, safe=safe,
                     credential_object=credential_object, username=username, password=password,
-                    cert_text=cert_text,key_text=key_text)
+                    cert_text=cert_text, key_text=key_text)
 
     command = demisto.command()
     LOG(f'Command being called in CyberArk AIM is: {command}')
