@@ -1798,7 +1798,7 @@ def fetch_incidents(client: Client) -> list:
     for result in res.get('result', []):
         labels = []
 
-        result['mirror_direction'] = MIRROR_DIRECTION[demisto.params().get('mirror_direction')]
+        result['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
         result['mirror_tags'] = [
             demisto.params().get('comment_tag'),
             demisto.params().get('file_tag'),

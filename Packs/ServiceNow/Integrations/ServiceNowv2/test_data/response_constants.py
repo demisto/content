@@ -40,7 +40,7 @@ RESPONSE_TICKET_MIRROR = {'result': [{
     'group_list': '', 'work_end': '', 'caller_id': '',
     'reopened_time': '', 'resolved_at': '', 'approval_set': '', 'subcategory': '', 'work_notes': '',
     'short_description': 'Trouble getting to Oregon mail server', 'close_code': '', 'correlation_display': '',
-    'delivery_task': '', 'work_start': '', 'assignment_group': {'link': 'demisto.com', 'value': 'test'},
+    'delivery_task': '', 'work_start': '', 'assignment_group': '',
     'additional_assignee_list': '', 'business_stc': '',
     'description': 'Unable to access Oregon mail server. Is it down?', 'calendar_duration': '', 'close_notes': '',
     'notify': '1', 'sys_class_name': 'incident', 'closed_by': '', 'follow_up': '', 'parent_incident': '',
