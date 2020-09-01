@@ -201,6 +201,7 @@ def test_query(mocker):
     assert isinstance(_id, str)
     assert isinstance(time, str)
 
+
 class TestFormatSort:
     def test_format_sort_correctly(self):
         """
@@ -209,7 +210,7 @@ class TestFormatSort:
         Then:
             Format the string in the correct format to be used in `pymongo.sort()`
         """
-        assert format_sort("field1:asc,field2:desc") ==[('field1', 1), ('field2', -1)]
+        assert format_sort("field1:asc,field2:desc") == [('field1', 1), ('field2', -1)]
 
     def test_format_sort_raises_error(self):
         """
