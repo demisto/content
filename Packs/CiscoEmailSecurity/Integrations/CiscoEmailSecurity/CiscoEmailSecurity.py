@@ -168,7 +168,7 @@ def build_url_params_for_list_report(args):
 
 
 def list_report_command(client: Client, args: Dict[str, Any]):
-    url_suffix = '/esa/api/v2.0/reporting'
+    url_suffix = '/sma/api/v2.0/reporting'
     url_params = build_url_params_for_list_report(args)
     url_suffix_to_filter_by = url_suffix + url_params
     report_response_data = client.list_report(url_suffix_to_filter_by)

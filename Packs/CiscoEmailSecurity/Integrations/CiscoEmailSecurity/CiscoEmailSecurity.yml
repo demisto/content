@@ -21,27 +21,6 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: Set this to determine the HelloWorld score that will determine if
-    a domain is malicious (0-100)
-  defaultvalue: '65'
-  display: Score threshold for domain reputation command
-  name: threshold_domain
-  required: false
-  type: 0
-- defaultvalue: ACTIVE
-  display: Fetch alerts with status (ACTIVE, CLOSED)
-  name: alert_status
-  options:
-  - ACTIVE
-  - CLOSED
-  required: false
-  type: 15
-- additionalinfo: Comma-separated list of types of alerts to fetch. Types might change
-    over time. Some examples are 'Bug' and 'Vulnerability'
-  display: Fetch alerts with type
-  name: alert_type
-  required: false
-  type: 0
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
@@ -853,7 +832,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultmapperin: HelloWorld-mapper
-defaultclassifier: HelloWorld
 tests:
 - No tests
+defaultmapperin: HelloWorld-mapper
+defaultclassifier: HelloWorld
