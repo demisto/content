@@ -84,7 +84,8 @@ script:
     - default: false
       description: The response contains a page of assets for each related asset type.
         Size determines the number of associated assets of each type that are returned.
-        The default value for this argument from RiskIQ platform is 20.
+        The default value for this argument from RiskIQ platform is 20. If a large
+        value is entered for this argument, it might take a while to fetch the response.
       isArray: false
       name: size
       required: false
@@ -410,7 +411,8 @@ script:
       secret: false
     - default: false
       description: The number of matching assets to return per page. The default value
-        for this argument from RiskIQ platform is 20.
+        for this argument from RiskIQ platform is 20. If a large value is entered for
+        this argument, it might take a while to fetch the response.
       isArray: false
       name: size
       required: false
@@ -699,6 +701,8 @@ script:
       description: Digital Footprint (Global Inventory) assets potentially contain
         pages of related data, for example attributes, cookies and host pairs. Size
         determines the number for each of these associated items that are returned.
+        If a large value is entered for this argument, it might take a while to
+        fetch the response.
       isArray: false
       name: size
       required: false

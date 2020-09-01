@@ -34,7 +34,7 @@ Retrieve the set of assets that are connected to the requested asset.
 | name | The name of the asset for which connections are to be fetched. For example riskiq.com, 8.8.8.8, mail.net, etc. This argument supports a single value only. | Required | 
 | global | Setting this value to true will search all of the global inventory. Setting it to false will search for assets in the workspace associated with the authentication token. The default value for this argument from RiskIQ platform is false. This argument supports a single value only. | Optional | 
 | page | The index of the page to retrieve. The index is zero based so the first page is page 0. The default value for this argument from RiskIQ platform is 0. | Optional |
-| size | The response contains a page of assets for each related asset type. Size determines the number of associated assets of each type that are returned. The default value for this argument from RiskIQ platform is 20. | Optional |
+| size | The response contains a page of assets for each related asset type. Size determines the number of associated assets of each type that are returned. The default value for this argument from RiskIQ platform is 20. If a large value is entered for this argument, it might take a while to fetch the response. | Optional |
 
 #### Context Output
 
@@ -507,7 +507,7 @@ Retrieve the list of confirmed assets that have been added or removed from inven
 | organization | Filter changed assets based on the organization associated with the assets. This argument supports a single value only. | Optional | 
 | tag | Filter changed assets based on the tag associated with the assets. This argument supports a single value only. | Optional | 
 | page | The index of the page to retrieve. The index is zero based so the first page is page 0. The default value for this argument from RiskIQ platform is 0. | Optional |
-| size | The number of matching assets to return per page. The default value for this argument from RiskIQ platform is 20. | Optional |
+| size | The number of matching assets to return per page. The default value for this argument from RiskIQ platform is 20. If a large value is entered for this argument, it might take a while to fetch the response. | Optional |
 
 #### Context Output
 
@@ -678,7 +678,7 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
 | type | The type of the asset to retrieve. Valid Types: Domain, Host, IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports a single value only. | Optional | 
 | global | Setting this value to true will search all of the global inventory. Setting it to false will search for assets in the workspace associated with the authentication token. The default value for this argument from RiskIQ platform is false. This argument supports a single value only. | Optional | 
 | recent | If specified and 'true', then only return recent data on the asset. The default value for this argument from RiskIQ platform is false. This argument supports a single value only. | Optional | 
-| size | Digital Footprint (Global Inventory) assets potentially contain pages of related data, for example attributes, cookies and host pairs. Size determines the number for each of these associated items that are returned. | Optional |
+| size | Digital Footprint (Global Inventory) assets potentially contain pages of related data, for example attributes, cookies and host pairs. Size determines the number for each of these associated items that are returned. If a large value is entered for this argument, it might take a while to fetch the response. | Optional |
 
 #### Context Output
 
