@@ -15,10 +15,17 @@ if [[ $2 == "true" ]]; then
     git pull
 fi
 
-git remote add $USER git@github.com:$USER/content.git
-git fetch $USER
-git checkout -t $USER/$BRANCH
-git pull
+git remote set-url $USER git@github.com:$USER/content.git
+LOCAL_BRANCH_EXISTS=$(git show-branch --list "${USER}/${BRANCH}")
+if [[ -z ${LOCAL_BRANCH_EXISTS} ]]; then
+      git fetch "${USER}"
+      git checkout -t "${USER}/${BRANCH}"
+      git pull
+else
+      git checkout "${USER}/${BRANCH}"
+      git switch "${BRANCH}"
+      git pull
+fi
 
 if [[ $2 == "true" ]]; then
     echo merging branch with origin/master
