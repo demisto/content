@@ -72,7 +72,7 @@ class Taxii2FeedClient:
         password: Optional[str] = None,
         field_map: Optional[dict] = None,
         tags: Optional[list] = None,
-        tlp_color: str = 'RED',
+        tlp_color: Optional[str] = None,
         limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
     ):
         """

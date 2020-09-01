@@ -20,7 +20,7 @@ class Client(BaseClient):
                  insecure: bool = False, credentials: dict = None, ignore_regex: str = None, encoding: str = 'latin-1',
                  delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
-                 feedTags: Optional[str] = None, tlp_color: str = 'RED', **kwargs):
+                 feedTags: Optional[str] = None, tlp_color: Optional[str] = None, **kwargs):
         """
         :param url: URL of the feed.
         :param feed_url_to_config: for each URL, a configuration of the feed that contains

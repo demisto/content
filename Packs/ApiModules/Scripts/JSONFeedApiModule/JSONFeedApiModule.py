@@ -14,7 +14,7 @@ class Client:
                  feed_name_to_config: Dict[str, dict] = None, source_name: str = 'JSON',
                  extractor: str = '', indicator: str = 'indicator',
                  insecure: bool = False, cert_file: str = None, key_file: str = None, headers: dict = None,
-                 tlp_color: str = 'RED', **_):
+                 tlp_color: Optional[str] = None, **_):
         """
         Implements class for miners of JSON feeds over http/https.
         :param url: URL of the feed.
@@ -129,12 +129,14 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                 if not current_indicator_type:
                     continue
 
-                indicator = {'value': indicator_value, 'type': current_indicator_type,
-                             'fields': {
-                                 'tags': feedTags,
-                                 'trafficlightprotocol': client.tlp_color
-                             }
-                             }
+                indicator = {
+                    'value': indicator_value,
+                    'type': current_indicator_type,
+                    'fields': {
+                        'tags': feedTags,
+                        'trafficlightprotocol': client.tlp_color
+                    }
+                }
 
                 attributes = {'source_name': service_name, 'value': indicator_value,
                               'type': current_indicator_type}

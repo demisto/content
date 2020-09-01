@@ -20,8 +20,8 @@ class Client(BaseClient):
     def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, encoding: str = None, indicator_type: str = '',
                  indicator: str = '', fields: str = '{}', feed_url_to_config: dict = None, polling_timeout: int = 20,
-                 headers: dict = None, proxy: bool = False, custom_fields_mapping: dict = None, tlp_color: str = 'RED',
-                 **kwargs):
+                 headers: dict = None, proxy: bool = False, custom_fields_mapping: dict = None,
+                 tlp_color: Optional[str] = None, **kwargs):
         """Implements class for miners of plain text feeds over HTTP.
         **Config parameters**
         :param: url: URL of the feed.
@@ -272,7 +272,6 @@ def get_indicator_fields(line, url, feed_tags: list, client: Client):
     :param url: The feed URL
     :param client: The client
     :param feed_tags: The indicator tags.
-    :param tlp_color: Traffic Light Protocol color.
     :return: The indicator
     """
     attributes = None
@@ -437,7 +436,6 @@ def feed_main(feed_name, params=None, prefix=''):
             args['feed_name'] = feed_name
             if feed_tags:
                 args['feedTags'] = feed_tags
-            args['tlp_color'] = params.get('tlp_color')
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
