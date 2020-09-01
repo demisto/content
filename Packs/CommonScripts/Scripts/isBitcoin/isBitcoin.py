@@ -1,6 +1,5 @@
 
 import demistomock as demisto
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from hashlib import sha256
 
 DIGITS58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
