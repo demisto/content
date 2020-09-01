@@ -22,8 +22,16 @@ class Client(BaseClient):
         self.password = params.get('api_password')
         super().__init__(base_url=params.get('base_url'), verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))
-        self._token_base64 = self._generate_base64_token()
-        self._headers = {'Authorization': 'Basic ' + self._token_base64}
+
+        # self._token_base64 = self._generate_base64_token()
+        # self._headers = {'Authorization': 'Basic ' + self._token_base64}
+
+        self._jwt_token = self._generate_jwt_token()
+        self._headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'jwtToken': self._jwt_token
+        }
 
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
                      files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
@@ -36,6 +44,22 @@ class Client(BaseClient):
         basic_authorization_to_encode = f'{self.username}:{self.password}'
         basic_authorization = base64.b64encode(basic_authorization_to_encode.encode('ascii')).decode('utf-8')
         return basic_authorization
+
+    def _generate_jwt_token(self) -> str:
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+        data = {
+            "data":
+                {
+                    "userName": base64.b64encode(self.username.encode('ascii')).decode('utf-8'),
+                    "passphrase": base64.b64encode(self.password.encode('ascii')).decode('utf-8')
+                }
+        }
+        output = self.http_request('POST', '/sma/api/v2.0/login', json_data=data, headers=headers)
+        jwt_token = output.json()['data']['jwtToken']
+        return jwt_token
 
     def list_report(self, url_suffix) -> Dict[str, Any]:
         return self.http_request(
