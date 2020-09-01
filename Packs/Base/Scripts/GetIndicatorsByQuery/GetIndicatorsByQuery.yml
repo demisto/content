@@ -20,7 +20,7 @@ args:
   secret: false
 - default: false
   defaultValue: '0'
-  description: The results offset page. Need to be changed only when there are number
+  description: The results offset page. Only change when the number
     of the results exceed the limit.
   isArray: false
   name: offset
@@ -33,14 +33,14 @@ args:
   required: false
   secret: true
 - default: false
-  description: A comma-separated list of fields to hash. Support "*" wildcard
+  description: A comma-separated list of fields to hash. Supports wildcard "*".
   isArray: false
   name: fieldsToHash
   required: false
   secret: false
 - default: false
   defaultValue: id,score,investigationIDs
-  description: A comma-separated list of fields in the object to poplulate.
+  description: A comma-separated list of fields in the object to poplulate. Defaults are id, score, and investigationIDs.
   isArray: false
   name: populateFields
   required: false
