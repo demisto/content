@@ -4,7 +4,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
-    get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main
+    get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
+    get_mapping_fields_command, get_remote_data_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
@@ -13,14 +14,15 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_QUERY_COMPUTERS, RESPONSE_GET_TABLE_NAME, RESPONSE_UPDATE_TICKET_ADDITIONAL, \
     RESPONSE_QUERY_TABLE_SYS_PARAMS, RESPONSE_ADD_TAG, RESPONSE_QUERY_ITEMS, RESPONSE_ITEM_DETAILS, \
     RESPONSE_CREATE_ITEM_ORDER, RESPONSE_DOCUMENT_ROUTE, RESPONSE_FETCH, RESPONSE_FETCH_ATTACHMENTS_FILE, \
-    RESPONSE_FETCH_ATTACHMENTS_TICKET
+    RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, RESPONSE_GET_ATTACHMENT, MIRROR_COMMENTS_RESPONSE, \
+    RESPONSE_MIRROR_FILE_ENTRY
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, \
     EXPECTED_UPLOAD_FILE, EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, EXPECTED_UPDATE_RECORD, \
     EXPECTED_CREATE_RECORD, EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS, \
     EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, \
-    EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE
+    EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING
 
 import demistomock as demisto
 
@@ -440,3 +442,51 @@ def test_sysparm_input_display_value(mocker, requests_mock):
     # will raise a requests_mock.exceptions.NoMockAddress if the url address will not be as given in the requests_mock
     create_record_command(client, demisto.args())
     assert requests_mock.request_history[1].method == 'POST'
+
+
+def test_get_mapping_fields():
+    """
+    Given:
+        -  ServiceNow client
+        -  ServiceNow mapping fields
+    When
+        - running get_mapping_fields_command
+    Then
+        - the result fits the expected mapping.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+    res = get_mapping_fields_command(client)
+    assert EXPECTED_MAPPING == res.extract_mapping()
+
+
+def test_get_remote_data(mocker):
+    """
+    Given:
+        -  ServiceNow client
+        -  arguments: id and LastUpdate(set to lower then the modification time).
+        -  ServiceNow ticket
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket was updated with the entries.
+    """
+
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 0}
+    params = {}
+    mocker.patch.object(client, 'get', return_value=RESPONSE_TICKET_MIRROR)
+    mocker.patch.object(client, 'get_ticket_attachments', return_value=RESPONSE_GET_ATTACHMENT)
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=RESPONSE_MIRROR_FILE_ENTRY)
+    mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
+
+    res = get_remote_data_command(client, args, params)
+
+    assert res[1]['File'] == 'test.txt'
+    assert res[2]['Contents'] == 'This is a comment'

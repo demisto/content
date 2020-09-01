@@ -12,4 +12,4 @@ tags:
 - dynamic-indicator-section
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.5.10455
+dockerimage: demisto/python3:3.8.5.10845
