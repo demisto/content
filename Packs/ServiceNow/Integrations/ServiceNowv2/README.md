@@ -9,7 +9,7 @@ Please refer to ServiceNow documentation for additional information. We especial
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
 ## Use cases
-1. Get, update, create, delete ServiceNow tickets, in addition to adding links/comments and uploading files to them.
+1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
 2. Fetch newly created incidents.
 3. Get, update, create, delete records from any ServiceNow table.
 ## Wrapper Scripts
@@ -23,8 +23,18 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 ## Configure ServiceNow v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ServiceNow v2.
-3. Click **Add instance** to create and configure a new integration instance.
+1. Search for ServiceNow v2.
+1. Click **Add instance** to create and configure a new integration instance.
+1. To ensure that mirroring works:
+    1. Select the **Fetches incidents** radio button.
+    1. Under **Classifier**, select ServiceNow Classifier.
+    1. Under **Incident type**, select ServiceNowTicket.
+    1. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
+    1. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
+    1. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select the
+**Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** checkboxes, respectively.
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
+5. Click **Done.**
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -32,7 +42,7 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 | credentials | Username | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
-| ticket_type | Default ticket type for running ticket commands and fetching incidents | False |
+| ticket_type | Default ticket type on which to run ticket commands and fetch incidents | False |
 | api_version | ServiceNow API Version \(e.g. 'v1'\) | False |
 | isFetch | Fetch incidents | False |
 | sysparm_query | The query to use when fetching incidents | False |
@@ -41,13 +51,82 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 | timestamp_field | Timestamp field to filter by \(e.g., \`opened\_at\`\) This is how the filter is applied to the query: "ORDERBYopened\_at^opened\_at&gt;\[Last Run\]". To prevent duplicate incidents, this field is mandatory for fetching incidents. | False |
 | incidentType | Incident type | False |
 | get_attachments | Get incident attachments | False |
+| proxy | Use system proxy settings | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| close_incident | Close XSOAR Incident. When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
+| close_ticket | Close ServiceNow Ticket. When selected, closing the XSOAR incident is mirrored in ServiceNow. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+5. Click **Test** to validate the URLs, token, and connection.
 ## Fetch Incidents
 The integration fetches newly created tickets according to the following parameters,
 which you define in the instance configuration: ticket_type, query, and limit.
 For the first fetch, the integration will fetch incidents that were created 10 minutes earlier. 
 After that, it will fetch incidents that were created after the timestamp of the last fetch.
+
+## Configure Incident Mirroring
+**This feature is compliant with XSOAR version 6.0 and above.**
+This part walks you through setting up the ServiceNow v2 integration to mirror incidents from ServiceNow in Cortex XSOAR. 
+It includes steps for configuring the integration and incoming and outgoing mappers. However, it does not cover every option available in the integration nor classification and mapping features. 
+For information about **Classification and Mapping** visit: [Classification and Mapping](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping.html).
+
+When mirroring incidents, you can make changes in ServiceNow that will be reflected in Cortex XSOAR, or vice versa. 
+You can also attach files from either of the systems, which will then be available in the other system. 
+
+This is made possible by the addition of 3 new functions in the integration, which are applied with the following options:
+- External schema support
+- Can sync mirror in
+- Can sync mirror out
+
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-configuration.png)
+
+#### STEP 1 - Modify the incoming mapper.
+1. Navigate to **Classification and Mapping** and click **ServiceNow - Incoming Mapper**.
+2. Under the Incident Type dropdown, select **ServiceNow Ticket**.
+3. Change the mapping according to your needs.
+4. Save your changes.
+    
+##### 5 fields have been added to support the mirroring feature:
+- **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both.
+- **dbotMirrorId** - determines the incident ID in the 3rd party integration. In this case, the ServiceNow incident ID field.
+- **dbotMirrorInstance** - determines the ServiceNow instance with which to mirror.
+- **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
+- **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to ServiceNow.
+    - To mirror files, use the **ForServiceNow** tag.
+    - To mirror general notes, use the **comments** tag.
+    - To mirror private notes that can be read only by users with the necessary permissions, use the **work_notes** tag.
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-fields.png)
+
+#### STEP 2 - Modify the outgoing mapper.
+1. Under **Classification and Mapping**, click **ServiceNow - Outgoing Mapper.**
+The left side of the screen shows the ServiceNow fields to which to map and the right side of the
+screen shows the Cortex XSOAR fields by which you are mapping.
+2. Under the **Incident Type** dropdown, select **ServiceNow Ticket**.
+3. Under **Schema Type**, select **incident**. The Schema Type represents the ServiceNow entity that
+you are mapping to. In our example it is an incident, but it can also be any other kind of ticket that
+ServiceNow supports.
+4. On the right side of the screen, under **Incident**, select the incident based on which you want to
+match.
+5. Change the mapping according to your needs.
+6. Save your changes.
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/outgoing-mapper.png)
+
+
+
+#### STEP 3 - Create an incident in ServiceNow. For purposes of this use case, it can be a very simple incident
+
+#### STEP 4 - In Cortex XSOAR, the new ticket will be ingested in approximately one minute.
+1. Add a note to the incident. In the example below, we have written A comment from Cortex XSOAR to ServiceNow.
+2. Click Actions > Tags and add the comments tag.
+3. Add a file to the incident and mark it with the ForServiceNow tag.
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-files.png)
+4. Navigate back to the incident in ServiceNow and within approximately one minute, the changes will be reflected there, too.
+* You can make additional changes like closing the incident or changing severity and those will be reflected in both systems.
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
+
+
+* The final **source of truth** for the incident for Cortex XSOAR are the **values in Cortex XSOAR**. 
+Meaning, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR.
+
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -1821,6 +1900,45 @@ Documents a route to a queue. Requires an installation of the Advanced Work Assi
 | ServiceNow.WorkItem.DocumentID | String | Unique ID of the document to be routed to the queue. | 
 | ServiceNow.WorkItem.QueueID | String | Unique ID of the queue on which to route a document. | 
 | ServiceNow.WorkItem.DisplayName | String | Name of the document to be routed by this work item, for example: case record. | 
+
+
+### get-mapping-fields
+***
+Returns the list of fields for an incident type. This command is for debugging purposes.
+
+
+#### Base Command
+
+`get-mapping-fields`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+
+
+### get-remote-data
+***
+Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+
+
+#### Base Command
+
+`get-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ticket ID. | Required | 
+| lastUpdate | Retrieve entries that were created after lastUpdate. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
 
 
 

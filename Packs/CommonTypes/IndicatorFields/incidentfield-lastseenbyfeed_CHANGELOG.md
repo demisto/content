@@ -1,1 +1,0 @@
-Changed the name of the *lastseenbyfeed* field to *lastseenbysource*.

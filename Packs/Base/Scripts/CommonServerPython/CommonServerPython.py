@@ -27,7 +27,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, List
+    from typing import Optional, List, Any
 except Exception:
     pass
 
@@ -2687,7 +2687,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict``
+    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget``
     :param results:
 
     :return: None
@@ -2700,6 +2700,10 @@ def return_results(results):
 
     if isinstance(results, CommandResults):
         demisto.results(results.to_context())
+        return
+
+    if isinstance(results, BaseWidget):
+        demisto.results(results.to_display())
         return
 
     if isinstance(results, GetMappingFieldsResponse):
@@ -2720,14 +2724,14 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
 
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
-    :type readable_output: ``str``
+    :type readable_output: ``str`` | ``int``
     :param readable_output: markdown string that will be presented in the warroom, should be human readable -
         (HumanReadable)
 
     :type outputs: ``dict``
     :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
 
-    :type raw_response: ``dict`` | ``list``
+    :type raw_response: ``dict`` | ``list`` | ``str``
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
         raw response from the 3rd party service (originally Contents)
 
@@ -2751,7 +2755,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
-        "ContentsFormat": formats["json"],
+        "ContentsFormat": formats["text"] if isinstance(raw_response, STRING_TYPES) else formats['json'],
         "Contents": raw_response,
         "EntryContext": outputs,
         'IgnoreAutoExtract': ignore_auto_extract,
@@ -3857,6 +3861,12 @@ def batch(iterable, batch_size=1):
 
 def dict_safe_get(dict_object, keys, default_return_value=None):
     """Recursive safe get query, If keys found return value otherwise return None or default value.
+    Example:
+    >>> dict = {"something" : {"test": "A"}}
+    >>> dict_safe_get(dict, ['something', 'test'])
+    >>> A
+    >>> dict_safe_get(dict, ['something', 'else'], 'default value')
+    >>> 'default value'
 
     :type dict_object: ``dict``
     :param dict_object: dictionary to query.
@@ -4151,15 +4161,15 @@ class SchemeTypeMapping:
     :type type_name: ``str``
     :param type_name: The name of the remote incident type.
 
-    :type fields: ``list``
-    :param fields: The list of fields to their description.
+    :type fields: ``dict``
+    :param fields: The dict of fields to their description.
 
     :return: No data returned
     :rtype: ``None``
     """
     def __init__(self, type_name='', fields=None):
         self.type_name = type_name
-        self.fields = fields if fields else []
+        self.fields = fields if fields else {}
 
     def add_field(self, name, description=''):
         """Adds a field to the incident type mapping.
@@ -4173,7 +4183,7 @@ class SchemeTypeMapping:
         :return: No data returned
         :rtype: ``None``
         """
-        self.fields.append({
+        self.fields.update({
             name: description
         })
 
@@ -4347,3 +4357,199 @@ def setup_outgoing_mirror_error(incident_id, error):
 
     demisto.setIntegrationContext(integration_cache)
     return incident_id
+
+
+class BaseWidget:
+    @abstractmethod
+    def to_display(self):
+        pass
+
+
+class TextWidget(BaseWidget):
+    """Text Widget representation
+
+    :type text: ``str``
+    :param text: The text for the widget to display
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, text):
+        # type: (str) -> None
+        self.text = text
+
+    def to_display(self):
+        """Text Widget representation
+
+        :type text: ``str``
+        :param text: The text for the widget to display
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        return self.text
+
+
+class TrendWidget(BaseWidget):
+    """Trend Widget representation
+
+    :type current_number: ``int``
+    :param current_number: The Current number in the trend.
+
+    :type previous_number: ``int``
+    :param previous_number: The previous number in the trend.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, current_number, previous_number):
+        # type: (int, int) -> None
+        self.current_number = current_number
+        self.previous_number = previous_number
+
+    def to_display(self):
+        return json.dumps({
+            'currSum': self.current_number,
+            'prevSum': self.previous_number
+        })
+
+
+class NumberWidget(BaseWidget):
+    """Number Widget representation
+
+    :type number: ``int``
+    :param number: The number for the widget to display.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, number):
+        # type: (int) -> None
+        self.number = number
+
+    def to_display(self):
+        return self.number
+
+
+class BarColumnPieWidget(BaseWidget):
+    """Bar/Column/Pie Widget representation
+
+    :type categories: ``list``
+    :param categories: a list of categories to display(Better use the add_category function to populate the data.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, categories=None):
+        # type: (list) -> None
+        self.categories = categories if categories else []  # type: List[dict]
+
+    def add_category(self, name, number):
+        """Add a category to widget.
+
+        :type name: ``str``
+        :param name: the name of the category to add.
+
+        :type number: ``int``
+        :param number: the number value of the category.
+
+        :return: No data returned.
+        :rtype: ``None``
+        """
+        self.categories.append({
+            'name': name,
+            'data': [number]
+        })
+
+    def to_display(self):
+        return json.dumps(self.categories)
+
+
+class LineWidget(BaseWidget):
+    """Line Widget representation
+
+    :type categories: ``Any``
+    :param categories: a list of categories to display(Better use the add_category function to populate the data.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, categories=None):
+        # type: (list) -> None
+        self.categories = categories if categories else []  # type: List[dict]
+
+    def add_category(self, name, number, group):
+        """Add a category to widget.
+
+        :type name: ``str``
+        :param name: the name of the category to add.
+
+        :type number: ``int``
+        :param number: the number value of the category.
+
+        :type group: ``str``
+        :param group: the name of the relevant group.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        self.categories.append({
+            'name': name,
+            'data': [number],
+            'groups': [
+                {
+                    'name': group,
+                    'data': [number]
+                },
+            ]
+        })
+
+    def to_display(self):
+        processed_names = []  # type: List[str]
+        processed_categories = []  # type: List[dict]
+        for cat in self.categories:
+            if cat['name'] in processed_names:
+                for processed_category in processed_categories:
+                    if cat['name'] == processed_category['name']:
+                        processed_category['data'] = [processed_category['data'][0] + cat['data'][0]]
+                        processed_category['groups'].extend(cat['groups'])
+                        break
+
+            else:
+                processed_categories.append(cat)
+                processed_names.append(cat['name'])
+
+        return json.dumps(processed_categories)
+
+
+class TableOrListWidget(BaseWidget):
+    """Table/List Widget representation
+
+    :type data: ``Any``
+    :param data: a list of data to display(Better use the add_category function to populate the data.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, data=None):
+        # type: (Any) -> None
+        self.data = data if data else []
+        if not isinstance(self.data, list):
+            self.data = [data]
+
+    def add_row(self, data):
+        """Add a row to the widget.
+
+        :type data: ``Any``
+        :param data: the data to add to the list/table.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        self.data.append(data)
+
+    def to_display(self):
+        return json.dumps({
+            'total': len(self.data),
+            'data': self.data
+        })
