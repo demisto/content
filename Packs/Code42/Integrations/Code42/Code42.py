@@ -8,6 +8,8 @@ import requests
 import py42.sdk
 import py42.settings
 from datetime import datetime
+from py42.services.detectionlists.departing_employee import DepartingEmployeeFilters
+from py42.services.detectionlists.high_risk_employee import HighRiskEmployeeFilters
 from py42.sdk.queries.fileevents.file_event_query import FileEventQuery
 from py42.sdk.queries.fileevents.filters import (
     MD5,
@@ -198,7 +200,7 @@ class Code42Client(BaseClient):
     def get_all_departing_employees(self, results, filter_type):
         res = []
         results = int(results) if results else 50
-        filter_type = filter_type if filter_type else "OPEN"
+        filter_type = filter_type if filter_type else DepartingEmployeeFilters.OPEN
         pages = self._get_sdk().detectionlists.departing_employee.get_all(filter_type=filter_type)
         for page in pages:
             page_json = json.loads(page.text)
@@ -236,7 +238,7 @@ class Code42Client(BaseClient):
     def get_all_high_risk_employees(self, risk_tags, results, filter_type):
         risk_tags = argToList(risk_tags)
         results = int(results) if results else 50
-        filter_type = filter_type if filter_type else "OPEN"
+        filter_type = filter_type if filter_type else HighRiskEmployeeFilters.OPEN
         res = []
         pages = self._get_sdk().detectionlists.high_risk_employee.get_all(filter_type=filter_type)
         for page in pages:
@@ -801,7 +803,7 @@ def departingemployee_remove_command(client, args):
 @logger
 def departingemployee_get_all_command(client, args):
     results = args.get("results", 50)
-    filter_type = args.get("filtertype", "OPEN")
+    filter_type = args.get("filtertype", DepartingEmployeeFilters.OPEN)
     employees = client.get_all_departing_employees(results, filter_type)
     if not employees:
         return CommandResults(
@@ -905,7 +907,7 @@ def highriskemployee_remove_command(client, args):
 def highriskemployee_get_all_command(client, args):
     tags = args.get("risktags")
     results = args.get("results", 50)
-    filter_type = args.get("filtertype", "OPEN")
+    filter_type = args.get("filtertype", HighRiskEmployeeFilters.OPEN)
     employees = client.get_all_high_risk_employees(tags, results, filter_type)
     if not employees:
         return CommandResults(
