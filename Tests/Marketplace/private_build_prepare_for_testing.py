@@ -65,24 +65,11 @@ def main():
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
-    build_number = upload_config.ci_build_number
-    override_all_packs = upload_config.override_all_packs
-    signature_key = upload_config.key_string
-    id_set_path = upload_config.id_set_path
-    should_encrypt_pack = upload_config.encrypt_pack
-    enc_key = upload_config.encryption_key
-    packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
-
-    remove_test_playbooks = upload_config.remove_test_playbooks
-
     storage_client = init_storage_client(service_account)
     private_testing_bucket_client = storage_client.bucket(GCPConfig.CI_PRIVATE_BUCKET)
-    public_prod_bucket_client = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
 
     extract_packs_artifacts(path_to_artifacts, extract_destination_path)
     path_to_pack = os.path.join(extract_destination_path, pack_name)
     premium_pack = Pack(pack_name, path_to_pack)
-    premium_pack.upload_to_storage()
 
-    upload_premium_pack_to_private_testing_bucket(pack_name, private_testing_bucket_client)
-    # index_folder_path, index_blob = download_and_extract_index(public_prod_bucket_client, extract_destination_path)
+    upload_premium_pack_to_private_testing_bucket(premium_pack, pack_name, private_testing_bucket_client)
