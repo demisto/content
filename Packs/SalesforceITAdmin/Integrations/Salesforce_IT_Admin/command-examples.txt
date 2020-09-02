@@ -1,0 +1,17 @@
+!get-user scim={"id":"0050m000003K9VAAA0"} using=Salesforce
+!create-user scim={"userName":"testdemisto23@pancustportal.com.sit","name":{"familyName":"Test","givenName":"Demisto"},"emails":[{"type":"work","primary":true,"value":"demistotest@panw.com"}],"urn:scim:schemas:extension:custom:1.0:user":{"Alias":"dtest","TimeZoneSidKey":"America/Los_Angeles","LocaleSidKey":"en_US","EmailEncodingKey":"ISO-8859-1","ProfileId":"00e70000000opnNAAQ","LanguageLocaleKey":"en_US","Department":"IT"}} customMapping={"Alias":"Alias","TimeZoneSidKey":"TimeZoneSidKey","LocaleSidKey":"LocaleSidKey","EmailEncodingKey":"EmailEncodingKey","ProfileId":"ProfileId","LanguageLocaleKey":"LanguageLocaleKey","Department":"Department"}  using=Salesforce
+!update-user oldScim={"id":"0050m000003K9VAAA0"} newScim={"name":{"givenName":"Demisto"}} using=Salesforce
+!enable-user scim={"id":"0050m000003K9VAAA0","urn:scim:schemas:extension:custom:1.0:user":{"SOX_Notes__c":"Enabled by XSOAR"}} customMapping={"SOX_Notes__c":"SOX_Notes__c"} using=Salesforce
+!disable-user scim={"id":"0050m000003K9VAAA0","urn:scim:schemas:extension:custom:1.0:user":{"terminationDate":"2020-08-04"}} customMapping={"terminationDate":"Terminate_Date__c"} using=Salesforce
+!salesforce-delete-assigned-permission-set permission_set_assignment_id="0Pa0m000003bH2ECAU" using=Salesforce
+!salesforce-assign-permission-set user_id="0050m000003MAxCAAW" permission_set_id="0PS0m000000IuIrGAK" using=Salesforce
+!salesforce-get-assigned-permission-set user_id="0050m000003MAxCAAW" using=Salesforce
+!salesforce-delete-assigned-permission-set-license permission_set_assignment_license_id="2LA0m0000005pONGAY" using=Salesforce
+!salesforce-assign-permission-set-license user_id="0050m000003MAxCAAW" permission_set_license_id="0PL0g0000008QVEGA2"  using=Salesforce
+!salesforce-get-assigned-permission-set-license user_id="0050m000003MAxCAAW" using=Salesforce
+!salesforce-delete-assigned-package-license user_package_license_id="0510m00000008pnAAA" using=Salesforce
+!salesforce-assign-package-license user_id="0050m000003K9VAAA0" package_license_id="05070000000PHmCAAW" using=Salesforce
+!salesforce-get-assigned-package-license user_id="0050m000003K9VAAA0" using=Salesforce
+!salesforce-freeze-user-account user_login_id="0Yw0m000002T4lqCAC" using=Salesforce
+!salesforce-unfreeze-user-account user_login_id="0Yw0m000002T4lqCAC" using=Salesforce
+!salesforce-get-user-isfrozen-status user_id="0050m000003MAxCAAW" using=Salesforce

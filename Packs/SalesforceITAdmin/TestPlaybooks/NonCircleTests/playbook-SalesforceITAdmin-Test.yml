@@ -1,0 +1,1720 @@
+id: SalesforceITAdmin-Test
+version: -1
+name: SalesforceITAdmin-Test
+starttaskid: "0"
+description: ''
+tasks:
+  "0":
+    id: "0"
+    taskid: 1de31923-811f-4a15-87ee-64c161dba4de
+    type: start
+    task:
+      id: 1de31923-811f-4a15-87ee-64c161dba4de
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 21a644ca-14ca-49e1-869e-6bd58346caaa
+    type: regular
+    task:
+      id: 21a644ca-14ca-49e1-869e-6bd58346caaa
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 12ad40a6-bea8-4898-8439-21b762a492d4
+    type: regular
+    task:
+      id: 12ad40a6-bea8-4898-8439-21b762a492d4
+      version: -1
+      name: get-user
+      description: Get a user
+      script: Salesforce IT Admin|||get-user
+      type: regular
+      iscommand: true
+      brand: Salesforce IT Admin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      scim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 063b4bff-0ac8-45ba-8090-9abefdf9c3b7
+    type: condition
+    task:
+      id: 063b4bff-0ac8-45ba-8090-9abefdf9c3b7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GetUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 17c383f2-6b44-43ba-8114-65d3d29a843b
+    type: regular
+    task:
+      id: 17c383f2-6b44-43ba-8114-65d3d29a843b
+      version: -1
+      name: create-user
+      description: Creates a user
+      script: Salesforce IT Admin|||create-user
+      type: regular
+      iscommand: true
+      brand: Salesforce IT Admin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      customMap: {}
+      customMapping:
+        simple: |-
+          {
+          "Alias":"Alias",
+          "TimeZoneSidKey":"TimeZoneSidKey",
+          "LocaleSidKey":"LocaleSidKey",
+          "EmailEncodingKey":"EmailEncodingKey",
+          "ProfileId":"ProfileId",
+          "LanguageLocaleKey":"LanguageLocaleKey",
+          "Department":"Department"
+          }
+      scim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1d007f55-ad31-465e-8686-88ca67f0106d
+    type: condition
+    task:
+      id: 1d007f55-ad31-465e-8686-88ca67f0106d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CreateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: if user is already created
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CreateUser.errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "400"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 1b4e9011-3610-4789-8244-e645f87223c3
+    type: regular
+    task:
+      id: 1b4e9011-3610-4789-8244-e645f87223c3
+      version: -1
+      name: update-user
+      description: Update a user
+      script: Salesforce IT Admin|||update-user
+      type: regular
+      iscommand: true
+      brand: Salesforce IT Admin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      customMap: {}
+      customMapping: {}
+      newScim:
+        simple: ${scim}
+      oldScim:
+        simple: '{"id": "${id}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 080a0eb4-bf65-4bd4-8191-04799cf3649d
+    type: condition
+    task:
+      id: 080a0eb4-bf65-4bd4-8191-04799cf3649d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UpdateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: daeeeaa9-1c3e-4696-89d9-4cb6080e41d2
+    type: regular
+    task:
+      id: daeeeaa9-1c3e-4696-89d9-4cb6080e41d2
+      version: -1
+      name: salesforce-assign-permission-set
+      script: '|||salesforce-assign-permission-set'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      permission_set_id:
+        simple: 0PS0m000000IuIrGAK
+      user_id:
+        simple: ${id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: b0cd5139-6827-47d7-8b8c-fb60f4977baf
+    type: condition
+    task:
+      id: b0cd5139-6827-47d7-8b8c-fb60f4977baf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceAssignPermissionSet.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: Failure scenario
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSet.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 432146fe-a604-49ff-8693-114e28819697
+    type: regular
+    task:
+      id: 432146fe-a604-49ff-8693-114e28819697
+      version: -1
+      name: salesforce-get-assigned-permission-set
+      script: '|||salesforce-get-assigned-permission-set'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      user_id:
+        simple: ${id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 151ab5fb-27c5-464f-8b66-dcb02de5883f
+    type: condition
+    task:
+      id: 151ab5fb-27c5-464f-8b66-dcb02de5883f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSet.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 0c258dba-6e63-4e89-8cf2-dcb46a77a723
+    type: regular
+    task:
+      id: 0c258dba-6e63-4e89-8cf2-dcb46a77a723
+      version: -1
+      name: salesforce-delete-assigned-permission-set
+      script: '|||salesforce-delete-assigned-permission-set'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      permission_set_assignment_id:
+        simple: ${permission_set_assignment_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: f5a1d9e0-e0a0-4136-8713-3b23de1e7e47
+    type: condition
+    task:
+      id: f5a1d9e0-e0a0-4136-8713-3b23de1e7e47
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSet.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: Error scenario
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSet.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 2e7e667f-ce9b-4dd6-85af-5a27a0a5eff8
+    type: regular
+    task:
+      id: 2e7e667f-ce9b-4dd6-85af-5a27a0a5eff8
+      version: -1
+      name: salesforce-freeze-user-account
+      script: '|||salesforce-freeze-user-account'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      user_login_id:
+        simple: ${user_login_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 91e1389d-89c8-4203-810e-a46668cd14e2
+    type: condition
+    task:
+      id: 91e1389d-89c8-4203-810e-a46668cd14e2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceFreezeUserAccount.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: condition-2
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceFreezeUserAccount.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: ecf232a9-2633-4309-8105-8a3c722593c1
+    type: regular
+    task:
+      id: ecf232a9-2633-4309-8105-8a3c722593c1
+      version: -1
+      name: salesforce-unfreeze-user-account
+      script: '|||salesforce-unfreeze-user-account'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      user_login_id:
+        simple: ${user_login_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 54d47eed-ea13-4083-8249-6526ebff26f4
+    type: condition
+    task:
+      id: 54d47eed-ea13-4083-8249-6526ebff26f4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceUnfreezeUserAccount.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: Failure scenario
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceUnfreezeUserAccount.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 14d28211-550f-4247-8cf0-e4c7945f1308
+    type: regular
+    task:
+      id: 14d28211-550f-4247-8cf0-e4c7945f1308
+      version: -1
+      name: salesforce-get-user-isfrozen-status
+      script: '|||salesforce-get-user-isfrozen-status'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      user_id:
+        simple: ${id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 0687e0c7-b452-4dee-86a6-e2e7777f7a63
+    type: condition
+    task:
+      id: 0687e0c7-b452-4dee-86a6-e2e7777f7a63
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceGetUserIsfrozenStatus.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: Failure condition
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetUserIsfrozenStatus.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: be56b4e3-b22c-4c90-8242-85cf6698ebbf
+    type: regular
+    task:
+      id: be56b4e3-b22c-4c90-8242-85cf6698ebbf
+      version: -1
+      name: salesforce-assign-permission-set-license
+      script: '|||salesforce-assign-permission-set-license'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      permission_set_license_id:
+        simple: 0PL0g0000008QVEGA2
+      user_id:
+        simple: ${id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: c67ec20f-c885-4bcf-8c5d-e65fac666121
+    type: condition
+    task:
+      id: c67ec20f-c885-4bcf-8c5d-e65fac666121
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceAssignPermissionSetLicense.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: Failure scenario
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPermissionSetLicense.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 9f6a0804-e06b-4a73-8987-28748b5d6593
+    type: regular
+    task:
+      id: 9f6a0804-e06b-4a73-8987-28748b5d6593
+      version: -1
+      name: salesforce-get-assigned-permission-set-license
+      script: '|||salesforce-get-assigned-permission-set-license'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      user_id:
+        simple: ${id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 8bcf4cc0-56b1-4321-8974-71c75364c3ad
+    type: condition
+    task:
+      id: 8bcf4cc0-56b1-4321-8974-71c75364c3ad
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSetLicense.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: Failure scenario
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPermissionSetLicense.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: ed53cc26-07f4-4d0f-83d9-4f7dc75ac9c5
+    type: regular
+    task:
+      id: ed53cc26-07f4-4d0f-83d9-4f7dc75ac9c5
+      version: -1
+      name: salesforce-delete-assigned-permission-set-license
+      script: '|||salesforce-delete-assigned-permission-set-license'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      permission_set_assignment_license_id:
+        simple: ${permission_set_assignment_license_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: d85263a7-39ec-4d58-84b4-827e32134f3b
+    type: condition
+    task:
+      id: d85263a7-39ec-4d58-84b4-827e32134f3b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSetLicense.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: Failure scenario
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPermissionSetLicense.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 95443a27-a7b7-41aa-86da-d0b16d347171
+    type: regular
+    task:
+      id: 95443a27-a7b7-41aa-86da-d0b16d347171
+      version: -1
+      name: salesforce-assign-package-license
+      script: '|||salesforce-assign-package-license'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      package_license_id:
+        simple: 05070000000PHmCAAW
+      user_id:
+        simple: ${id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 04e4b311-a07d-4bcb-8237-1b866ee2499f
+    type: condition
+    task:
+      id: 04e4b311-a07d-4bcb-8237-1b866ee2499f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceAssignPackageLicense.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: Failure scenario
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceAssignPackageLicense.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: eddaea6a-b873-4b1f-868e-c5f047b6434e
+    type: regular
+    task:
+      id: eddaea6a-b873-4b1f-868e-c5f047b6434e
+      version: -1
+      name: salesforce-get-assigned-package-license
+      script: '|||salesforce-get-assigned-package-license'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      user_id:
+        simple: ${id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 2c5ae41f-7119-4d10-80f4-9fe215cbe506
+    type: condition
+    task:
+      id: 2c5ae41f-7119-4d10-80f4-9fe215cbe506
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceGetAssignedPackageLicense.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: Failure scenario
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceGetAssignedPackageLicense.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 1c0049a5-8a9f-4ba3-8a93-ab6298156d0a
+    type: regular
+    task:
+      id: 1c0049a5-8a9f-4ba3-8a93-ab6298156d0a
+      version: -1
+      name: salesforce-delete-assigned-package-license
+      script: '|||salesforce-delete-assigned-package-license'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      user_package_license_id:
+        simple: ${user_package_license_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 76261206-1142-4b80-8709-a475eead7e4e
+    type: condition
+    task:
+      id: 76261206-1142-4b80-8709-a475eead7e4e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPackageLicense.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: Failure Scenario
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SalesforceDeleteAssignedPackageLicense.errorCode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 79d388fd-d7ce-4b6c-8deb-f35649a72f53
+    type: regular
+    task:
+      id: 79d388fd-d7ce-4b6c-8deb-f35649a72f53
+      version: -1
+      name: enable-user
+      description: Enable a disabled user
+      script: Salesforce IT Admin|||enable-user
+      type: regular
+      iscommand: true
+      brand: Salesforce IT Admin
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      customMapping:
+        simple: '{"SOX_Notes__c":"SOX_Notes__c"}'
+      scim:
+        simple: '{"id": "${id}", "SOX_Notes__c":"Enabled by XSOAR"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 55a9adcb-c17d-44d8-813f-13b2690a277c
+    type: condition
+    task:
+      id: 55a9adcb-c17d-44d8-813f-13b2690a277c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EnableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 4d9fab49-566e-4953-808a-23b53bcf89e4
+    type: regular
+    task:
+      id: 4d9fab49-566e-4953-808a-23b53bcf89e4
+      version: -1
+      name: disable-user
+      description: Disable a user
+      script: Salesforce IT Admin|||disable-user
+      type: regular
+      iscommand: true
+      brand: Salesforce IT Admin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      customMapping:
+        simple: '{"terminationDate":"Terminate_Date__c"}'
+      scim:
+        simple: '{"id": "${id}","urn:scim:schemas:extension:custom:1.0:user":{"terminationDate":"2020-08-04"}}'
+      user_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 33ebcd6a-4ac9-4ad3-8a23-9fff89a09010
+    type: condition
+    task:
+      id: 33ebcd6a-4ac9-4ad3-8a23-9fff89a09010
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: ccc9ff3f-6145-4ba2-8cb1-323911cabd31
+    type: title
+    task:
+      id: ccc9ff3f-6145-4ba2-8cb1-323911cabd31
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 0ef6f128-e871-434f-8c01-5eb64dc7bfab
+    type: regular
+    task:
+      id: 0ef6f128-e871-434f-8c01-5eb64dc7bfab
+      version: -1
+      name: Set Instance Name
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      append: {}
+      key:
+        simple: appInstanceName
+      stringify: {}
+      value:
+        simple: Salesforce
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: bc7def64-a94f-4e5e-8855-511c59c5902e
+    type: regular
+    task:
+      id: bc7def64-a94f-4e5e-8855-511c59c5902e
+      version: -1
+      name: set scim data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: scim
+      stringify: {}
+      value:
+        simple: |-
+          {
+             "userName":"testdemisto24@pancustportal.com.sit",
+             "name":{
+                "familyName":"Test",
+                "givenName":"Demisto"
+             },
+             "emails":[
+                {
+                   "type":"work",
+                   "primary":true,
+                   "value":"demistotest@panw.com"
+                }
+             ],
+             "urn:scim:schemas:extension:custom:1.0:user":{
+                "Alias":"dtest",
+                "TimeZoneSidKey":"America/Los_Angeles",
+                "LocaleSidKey":"en_US",
+                "EmailEncodingKey":"ISO-8859-1",
+                "ProfileId":"00e70000000opnNAAQ",
+                "LanguageLocaleKey":"en_US",
+                "Department":"IT"
+             }
+          }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 44d1315a-2282-44f1-88d5-6eec6870b482
+    type: regular
+    task:
+      id: 44d1315a-2282-44f1-88d5-6eec6870b482
+      version: -1
+      name: set id for update
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: id
+      stringify:
+        simple: "true"
+      value:
+        simple: ${GetUser.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 74c39ad0-4839-4f71-8265-a0ffa18ab189
+    type: regular
+    task:
+      id: 74c39ad0-4839-4f71-8265-a0ffa18ab189
+      version: -1
+      name: set  permission_set_assignment_id
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append: {}
+      key:
+        simple: permission_set_assignment_id
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: SalesforceGetAssignedPermissionSet
+          accessor: PermissionSetAssignments.Id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 2bb9501e-83af-4f59-8a36-8bd2c8e40ec7
+    type: regular
+    task:
+      id: 2bb9501e-83af-4f59-8a36-8bd2c8e40ec7
+      version: -1
+      name: set user_login_id
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append: {}
+      key:
+        simple: user_login_id
+      stringify:
+        simple: "true"
+      value:
+        simple: ${SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.Id}${SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 26c95703-19ec-4c58-8d43-59e1d03a09b3
+    type: regular
+    task:
+      id: 26c95703-19ec-4c58-8d43-59e1d03a09b3
+      version: -1
+      name: set permission_set_assignment_license_id
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      append: {}
+      key:
+        simple: permission_set_assignment_license_id
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: SalesforceGetAssignedPermissionSetLicense
+          accessor: PermissionSetLicenseAssignments.Id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 3e59f070-71ed-4e65-886e-a407bef2cb9d
+    type: regular
+    task:
+      id: 3e59f070-71ed-4e65-886e-a407bef2cb9d
+      version: -1
+      name: set user_package_license_id
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append: {}
+      key:
+        simple: user_package_license_id
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: SalesforceGetAssignedPackageLicense
+          accessor: PackageLicenseAssignments.Id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "27_28_#default#": 0.34
+    },
+    "paper": {
+      "dimensions": {
+        "height": 7560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
