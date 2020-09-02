@@ -37,8 +37,44 @@
                     "simple": "category"
                 },
                 "ServiceNow Due Date": {
-                    "complex": null,
-                    "simple": "due_date"
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "opened_at",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            },
+                            {
+                                "args": {
+                                    "formatter": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "FormattedDateToEpoch"
+                            },
+                            {
+                                "args": {},
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    },
+                    "simple": ""
                 },
                 "ServiceNow Impact": {
                     "complex": {
@@ -652,12 +688,12 @@
                 },
                 "dbotMirrorInstance": {
                     "complex": null,
-                    "simple": ".='ServiceNow v2_instance_1'"
+                    "simple": "mirror_instance"
                 },
-				"dbotMirrorTags": {
-					"complex": null,
-					"simple": "mirror_tags"
-				},
+                "dbotMirrorTags": {
+                    "complex": null,
+                    "simple": "mirror_tags"
+                },
                 "details": {
                     "complex": null,
                     "simple": "description"

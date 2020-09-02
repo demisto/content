@@ -62,16 +62,43 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-- defaultvalue: 'false'
-  display: Use system proxy settings
-  name: proxy
+- additionalinfo: Chose whenever to mirror the incident. You can mirror only In (from
+    ServiceNow to XSOAR), only out(from XSOAR to ServiceNow) or both dircetion.
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
   required: false
-  type: 8
-- defaultvalue: 'false'
-  display: Trust any certificate (not secure)
-  name: insecure
+  type: 15
+- additionalinfo: Choose the tag you will want to add to an entry to mirror it as
+    a comment in ServiceNow.
+  defaultvalue: comments
+  display: Comment Entry Tag
+  hidden: false
+  name: comment_tag
   required: false
-  type: 8
+  type: 0
+- additionalinfo: Choose the tag you will want to add to an entry to mirror it as
+    a work note in ServiceNow.
+  defaultvalue: work_notes
+  display: Work Note Entry Tag
+  hidden: false
+  name: work_notes_tag
+  required: false
+  type: 0
+- additionalinfo: Choose the tag you will want to add to an entry to mirror it as
+    a filein ServiceNow.
+  defaultvalue: ForServiceNow
+  display: File Entry Tag
+  hidden: false
+  name: file_tag
+  required: false
+  type: 0
 - additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex
     XSOAR.
   defaultvalue: 'false'
@@ -87,35 +114,16 @@ configuration:
   name: close_ticket
   required: false
   type: 8
-- defaultvalue: None
-  display: Incident Mirroring Direction
-  hidden: false
-  name: mirror_direction
-  options:
-  - None
-  - Incoming
-  - Outgoing
-  - Incoming And Outgoing
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
   required: false
-  type: 15
-- defaultvalue: comments
-  display: Comment Entry Tag
-  hidden: false
-  name: comment_tag
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
   required: false
-  type: 0
-- defaultvalue: work_notes
-  display: Work Note Entry Tag
-  hidden: false
-  name: work_notes_tag
-  required: false
-  type: 0
-- defaultvalue: ForServiceNow
-  display: File Entry Tag
-  hidden: false
-  name: file_tag
-  required: false
-  type: 0
+  type: 8
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize
   the way you manage and deliver services to your users.
 display: ServiceNow v2
@@ -2332,9 +2340,6 @@ script:
   isfetch: true
   longRunning: false
   longRunningPort: false
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
