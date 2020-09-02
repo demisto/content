@@ -1,0 +1,620 @@
+id: testplaybook-Atlassian_Cloud_IT_Admin
+version: -1
+name: testplaybook-Atlassian_Cloud_IT_Admin
+starttaskid: "0"
+description: ""
+tasks:
+  "0":
+    id: "0"
+    taskid: fd87d523-fac8-4c4a-82f4-1190bb2c909e
+    type: start
+    task:
+      id: fd87d523-fac8-4c4a-82f4-1190bb2c909e
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 2855f6bd-c588-4d2b-873c-a925418adfe7
+    type: regular
+    task:
+      id: 2855f6bd-c588-4d2b-873c-a925418adfe7
+      version: -1
+      name: DeleteContext
+      description: ""
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 44432d25-10f2-43e7-811c-4e5c277549a1
+    type: regular
+    task:
+      id: 44432d25-10f2-43e7-811c-4e5c277549a1
+      version: -1
+      name: get-user
+      description: Retrieve the user details based on id or username.
+      script: Atlassian Cloud IT Admin|||get-user
+      type: regular
+      iscommand: true
+      brand: Atlassian Cloud IT Admin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      scim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8217ad13-cefa-478b-8fb8-6d8a585bb097
+    type: condition
+    task:
+      id: 8217ad13-cefa-478b-8fb8-6d8a585bb097
+      version: -1
+      name: Verify Outputs
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GetUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 96d5d230-b0f2-4d8a-8682-c91b55984eaa
+    type: regular
+    task:
+      id: 96d5d230-b0f2-4d8a-8682-c91b55984eaa
+      version: -1
+      name: create-user
+      description: This command creates the user based on the scim and custom map
+        passed in argument.
+      script: Atlassian Cloud IT Admin|||create-user
+      type: regular
+      iscommand: true
+      brand: Atlassian Cloud IT Admin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e5153265-e04b-4a29-8b0d-8da2e8a35b69
+    type: condition
+    task:
+      id: e5153265-e04b-4a29-8b0d-8da2e8a35b69
+      version: -1
+      name: Verify Outputs
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CreateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CreateUser.errorCode
+            iscontext: true
+          right:
+            value:
+              simple: "409"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 6ff7c5d2-1a63-410b-85f8-db00fe1fc260
+    type: regular
+    task:
+      id: 6ff7c5d2-1a63-410b-85f8-db00fe1fc260
+      version: -1
+      name: update-user
+      description: Update a user
+      script: Atlassian Cloud IT Admin|||update-user
+      type: regular
+      iscommand: true
+      brand: Atlassian Cloud IT Admin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      customMap: {}
+      customMapping: {}
+      newScim:
+        simple: ${scim}
+      oldScim:
+        simple: ${scim}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 66991e23-4c3e-4360-8c55-b460f26ff60a
+    type: condition
+    task:
+      id: 66991e23-4c3e-4360-8c55-b460f26ff60a
+      version: -1
+      name: Verify Outputs
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UpdateUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 87035dd8-16de-4542-8573-7beba1ee5c15
+    type: regular
+    task:
+      id: 87035dd8-16de-4542-8573-7beba1ee5c15
+      version: -1
+      name: disable-user
+      description: This command disables the user.
+      script: Atlassian Cloud IT Admin|||disable-user
+      type: regular
+      iscommand: true
+      brand: Atlassian Cloud IT Admin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: '{"id":"${id}"}'
+      user_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: b81b88ff-917c-4ecb-8eb5-c6968c6d7375
+    type: condition
+    task:
+      id: b81b88ff-917c-4ecb-8eb5-c6968c6d7375
+      version: -1
+      name: Verify Outputs
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 36b8933f-6afe-4d92-8a17-abb9bb3f0118
+    type: regular
+    task:
+      id: 36b8933f-6afe-4d92-8a17-abb9bb3f0118
+      version: -1
+      name: enable-user
+      description: This command enables the user.
+      script: Atlassian Cloud IT Admin|||enable-user
+      type: regular
+      iscommand: true
+      brand: Atlassian Cloud IT Admin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      customMapping: {}
+      scim:
+        simple: '{"id":"${id}"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: bcc3fd9b-f718-4777-8203-13d03bb1e009
+    type: condition
+    task:
+      id: bcc3fd9b-f718-4777-8203-13d03bb1e009
+      version: -1
+      name: Verify Outputs
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EnableUser.success
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 7f8837dc-1926-47c6-8ee7-9122b137a25f
+    type: regular
+    task:
+      id: 7f8837dc-1926-47c6-8ee7-9122b137a25f
+      version: -1
+      name: test-module
+      description: ""
+      script: '|||test-module'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: fd8d8331-3066-4148-86ed-29b8f366d43c
+    type: title
+    task:
+      id: fd8d8331-3066-4148-86ed-29b8f366d43c
+      version: -1
+      name: Test Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: a035a332-cb6f-48c5-8741-fd3fd3ff89e0
+    type: regular
+    task:
+      id: a035a332-cb6f-48c5-8741-fd3fd3ff89e0
+      version: -1
+      name: set Instance Name
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      append: {}
+      key:
+        simple: appInstanceName
+      stringify: {}
+      value:
+        simple: Atlassian
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: c508ca74-211f-4bae-8288-da84106b8912
+    type: regular
+    task:
+      id: c508ca74-211f-4bae-8288-da84106b8912
+      version: -1
+      name: set SCIM data
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: scim
+      stringify: {}
+      value:
+        simple: '{"userName":"test123@paloaltonetworks.com","emails":[{"value":"test123@paloaltonetworks.com","type":"work","primary":true}],"name":{"familyName":"familyName","givenName":"givenName"},"displayName":
+          "givenName familyName","title": "Staff IT Systems Engineer","active":true}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 37e5c928-59e6-4408-8b03-1d612e539f5a
+    type: regular
+    task:
+      id: 37e5c928-59e6-4408-8b03-1d612e539f5a
+      version: -1
+      name: set ID for update
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append: {}
+      key:
+        simple: id
+      stringify: {}
+      value:
+        complex:
+          root: UpdateUser
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2835,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+
