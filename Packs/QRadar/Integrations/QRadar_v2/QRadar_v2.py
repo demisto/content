@@ -19,8 +19,8 @@ urllib3.disable_warnings()
 
 """ GLOBAL VARS """
 SYNC_CONTEXT = True
-RESET_KEY = 'reset'
-LAST_FETCH_KEY = 'id'
+RESET_KEY = "reset"
+LAST_FETCH_KEY = "id"
 API_USERNAME = "_api_token_key"
 TERMINATING_SEARCH_STATUSES = {"CANCELED", "ERROR", "COMPLETED"}
 
@@ -139,6 +139,7 @@ class LongRunningIntegrationLogger(IntegrationLogger):
     """
     LOG class that ignores LOG calls if long_running
     """
+
     def __init__(self, long_running=False):
         super().__init__()
         self.long_running = long_running
@@ -164,13 +165,9 @@ class QRadarClient:
     """
     Client for sending QRadar requests
     """
+
     def __init__(
-        self,
-        server: str,
-        proxies,
-        credentials,
-        offenses_per_fetch=50,
-        insecure=False,
+        self, server: str, proxies, credentials, offenses_per_fetch=50, insecure=False,
     ):
         self._server = server[:-1] if server.endswith("/") else server
         self._proxies = proxies
@@ -398,7 +395,9 @@ class QRadarClient:
             headers["Range"] = "items={0}".format(_range)
         return self.send_request("GET", url, headers, params=params)
 
-    def create_reference_set(self, ref_name, element_type, timeout_type=None, time_to_live=None):
+    def create_reference_set(
+        self, ref_name, element_type, timeout_type=None, time_to_live=None
+    ):
         """
         Create or update a reference set
         """
@@ -516,12 +515,16 @@ class QRadarClient:
         helper function: Enriches the source addresses ids dictionary with the source addresses values corresponding to the ids
         """
         batch_size = BATCH_SIZE
-        for b in batch(list(src_adrs.values())[:BATCH_LIMIT], batch_size=int(batch_size)):
-            src_ids_str = ','.join(map(str, b))
-            source_url = f"{self._server}/api/siem/source_addresses?filter=id in ({src_ids_str})"
+        for b in batch(
+            list(src_adrs.values())[:BATCH_LIMIT], batch_size=int(batch_size)
+        ):
+            src_ids_str = ",".join(map(str, b))
+            source_url = (
+                f"{self._server}/api/siem/source_addresses?filter=id in ({src_ids_str})"
+            )
             src_res = self.send_request("GET", source_url, self._auth_headers)
             for src_adr in src_res:
-                src_adrs[src_adr['id']] = src_adr['source_ip']
+                src_adrs[src_adr["id"]] = src_adr["source_ip"]
         return src_adrs
 
     def enrich_destination_addresses_dict(self, dst_adrs):
@@ -530,12 +533,14 @@ class QRadarClient:
         the ids
         """
         batch_size = BATCH_SIZE
-        for b in batch(list(dst_adrs.values())[:BATCH_LIMIT], batch_size=int(batch_size)):
-            dst_ids_str = ','.join(map(str, b))
+        for b in batch(
+            list(dst_adrs.values())[:BATCH_LIMIT], batch_size=int(batch_size)
+        ):
+            dst_ids_str = ",".join(map(str, b))
             destination_url = f"{self._server}/api/siem/local_destination_addresses?filter=id in ({dst_ids_str})"
             dst_res = self.send_request("GET", destination_url, self._auth_headers)
             for dst_adr in dst_res:
-                dst_adrs[dst_adr['id']] = dst_adr['local_destination_ip']
+                dst_adrs[dst_adr["id"]] = dst_adr["local_destination_ip"]
         return dst_adrs
 
 
@@ -673,7 +678,9 @@ def test_module(client: QRadarClient):
     return client.test_connection()
 
 
-def enrich_offense_with_events(client: QRadarClient, offense, fetch_mode, events_columns, events_limit):
+def enrich_offense_with_events(
+    client: QRadarClient, offense, fetch_mode, events_columns, events_limit
+):
     additional_where = (
         "AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine'"
         if fetch_mode == FetchMode.correlations_only
@@ -716,8 +723,12 @@ def perform_offense_events_enrichment(
         f'(1) Starting events fetch for offense {offense["id"]}.', client.lock
     )
     try:
-        query_status, search_id = try_create_search_with_retry(client, events_query, offense)
-        offense['events'] = try_poll_offense_events_with_retry(client, offense["id"], query_status, search_id)
+        query_status, search_id = try_create_search_with_retry(
+            client, events_query, offense
+        )
+        offense["events"] = try_poll_offense_events_with_retry(
+            client, offense["id"], query_status, search_id
+        )
     except Exception as e:
         print_debug_msg(
             f'(5) Failed fetching event for offense {offense["id"]}: {str(e)}.',
@@ -727,7 +738,9 @@ def perform_offense_events_enrichment(
         return offense
 
 
-def try_poll_offense_events_with_retry(client, offense_id, query_status, search_id, max_retries=None):
+def try_poll_offense_events_with_retry(
+    client, offense_id, query_status, search_id, max_retries=None
+):
     """
     Polls search until the search is done (completed/canceled/error), and then returns the search result
     will retry up to max_retries consecutive failures
@@ -742,21 +755,21 @@ def try_poll_offense_events_with_retry(client, offense_id, query_status, search_
                 return []
 
             raw_search = client.get_search(search_id)
-            query_status = raw_search.get('status')
+            query_status = raw_search.get("status")
             # failures are relevant only when consecutive
             failures = 0
             if query_status in TERMINATING_SEARCH_STATUSES:
                 raw_search_results = client.get_search_results(search_id)
-                print_debug_msg(f'(3) Events fetched for offense {offense_id}.',client.lock)
+                print_debug_msg(
+                    f"(3) Events fetched for offense {offense_id}.", client.lock
+                )
                 return raw_search_results.get("events", [])
             else:
                 # prepare next run
                 i = i % 60 + EVENTS_INTERVAL_SECS
-                if (
-                        i >= 60
-                ):  # print status debug every fetch sleep (or after)
+                if i >= 60:  # print status debug every fetch sleep (or after)
                     print_debug_msg(
-                        f'(2) Still fetching offense {offense_id} events, search_id: {search_id}.',
+                        f"(2) Still fetching offense {offense_id} events, search_id: {search_id}.",
                         client.lock,
                     )
                 time.sleep(EVENTS_INTERVAL_SECS)
@@ -786,9 +799,7 @@ def try_create_search_with_retry(client, events_query, offense, max_retries=None
         except Exception:
             failures += 1
     if failures >= EVENTS_FAILURE_LIMIT:
-        raise DemistoException(
-            f"Unable to create search for offense: {offense['id']}."
-        )
+        raise DemistoException(f"Unable to create search for offense: {offense['id']}.")
     return query_status, search_id
 
 
@@ -873,8 +884,10 @@ def is_reset_triggered(lock, handle_reset=False):
         ctx = get_integration_context(SYNC_CONTEXT)
         if RESET_KEY in ctx:
             if handle_reset:
-                print_debug_msg('(16) Reset fetch-incidents.')
-                set_integration_context({"samples": ctx.get("samples", [])}, sync=SYNC_CONTEXT)
+                print_debug_msg("(16) Reset fetch-incidents.")
+                set_integration_context(
+                    {"samples": ctx.get("samples", [])}, sync=SYNC_CONTEXT
+                )
             lock.release()
             return True
         lock.release()
@@ -882,7 +895,12 @@ def is_reset_triggered(lock, handle_reset=False):
 
 
 def fetch_incidents_long_running_events(
-    client: QRadarClient, user_query, full_enrich, fetch_mode, events_columns, events_limit
+    client: QRadarClient,
+    user_query,
+    full_enrich,
+    fetch_mode,
+    events_columns,
+    events_limit,
 ):
     last_run = get_integration_context(SYNC_CONTEXT)
     offense_id = last_run["id"] if last_run and "id" in last_run else 0
@@ -907,7 +925,7 @@ def fetch_incidents_long_running_events(
                     offense=offense,
                     fetch_mode=fetch_mode,
                     events_columns=events_columns,
-                    events_limit=events_limit
+                    events_limit=events_limit,
                 )
             )
         for future in concurrent.futures.as_completed(futures):
@@ -1170,7 +1188,15 @@ def get_offense_by_id_command(
 
 
 def update_offense_command(
-    client: QRadarClient, offense_id=None, closing_reason_name=None, closing_reason_id=None, protected=None, assigned_to=None, follow_up=None, status=None, fields=None
+    client: QRadarClient,
+    offense_id=None,
+    closing_reason_name=None,
+    closing_reason_id=None,
+    protected=None,
+    assigned_to=None,
+    follow_up=None,
+    status=None,
+    fields=None,
 ):
     args = assign_params(
         closing_reason_name=closing_reason_name,
@@ -1179,7 +1205,7 @@ def update_offense_command(
         assigned_to=assigned_to,
         follow_up=follow_up,
         status=status,
-        fields=fields
+        fields=fields,
     )
     if "closing_reason_name" in args:
         args["closing_reason_id"] = client.convert_closing_reason_name_to_id(
@@ -1491,9 +1517,7 @@ def get_reference_by_name_command(client: QRadarClient, ref_name=None, date_valu
     raw_ref = client.get_ref_set(ref_name)
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
     convert_date_elements = (
-        True
-        if date_value == "True" and ref["ElementType"] == "DATE"
-        else False
+        True if date_value == "True" and ref["ElementType"] == "DATE" else False
     )
     enrich_reference_set_result(ref, convert_date_elements)
     return get_entry_for_reference_set(ref)
@@ -1559,7 +1583,7 @@ def delete_reference_set_command(client: QRadarClient, ref_name=None):
 
 
 def update_reference_set_value_command(
-    client: QRadarClient, value=None, date_value=None, ref_name=None, source=None
+    client: QRadarClient, ref_name, value, date_value=None, source=None
 ):
     """
     Creates or updates values in QRadar reference set
@@ -1585,7 +1609,7 @@ def update_reference_set_value_command(
 
 
 def delete_reference_set_value_command(
-    client: QRadarClient, date_value=None, value=None, ref_name=None
+    client: QRadarClient, ref_name, value, date_value=None,
 ):
     if date_value == "True":
         value = date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
@@ -1645,8 +1669,8 @@ def upload_indicators_command(
     timeout_type=None,
     query=None,
     time_to_live=None,
-    limit=None,
-    page=None,
+    limit=1000,
+    page=0,
 ):
     """
     Finds indicators according to user query and updates QRadar reference set
@@ -1659,27 +1683,51 @@ def upload_indicators_command(
         page = int(page)
         if not check_ref_set_exist(client, ref_name):
             if element_type:
-                client.create_reference_set(ref_name, element_type, timeout_type, time_to_live)
+                client.create_reference_set(
+                    ref_name, element_type, timeout_type, time_to_live
+                )
             else:
-                return_error("There isn't a reference set with the name {0}. To create one,"
-                             " please enter an element type".format(ref_name))
+                return_error(
+                    "There isn't a reference set with the name {0}. To create one,"
+                    " please enter an element type".format(ref_name)
+                )
         else:
             if element_type or time_to_live or timeout_type:
-                return_error("The reference set {0} is already exist. Element type, time to live or timeout type "
-                             "cannot be modified".format(ref_name))
-        indicators_values_list, indicators_data_list = get_indicators_list(query, limit, page)
+                return_error(
+                    "The reference set {0} is already exist. Element type, time to live or timeout type "
+                    "cannot be modified".format(ref_name)
+                )
+        indicators_values_list, indicators_data_list = get_indicators_list(
+            query, limit, page
+        )
         if len(indicators_values_list) == 0:
-            return "No indicators found, Reference set {0} didn't change".format(ref_name), {}, {}
+            return (
+                "No indicators found, Reference set {0} didn't change".format(ref_name),
+                {},
+                {},
+            )
         else:
-            raw_response = client.upload_indicators_list_request(ref_name, indicators_values_list)
+            raw_response = client.upload_indicators_list_request(
+                ref_name, indicators_values_list
+            )
             ref_set_data = client.get_ref_set(ref_name)
             ref = replace_keys(ref_set_data, REFERENCE_NAMES_MAP)
             enrich_reference_set_result(ref)
-            indicator_headers = ['Value', 'Type']
-            ref_set_headers = ['Name', 'ElementType', 'TimeoutType', 'CreationTime', 'NumberOfElements']
-            hr = tableToMarkdown("reference set {0} was updated".format(ref_name), ref,
-                                 headers=ref_set_headers) + tableToMarkdown("Indicators list", indicators_data_list,
-                                                                            headers=indicator_headers)
+            indicator_headers = ["Value", "Type"]
+            ref_set_headers = [
+                "Name",
+                "ElementType",
+                "TimeoutType",
+                "CreationTime",
+                "NumberOfElements",
+            ]
+            hr = tableToMarkdown(
+                "reference set {0} was updated".format(ref_name),
+                ref,
+                headers=ref_set_headers,
+            ) + tableToMarkdown(
+                "Indicators list", indicators_data_list, headers=indicator_headers
+            )
             return {
                 "Type": entryTypes["note"],
                 "HumanReadable": hr,
@@ -1689,7 +1737,7 @@ def upload_indicators_command(
 
     # Gets an error if the user tried to add indicators that dont match to the reference set type
     except Exception as e:
-        if '1005' in str(e):
+        if "1005" in str(e):
             return "You tried to add indicators that dont match to reference set type"
         raise e
 
@@ -1739,12 +1787,21 @@ def get_indicators_list(indicator_query, limit, page):
     return indicators_values_list, indicators_data_list
 
 
-def fetch_loop_with_events(client: QRadarClient, user_query, full_enrich, fetch_mode, events_columns, events_limit):
+def fetch_loop_with_events(
+    client: QRadarClient,
+    user_query,
+    full_enrich,
+    fetch_mode,
+    events_columns,
+    events_limit,
+):
     while True:
         is_reset_triggered(client.lock, handle_reset=True)
 
         print_debug_msg(f"(14) Starting fetch loop with events.")
-        fetch_incidents_long_running_events(client, user_query, full_enrich, fetch_mode, events_columns, events_limit)
+        fetch_incidents_long_running_events(
+            client, user_query, full_enrich, fetch_mode, events_columns, events_limit
+        )
         time.sleep(FETCH_SLEEP)
 
 
@@ -1757,10 +1814,19 @@ def fetch_loop_no_events(client: QRadarClient, user_query, full_enrich):
         time.sleep(FETCH_SLEEP)
 
 
-def long_running_main(client: QRadarClient, user_query, full_enrich, fetch_mode, events_columns, events_limit):
+def long_running_main(
+    client: QRadarClient,
+    user_query,
+    full_enrich,
+    fetch_mode,
+    events_columns,
+    events_limit,
+):
     print_debug_msg(f'(15) Starting fetch with "{fetch_mode}".')
     if fetch_mode in (FetchMode.all_events, FetchMode.correlations_only):
-        fetch_loop_with_events(client, user_query, full_enrich, fetch_mode, events_columns, events_limit)
+        fetch_loop_with_events(
+            client, user_query, full_enrich, fetch_mode, events_columns, events_limit
+        )
     elif fetch_mode == FetchMode.no_events:
         fetch_loop_no_events(client, user_query, full_enrich)
 
@@ -1779,8 +1845,8 @@ def main():
     adv_params = params.get("adv_params")
     if adv_params:
         globals_ = globals()
-        for adv_p in adv_params.split(','):
-            adv_p_kv = adv_p.split('=')
+        for adv_p in adv_params.split(","):
+            adv_p_kv = adv_p.split("=")
             if len(adv_p_kv) == 2 and adv_p_kv[0] in ADVANCED_PARAMETER_NAMES:
                 globals_[adv_p_kv[0]] = try_parse_integer(adv_p_kv[1])
 
@@ -1836,7 +1902,14 @@ def main():
         elif command == "fetch-incidents":
             fetch_incidents_long_running_samples()
         elif command == "long-running-execution":
-            long_running_main(client, user_query, full_enrich, fetch_mode, events_columns, events_limit)
+            long_running_main(
+                client,
+                user_query,
+                full_enrich,
+                fetch_mode,
+                events_columns,
+                events_limit,
+            )
         elif command == "qradar-reset-last-run":
             demisto.results(reset_fetch_incidents())
     except Exception as e:
