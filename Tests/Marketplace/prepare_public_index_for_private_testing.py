@@ -35,6 +35,12 @@ def merge_private_index_into_public_index(public_index_folder_path, private_inde
 
 
 def edit_index_json_file(path_to_public_index, build_number):
+    """ This function brings the public index file to the bucket format.
+
+    Args:
+        path_to_public_index: a path to the file containing the public index.
+        build_number: the build number to add to the pack metadata.
+    """
     path_to_index_json = os.path.join(path_to_public_index, 'index.json')
     with open(path_to_index_json, 'r') as pack_metadata_file:
         pack_metadata = json.load(pack_metadata_file)
