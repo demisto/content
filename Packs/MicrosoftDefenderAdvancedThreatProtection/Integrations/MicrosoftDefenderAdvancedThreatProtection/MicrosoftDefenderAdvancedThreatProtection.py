@@ -5,7 +5,6 @@ from dateutil.parser import parse
 from requests import Response
 
 # Disable insecure warnings
-
 urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
@@ -65,7 +64,7 @@ class MsClient:
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
         """
-        kwargs['scope'] = "graph"
+        kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
         return self.ms_client.http_request(*args, **kwargs)
 
     def isolate_machine(self, machine_id, comment, isolation_type):

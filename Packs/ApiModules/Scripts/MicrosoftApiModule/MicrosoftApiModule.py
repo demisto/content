@@ -8,6 +8,12 @@ import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Tuple, Optional
 
+
+class Scopes:
+    graph = 'https://graph.microsoft.com/.default'
+    security_center = 'https://api.securitycenter.windows.com/.default'
+
+
 # authorization types
 OPROXY_AUTH_TYPE = 'oproxy'
 SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
