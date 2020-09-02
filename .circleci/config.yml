@@ -377,6 +377,7 @@ jobs:
           steps:
             - *restore_cache
             - *add_ssh_keys
+            - *update_tests_step
             - *prepare_environment
             - *secrets
             - *create_id_set
@@ -452,7 +453,6 @@ jobs:
       - *prepare_environment
       - *get_contribution_pack
       - *add_ssh_keys
-      - *update_tests_step
       - *create_id_set
       - *build_content_descriptor
       - *common_server_documentation
@@ -975,6 +975,7 @@ jobs:
       - *restore_cache
       - *prepare_environment
       - *secrets
+      - *update_tests_step
       - *validate_files_and_yaml
       - *run_unit_testing_and_lint
       - *infrastructure_testing
@@ -983,7 +984,6 @@ jobs:
       - *common_server_documentation
       - *collect_test_list_and_content_packs
       - *calculate_packs_dependencies
-      - *update_tests_step
       - *store_artifacts
       - run:
           name: Slack Notifier
