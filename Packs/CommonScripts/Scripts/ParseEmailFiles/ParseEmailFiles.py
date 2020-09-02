@@ -3420,7 +3420,6 @@ def unfold(s):
 def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False):
     global ENCODINGS_TYPES
 
-
     if max_depth == 0:
         return None, []
 
