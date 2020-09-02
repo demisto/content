@@ -124,7 +124,6 @@ def main():
     private_bucket_name = upload_config.private_bucket_name
     storage_base_path = upload_config.storage_base_path
     extract_public_index_path = upload_config.extract_path
-    extract_private_index_path = os.path.join(extract_public_index_path, 'private')
     changed_pack = upload_config.pack_name
 
     storage_client = init_storage_client(service_account)
@@ -136,12 +135,10 @@ def main():
 
     public_index_folder_path, public_index_blob, _ = download_and_extract_index(public_storage_bucket,
                                                                                 extract_public_index_path)
-    # private_index_folder_path, private_index_blob, _ = download_and_extract_index(private_storage_bucket,
-    #                                                                               extract_private_index_path)
 
-    # merge_private_index_into_public_index(public_index_folder_path, private_index_folder_path)
     update_index_with_priced_packs(private_storage_bucket, extract_public_index_path, public_index_folder_path,
                                    changed_pack, True)
+    # In order for the packs to be downloaded successfully, their price has to be 0
     change_packs_price_to_zero(public_index_folder_path)
     edit_index_json_file(public_index_folder_path, build_number)
     upload_modified_index(public_index_folder_path, extract_public_index_path, public_index_blob, build_number)
