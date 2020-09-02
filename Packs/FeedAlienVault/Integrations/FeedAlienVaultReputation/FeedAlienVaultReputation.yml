@@ -34,7 +34,6 @@ configuration:
     - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
 - additionalinfo: Traffic Light Protocol color for indicators fetched from feed.
-  defaultvalue: RED
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -42,7 +41,7 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: true
+  required: false
   type: 15
 - display: ""
   name: feedExpirationPolicy

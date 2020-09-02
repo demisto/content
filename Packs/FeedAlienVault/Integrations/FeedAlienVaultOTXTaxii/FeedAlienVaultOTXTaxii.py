@@ -14,7 +14,7 @@ import dateutil.parser
 from bs4 import BeautifulSoup
 from netaddr import IPAddress, iprange_to_cidrs, IPNetwork
 from six import string_types
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -463,7 +463,7 @@ class Client:
             all_collections(bool): Whether to run on all active collections.
         """
     def __init__(self, api_key: str, collection: str, insecure: bool = False, proxy: bool = False,
-                 all_collections: bool = False, tags: list = [], tlp_color: str = 'RED'):
+                 all_collections: bool = False, tags: list = [], tlp_color: Optional[str] = None):
 
         taxii_client = cabby.create_client(discovery_path="https://otx.alienvault.com/taxii/discovery")
         taxii_client.set_auth(username=str(api_key), password="foo", verify_ssl=not insecure)
