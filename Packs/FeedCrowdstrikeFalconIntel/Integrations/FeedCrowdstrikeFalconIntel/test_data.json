@@ -179,13 +179,10 @@
                     ]
                     },
         "fields": {"tags": {}, "region": {"id": 1, "slug": "hostel", "value": "hostel"},
-                   "actor_capability": {"id": 1, "slug": "hi", "value": "hi"}, "geocountry": [
-                   {"id": 1, "slug": "apartment", "value": "apartment"}],
+                   "geocountry": [{"id": 1, "slug": "apartment", "value": "apartment"}],
                    "stixdescription": "hello", "stixaliases": "aaa",
                    "creationdate": 1487960014, "stixprimarymotivation": [{"id": 1, "slug": "food", "value": "food"}],
-                   "updateddate": 1595568692, "stixid": 1,
-                   "actor_target_country": [{"id": 1, "slug": "hotel", "value": "hotel"}],
-                   "actor_target_industry": [{"id": 1, "slug": "stores", "value": "stores"}]}
+                   "updateddate": 1595568692, "stixid": 1}
     },
     {
         "type": "STIX Threat Actor",
@@ -246,13 +243,11 @@
                     ]
                     },
         "fields": {"tags": {}, "region": {"id": 2, "slug": "home", "value": "home"},
-                   "actor_capability": {"id": 2, "slug": "hi", "value": "hi"}, "geocountry":
+                    "geocountry":
                    [{"id": 2, "slug": "house", "value": "house"}],
                    "stixdescription": "hello world", "stixaliases": "bbb",
                    "creationdate": 1589572143, "stixprimarymotivation": [{"id": 2, "slug": "sports", "value": "sports"}],
-                   "updateddate": 1595627719, "stixid": 2,
-                   "actor_target_country": [{"id": 2, "slug": "bus_stations", "value": "bus_stations"}],
-                   "actor_target_industry": [{"id": 2, "slug": "supermarkets", "value": "supermarkets"}]}
+                   "updateddate": 1595627719, "stixid": 2}
     }
   ]
 }
