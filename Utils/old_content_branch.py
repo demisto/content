@@ -5,7 +5,6 @@ import click
 import ujson
 from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import FoldedScalarString
-import json
 from pkg_resources import parse_version
 import shutil
 
@@ -15,7 +14,7 @@ ryaml.width = 50000  # make sure long lines will not break (relevant for code se
 
 
 def should_keep_yml_file(yml_content, new_to_version):
-    if parse_version(yml_content.get('toversion', '99.99.99')) <= parse_version(new_to_version) or \
+    if parse_version(yml_content.get('toversion', '99.99.99')) < parse_version(new_to_version) or \
             parse_version(yml_content.get('fromversion', '0.0.0')) >= parse_version(new_to_version):
         return False
 
@@ -23,7 +22,7 @@ def should_keep_yml_file(yml_content, new_to_version):
 
 
 def should_keep_json_file(json_content, new_to_version):
-    if parse_version(json_content.get('toVersion', '99.99.99')) <= parse_version(new_to_version) or \
+    if parse_version(json_content.get('toVersion', '99.99.99')) < parse_version(new_to_version) or \
             parse_version(json_content.get('fromVersion', '0.0.0')) >= parse_version(new_to_version):
         return False
 
@@ -224,7 +223,7 @@ def edit_reputations_json(new_to_version):
             reputation['toVersion'] = new_to_version
 
     with open(rep_json_path, 'w') as f:
-        json.dump(rep_content, f, indent=4)
+        ujson.dump(rep_content, f, indent=4, ensure_ascii=True)
 
 
 def main():
