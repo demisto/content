@@ -76,7 +76,7 @@ def main():
     remove_test_playbooks = upload_config.remove_test_playbooks
 
     storage_client = init_storage_client(service_account)
-    private_testing_bucket_client = storage_client.bucket(GCPConfig.PRODUCTION_PRIVATE_CI_BUCKET)
+    private_testing_bucket_client = storage_client.bucket(GCPConfig.CI_PRIVATE_BUCKET)
     public_prod_bucket_client = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
 
     extract_packs_artifacts(path_to_artifacts, extract_destination_path)

@@ -37,7 +37,7 @@ class GCPConfig(object):
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     PRODUCTION_BUCKET = "marketplace-dist"
     PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
-    PRODUCTION_PRIVATE_CI_BUCKET = "marketplace-ci-build-private"
+    CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
@@ -522,7 +522,6 @@ class Pack(object):
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         if pack_metadata['price'] > 0:
-            print_error(f"Price is bigger than 0. User metadata is: {user_metadata}")
             pack_metadata['premium'] = True
             pack_metadata['previewOnly'] = True
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
@@ -669,9 +668,6 @@ class Pack(object):
             if signature_string:
                 with open("keyfile", "wb") as keyfile:
                     keyfile.write(signature_string.encode())
-                print_error(f'pack path is: {self._pack_path}')
-                print_error(f'pwd result is: {subprocess.check_output("pwd")}')
-                print_error(f'ls result is: {subprocess.check_output("ls")}')
                 arg = f'./signDirectory {self._pack_path} keyfile base64'
                 signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 output, err = signing_process.communicate()
@@ -690,15 +686,11 @@ class Pack(object):
             return task_status
 
     def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
-        # The path below is custom made for the private repo's build.
-        # path_to_directory = self._pack_path
+
         shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
         os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
         current_working_dir = os.getcwd()
         os.chdir(extract_destination_path)
-        subprocess.call('chmod +x ./encryptor', shell=True)
-        print_error(f'ls result is: {subprocess.check_output("ls")}')
-        # zip_and_encrypt_script_path = os.path.join(extract_destination_path, 'zipAndEncryptDirectory')
         output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
         full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
         subprocess.call(full_command, shell=True)
@@ -1185,7 +1177,6 @@ class Pack(object):
                                                            downloads_count=self.downloads_count,
                                                            is_feed_pack=self._is_feed)
 
-            print_error(f"formatted pack metadata is: {formatted_metadata}")
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
 

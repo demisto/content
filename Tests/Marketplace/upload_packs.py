@@ -628,7 +628,7 @@ def check_if_index_is_updated(index_folder_path, content_repo, current_commit_ha
 
 def should_upload_core_packs(storage_bucket_name):
     is_private_storage_bucket = (storage_bucket_name != GCPConfig.PRODUCTION_PRIVATE_BUCKET)
-    is_private_ci_bucket = (storage_bucket_name != GCPConfig.PRODUCTION_PRIVATE_CI_BUCKET)
+    is_private_ci_bucket = (storage_bucket_name != GCPConfig.CI_PRIVATE_BUCKET)
     return not (is_private_storage_bucket or is_private_ci_bucket)
 
 
