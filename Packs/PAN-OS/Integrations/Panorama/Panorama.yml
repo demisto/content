@@ -4220,6 +4220,35 @@ script:
     - contextPath: Panorama.WildFire.Schedule.Recurring
       description: WildFire schedule recurring.
       type: String
+  - deprecated: false
+    description: Show URL Filtering best practices.
+    execution: false
+    name: panorama-get-url-filtering-best-practice
+    outputs:
+    - contextPath: Panorama.URLFilter.Category.Action
+      description: The action to perform on the category.
+      type: String
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: Category name.
+      type: String
+    - contextPath: Panorama.URLFilter.DeviceGroup
+      description: Device group name.
+      type: String
+    - contextPath: Panorama.URLFilter.Name
+      description: Profile name.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-container-page-only
+      description: Log container page only.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-http-hdr-referer
+      description: Log HTTP header referer.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-http-hdr-user
+      description: Log HTTP header user.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-http-hdr-xff
+      description: Log HTTP header xff.
+      type: String
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false

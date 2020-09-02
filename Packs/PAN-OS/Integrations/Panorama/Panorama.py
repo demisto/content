@@ -2346,28 +2346,47 @@ def prettify_get_url_filter(url_filter):
         pretty_url_filter['Description'] = url_filter['description']
 
     pretty_url_filter['Category'] = []
-    url_category_list: List[str] = []
-    action: str
-    if 'alert' in url_filter:
-        url_category_list = url_filter['alert']['member']
-        action = 'alert'
-    elif 'allow' in url_filter:
-        url_category_list = url_filter['allow']['member']
-        action = 'allow'
-    elif 'block' in url_filter:
-        url_category_list = url_filter['block']['member']
-        action = 'block'
-    elif 'continue' in url_filter:
-        url_category_list = url_filter['continue']['member']
-        action = 'continue'
-    elif 'override' in url_filter:
-        url_category_list = url_filter['override']['member']
-        action = 'override'
+    alert_category_list = []
+    block_category_list = []
+    allow_category_list = []
+    continue_category_list = []
+    override_category_list = []
 
-    for category in url_category_list:
+    if 'alert' in url_filter:
+        alert_category_list = url_filter['alert']['member']
+    if 'block' in url_filter:
+        block_category_list = url_filter['block']['member']
+    if 'allow' in url_filter:
+        allow_category_list = url_filter['allow']['member']
+    if 'continue' in url_filter:
+        continue_category_list = url_filter['continue']['member']
+    if 'override' in url_filter:
+        override_category_list = url_filter['override']['member']
+
+    for category in alert_category_list:
         pretty_url_filter['Category'].append({
             'Name': category,
-            'Action': action
+            'Action': 'alert'
+        })
+    for category in block_category_list:
+        pretty_url_filter['Category'].append({
+            'Name': category,
+            'Action': 'block'
+        })
+    for category in allow_category_list:
+        pretty_url_filter['Category'].append({
+            'Name': category,
+            'Action': 'block'
+        })
+    for category in continue_category_list:
+        pretty_url_filter['Category'].append({
+            'Name': category,
+            'Action': 'block'
+        })
+    for category in override_category_list:
+        pretty_url_filter['Category'].append({
+            'Name': category,
+            'Action': 'block'
         })
 
     if 'allow-list' in url_filter or 'block-list' in url_filter:
@@ -6220,6 +6239,70 @@ def url_filtering_block_default_categories_command():
         demisto.results(result['response']['msg'])
 
 
+def get_url_filtering_best_practice_command():
+
+    best_practice = {
+        '@name': 'best-practice', 'credential-enforcement': {
+            'mode': {'disabled': None},
+            'log-severity': 'medium',
+            'alert': {
+                'member': [
+                    'abortion', 'abused-drugs', 'adult', 'alcohol-and-tobacco', 'auctions', 'business-and-economy',
+                    'computer-and-internet-info', 'content-delivery-networks', 'cryptocurrency', 'dating',
+                    'educational-institutions', 'entertainment-and-arts', 'financial-services', 'gambling', 'games',
+                    'government', 'grayware', 'health-and-medicine', 'high-risk', 'home-and-garden',
+                    'hunting-and-fishing', 'insufficient-content', 'internet-communications-and-telephony',
+                    'internet-portals', 'job-search', 'legal', 'low-risk', 'medium-risk', 'military', 'motor-vehicles',
+                    'music', 'newly-registered-domain', 'news', 'not-resolved', 'nudity', 'online-storage-and-backup',
+                    'peer-to-peer', 'personal-sites-and-blogs', 'philosophy-and-political-advocacy',
+                    'private-ip-addresses', 'questionable', 'real-estate', 'recreation-and-hobbies',
+                    'reference-and-research', 'religion', 'search-engines', 'sex-education', 'shareware-and-freeware',
+                    'shopping', 'social-networking', 'society', 'sports', 'stock-advice-and-tools', 'streaming-media',
+                    'swimsuits-and-intimate-apparel', 'training-and-tools', 'translation', 'travel', 'weapons',
+                    'web-advertisements', 'web-based-email', 'web-hosting']},
+            'block': {'member': ['command-and-control', 'copyright-infringement', 'dynamic-dns', 'extremism',
+                                 'hacking', 'malware', 'parked', 'phishing', 'proxy-avoidance-and-anonymizers',
+                                 'unknown']}},
+        'alert': {'member': ['abortion', 'abused-drugs', 'adult', 'alcohol-and-tobacco', 'auctions',
+                             'business-and-economy', 'computer-and-internet-info', 'content-delivery-networks',
+                             'cryptocurrency', 'dating', 'educational-institutions', 'entertainment-and-arts',
+                             'financial-services', 'gambling', 'games', 'government', 'grayware', 'health-and-medicine',
+                             'high-risk', 'home-and-garden', 'hunting-and-fishing', 'insufficient-content',
+                             'internet-communications-and-telephony', 'internet-portals', 'job-search', 'legal',
+                             'low-risk', 'medium-risk', 'military', 'motor-vehicles', 'music',
+                             'newly-registered-domain', 'news', 'not-resolved', 'nudity', 'online-storage-and-backup',
+                             'peer-to-peer', 'personal-sites-and-blogs', 'philosophy-and-political-advocacy',
+                             'private-ip-addresses', 'questionable', 'real-estate', 'recreation-and-hobbies',
+                             'reference-and-research', 'religion', 'search-engines', 'sex-education',
+                             'shareware-and-freeware', 'shopping', 'social-networking', 'society', 'sports',
+                             'stock-advice-and-tools', 'streaming-media', 'swimsuits-and-intimate-apparel',
+                             'training-and-tools', 'translation', 'travel', 'weapons', 'web-advertisements',
+                             'web-based-email', 'web-hosting']},
+        'block': {'member': ['command-and-control', 'copyright-infringement', 'dynamic-dns', 'extremism', 'hacking',
+                             'malware', 'parked', 'phishing', 'proxy-avoidance-and-anonymizers', 'unknown']}}
+
+    headers_best_practice = {
+        'log-http-hdr-xff': 'yes',
+        'log-http-hdr-user': 'yes',
+        'log-http-hdr-referer': 'yes',
+        'log-container-page-only': 'no'
+    }
+    rules = prettify_get_url_filter(best_practice)
+    human_readbale = tableToMarkdown('URL Filtering Best Practice Profile Categories', rules)
+    human_readbale += tableToMarkdown('Best Practice Headers', headers_best_practice)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': best_practice,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readbale,
+        'EntryContext': {
+            "Panorama.URLFilter": rules,
+            "Panorama.URLFilter.Header": headers_best_practice
+        }
+    })
+
+
 def main():
     LOG(f'Command being called is: {demisto.command()}')
 
@@ -6534,6 +6617,9 @@ def main():
 
         elif demisto.command() == 'panorama-get-vulnerability-protection-best-practice':
             get_vulnerability_protection_best_practice_command()
+
+        elif demisto.command() == 'panorama-get-url-filtering-best-practice':
+            get_url_filtering_best_practice_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
