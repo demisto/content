@@ -321,6 +321,16 @@ references:
                 USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
                 python3 ./Utils/get_contrib_pack.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USER
+
+  notify_contrib_pr: &notify_contrib_pr
+    when:
+      condition: << pipeline.parameters.contrib_branch >>
+      steps:
+        - run:
+            name: Comment on the contribution Pull Request
+            when: always
+            command: |
+              python3 ./Utils/notify_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Link: $SERVER_URL"
 jobs:
   Setup Environment:
     <<: *container_config
@@ -729,6 +739,7 @@ jobs:
                       echo "Not AMI run, can't run on this version"
                       exit 0
                   fi
+            - *notify_contrib_pr
             - *destroy_instances
             - *store_artifacts
   Server 6_0:
