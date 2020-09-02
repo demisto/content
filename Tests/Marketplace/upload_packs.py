@@ -104,7 +104,6 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
     """
     index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
-    print_error(f"index_storage_path is: {index_storage_path}, download_index_path is: {download_index_path}")
 
     index_blob = storage_bucket.blob(index_storage_path)
     index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
@@ -316,8 +315,6 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
     """
     core_packs_public_urls = []
     found_core_packs = set()
-    print_error(
-        f'storage_bucket is:{storage_bucket}, build_number is:{build_number}, index_folder_path is:{index_folder_path}')
     for pack in os.scandir(index_folder_path):
         print_error(f'current pack is:{pack.name}')
         if pack.is_dir() and pack.name in GCPConfig.CORE_PACKS_LIST:
@@ -411,7 +408,6 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"), "r") as metadata_file:
                     metadata = json.load(metadata_file)
             if metadata:
-                print_error(f"private pack {metadata.get('id')} metadata is: {metadata}")
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
                     'price': metadata.get('price'),
@@ -457,7 +453,6 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
         private_index_path, private_index_blob, _ = download_and_extract_index(private_storage_bucket,
                                                                                os.path.join(extract_destination_path,
                                                                                             'private'))
-        print_error(f"ls: {subprocess.check_output('ls')}")
 
         private_packs = get_private_packs(private_index_path, pack_names, is_private_build, extract_destination_path)
         add_private_packs_to_index(index_folder_path, private_index_path)
@@ -465,7 +460,6 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
     except Exception as e:
         print_error(f'Could not add private packs to the index: {str(e)}')
     finally:
-        # if private_index_path:
         shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
         return private_packs, private_index_path, private_index_blob
 
@@ -765,7 +759,6 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
         pack.cleanup()
         return
 
-    print_error(f"user metadata sent to format_metadata is: {user_metadata}")
     task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                        integration_images=integration_images, author_image=author_image,
                                        index_folder_path=index_folder_path,
@@ -955,7 +948,6 @@ def main():
                                                                                                index_folder_path,
                                                                                                pack_names,
                                                                                                is_private_build)
-        print_error(f"private packs are: {private_packs}")
     else:  # skipping private packs
         print("Skipping index update of priced packs")
         private_packs = []
