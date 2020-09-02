@@ -62,11 +62,7 @@ class Client(BaseClient):
                                'creationdate': actor.get('created_date'),
                                'updateddate': actor.get('last_modified_date'),
                                'geocountry': actor.get('origins'),
-                               'region': actor.get('region'),
-
-                               'actor_capability': actor.get('capability'),
-                               'actor_target_country': actor.get('target_countries'),
-                               'actor_target_industry': actor.get('target_industries')}
+                               'region': actor.get('region')}
                 }
                 indicator['rawJSON'].update(actor)
             parsed_indicators.append(indicator)
