@@ -207,6 +207,7 @@ def test_fetch_incidents(mocker, requests_mock):
     expected_output = load_test_data('test_data/fetch_incidents_response.json')
 
     next_run, response = fetch_incidents(client, None, gql_client)
+    print(response)
     assert expected_output == response
     assert next_run['Tenant 1']['time'] == '1591374031591'
 
