@@ -27,11 +27,11 @@ subtype: python3
 system: false
 tags:
 - email
-- ' preProcessing'
+- preProcessing
 timeout: '0'
 type: python
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.8.5.10845
-
+runas: DBotRole

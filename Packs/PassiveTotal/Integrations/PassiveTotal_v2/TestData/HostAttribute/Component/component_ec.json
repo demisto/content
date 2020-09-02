@@ -1,0 +1,22 @@
+{
+  "successDomain": [
+    {
+      "firstSeen": "2019-12-10 06:06:19", 
+      "lastSeen": "2020-06-02 06:05:05", 
+      "version": "2.0", 
+      "category": "dummy category", 
+      "label": "dummy label", 
+      "hostname": "dummy hostname"
+    }
+  ],
+  "successIP": [
+    {
+      "firstSeen": "2019-12-10 06:06:19", 
+      "lastSeen": "2020-06-02 06:05:05", 
+      "version": "2.0", 
+      "category": "dummy category",
+      "label": "dummy label", 
+      "address": "dummy ip"
+    }
+  ]
+}
