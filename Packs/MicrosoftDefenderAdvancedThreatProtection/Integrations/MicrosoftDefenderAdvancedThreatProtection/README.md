@@ -121,7 +121,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 31. microsoft-atp-get-user-machines
 32. microsoft-atp-add-remove-machine-tag
 33. microsoft-atp-list-indicators
-34. microsoft-atp-get-indicator-by-id
+34. microsoft-atp-indicator-get-by-id
 35. microsoft-atp-network-indicator-create
 36. microsoft-atp-file-indicator-create
 37. microsoft-atp-indicator-update
@@ -2749,14 +2749,14 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 >|---|---|---|---|
 >| 16 | block | 2 | jacoviya.net |
 
-### microsoft-atp-get-indicator-by-id
+### microsoft-atp-indicator-get-by-id
 ***
 Gets an indicator by its ID.
 
 
 #### Base Command
 
-`microsoft-atp-get-indicator-by-id`
+`microsoft-atp-indicator-get-by-id`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2826,7 +2826,7 @@ Gets an indicator by its ID.
 | MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
 
 #### Command Example
-```!microsoft-atp-get-indicator-by-id indicator_id=17```
+```!microsoft-atp-indicator-get-by-id indicator_id=17```
 
 #### Context Example
 ```
