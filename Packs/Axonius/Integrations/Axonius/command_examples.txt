@@ -1,0 +1,2 @@
+!axonius-get-devices-by-savedquery saved_query_name=example_query
+!axonius-get-users-by-savedquery saved_query_name=example_query
