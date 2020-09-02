@@ -17,8 +17,7 @@ def upload_git_snapshot(git_snapshot_path, pack_name, branch_name, pack_version,
     try:
         git_snapshot_name = f'org-{git_org}_repo-{repo_name}_branch-{branch_name}_version-{pack_version}.zip'
         git_snapshot_storage_path = os.path.join('backup', pack_name, pack_version, git_snapshot_name)
-        print_error(f'git_snapshot_storage_path is: {git_snapshot_storage_path}')
-        print_error(f'git_snapshot_path is: {git_snapshot_path}')
+
         git_snapshot_blob = storage_bucket.blob(git_snapshot_storage_path)
 
         with open(git_snapshot_path, "rb") as git_snapshot:
