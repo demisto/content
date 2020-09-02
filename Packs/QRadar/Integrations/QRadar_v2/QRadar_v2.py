@@ -263,7 +263,7 @@ class QRadarClient:
         # If encountered error, send_request will return_error
         return "ok"
 
-    def get_offenses(self, _range, _filter="", _fields=""):
+    def get_offenses(self, _range=None, _filter=None, _fields=None):
         """
         Returns the result of an offenses request
         """
@@ -287,12 +287,12 @@ class QRadarClient:
             params["fields"] = _fields
         return self.send_request("GET", full_url, headers, params)
 
-    def update_offense(self, offense_id):
+    def update_offense(self, offense_id, args):
         """
         Updates a single offense and returns the updated offense
         """
         url = f"{self._server}/api/siem/offenses/{offense_id}"
-        return self.send_request("POST", url, params=demisto.args())
+        return self.send_request("POST", url, params=args)
 
     def search(self, args):
         """
@@ -308,7 +308,7 @@ class QRadarClient:
         url = f"{self._server}/api/ariel/searches/{search_id}"
         return self.send_request("GET", url, self._auth_headers)
 
-    def get_search_results(self, search_id, _range=""):
+    def get_search_results(self, search_id, _range=None):
         """
         Returns a search result
         """
@@ -318,7 +318,7 @@ class QRadarClient:
             headers["Range"] = "items={0}".format(_range)
         return self.send_request("GET", url, headers)
 
-    def get_assets(self, _range="", _filter="", _fields=""):
+    def get_assets(self, _range=None, _filter=None, _fields=None):
         """
         Returns the result of an assets request
         """
@@ -365,7 +365,7 @@ class QRadarClient:
             return self.send_request("GET", url)
         return {}
 
-    def get_note(self, offense_id, note_id, fields):
+    def get_note(self, offense_id, note_id=None, fields=None):
         """
         Returns the result of a get note request
         """
@@ -376,7 +376,7 @@ class QRadarClient:
         params = {"fields": fields} if fields else {}
         return self.send_request("GET", url, self._auth_headers, params=params)
 
-    def create_note(self, offense_id, note_text, fields):
+    def create_note(self, offense_id, note_text, fields=None):
         """
         Creates a note and returns the note as a result
         """
@@ -385,7 +385,7 @@ class QRadarClient:
         params["note_text"] = note_text
         return self.send_request("POST", url, self._auth_headers, params=params)
 
-    def get_ref_set(self, ref_name, _range="", _filter="", _fields=""):
+    def get_ref_set(self, ref_name, _range=None, _filter=None, _fields=None):
         """
         Returns the result of a reference request
         """
@@ -398,7 +398,7 @@ class QRadarClient:
             headers["Range"] = "items={0}".format(_range)
         return self.send_request("GET", url, headers, params=params)
 
-    def create_reference_set(self, ref_name, element_type, timeout_type, time_to_live):
+    def create_reference_set(self, ref_name, element_type, timeout_type=None, time_to_live=None):
         """
         Create or update a reference set
         """
@@ -435,7 +435,7 @@ class QRadarClient:
         params = {"name": ref_name, "value": value}
         return self.send_request("DELETE", url, params=params)
 
-    def get_devices(self, _range="", _filter="", _fields=""):
+    def get_devices(self, _range=None, _filter=None, _fields=None):
         """
         Get devices
         """
@@ -448,7 +448,7 @@ class QRadarClient:
             headers["Range"] = "items={0}".format(_range)
         return self.send_request("GET", url, headers, params=params)
 
-    def get_domains_by_id(self, domain_id, _fields=""):
+    def get_domains_by_id(self, domain_id, _fields=None):
         """
         Get domains by id
         """
@@ -825,7 +825,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich
 
 def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
     """
-    Look for offenses in QRadar using the startIncrease the search window until
+    Look for offenses in QRadar using an increasing search window until a fetchable offense is found
     """
     raw_offenses = []
     fetch_query = ""
@@ -912,6 +912,7 @@ def fetch_incidents_long_running_events(
             )
         for future in concurrent.futures.as_completed(futures):
             enriched_offenses.append(future.result())
+        # force thread clear
         executor._threads.clear()
     concurrent.futures.thread._threads_queues.clear()
 
@@ -1063,8 +1064,7 @@ def enrich_offense_res_with_source_and_destination_address(
     Enriches offense result dictionary with source and destination addresses
     """
     src_adrs, dst_adrs = extract_source_and_destination_addresses_ids(response)
-    # This command might encounter HTML error page in certain cases instead of JSON result. Fallback: cancel the
-    # enrichment
+    # This command might encounter HTML error page in certain cases instead of JSON result. Fallback: cancel operation
     try:
         if src_adrs:
             client.enrich_source_addresses_dict(src_adrs)
@@ -1137,8 +1137,10 @@ def enrich_single_offense_res_with_source_and_destination_address(
     return None
 
 
-# helper function: For a single offense replaces the epoch times with ISO string
 def enrich_offense_times(offense):
+    """
+    Replaces the epoch times with ISO string
+    """
     if "start_time" in offense:
         offense["start_time"] = epoch_to_iso(offense["start_time"])
     if "last_updated_time" in offense:
@@ -1168,9 +1170,17 @@ def get_offense_by_id_command(
 
 
 def update_offense_command(
-    client: QRadarClient, offense_id=None, closing_reason_name=None
+    client: QRadarClient, offense_id=None, closing_reason_name=None, closing_reason_id=None, protected=None, assigned_to=None, follow_up=None, status=None, fields=None
 ):
-    args = demisto.args()
+    args = assign_params(
+        closing_reason_name=closing_reason_name,
+        closing_reason_id=closing_reason_id,
+        protected=protected,
+        assigned_to=assigned_to,
+        follow_up=follow_up,
+        status=status,
+        fields=fields
+    )
     if "closing_reason_name" in args:
         args["closing_reason_id"] = client.convert_closing_reason_name_to_id(
             closing_reason_name
@@ -1180,7 +1190,7 @@ def update_offense_command(
             'Invalid input - must provide closing reason name or id (may use "qradar-get-closing-reasons" command to '
             "get them) to close offense"
         )
-    raw_offense = client.update_offense(offense_id)
+    raw_offense = client.update_offense(offense_id, args)
     offense = deepcopy(raw_offense)
     enrich_offense_result(client, offense, full_enrichment=True)
     offense = filter_dict_non_intersection_key_to_value(
@@ -1245,7 +1255,7 @@ def get_search_results_command(client: QRadarClient, search_id=None, range=None)
     )
 
 
-def get_assets_command(client: QRadarClient, range, filter, fields):
+def get_assets_command(client: QRadarClient, range=None, filter=None, fields=None):
     raw_assets = client.get_assets(range, filter, fields)
     assets_result, human_readable_res = create_assets_result(deepcopy(raw_assets))
     return get_entry_for_assets(
@@ -1272,8 +1282,10 @@ def get_asset_by_id_command(client: QRadarClient, asset_id=None):
     )
 
 
-# Specific implementation for assets commands, that turns asset result to entryObject
 def get_entry_for_assets(title, obj, contents, human_readable_obj, headers=None):
+    """
+    Specific implementation for assets commands, that turns asset result to entryObject
+    """
     if len(obj) == 0:
         return "There is no output result"
     obj = filter_dict_null(obj)
@@ -1345,7 +1357,8 @@ def create_single_asset_result_and_enrich_endpoint_dict(
     if full_values:
         if "domain_id" in asset:
             domain_name = get_domain_name(asset.get("domain_id"))
-            endpoint_dict.get("Domain").append(domain_name)
+            if domain_name:
+                endpoint_dict.get("Domain").append(domain_name)
     # Adding values found in properties of the asset
     enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values)
     return asset_dict
@@ -1391,20 +1404,14 @@ def get_domain_name(client: QRadarClient, domain_id=None):
             "query_expression": f"SELECT DOMAINNAME({domain_id}) AS 'Domain name' FROM events GROUP BY 'Domain name'"
         }
         search_id = client.search(query_param)["search_id"]
+        time.sleep(5)
         return (
             client.get_search_results(search_id)
             .get("events", [{}])[0]
             .get("Domain name")
         )
     except Exception as e:
-        demisto.results(
-            {
-                "Type": 11,
-                "Contents": "No Domain name was found.{error}".format(error=str(e)),
-                "ContentsFormat": formats["text"],
-            }
-        )
-        return domain_id
+        return None
 
 
 def get_closing_reasons_command(

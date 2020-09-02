@@ -73,7 +73,7 @@ configuration:
   required: false
   type: 12
 description: Fetch offenses as incidents and search QRadar
-display: IBM QRadar V2
+display: IBM QRadar v2
 name: QRadar_v2
 script:
   commands:
@@ -412,12 +412,6 @@ script:
       description: A user to assign the offense to
       isArray: false
       name: assigned_to
-      required: false
-      secret: false
-    - default: false
-      description: Table headers
-      isArray: false
-      name: headers
       required: false
       secret: false
     - default: false
