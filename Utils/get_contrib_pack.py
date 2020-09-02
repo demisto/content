@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import os
+import shutil
 import sys
 
 import requests
@@ -40,10 +41,15 @@ def main():
 
     pack_dir = f'Packs/{pack_dir_name}'
     print(f'Copy the changes from the contributor branch {user}/{branch} in the pack {pack_dir_name}')
-    os.remove(pack_dir)
-    run_command(f'git remote add {user} git@github.com:{user}/content.git')
-    run_command(f'git fetch {user} {branch}')
-    run_command(f'git checkout {user}/{branch} {pack_dir}')
+
+    try:
+        shutil.rmtree(pack_dir)
+        run_command(f'git remote add {user} git@github.com:{user}/content.git')
+        run_command(f'git fetch {user} {branch}')
+        run_command(f'git checkout {user}/{branch} {pack_dir}')
+    except Exception as e:
+        print_error(f'Failed to deploy contributed pack to base branch: {e}')
+        sys.exit(1)
 
     print_success(f'Successfully updated the base branch with the contrib pack {pack_dir_name}')
 
