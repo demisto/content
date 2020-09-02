@@ -73,6 +73,7 @@ The integration can fetch events and cases.
 
 - When first turned on, the integration fetches all events/cases from the query viewer.
 - The fetched incidents are later filtered by timestamp (start time/create time).
+- In case of slowness, timeouts or crashes try reducing the max fetch parameter.
 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of automation, or in a playbook.
