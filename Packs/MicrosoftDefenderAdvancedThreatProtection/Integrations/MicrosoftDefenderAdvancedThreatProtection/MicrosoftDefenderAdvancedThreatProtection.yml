@@ -2491,7 +2491,7 @@ script:
     deprecated: false
     description: Gets an indicator by its ID.
     execution: false
-    name: microsoft-atp-get-indicator-by-id
+    name: microsoft-atp-indicator-get-by-id
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
       type: String

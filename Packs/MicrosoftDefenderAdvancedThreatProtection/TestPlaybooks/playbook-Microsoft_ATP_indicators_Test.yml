@@ -103,7 +103,7 @@ tasks:
       version: -1
       name: Get indicators by ID
       description: Gets an indicator by its ID.
-      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-get-indicator-by-id
+      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-indicator-get-by-id
       type: regular
       iscommand: true
       brand: Microsoft Defender Advanced Threat Protection
