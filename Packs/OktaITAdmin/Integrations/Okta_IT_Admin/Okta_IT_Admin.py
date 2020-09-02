@@ -361,14 +361,14 @@ def send_email(subject, body=''):
 
     # Send email if smtp details are configured
     if smtp_server_host and smtp_server_port and from_email and to_email:
-        SERVER = SMTP(smtp_server_host, int(smtp_server_port), local_hostname=smtp_server_host)
-        SERVER.ehlo()
+        smtp_client = SMTP(smtp_server_host, int(smtp_server_port), local_hostname=smtp_server_host)
+        smtp_client.ehlo()
         msg = MIMEText(body)
         msg['Subject'] = subject
         msg['From'] = from_email
         msg['To'] = to_email
-        SERVER.sendmail(from_email, to_email.split(','), msg.as_string())
-        SERVER.quit()
+        smtp_client.sendmail(from_email, to_email.split(','), msg.as_string())
+        smtp_client.quit()
 
 
 '''COMMAND FUNCTIONS'''
