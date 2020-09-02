@@ -3591,9 +3591,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 text = get_utf_string(part.get_payload(decode=True), 'TEXT')
         email_data = None
         # if we are parsing a signed attachment there can be one of two options:
-        # 1. it is a wrapper and we can ignore the outer "email"
-        # 2. it is not a wrapper and will not get into recursion, therefore we need the second condition
-
+        # 1. it is 'multipart/signed' so it is probably a wrapper and we can ignore the outer "email"
+        # 2. if it is 'multipart/signed' but has 'to' address so it is actually a real mail.
         if 'multipart/signed' not in eml.get_content_type()\
                 or ('multipart/signed' in eml.get_content_type() and extract_address_eml(eml, 'to')):
             email_data = {
