@@ -1,16 +1,7 @@
-import json
 import os
-import sys
 import argparse
-import shutil
-import uuid
-import prettytable
-import glob
-from datetime import datetime
-from zipfile import ZipFile
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata
-from demisto_sdk.commands.common.tools import run_command, print_error, print_warning, print_color, LOG_COLORS, str2bool
+from Tests.Marketplace.marketplace_services import init_storage_client
+from demisto_sdk.commands.common.tools import print_error
 
 
 def upload_git_snapshot(git_snapshot_path, pack_name, branch_name, pack_version, storage_bucket, repo_name, git_org):

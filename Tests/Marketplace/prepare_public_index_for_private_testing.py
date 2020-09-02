@@ -1,5 +1,4 @@
-from Tests.Marketplace.upload_packs import download_and_extract_index, upload_index_to_storage, \
-    update_index_with_priced_packs
+from Tests.Marketplace.upload_packs import download_and_extract_index, update_index_with_priced_packs
 from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
 import os
 import sys

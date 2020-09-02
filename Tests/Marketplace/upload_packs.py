@@ -5,7 +5,6 @@ import argparse
 import shutil
 import uuid
 import prettytable
-import subprocess
 import glob
 import git
 import requests

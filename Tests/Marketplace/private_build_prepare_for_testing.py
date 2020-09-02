@@ -1,8 +1,7 @@
 import argparse
-import sys
 import os
 from Tests.Marketplace.marketplace_services import GCPConfig, init_storage_client, Pack
-from Tests.Marketplace.upload_packs import download_and_extract_index, extract_packs_artifacts
+from Tests.Marketplace.upload_packs import extract_packs_artifacts
 from demisto_sdk.commands.common.tools import str2bool
 
 
