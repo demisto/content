@@ -81,10 +81,20 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
 
-    def http_request(self, *args, resp_type='json', headers=None, return_empty_response=False, scope=None, **kwargs):
+    def http_request(
+            self,
+            *args, resp_type='json', headers: Optional[Dict] = None,
+            return_empty_response: bool = False, scope: Optional[str] = None,
+            **kwargs
+    ):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
+        Args:
+            resp_type: Type of response to return. will be ignored if `return_empty_response` is True.
+            headers: Headers to add to the request.
+            return_empty_response: Return the response itself if the return_code is 206.
+            scope: A scope to request. Currently will work only with self-deployed app.
         Returns:
             Response from api according to resp_type. The default is `json` (dict or list).
         """
@@ -168,10 +178,11 @@ class MicrosoftClient(BaseClient):
         demisto.setIntegrationContext(integration_context)
         return access_token
 
-    def _oproxy_authorize(self, scope=None) -> Tuple[str, int, str]:
+    def _oproxy_authorize(self, scope: Optional[str] = None) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing with oproxy.
-
+        Args:
+            scope: A scope to add to the request. Do not use it.
         Returns:
             tuple: An access token, its expiry and refresh token.
         """
@@ -231,6 +242,9 @@ class MicrosoftClient(BaseClient):
     def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application in client credentials grant type.
+
+        Args:
+            scope; A scope to add to the headers. Else will get self.scope.
 
         Returns:
             tuple: An access token and its expiry.
