@@ -1076,10 +1076,6 @@ def manage_tests(tests_settings):
         tests_failed_msg = "Some tests have failed. Not destroying instances."
         print(tests_failed_msg)
         sys.exit(1)
-    else:
-        file_path = "./Tests/is_build_passed_{}.txt".format(tests_settings.serverVersion.replace(' ', ''))
-        with open(file_path, "w") as is_build_passed_file:
-            is_build_passed_file.write('Build passed')
 
 
 def add_pr_comment(comment):
