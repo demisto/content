@@ -46,7 +46,7 @@ def main():
         shutil.rmtree(pack_dir)
         commands = [
             f'git remote add {user} git@github.com:{user}/content.git',
-            f'git fetch {user} {branch}'
+            f'git fetch {user} {branch}',
             f'git checkout {user}/{branch} {pack_dir}'
         ]
 
