@@ -291,7 +291,8 @@ def file_command(client: Client, file: str) -> Tuple[str, Dict, Union[Dict, list
         if raw_response_analysis and raw_response_general:
             raws.append(raw_response_analysis)
             raws.append(raw_response_general)
-            shortcut = raw_response_analysis.get('analysis', {}).get('info', {}).get('results', {})
+            analysis = raw_response_analysis.get('analysis')
+            shortcut = analysis.get('info', {}).get('results', {}) if analysis else {}
             file_ec.append({
                 'MD5': shortcut.get('md5'),
                 'SHA1': shortcut.get('sha1'),
@@ -663,5 +664,7 @@ def main():
         return_error(err_msg, error=e)
 
 
-if __name__ == 'builtins':
+# if __name__ == 'builtins':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+
     main()
