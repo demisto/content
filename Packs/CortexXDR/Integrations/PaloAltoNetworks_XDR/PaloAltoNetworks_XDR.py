@@ -1768,8 +1768,8 @@ def get_remote_data_command(client, args):
                                                                  "alerts_limit": 1000})[2].get('incident')
 
         incident_data['id'] = incident_data.get('incident_id')
-        current_modified_time = int(incident_data.get('modification_time'))
-        demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"
+        current_modified_time = int(str(incident_data.get('modification_time')))
+        demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"  # type:ignore
                       f"modified time: {int(incident_data.get('modification_time'))}\n"
                       f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
 
