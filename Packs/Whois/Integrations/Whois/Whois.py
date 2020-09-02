@@ -8,7 +8,7 @@ from codecs import encode, decode
 import socks
 import errno
 
-ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', False) else entryTypes['warning']
+SHOULD_ERROR = demisto.params().get('with_error', False)
 
 # flake8: noqa
 
@@ -7235,13 +7235,12 @@ def get_root_server(domain):
                     }
                 },
             })
-            demisto.results({
-                'ContentsFormat': 'text',
-                'Type': ENTRY_TYPE,
-                'Contents': 'The domain - {} - is not supported by the Whois service'.format(domain),
-                'EntryContext': context
-            })
-            sys.exit(-1)
+            if SHOULD_ERROR:
+                return_error('The domain - {} - is not supported by the Whois service'.format(domain),
+                             outputs=context)
+            else:
+                return_warning('The domain - {} - is not supported by the Whois service'.format(domain),
+                               exit=True, outputs=context)
 
         return host
 
@@ -7263,15 +7262,11 @@ def whois_request(domain, server, port=43):
             },
         })
 
-        demisto.results(
-            {
-                'ContentsFormat': 'text',
-                'Type': ENTRY_TYPE,
-                'Contents': "Whois returned - Couldn't connect with the socket-server: {}".format(msg),
-                'EntryContext': context
-            }
-        )
-        sys.exit(-1)
+        if SHOULD_ERROR:
+            return_error("Whois returned - Couldn't connect with the socket-server: {}".format(msg), outputs=context)
+        else:
+            return_warning("Whois returned - Couldn't connect with the socket-server: {}".format(msg),
+                           exit=True, outputs=context)
 
     else:
         sock.send(("%s\r\n" % domain).encode("utf-8"))

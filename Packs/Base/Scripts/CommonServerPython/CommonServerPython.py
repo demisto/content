@@ -2731,7 +2731,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     :type outputs: ``dict``
     :param outputs: the outputs that will be returned to playbook/investigation context (originally EntryContext)
 
-    :type raw_response: ``dict`` | ``list``
+    :type raw_response: ``dict`` | ``list`` | ``str``
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
         raw response from the 3rd party service (originally Contents)
 
@@ -2755,7 +2755,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
-        "ContentsFormat": formats["json"],
+        "ContentsFormat": formats["text"] if isinstance(raw_response, STRING_TYPES) else formats['json'],
         "Contents": raw_response,
         "EntryContext": outputs,
         'IgnoreAutoExtract': ignore_auto_extract,
@@ -3861,6 +3861,12 @@ def batch(iterable, batch_size=1):
 
 def dict_safe_get(dict_object, keys, default_return_value=None):
     """Recursive safe get query, If keys found return value otherwise return None or default value.
+    Example:
+    >>> dict = {"something" : {"test": "A"}}
+    >>> dict_safe_get(dict, ['something', 'test'])
+    >>> A
+    >>> dict_safe_get(dict, ['something', 'else'], 'default value')
+    >>> 'default value'
 
     :type dict_object: ``dict``
     :param dict_object: dictionary to query.
@@ -4499,7 +4505,7 @@ class LineWidget(BaseWidget):
         })
 
     def to_display(self):
-        processed_names = []
+        processed_names = []  # type: List[str]
         processed_categories = []  # type: List[dict]
         for cat in self.categories:
             if cat['name'] in processed_names:
