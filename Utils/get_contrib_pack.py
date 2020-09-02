@@ -44,9 +44,15 @@ def main():
 
     try:
         shutil.rmtree(pack_dir)
-        run_command(f'git remote add {user} git@github.com:{user}/content.git')
-        run_command(f'git fetch {user} {branch}')
-        run_command(f'git checkout {user}/{branch} {pack_dir}')
+        commands = [
+            f'git remote add {user} git@github.com:{user}/content.git',
+            f'git fetch {user} {branch}'
+            f'git checkout {user}/{branch} {pack_dir}'
+        ]
+
+        for command in commands:
+            print(f'Running command {command}')
+            run_command(command, is_silenced=False)
     except Exception as e:
         print_error(f'Failed to deploy contributed pack to base branch: {e}')
         sys.exit(1)
