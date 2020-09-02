@@ -7,6 +7,7 @@ import uuid
 import prettytable
 import glob
 import git
+import requests
 from datetime import datetime
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
@@ -447,6 +448,40 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
     return table
 
 
+def build_summary_table_md(packs_input_list, include_pack_status=False):
+    """Build markdown summary table from pack list
+
+    Args:
+        packs_input_list (list): list of Packs
+        include_pack_status (bool): whether pack includes status
+
+    Returns:
+        Markdown table: table with upload result of packs.
+
+    """
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
+
+    table = ['|', '|']
+
+    for key in table_fields:
+        table[0] = f'{table[0]} {key} |'
+        table[1] = f'{table[1]} :- |'
+
+    for index, pack in enumerate(packs_input_list):
+        pack_status_message = PackStatus[pack.status].value if include_pack_status else ''
+
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version]
+
+        row_hr = '|'
+        for _value in row:
+            row_hr = f'{row_hr} {_value}|'
+        table.append(row_hr)
+
+    return '\n'.join(table)
+
+
 def load_json(file_path):
     """ Reads and loads json file.
 
@@ -585,6 +620,22 @@ def print_packs_summary(packs_list):
         print_error(failed_packs_table)
         sys.exit(1)
 
+    # for external pull requests -  when there is no failed packs, add the build summary to the pull request
+    branch_name = os.environ['CIRCLE_BRANCH']
+    if branch_name.startswith('pull/'):
+        successful_packs_table = build_summary_table_md(successful_packs)
+
+        build_num = os.environ['CIRCLE_BUILD_NUM']
+
+        bucket_path = f'https://console.cloud.google.com/storage/browser/' \
+                      f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
+
+        pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
+            f'Uploaded packs:\n{successful_packs_table}\n\n' \
+            f'Browse to the build bucket with this address:\n{bucket_path}'
+
+        add_pr_comment(pr_comment)
+
 
 def option_handler():
     """Validates and parses script arguments.
@@ -626,6 +677,43 @@ def option_handler():
                         help='Should remove test playbooks from content packs or not.', default=True)
     # disable-secrets-detection-end
     return parser.parse_args()
+
+
+def add_pr_comment(comment):
+    """Add comment to the pull request.
+
+    Args:
+        comment (string): The comment text.
+
+    """
+    token = os.environ['CONTENT_GITHUB_TOKEN']
+    branch_name = os.environ['CIRCLE_BRANCH']
+    sha1 = os.environ['CIRCLE_SHA1']
+
+    query = f'?q={sha1}+repo:demisto/content+is:pr+is:open+head:{branch_name}+is:open'
+    url = 'https://api.github.com/search/issues'
+    headers = {'Authorization': 'Bearer ' + token}
+    try:
+        res = requests.get(url + query, headers=headers, verify=False)
+        res = handle_github_response(res)
+        if res and res.get('total_count', 0) == 1:
+            issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
+            if issue_url:
+                res = requests.post(issue_url, json={'body': comment}, headers=headers, verify=False)
+                handle_github_response(res)
+        else:
+            print_warning('Add pull request comment failed: There is more then one open pull request for branch {}.'
+                          .format(branch_name))
+    except Exception as e:
+        print_warning('Add pull request comment failed: {}'.format(e))
+
+
+def handle_github_response(response):
+    res_dict = response.json()
+    if not res_dict.get('ok'):
+        print_warning('Add pull request comment failed: {}'.
+                      format(res_dict.get('message')))
+    return res_dict
 
 
 def main():

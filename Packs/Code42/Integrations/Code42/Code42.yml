@@ -570,7 +570,7 @@ script:
       secret: false
     - default: false
       defaultValue: The email to give to the user.
-      description: The email of the employee to create.
+      description: The email of the user to create.
       isArray: false
       name: email
       required: true
