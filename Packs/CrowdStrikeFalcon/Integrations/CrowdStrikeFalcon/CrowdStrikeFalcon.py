@@ -1907,16 +1907,23 @@ def refresh_session_command():
     return create_entry_object(contents=response, hr=f'CrowdStrike Session Refreshed: {session_id}')
 
 
-def get_indicator_device_id():
-    args = demisto.args()
+def build_url_filter_for_device_id(args):
     indicator_type = args.get('type')
     indicator_value = args.get('value')
-    raw_res = http_request('GET', f'/indicators/queries/devices/v1?type={indicator_type}&value={indicator_value}')
+    url_filter = f'/indicators/queries/devices/v1?type={indicator_type}&value={indicator_value}'
+    return url_filter
+
+
+def get_indicator_device_id():
+    args = demisto.args()
+    url_filter = build_url_filter_for_device_id(args)
+    raw_res = http_request('GET', url_filter)
+    context_output = raw_res.get('resources')
     return CommandResults(
-        readable_output=raw_res,
+        readable_output=context_output,
         outputs_prefix='CrowdStrike.DeviceID',
-        outputs_key_field='',
-        outputs=raw_res
+        outputs_key_field='DeviceID',
+        outputs=context_output
     )
 
 

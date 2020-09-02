@@ -2083,3 +2083,55 @@ def test_refresh_session(requests_mock, mocker):
     results = refresh_session_command()
 
     assert results['HumanReadable'] == f"CrowdStrike Session Refreshed: {session_id}"
+
+
+response_for_get_indicator_device_id = {
+  "errors": [
+    {
+      "code": 0,
+      "id": "string",
+      "message": "string"
+    }
+  ],
+  "meta": {
+    "entity": "string",
+    "pagination": {
+      "limit": 0,
+      "next_page": "string",
+      "total": 0
+    },
+    "query_time": 0,
+    "trace_id": "string"
+  },
+  "resources": [
+    "111111",
+    "222222",
+    "333333"
+  ]
+}
+
+
+context_output_for_get_indicator_device_id = [
+    "111111",
+    "222222",
+    "333333"
+  ]
+
+
+def test_get_indicator_device_id(requests_mock):
+    from CrowdStrikeFalcon import get_indicator_device_id
+    requests_mock.get("https://4.4.4.4/indicators/queries/devices/v1?type=None&value=None",
+                      json=response_for_get_indicator_device_id)
+    res = get_indicator_device_id()
+    assert res.outputs == context_output_for_get_indicator_device_id
+    assert res.outputs_prefix == 'CrowdStrike.DeviceID'
+    assert res.outputs_key_field == 'DeviceID'
+
+
+def test_build_url_filter_for_device_id():
+    from CrowdStrikeFalcon import build_url_filter_for_device_id
+    res = build_url_filter_for_device_id({"type": "domain", "value": "google.com"})
+    assert res == '/indicators/queries/devices/v1?type=domain&value=google.com'
+
+
+
