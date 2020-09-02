@@ -317,8 +317,12 @@ class TrustarClient:
 
     def test_module(self):
         """Tests connectivity with TruSTAR"""
-        self.client.ping()
-        return "ok"
+        try:
+            self.client.ping()
+            return "ok"
+        except requests.exceptions.HTTPError:
+            return ("Invalid Credentials. Please check your API Key and Secret"
+                    "are correct on TruSTAR Station. Settings > API")
 
     def search_indicators(self,
                           search_term=None,
@@ -338,22 +342,38 @@ class TrustarClient:
 
         :return: Entry context with found indicators.
         """
+        """
+        Searches for all indicators that contain the given search term.
+
+        :param search_term: Term to be searched.
+        :param enclave_ids: list of enclaves to restrict the search to.
+        "param limit: Max number of entries to be returned.
+
+        :return: Entry context with found indicators.
+        """
         from_time = Utils.date_to_unix(from_time) if from_time else from_time
         to_time = Utils.date_to_unix(to_time) if to_time else to_time
-        response = self.client.search_indicators_page(
-            search_term=search_term,
-            enclave_ids=enclave_ids,
-            from_time=from_time,
-            to_time=to_time,
-            tags=tags,
-            indicator_types=indicator_types,
-            excluded_tags=excluded_tags,
-            page_number=0,
-            page_size=limit,
-        )
+        try:
+            response = self.client.search_indicators_page(
+                search_term=search_term,
+                enclave_ids=enclave_ids,
+                from_time=from_time,
+                to_time=to_time,
+                tags=tags,
+                indicator_types=indicator_types,
+                excluded_tags=excluded_tags,
+                page_number=0,
+                page_size=limit,
+            )
 
-        if not response:
-            return 'No indicators were found.'
+            if not response:
+                return 'No indicators were found.'
+
+        except requests.exceptions.HTTPError as err:
+            if err.response.status_code == 400:
+                return 'No indicators were found.'
+
+            raise(err)
 
         results = self.context_manager.get_indicators_context(response)
         return results
@@ -927,6 +947,12 @@ def main():
     try:
         client = TrustarClient(config, station)
         client.process(demisto.command(), **demisto.args())
+
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 401:
+            return_error("Invalid Credentials. Please check your API Key and "
+                        "Secret are correct on TruSTAR Station. Settings > API")
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
