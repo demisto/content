@@ -167,7 +167,7 @@ def get_pylum_id(machine):
         }
     ]
     json_body = build_query(query_fields, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json=json_body).json()
+    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
     data = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {}, dict)
     pylum_id = dict_safe_get(data.values(), [0, 'simpleValues', 'pylumId', 'values', 0])
     if not pylum_id:
@@ -188,7 +188,7 @@ def get_machine_guid(machine_name):
         }
     ]
     json_body = build_query(query_fields, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json=json_body).json()
+    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
     data = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {}, dict)
 
     return dict_safe_get(data.keys(), [0])
@@ -431,7 +431,7 @@ def query_connections(machine, ip):
         path = [{}]
 
     json_body = build_query(CONNECTION_FIELDS, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json=json_body).json()
+    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
 
     return response
 
@@ -526,7 +526,7 @@ def query_malops_command():
 
 
 def query_malops(total_result_limit=None, per_group_limit=None, template_context=None, filters=None, guid_list=None):
-    body = {
+    json_body = {
         'totalResultLimit': int(total_result_limit) if total_result_limit else 10000,
         'perGroupLimit': int(per_group_limit) if per_group_limit else 10000,
         'perFeatureLimit': 100,
@@ -541,7 +541,7 @@ def query_malops(total_result_limit=None, per_group_limit=None, template_context
         ]
     }
 
-    return http_request('POST', '/rest/crimes/unified', json=body).json()
+    return http_request('POST', '/rest/crimes/unified', json_body=json_body).json()
 
 
 def isolate_machine_command():
@@ -578,7 +578,7 @@ def isolate_machine(machine):
         'pylumIds': [pylum_id]
 
     }
-    response = http_request('POST', cmd_url, json=json_body).json()
+    response = http_request('POST', cmd_url, json_body=json_body).json()
 
     return response, pylum_id
 
@@ -616,7 +616,7 @@ def unisolate_machine(machine):
         'pylumIds': [pylum_id]
 
     }
-    response = http_request('POST', cmd_url, json=json_body).json()
+    response = http_request('POST', cmd_url, json_body=json_body).json()
 
     return response, pylum_id
 
@@ -700,7 +700,7 @@ def malop_processes(malop_guids):
         'queryTimeout': None
     }
 
-    return http_request('POST', '/rest/visualsearch/query/simple', json=json_body).json()
+    return http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
 
 
 def add_comment_command():
@@ -747,7 +747,7 @@ def update_malop_status(malop_guid, status):
 
     json_body = {malop_guid: api_status}
 
-    response = http_request('POST', '/rest/crimes/status', json=json_body).json()
+    response = http_request('POST', '/rest/crimes/status', json_body=json_body).json()
     if response['status'] != 'SUCCESS':
         raise Exception('Failed to update malop {0} status to {1}. Message: {2}'.format(malop_guid, status,
                                                                                         response['message']))
@@ -784,7 +784,7 @@ def prevent_file(file_hash):
         'prevent': True
     }]
 
-    return http_request('POST', '/rest/classification/update', json=json_body).json()
+    return http_request('POST', '/rest/classification/update', json_body=json_body).json()
 
 
 def unprevent_file_command():
@@ -817,7 +817,7 @@ def unprevent_file(file_hash):
         'prevent': False
     }]
 
-    return http_request('POST', '/rest/classification/update', json=json_body).json()
+    return http_request('POST', '/rest/classification/update', json_body=json_body).json()
 
 
 def kill_process_command():
@@ -851,7 +851,7 @@ def kill_process(malop_guid, machine_guid, process_guid):
         }
     }
 
-    return http_request('POST', '/rest/remediate', json=json_body).json()
+    return http_request('POST', '/rest/remediate', json_body=json_body).json()
 
 
 def quarantine_file_command():
@@ -884,7 +884,7 @@ def quarantine_file(malop_guid, machine_guid, process_guid):
         }
     }
 
-    return http_request('POST',  '/rest/remediate', json=json_body).json()
+    return http_request('POST',  '/rest/remediate', json_body=json_body).json()
 
 
 def delete_registry_key_command():
@@ -913,7 +913,7 @@ def delete_registry_key(malop_guid, machine_guid, process_guid):
         }
     }
 
-    return http_request('POST', '/rest/remediate', json=json_body).json()
+    return http_request('POST', '/rest/remediate', json_body=json_body).json()
 
 
 def query_file_command():
@@ -1047,7 +1047,7 @@ def query_file(filters):
         }
     ]
     json_body = build_query(query_fields, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json=json_body).json()
+    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
     if response.get('status') == 'SUCCESS' and 'data' in response:
         return response['data']
     else:
@@ -1075,7 +1075,7 @@ def get_file_machine_details(file_guid):
     ]
     json_body = build_query(query_fields, path, template_context='DETAILS')
 
-    return http_request('POST', '/rest/visualsearch/query/simple', json=json_body).json()
+    return http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
 
 
 def query_domain_command():
@@ -1148,7 +1148,7 @@ def query_domain(filters):
         }
     ]
     json_body = build_query(query_fields, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json=json_body).json()
+    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
     if response.get('status', '') == 'SUCCESS' and 'data' in response:
         return response['data']
     else:
@@ -1215,7 +1215,7 @@ def query_user(filters):
         }
     ]
     json_body = build_query(query_fields, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json=json_body).json()
+    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
     if response.get('status', '') == 'SUCCESS' and 'data' in response:
         return response['data']
     else:
