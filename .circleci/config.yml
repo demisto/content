@@ -56,6 +56,7 @@ references:
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Setup Environment' step.
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
+      PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
       DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
@@ -316,13 +317,7 @@ references:
             command: |
                 USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-                PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
-                echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
-                git remote add $USER git@github.com:$USER/content.git
-                git fetch $USER $BRANCH
-                rm -rf $PACK
-                git checkout $USER/$BRANCH $PACK
-                exit 0
+                python3 ./Utils/get_contrib_pack.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USER
 
 jobs:
   Setup Environment:
