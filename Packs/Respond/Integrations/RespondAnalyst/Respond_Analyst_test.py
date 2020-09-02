@@ -307,7 +307,7 @@ def test_close_incident(mocker, requests_mock):
         auth=('un', 'pw'),
         verify=False
     )
-
+    # test
     mocker.patch.object(demisto, 'info')
 
     get_all_users_response = load_test_data('test_data/users.json')
