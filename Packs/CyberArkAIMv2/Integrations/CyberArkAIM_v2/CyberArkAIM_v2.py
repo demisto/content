@@ -154,10 +154,15 @@ def main():
     finally:
         try:
             if client.crt:
-                client.cf.close()
-                client.kf.close()
+                cf_name, kf_name = client.crt
+                if client.cf:
+                    client.cf.close()
+                    os.close(cf_name)
+                if client.cf:
+                    client.kf.close()
+                    os.close(kf_name)
         except Exception as err:
-            demisto.error(f"CyberArk PAS error: {str(err)}")
+            demisto.error(f"CyberArk AIM error: {str(err)}")
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
