@@ -3,8 +3,8 @@ import argparse
 import os
 import sys
 
+import requests
 from demisto_sdk.commands.common.tools import run_command, print_error, print_success
-from github import Github
 
 
 def main():
@@ -17,19 +17,22 @@ def main():
     pr_number = args.pr_number
     user = args.user
     branch = args.branch
-
-    gh = Github(os.getenv('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
-    organization = 'demisto'
-    repo = 'content'
-    content_repo = gh.get_repo(f'{organization}/{repo}')
-    pr = content_repo.get_pull(pr_number)
-    pr_files = pr.get_files()
-    # choose a file
+    page = 1
     pack_dir_name = ''
-    for pr_file in pr_files:
-        if pr_file.filename.startswith('Packs/'):
-            pack_dir_name = pr_file.filename.split('/')[1]
+    while True:
+        response = requests.get(f'https://api.github.com/repos/demisto/content/pulls/{pr_number}/files',
+                                params={'page': str(page)})
+        response.raise_for_status()
+        files = response.json()
+        if not files:
             break
+        for pr_file in files:
+            if pr_file['filename'].startswith('Packs/'):
+                pack_dir_name = pr_file['filename'].split('/')[1]
+                break
+        if pack_dir_name:
+            break
+        page += 1
 
     if not pack_dir_name:
         print_error('Did not find a pack in the PR')

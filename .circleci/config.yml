@@ -320,10 +320,7 @@ references:
             command: |
                 USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-                echo "Updating contribution base branche with pack"
-                cd Utils/contribution_sync
-                pipenv install --dev
-                pipenv run ./get_contrib_pack.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USER
+                python3 ./Utils/get_contrib_pack.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USER
 jobs:
   Setup Environment:
     <<: *container_config
