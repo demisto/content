@@ -377,10 +377,10 @@ jobs:
           steps:
             - *restore_cache
             - *add_ssh_keys
-            - *update_tests_step
             - *prepare_environment
             - *secrets
             - *create_id_set
+            - *update_tests_step
             - *validate_files_and_yaml
             - run:
                 name: Content Docs Site
