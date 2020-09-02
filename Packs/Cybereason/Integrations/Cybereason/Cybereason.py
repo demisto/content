@@ -111,13 +111,13 @@ def build_query(query_fields, path, template_context='SPECIFIC'):
     return query
 
 
-def http_request(method, url_suffix, data=None, json_body=None, headers=None):
+def http_request(method, url_suffix, data=None, json_body=None, headers=HEADERS):
     LOG('running request with url=%s' % (SERVER + url_suffix))
     try:
         res = session.request(
             method,
             SERVER + url_suffix,
-            headers=headers or HEADERS,
+            headers=headers,
             data=data,
             json=json_body,
             verify=USE_SSL
@@ -245,7 +245,7 @@ def is_probe_connected(machine):
     ]
     json_body = build_query(query_fields, path)
 
-    return http_request('POST', '/rest/visualsearch/query/simple', json=json_body).json()
+    return http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
 
 
 def query_processes_command():
@@ -265,7 +265,7 @@ def query_processes_command():
                                privileges_escalation, maclicious_psexec)
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], [], list)
     outputs = []
-    for item in elements:
+    for item in elements.values():
         if not isinstance(item, dict):
             raise ValueError("Cybereason raw response is not valid, item in elements is not dict")
 
@@ -350,7 +350,7 @@ def query_processes(machine, process_name, only_suspicious=None, has_incoming_co
 
     json_body = build_query(PROCESS_FIELDS, path)
 
-    return http_request('POST', '/rest/visualsearch/query/simple', json=json_body).json()
+    return http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
 
 
 def query_connections_command():
@@ -366,12 +366,11 @@ def query_connections_command():
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], [], list)
     outputs = []
 
-    for item in elements:
+    for item in elements.values():
         simple_values = dict_safe_get(item, ['simpleValues'], {})
         element_values = dict_safe_get(item, ['elementValues'], {})
 
-        output = {}
-        output = update_output(output, simple_values, element_values, CONNECTION_INFO)
+        output = update_output({}, simple_values, element_values, CONNECTION_INFO)
         outputs.append(output)
 
     context = []
@@ -398,21 +397,19 @@ def query_connections(machine, ip):
             {
                 'requestedType': 'Connection',
                 'filters': [],
-                'connectionFeature':
-                    {
-                        'elementInstanceType': 'Connection',
-                        'featureName': 'ownerMachine'
-                    },
+                'connectionFeature': {
+                    'elementInstanceType': 'Connection',
+                    'featureName': 'ownerMachine'
+                },
                 'isResult': True
             },
             {
                 'requestedType': 'Machine',
-                'filters':
-                    [{
-                        'facetName': 'elementDisplayName',
-                        'values': [machine],
-                        'filterType': 'Equals'
-                    }]
+                'filters': [{
+                    'facetName': 'elementDisplayName',
+                    'values': [machine],
+                    'filterType': 'Equals'
+                }]
             }
         ]
     elif ip:
@@ -448,8 +445,8 @@ def query_malops_command():
         current_timestamp = time.time()
         current_datetime = datetime.fromtimestamp(current_timestamp)
         within_last_days_datetime = current_datetime - timedelta(days=int(within_last_days))
-        within_last_days_timestamp = (time.mktime(within_last_days_datetime.timetuple()) +
-                                      within_last_days_datetime.microsecond / 1E6)  # Converting datetime to time
+        within_last_days_timestamp = (time.mktime(
+            within_last_days_datetime.timetuple()) + within_last_days_datetime.microsecond / 1E6)  # Converting datetime to time
         within_last_days_timestamp *= 1000
         filters.append({
             'facetName': 'malopLastUpdateTime',
@@ -638,24 +635,24 @@ def malop_processes_command():
 
     simple_values = {}
     element_values = {}
-    for item in elements:
+    for item in elements.values():
         simple_values = dict_safe_get(item, ['simpleValues'], {}, dict)
         element_values = dict_safe_get(item, ['elementValues'], {}, dict)
 
-    if machine_name_list:
-        machine_list = dict_safe_get(element_values, ['ownerMachine', 'elementValues'], [], list)
-        for machine in machine_list:
-            current_machine_name = machine.get('name', '').lower() if isinstance(machine, dict) else ''
-            if current_machine_name in machine_name_list:
-                break
+        if machine_name_list:
+            machine_list = dict_safe_get(element_values, ['ownerMachine', 'elementValues'], [], list)
+            for machine in machine_list:
+                current_machine_name = machine.get('name', '').lower() if isinstance(machine, dict) else ''
+                if current_machine_name in machine_name_list:
+                    break
 
-        output = {}
-        for item in PROCESS_INFO:
-            if item['type'] == 'filterData':
-                output[item['header']] = dict_safe_get(elements, [element, 'filterData', 'groupByValue'])
+            output = {}
+            for info in PROCESS_INFO:
+                if item['type'] == 'filterData':
+                    output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
 
-        output = update_output(output, simple_values, element_values, PROCESS_INFO)
-        outputs.append(output)
+            output = update_output(output, simple_values, element_values, PROCESS_INFO)
+            outputs.append(output)
 
     context = []
     for output in outputs:
@@ -884,7 +881,7 @@ def quarantine_file(malop_guid, machine_guid, process_guid):
         }
     }
 
-    return http_request('POST',  '/rest/remediate', json_body=json_body).json()
+    return http_request('POST', '/rest/remediate', json_body=json_body).json()
 
 
 def delete_registry_key_command():
@@ -947,20 +944,21 @@ def query_file_command():
         for file_ in files.keys():
             raw_machine_details = dict_safe_get(get_file_machine_details(file_), ['data', 'resultIdToElementDataMap'],
                                                 {}, dict)
-            machine_details = dict_safe_get(raw_machine_details, dict_safe_get(raw_machine_details.keys(), [0]), {}, dict)
+            machine_details = dict_safe_get(raw_machine_details, dict_safe_get(raw_machine_details.keys(), [0]), {},
+                                            dict)
             simple_values = dict_safe_get(file_, ['simpleValues'], {}, dict)
             file_name = dict_safe_get(simple_values, ['elementDisplayName', 'values', 0])
             md5 = dict_safe_get(simple_values, ['md5String', 'values', 0])
             sha1 = dict_safe_get(simple_values, ['sha1String', 'values', 0])
             path = dict_safe_get(simple_values, ['correctedPath', 'values', 0])
             machine = dict_safe_get(file_, ['elementValues', 'ownerMachine', 'elementValues', 0, 'name'])
-            
+
             machine_element_values = dict_safe_get(machine_details, ['elementValues'], {}, dict)
             machine_simple_values = dict_safe_get(machine_details, ['simpleValues'], {}, dict)
 
             os_version = dict_safe_get(machine_simple_values, ['ownerMachine.osVersionType', 'values', 0])
             raw_suspicions = dict_safe_get(machine_details, ['suspicions'], {}, dict)
-            
+
             suspicions = {}
             for key, value in raw_suspicions.iteritems():
                 suspicions[key] = timestamp_to_datestring(value)
@@ -1101,7 +1099,8 @@ def query_domain_command():
             reputation = dict_safe_get(simple_values, ['maliciousClassificationType', 'values', 0])
             is_internal_domain = dict_safe_get(simple_values, ['isInternalDomain', 'values', 0]) == 'true'
             was_ever_resolved = dict_safe_get(simple_values, ['everResolvedDomain', 'values', 0]) == 'true'
-            was_ever_resolved_as = dict_safe_get(simple_values, ['everResolvedSecondLevelDomain', 'values', 0]) == 'true'
+            was_ever_resolved_as = dict_safe_get(simple_values,
+                                                 ['everResolvedSecondLevelDomain', 'values', 0]) == 'true'
             malicious = domain.get('isMalicious')
             suspicions_count = domain.get('suspicionCount')
 
@@ -1169,7 +1168,7 @@ def query_user_command():
     if data:
         cybereason_outputs = []
         users = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
-        
+
         for user in users.keys():
             simple_values = dict_safe_get(user, ['simpleValues'], {}, dict)
             element_values = dict_safe_get(user, ['elementValues'], {}, dict)
