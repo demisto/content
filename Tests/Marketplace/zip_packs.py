@@ -9,7 +9,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, IGNORED_
 
 from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion, str2bool
 
-ARTIFACT_NAME = 'zipped_packs.zip'
+ARTIFACT_NAME = 'content_marketplace_packs.zip'
 MAX_THREADS = 4
 BUILD_GCP_PATH = 'content/builds'
 
@@ -28,7 +28,6 @@ def option_handler():
     parser.add_argument('-gp', '--gcp_path', help="Path of the content packs in the GCP bucket",
                         required=False)
     parser.add_argument('-z', '--zip_path', help="Full path of folder to zip packs in", required=True)
-    parser.add_argument('-i', '--packs_to_include', help="Comma separated list of packs to include", default='')
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-br', '--branch_name', help="Name of the branch", required=False)
     parser.add_argument('-n', '--circle_build', help="Number of the circle build", required=False)
@@ -46,7 +45,7 @@ def option_handler():
     return parser.parse_args()
 
 
-def zip_packs(packs, destination_path, packs_to_include):
+def zip_packs(packs, destination_path):
     """
     Zips packs to a provided path.
     Args:
@@ -57,8 +56,6 @@ def zip_packs(packs, destination_path, packs_to_include):
     with ZipFile(os.path.join(destination_path, ARTIFACT_NAME), mode='w') as zf:
         for zip_pack in packs:
             for name, path in zip_pack.items():
-                if name not in packs_to_include:
-                    continue
                 print(f'Adding {name} to the zip file')
                 zf.write(path, f'{name}.zip')
 
@@ -111,7 +108,7 @@ def remove_test_playbooks_from_signatures(path, filenames):
         print_warning(f'Could not find signatures in the pack {os.path.basename(os.path.dirname(path))}')
 
 
-def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_build, branch_name, packs_to_include):
+def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_build, branch_name):
     """
     Iterates over the Packs directory in the content repository and downloads each pack (if found) from a GCP bucket
     in parallel.
@@ -128,7 +125,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     zipped_packs = []
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
         for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
-            if pack.name in IGNORED_FILES or (packs_to_include and pack.name not in packs_to_include):
+            if pack.name in IGNORED_FILES:
                 continue
 
             if gcp_path == BUILD_GCP_PATH:
@@ -203,7 +200,6 @@ def main():
     branch_name = option.branch_name
     gcp_path = option.gcp_path
     remove_test_playbooks = option.remove_test_playbooks
-    packs_to_include = option.packs_to_include
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -220,8 +216,7 @@ def main():
     zipped_packs = []
     success = True
     try:
-        zipped_packs = download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name,
-                                               packs_to_include)
+        zipped_packs = download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
     except Exception as e:
         print_error(f'Failed downloading packs: {e}')
         success = False
@@ -235,7 +230,7 @@ def main():
 
     if zipped_packs and success:
         try:
-            zip_packs(zipped_packs, zip_path, packs_to_include)
+            zip_packs(zipped_packs, zip_path)
         except Exception as e:
             print_error(f'Failed zipping packs: {e}')
             success = False
