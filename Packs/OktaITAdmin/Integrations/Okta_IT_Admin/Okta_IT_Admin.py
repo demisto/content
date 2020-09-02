@@ -64,9 +64,6 @@ class Client(BaseClient):
         self.verify = verify
         self.headers = headers
         self.auth = auth
-        self.session = requests.Session()
-        if not proxy:
-            self.session.trust_env = False
 
     def http_request(self, method, url_suffix, full_url=None, params=None, data=None, headers=None):
         if headers is None:
@@ -192,7 +189,6 @@ class Client(BaseClient):
     def build_create_user_profile(self, args, scim, custom_mapping):
         parsed_scim_data = map_scim(scim)
         profile = dict()
-        demisto.log(json.dumps(parsed_scim_data))
 
         for key, value in parsed_scim_data.items():
             if key in PROFILE_ARGS:

@@ -1,5 +1,5 @@
 Integration with Okta's cloud-based identity management service
-This integration was integrated and tested with version xx of Okta IT Admin
+This integration was integrated and tested with version 01 of Okta IT Admin
 ## Configure Okta IT Admin on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
