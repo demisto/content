@@ -164,15 +164,15 @@ def close_new_incident_and_link_to_existing(new_incident, existing_incident, sim
     entries_str = json.dumps(entries)
     demisto.executeCommand("addEntries", {"id": existing_incident["id"], "entries": entries_str})
     res = demisto.executeCommand("linkIncidents", {
-        'linkedIncidentIDs': existing_incident['id'],
+        'linkedIncidentIDs': new_incident['id'],
         'incidentId': existing_incident['id']})
     if is_error(res):
         return_error(res)
-    demisto.results(False)
+    demisto.results('Duplicated incident found: {}, {}'.format(new_incident['id'], existing_incident['id']))
 
 
 def create_new_incident():
-    demisto.results(True)
+    demisto.results('No duplicated incident found')
 
 
 def main():
