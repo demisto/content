@@ -664,7 +664,5 @@ def main():
         return_error(err_msg, error=e)
 
 
-# if __name__ == 'builtins':
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-
     main()
