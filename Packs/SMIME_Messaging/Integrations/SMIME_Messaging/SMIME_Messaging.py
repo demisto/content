@@ -1,10 +1,10 @@
-
-
-
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
-from M2Crypto import BIO, SMIME, X509, m2
+from M2Crypto import BIO, SMIME, X509
 from typing import Dict
 from tempfile import NamedTemporaryFile
 
@@ -104,9 +104,7 @@ def verify(client: Client, args: Dict):
         args: Dict
 
     """
-
     signed_message = demisto.getFilePath(args.get('signed_message'))
-
 
     x509 = X509.load_cert(client.public_key_file)
     sk = X509.X509_Stack()
@@ -122,13 +120,13 @@ def verify(client: Client, args: Dict):
 
     except SMIME.SMIME_Error as e:
 
-        if str(e) == 'no content type': #If no content type; see if we can process as DER format
-            with open(signed_message['path'],"rb") as message_file:
+        if str(e) == 'no content type':  # If no content type; see if we can process as DER format
+            with open(signed_message['path'], "rb") as message_file:
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
             p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
-            v = client.smime.verify(p7,flags=SMIME.PKCS7_NOVERIFY)
-            return_results(fileResult('unwrapped-'+signed_message.get('name'), v))
+            v = client.smime.verify(p7, flags=SMIME.PKCS7_NOVERIFY)
+            return_results(fileResult('unwrapped-' + signed_message.get('name'), v))
 
 
     human_readable = f'The signature verified\n\n'
@@ -158,13 +156,12 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
 
     except SMIME.SMIME_Error as e:
 
-        if str(e) == 'no content type': #If no content type; see if we can process as DER format
-            with open(encrypt_message['path'],"rb") as message_file:
+        if str(e) == 'no content type':  # If no content type; see if we can process as DER format
+            with open(encrypt_message['path'], "rb") as message_file:
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
             p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
-            out = client.smime.decrypt(p7,flags=SMIME.PKCS7_NOVERIFY).decode('utf-8')
-
+            out = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY).decode('utf-8')
 
     entry_context = {
         'SMIME.Decrypted': {
