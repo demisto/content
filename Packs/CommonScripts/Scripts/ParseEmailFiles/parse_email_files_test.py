@@ -509,7 +509,6 @@ def test_smime(mocker):
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email']['Subject'] == 'Testing Email Attachment'
 
-
 def test_smime_msg(mocker):
     info = 'CDFV2 Microsoft Outlook Message'
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
@@ -523,9 +522,6 @@ def test_smime_msg(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
-    print(results[0])
-    print(results[0]['EntryContext'])
-    print(results[0]['EntryContext']['Email'])
     assert results[0]['EntryContext']['Email']['Subject'] == 'test'
 
 
