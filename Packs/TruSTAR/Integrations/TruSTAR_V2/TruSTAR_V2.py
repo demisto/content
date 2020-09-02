@@ -951,7 +951,8 @@ def main():
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 401:
             return_error("Invalid Credentials. Please check your API Key and "
-                        "Secret are correct on TruSTAR Station. Settings > API")
+                         "Secret are correct on TruSTAR Station. Settings > API")
+
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
     except Exception as e:

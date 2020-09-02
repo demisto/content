@@ -40,25 +40,25 @@ script:
       description: The term to search for (e.g. covid-19)
     - name: enclave_ids
       description: Comma-separated list of enclave ids; (i.e. <enclave1>,<enclave2>,<enclave3>).
-      Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves).
-      Defaults is all enclaves the user has READ access to.
-      You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+        Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves).
+        Defaults is all enclaves the user has READ access to.
+        You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
       isArray: true
     - name: from_time
       description: Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, 
-      i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
-      Based on updated time, and not created time. Default is 1 day ago.
+        i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
+        Based on updated time, and not created time. Default is 1 day ago.
     - name: to_time
       description: End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, 
-      i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
-      Based on updated time, and not created time. Default is 1 day ago.
+        i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
+        Based on updated time, and not created time. Default is 1 day ago.
     - name: indicator_types
       description: comma-separated indicator types to filter by. e.g. "URL, IP"
       isArray: true
     - name: tags
       description: Name (or list of names) of tag(s) to filter indicators by. 
-      (i.e. <tag1>,<tag2>,<tag3>).
-      Only indicators containing ALL of these tags will be returned.
+        (i.e. <tag1>,<tag2>,<tag3>).
+        Only indicators containing ALL of these tags will be returned.
       isArray: true
     - name: excluded_tags
       description: Indicators containing ANY of these tags will be excluded from the
@@ -151,9 +151,9 @@ script:
     - name: enclave_ids
       isArray: true
       description: Comma-separated list of enclave IDs; (i.e. <enclave1>,<enclave2>,<enclave3>). 
-      Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves).
-      Defaults is all enclaves the user has READ access to. You can get a list of your
-      enclave IDs executing the command '!trustar-get-enclaves'
+        Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves).
+        Defaults is all enclaves the user has READ access to. You can get a list of your
+        enclave IDs executing the command '!trustar-get-enclaves'
     - name: limit
       description: Limit of results to return. Max value possible is 1000.
       defaultValue: "25"
@@ -286,8 +286,8 @@ script:
     - name: enclave_ids
       isArray: true
       description: CSV of enclave IDs to restrict to. (i.e. <enclave1>,<enclave2>,<enclave3>). 
-      By default, uses all of the user’s enclaves. You can get a list of your enclave IDs executing the command 
-      '!trustar-get-enclaves'
+        By default, uses all of the user’s enclaves. You can get a list of your enclave IDs executing the command 
+        '!trustar-get-enclaves'
     outputs:
     - contextPath: TruSTAR.IndicatorsMetadata.notes
       description: Indicator notes
@@ -369,10 +369,10 @@ script:
     - name: enclave_ids
       isArray: true
       description: CSV of enclaves to search for indicator summaries in. 
-      (i.e. <enclave1>,<enclave2>,<enclave3>). These should
-      be enclaves containing data from sources on the TruSTAR Marketplace.
-      You can get a list of your enclave IDs executing the
-      command '!trustar-get-enclaves'
+        (i.e. <enclave1>,<enclave2>,<enclave3>). These should
+        be enclaves containing data from sources on the TruSTAR Marketplace.
+        You can get a list of your enclave IDs executing the
+        command '!trustar-get-enclaves'
     - name: limit
       description: Limit of results to return. Max value possible is 1000.
       defaultValue: "25"
@@ -513,12 +513,12 @@ script:
     arguments:
     - name: from_time
       description: Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, 
-      i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
-      Based on updated time, and not created time. Default is 1 day ago.
+        i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
+        Based on updated time, and not created time. Default is 1 day ago.
     - name: to_time
       description: End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, 
-      i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
-      Based on updated time, and not created time. Default is 1 day ago.
+        i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
+        Based on updated time, and not created time. Default is 1 day ago.
     - name: distribution_type
       auto: PREDEFINED
       predefined:
@@ -529,11 +529,11 @@ script:
     - name: enclave_ids
       isArray: true
       description: Comma separated list of enclave ids to search for reports in. 
-      (i.e. <enclave1>,<enclave2>,<enclave3>).
-      Even if distributionType is COMMUNITY, these enclaves will still be searched as
-      well. Default is All enclaves the user has READ access to.
-      You can get a list of your enclave IDs executing
-      the command '!trustar-get-enclaves'
+        (i.e. <enclave1>,<enclave2>,<enclave3>).
+        Even if distributionType is COMMUNITY, these enclaves will still be searched as
+        well. Default is All enclaves the user has READ access to.
+        You can get a list of your enclave IDs executing
+        the command '!trustar-get-enclaves'
     - name: tags
       description: a list of names of tags to filter by; only reports containing ALL
         of these tags will be returned. i.e. <tag1>,<tag2>,<tag3>).
@@ -619,7 +619,6 @@ script:
     - name: report_id
       description: the ID of the report you want to move 
       required: true
-
     - name: dest-enclave-id
       description: the ID of the destination enclave
       required: true
@@ -644,8 +643,8 @@ script:
     - name: enclave_ids
       isArray: true
       description: CSV of TruSTAR-generated enclave ids. (i.e. <enclave1>,<enclave2>,<enclave3>).
-      Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. 
-      You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+        Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. 
+        You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
     - name: distribution_type
       auto: PREDEFINED
       predefined:
@@ -704,9 +703,9 @@ script:
     - name: enclave-ids
       isArray: true
       description: Comma-separated list of enclave ids; (i.e. <enclave1>,<enclave2>,<enclave3>). 
-      Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves).
-      Defaults is all enclaves the user has READ access to. You can get a list of your
-      enclave IDs executing the command '!trustar-get-enclaves'
+        Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves).
+        Defaults is all enclaves the user has READ access to. You can get a list of your
+        enclave IDs executing the command '!trustar-get-enclaves'
     - name: limit
       description: Limit of results to return. Max value possible is 1000.
       defaultValue: "25"
@@ -754,8 +753,8 @@ script:
     - name: enclave_ids
       isArray: true
       description: CSV of TruSTAR-generated enclave ids. (i.e. <enclave1>,<enclave2>,<enclave3>).
-      Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. 
-      You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
+        Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. 
+        You can get a list of your enclave IDs executing the command '!trustar-get-enclaves'
     - name: external_url
       description: URL for the external report that this originated from, if one exists.
         Limit 500 alphanumeric characters. Must be unique across all reports for a
@@ -791,22 +790,22 @@ script:
         will be applied. Otherwise, must be at least 3 characters.
     - name: enclave_ids
       description: Comma-separated list of enclave ids (i.e. <enclave1>,<enclave2>,<enclave3>).
-      Only indicators found in reports from these enclaves will be returned 
-      (defaults to all of user’s enclaves). You can get a list of your enclave IDs executing 
-      the command '!trustar-get-enclaves'
+        Only indicators found in reports from these enclaves will be returned 
+        (defaults to all of user’s enclaves). You can get a list of your enclave IDs executing 
+        the command '!trustar-get-enclaves'
       isArray: true
     - name: from_time
       description: Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, 
-      i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
-      Based on updated time, and not created time. Default is 1 day ago.
+        i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
+        Based on updated time, and not created time. Default is 1 day ago.
     - name: to_time
       description: End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, 
-      i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
-      Based on updated time, and not created time. Default is 1 day ago.
+        i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
+        Based on updated time, and not created time. Default is 1 day ago.
     - name: tags
       description: Name (or list of names) of tag(s) to filter indicators by. 
-      i.e. <tag1>,<tag2>,<tag3>).
-      Only indicators containing ALL of these tags will be returned.
+        i.e. <tag1>,<tag2>,<tag3>).
+        Only indicators containing ALL of these tags will be returned.
       isArray: true
     - name: excluded_tags
       description: Indicators containing ANY of these tags will be excluded from the
@@ -856,17 +855,18 @@ script:
   - name: trustar-get-phishing-submissions
     arguments:
     - name: priority_event_score
-      description: List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. 
+      description: List of email submissions scores to restrict the query. 
+        Possible values are -1, 0, 1, 2, 3. (i.e. -1,0,2)
       isArray: true
       defaultValue: -1,0,1,2,3
     - name: from_time
       description: Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, 
-      i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
-      Based on updated time, and not created time. Default is 1 day ago.
+        i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
+        Based on updated time, and not created time. Default is 1 day ago.
     - name: to_time
       description: End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, 
-      i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
-      Based on updated time, and not created time. Default is 1 day ago.
+        i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
+        Based on updated time, and not created time. Default is 1 day ago.
     - name: status
       auto: PREDEFINED
       predefined:
@@ -925,20 +925,22 @@ script:
     arguments:
     - name: normalized_indicator_score
       description: List of Intel scores to restrict the query. Possible values are -1, 0, 1, 2, 3. 
+        (i.e. 0,2,3),
       isArray: true
       defaultValue: -1,0,1,2,3
     - name: priority_event_score
       description: List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. 
+        (i.e. 0,2,3),
       isArray: true
       defaultValue: -1,0,1,2,3
     - name: from_time
       description: Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, 
-      i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
-      Based on updated time, and not created time. Default is 1 day ago.
+        i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
+        Based on updated time, and not created time. Default is 1 day ago.
     - name: to_time
       description: End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, 
-      i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
-      Based on updated time, and not created time. Default is 1 day ago.
+        i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). 
+        Based on updated time, and not created time. Default is 1 day ago.
     - name: status
       auto: PREDEFINED
       predefined:
