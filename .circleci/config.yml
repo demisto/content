@@ -27,6 +27,9 @@ parameters:
   time_to_live:
     type: string
     default: ""
+  pr_number:
+    type: string
+    default: ""
   contrib_branch:
     type: string
     default: ""
