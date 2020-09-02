@@ -11,4 +11,4 @@ requests_mock==1.7.0
 google-cloud-storage==1.29.0
 google-cloud-bigquery==1.26.1
 prettytable==0.7.2
-pygithub==1.53.0
+pygithub==1.53
