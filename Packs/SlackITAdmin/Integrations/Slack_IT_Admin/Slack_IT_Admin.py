@@ -14,6 +14,7 @@ requests.packages.urllib3.disable_warnings()
 INPUT_SCIM_EXTENSION_KEY = "urn:scim:schemas:extension:custom:1.0:user"
 SLACK_SCIM_EXTENSION_KEY = "urn:scim:schemas:extension:enterprise:1.0"
 SLACK_SCIM_CORE_SCHEMA_KEY = "urn:scim:schemas:core:1.0"
+base_url = 'https://api.slack.com/scim/v1/'
 
 
 '''CLIENT CLASS'''
@@ -28,9 +29,6 @@ class Client(BaseClient):
         self.base_url = base_url
         self.verify = verify
         self.headers = headers
-        self.session = requests.Session()
-        if not proxy:
-            self.session.trust_env = False
 
     def http_request(self, method, url_suffix, params=None, data=None, headers=None):
         if headers is None:
@@ -213,12 +211,12 @@ class OutputContext:
 ''' HELPER FUNCTIONS '''
 
 
-def map_scim(clientData):
+def map_scim(client_data):
     try:
-        clientData = json.loads(clientData)
+        client_data = json.loads(client_data)
     except Exception:
         pass
-    if type(clientData) != dict:
+    if type(client_data) != dict:
         raise Exception('Provided client data is not JSON compatible')
 
     scim_extension = INPUT_SCIM_EXTENSION_KEY.replace('.', '\.')
@@ -264,7 +262,7 @@ def map_scim(clientData):
     ret = dict()
     for k, v in mapping.items():
         try:
-            ret[k] = demisto.dt(clientData, v)
+            ret[k] = demisto.dt(client_data, v)
         except Exception:
             ret[k] = None
     return ret
@@ -524,7 +522,7 @@ def get_group(client, args):
         }
     }
 
-    readable_output = tableToMarkdown(name=f"Slack Group Members: {res_json.get('displayName')} [{group_id}]",
+    readable_output = tableToMarkdown(name=f"Slack Group {group_id} Members: {res_json.get('displayName')}",
                                       t=members)
 
     return (
@@ -539,7 +537,7 @@ def delete_group_command(client, args):
     group_name = args.get('groupName')
 
     if not (group_id or group_name):
-        return_error("You must supply either 'groupId' or 'groupName")
+        return_error("You must supply either 'groupId' or 'groupName'")
     if not group_id:
         group_id = client.get_group_id(group_name)
 
@@ -635,7 +633,6 @@ def update_group_members_command(client, args):
 
 
 def replace_group_command(client, args):
-    demisto.log(str(args))
     group_id = args.get('groupId')
     group_name = args.get('groupName')
 
@@ -677,8 +674,6 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    # get the service API url
-    base_url = 'https://api.slack.com/scim/v1/'
     access_token = params.get('access_token')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)

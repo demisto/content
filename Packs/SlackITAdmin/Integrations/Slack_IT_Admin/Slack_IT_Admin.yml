@@ -100,13 +100,13 @@ script:
     outputs:
     - contextPath: Slack.Group.id
       description: Group Id
-      type: Unknown
+      type: string
     - contextPath: Slack.Group.displayName
       description: Display Name of the Group
-      type: Unknown
+      type: string
     - contextPath: Slack.Group.members
       description: Id of the group member
-      type: Unknown
+      type: string
   - arguments:
     - description: Group ID
       name: groupId
@@ -147,7 +147,7 @@ script:
       type: string
     - contextPath: CreateUser.details
       description: Gives the detail error information
-      type: unknown
+      type: string
     - contextPath: CreateUser.email
       description: Value of email ID passed as argument
       type: string
@@ -171,7 +171,7 @@ script:
       type: string
     - contextPath: Account
       description: Account information
-      type: Unknown
+      type: string
   - arguments:
     - description: SCIM content in JSON format
       name: scim
@@ -188,7 +188,7 @@ script:
       type: boolean
     - contextPath: EnableUser.details
       description: Gives the detail error information
-      type: unknown
+      type: string
     - contextPath: EnableUser.email
       description: Value of email ID passed as argument
       type: string
@@ -215,7 +215,7 @@ script:
       type: string
     - contextPath: Account
       description: Account information
-      type: Unknown
+      type: string
   - arguments:
     - description: SCIM content in JSON format
       name: scim
@@ -259,7 +259,7 @@ script:
       type: string
     - contextPath: Account
       description: Account information
-      type: Unknown
+      type: string
   - arguments:
     - description: Old SCIM content in JSON format
       name: oldScim
@@ -285,7 +285,7 @@ script:
       type: string
     - contextPath: UpdateUser.details
       description: Gives the detail error information
-      type: unknown
+      type: string
     - contextPath: UpdateUser.email
       description: Value of email ID passed as argument
       type: string
@@ -309,7 +309,7 @@ script:
       type: string
     - contextPath: Account
       description: Account information
-      type: Unknown
+      type: string
   - arguments:
     - description: SCIM content in JSON format
       name: scim
@@ -328,7 +328,7 @@ script:
       type: string
     - contextPath: GetUser.details
       description: Gives the user information if the API is success else error information
-      type: Unknown
+      type: string
     - contextPath: GetUser.email
       description: User's email address
       type: string
@@ -352,7 +352,7 @@ script:
       type: string
     - contextPath: Account
       description: Account information
-      type: Unknown
+      type: string
   dockerimage: demisto/python3:3.8.5.10845
   runonce: false
   script: ''

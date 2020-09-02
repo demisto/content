@@ -1,5 +1,5 @@
 Perform Slack Admin action in a Slack Enterprise Grid environment.
-This integration was integrated and tested with version xx of Slack IT Admin
+This integration was integrated and tested with version 01 of Slack IT Admin
 ## Configure Slack IT Admin on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
