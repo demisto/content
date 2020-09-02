@@ -18,11 +18,6 @@ AUTHORIZATION_CODE = 'authorization_code'
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 
 
-class Scopes:
-    graph = "https://graph.microsoft.com/.default"
-    security_center = "https://api.securitycenter.windows.com/.default"
-
-
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',

@@ -65,7 +65,7 @@ class MsClient:
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
         """
-        kwargs['scope'] = Scopes.graph
+        kwargs['scope'] = "graph"
         return self.ms_client.http_request(*args, **kwargs)
 
     def isolate_machine(self, machine_id, comment, isolation_type):
