@@ -34,7 +34,7 @@ class Client(BaseClient):
     def create_crt_param(self):
         if not self._cert_text and not self._key_text:
             return None, None, None
-        elif (self._cert_text and not self._key_text) or (not self._cert_text and self._key_text):
+        elif not self._cert_text or not self._key_text:
             raise Exception('You can not configure either certificate text or key, both are required.')
         elif self._cert_text and self._key_text:
             cert_text_list = self._cert_text.split('-----')
@@ -55,8 +55,7 @@ class Client(BaseClient):
             return (cf.name, kf.name), cf, kf
 
     def list_credentials(self):
-        url_suffix = f'/AIMWebService/api/Accounts?AppID={self._app_id}&Safe=' \
-                     f'{self._safe}&Folder={self._folder}&Object={self._credential_object}'
+        url_suffix = '/AIMWebService/api/Accounts'
         params = {
             "AppID": self._app_id,
             "Safe": self._safe,
@@ -73,7 +72,6 @@ def list_credentials_command(client):
     :return: the credentials info without the explicit password
     """
     res = client.list_credentials()
-    demisto.log(str(res))
     # the password value in the json appears under the key "Content"
     if "Content" in res:
         del res["Content"]
@@ -115,17 +113,17 @@ def main():
 
     params = demisto.params()
 
-    url = params.get('url', "")
+    url = params.get('url')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    app_id = params.get('app_id', "")
-    folder = params.get('folder', "")
-    safe = params.get('safe', "")
-    credential_object = params.get('credential_names', "")
+    app_id = params.get('app_id') or ""
+    folder = params.get('folder')
+    safe = params.get('safe')
+    credential_object = params.get('credential_names') or ""
 
-    cert_text = params.get('cert_text', "")
-    key_text = params.get('key_text', "")
+    cert_text = params.get('cert_text') or ""
+    key_text = params.get('key_text') or ""
 
     username = ""
     password = ""
@@ -140,7 +138,7 @@ def main():
                         cert_text=cert_text, key_text=key_text)
 
         command = demisto.command()
-        LOG(f'Command being called in CyberArk AIM is: {command}')
+        demisto.debug(f'Command being called in CyberArk AIM is: {command}')
 
         commands = {
             'test-module': test_module,
@@ -159,7 +157,7 @@ def main():
                 client.cf.close()
                 client.kf.close()
         except Exception as err:
-            demisto.info(f"CyberArk PAS error: {str(err)}")
+            demisto.error(f"CyberArk PAS error: {str(err)}")
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
