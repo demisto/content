@@ -1012,7 +1012,7 @@ script:
     description: Returns a list of device IDs on which an indicator ran.
     execution: false
     name: cs-device-ran-on
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false
