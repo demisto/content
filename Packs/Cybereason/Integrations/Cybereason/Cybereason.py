@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 
 ''' IMPORTS '''
-from typing import Dict
 import requests
 import os
 import json
@@ -112,15 +111,15 @@ def build_query(query_fields, path, template_context='SPECIFIC'):
     return query
 
 
-def http_request(method, url_suffix, data=None, json=None, headers=HEADERS):
+def http_request(method, url_suffix, data=None, json_body=None, headers=None):
     LOG('running request with url=%s' % (SERVER + url_suffix))
     try:
         res = session.request(
             method,
             SERVER + url_suffix,
-            headers=headers,
+            headers=headers or HEADERS,
             data=data,
-            json=json,
+            json=json_body,
             verify=USE_SSL
         )
         if res.status_code not in {200, 204}:
@@ -204,7 +203,7 @@ def is_probe_connected_command(is_remediation_commmand=False):
 
     response = is_probe_connected(machine)
 
-    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {})  # type: Dict[Any, Any]
+    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {})
 
     for key, value in elements.iteritems():
         if isinstance(value, dict):
@@ -263,14 +262,13 @@ def query_processes_command():
 
     response = query_processes(machine, process_name, only_suspicious, has_incoming_connection, has_outgoing_connection,
                                has_external_connection, unsigned_unknown_reputation, from_temporary_folder,
-                               privileges_escalation, maclicious_psexec)  # type: Dict[Any, Any]
+                               privileges_escalation, maclicious_psexec)
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], [], list)
     outputs = []
     for item in elements:
         if not isinstance(item, dict):
-            raise ValueError("Unable to parse cyber reason return value excepted dict,"
-                             " but actual is %s".format(type(item)))
-        
+            raise ValueError("Cybereason raw response is not valid, item in elements is not dict")
+
         simple_values = item.get('simpleValues', {})
         element_values = item.get('elementValues', {})
 
@@ -372,7 +370,7 @@ def query_connections_command():
         simple_values = dict_safe_get(item, ['simpleValues'], {})
         element_values = dict_safe_get(item, ['elementValues'], {})
 
-        output = {}  # type: Dict[Any,Any]
+        output = {}
         output = update_output(output, simple_values, element_values, CONNECTION_INFO)
         outputs.append(output)
 
@@ -488,8 +486,8 @@ def query_malops_command():
         elementValues = dict_safe_get(malop, ['elementValues', 'affectedMachines', 'elementValues'], [], list)
         for machine in elementValues:
             if not isinstance(machine, dict):
-                raise ValueError("Unable to parse cyber reason return value excepted dict,"
-                                 " but actual is %s".format(type(machine)))
+                raise ValueError("Cybereason raw response is not valid, machine in elementValues is not dict")
+
             affected_machines.append(machine.get('name', ''))
 
         involved_hashes = []  # type: List[str]
@@ -1097,7 +1095,7 @@ def query_domain_command():
         domains = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
         for domain in domains.values():
             if not isinstance(domain, dict):
-                raise ValueError()
+                raise ValueError("Cybereason raw response is not valid, domain in domains.values() is not dict")
 
             simple_values = dict_safe_get(domain, ['simpleValues'], {}, dict)
             reputation = dict_safe_get(simple_values, ['maliciousClassificationType', 'values', 0])
@@ -1226,13 +1224,13 @@ def query_user(filters):
 
 def malop_to_incident(malop):
     if not isinstance(malop, dict):
-        raise ValueError("Unable to parse file due to not valid raw response.")
+        raise ValueError("Cybereason raw response is not valid, malop is not dict")
 
     guid_string = malop.get('guidString', '')
     incident = {
         'rawJSON': json.dumps(malop),
         'name': 'Cybereason Malop ' + guid_string,
-        'labels': [{'type': 'GUID', 'value': guid_string}]}  # type: Dict[Any, Any]
+        'labels': [{'type': 'GUID', 'value': guid_string}]}
 
     return incident
 

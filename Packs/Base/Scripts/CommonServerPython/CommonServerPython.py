@@ -3859,13 +3859,13 @@ def batch(iterable, batch_size=1):
         not_batched = not_batched[batch_size:]
 
 
-def dict_safe_get(dict_object, keys, default_return_value=None):
-    """Recursive safe get query, If keys found return value otherwise return None or default value.
+def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None, raise_return_type=True):
+    """Recursive safe get query (for nested dicts and lists), If keys found return value otherwise return None or default value.
     Example:
     >>> dict = {"something" : {"test": "A"}}
-    >>> dict_safe_get(dict, ['something', 'test'])
-    >>> A
-    >>> dict_safe_get(dict, ['something', 'else'], 'default value')
+    >>> dict_safe_get(dict,['something', 'test'])
+    >>> 'A'
+    >>> dict_safe_get(dict,['something', 'else'],'default value')
     >>> 'default value'
 
     :type dict_object: ``dict``
@@ -3877,16 +3877,27 @@ def dict_safe_get(dict_object, keys, default_return_value=None):
     :type default_return_value: ``object``
     :param default_return_value: Value to return when no key available.
 
-    :rtype: ``object``
-    :return:: Value found.
+    :type return_type: ``object``
+    :return:: Excepted return type.
+
+    :type raise_return_type: ``bool``
+    :return:: True if raising value error when value didn't match excepted return type.
     """
+    return_value = dict_object
+
     for key in keys:
         try:
-            dict_object = dict_object[key]
-        except (KeyError, TypeError):
-            return default_return_value
+            return_value = return_value[key]
+        except (KeyError, TypeError, IndexError, AttributeError):
+            return_value = default_return_value
+            break
 
-    return dict_object
+    if return_type and not isinstance(return_value, return_type):
+        if raise_return_type:
+            raise TypeError("Excepted return type %s, but actual type from nested dict/list is %s with value %s".format(return_type, type(return_value), str(return_value)))
+        return_value = default_return_value
+
+    return return_value
 
 
 CONTEXT_UPDATE_RETRY_TIMES = 3
