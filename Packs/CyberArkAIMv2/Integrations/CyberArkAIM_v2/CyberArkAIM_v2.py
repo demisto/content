@@ -22,7 +22,7 @@ class Client(BaseClient):
         self._cert_text = cert_text
         self._key_text = key_text
         self.auth = self.create_windows_authentication_param()
-        self.crt = self.create_crt_param()
+        self.crt, self.cf, self.kf = self.create_crt_param()
 
     def create_windows_authentication_param(self):
         auth = None
@@ -33,7 +33,7 @@ class Client(BaseClient):
 
     def create_crt_param(self):
         if not self._cert_text and not self._key_text:
-            return None
+            return None, None, None
         elif (self._cert_text and not self._key_text) or (not self._cert_text and self._key_text):
             raise Exception('You can not configure either certificate text or key, both are required.')
         elif self._cert_text and self._key_text:
@@ -52,7 +52,7 @@ class Client(BaseClient):
             kf = tempfile.NamedTemporaryFile(delete=False)
             kf.write(key_text_fixed.encode())
             kf.flush()
-            return cf.name, kf.name
+            return (cf.name, kf.name), cf, kf
 
     def list_credentials(self):
         url_suffix = f'/AIMWebService/api/Accounts?AppID={self._app_id}&Safe=' \
@@ -134,20 +134,32 @@ def main():
         username = params.get('credentials').get('identifier')
         password = params.get('credentials').get('password')
 
-    client = Client(server_url=url, use_ssl=use_ssl, proxy=proxy, app_id=app_id, folder=folder, safe=safe,
-                    credential_object=credential_object, username=username, password=password,
-                    cert_text=cert_text, key_text=key_text)
+    try:
+        client = Client(server_url=url, use_ssl=use_ssl, proxy=proxy, app_id=app_id, folder=folder, safe=safe,
+                        credential_object=credential_object, username=username, password=password,
+                        cert_text=cert_text, key_text=key_text)
 
-    command = demisto.command()
-    LOG(f'Command being called in CyberArk AIM is: {command}')
+        command = demisto.command()
+        LOG(f'Command being called in CyberArk AIM is: {command}')
 
-    commands = {
-        'test-module': test_module,
-        'cyberark-aim-list-credentials': list_credentials_command,
-        'fetch-credentials': fetch_credentials
-    }
-    if command in commands:
-        return_results(commands[command](client))  # type: ignore[operator]
+        commands = {
+            'test-module': test_module,
+            'cyberark-aim-list-credentials': list_credentials_command,
+            'fetch-credentials': fetch_credentials
+        }
+        if command in commands:
+            return_results(commands[command](client))  # type: ignore[operator]
+        else:
+            raise NotImplementedError(f'{command} is not an existing CyberArk PAS command')
+    except Exception as err:
+        return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
+    finally:
+        try:
+            if client.crt:
+                client.cf.close()
+                client.kf.close()
+        except Exception as err:
+            demisto.info(f"CyberArk PAS error: {str(err)}")
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
