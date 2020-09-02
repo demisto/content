@@ -941,7 +941,7 @@ def query_file_command():
         file_outputs = []
         endpoint_outputs = []
         files = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
-        for file_ in files.keys():
+        for file_ in files.values():
             raw_machine_details = dict_safe_get(get_file_machine_details(file_), ['data', 'resultIdToElementDataMap'],
                                                 {}, dict)
             machine_details = dict_safe_get(raw_machine_details, dict_safe_get(raw_machine_details.keys(), [0]), {},
