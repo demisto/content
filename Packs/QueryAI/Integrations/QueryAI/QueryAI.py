@@ -9,16 +9,19 @@ import urllib.parse
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+DEFAULT_TIMEOUT = 60    # in seconds
+
 
 class Client(BaseClient):   # type: ignore
 
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None,
-                 email=None, license_key=None, connection_params='{}', alias=None):
+                 email=None, license_key=None, connection_params='{}', alias=None, timeout=DEFAULT_TIMEOUT):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self._email = email
         self._license_key = license_key
         self.alias = alias
         self.connection_params = safe_load_json(connection_params) if connection_params else {}
+        self.timeout = timeout
 
     def queryai_http_request(self, method, url_suffix, json_data=None, params=None, data=None, **kwargs):
         if not json_data:
@@ -32,6 +35,7 @@ class Client(BaseClient):   # type: ignore
             params=params,
             json_data=json_data,
             data=data,
+            timeout=self.timeout,
             **kwargs
         )
 
@@ -182,6 +186,7 @@ def main() -> None:
     base_url = urljoin(demisto.params()['url'], '/api/v1')
     alias = demisto.params().get('alias')
     connection_params = demisto.params().get('connection_params', '{}')
+    timeout = int(demisto.params().get('timeout', DEFAULT_TIMEOUT))
 
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
@@ -198,6 +203,7 @@ def main() -> None:
             license_key=license_key,
             alias=alias,
             connection_params=connection_params,
+            timeout=timeout
         )
 
         if demisto.command() == 'test-module':
