@@ -1249,7 +1249,7 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
         json.dump(envs_to_test, filter_envs_file)
 
 
-def create_test_file(is_nightly, skip_save=False, file_string=''):
+def create_test_file(is_nightly, skip_save=False, changed_file_param=''):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     packs_to_install_string = ''
@@ -1259,9 +1259,8 @@ def create_test_file(is_nightly, skip_save=False, file_string=''):
         branch_name = branch_name_reg.group(1)
 
         logging.info("Getting changed files from the branch: {0}".format(branch_name))
-        if file_string:
-            print(f"entered file string if statement. file string is: {file_string}")
-            files_string = file_string
+        if changed_file_param:
+            files_string = changed_file_param
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
@@ -1306,11 +1305,11 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--nightly', type=tools.str2bool, help='Is nightly or not')
     parser.add_argument('-s', '--skip-save', type=tools.str2bool,
                         help='Skipping saving the test filter file (good for simply doing validation)')
-    parser.add_argument('-f', '--file-string', type=str, help='Is nightly or not')
+    parser.add_argument('-f', '--changed_files_string', type=str, help='A string representing the changed files')
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save, options.file_string)
+    create_test_file(options.nightly, options.skip_save, options.changed_files_string)
     if not _FAILED:
         logging.info("Finished test configuration")
         sys.exit(0)
