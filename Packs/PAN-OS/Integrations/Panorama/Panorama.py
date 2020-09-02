@@ -6168,7 +6168,29 @@ def get_wildfire_update_schedule_command():
     })
 
 
-# def enforce_wildfire_best_practice():
+def enforce_wildfire_system_config(template):
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': set_xpath_wildfire(template),
+        'key': API_KEY,
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def enforce_wildfire_schedule(template):
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']"
+        f"/config/devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
+        'key': API_KEY
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
 
 
 def url_filtering_block_default_categories(profile_name):
