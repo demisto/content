@@ -72,6 +72,16 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- additionalinfo: Traffic Light Protocol value (color) to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -168,7 +178,7 @@ script:
     description: Gets indicators available in the configured Elasticsearch database.
     execution: false
     name: es-get-indicators
-  dockerimage: demisto/elasticsearch:1.0.0.10134
+  dockerimage: demisto/elasticsearch:1.0.0.11003
   feed: true
   isfetch: false
   longRunning: false
