@@ -174,17 +174,24 @@ def get_full_timeline(detection_id, per_page=100):
     page = 1
     done = False
     activities = []  # type:ignore
+    last_data = {}  # type:ignore
+
     while not done:
         res = http_get('/detections/{}/timeline'.format(detection_id),
                        params={
                            'page': page,
                            'per_page': per_page,
         })
+        current_data = res.get('data')
 
-        if len(res['data']) == 0:
+        # if there is no more data to get from this http request
+        # or if the request provides the same information over and over again stop the loop
+        if len(current_data) == 0 or current_data == last_data:
+            current_data = {}
             done = True
 
-        activities.extend(res['data'])
+        activities.extend(current_data)
+        last_data = current_data
         page += 1
 
     return activities
