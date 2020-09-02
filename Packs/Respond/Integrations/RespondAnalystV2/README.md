@@ -1,1 +1,0 @@
-V2 supports mirroring api
