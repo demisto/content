@@ -669,23 +669,23 @@ def splunk_parse_raw_command():
 
 
 def test_module(service):
-    if demisto.params().get('isFetch'):
+    params = demisto.params()
+    if params.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count': 1, 'earliest_time': time}
-        searchquery_oneshot = demisto.params()['fetchQuery']
+        searchquery_oneshot = params['fetchQuery']
         try:
             service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
         except HTTPError as error:
             return_error(str(error))
-    if demisto.params().get('hec_url') and demisto.params().get('hec_token'):
+    if params.get('hec_url'):
         headers = {
-            'Authorization': 'Splunk {}'.format(demisto.params().get('hec_token')),
             'Content-Type': 'application/json'
         }
         try:
-            requests.post(demisto.params().get('hec_url') + '/services/collector/health', headers=headers,
-                          verify=VERIFY_CERTIFICATE)
+            requests.get(params.get('hec_url') + '/services/collector/health', headers=headers,
+                         verify=VERIFY_CERTIFICATE)
         except Exception as e:
             return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
