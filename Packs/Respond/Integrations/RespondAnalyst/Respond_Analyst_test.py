@@ -102,21 +102,7 @@ def test_get_incident_command(mocker, requests_mock):
         ]
     }
 
-    expected_result = {'name': 'Tenant 1: 6', 'occurred': '2020-06-05T09:20:21Z',
-                       'rawJSON': '{"incidentId": "6", "timeGenerated": "2020-06-05T09:20:21Z", "eventCount": 24, '
-                                  '"firstEventTime": "2019-12-21T05:05:31Z", "lastEventTime": "2020-06-05T01:20:17Z", '
-                                  '"URL": "https://localhost:6078/secure/incidents/6?tenantId=dev1", "closeURL": '
-                                  '"https://localhost:6078/secure/incidents/feedback/6?tenantId=dev1", '
-                                  '"title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network '
-                                  'IPS Activity", "status": "Closed", "severity": "Critical", "probability": '
-                                  '"VeryHigh", "attackStage": "LateralMovement", "attackTactic": null, '
-                                  '"assetCriticality": "Critical", "internalSystemsCount": 1, "internalSystems": [{'
-                                  '"hostname": "enterprise.com"}], "escalationReasons": [{"label": "Multiple Network '
-                                  'IPS Signatures Triggered by Same Internal Asset"}], "assignedUsers": ['
-                                  '"cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"], "feedback": {"timeUpdated": '
-                                  '"1593469076049", "userId": "qa-user@respond-software.com", "outcome": '
-                                  '"NonActionable", "comments": "blah blah blah"}, "tenantIdRespond": "dev1", '
-                                  '"tenantId": "Tenant 1"}'}
+    expected_result = load_test_data('test_data/get_incident_response.json')
 
     gql_client = GraphQLClient(
         tenant_id='dev1',
@@ -140,6 +126,7 @@ def test_get_incident_command(mocker, requests_mock):
         'incident_id': 6
     }
     incident = get_incident_command(client, args, gql_client)
+    # print(incident)
     assert incident == expected_result
 
 
@@ -207,7 +194,7 @@ def test_fetch_incidents(mocker, requests_mock):
     expected_output = load_test_data('test_data/fetch_incidents_response.json')
 
     next_run, response = fetch_incidents(client, None, gql_client)
-    print(response)
+    # print(response)
     assert expected_output == response
     assert next_run['Tenant 1']['time'] == '1591374031591'
 
@@ -506,9 +493,10 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
         "error closing incident and/or updating feedback: type object 'Exception' has no attribute 'get'")
 
 # INTEGRATION TESTS
-# the reason I have these commented out is that they are setup against the mock and thus will fail if mock is not up
-# I think it might make some sense to set these up against qa5 or another dev environment
-# they are useful to have down here for future testing maybe?
+# the reason I have these commented out is that they are setup against the mock/a test env
+# and so will fail without proper credentials/mock is down
+# they are useful to have down here for future testing, although once we are confident enough in unit tests
+# they can probably be removed
 # def test_fetch_incidents():
 #     from RespondAnalyst import fetch_incidents, RestClient
 #     rest_client = RestClient(
