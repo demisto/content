@@ -457,6 +457,7 @@ jobs:
       - *build_content_descriptor
       - *common_server_documentation
       - *create_artifact
+      - *update_tests_step
       - run:
           name: Download Configuration
           when: always
