@@ -526,8 +526,9 @@ def dnsdb_rdata(client, args):
     return CommandResults(
         readable_output=lookup_to_markdown(res, want_bailiwick=False),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}',
+        outputs_key_field='',
         outputs=[build_result_context(r) for r in res],
-        indicators=[Common.IP, Common.Domain]
+        #indicators=
     )
 
 
@@ -544,6 +545,7 @@ def dnsdb_summarize_rdata(client, args):
     return CommandResults(
         readable_output=summarize_to_markdown(res),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{SUMMARY_SUBCONTEXT_NAME}',
+        outputs_key_field='',
         outputs=build_result_context(res),
     )
 
@@ -556,8 +558,9 @@ def dnsdb_rrset(client, args):
     return CommandResults(
         readable_output=lookup_to_markdown(res),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}',
+        outputs_key_field='',
         outputs=[build_result_context(r) for r in res],
-        indicators=[Common.IP, Common.Domain]
+        #indicators =
     )
 
 
@@ -567,6 +570,7 @@ def dnsdb_summarize_rrset(client, args):
     return CommandResults(
         readable_output=summarize_to_markdown(res),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{SUMMARY_SUBCONTEXT_NAME}',
+        outputs_key_field='',
         outputs=build_result_context(res),
     )
 
@@ -575,8 +579,9 @@ def dnsdb_summarize_rrset(client, args):
 def dnsdb_rate_limit(client, _):
     res = client.rate_limit()
     return CommandResults(
-        readable_output= rate_limit_to_markdown(res),
+        readable_output=rate_limit_to_markdown(res),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{RATE_SUBCONTEXT_NAME}',
+        outputs_key_field='',
         outputs=build_rate_limits_context(res),
     )
 
