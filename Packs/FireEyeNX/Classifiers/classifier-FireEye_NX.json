@@ -1,0 +1,16 @@
+{
+ "name": "FireEye NX - Classifier",
+ "type": "classification",
+ "id": "FireEye NX",
+ "description": "Classifies FireEye NX Incidents.",
+ "defaultIncidentType": "FireEye NX Incident",
+ "keyTypeMap": {
+  "DOMAIN_MATCH": "FireEye NX Incident"
+ },
+ "transformer": {
+  "complex": null,
+  "simple": "name"
+ },
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

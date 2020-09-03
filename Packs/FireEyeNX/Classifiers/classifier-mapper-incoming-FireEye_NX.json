@@ -1,0 +1,174 @@
+{
+ "name": "FireEye NX Incoming Mapper",
+ "type": "mapping-incoming",
+ "id": "FireEye NX-mapper",
+ "description": "Maps incoming FireEye NX incident fields.",
+ "mapping": {
+  "FireEye NX Incident": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "FireEye NX Alert Type": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "name",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX ID": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "id",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX SC Version": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "scVersion",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Target MAC Address": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "DstMac",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX Time(UTC)": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "occurred",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "FireEye NX UUID": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "uuid",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "severity": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "severity",
+      "transformers": [
+       {
+        "args": {
+         "limit": {
+          "isContext": false,
+          "value": null
+         },
+         "replaceWith": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "1"
+          }
+         },
+         "toReplace": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "MINR"
+          }
+         }
+        },
+        "operator": "replace"
+       },
+       {
+        "args": {
+         "limit": {
+          "isContext": false,
+          "value": null
+         },
+         "replaceWith": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "4"
+          }
+         },
+         "toReplace": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "CRIT"
+          }
+         }
+        },
+        "operator": "replace"
+       },
+       {
+        "args": {
+         "limit": {
+          "isContext": false,
+          "value": null
+         },
+         "replaceWith": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "3"
+          }
+         },
+         "toReplace": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "MAJR"
+          }
+         }
+        },
+        "operator": "replace"
+       }
+      ]
+     },
+     "simple": ""
+    }
+   }
+  }
+ },
+ "version": -1,
+ "fromVersion": "6.0.0"
+}
