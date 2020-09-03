@@ -2578,13 +2578,13 @@ class IndicatorsTimeline:
     IndicatorsTimeline class - use to return Indicator Timeline object to CommandResults
 
     :type indicators: ``list`` or ``dict``
-    param indicators: expects a list of indicators, if a dict is passed it will be put into a list.
+    :param indicators: expects a list of indicators, if a dict is passed it will be put into a list.
 
     :type category: ``str``
-    param category: indicator category.
+    :param category: indicator category.
 
     :type message: ``str``
-    param message: indicator message.
+    :param message: indicator message.
 
     :return: a list of indicators
     :rtype: ``list``
