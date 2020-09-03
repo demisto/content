@@ -8,14 +8,6 @@ RETURN_ERROR_TARGET = 'CrowdStrikeFalcon.return_error'
 SERVER_URL = 'https://4.4.4.4'
 
 
-def get_fetch_data():
-    with open('./test_data.json', 'r') as f:
-        return json.loads(f.read())
-
-
-test_data = get_fetch_data()
-
-
 @pytest.fixture(autouse=True)
 def get_access_token(requests_mock, mocker):
     mocker.patch.object(
@@ -111,16 +103,10 @@ incident_context = {'name': 'Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1
                         '"tags": ["Objective/Keep Access"], "fine_score": 38}'}
 
 
-@pytest.mark.parametrize(
-    "response_incident, expected",
-    [
-        (response_incident, incident_context)
-    ]
-)
-def test_incident_to_incident_context(response_incident, expected):
+def test_incident_to_incident_context():
     from CrowdStrikeFalcon import incident_to_incident_context
-    res = incident_to_incident_context(test_data["response_incident"])
-    assert res == test_data['incident_context']
+    res = incident_to_incident_context(response_incident)
+    assert res == incident_context
 
 
 def test_timestamp_length_equalization():
