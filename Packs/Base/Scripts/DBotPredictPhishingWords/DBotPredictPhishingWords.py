@@ -56,7 +56,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
                                                     top_word_limit)
     predicted_prob = explain_result["Probability"]
     if predicted_prob < label_threshold:
-        handle_error("Label probability is {:.2f} and it's below the input threshold".format(
+        handle_error("Label probability is {:.2f} and it's below the input confidence threshold".format(
             predicted_prob), is_return_error)
 
     if tokenized_text_result.get('hashedTokenizedText'):
@@ -90,7 +90,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     explain_result_hr = dict()
     explain_result_hr['TextTokensHighlighted'] = highlighted_text_markdown
     explain_result_hr['Label'] = predicted_label
-    explain_result_hr['Probability'] = "%.2f" % predicted_prob
+    explain_result_hr['Confidence'] = "%.2f" % predicted_prob
     explain_result_hr['PositiveWords'] = ", ".join(positive_words)
     explain_result_hr['NegativeWords'] = ", ".join(negative_words)
     incident_context = demisto.incidents()[0]
@@ -122,12 +122,15 @@ def find_words_contain_tokens(positive_tokens, words_to_token_maps):
 
 
 def main():
+    confidence_threshold = 0
+    confidence_threshold = float(demisto.args().get("labelProbabilityThreshold", confidence_threshold))
+
     result = predict_phishing_words(demisto.args()['modelName'],
                                     demisto.args()['modelStoreType'],
                                     demisto.args().get('emailSubject', ''),
                                     demisto.args().get('emailBody', '') or demisto.args().get('emailBodyHTML', ''),
                                     int(demisto.args()['minTextLength']),
-                                    float(demisto.args().get("labelProbabilityThreshold", 0)),
+                                    confidence_threshold,
                                     float(demisto.args().get('wordThreshold', 0)),
                                     int(demisto.args()['topWordsLimit']),
                                     demisto.args()['returnError'] == 'true',
