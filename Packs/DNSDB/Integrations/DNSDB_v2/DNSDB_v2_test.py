@@ -16,7 +16,7 @@ import json
 import textwrap
 import time
 
-import DNSDB
+import DNSDB_v2 as DNSDB
 import pytest
 import CommonServerPython
 
@@ -707,32 +707,29 @@ class TestRDataCommand:
                     |farsightsecurity.com|NS|ns5.dnsmadeeasy.com.|706617|2013-07-17T21:26:20Z|2016-07-12T14:48:46Z|False|
                     ''')
 
-        expected_ctx = {
-            'DNSDB': {
-                'Record': [
-                    {
-                        'Count': 1078,
-                        'RData': 'ns5.dnsmadeeasy.com.',
-                        'RRName': 'farsightsecurity.com',
-                        'RRType': 'NS',
-                        'TimeFirst': '2013-07-19T16:22:00Z',
-                        'TimeLast': '2016-07-11T16:18:03Z',
-                        'FromZoneFile': True,
-                    },
-                    {
-                        'Count': 706617,
-                        'RData': 'ns5.dnsmadeeasy.com.',
-                        'RRName': 'farsightsecurity.com',
-                        'RRType': 'NS',
-                        'TimeFirst': '2013-07-17T21:26:20Z',
-                        'TimeLast': '2016-07-12T14:48:46Z',
-                        'FromZoneFile': False,
-                    }
-                ]
+        expected_output_prefix='DNSDB.Record'
+        expected_outputs = [
+            {
+                'Count': 1078,
+                'RData': 'ns5.dnsmadeeasy.com.',
+                'RRName': 'farsightsecurity.com',
+                'RRType': 'NS',
+                'TimeFirst': '2013-07-19T16:22:00Z',
+                'TimeLast': '2016-07-11T16:18:03Z',
+                'FromZoneFile': True,
+            },
+            {
+                'Count': 706617,
+                'RData': 'ns5.dnsmadeeasy.com.',
+                'RRName': 'farsightsecurity.com',
+                'RRType': 'NS',
+                'TimeFirst': '2013-07-17T21:26:20Z',
+                'TimeLast': '2016-07-12T14:48:46Z',
+                'FromZoneFile': False,
             }
-        }
+        ]
 
-        self._run_test(requests_mock, args, input, expected_readable, expected_ctx)
+        self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     def test_ip(self, requests_mock):
         args = {
@@ -753,33 +750,30 @@ class TestRDataCommand:
             |farsightsecurity.com|A|104.244.13.104|9429|2015-04-01T14:17:52Z|2016-07-12T14:17:22Z|True|
             ''')
 
-        expected_ctx = {
-            'DNSDB': {
-                'Record': [
-                    {'Count': 24,
-                     'FromZoneFile': False,
-                     'RData': '104.244.13.104',
-                     'RRName': 'www.farsighsecurity.com',
-                     'RRType': 'A',
-                     'TimeFirst': '2015-06-06T00:33:05Z',
-                     'TimeLast': '2016-07-12T08:28:36Z'},
-                    {
-                        'Count': 9429,
-                        'FromZoneFile': True,
-                        'RData': '104.244.13.104',
-                        'RRName': 'farsightsecurity.com',
-                        'RRType': 'A',
-                        'TimeFirst': '2015-04-01T14:17:52Z',
-                        'TimeLast': '2016-07-12T14:17:22Z'
-                    }
-                ]
+        expected_prefix = 'DNSDB.Record'
+        expected_outputs= [
+            {'Count': 24,
+             'FromZoneFile': False,
+             'RData': '104.244.13.104',
+             'RRName': 'www.farsighsecurity.com',
+             'RRType': 'A',
+             'TimeFirst': '2015-06-06T00:33:05Z',
+             'TimeLast': '2016-07-12T08:28:36Z'},
+            {
+                'Count': 9429,
+                'FromZoneFile': True,
+                'RData': '104.244.13.104',
+                'RRName': 'farsightsecurity.com',
+                'RRType': 'A',
+                'TimeFirst': '2015-04-01T14:17:52Z',
+                'TimeLast': '2016-07-12T14:17:22Z'
             }
-        }
+        ]
 
-        self._run_test(requests_mock, args, input, expected_readable, expected_ctx)
+        self._run_test(requests_mock, args, input, expected_readable, expected_prefix, expected_outputs)
 
     @staticmethod
-    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_ctx: dict):
+    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str, expected_outputs: list):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/lookup/rdata/{args["type"]}/{args["value"]}'
                           f'?limit={args["limit"]}'
@@ -789,9 +783,11 @@ class TestRDataCommand:
         for v in args.values():
             assert isinstance(v, str)
 
-        readable, ctx, _ = DNSDB.dnsdb_rdata(client, args)
-        assert readable == expected_readable
-        assert ctx == expected_ctx
+        res = DNSDB.dnsdb_rdata(client, args)
+
+        assert res.readable_output == expected_readable
+        assert res.outputs_prefix == expected_output_prefix
+        assert res.outputs == expected_outputs
 
 
 class TestSummarizeRDataCommand:
@@ -817,19 +813,16 @@ class TestSummarizeRDataCommand:
                 FromZoneFile
                  : False
                 ''')
-        expected_ctx = {
-            'DNSDB': {
-                'Summary': {
-                    'Count': 1127,
-                    'NumResults': 2,
-                    'TimeFirst': '2019-05-14T18:41:53Z',
-                    'TimeLast': '2019-06-14T18:35:33Z',
-                    'FromZoneFile': False,
-                }
-            }
+        expected_output_prefix = 'DNSDB.Summary'
+        expected_outputs = {
+            'Count': 1127,
+            'NumResults': 2,
+            'TimeFirst': '2019-05-14T18:41:53Z',
+            'TimeLast': '2019-06-14T18:35:33Z',
+            'FromZoneFile': False,
         }
 
-        self._run_test(requests_mock, args, input, expected_readable, expected_ctx)
+        self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     def test_ip(self, requests_mock):
         args = {
@@ -854,19 +847,16 @@ class TestSummarizeRDataCommand:
                  : False
                 ''')
 
-        expected_ctx = {
-            'DNSDB': {
-                'Summary': {
-                    'Count': 1127,
-                    'NumResults': 2,
-                    'TimeFirst': '2019-05-14T18:41:53Z',
-                    'TimeLast': '2019-06-14T18:35:33Z',
-                    'FromZoneFile': False,
-                }
-            }
+        expected_output_prefix='DNSDB.Summary'
+        expected_outputs = {
+            'Count': 1127,
+            'NumResults': 2,
+            'TimeFirst': '2019-05-14T18:41:53Z',
+            'TimeLast': '2019-06-14T18:35:33Z',
+            'FromZoneFile': False,
         }
 
-        self._run_test(requests_mock, args, input, expected_readable, expected_ctx)
+        self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     def test_zone(self, requests_mock):
         args = {
@@ -891,22 +881,19 @@ class TestSummarizeRDataCommand:
                          : True
                         ''')
 
-        expected_ctx = {
-            'DNSDB': {
-                'Summary': {
-                    'Count': 1127,
-                    'NumResults': 2,
-                    'TimeFirst': '2019-05-14T18:41:53Z',
-                    'TimeLast': '2019-06-14T18:35:33Z',
-                    'FromZoneFile': True,
-                }
-            }
+        expected_output_prefix='DNSDB.Summary'
+        expected_outputs = {
+            'Count': 1127,
+            'NumResults': 2,
+            'TimeFirst': '2019-05-14T18:41:53Z',
+            'TimeLast': '2019-06-14T18:35:33Z',
+            'FromZoneFile': True,
         }
 
-        self._run_test(requests_mock, args, input, expected_readable, expected_ctx)
+        self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     @staticmethod
-    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_ctx: dict):
+    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str, expected_outputs: dict):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/summarize/rdata/{args["type"]}/{args["value"]}'
                           f'?limit={args["limit"]}'
@@ -917,9 +904,11 @@ class TestSummarizeRDataCommand:
         for v in args.values():
             assert isinstance(v, str)
 
-        readable, ctx, _ = DNSDB.dnsdb_summarize_rdata(client, args)
-        assert readable == expected_readable
-        assert ctx == expected_ctx
+        res = DNSDB.dnsdb_summarize_rdata(client, args)
+
+        assert res.readable_output == expected_readable
+        assert res.outputs_prefix == expected_output_prefix
+        assert res.outputs == expected_outputs
 
 
 class TestRRSetCommand:
@@ -941,37 +930,34 @@ class TestRRSetCommand:
             |farsightsecurity.com|A|com|104.244.13.104|17381|2015-04-01T13:07:24Z|2016-07-12T13:14:32Z|True|
                                 ''')
 
-        expected_ctx = {
-            'DNSDB': {
-                'Record': [
-                    {
-                        'Count': 5059,
-                        'RRName': 'www.farsightsecurity.com',
-                        'RRType': 'A',
-                        'RData': ['66.160.140.81'],
-                        'Bailiwick': 'farsightsecurity.com',
-                        'TimeFirst': '2013-09-25T20:02:10Z',
-                        'TimeLast': '2015-04-01T09:51:39Z',
-                        'FromZoneFile': False,
-                    },
-                    {
-                        'Count': 17381,
-                        'RRName': 'farsightsecurity.com',
-                        'RRType': 'A',
-                        'Bailiwick': 'com',
-                        'RData': ['104.244.13.104'],
-                        'TimeFirst': '2015-04-01T13:07:24Z',
-                        'TimeLast': '2016-07-12T13:14:32Z',
-                        'FromZoneFile': True,
-                    }
-                ]
+        expected_output_prefix='DNSDB.Record'
+        expected_outputs = [
+            {
+                'Count': 5059,
+                'RRName': 'www.farsightsecurity.com',
+                'RRType': 'A',
+                'RData': ['66.160.140.81'],
+                'Bailiwick': 'farsightsecurity.com',
+                'TimeFirst': '2013-09-25T20:02:10Z',
+                'TimeLast': '2015-04-01T09:51:39Z',
+                'FromZoneFile': False,
+            },
+            {
+                'Count': 17381,
+                'RRName': 'farsightsecurity.com',
+                'RRType': 'A',
+                'Bailiwick': 'com',
+                'RData': ['104.244.13.104'],
+                'TimeFirst': '2015-04-01T13:07:24Z',
+                'TimeLast': '2016-07-12T13:14:32Z',
+                'FromZoneFile': True,
             }
-        }
+        ]
 
-        self._run_test(requests_mock, args, input, expected_readable, expected_ctx)
+        self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     @staticmethod
-    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_ctx: dict):
+    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str, expected_outputs: list):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/lookup/rrset/name/{DNSDB.quote(args["owner_name"])}'
                           f'?limit={args["limit"]}'
@@ -981,9 +967,11 @@ class TestRRSetCommand:
         for v in args.values():
             assert isinstance(v, str)
 
-        readable, ctx, _ = DNSDB.dnsdb_rrset(client, args)
-        assert readable == expected_readable
-        assert ctx == expected_ctx
+        res = DNSDB.dnsdb_rrset(client, args)
+
+        assert res.readable_output == expected_readable
+        assert res.outputs_prefix == expected_output_prefix
+        assert res.outputs == expected_outputs
 
 
 class TestSummarizeRRSetCommand:
@@ -1009,19 +997,16 @@ class TestSummarizeRRSetCommand:
                  : False
                 ''')
 
-        expected_ctx = {
-            'DNSDB': {
-                'Summary': {
-                    'Count': 1127,
-                    'NumResults': 2,
-                    'TimeFirst': '2019-05-14T18:41:53Z',
-                    'TimeLast': '2019-06-14T18:35:33Z',
-                    'FromZoneFile': False,
-                }
-            }
+        expected_output_prefix = 'DNSDB.Summary'
+        expected_outputs = {
+            'Count': 1127,
+            'NumResults': 2,
+            'TimeFirst': '2019-05-14T18:41:53Z',
+            'TimeLast': '2019-06-14T18:35:33Z',
+            'FromZoneFile': False,
         }
 
-        self._run_test(requests_mock, args, input, expected_readable, expected_ctx)
+        self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     def test_zone(self, requests_mock):
         args = {
@@ -1045,22 +1030,19 @@ class TestSummarizeRRSetCommand:
                          : True
                         ''')
 
-        expected_ctx = {
-            'DNSDB': {
-                'Summary': {
-                    'Count': 1127,
-                    'NumResults': 2,
-                    'TimeFirst': '2019-05-14T18:41:53Z',
-                    'TimeLast': '2019-06-14T18:35:33Z',
-                    'FromZoneFile': True,
-                }
-            }
+        expected_output_prefix = 'DNSDB.Summary'
+        expected_outputs = {
+            'Count': 1127,
+            'NumResults': 2,
+            'TimeFirst': '2019-05-14T18:41:53Z',
+            'TimeLast': '2019-06-14T18:35:33Z',
+            'FromZoneFile': True,
         }
 
-        self._run_test(requests_mock, args, input, expected_readable, expected_ctx)
+        self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     @staticmethod
-    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_ctx: dict):
+    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str, expected_outputs: dict):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/summarize/rrset/name/{args["owner_name"]}'
                           f'?limit={args["limit"]}'
@@ -1071,9 +1053,11 @@ class TestSummarizeRRSetCommand:
         for v in args.values():
             assert isinstance(v, str)
 
-        readable, ctx, _ = DNSDB.dnsdb_summarize_rrset(client, args)
-        assert readable == expected_readable
-        assert ctx == expected_ctx
+        res = DNSDB.dnsdb_summarize_rrset(client, args)
+
+        assert res.readable_output == expected_readable
+        assert res.outputs_prefix == expected_output_prefix
+        assert res.outputs == expected_outputs
 
 
 class TestRateLimitCommand:
@@ -1150,9 +1134,10 @@ class TestRateLimitCommand:
             ), json=input)
 
         # The context is tested in TestBuildLimitsContext
-        readable, ctx, _ = DNSDB.dnsdb_rate_limit(client, None)
-        assert readable == expected_readable
-        assert 'Rate' in ctx['DNSDB']
+        res = DNSDB.dnsdb_rate_limit(client, None)
+        assert res.readable_output == expected_readable
+        assert res.outputs_prefix == 'DNSDB.Rate'
+        assert isinstance(res.outputs, dict)
 
 
 class TestParseRData:

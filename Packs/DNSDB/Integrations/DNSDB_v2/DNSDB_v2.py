@@ -19,7 +19,6 @@ import urllib
 import urllib.parse
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 import datetime  # type: ignore[no-redef]
 import json
@@ -509,7 +508,7 @@ def rate_limit_to_markdown(results: Dict) -> str:
 def test_module(client, _):
     try:
         client.rate_limit()
-        return ['ok']
+        return 'ok'
     except Exception as e:
         raise DemistoException from e
 
@@ -524,11 +523,12 @@ def dnsdb_rdata(client, args):
     else:
         raise Exception(f'Invalid rdata query type: {type}')
 
-    ctx = {
-        f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}': [build_result_context(r) for r in res],
-    }
-    md = lookup_to_markdown(res, want_bailiwick=False)
-    return md, ctx, res
+    return CommandResults(
+        readable_output=lookup_to_markdown(res, want_bailiwick=False),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}',
+        outputs=[build_result_context(r) for r in res],
+        indicators=[Common.IP, Common.Domain]
+    )
 
 
 @logger
@@ -541,11 +541,11 @@ def dnsdb_summarize_rdata(client, args):
     else:
         raise Exception(f'Invalid rdata query type: {type}')
 
-    ctx = {
-        f'INTEGRATION_CONTEXT_NAME.{SUMMARY_SUBCONTEXT_NAME}': build_result_context(res),
-    }
-    md = summarize_to_markdown(res)
-    return md, ctx, res
+    return CommandResults(
+        readable_output=summarize_to_markdown(res),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{SUMMARY_SUBCONTEXT_NAME}',
+        outputs=build_result_context(res),
+    )
 
 
 @logger
@@ -553,31 +553,32 @@ def dnsdb_rrset(client, args):
     q = _run_query(client.lookup_rrset, args)
     res = list(q)
 
-    ctx = {
-        f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}': [build_result_context(r) for r in res],
-    }
-    md = lookup_to_markdown(res)
-    return md, ctx, res
+    return CommandResults(
+        readable_output=lookup_to_markdown(res),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}',
+        outputs=[build_result_context(r) for r in res],
+        indicators=[Common.IP, Common.Domain]
+    )
 
 
 @logger
 def dnsdb_summarize_rrset(client, args):
     res = _run_query(client.summarize_rrset, args)
-    ctx = {
-        f'{INTEGRATION_CONTEXT_NAME}.{SUMMARY_SUBCONTEXT_NAME}': build_result_context(res),
-    }
-    md = summarize_to_markdown(res)
-    return md, ctx, res
+    return CommandResults(
+        readable_output=summarize_to_markdown(res),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{SUMMARY_SUBCONTEXT_NAME}',
+        outputs=build_result_context(res),
+    )
 
 
 @logger
 def dnsdb_rate_limit(client, _):
     res = client.rate_limit()
-    ctx = {
-        f'{INTEGRATION_CONTEXT_NAME}.{RATE_SUBCONTEXT_NAME}': build_rate_limits_context(res),
-    }
-    md = rate_limit_to_markdown(res)
-    return md, ctx, res
+    return CommandResults(
+        readable_output= rate_limit_to_markdown(res),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{RATE_SUBCONTEXT_NAME}',
+        outputs=build_rate_limits_context(res),
+    )
 
 
 def main():
@@ -601,20 +602,23 @@ def main():
     command = demisto.command()
     LOG(f'Command being called is {command}')
     try:
-        if command == f'{INTEGRATION_COMMAND_NAME}-rdata':
-            return_outputs(dnsdb_rdata(client, demisto.args()))
+        if command == 'test-module':
+            return_results(test_module(client, demisto.args()))
+
+        elif command == f'{INTEGRATION_COMMAND_NAME}-rdata':
+            return_results(dnsdb_rdata(client, demisto.args()))
 
         elif command == f'{INTEGRATION_COMMAND_NAME}-summarize-rdata':
-            return_outputs(dnsdb_summarize_rdata(client, demisto.args()))
+            return_results(dnsdb_summarize_rdata(client, demisto.args()))
 
         elif command == f'{INTEGRATION_COMMAND_NAME}-rrset':
-            return_outputs(dnsdb_rrset(client, demisto.args()))
+            return_results(dnsdb_rrset(client, demisto.args()))
 
         elif command == f'{INTEGRATION_COMMAND_NAME}-summarize-rrset':
-            return_outputs(dnsdb_summarize_rrset(client, demisto.args()))
+            return_results(dnsdb_summarize_rrset(client, demisto.args()))
 
         elif command == f'{INTEGRATION_COMMAND_NAME}-rate-limit':
-            return_outputs(dnsdb_rate_limit(client, demisto.args()))
+            return_results(dnsdb_rate_limit(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:
