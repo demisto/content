@@ -2599,8 +2599,7 @@ class IndicatorsTimeline:
                 indicator['Category'] = 'Integration Update'
             if message:
                 indicator['Message'] = message
-
-        return indicators
+        self.indicators_timeline = indicators
 
 
 class CommandResults:
@@ -2637,7 +2636,7 @@ class CommandResults:
     :rtype: ``None``
     """
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicator_timeline=None):
+                 raw_response=None, indicators_timeline=None):
         # type: (str, object, object, list, str, object, list) -> None
         if raw_response is None:
             raw_response = outputs
@@ -2663,7 +2662,7 @@ class CommandResults:
 
         self.raw_response = raw_response
         self.readable_output = readable_output
-        self.indicator_timeline = indicator_timeline
+        self.indicators_timeline = indicators_timeline
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -2672,7 +2671,7 @@ class CommandResults:
         else:
             human_readable = None  # type: ignore[assignment]
         raw_response = None  # type: ignore[assignment]
-        indicator_timeline = None  # type: ignore[assignment]
+        indicators_timeline = None  # type: ignore[assignment]
 
         if self.indicators:
             for indicator in self.indicators:
@@ -2687,8 +2686,8 @@ class CommandResults:
         if self.raw_response:
             raw_response = self.raw_response
 
-        if self.indicator_timeline:
-            indicator_timeline = self.indicator_timeline
+        if self.indicators_timeline:
+            indicators_timeline = self.indicators_timeline
 
         if self.outputs is not None:
             if not self.readable_output:
@@ -2716,7 +2715,7 @@ class CommandResults:
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs,
-            'IndicatorTimeline': indicator_timeline
+            'IndicatorTimeline': indicators_timeline
         }
 
         return return_entry
