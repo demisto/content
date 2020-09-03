@@ -71,6 +71,6 @@ class TestFetchIndicators:
                 assert expected_value[i] in res["value"]
                 assert expected_type[i] in res["type"]
                 assert res['fields']['tags'] == client.tags
-                assert res['fields']['tags'] == client.tlp_color
+                assert res['fields']['trafficlightprotocol'] == client.tlp_color
         else:
             assert not results
