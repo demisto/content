@@ -83,7 +83,7 @@ script:
       required: true
     description: remove a user from a Respond incident
     name: respond-remove-user
-  dockerimage: demisto/gql:1.0.0.9687
+  dockerimage: demisto/gql:1.0.0.10664
   isfetch: true
   runonce: false
   script: ''

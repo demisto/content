@@ -13,5 +13,6 @@
  "fromVersion": "5.0.0",
  "content": true,
  "system": false,
- "required": false
+ "required": false,
+ "group": 0
 }

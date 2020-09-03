@@ -818,6 +818,6 @@ detaileddescription: >
   - This text is markdown
 
   - Here you should explain how to configure the instance in Demisto
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

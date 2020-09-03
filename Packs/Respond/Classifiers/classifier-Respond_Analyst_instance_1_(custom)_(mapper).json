@@ -20,6 +20,6 @@
  },
  "type": "mapping-incoming",
  "version": -1,
- "fromVersion": "5.0.0",
+ "fromVersion": "6.0.0",
  "description": ""
 }
