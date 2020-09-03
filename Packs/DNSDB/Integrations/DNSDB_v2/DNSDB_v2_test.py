@@ -688,6 +688,22 @@ class TestBuildLimitsContext(object):
 
 
 class TestRDataCommand:
+    def test_empty(self, requests_mock):
+        args = {
+            'type': 'name',
+            'value': 'farsightsecurity.com',
+            'limit': '10',
+        }
+        input = ''
+        expected_readable = textwrap.dedent('''\
+                    ### Farsight DNSDB Lookup
+                    No results found.
+                                        ''')
+        expected_output_prefix='DNSDB.Record'
+        expected_outputs = []
+
+        self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
+
     def test_name(self, requests_mock):
         args = {
             'type': 'name',
@@ -912,6 +928,21 @@ class TestSummarizeRDataCommand:
 
 
 class TestRRSetCommand:
+    def test_empty(self, requests_mock):
+        args = {
+            'owner_name': '*.farsightsecurity.com',
+            'limit': '10',
+        }
+        input = ''
+        expected_readable = textwrap.dedent('''\
+                    ### Farsight DNSDB Lookup
+                    No results found.
+                                        ''')
+        expected_output_prefix='DNSDB.Record'
+        expected_outputs = []
+
+        self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
+
     def test_a(self, requests_mock):
         args = {
             'owner_name': '*.farsightsecurity.com',

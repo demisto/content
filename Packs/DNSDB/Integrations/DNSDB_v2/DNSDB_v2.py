@@ -397,47 +397,50 @@ def lookup_to_markdown(results: List[Dict], want_bailiwick=True) -> str:
     # TODO this should be more specific, include arguments?
     out = ['### Farsight DNSDB Lookup']
 
-    keys = [
-        ('RRName', 'rrname', format_name_for_context),
-        ('RRType', 'rrtype', str),
-        ('Bailiwick', 'bailiwick', format_name_for_context),
-        ('RData', 'rdata', format_rdata_for_markdown),
-        ('Count', 'count', str),
-        ('TimeFirst', 'time_first'),
-        ('TimeLast', 'time_last'),
-        ('TimeFirst', 'zone_time_first'),
-        ('TimeLast', 'zone_time_last'),
-    ]
+    if not results:
+        out += ['No results found.']
+    else:
+        keys = [
+            ('RRName', 'rrname', format_name_for_context),
+            ('RRType', 'rrtype', str),
+            ('Bailiwick', 'bailiwick', format_name_for_context),
+            ('RData', 'rdata', format_rdata_for_markdown),
+            ('Count', 'count', str),
+            ('TimeFirst', 'time_first'),
+            ('TimeLast', 'time_last'),
+            ('TimeFirst', 'zone_time_first'),
+            ('TimeLast', 'zone_time_last'),
+        ]
 
-    if not want_bailiwick:
-        keys = list(filter(lambda r: r[1] != 'bailiwick', keys))
+        if not want_bailiwick:
+            keys = list(filter(lambda r: r[1] != 'bailiwick', keys))
 
-    out += ['|' + '|'.join(str(k[0]) for k in keys[:-2]) + '|', '|-' * len(keys) + '|']
+        out += ['|' + '|'.join(str(k[0]) for k in keys[:-2]) + '|', '|-' * len(keys) + '|']
 
-    for result in results:
-        row = []
-        for ckey, rkey, f in keys[:-4]:
-            if rkey in result:
-                row += [f(result[rkey])]  # type: ignore[operator]
+        for result in results:
+            row = []
+            for ckey, rkey, f in keys[:-4]:
+                if rkey in result:
+                    row += [f(result[rkey])]  # type: ignore[operator]
+                else:
+                    row += [' ']
+
+            if 'time_first' in result:
+                row += [parse_unix_time(result['time_first'])]
+            elif 'zone_time_first' in result:
+                row += [parse_unix_time(result['zone_time_first'])]
             else:
                 row += [' ']
 
-        if 'time_first' in result:
-            row += [parse_unix_time(result['time_first'])]
-        elif 'zone_time_first' in result:
-            row += [parse_unix_time(result['zone_time_first'])]
-        else:
-            row += [' ']
+            if 'time_last' in result:
+                row += [parse_unix_time(result['time_last'])]
+            elif 'zone_time_last' in result:
+                row += [parse_unix_time(result['zone_time_last'])]
+            else:
+                row += [' ']
 
-        if 'time_last' in result:
-            row += [parse_unix_time(result['time_last'])]
-        elif 'zone_time_last' in result:
-            row += [parse_unix_time(result['zone_time_last'])]
-        else:
-            row += [' ']
-
-        row += [str("zone_time_first" in result)]
-        out += ['|' + '|'.join(row) + '|']
+            row += [str("zone_time_first" in result)]
+            out += ['|' + '|'.join(row) + '|']
 
     return '\n'.join(out) + '\n'
 
