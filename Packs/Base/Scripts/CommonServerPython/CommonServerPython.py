@@ -2577,7 +2577,7 @@ class IndicatorsTimeline:
     """
     IndicatorsTimeline class - use to return Indicator Timeline object to CommandResults
 
-    :type indicators: ``list | dict``
+    :type indicators: ``list`` or ``dict``
     param indicators: expects a list of indicators, if a dict is passed it will be put into a list.
 
     :type category: ``str``
@@ -2601,6 +2601,7 @@ class IndicatorsTimeline:
                 indicator['Message'] = message
 
         return indicators
+
 
 class CommandResults:
     """
