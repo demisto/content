@@ -1290,7 +1290,7 @@ script:
       initial fetch state (will try to fetch first available offense).
     execution: false
     name: qradar-reset-last-run
-  dockerimage: demisto/python3:3.8.5.10455
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: false
   longRunning: true
@@ -1301,5 +1301,4 @@ script:
   type: python
 defaultmapperin: QRadar-mapper
 defaultclassifier: QRadar
-sourcemoduleid: QRadar_v2
 fromversion: 6.0.0

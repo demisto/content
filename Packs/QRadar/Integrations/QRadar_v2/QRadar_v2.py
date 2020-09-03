@@ -226,11 +226,7 @@ class QRadarClient:
                 try:
                     err_json = res.json()
                 except ValueError:
-                    raise Exception(
-                        "Error code {err}\nContent: {cnt}".format(
-                            err=res.status_code, cnt=res.content
-                        )
-                    )
+                    raise Exception(f"Error code {str(res.status_code)}\nContent: {str(res.content)}")
 
                 err_msg = ""
                 if "message" in err_json:
@@ -577,7 +573,7 @@ def get_entry_for_object(
         }
     obj = filter_dict_null(obj)
     if headers:
-        if isinstance(headers, STRING_TYPES):
+        if isinstance(headers, str):
             headers = headers.split(",")
         if isinstance(obj, dict):
             headers = list(set(headers).intersection(set(obj.keys())))
@@ -932,18 +928,15 @@ def fetch_incidents_long_running_events(
             )
         for future in concurrent.futures.as_completed(futures):
             enriched_offenses.append(future.result())
-        # force thread clear
-        executor._threads.clear()
-    concurrent.futures.thread._threads_queues.clear()
 
     if is_reset_triggered(client.lock, handle_reset=True):
         return
 
     enriched_offenses.sort(key=lambda offense: offense.get("id", 0))
     if full_enrich:
-        print_debug_msg(f"(8) Enriching offenses")
+        print_debug_msg("(8) Enriching offenses")
         enrich_offense_result(client, enriched_offenses, full_enrich)
-        print_debug_msg(f"(9) Enriched offenses successfully.")
+        print_debug_msg("(9) Enriched offenses successfully.")
     new_incidents_samples = try_create_incidents(enriched_offenses)
     incidents_batch_for_sample = (
         new_incidents_samples if new_incidents_samples else last_run.get("samples", [])
@@ -1468,7 +1461,7 @@ def get_domain_name(client: QRadarClient, domain_id=None):
             .get("events", [{}])[0]
             .get("Domain name")
         )
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -1830,7 +1823,7 @@ def fetch_loop_with_events(
     while True:
         is_reset_triggered(client.lock, handle_reset=True)
 
-        print_debug_msg(f"(14) Starting fetch loop with events.")
+        print_debug_msg("(14) Starting fetch loop with events.")
         fetch_incidents_long_running_events(
             client, user_query, full_enrich, fetch_mode, events_columns, events_limit
         )
@@ -1841,7 +1834,7 @@ def fetch_loop_no_events(client: QRadarClient, user_query, full_enrich):
     while True:
         is_reset_triggered(client.lock, handle_reset=True)
 
-        print_debug_msg(f"(14) Starting fetch loop with no events.")
+        print_debug_msg("(14) Starting fetch loop with no events.")
         fetch_incidents_long_running_no_events(client, user_query, full_enrich)
         time.sleep(FETCH_SLEEP)
 
@@ -1930,7 +1923,7 @@ def main():
         }
         if command in normal_commands:
             args = demisto.args()
-            demisto.results(normal_commands[command](client, **args))
+            demisto.results(normal_commands[command](client, **args))  # type: ignore[operator]
         elif command == "fetch-incidents":
             fetch_incidents_long_running_samples()
         elif command == "long-running-execution":
