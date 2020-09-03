@@ -21,6 +21,7 @@ urllib3.disable_warnings()
 
 UDSOAPIPATH = '/WebApp/api/SuspiciousObjects/UserDefinedSO'
 PRODAGENTAPIPATH = '/WebApp/API/AgentResource/ProductAgents'
+FIELDS_TO_REMOVE_FROM_CONTEXT = ['FeatureCtrl', 'Meta', 'PermissionCtrl', 'SystemCtrl']
 
 LOG_NAME_TO_LOG_TYPE = {
     "Data Loss Prevention": "data_loss_prevention",
@@ -315,14 +316,9 @@ class Client(BaseClient):
 
     @staticmethod
     def remove_unnecessary_fields_from_response(response):
-        if response.get('FeatureCtrl'):
-            response.pop('FeatureCtrl')
-        if response.get('Meta'):
-            response.pop('Meta')
-        if response.get('PermissionCtrl'):
-            response.pop('PermissionCtrl')
-        if response.get('SystemCtrl'):
-            response.pop('SystemCtrl')
+        for field in FIELDS_TO_REMOVE_FROM_CONTEXT:
+            if response.get(field):
+                response.pop(field)
         return response
 
     @staticmethod
@@ -461,91 +457,11 @@ class Client(BaseClient):
 
         return payload_data
 
-    def build_process_terminate_payload(self, agent_guids: Dict = {}, server_guids: List = [], object_name: str = "",
-                                        processes_to_terminate: List = [], filter_by_endpoint_name="",
-                                        filter_by_endpoint_type="",
-                                        filter_by_endpoint_ip_address="", filter_by_endpoint_operating_system=""):
-        payload_data = {}
-        payload_filter = self.create_payload_filter(filter_by_endpoint_name, filter_by_endpoint_type,
-                                                    filter_by_endpoint_ip_address, filter_by_endpoint_operating_system)
-        if payload_filter:
-            payload_data["filter"] = payload_filter
-
-        if agent_guids:
-            payload_data = self.update_agents_info_in_payload(payload_data, agent_guids)
-
-        elif server_guids:
-            payload_data["serverGuid"] = argToList(server_guids)
-
-        if object_name:
-            payload_data["suspiciousObjectName"] = object_name
-
-        if processes_to_terminate:
-            processes_to_terminate = argToList(processes_to_terminate)
-            payload_data["terminationInfoList"] = [
-                {
-                    "name": 101,
-                    "value": process_sha1
-                } for process_sha1 in processes_to_terminate]
-        return payload_data
-
     @staticmethod
     def validate_response(response, error_message):
         response_message = response.get('Data', {}).get('Message', '')
         if response_message and response_message != 'OK':
             raise DemistoException(f'{error_message}. Reason:\n{response_message}')
-
-    def process_terminate_request(self, agent_guids: Dict = {}, server_guids: List = [], object_name: str = "",
-                                  processes_to_terminate: List = [], filter_by_endpoint_name="",
-                                  filter_by_endpoint_type="",
-                                  filter_by_endpoint_ip_address="", filter_by_endpoint_operating_system=""):
-
-        payload = self.build_process_terminate_payload(agent_guids, server_guids, object_name, processes_to_terminate,
-                                                       filter_by_endpoint_name, filter_by_endpoint_type,
-                                                       filter_by_endpoint_ip_address,
-                                                       filter_by_endpoint_operating_system)
-        request_data = {
-            "Url": "V1/Task/CreateProcessTermination",
-            "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
-            "Payload": payload
-        }
-        headers = {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
-                                                               headers='', request_body=json.dumps(request_data))}
-
-        response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
-        self.validate_response(response, error_message='The process termination was unsuccessful')
-        return response
-
-    def build_investigation_payload(self, investigation_name: str, scan_type: str, time_range_type: str,
-                                    agent_guids: Dict = {}, server_guids: List = [],
-                                    scan_schedule_guid: str = "", scan_schedule_id: str = "",
-                                    time_range_start: str = "", time_range_end: str = ""):
-        payload = {
-            "name": investigation_name,
-            "scan_type": SCAN_TYPE_TO_NUM[scan_type],
-            "timeRange": {"rangeType": time_range_type}
-        }
-
-        if time_range_type == 'Specific':
-            # TODO convert times to unix timestamps
-            payload["timeRange"] = {"startUnixTime": time_range_start}
-            payload["timeRange"] = {"endUnixTime": time_range_end}
-
-        if agent_guids:
-            payload = self.update_agents_info_in_payload(payload, agent_guids)
-
-        elif server_guids:
-            payload["serverGuid"] = argToList(server_guids)
-
-        if scan_schedule_guid:
-            payload["scanScheduleGuid"] = scan_schedule_guid
-
-        if scan_schedule_id:
-            payload["scanScheduleId"] = scan_schedule_id
-
-        return payload
 
     @staticmethod
     def get_file_name_and_base_64_content(entry_id: str):
@@ -556,83 +472,6 @@ class Client(BaseClient):
             file_content_base64_string = base64.b64encode(
                 f.read()).decode()  # the api is expecting 64based encoded file
         return file_name, file_content_base64_string
-
-    def create_file_content_criteria(self, entry_id, criteria_hash_id: str = ""):
-
-        file_name, file_content_base64_string = self.get_file_name_and_base_64_content(entry_id)
-
-        file_content_criteria = {
-            "base64EncodedContent": file_content_base64_string,
-            "fileName": file_name
-        }
-        if criteria_hash_id:
-            file_content_criteria["criteriaHashId"] = criteria_hash_id
-
-        return file_content_criteria
-
-    def create_file_investigation(self, investigation_name: str, entry_id: str, scan_type: str, time_range_type: str,
-                                  agent_guids: Dict = {}, server_guids: List = [],
-                                  criteria_hash_id: str = "", scan_schedule_guid: str = "", scan_schedule_id: str = "",
-                                  time_range_start: str = "", time_range_end: str = ""):
-
-        payload = self.build_investigation_payload(investigation_name, scan_type, time_range_type,
-                                                   agent_guids, server_guids, scan_schedule_guid, scan_schedule_id,
-                                                   time_range_start, time_range_end)
-
-        payload["fileContentCriteria"] = self.create_file_content_criteria(entry_id, criteria_hash_id)
-        request_data = {
-            "Url": "V1/Task/CreateScan",
-            "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
-            "Payload": payload
-        }
-
-        headers = {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
-                                                               headers='', request_body=json.dumps(request_data))}
-        response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
-        return response
-
-    @staticmethod
-    def create_registry_criteria(registry_key, registry_name, match_option, registry_data):
-        match_option_to_number = {
-            'Equal': 1,
-            'Data contains': 2,
-            'Data does not contain': 3
-        }
-        registry_criteria = {
-            'item': [
-                {
-                    'key': registry_key,
-                    'data': registry_data,
-                    'matchOption': match_option_to_number[match_option],
-                    'value': registry_name
-                }
-            ]
-        }
-        return registry_criteria
-
-    def create_registry_investigation(self, registry_key, registry_name, match_option, registry_data,
-                                      investigation_name: str, time_range_type: str,
-                                      agent_guids: Dict = {}, server_guids: List = [], scan_schedule_guid: str = "",
-                                      scan_schedule_id: str = "", time_range_start: str = "", time_range_end: str = ""):
-
-        payload = self.build_investigation_payload(investigation_name, 'Windows registry', time_range_type, agent_guids,
-                                                   server_guids, scan_schedule_guid, scan_schedule_id, time_range_start,
-                                                   time_range_end)
-        payload["registryCriteria"] = self.create_registry_criteria(registry_key, registry_name, match_option,
-                                                                    registry_data)
-        request_data = {
-            "Url": "V1/Task/CreateScan",
-            "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
-            "Payload": payload
-        }
-        headers = {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
-                                                               headers='', request_body=json.dumps(request_data))}
-        response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
-        return response
 
     @staticmethod
     def create_custom_criteria(custom_investigation_args):
@@ -660,72 +499,6 @@ class Client(BaseClient):
             custom_criteria['item'] = filters
 
         return custom_criteria
-
-    def create_custom_investigation(self, args):
-        general_investigation_args = {key: value for key, value in args.items() if
-                                      key in GENERAL_INVESTIGATION_ARGS}  # take all general investigation args
-
-        general_investigation_args['scan_type'] = 'Custom criteria'  # hardcoded value
-        payload = self.build_investigation_payload(**general_investigation_args)
-
-        [args.pop(key) for key in
-         general_investigation_args.keys()]  # args now contains only the special investigation args
-        payload["retroCriteria"] = self.create_custom_criteria(args)
-
-        request_data = {
-            "Url": "V1/Task/CreateScan",
-            "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
-            "Payload": payload
-        }
-        headers = {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
-                                                               headers='', request_body=json.dumps(request_data))}
-        response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
-        return response
-
-    @staticmethod
-    def create_schedule_criteria(scheduled_investigation_end_date, scheduled_investigation_start_date,
-                                 scheduled_investigation_repeat_type, scheduled_investigation_repeat_value):
-        schedule_criteria = {
-            'startDate': scheduled_investigation_start_date,
-            'endDate': scheduled_investigation_end_date,
-            'repeatValue': scheduled_investigation_repeat_value,
-            'repeatType': REPEAT_TYPE_TO_ID[scheduled_investigation_repeat_type]
-        }
-
-        return schedule_criteria
-
-    def create_scheduled_investigation(self, args):
-        general_investigation_args = {key: value for key, value in args.items() if
-                                      key in GENERAL_INVESTIGATION_ARGS}  # take all general investigation args
-
-        payload = self.build_investigation_payload(**general_investigation_args)
-
-        [args.pop(key) for key in
-         general_investigation_args.keys()]  # args now contains only the special investigation args
-
-        payload["userTimezone"] = args.pop('user_time_zone')  # TODO: Check the format
-
-        #  build 'fileContentCriteria' entry
-        entry_id = args.pop('entry_id')
-        criteria_hash_id = args.pop('criteria_hash_id')
-        payload["fileContentCriteria"] = self.create_file_content_criteria(entry_id, criteria_hash_id)
-
-        #  build the 'scheduleCriteria' entry
-        payload["scheduleCriteria"] = self.create_schedule_criteria(**args)
-
-        request_data = {
-            "Url": "V1/Task/CreateScanSchedule",
-            "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
-            "Payload": payload
-        }
-        headers = {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Authorization': 'Bearer ' + self.create_jwt_token(http_method='POST', api_path=self.suffix,
-                                                               headers='', request_body=json.dumps(request_data))}
-        response = self._http_request("POST", self.suffix, headers=headers, data=json.dumps(request_data))
-        return response
 
     @staticmethod
     def create_historical_investigation_payload(criteria_kvp, criteria_source, search_period):
@@ -806,7 +579,7 @@ class Client(BaseClient):
             "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
             "Payload": payload
         }
-
+        return_error(json.dumps(request_data, indent=4))
         headers = {
             'Content-Type': 'application/json;charset=utf-8',
             'Authorization': 'Bearer ' + self.create_jwt_token(http_method='PUT', api_path=self.suffix,
@@ -814,60 +587,6 @@ class Client(BaseClient):
         response = self._http_request("PUT", self.suffix, headers=headers, data=json.dumps(request_data))
         self.validate_response(response, 'The investigation result list command was unsuccessfu')
 
-        return response
-
-    def create_result_list_by_status_payload(self, limit: str, offset: str, scan_type: str, scan_status: str,
-                                             scan_summary_guid: str, endpoint_name: str = '',
-                                             endpoint_ip_address: str = '', endpoint_operating_system: str = '',
-                                             endpoint_user_name: str = ''):
-        payload = {
-            "pagination": {
-                "limit": int(limit),
-                "offset": int(offset)
-            },
-            "scanType": [SCAN_TYPE_TO_NUM[scan_type] for scan_type in argToList(scan_type)],
-            "scanStatus": SCAN_STATUS_TO_NUM[scan_status],
-            "scanSummaryGuid": argToList(scan_summary_guid) if scan_summary_guid else []
-        }
-
-        payload_filter = []
-        if endpoint_name:
-            payload_filter.append(self.create_filter_entry(endpoint_name, 'endpoint_name'))
-        if endpoint_ip_address:
-            payload_filter.append(self.create_filter_entry(endpoint_ip_address, 'endpoint_ip_address',))
-        if endpoint_operating_system:
-            payload_filter.append(self.create_filter_entry(endpoint_operating_system, 'endpoint_OS',))
-        if endpoint_user_name:
-            payload_filter.append(self.create_filter_entry(endpoint_user_name, 'endpoint_user_name'))
-
-        if payload_filter:
-            payload["filter"] = payload_filter
-
-        return payload
-
-    def investigation_result_list_by_status(self, scan_status: str, scan_summary_guid: str = '', scan_type: str = "",
-                                            limit: str = '50', offset: str = '0', endpoint_name: str = '',
-                                            endpoint_ip_address: str = '',
-                                            endpoint_operating_system: str = '',
-                                            endpoint_user_name: str = ''):
-
-        payload = self.create_result_list_by_status_payload(limit, offset, scan_type, scan_status, scan_summary_guid,
-                                                            endpoint_name, endpoint_ip_address,
-                                                            endpoint_operating_system,
-                                                            endpoint_user_name)
-
-        request_data = {
-            "Url": "V1/Task/ShowScanListByScanSummaryGuid",
-            "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
-            "Payload": payload
-        }
-
-        headers = {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Authorization': 'Bearer ' + self.create_jwt_token(http_method='PUT', api_path=self.suffix,
-                                                               headers='', request_body=json.dumps(request_data))}
-        response = self._http_request("PUT", self.suffix, headers=headers, data=json.dumps(request_data))
-        self.validate_response(response, 'The investigation result list command was unsuccessful')
         return response
 
 
@@ -985,17 +704,19 @@ def prodagent_restore_command(client: Client, args):
 
 def list_logs_command(client: Client, args):
     client.suffix = '/WebApp/api/v1/logs'
+    limit = int(args.pop('limit', 50))
     response = client.logs_list(**assign_params(**args))
     parsed_logs_list = []
 
     if response:
         if response.get('Data', {}).get('Logs'):
-            parsed_logs_list = client.parse_cef_logs_to_dict_logs(response)
+            parsed_logs_list = client.parse_cef_logs_to_dict_logs(response)[:limit]
 
-    readable_output = tableToMarkdown('Logs List', parsed_logs_list, removeNull=True)
+    log_type = args.get('log_type')
+    readable_output = tableToMarkdown(f'Trend Micro Apex - {log_type} Logs', parsed_logs_list, removeNull=True)
     context = parsed_logs_list
 
-    return CommandResults(  # TODO insert a key_field
+    return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroApex.Log',
         outputs=context,
@@ -1033,8 +754,8 @@ def servers_list_command(client: Client, args):
         if response.get('result_content'):
             context = human_readable_table = response.get('result_content')
 
-    # headers = ['Entity Id', 'Host Name', 'Product', 'Ip Address List', 'Capabilities']
-    readable_output = tableToMarkdown('Servers List', human_readable_table,
+    headers = ['entity_id', 'product', 'host_name', 'ip_address_list', 'capabilities']
+    readable_output = tableToMarkdown('Trend Micro Apex Servers List', human_readable_table, headers,
                                       headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
@@ -1059,7 +780,7 @@ def agents_list_command(client: Client, args):
         if response.get('result_content'):
             context = human_readable_table = response.get('result_content')
 
-    readable_output = tableToMarkdown('Agents List', human_readable_table, headerTransform=string_to_table_header,
+    readable_output = tableToMarkdown('Trend Micro Apex Agents List', human_readable_table, headerTransform=string_to_table_header,
                                       removeNull=True)
 
     return CommandResults(
@@ -1075,7 +796,6 @@ def endpoint_sensors_list_command(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
 
     response = client.endpoint_sensors_list(**assign_params(**args))
-    # return_error(json.dumps(response))
     human_readable_table = []
     if response:
         # extract the sensor agents entities from the response
@@ -1087,77 +807,14 @@ def endpoint_sensors_list_command(client: Client, args):
                     agent['isolateStatus'] = AGENT_ISOLATION_STATUS_NUM_TO_VALUE[agent['isolateStatus']]
                 human_readable_table.append(agent[0])
 
-    readable_output = tableToMarkdown('Security Agents with Endpoint Sensor enabled', human_readable_table,
-                                      removeNull=True)
+    readable_output = tableToMarkdown('Trend Micro Apex Security Agents with Endpoint Sensor enabled',
+                                      human_readable_table, removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroApex.EndpointSensorSecurityAgent',
         outputs=human_readable_table,
         outputs_key_field='agentGuid',
-        raw_response=response
-    )
-
-
-def process_terminate_command(client: Client, args):
-    client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
-    response = client.process_terminate_request(**assign_params(**args))
-
-    if response:
-        readable_output = 'The process terminated successfully.'
-
-    return CommandResults(  # TODO insert a key_field
-        readable_output=readable_output,
-        outputs_prefix='TrendMicroApex.TerminatedProcess',
-        outputs_key_field='',
-        raw_response=response
-    )
-
-
-def create_investigation_from_file(client: Client, args):
-    client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
-    response = client.create_file_investigation(**assign_params(**args))
-    return CommandResults(  # TODO fill command results
-        # readable_output=readable_output,
-        outputs_prefix='TrendMicroApex.FileInvestigation',
-        # outputs={},
-        outputs_key_field='',
-        raw_response=response
-    )
-
-
-def create_investigation_from_registry(client: Client, args):
-    client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
-    response = client.create_registry_investigation(**assign_params(**args))
-    return CommandResults(  # TODO fill command results
-        # readable_output=readable_output,
-        outputs_prefix='TrendMicroApex.RegistryInvestigation',
-        # outputs={},
-        outputs_key_field='',
-        raw_response=response
-    )
-
-
-def create_custom_live_investigation(client: Client, args):
-    client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
-    response = client.create_custom_investigation(args)
-    return CommandResults(  # TODO fill command results
-        # readable_output=readable_output,
-        outputs_prefix='TrendMicroApex.CustomInvestigation',
-        outputs={},
-        outputs_key_field='',
-        raw_response=response
-    )
-
-
-def create_scheduled_investigation(client: Client, args):
-    client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
-    response = client.create_scheduled_investigation(args)
-    return CommandResults(  # TODO fill command results
-        # readable_output=readable_output,
-        outputs_prefix='TrendMicroApex.ScheduledInvestigation',
-        outputs={},
-        outputs_key_field='',
         raw_response=response
     )
 
@@ -1230,55 +887,6 @@ def investigation_result_list_by_status_command(client: Client, args):
     )
 
 
-# def fetch_incidents(client: Client, last_run: Dict[str, int],
-#                     first_fetch_time: Optional[int], log_types: List[str]) -> Tuple[Dict[str, int], List[dict]]:
-#
-#     last_fetch = last_run.get('last_fetch', None)
-#     for log in log_types:
-#         if not last_fetch.get(log):
-#             last_fetch[log] = first_fetch_time
-#     else:
-#         last_fetch = int(last_fetch)
-#
-#     incidents: List[Dict[str, Any]] = []
-#
-#     for log_type in log_types:
-#         log_last_fetch = last_fetch[log]
-#         logs_list = client.logs_list(log_type=log_type, since_time=log_last_fetch)
-#         if logs_list:
-#             parsed_logs_list = client.parse_cef_logs_to_dict_logs(logs_list)
-#             for log in parsed_logs_list:
-#                 log_creation_time = log.get('rt')  # 'rt' is the log creation time field name. in UTC format
-#
-#     for alert in alerts:
-#         incident_created_time = int(alert.get('created', '0'))
-#         incident_created_time_ms = incident_created_time * 1000
-#
-#         if last_fetch:
-#             if incident_created_time <= last_fetch:
-#                 continue
-#
-#         # If no name is present it will throw an exception
-#         incident_name = alert['name']
-#
-#         incident = {
-#             'name': incident_name,
-#             # 'details': alert['name'],
-#             'occurred': timestamp_to_datestring(incident_created_time_ms),
-#             'rawJSON': json.dumps(alert),
-#         }
-#
-#         incidents.append(incident)
-#
-#         # Update last run and add incident if the incident is newer than last fetch
-#         if incident_created_time > latest_created_time:
-#             latest_created_time = incident_created_time
-#
-#     # Save the next_run as a dict with the last_fetch key to be stored
-#     next_run = {'last_fetch': latest_created_time}
-#     return next_run, incidents
-
-
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1301,23 +909,6 @@ def main():
         if command == 'test-module':
             test_result = test_module(client)
             return_results(test_result)
-
-        # elif command == 'fetch-incidents':
-            # first_fetch_time = arg_to_timestamp(
-            #     arg=demisto.params().get('first_fetch', '3 days'),
-            #     arg_name='First fetch time',
-            #     required=True
-            # )
-            #
-            # next_run, incidents = fetch_incidents(
-            #     client=client,
-            #     last_run=demisto.getLastRun(),
-            #     first_fetch_time=first_fetch_time,
-            #     log_type=demisto.params().get('log_type')
-            # )
-            #
-            # demisto.setLastRun(next_run)
-            # demisto.incidents(incidents)
 
         elif command == 'trendmicro-apex-udso-list':
             return_results(udso_list_command(client, demisto.args()))
@@ -1349,29 +940,11 @@ def main():
         elif command == 'trendmicro-apex-endpoint-sensors-list':
             return_results(endpoint_sensors_list_command(client, demisto.args()))
 
-        elif command == 'trendmicro-apex-process-terminate':
-            return_results(process_terminate_command(client, demisto.args()))
-
-        elif command == 'trendmicro-apex-create-live-investigation-from-file':
-            return_results(create_investigation_from_file(client, demisto.args()))
-
-        elif command == 'trendmicro-apex-create-live-investigation-from-registry':
-            return_results(create_investigation_from_registry(client, demisto.args()))
-
-        elif command == 'trendmicro-apex-create-custom-live-investigation':
-            return_results(create_custom_live_investigation(client, demisto.args()))
-
-        elif command == 'trendmicro-apex-create-scheduled-investigation':
-            return_results(create_scheduled_investigation(client, demisto.args()))
-
         elif command == 'trendmicro-apex-historical-investigation-create':
             return_results(create_historical_investigation(client, demisto.args()))
 
         elif command == 'trendmicro-apex-investigation-result-list':
             return_results(investigation_result_list_command(client, demisto.args()))
-
-        elif command == 'trendmicro-apex-investigation-result-list-by-status':
-            return_results(investigation_result_list_by_status_command(client, demisto.args()))
 
     except ValueError as e:
         return_error(f'Error from TrendMicro Apex integration: {str(e)}', e)

@@ -235,36 +235,6 @@ def test_investigation_result_list_command(requests_mock, mocker):
     assert response.outputs_prefix == 'TrendMicroApex.InvestigationResult'
 
 
-def test_investigation_result_list_by_status_command(requests_mock, mocker):
-    """ Unit test
-    Given
-        - investigation_result_list_by_status command
-    When
-        - mock the server response to http_request.
-        - mock the response to the create_jwt_token method.
-
-    Then
-        Validate the content of the CommandResult
-    """
-    from TrendMicroApex import investigation_result_list_by_status_command
-    requests_mock.put(f'{MOCK_URL}/WebApp/OSCE_iES/OsceIes/ApiEntry', json=MOCK_RESULT_LIST_BY_STATUS)
-    mocker.patch.object(client, 'create_jwt_token', return_value="fake_token")
-    args = {
-        'scan_type': 'YARA rule file',
-        'scan_summary_guid': 'fake_guid',
-        'scan_status': 'All'
-    }
-    response = investigation_result_list_by_status_command(client, args)
-
-    outputs = response.outputs
-    assert outputs
-    assert len(outputs) == 1
-    assert 'Meta' not in outputs  # check that unnecessary fields was removed from the response
-    assert outputs[0].get('submitTime') == '2020-07-26T14:14:37+00:00'  # check that time values were parsed
-    assert 'Investigation result list by status' in response.readable_output
-    assert response.outputs_prefix == 'TrendMicroApex.InvestigationResultByStatus'
-
-
 ''' HELPER FUNCTIONS'''
 
 SINCE_TIME_INPUTS = [
