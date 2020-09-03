@@ -1564,7 +1564,7 @@
             "playbookID": "Anomali_ThreatStream_Test"
         },
         {
-            "integrations": "DNSDB",
+            "integrations": "DNSDB_v2",
             "playbookID": "DNSDB-Test",
             "timeout": 500,
             "nightly": true
