@@ -3882,10 +3882,13 @@ def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None
     :param default_return_value: Value to return when no key available.
 
     :type return_type: ``object``
-    :return:: Excepted return type.
+    :param return_type: Excepted return type.
 
     :type raise_return_type: ``bool``
-    :return:: True if raising value error when value didn't match excepted return type.
+    :param raise_return_type: True if raising value error when value didn't match excepted return type.
+
+    :rtype: ``object``
+    :return:: Value from nested query.
     """
     return_value = dict_object
 
