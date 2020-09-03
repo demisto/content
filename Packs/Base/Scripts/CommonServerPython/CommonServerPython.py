@@ -2590,7 +2590,7 @@ class IndicatorsTimeline:
     :rtype: ``list``
     """
     def __init__(self, indicators=None, category=None, message=None):
-        # type: (list, str, str, list, str, object) -> list
+        # type: (list, str, str) -> list
         indicators = [indicators] if isinstance(indicators, dict) else indicators
         for indicator in indicators:
             if category:
@@ -2638,7 +2638,7 @@ class CommandResults:
     """
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicator_timeline=None):
-        # type: (str, object, object, list, str, object) -> None
+        # type: (str, object, object, list, str, object, list) -> None
         if raw_response is None:
             raw_response = outputs
 
