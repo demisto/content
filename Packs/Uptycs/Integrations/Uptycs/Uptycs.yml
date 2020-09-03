@@ -973,7 +973,6 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: ''''''
       description: Tag value that will be set on the asset
       isArray: false
       name: tag_value
