@@ -1036,7 +1036,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: demisto/py3ews:1.0.0.8854
+  dockerimage: demisto/py3ews:1.0.0.10664
   feed: false
   isfetch: true
   longRunning: false
@@ -1049,3 +1049,5 @@ tests:
 - pyEWS_Test
 - EWS search-mailbox test
 fromversion: 5.0.0
+defaultclassifier: EWS v2
+defaultmapperin: EWS v2-mapper

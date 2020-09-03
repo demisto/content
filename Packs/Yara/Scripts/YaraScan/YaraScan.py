@@ -30,7 +30,6 @@ def main():
             fileInfos.append(fileInfo)
     if len(fileInfos) < 1:
         return_error('No files were found for scanning, please check the entry IDs')
-        sys.exit(-1)
 
     yaraRuleRaw = args.get('yaraRule')
 
