@@ -27,5 +27,6 @@ subtype: python3
 tags:
 - field-change-triggered
 type: python
+fromversion: 5.0.0
 tests:
   - No test
