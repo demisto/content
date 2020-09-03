@@ -169,9 +169,6 @@ script:
     - contextPath: CreateUser.username
       description: Value of username passed as argument
       type: string
-    - contextPath: Account
-      description: Account information
-      type: string
   - arguments:
     - description: SCIM content in JSON format
       name: scim
@@ -213,9 +210,6 @@ script:
     - contextPath: EnableUser.username
       description: Value of username passed as argument
       type: string
-    - contextPath: Account
-      description: Account information
-      type: string
   - arguments:
     - description: SCIM content in JSON format
       name: scim
@@ -256,9 +250,6 @@ script:
       type: boolean
     - contextPath: DisableUser.username
       description: Value of username passed as argument
-      type: string
-    - contextPath: Account
-      description: Account information
       type: string
   - arguments:
     - description: Old SCIM content in JSON format
@@ -307,9 +298,6 @@ script:
     - contextPath: UpdateUser.username
       description: Value of username passed as argument
       type: string
-    - contextPath: Account
-      description: Account information
-      type: string
   - arguments:
     - description: SCIM content in JSON format
       name: scim
@@ -349,9 +337,6 @@ script:
       type: boolean
     - contextPath: GetUser.username
       description: User''s username
-      type: string
-    - contextPath: Account
-      description: Account information
       type: string
   dockerimage: demisto/python3:3.8.5.10845
   runonce: false

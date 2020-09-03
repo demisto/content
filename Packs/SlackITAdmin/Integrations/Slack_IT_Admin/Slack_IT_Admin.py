@@ -100,7 +100,8 @@ class Client(BaseClient):
             url_suffix=uri
         )
 
-    # Getting Group Id with a given group name
+        # Getting Group Id with a given group name
+
     def get_group_id(self, group_name):
         uri = '/Groups'
         query_params = {
@@ -219,45 +220,14 @@ def map_scim(client_data):
     if type(client_data) != dict:
         raise Exception('Provided client data is not JSON compatible')
 
-    scim_extension = INPUT_SCIM_EXTENSION_KEY.replace('.', '\.')
     mapping = {
         "active": "active",
-        "addressCountry": "addresses(val.primary && val.primary==true).[0].country",
-        "addressFormatted": "addresses(val.primary && val.primary==true).[0].formatted",
-        "addressLocailty": "addresses(val.primary && val.primary==true).[0].locality",
-        "addressPostalCode": "addresses(val.primary && val.primary==true).[0].postalCode",
-        "addressRegion": "addresses(val.primary && val.primary==true).[0].region",
-        "addressStreeetAddress": "addresses(val.primary && val.primary==true).[0].streetAddress",
-        "addressType": "addresses(val.primary && val.primary==true).[0].type",
-        "costCenter": scim_extension + ".costCenter",
-        "department": scim_extension + ".department",
-        "displayName": "displayName",
-        "division": scim_extension + ".division",
         "email": "emails(val.primary && val.primary==true).[0].value",
-        "emailType": "emails(val.primary && val.primary==true).[0].type",
-        "employeeNumber": scim_extension + ".employeeNumber",
-        "groups": "groups(val.display).display",
         "id": "id",
-        "externalId": "externalId",
-        "locale": "locale",
-        "manager": scim_extension + ".manager.value",
-        "nameFormatted": "name.formatted",
         "nameFamilyName": "name.familyName",
         "nameGivenName": "name.givenName",
-        "nameHonorificPrefix": "name.honorificPrefix",
-        "nameHonorificSuffix": "name.honorificSuffix",
-        "nameMiddleName": "name.middleName",
-        "nickName": "nickName",
-        "organization": scim_extension + ".organization",
-        "password": "password",
-        "photo": "photos(val.type && val.type=='photo').[0].value",
-        "preferredLanguage": "preferredLanguage",
-        "profileUrl": "profileUrl",
-        "thumbnnail": "photos(val.type && val.type=='thumbnail').[0].value",
-        "timezone": "timezone",
-        "title": "title",
         "userName": "userName",
-        "userType": "userType",
+        "userType": "userType"
     }
     ret = dict()
     for k, v in mapping.items():
@@ -287,12 +257,12 @@ def get_primary(arr, val):
                 break
         except Exception:
             pass
-    if not value:
-        try:
-            value = arr[0][val]
-        except Exception:
-            value = ""
-    return value
+        if not value:
+            try:
+                value = arr[0][val]
+            except Exception:
+                value = ""
+        return value
 
 
 '''COMMAND FUNCTIONS'''
@@ -375,7 +345,6 @@ def create_user_command(client, args):
 
     if not slack_scim.get('schemas'):
         slack_scim['schemas'] = [SLACK_SCIM_CORE_SCHEMA_KEY, SLACK_SCIM_EXTENSION_KEY]
-
     res = client.create_user(slack_scim)
     res_json = res.json()
     if res.status_code in [200, 201]:
@@ -565,21 +534,21 @@ def create_group_command(client, args):
                 member_ids = json.loads(member_ids)
             except JSONDecodeError:
                 return_error("memberIds is not a valid list")
-        for member_id in member_ids:
-            members.append({"value": member_id})
+            for member_id in member_ids:
+                members.append({"value": member_id})
 
-    group_data['members'] = members
-    res = client.create_group(group_data)
-    res_json = res.json()
+            group_data['members'] = members
+            res = client.create_group(group_data)
+            res_json = res.json()
 
-    if res.status_code not in [200, 201]:
-        return_error(f"Error in API call. Status Code: [{res.status_code}]. Error Response: {res_json}")
+            if res.status_code not in [200, 201]:
+                return_error(f"Error in API call. Status Code: [{res.status_code}]. Error Response: {res_json}")
 
-    readable_output = f'Slack Group "{res_json.get("id")}" created successfully'
-    return (
-        readable_output,
-        {},
-        res_json)
+            readable_output = f'Slack Group "{res_json.get("id")}" created successfully'
+            return (
+                readable_output,
+                {},
+                res_json)
 
 
 def update_group_members_command(client, args):
