@@ -13,7 +13,7 @@ def test_get_user_command(mocker):
     # Positive scenario 1
     inp_args = {"scim": {"id": "TestID@paloaltonetworks.com"}}
     res.status_code = 200
-    res._content = b'{"email": "TestID@paloaltonetworks.com", "id":"12345"}'
+    res._content = b'{"id":"12345"}'
     mocker.patch.object(requests, 'request', return_value=res)
     client = Client(base_url='https://test.com', verify=False, headers={})
 
@@ -190,14 +190,14 @@ def test_get_group_command(mocker):
     # Positive scenario
     inp_args = {"groupName": "testgroup"}
     res.status_code = 200
-    res._content = b'{"displayName": "testGroup", "members": {"id": "12345"},"totalResults": 1, ' \
-                   b'"Resources": [{"id":"12345"}]}'
+    res._content = b'{"displayName": "testGroup", "members": [{"display": "testName", "value": "12345"}],' \
+                   b'"totalResults": 1, "Resources": [{"id":"12345"}]}'
     mocker.patch.object(requests, 'request', return_value=res)
     client = Client(base_url='https://test.com', verify=False, headers={})
 
     _, outputs, _ = get_group(client, inp_args)
     get_group_var = 'Slack.Group(val.Id && val.Id === obj.Id)'
-    assert outputs.get(get_group_var).get('Members') == {"id": "12345"}
+    assert outputs.get(get_group_var).get('Members') == [{"display": "testName", "value": "12345"}]
 
 
 def test_create_group_command(mocker):
@@ -232,7 +232,7 @@ def test_delete_group_command(mocker):
     client = Client(base_url='https://test.com', verify=False, headers={})
 
     outputs, _, _ = delete_group_command(client, inp_args)
-    assert outputs == 'Slack Group: "abc" was deleted successfully'
+    assert outputs == 'Slack Group ID: abc was deleted successfully'
 
 
 def test_replace_group_command(mocker):

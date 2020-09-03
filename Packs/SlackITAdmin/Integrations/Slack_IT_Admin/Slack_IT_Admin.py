@@ -483,6 +483,14 @@ def get_group(client, args):
         return_error(f"Error in API call. Status Code: [{res.status_code}]. Error Response: {res_json}")
 
     members = res_json.get('members')
+
+    members_list = []
+    for member in members:
+        temp_member = {}
+        temp_member['Member Name'] = member.get('display')
+        temp_member['Member Id'] = member.get('value')
+        members_list.append(temp_member)
+
     outputs = {
         'Slack.Group(val.Id && val.Id === obj.Id)': {
             'Id': group_id,
@@ -492,7 +500,7 @@ def get_group(client, args):
     }
 
     readable_output = tableToMarkdown(name=f"Slack Group {group_id} Members: {res_json.get('displayName')}",
-                                      t=members)
+                                      t=members_list)
 
     return (
         readable_output,
@@ -516,7 +524,7 @@ def delete_group_command(client, args):
         error_json = res.json()
         return_error(f"Error in API call. Status Code: [{res.status_code}]. Error Response: {error_json}")
 
-    readable_output = f'Slack Group: "{group_id}" was deleted successfully'
+    readable_output = f'Slack Group ID: {group_id} was deleted successfully'
     return (
         readable_output,
         {},
@@ -544,7 +552,7 @@ def create_group_command(client, args):
             if res.status_code not in [200, 201]:
                 return_error(f"Error in API call. Status Code: [{res.status_code}]. Error Response: {res_json}")
 
-            readable_output = f'Slack Group "{res_json.get("id")}" created successfully'
+            readable_output = f'Slack Group ID: {res_json.get("id")} created successfully'
             return (
                 readable_output,
                 {},
