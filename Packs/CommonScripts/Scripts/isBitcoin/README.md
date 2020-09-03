@@ -1,4 +1,5 @@
-Verifies that a Bitcoin address is valid.
+Verifies that a Bitcoin address is valid and returns the address only if it is valid
+.
 ## Script Data
 ---
 
@@ -13,7 +14,7 @@ Verifies that a Bitcoin address is valid.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| address | The Bitcoin address to check. |
+| input | The Bitcoin address to check. |
 
 ## Outputs
 ---
@@ -28,4 +29,4 @@ There are no outputs for this script.
 ```
 
 ## Human Readable Output
-True
+1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i

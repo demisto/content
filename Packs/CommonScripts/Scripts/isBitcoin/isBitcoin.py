@@ -25,6 +25,8 @@ def main():
 
     if verify_is_bitcoin(address):
         demisto.results(address)
+    else:
+        demisto.results("")
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):

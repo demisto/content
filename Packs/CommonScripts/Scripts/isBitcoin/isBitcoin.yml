@@ -1,11 +1,11 @@
 args:
 - default: false
-  description: The Bitcoin address to check.
+  description: The Bitcoin address to verify.
   isArray: false
   name: input
   required: true
   secret: false
-comment: Verifies that a Bitcoin address is valid.
+comment: Verifies that a Bitcoin address is valid and returns the address only if it is valid.
 commonfields:
   id: isBitcoin
   version: -1
