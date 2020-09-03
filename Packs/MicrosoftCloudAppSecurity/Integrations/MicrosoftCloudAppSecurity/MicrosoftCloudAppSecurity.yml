@@ -354,7 +354,7 @@ script:
       - encryptionFailed
       - protect
       - verify
-      - 'null'
+      - null
       required: false
       secret: false
     - auto: PREDEFINED
