@@ -16,7 +16,7 @@ args:
 comment: |
   Incident action button script to link or unlink Incidents from an Incident
 commonfields:
-  id: 2b9e3e5a-d49e-4ab9-8389-68b2274c760a
+  id: LinkIncidentsButton
   version: -1
 contentitemexportablefields:
   contentitemfields:
