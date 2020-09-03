@@ -1,4 +1,4 @@
-from isBitcoin import verify_is_bitcoin
+from bitcoinAddressValidator import verify_is_bitcoin
 import pytest
 
 
