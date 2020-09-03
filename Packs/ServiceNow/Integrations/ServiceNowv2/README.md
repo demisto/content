@@ -34,7 +34,7 @@ These scripts are wrapped around the incident table, so to wrap them around anot
     1. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select the
 **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** checkboxes, respectively.
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
+![image](https://raw.githubusercontent.com/demisto/content/8038ce7e02dfd47b75adc9bedf1f7e9747dd77d5/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
 5. Click **Done.**
 
 | **Parameter** | **Description** | **Required** |
@@ -100,7 +100,7 @@ This is made possible by the addition of 3 new functions in the integration, whi
 - **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to ServiceNow.
     - You can set the tags in the instance configuration, using **Comment Entry Tag**, **Work Note Entry Tag** and **File Entry Tag**.
     
-    ![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-params.png)
+    ![image](https://raw.githubusercontent.com/demisto/content/8038ce7e02dfd47b75adc9bedf1f7e9747dd77d5/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-params.png)
 
 
 ![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-fields.png)
