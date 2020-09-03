@@ -132,7 +132,7 @@ class Build:
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
-        self.servers = [server for server in map(lambda x: Server(x, self.username, self.password), self.servers)]
+        self.servers = [Server(server_url, self.username, self.password) for server_url in self.servers]
 
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
@@ -890,14 +890,14 @@ def configure_servers_and_restart(build, prints_manager):
         if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
             configure_types.append('marketplace')
             configurations.update(MARKET_PLACE_CONFIGURATION)
+
+        error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
+        for server in build.servers:
+            server.add_server_configuration(configurations, error_msg=error_msg, restart=True)
+
         if Build.run_environment == Running.WITH_LOCAL_SERVER:
             input('restart your server and then press enter.')
         else:
-            error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
-            for server in build.servers:
-                server.add_server_configuration(configurations, error_msg=error_msg, restart=True)
-
-        if Build.run_environment is not Running.WITH_LOCAL_SERVER:
             prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
             prints_manager.execute_thread_prints(0)
             sleep(60)
@@ -1225,14 +1225,6 @@ def test_pack_zip(content_path, target):
                 else:
                     test_target = f'test_pack/TestPlaybooks/{test}'
                 zip_file.writestr(test_target, test_file.read())
-
-
-def set_marketplace_bucket(server: Server, build_number, branch_name):
-    marketplace_url_configuration = {
-        'marketplace.bootstrap.bypass.url':
-            'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(branch_name, build_number)
-    }
-    server.add_server_configuration(marketplace_url_configuration, 'failed to config marketplace url ', True)
 
 
 def get_non_added_packs_ids(build: Build):
