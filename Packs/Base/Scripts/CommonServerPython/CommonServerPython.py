@@ -2573,6 +2573,35 @@ class Common(object):
             return ret_value
 
 
+class IndicatorsTimeline:
+    """
+    IndicatorsTimeline class - use to return Indicator Timeline object to CommandResults
+
+    :type indicators: ``list | dict``
+    param indicators: expects a list of indicators, if a dict is passed it will be put into a list.
+
+    :type category: ``str``
+    param category: indicator category.
+
+    :type message: ``str``
+    param message: indicator message.
+
+    :return: a list of indicators
+    :rtype: ``list``
+    """
+    def __init__(self, indicators=None, category=None, message=None):
+        # type: (list, str, str, list, str, object) -> list
+        indicators = [indicators] if isinstance(indicators, dict) else indicators
+        for indicator in indicators:
+            if category:
+                indicator['Category'] = category
+            elif 'Category' not in indicator.keys():
+                indicator['Category'] = 'Integration Update'
+            if message:
+                indicator['Message'] = message
+
+        return indicators
+
 class CommandResults:
     """
     CommandResults class - use to return results to warroom
@@ -2600,11 +2629,14 @@ class CommandResults:
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
         raw response from the 3rd party service (originally Contents)
 
+    :type indicator_timeline: ``list``
+    param timeline: must be a list. used by the server to populate an indicator's timeline
+
     :return: None
     :rtype: ``None``
     """
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None):
+                 raw_response=None, indicator_timeline=None):
         # type: (str, object, object, list, str, object) -> None
         if raw_response is None:
             raw_response = outputs
@@ -2630,6 +2662,7 @@ class CommandResults:
 
         self.raw_response = raw_response
         self.readable_output = readable_output
+        self.indicator_timeline = indicator_timeline
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -2651,6 +2684,9 @@ class CommandResults:
 
         if self.raw_response:
             raw_response = self.raw_response
+
+        if self.indicator_timeline:
+            indicator_timeline = self.indicator_timeline
 
         if self.outputs is not None:
             if not self.readable_output:
@@ -2677,7 +2713,8 @@ class CommandResults:
             'ContentsFormat': content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
-            'EntryContext': outputs
+            'EntryContext': outputs,
+            'IndicatorTimeline': indicator_timeline
         }
 
         return return_entry
@@ -2758,7 +2795,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
         "ContentsFormat": formats["text"] if isinstance(raw_response, STRING_TYPES) else formats['json'],
         "Contents": raw_response,
         "EntryContext": outputs,
-        'IgnoreAutoExtract': ignore_auto_extract,
+        "IgnoreAutoExtract": ignore_auto_extract,
         "IndicatorTimeline": timeline_list
     }
     # Return 'readable_output' only if needed
