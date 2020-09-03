@@ -38,7 +38,7 @@ configuration:
   required: false
   additionalinfo: An optional custom mapping that takes custom values in the SCIM
     data into the integration.
-- display: ""
+- display: "Okta query filter"
   name: fetchLogsQuery
   defaultvalue: ""
   type: 12
@@ -125,9 +125,6 @@ script:
     - contextPath: CreateUser.username
       description: Value of username passed as argument
       type: String
-    - contextPath: Account
-      description: Account information
-      type: Unknown
     description: Creates a user
     execution: true
   - name: update-user
@@ -176,9 +173,6 @@ script:
     - contextPath: UpdateUser.username
       description: Value of username passed as argument
       type: String
-    - contextPath: Account
-      description: Account information
-      type: Unknown
     description: Updates an existing user resource found with the "oldscim" with the
       data in the "newscim"
     execution: true
@@ -221,9 +215,6 @@ script:
     - contextPath: GetUser.username
       description: User''s username
       type: String
-    - contextPath: Account
-      description: Account information
-      type: Unknown
     description: Retrieves a single user resource.
   - name: enable-user
     arguments:
@@ -264,9 +255,6 @@ script:
     - contextPath: EnableUser.username
       description: Value of username passed as argument
       type: String
-    - contextPath: Account
-      description: Account information
-      type: Unknown
     description: Enable active users by setting the active attribute equal to true.
     execution: true
   - name: disable-user
@@ -308,9 +296,6 @@ script:
     - contextPath: DisableUser.username
       description: Value of username passed as argument
       type: String
-    - contextPath: Account
-      description: Account information
-      type: Unknown
     description: Disable active users by setting the active attribute equal to false.
     execution: true
   - name: okta-get-assigned-user-for-app

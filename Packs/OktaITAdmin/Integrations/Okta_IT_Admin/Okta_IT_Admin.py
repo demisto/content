@@ -49,6 +49,7 @@ PROFILE_ARGS = [
 
 DEPROVISIONED_STATUS = 'DEPROVISIONED'
 SCIM_EXTENSION_SCHEMA = "urn:scim:schemas:extension:custom:1.0:user"
+params = demisto.params()
 
 '''CLIENT CLASS'''
 
@@ -284,40 +285,27 @@ def map_scim(scim):
     scim_extension = SCIM_EXTENSION_SCHEMA.replace('.', '\.')
 
     mapping = {
-        "active": "active",
         "countryCode": "addresses(val.primary && val.primary==true).[0].country",
-        "addressFormatted": "addresses(val.primary && val.primary==true).[0].formatted",
         "city": "addresses(val.primary && val.primary==true).[0].locality",
         "zipCode": "addresses(val.primary && val.primary==true).[0].postalCode",
         "state": "addresses(val.primary && val.primary==true).[0].region",
         "streetAddress": "addresses(val.primary && val.primary==true).[0].streetAddress",
-        "addressType": "addresses(val.primary && val.primary==true).[0].type",
         "costCenter": scim_extension + ".costcenter",
         "department": scim_extension + ".department",
         "displayName": "displayName",
         "division": scim_extension + ".division",
         "email": "emails(val.primary && val.primary==true).[0].value",
-        "emailType": "emails(val.primary && val.primary==true).[0].type",
         "mobilePhone": "phoneNumbers(val.type && val.type=='mobile').[0].value",
         "employeeNumber": scim_extension + ".employeeNumber",
-        "groups": "groups(val.display).display",
         "id": "id",
-        "externalId": "externalId",
         "locale": "locale",
         "manager": scim_extension + ".manager.value",
         "lastName": "name.familyName",
-        "nameFormatted": "name.formatted",
         "firstName": "name.givenName",
-        "nameHonorificPrefix": "name.honorificPrefix",
-        "nameHonorificSuffix": "name.honorificSuffix",
-        "nameMiddleName": "name.middleName",
         "nickName": "nickName",
         "organization": scim_extension + ".organization",
-        "password": "password",
-        "photo": "photos(val.type && val.type=='photo').[0].value",
         "preferredLanguage": "preferredLanguage",
         "profileUrl": "profileUrl",
-        "thumbnnail": "photos(val.type && val.type=='thumbnail').[0].value",
         "timezone": "timezone",
         "title": "title",
         "userName": "userName",
@@ -375,6 +363,13 @@ def send_email(subject, body=''):
 
 
 def test_module(client, args):
+    # Validating fetch_time parameter
+    fetch_time = params.get('fetch_events_time_minutes')
+    try:
+        fetch_time = int(fetch_time)
+    except Exception:
+        raise Exception('Please enter valid fetch_time parameter.')
+
     uri = 'users/me'
     res = client.http_request(method='GET', url_suffix=uri)
     if res.status_code == 200:
@@ -734,7 +729,6 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    params = demisto.params()
     # get the service API url
     base_url = urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
     apitoken = demisto.params().get('apitoken')
