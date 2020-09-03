@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: 'Input for the playbook'
     nexttasks:
       '#none#':
       - "1"
@@ -261,6 +262,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "8"
@@ -379,6 +381,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -403,6 +406,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "10"
@@ -651,13 +655,13 @@ inputs:
     simple: ${incident.labels.alertId}
   required: true
   description: Unique Uptycs ID for a particular alert
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: alert_time
   value:
     simple: ${incident.labels.alertTime}
   required: true
   description: Time the alert was fired
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Uptycs.ProcEvent.pid
   description: pid for the process
@@ -680,4 +684,5 @@ outputs:
 - contextPath: Uptycs.Children.upt_remove_time
   description: time that the process was removed
   type: date
-sourceplaybookid: Uptycs - Outbound Connection to Threat IOC Incident
+tests:
+- No tests (auto formatted)
