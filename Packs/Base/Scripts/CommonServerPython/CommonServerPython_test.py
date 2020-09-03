@@ -1062,7 +1062,8 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': None
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1145,7 +1146,8 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': None
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1173,7 +1175,8 @@ class TestCommandResults:
             'HumanReadable': tableToMarkdown('Results', tickets),
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
+            },
+            'IndicatorTimeline': None
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1204,7 +1207,8 @@ class TestCommandResults:
             'HumanReadable': None,
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
+            },
+            'IndicatorTimeline': None
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1347,7 +1351,8 @@ class TestCommandResults:
                         'Type': 'domain'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': None
         }
 
 
