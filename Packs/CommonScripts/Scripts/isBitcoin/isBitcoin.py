@@ -21,10 +21,10 @@ def verify_is_bitcoin(bitcoin):
 
 
 def main():
-    args = demisto.args()
-    address = args.get('address')
+    address = demisto.args().get('input')
 
-    demisto.results(verify_is_bitcoin(address))
+    if verify_is_bitcoin(address):
+        demisto.results(address)
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):

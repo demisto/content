@@ -2,7 +2,7 @@ args:
 - default: false
   description: The Bitcoin address to check.
   isArray: false
-  name: address
+  name: input
   required: true
   secret: false
 comment: Verifies that a Bitcoin address is valid.
@@ -15,6 +15,6 @@ script: '-'
 subtype: python3
 system: false
 tags:
-- ''
+- indicator-format
 type: python
 dockerimage: demisto/python3:3.8.5.10845
