@@ -280,7 +280,8 @@ def add_argument_yes_no(arg: Optional[str], field_name: str, option: bool = Fals
 
 def add_argument_target(arg: Optional[str], field_name: str) -> str:
     if arg:
-        return '<' + field_name + '>' + '<devices>' + '<entry name=\"' + arg + '\"/>' + '</devices>' + '</' + field_name + '>'
+        return '<' + field_name + '>' + '<devices>' + '<entry name=\"' + arg + '\"/>' + '</devices>' + '</' + \
+               field_name + '>'
     else:
         return ''
 
@@ -6191,8 +6192,17 @@ def enforce_wildfire_system_config(template):
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': set_xpath_wildfire(template),
+        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']/"
+        f"config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting",
         'key': API_KEY,
+        'element': '<wildfire><file-size-limit><entry name="pe"><size-limit>10</size-limit></entry>'
+                   '<entry name="apk"><size-limit>30</size-limit></entry><entry name="pdf">'
+                   '<size-limit>1000</size-limit></entry><entry name="ms-office"><size-limit>2000</size-limit></entry>'
+                   '<entry name="jar"><size-limit>5</size-limit></entry><entry name="flash">'
+                   '<size-limit>5</size-limit></entry><entry name="MacOSX"><size-limit>1</size-limit></entry>'
+                   '<entry name="archive"><size-limit>10</size-limit></entry><entry name="linux">'
+                   '<size-limit>2</size-limit></entry><entry name="script"><size-limit>20</size-limit></entry>'
+                   '</file-size-limit><report-grayware-file>yes</report-grayware-file></wildfire>'
     }
     result = http_request(URL, 'POST', params=params)
 
@@ -6203,13 +6213,39 @@ def enforce_wildfire_schedule(template):
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']"
-        f"/config/devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
-        'key': API_KEY
+        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']/config/"
+        f"devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
+        'key': API_KEY,
+        'element': '<recurring><every-min><action>download-and-install</action></every-min></recurring>'
     }
+
     result = http_request(URL, 'POST', params=params)
 
     return result
+
+
+def enforce_wildfire_system_config_command():
+
+    template = demisto.args().get('template')
+    file_size_settings = enforce_wildfire_system_config(template)
+    if file_size_settings.get('response', {}).get('@status') == 'success':
+        human_readable = 'WildFire file upload for all file types is set to the maximum size.'
+    else:
+        human_readable = file_size_settings.get('response', {}).get('msg')
+
+    demisto.results(human_readable)
+
+
+def enforce_wildifre_schedule_command():
+    template = demisto.args().get('template')
+    update_schedule = enforce_wildfire_schedule(template)
+    if update_schedule.get('response', {}).get('@status') == 'success':
+        human_readable = 'The schedule was updated according to the best practice.\nRecurring every minute ' \
+                          'with the action of "download and install"'
+    else:
+        human_readable = update_schedule.get('response', {}).get('msg')
+
+    demisto.results(human_readable)
 
 
 def url_filtering_block_default_categories(profile_name):
@@ -6301,6 +6337,43 @@ def get_url_filtering_best_practice_command():
             "Panorama.URLFilter.Header": headers_best_practice
         }
     })
+
+
+# def create_antivirus_best_practice_profile(profile_name):
+#     params = {
+#         'action': 'set',
+#         'type': 'config',
+#         'xpath': f"{XPATH_RULEBASE}profiles/virus",
+#         'key': API_KEY,
+#         'element': f'<entry name="{profile_name}"><decoder><entry name="ftp"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+#                    '<mlav-action>reset-both</mlav-action></entry><entry name="http"><action>reset-both</action>'
+#                    '<wildfire-action>reset-both</wildfire-action><mlav-action>reset-both</mlav-action></entry>'
+#                    '<entry name="http2"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+#                    '<mlav-action>reset-both</mlav-action></entry><entry name="smb"><action>reset-both</action>'
+#                    '<wildfire-action>reset-both</wildfire-action><mlav-action>reset-both</mlav-action></entry>'
+#                    '<entry name="smtp"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+#                    '<mlav-action>reset-both</mlav-action></entry><entry name="imap"><action>reset-both</action>'
+#                    '<wildfire-action>reset-both</wildfire-action><mlav-action>reset-both</mlav-action></entry>'
+#                    '<entry name="pop3"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+#                    '<mlav-action>reset-both</mlav-action></entry></decoder><mlav-engine-filebased-enabled>'
+#                    '<entry name="Windows Executables"><mlav-policy-action>enable</mlav-policy-action></entry>'
+#                    '<entry name="PowerShell Script 1"><mlav-policy-action>enable</mlav-policy-action></entry>'
+#                    '<entry name="PowerShell Script 2"><mlav-policy-action>enable</mlav-policy-action></entry>'
+#                    '</mlav-engine-filebased-enabled></entry>'
+#     }
+#     result = http_request(URL, 'POST', params=params)
+#
+#     return result
+
+
+def create_antivirus_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    result = create_antivirus_best_practice_profile(profile_name)
+    if result.get('response', {}).get('@status') == 'success':
+        demisto.results(f'The profile {profile_name} was created successfully.')
+    else:
+        demisto.results(result['response']['msg'])
 
 
 def main():
@@ -6603,6 +6676,10 @@ def main():
         elif demisto.command() == 'panorama-get-wildfire-best-practice':
             get_wildfire_best_practice_command()
 
+        elif demisto.command() == 'panorama-enforce-wildfire-best-practice':
+            enforce_wildfire_system_config_command()
+            enforce_wildifre_schedule_command()
+
         elif demisto.command() == 'panorama-url-filtering-block-default-categories':
             url_filtering_block_default_categories_command()
 
@@ -6620,6 +6697,9 @@ def main():
 
         elif demisto.command() == 'panorama-get-url-filtering-best-practice':
             get_url_filtering_best_practice_command()
+
+        elif demisto.command() == 'panorama-create-antivirus-best-practice-profile':
+            create_antivirus_best_practice_profile_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

@@ -4249,6 +4249,29 @@ script:
     - contextPath: Panorama.URLFilter.Header.log-http-hdr-xff
       description: Log HTTP header xff.
       type: String
+  - arguments:
+    - default: false
+      description: The template name.
+      isArray: false
+      name: template
+      required: false
+      secret: false
+    deprecated: false
+    description: Enforce wildfire file upload to the maximum size + all file types
+      are forwarded and update schedule.
+    execution: false
+    name: panorama-enforce-wildfire-best-practice
+  - arguments:
+    - default: false
+      description: The name of the profile
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create antivirus best practice profile.
+    execution: false
+    name: panorama-create-antivirus-best-practice-profile
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false
