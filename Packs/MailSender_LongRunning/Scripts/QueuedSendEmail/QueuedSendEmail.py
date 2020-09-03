@@ -4,7 +4,7 @@ from CommonServerPython import *
 args = demisto.args()
 
 res = demisto.executeCommand('addEntitlement', {'replyEntriesTag': args.pop('replyEntriesTag', '')})
-if isError(res[0]):
+if is_error(res[0]):
     demisto.results(res)
     sys.exit(0)
 
