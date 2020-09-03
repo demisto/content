@@ -1,10 +1,19 @@
 import pytest
 import os
+import json
 import demistomock as demisto
 from CommonServerPython import outputPaths, entryTypes
 
 RETURN_ERROR_TARGET = 'CrowdStrikeFalcon.return_error'
 SERVER_URL = 'https://4.4.4.4'
+
+
+def get_fetch_data():
+    with open('./test_data.json', 'r') as f:
+        return json.loads(f.read())
+
+
+test_data = get_fetch_data()
 
 
 @pytest.fixture(autouse=True)
@@ -110,8 +119,8 @@ incident_context = {'name': 'Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1
 )
 def test_incident_to_incident_context(response_incident, expected):
     from CrowdStrikeFalcon import incident_to_incident_context
-    res = incident_to_incident_context(response_incident)
-    assert res == expected
+    res = incident_to_incident_context(test_data["response_incident"])
+    assert res == test_data['incident_context']
 
 
 def test_timestamp_length_equalization():

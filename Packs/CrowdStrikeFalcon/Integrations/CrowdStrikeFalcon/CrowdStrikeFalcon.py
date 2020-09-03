@@ -262,9 +262,11 @@ def incident_to_incident_context(incident):
             :return: Incident context representation of a incident
             :rtype ``dict``
         """
+    incident_id = str(incident.get('incident_id'))
+    incident_hosts = incident.get('hosts')[0]
     incident_context = {
-        'name': 'Incident ID: ' + str(incident.get('incident_id')),
-        'occurred': incident.get('hosts')[0].get('modified_timestamp'),
+        'name': f'Incident ID: {incident_id}',
+        'occurred': incident_hosts.get('modified_timestamp'),
         'rawJSON': json.dumps(incident)
     }
     return incident_context
@@ -879,8 +881,8 @@ def get_detections_entities(detections_ids):
     return detections_ids
 
 
-def get_fetch_incidents(last_created_timestamp=None, filter_arg=None):
-    endpoint_url = '/incidents/queries/incidents/v1'
+def get_incidents_ids(last_created_timestamp=None, filter_arg=None):
+    get_incidents_endpoint = '/incidents/queries/incidents/v1'
     params = {
         'sort': 'modified_timestamp.asc'
     }
@@ -890,21 +892,19 @@ def get_fetch_incidents(last_created_timestamp=None, filter_arg=None):
     elif last_created_timestamp:
         params['filter'] = "modified_timestamp:>'{0}'".format(last_created_timestamp)
 
-    response = http_request('GET', endpoint_url, params)
+    response = http_request('GET', get_incidents_endpoint, params)
 
     return response
 
 
 def get_incidents_entities(incidents_ids):
     ids_json = {'ids': incidents_ids}
-    if incidents_ids:
-        response = http_request(
-            'POST',
-            '/incidents/entities/incidents/GET/v1',
-            data=json.dumps(ids_json)
-        )
-        return response
-    return incidents_ids
+    response = http_request(
+        'POST',
+        '/incidents/entities/incidents/GET/v1',
+        data=json.dumps(ids_json)
+    )
+    return response
 
 
 def create_ioc():
@@ -1151,14 +1151,41 @@ def timestamp_length_equalization(timestamp1, timestamp2):
 ''' COMMANDS FUNCTIONS '''
 
 
+def get_last_fetch_time_and_last_incident_id():
+    last_run = demisto.getLastRun()
+    last_fetch_time = last_run.get('first_behavior_incident_time')
+
+    if not last_fetch_time:
+        last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+
+    last_fetch_timestamp = int(parse(last_fetch_time).timestamp() * 1000)
+    last_incident_id = str(last_run.get('last_incident_id'))
+    return last_fetch_time, last_fetch_timestamp, last_incident_id
+
+
+def get_incidents_ids_and_last_index_to_fetch_with(incidents_ids, last_incident_id, incidents):
+    if last_incident_id == incidents_ids[0]:
+        first_index_to_fetch = 1
+
+        if len(incidents_ids) == 1:
+            return incidents
+
+    else:
+        first_index_to_fetch = 0
+
+    last_index_to_fetch = INCIDENTS_PER_FETCH + first_index_to_fetch
+    incidents_ids = incidents_ids[first_index_to_fetch:last_index_to_fetch]
+    return incidents_ids, last_index_to_fetch
+
+
 def fetch_incidents():
     """
         Fetches incident using the detections API
         :return: Fetched detections in incident format
     """
     incidents = []  # type:List
-    incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
-    if 'detections' in incidents_or_detections or not incidents_or_detections:
+    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections', '')
+    if 'detections' in fetch_incidents_or_detections or not fetch_incidents_or_detections:
 
         last_run = demisto.getLastRun()
         # Get the last fetch time, if exists
@@ -1202,7 +1229,7 @@ def fetch_incidents():
 
             if "resources" in raw_res:
                 raw_res['type'] = "detections"
-                for detection in raw_res.get("resources"):
+                for detection in demisto.get(raw_res, "resources"):
                     incident = detection_to_incident(detection)
                     incident_date = incident['occurred']
 
@@ -1223,45 +1250,24 @@ def fetch_incidents():
 
             demisto.setLastRun({'first_behavior_time': last_fetch, 'last_detection_id': last_detection_id})
 
-    if 'incidents' in incidents_or_detections:
+    if 'incidents' in fetch_incidents_or_detections:
 
-        last_run = demisto.getLastRun()
-
-        last_fetch = last_run.get('first_behavior_incident_time')
-
-        if last_fetch is None:
-            last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
-
-        last_fetch_timestamp = int(parse(last_fetch).timestamp() * 1000)
-
-        last_incident_id = str(last_run.get('last_incident_id'))
+        last_fetch_time, last_fetch_timestamp, last_incident_id = get_last_fetch_time_and_last_incident_id()
 
         fetch_query = demisto.params().get('fetch_query')
 
         if fetch_query:
-            fetch_query = "modified_timestamp:>'{time}'+{query}".format(time=last_fetch, query=fetch_query)
-            incidents_ids = demisto.get(get_fetch_incidents(filter_arg=fetch_query), 'resources')
+            fetch_query = "modified_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
+            incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query), 'resources')
 
         else:
-            incidents_ids = demisto.get(get_fetch_incidents(last_created_timestamp=last_fetch), 'resources')
+            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=last_fetch_time), 'resources')
 
         if incidents_ids:
 
-            # make sure we do not fetch the same detection again.
-            if last_incident_id == incidents_ids[0]:
-                first_index_to_fetch = 1
-
-                # if this is the only detection - dont fetch.
-                if len(incidents_ids) == 1:
-                    return incidents
-
-            # if the first detection in this pull is different than the last detection fetched we bring it as well
-            else:
-                first_index_to_fetch = 0
-
-            # Limit the results to INCIDENTS_PER_FETCH`z
-            last_index_to_fetch = INCIDENTS_PER_FETCH + first_index_to_fetch
-            incidents_ids = incidents_ids[first_index_to_fetch:last_index_to_fetch]
+            incidents_ids, last_index_to_fetch = get_incidents_ids_and_last_index_to_fetch_with(incidents_ids,
+                                                                                                last_incident_id,
+                                                                                                incidents)
             raw_res = get_incidents_entities(incidents_ids)
 
             if "resources" in raw_res:
@@ -1279,13 +1285,13 @@ def fetch_incidents():
 
                     # Update last run and add incident if the incident is newer than last fetch
                     if incident_date_timestamp > last_fetch_timestamp:
-                        last_fetch = incident_date
+                        last_fetch_time = incident_date
                         last_fetch_timestamp = incident_date_timestamp
                         last_incident_id = json.loads(incident_to_context['rawJSON']).get('incident_id')
 
                     incidents.append(incident_to_context)
 
-            demisto.setLastRun({'first_behavior_incident_time': last_fetch, 'last_incident_id': last_incident_id})
+            demisto.setLastRun({'first_behavior_incident_time': last_fetch_time, 'last_incident_id': last_incident_id})
         return incidents
 
 
@@ -2072,9 +2078,9 @@ def list_incident_summaries_command():
 
     if fetch_query:
         fetch_query = "{query}".format(query=fetch_query)
-        incidents_ids = get_fetch_incidents(filter_arg=fetch_query)
+        incidents_ids = get_incidents_ids(filter_arg=fetch_query)
     else:
-        incidents_ids = get_fetch_incidents()
+        incidents_ids = get_incidents_ids()
     incidents_response_data = {}
     if incidents_ids:
         incidents_response_data = get_incidents_entities(incidents_ids)
