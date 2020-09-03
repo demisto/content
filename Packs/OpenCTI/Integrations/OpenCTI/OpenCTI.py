@@ -210,6 +210,7 @@ def main():
 
     api_key = params.get('apikey')
     base_url = params.get('base_url')
+    indicator_types = params.get('indicator_types')
 
     try:
         client = OpenCTIApiClient(base_url, api_key, ssl_verify=True)
@@ -218,7 +219,7 @@ def main():
         demisto.info("Command being called is {}".format(command))
         # Switch case
         if command == "fetch-indicators":
-            indicators = fetch_indicators_command(client, params.get("indicator_type"))
+            indicators = fetch_indicators_command(client, indicator_types)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)

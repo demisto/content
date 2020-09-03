@@ -70,7 +70,7 @@ configuration:
   type: 8
 - defaultvalue: all
   display: Indicator Type
-  name: indicator_type
+  name: indicator_types
   options:
   - all
   - ip
@@ -110,7 +110,7 @@ script:
       defaultValue: all
       description: The indicator type to fetch.
       isArray: false
-      name: indicator_type
+      name: indicator_types
       predefined:
       - all
       - domain
