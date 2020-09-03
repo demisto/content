@@ -1,0 +1,79 @@
+{"meta": {"total_items": 16, "api_version": "v3.0"}, "data": [{"attributes": {"type": "process_activity_occurred",
+                                                                                  "process_execution": {"attributes": {
+                                                                                      "operating_system_process": {
+                                                                                          "attributes": {"image": {
+                                                                                              "attributes": {
+                                                                                                  "file_type": null,
+                                                                                                  "path": "/System/Library/.",
+                                                                                                  "sha256": "b74d2067f5244f",
+                                                                                                  "binary": {
+                                                                                                      "attributes": {
+                                                                                                          "sha256": "\ufffd\u007fb\ufffd\ufffd\ufffd\ufffd\ufffdb\ufffd\ufffd\ufffd\ufffd",
+                                                                                                          "internal_name": null,
+                                                                                                          "digital_signature": {
+                                                                                                              "attributes": {
+                                                                                                                  "publisher": "Inc.",
+                                                                                                                  "product": "runner",
+                                                                                                                  "subject": "Inc.",
+                                                                                                                  "signing_time": null,
+                                                                                                                  "issuer": "Inc."},
+                                                                                                              "type": "primitives"},
+                                                                                                          "md5": "a771737e"},
+                                                                                                      "type": "Binary"},
+                                                                                                  "md5": "a771737ed"},
+                                                                                              "type": "File"},
+                                                                                                         "started_at": "2020-06-03T02:37:04.404Z",
+                                                                                                         "command_line": {
+                                                                                                             "attributes": {
+                                                                                                                 "identified_encodings": [],
+                                                                                                                 "command_line": "/System/Library/",
+                                                                                                                 "command_line_decoded": "/System/Library"},
+                                                                                                             "type": "primitives"},
+                                                                                                         "operating_system_pid": 1},
+                                                                                          "type": "primitives"}},
+                                                                                                        "type": "ProcessExecution"},
+                                                                                  "occurred_at": "2020-06-03T02:37:04.404Z",
+                                                                                  "analyst_notes": [],
+                                                                                  "is_indicator_of_compromise": false},
+                                                                   "type": "activity_timelines.ActivityOccurred"}, {
+                                                                      "attributes": {
+                                                                          "type": "process_activity_occurred",
+                                                                          "process_execution": {"attributes": {
+                                                                              "operating_system_process": {
+                                                                                  "attributes": {"image": {
+                                                                                      "attributes": {"file_type": null,
+                                                                                                     "path": "/usr/bin/ruby",
+                                                                                                     "sha256": "1a92c5c50e6a489",
+                                                                                                     "binary": {
+                                                                                                         "attributes": {
+                                                                                                             "sha256": "\ufffd\u007fb\ufffd\ufffd\ufffd\ufffd\ufffdb\ufffd\ufffd\ufffd\ufffd",
+                                                                                                             "internal_name": null,
+                                                                                                             "digital_signature": {
+                                                                                                                 "attributes": {
+                                                                                                                     "publisher": "Inc.",
+                                                                                                                     "product": "ruby",
+                                                                                                                     "subject": "Inc.",
+                                                                                                                     "signing_time": null,
+                                                                                                                     "issuer": "Inc."},
+                                                                                                                 "type": "primitives"},
+                                                                                                             "md5": "4ebf1e17"},
+                                                                                                         "type": "Binary"},
+                                                                                                     "md5": "4ebf1e170964"},
+                                                                                      "type": ".File"},
+                                                                                                 "started_at": "2020-06-03T02:37:04.643Z",
+                                                                                                 "command_line": {
+                                                                                                     "attributes": {
+                                                                                                         "identified_encodings": [],
+                                                                                                         "command_line": "ruby /Users/",
+                                                                                                         "command_line_decoded": "ruby /Users/"},
+                                                                                                     "type": "ProcessCommandLine"},
+                                                                                                 "operating_system_pid": 1},
+                                                                                  "type": "OperatingSystemProcess"}},
+                                                                                                "type": "primitive_activities.ProcessExecution"},
+                                                                          "occurred_at": "2020-06-03T02:37:04.643Z",
+                                                                          "analyst_notes": [],
+                                                                          "is_indicator_of_compromise": false}}],
+     "links": {"next": "https://redcanary.co/v3/detections/83/timeline?page=25&per_page=50",
+               "self": "https://redcanary.co/v3/detections/83/timeline?page=24&per_page=50",
+               "prev": "https://redcanary.co/v3/detections/83/timeline?page=23&per_page=50",
+               "first": "https://=redcanary.co/v3/detections/83/timeline?page=1&per_page=50"}}
