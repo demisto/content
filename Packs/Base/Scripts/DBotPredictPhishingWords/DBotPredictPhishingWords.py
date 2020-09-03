@@ -90,6 +90,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     explain_result_hr = dict()
     explain_result_hr['TextTokensHighlighted'] = highlighted_text_markdown
     explain_result_hr['Label'] = predicted_label
+    explain_result_hr['Probability'] = "%.2f" % predicted_prob
     explain_result_hr['Confidence'] = "%.2f" % predicted_prob
     explain_result_hr['PositiveWords'] = ", ".join(positive_words)
     explain_result_hr['NegativeWords'] = ", ".join(negative_words)
