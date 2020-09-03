@@ -1945,10 +1945,7 @@ def main():
         elif command == "qradar-reset-last-run":
             demisto.results(reset_fetch_incidents())
     except Exception as e:
-        message = e.message if hasattr(e, "message") else str(e)
-        error = "Error has occurred in the QRadar Integration: {error}\n {message}".format(
-            error=type(e), message=message
-        )
+        error = f"Error has occurred in the QRadar Integration: {str(e)}"
         LOG(traceback.format_exc())
         if demisto.command() == "fetch-incidents":
             LOG(error)
