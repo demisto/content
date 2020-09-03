@@ -124,6 +124,7 @@ def find_words_contain_tokens(positive_tokens, words_to_token_maps):
 def main():
     confidence_threshold = 0
     confidence_threshold = float(demisto.args().get("labelProbabilityThreshold", confidence_threshold))
+    confidence_threshold = float(demisto.args().get("confidenceThreshold", confidence_threshold))
 
     result = predict_phishing_words(demisto.args()['modelName'],
                                     demisto.args()['modelStoreType'],
