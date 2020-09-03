@@ -10,22 +10,9 @@ class Client(BaseClient):
         super().__init__(base_url, *args, **kwarg)
 
 
-    def http_request(self, *args, **kwargs):
-        """
-        Wraps the CommonServerPython _http_request method
-        Returns:
-            Response content, can be: JSON, XML, or Text
-        """
-        r = self._http_request(*args, **kwargs)
-
-        return r
-        # else:
-            # return_error(f'Unexpected response from service: {r}')
-
-
 # Works
 def test_module(client: Client):
-    client.http_request('GET', 'users')
+    client._http_request('GET', 'users')
 
     return 'ok'
 
@@ -36,7 +23,7 @@ def query_samples(client, **args):
         'subset': args.get('subset')
     }
 
-    r = client.http_request('GET', 'samples', params=params)
+    r = client._http_request('GET', 'samples', params=params)
 
     results = CommandResults(
         outputs_prefix = 'Triage.samples',
@@ -62,7 +49,7 @@ def submit_sample(client: Client, **args):
 
     if data['kind'] == 'url':
         data.update({'url': args.get('data')})
-        r = client.http_request('POST', 'samples', json_data=data)
+        r = client._http_request('POST', 'samples', json_data=data)
     elif data['kind'] == 'file':
 
         file_path = demisto.getFilePath(demisto.args().get('data')).get('path')
@@ -72,7 +59,7 @@ def submit_sample(client: Client, **args):
                 '_json': (None, '{"kind":"file","interactive":false}')
             }
 
-            r = client.http_request('POST', 'samples', json_data=data, files=files)
+            r = client._http_request('POST', 'samples', json_data=data, files=files)
     else:
         return_error(f'Type of sample needs to be selected, either "file" or "url", the selected type was: {data["kind"]}')
 
@@ -86,7 +73,7 @@ def submit_sample(client: Client, **args):
 # Works
 def get_sample(client: Client, **args):
     sample_id = args.get("sample_id")
-    r = client.http_request('GET', f'samples/{sample_id}')
+    r = client._http_request('GET', f'samples/{sample_id}')
 
     results = CommandResults(
         outputs_prefix = 'Triage.samples',
@@ -103,7 +90,7 @@ def get_sample(client: Client, **args):
 # Works
 def get_sample_summary(client: Client, **args):
     sample_id = args.get('sample_id')
-    r = client.http_request('GET', f'samples/{sample_id}/summary')
+    r = client._http_request('GET', f'samples/{sample_id}/summary')
 
     results = CommandResults(
         outputs_prefix = 'Triage.sample.summaries',
@@ -116,7 +103,7 @@ def get_sample_summary(client: Client, **args):
 # Works
 def delete_sample(client: Client, **args):
     sample_id=args.get('sample_id')
-    client.http_request('DELETE', f'samples/{sample_id}')
+    client._http_request('DELETE', f'samples/{sample_id}')
 
     return f'Sample {sample_id} successfully deleted'
 
@@ -137,7 +124,7 @@ def set_sample_profile(client: Client, **args):
         data.update({'profiles': [{'profile': args.get('profiles', '')}]})
     data = json.dumps(data)
 
-    client.http_request('POST', f'samples/{sample_id}/profile', data=data)
+    client._http_request('POST', f'samples/{sample_id}/profile', data=data)
 
     return f'Profile successfully set for sample {sample_id}'
 
@@ -149,7 +136,7 @@ def get_static_report(client: Client, **args):
     '''
     sample_id=args.get('sample_id')
 
-    r = client.http_request('GET', f'samples/{sample_id}/reports/static')
+    r = client._http_request('GET', f'samples/{sample_id}/reports/static')
 
     results = CommandResults(
         outputs_prefix = 'Triage.sample.reports.static',
@@ -169,7 +156,7 @@ def get_report_triage(client: Client, **args):
     sample_id=args.get('sample_id')
     task_id=args.get('task_id')
 
-    r = client.http_request('GET', f'samples/{sample_id}/{task_id}/report_triage.json')
+    r = client._http_request('GET', f'samples/{sample_id}/{task_id}/report_triage.json')
 
     results = CommandResults(
         outputs_prefix = 'Triage.sample.reports.triage',
@@ -189,7 +176,7 @@ def get_report_triage(client: Client, **args):
 #
 #     # This will continue to have events available to pull until the status = reported / failed
 #     while True:
-#         r = client.http_request('GET', f'samples/{sample_id}/events')
+#         r = client._http_request('GET', f'samples/{sample_id}/events')
 #
 #         results = CommandResults(
 #             outputs_prefix = 'Triage.sample.events',
@@ -215,7 +202,7 @@ def get_report_triage(client: Client, **args):
 #
 #     # This will continue to have events available to pull until the status = reported / failed
 #     while True:
-#         r = client.http_request('GET', f'samples/events')
+#         r = client._http_request('GET', f'samples/events')
 #
 #         results = CommandResults(
 #             outputs_prefix = 'Triage.sample.events',
@@ -239,7 +226,7 @@ def get_kernel_monitor(client: Client, **args):
     sample_id=args.get('sample_id')
     task_id=args.get('task_id')
 
-    r = client.http_request('GET', f'samples/{sample_id}/{task_id}/logs/onemon.json', resp_type='text')
+    r = client._http_request('GET', f'samples/{sample_id}/{task_id}/logs/onemon.json', resp_type='text')
 
     res = []
     for x in r.split('\n'):
@@ -267,7 +254,7 @@ def get_pcap(client: Client, **args):
     sample_id = args.get('sample_id')
     task_id = args.get('task_id')
 
-    r = client.http_request('GET', f'samples/{sample_id}/{task_id}/dump.pcap', resp_type='response')
+    r = client._http_request('GET', f'samples/{sample_id}/{task_id}/dump.pcap', resp_type='response')
 
     filename = f'{sample_id}.pcap'
     file_content = r.content
@@ -285,7 +272,7 @@ def get_dumped_files(client: Client, **args):
     task_id=args.get('task_id')
     file_name=args.get('file_name')
 
-    r = client.http_request('GET', f'samples/{sample_id}/{task_id}/files/{file_name}')
+    r = client._http_request('GET', f'samples/{sample_id}/{task_id}/files/{file_name}')
 
     results = CommandResults(
         outputs_prefix = 'Triage.sample.file_dump',
@@ -306,7 +293,7 @@ def get_users(client: Client, **args):
     else:
         url_suffix = f'users'
 
-    r = client.http_request('GET', url_suffix)
+    r = client._http_request('GET', url_suffix)
 
     # Depending on the api endpoint used, the results are either in the 'data' key or not
     if r.get('data'):
@@ -339,7 +326,7 @@ def create_user(client: Client, **args):
 
     data = json.dumps(data)
 
-    r = client.http_request('POST', 'users', data=data)
+    r = client._http_request('POST', 'users', data=data)
 
     results = CommandResults(
         outputs_prefix = 'Triage.users',
@@ -359,7 +346,7 @@ def delete_user(client: Client, **args):
 
     userID = args.get('userID')
 
-    r = client.http_request('DELETE', f'users/{userID}')
+    r = client._http_request('DELETE', f'users/{userID}')
 
     results = CommandResults(
         outputs_prefix = 'Triage.users',
@@ -385,7 +372,7 @@ def create_apikey(client: Client, **args):
         'name': name
     })
 
-    r = client.http_request('POST', f'users/{userID}/apikeys', data=data)
+    r = client._http_request('POST', f'users/{userID}/apikeys', data=data)
 
     results = CommandResults(
         outputs_prefix = 'Triage.apikey',
@@ -402,7 +389,7 @@ def get_apikey(client: Client, **args):
     - Check the formatting of the output once instance UI is working better
     '''
     userID = args.get('userID')
-    r = client.http_request('GET', f'users/{userID}/apikeys')
+    r = client._http_request('GET', f'users/{userID}/apikeys')
 
     results = CommandResults(
         outputs_prefix = 'Triage.apikey',
@@ -421,7 +408,7 @@ def delete_apikey(client: Client, **args):
     userID = args.get('userID')
     apiKeyName = args.get('apiKeyName', 'Created from XSOAR')
 
-    r = client.http_request('DELETE', f'users/{userID}/apikeys/{apiKeyName}')
+    r = client._http_request('DELETE', f'users/{userID}/apikeys/{apiKeyName}')
 
     results = CommandResults(
         outputs_prefix = 'Triage.apikey',
@@ -445,7 +432,7 @@ def get_profile(client: Client, **args):
     else:
         url_suffix = f'profiles'
 
-    r = client.http_request('GET', url_suffix)
+    r = client._http_request('GET', url_suffix)
 
     if not profileID:
         r = r['data']
@@ -470,7 +457,7 @@ def create_profile(client: Client, **args):
         "browser": args.get('browser')
     })
 
-    r = client.http_request('POST', f'profiles', data=data)
+    r = client._http_request('POST', f'profiles', data=data)
 
     results = CommandResults(
         outputs_prefix = 'Triage.profiles',
@@ -497,7 +484,7 @@ def update_profile(client: Client, **args):
             else:
                 data[arg] = args.get(arg)
 
-    r = client.http_request('PUT', f'profiles/{profileID}', data=json.dumps(data))
+    r = client._http_request('PUT', f'profiles/{profileID}', data=json.dumps(data))
 
     results = CommandResults(
         outputs_prefix = 'Triage.profiles',
@@ -516,7 +503,7 @@ def delete_profile(client: Client, **args):
 
     profileID = args.get('profileID')
 
-    r = client.http_request('DELETE', f'profiles/{profileID}')
+    r = client._http_request('DELETE', f'profiles/{profileID}')
 
     results = CommandResults(
         outputs_prefix = 'Triage.profiles',
