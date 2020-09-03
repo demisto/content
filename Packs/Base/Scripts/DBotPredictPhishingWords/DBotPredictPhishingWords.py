@@ -47,7 +47,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     if filtered_text_number_of_words == 0:
         handle_error("The model does not contains any of the input text words", is_return_error)
     if filtered_text_number_of_words < min_text_length:
-        handle_error("The model contains less then %d words" % min_text_length, is_return_error)
+        handle_error("The model contains fewer than %d words" % min_text_length, is_return_error)
 
     explain_result = demisto_ml.explain_model_words(model,
                                                     input_text,
