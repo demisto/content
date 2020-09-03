@@ -612,10 +612,10 @@ def print_debug_msg(msg, lock: Lock = None):
     err_msg = f"QRadarMsg - {msg}"
     if lock:
         if lock.acquire(timeout=LOCK_WAIT_TIME):
-            demisto.error(err_msg)
+            demisto.debug(err_msg)
             lock.release()
     else:
-        demisto.error(err_msg)
+        demisto.debug(err_msg)
 
 
 def filter_dict_null(d):
