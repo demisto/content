@@ -190,7 +190,7 @@ def test_extract_indicators_from_generic_hit(mocker):
     import FeedElasticsearch as esf
     mocker.patch.object(esf, 'hit_to_indicator', return_value=PARSED_CUSTOM_HIT)
     ioc_lst = esf.extract_indicators_from_generic_hit(CUSTOM_HIT, CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None,
-                                                      ['tag1', 'tag2'])
+                                                      ['tag1', 'tag2'], 'AMBER')
     assert ioc_lst == [PARSED_CUSTOM_HIT]
 
 
