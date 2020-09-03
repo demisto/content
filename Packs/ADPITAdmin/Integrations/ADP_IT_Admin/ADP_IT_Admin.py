@@ -31,9 +31,6 @@ class Client(BaseClient):
         self._ok_codes = ok_codes
         self._headers = headers
         self._auth = auth
-        self._session = requests.Session()
-        if not proxy:
-            self._session.trust_env = False
 
         access_token = self.get_access_token(client_id, client_secret)
         self._headers['Authorization'] = f'Bearer {access_token}'
@@ -62,9 +59,6 @@ class Client(BaseClient):
                                   params=query_params, cert=self.cert_file)
 
     def get_workers_by_uri(self, uri):
-        return self.get_paged_workers(uri)
-
-    def get_paged_workers(self, uri):
         workers_list = []
         res = self._http_request(method="GET", url_suffix=uri, cert=self.cert_file, resp_type='response')
         if res.status_code == 200:
@@ -135,7 +129,7 @@ def get_all_workers_trigger_async_command(client, args):
     return (
         readable_output,
         outputs,
-        None
+        res
     )
 
 
@@ -143,9 +137,10 @@ def get_all_workers_command(client, args):
 
     workers_uri = args.get('workersURI')
     workers = client.get_workers_by_uri(workers_uri)
+    message = 'The adp-get-all-workers execution succeeded'
 
     return (
-        None,
+        message,
         {},
         workers
     )
@@ -172,7 +167,7 @@ def main():
 
     client_id = adp_credentials.get('identifier')
     client_secret = adp_credentials.get('password')
-    credentials = adp_credentials.get('credentials')
+    credentials = adp_credentials.get('credentials', {})
     cert = credentials.get('sshkey') if credentials.get('sshkey') else params.get('cert_file')
 
     if not cert:

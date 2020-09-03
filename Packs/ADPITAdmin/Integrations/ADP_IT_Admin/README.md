@@ -1,5 +1,5 @@
 ADP integration to import ADP user data
-This integration was integrated and tested with version xx of ADP IT Admin
+This integration was integrated and tested with version 02 of ADP IT Admin
 ## Configure ADP IT Admin on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
