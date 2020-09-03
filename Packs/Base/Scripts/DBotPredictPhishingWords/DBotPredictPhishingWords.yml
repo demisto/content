@@ -65,12 +65,11 @@ args:
   secret: false
 - default: false
   defaultValue: '0.8'
-  description: The label probability threshold.
+  description: The label probability threshold. Deprecated, please use quivalnet "confidenceThreshold" arguement.
   isArray: false
   name: labelProbabilityThreshold
   required: false
   secret: false
-  deprecated: true
 - default: false
   defaultValue: '0.8'
   description: The confience threshold to apply. Model will provide predictions only if their confidence is above this threshold.
