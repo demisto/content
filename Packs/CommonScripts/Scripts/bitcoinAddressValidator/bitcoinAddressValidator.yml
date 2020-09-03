@@ -7,10 +7,10 @@ args:
   secret: false
 comment: Verifies that a Bitcoin address is valid and returns the address only if it is valid.
 commonfields:
-  id: isBitcoin
+  id: bitcoinAddressValidator
   version: -1
 enabled: true
-name: isBitcoin
+name: bitcoinAddressValidator
 script: '-'
 subtype: python3
 system: false
