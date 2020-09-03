@@ -94,7 +94,6 @@ def main():
                 if line_values:
                     csv_data.append(line_values[0])
 
-
     # If we're searching the CSV
     if search_column:
         if header_row:
