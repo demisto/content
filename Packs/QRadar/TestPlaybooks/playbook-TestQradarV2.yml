@@ -1,7 +1,7 @@
 id: test_Qradar_v2
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: test_Qradar
+name: test_Qradar_v2
 starttaskid: "0"
 tasks:
   "0":
