@@ -28,7 +28,7 @@ class TestFetchIndicators:
             assert first_obj["value"] == value
             assert first_obj["type"] == _type
             assert first_obj['fields']['tags'] == client.tags
-            assert first_obj['fields']['tags'] == client.tlp_color
+            assert first_obj['fields']['trafficlightprotocol'] == client.tlp_color
         else:
             assert not ans
 
