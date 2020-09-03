@@ -33,7 +33,7 @@ def convert_datetime_to_epoch(the_time=0):
         if isinstance(the_time, datetime):
             return int(the_time.strftime('%s'))
     except Exception as err:
-        print(err)
+        demisto.debug(err)
         return 0
 
 

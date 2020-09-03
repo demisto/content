@@ -596,7 +596,6 @@ def insight_rerun_command(client: Client, args: dict):
             safebreach_insight_context_list.append(context_object)
             safebreach_test_context_list.append(test_context_dict)
         except Exception as e:
-            print(e)
             traceback.print_exc()
             return_error('Failed to rerun insight', e)
     safebreach_context = {
