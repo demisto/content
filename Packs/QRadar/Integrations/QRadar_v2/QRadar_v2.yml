@@ -46,7 +46,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- defaultvalue: '*,LOGSOURCETYPENAME(devicetype) AS ''DeviceNames'''
+- defaultvalue: "QIDNAME(qid) AS 'Event Name',LOGSOURCENAME(logsourceid) AS 'Log Source', CATEGORYNAME(highlevelcategory) AS 'High-level Category', CATEGORYNAME(category) AS 'Low-level Category', PROTOCOLNAME(protocolid), sourceip AS 'Source IP', sourceport AS 'Source Port', destinationip AS 'Destination IP', destinationport AS 'Destinaion Port', username AS 'Username'"
   display: Event columns to return from the events query
   name: events_columns
   required: false
@@ -299,6 +299,13 @@ script:
       isArray: false
       name: search_id
       required: true
+      secret: false
+    - default: false
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers)
+      isArray: false
+      name: headers
+      required: false
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,

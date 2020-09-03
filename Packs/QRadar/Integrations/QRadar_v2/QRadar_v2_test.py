@@ -1,6 +1,6 @@
 import pytest
 import json
-from Packs.QRadar.Integrations.QRadar_v2.QRadar_v2 import (
+from QRadar_v2 import (
     QRadarClient,
     search_command,
     get_search_command,

@@ -23,6 +23,8 @@ RESET_KEY = "reset"
 LAST_FETCH_KEY = "id"
 API_USERNAME = "_api_token_key"
 TERMINATING_SEARCH_STATUSES = {"CANCELED", "ERROR", "COMPLETED"}
+EVENT_TIME_FIELDS = ["starttime"]
+ASSET_TIME_FIELDS = ['created', 'last_reported', 'first_seen_scanner', 'last_seen_scanner']
 
 """ ADVANCED GLOBAL PARAMETERS """
 EVENTS_INTERVAL_SECS = 15
@@ -386,7 +388,7 @@ class QRadarClient:
         """
         Returns the result of a reference request
         """
-        url = f'{self._server}/api/reference_data/sets/{parse.quote(ref_name, safe="")}'
+        url = f'{self._server}/api/reference_data/sets/{parse.quote(str(ref_name), safe="")}'
         params = {"filter": _filter} if _filter else {}
         headers = dict(self._auth_headers)
         if _fields:
@@ -413,14 +415,14 @@ class QRadarClient:
         """
         Delete a refernce set
         """
-        url = f'{self._server}/api/reference_data/sets/{parse.quote(ref_name, safe="")}'
+        url = f'{self._server}/api/reference_data/sets/{parse.quote(str(ref_name), safe="")}'
         return self.send_request("DELETE", url)
 
     def update_reference_set_value(self, ref_name, value, source=None):
         """
         Update refernce set value
         """
-        url = f'{self._server}/api/reference_data/sets/{parse.quote(ref_name, safe="")}'
+        url = f'{self._server}/api/reference_data/sets/{parse.quote(str(ref_name), safe="")}'
         params = {"name": ref_name, "value": value}
         if source:
             params["source"] = source
@@ -430,7 +432,7 @@ class QRadarClient:
         """
         Delete reference set value
         """
-        url = f'{self._server}/api/reference_data/sets/{parse.quote(ref_name, safe="")}/{parse.quote(value, safe="")}'
+        url = f'{self._server}/api/reference_data/sets/{parse.quote(str(ref_name), safe="")}/{parse.quote(str(value), safe="")}'
         params = {"name": ref_name, "value": value}
         return self.send_request("DELETE", url, params=params)
 
@@ -504,7 +506,7 @@ class QRadarClient:
             Returns:
                 dict: Reference set object
         """
-        url = f'{self._server}/api/reference_data/sets/bulk_load/{parse.quote(reference_name, safe="")}'
+        url = f'{self._server}/api/reference_data/sets/bulk_load/{parse.quote(str(reference_name), safe="")}'
         params = {"name": reference_name}
         return self.send_request(
             "POST", url, params=params, data=json.dumps(indicators_list)
@@ -610,10 +612,10 @@ def print_debug_msg(msg, lock: Lock = None):
     err_msg = f"QRadarMsg - {msg}"
     if lock:
         if lock.acquire(timeout=LOCK_WAIT_TIME):
-            demisto.debug(err_msg)
+            demisto.error(err_msg)
             lock.release()
     else:
-        demisto.debug(err_msg)
+        demisto.error(err_msg)
 
 
 def filter_dict_null(d):
@@ -723,12 +725,8 @@ def perform_offense_events_enrichment(
         f'(1) Starting events fetch for offense {offense["id"]}.', client.lock
     )
     try:
-        query_status, search_id = try_create_search_with_retry(
-            client, events_query, offense
-        )
-        offense["events"] = try_poll_offense_events_with_retry(
-            client, offense["id"], query_status, search_id
-        )
+        query_status, search_id = try_create_search_with_retry(client, events_query, offense)
+        offense["events"] = try_poll_offense_events_with_retry(client, offense["id"], query_status, search_id)
     except Exception as e:
         print_debug_msg(
             f'(5) Failed fetching event for offense {offense["id"]}: {str(e)}.',
@@ -763,7 +761,15 @@ def try_poll_offense_events_with_retry(
                 print_debug_msg(
                     f"(3) Events fetched for offense {offense_id}.", client.lock
                 )
-                return raw_search_results.get("events", [])
+                events = raw_search_results.get("events", [])
+                for event in events:
+                    try:
+                        for time_field in EVENT_TIME_FIELDS:
+                            if time_field in event:
+                                event[time_field] = epoch_to_iso(event[time_field])
+                    except TypeError:
+                        continue
+                return events
             else:
                 # prepare next run
                 i = i % 60 + EVENTS_INTERVAL_SECS
@@ -826,10 +832,6 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich
     raw_offenses, fetch_query = seek_fetchable_offenses(client, offense_id, user_query)
     if raw_offenses:
         print_debug_msg(f"(7) Fetched {fetch_query}successfully.", client.lock)
-        if full_enrich:
-            print_debug_msg(f"(8) Enriching {fetch_query}")
-            enrich_offense_res_with_source_and_destination_address(client, raw_offenses)
-            print_debug_msg(f"(9) Enriched {fetch_query}successfully.")
 
     return raw_offenses
 
@@ -938,6 +940,10 @@ def fetch_incidents_long_running_events(
         return
 
     enriched_offenses.sort(key=lambda offense: offense.get("id", 0))
+    if full_enrich:
+        print_debug_msg(f"(8) Enriching offenses")
+        enrich_offense_result(client, enriched_offenses, full_enrich)
+        print_debug_msg(f"(9) Enriched offenses successfully.")
     new_incidents_samples = try_create_incidents(enriched_offenses)
     incidents_batch_for_sample = (
         new_incidents_samples if new_incidents_samples else last_run.get("samples", [])
@@ -990,7 +996,7 @@ def create_incident_from_offense(offense):
     """
     Creates incidents from offense
     """
-    occured = epoch_to_iso(offense["start_time"])
+    occured = offense["start_time"]
     keys = list(offense.keys())
     labels = []
     for i in range(len(keys)):
@@ -1032,12 +1038,11 @@ def get_offenses_command(client: QRadarClient, range=None, filter=None, fields=N
     )
 
 
-def enrich_offense_result(client: QRadarClient, response, full_enrichment=False):
+def enrich_offense_result(client: QRadarClient, response, full_enrich=False):
     """
-    Enriches the values of a given offense result (full_enrichment adds more enrichment options)
+    Enriches the values of a given offense result (full_enrich enriches destination and source ips)
     :return:
     """
-    enrich_offense_res_with_source_and_destination_address(client, response)
     if isinstance(response, list):
         type_dict = client.get_offense_types()
         closing_reason_dict = client.get_closing_reasons(
@@ -1045,10 +1050,12 @@ def enrich_offense_result(client: QRadarClient, response, full_enrichment=False)
         )
         for offense in response:
             enrich_single_offense_result(
-                client, offense, full_enrichment, type_dict, closing_reason_dict
+                client, offense, type_dict, closing_reason_dict
             )
     else:
-        enrich_single_offense_result(client, response, full_enrichment)
+        enrich_single_offense_result(client, response)
+    if full_enrich:
+        enrich_offense_res_with_source_and_destination_address(client, response)
 
     return response
 
@@ -1056,20 +1063,18 @@ def enrich_offense_result(client: QRadarClient, response, full_enrichment=False)
 def enrich_single_offense_result(
     client: QRadarClient,
     offense,
-    full_enrichment,
     type_dict=None,
     closing_reason_dict=None,
 ):
     """
-    Convert epoch to iso and closing_reason_id to closing reason name, and if full_enrichment then converts
-    closing_reason_id to name
+    Convert epoch to iso and closing_reason_id to closing reason name
     """
     enrich_offense_times(offense)
     if "offense_type" in offense:
         offense["offense_type"] = client.convert_offense_type_id_to_name(
             offense["offense_type"], type_dict
         )
-    if full_enrichment and "closing_reason_id" in offense:
+    if "closing_reason_id" in offense:
         offense["closing_reason_id"] = client.convert_closing_reason_id_to_name(
             offense["closing_reason_id"], closing_reason_dict
         )
@@ -1090,9 +1095,18 @@ def enrich_offense_res_with_source_and_destination_address(
             client.enrich_destination_addresses_dict(dst_adrs)
         if isinstance(response, list):
             for offense in response:
-                enrich_single_offense_res_with_source_and_destination_address(
+                asset_ip_ids = enrich_single_offense_res_with_source_and_destination_address(
                     offense, src_adrs, dst_adrs
                 )
+                for b in batch(list(asset_ip_ids), batch_size=100):
+                    query = ""
+                    for val in b:
+                        query = (f"{query} or " if query else "") + f'interfaces contains ip_addresses contains  value="{val}"'
+                    if query:
+                        assets = client.get_assets(_filter=query)
+                        if assets:
+                            transform_asset_time_fields_recursive(assets)
+                            offense['assets'] = assets
         else:
             enrich_single_offense_res_with_source_and_destination_address(
                 response, src_adrs, dst_adrs
@@ -1100,6 +1114,21 @@ def enrich_offense_res_with_source_and_destination_address(
     # The function is meant to be safe, so it shouldn't raise any error
     finally:
         return response
+
+
+def transform_asset_time_fields_recursive(asset):
+    """
+    Transforms the asset time fields recursively
+    """
+    if isinstance(asset, list):
+        for sub_asset_object in asset:
+            transform_asset_time_fields_recursive(sub_asset_object)
+    if isinstance(asset, dict):
+        for k, v in asset.items():
+            if isinstance(v, (list, dict)):
+                transform_asset_time_fields_recursive(v)
+            elif k in ASSET_TIME_FIELDS and v:
+                asset[k] = epoch_to_iso(v)
 
 
 def extract_source_and_destination_addresses_ids(response):
@@ -1141,18 +1170,21 @@ def enrich_single_offense_res_with_source_and_destination_address(
     """
     helper function: For a single offense replaces the source and destination ids with the actual addresses
     """
+    asset_ip_ids = set()
     if isinstance(offense.get("source_address_ids"), list):
         for i in range(len(offense["source_address_ids"])):
             offense["source_address_ids"][i] = src_adrs[
                 offense["source_address_ids"][i]
             ]
+            asset_ip_ids.add(offense["source_address_ids"][i])
     if isinstance(offense.get("local_destination_address_ids"), list):
         for i in range(len(offense["local_destination_address_ids"])):
             offense["local_destination_address_ids"][i] = dst_adrs[
                 offense["local_destination_address_ids"][i]
             ]
+            asset_ip_ids.add(offense["local_destination_address_ids"][i])
 
-    return None
+    return asset_ip_ids
 
 
 def enrich_offense_times(offense):
@@ -1174,7 +1206,7 @@ def get_offense_by_id_command(
 ):
     raw_offense = client.get_offense_by_id(offense_id, filter, fields)
     offense = deepcopy(raw_offense)
-    enrich_offense_result(client, offense, full_enrichment=True)
+    enrich_offense_result(client, offense, full_enrich=True)
     offense = filter_dict_non_intersection_key_to_value(
         replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP
     )
@@ -1218,7 +1250,7 @@ def update_offense_command(
         )
     raw_offense = client.update_offense(offense_id, args)
     offense = deepcopy(raw_offense)
-    enrich_offense_result(client, offense, full_enrichment=True)
+    enrich_offense_result(client, offense, full_enrich=True)
     offense = filter_dict_non_intersection_key_to_value(
         replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP
     )
@@ -1247,7 +1279,7 @@ def search_command(client: QRadarClient, query_expression=None, headers=None):
     )
 
 
-def get_search_command(client: QRadarClient, search_id=None):
+def get_search_command(client: QRadarClient, search_id=None, headers=None):
     raw_search = client.get_search(search_id)
     search = deepcopy(raw_search)
     search = filter_dict_non_intersection_key_to_value(
@@ -1257,12 +1289,12 @@ def get_search_command(client: QRadarClient, search_id=None):
         "QRadar Search Info",
         search,
         raw_search,
-        demisto.args().get("headers"),
+        headers,
         'QRadar.Search(val.ID === "{0}")'.format(search_id),
     )
 
 
-def get_search_results_command(client: QRadarClient, search_id=None, range=None):
+def get_search_results_command(client: QRadarClient, search_id=None, range=None, headers=None):
     raw_search_results = client.get_search_results(search_id, range)
     result_key = list(raw_search_results.keys())[0]
     title = "QRadar Search Results from {}".format(str(result_key))
@@ -1276,7 +1308,7 @@ def get_search_results_command(client: QRadarClient, search_id=None, range=None)
         title,
         context_obj,
         raw_search_results,
-        demisto.args().get("headers"),
+        headers,
         context_key,
     )
 
