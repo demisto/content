@@ -1,0 +1,3 @@
+!adp-get-worker associateOID="G3VSE2R6" using=ADPITAdmin
+!adp-get-all-workers-trigger-async using=ADPITAdmin
+!adp-get-all-workers workersURI="/core/v1/operations/workerInformationManagement/hr.v2.workers/9200029094106%5F1?$select=processingStatus"	using=ADPITAdmin
