@@ -1,9 +1,9 @@
 id: detonate_url_-_crowdstrike
 version: -1
 name: Detonate URL - CrowdStrike
-fromversion: 4.0.0
-description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook
-  returns relevant reports to the War Room and file reputations to the context data.
+description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
+  This playbook returns relevant reports to the War Room and file reputations to the
+  context data.
 starttaskid: "0"
 tasks:
   "0":
@@ -24,11 +24,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 3e2a6ea9-7f88-4d10-8d29-3ed2d10eba4f
@@ -80,11 +84,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
@@ -101,11 +109,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1140
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
@@ -132,10 +144,14 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 925
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
     taskid: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
@@ -164,10 +180,14 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 550
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: 6ffba508-37e1-4647-88ea-265cd5475d61
@@ -184,7 +204,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "13"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -202,6 +222,10 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: e34dd0a0-2806-4f3e-8c17-f4a05504222d
@@ -247,22 +271,77 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 740
+          "y": 895
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 7aa7ae01-7cab-4d35-8c66-fe345dad3c12
+    type: condition
+    task:
+      description: "Check if file type is not supported."
+      id: 7aa7ae01-7cab-4d35-8c66-fe345dad3c12
+      version: -1
+      name: Is file type not supported?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.URL
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: inputs.URL
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.FIlterOutRegex
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1155,
-        "width": 677.5,
-        "x": 162.5,
+        "height": 1260,
+        "width": 605,
+        "x": 50,
         "y": 50
       }
     }
@@ -275,22 +354,32 @@ inputs:
       accessor: Data
   required: false
   description: URL to detonate.
+  playbookInputQuery: null
 - key: EnvironmentID
   value:
     simple: "100"
   required: false
   description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
     command.
+  playbookInputQuery: null
 - key: Interval
   value:
     simple: "5"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery: null
 - key: Timeout
   value:
     simple: "30"
   required: false
   description: How much time to wait before a timeout occurs  (minutes)
+  playbookInputQuery: null
+- key: FIlterOutRegex
+  value:
+    simple: .*\.((?i)(?:dtd|png))\b
+  required: false
+  description: A regex of files to not detonate in CrowdStrike
+  playbookInputQuery: null
 outputs:
 - contextPath: File.SHA256
   description: SHA256 hash of the file
@@ -334,5 +423,6 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
+fromversion: 4.1.0
 tests:
   - Test-Detonate URL - Crowdstrike

@@ -1437,3 +1437,4 @@ script:
 tests:
 - VxStream Test
 - detonate_file_-_generic_test
+- CrowdStrike - Filter Out Test
