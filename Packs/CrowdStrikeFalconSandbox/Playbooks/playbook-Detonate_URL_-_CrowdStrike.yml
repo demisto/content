@@ -423,6 +423,6 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
-fromversion: 4.1.0
+fromversion: 4.0.0
 tests:
   - Test-Detonate URL - Crowdstrike
