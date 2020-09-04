@@ -14,7 +14,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 
-if not demisto.params()['proxy']:
+if not demisto.getParam('proxy'):
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
@@ -438,7 +438,7 @@ def query_malops_command():
     total_result_limit = demisto.getArg('totalResultLimit')
     per_group_limit = demisto.getArg('perGroupLimit')
     template_context = demisto.getArg('templateContext')
-    filters = demisto.getArg('filters') if demisto.getArg('filters') else []
+    filters = json.loads(demisto.getArg('filters')) if demisto.getArg('filters') else []
     within_last_days = demisto.getArg('withinLastDays')
     guid_list = argToList(demisto.getArg('malopGuid'))
 
@@ -455,56 +455,57 @@ def query_malops_command():
             'filterType': 'GreaterThan'
         })
 
-    response = query_malops(total_result_limit, per_group_limit, template_context, filters, guid_list=guid_list)
-    data = response.get('data', {})
-    malops_map = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
-    if not data or not malops_map:
-        demisto.results('No malops found')
-        return
-
+    malop_process_type, malop_loggon_session_type = query_malops(total_result_limit, per_group_limit, template_context, filters, guid_list=guid_list)
     outputs = []
-    for guid, malop in malops_map.iteritems():
-        simple_values = dict_safe_get(malop, ['simpleValues'], {}, dict)
-        management_status = dict_safe_get(simple_values, ['managementStatus', 'values', 0], u'', unicode)
 
-        if management_status == 'CLOSED':
+    for response in (malop_process_type, malop_loggon_session_type):
+        data = response.get('data', {})
+        malops_map = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
+        if not data or not malops_map:
             continue
 
-        creation_time = translate_timestamp(dict_safe_get(simple_values, ['creationTime', 'values', 0]))
-        malop_last_update_time = translate_timestamp(dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0]))
-        raw_decision_failure = dict_safe_get(simple_values, ['decisionFeature', 'values', 0], u'', unicode)
-        decision_failure = raw_decision_failure.replace('Process.', '')
-        raw_suspects = dict_safe_get(malop, ['elementValues', 'suspects'], {}, dict)
-        suspects_string = ''
-        if raw_suspects:
-            suspects = dict_safe_get(raw_suspects, ['elementValues', 0], {}, dict)
-            suspects_string = '{}: {}'.format(suspects.get('elementType'), suspects.get('name'))
+        for guid, malop in malops_map.iteritems():
+            simple_values = dict_safe_get(malop, ['simpleValues'], {}, dict)
+            management_status = dict_safe_get(simple_values, ['managementStatus', 'values', 0], u'', unicode)
 
-        affected_machines = []
-        elementValues = dict_safe_get(malop, ['elementValues', 'affectedMachines', 'elementValues'], [], list)
-        for machine in elementValues:
-            if not isinstance(machine, dict):
-                raise ValueError("Cybereason raw response is not valid, machine in elementValues is not dict")
+            if management_status == 'CLOSED':
+                continue
 
-            affected_machines.append(machine.get('name', ''))
+            creation_time = translate_timestamp(dict_safe_get(simple_values, ['creationTime', 'values', 0]))
+            malop_last_update_time = translate_timestamp(dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0]))
+            raw_decision_failure = dict_safe_get(simple_values, ['decisionFeature', 'values', 0], u'', unicode)
+            decision_failure = raw_decision_failure.replace('Process.', '')
+            raw_suspects = dict_safe_get(malop, ['elementValues', 'suspects'], {}, dict)
+            suspects_string = ''
+            if raw_suspects:
+                suspects = dict_safe_get(raw_suspects, ['elementValues', 0], {}, dict)
+                suspects_string = '{}: {}'.format(suspects.get('elementType'), suspects.get('name'))
 
-        involved_hashes = []  # type: List[str]
-        cause_elements_amount = dict_safe_get(simple_values, ['rootCauseElementHashes', 'totalValues'])
-        if cause_elements_amount != 0:
-            involved_hashes.append(cause_elements_amount)
+            affected_machines = []
+            elementValues = dict_safe_get(malop, ['elementValues', 'affectedMachines', 'elementValues'], [], list)
+            for machine in elementValues:
+                if not isinstance(machine, dict):
+                    raise ValueError("Cybereason raw response is not valid, machine in elementValues is not dict")
 
-        malop_output = {
-            'GUID': guid,
-            'Link': SERVER + '/#/malop/' + guid,
-            'CreationTime': creation_time,
-            'DecisionFailure': re.sub(r'\([^)]*\)', '', decision_failure),
-            'Suspects': suspects_string,
-            'LastUpdateTime': malop_last_update_time,
-            'Status': management_status,
-            'AffectedMachine': affected_machines,
-            'InvolvedHash': involved_hashes
-        }
-        outputs.append(malop_output)
+                affected_machines.append(machine.get('name', ''))
+
+            involved_hashes = []  # type: List[str]
+            cause_elements_amount = dict_safe_get(simple_values, ['rootCauseElementHashes', 'totalValues'])
+            if cause_elements_amount != 0:
+                involved_hashes.append(cause_elements_amount)
+
+            malop_output = {
+                'GUID': guid,
+                'Link': SERVER + '/#/malop/' + guid,
+                'CreationTime': creation_time,
+                'DecisionFailure': re.sub(r'\([^)]*\)', '', decision_failure),
+                'Suspects': suspects_string,
+                'LastUpdateTime': malop_last_update_time,
+                'Status': management_status,
+                'AffectedMachine': affected_machines,
+                'InvolvedHash': involved_hashes
+            }
+            outputs.append(malop_output)
 
     ec = {
         'Cybereason.Malops(val.GUID && val.GUID === obj.GUID)': outputs
@@ -519,7 +520,7 @@ def query_malops_command():
                                          outputs,
                                          ['GUID', 'Link', 'CreationTime', 'Status',
                                           'LastUpdateTime', 'DecisionFailure', 'Suspects',
-                                          'AffectedMachine', 'InvolvedHash']),
+                                          'AffectedMachine', 'InvolvedHash']) if outputs else 'No malops found',
         'EntryContext': ec
     })
 
@@ -532,15 +533,20 @@ def query_malops(total_result_limit=None, per_group_limit=None, template_context
         'templateContext': template_context or 'MALOP',
         'queryPath': [
             {
-                'requestedType': 'MalopProcess',
+                'requestedType': None,
                 'guidList': guid_list,
                 'result': True,
                 'filters': filters
             }
         ]
     }
+    json_body['queryPath'][0]['requestedType'] = "MalopProcess"
+    malop_process_type = http_request('POST', '/rest/crimes/unified', json_body=json_body).json()
 
-    return http_request('POST', '/rest/crimes/unified', json_body=json_body).json()
+    json_body['queryPath'][0]['requestedType'] = "MalopLogonSession"
+    malop_loggon_session_type = http_request('POST', '/rest/crimes/unified', json_body=json_body).json()
+
+    return malop_process_type, malop_loggon_session_type
 
 
 def isolate_machine_command():
@@ -1239,8 +1245,8 @@ def malop_to_incident(malop):
 def fetch_incidents():
     last_run = demisto.getLastRun()
 
-    if last_run and last_run['creation_time']:
-        last_update_time = int(last_run.get('creation_time')) if last_run.get('creation_time') else None
+    if last_run and last_run.get('creation_time'):
+        last_update_time = int(last_run.get('creation_time'))
     else:
         # In first run
         last_update_time, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
@@ -1262,21 +1268,22 @@ def fetch_incidents():
     else:
         raise Exception('Given filter to fetch by is invalid.')
 
-    data = query_malops(total_result_limit=10000, per_group_limit=10000, filters=filters).get('data', {})
-    malops = data.get('resultIdToElementDataMap', [])
-
+    malop_process_type, malop_loggon_session_type = query_malops(total_result_limit=10000, per_group_limit=10000, filters=filters)
     incidents = []
 
-    for malop in malops:
-        simple_values = dict_safe_get(malop, ['simpleValues'], {}, dict)
-        simple_values.pop('iconBase64', None)
-        simple_values.pop('malopActivityTypes', None)
-        malop_update_time = dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0])
-        if malop_update_time > max_update_time:
-            max_update_time = malop_update_time
+    for response in (malop_process_type, malop_loggon_session_type):
+        malops = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {}, dict)
 
-        incident = malop_to_incident(malop)
-        incidents.append(incident)
+        for malop in malops.values():
+            simple_values = dict_safe_get(malop, ['simpleValues'], {}, dict)
+            simple_values.pop('iconBase64', None)
+            simple_values.pop('malopActivityTypes', None)
+            malop_update_time = dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0])
+            if malop_update_time > max_update_time:
+                max_update_time = malop_update_time
+
+            incident = malop_to_incident(malop)
+            incidents.append(incident)
 
     demisto.setLastRun({
         'creation_time': max_update_time
@@ -1429,3 +1436,5 @@ def main():
 
 if __name__ in ('__builtin__', 'builtins'):
     main()
+
+main()
