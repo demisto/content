@@ -39,9 +39,9 @@ def get_int_arg(
 def get_csv_arg(
     key: str, required: Optional[bool] = False, default: Optional[str] = "",
 ) -> List[str]:
-    """Get a key from a command arg and convert it into an int."""
+    """Get string values from CSV."""
     args: dict = demisto.args()
-    value: int = args.get(key, default)
+    value: str = args.get(key, default)
 
     if not value and required:
         raise ValueError(f"No value supplied for argument {key!r}")
@@ -145,7 +145,11 @@ def get_by_value(
     results = [parse_asset(asset=asset) for asset in assets]
 
     if len(results) == 1:
-        results = results[0]
+        return CommandResults(  # noqa: F821, F405
+        outputs_prefix=f"Axonius.{api_name}",
+        outputs_key_field="internal_axon_id",
+        outputs=results[0],
+        )
 
     return CommandResults(  # noqa: F821, F405
         outputs_prefix=f"Axonius.{api_name}",
