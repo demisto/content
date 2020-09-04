@@ -146,9 +146,9 @@ def get_by_value(
 
     if len(results) == 1:
         return CommandResults(  # noqa: F821, F405
-        outputs_prefix=f"Axonius.{api_name}",
-        outputs_key_field="internal_axon_id",
-        outputs=results[0],
+            outputs_prefix=f"Axonius.{api_name}",
+            outputs_key_field="internal_axon_id",
+            outputs=results[0],
         )
 
     return CommandResults(  # noqa: F821, F405
