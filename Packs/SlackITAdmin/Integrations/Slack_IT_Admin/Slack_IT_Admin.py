@@ -484,13 +484,6 @@ def get_group(client, args):
 
     members = res_json.get('members')
 
-    members_list = []
-    for member in members:
-        temp_member = {}
-        temp_member['Member Name'] = member.get('display')
-        temp_member['Member Id'] = member.get('value')
-        members_list.append(temp_member)
-
     outputs = {
         'Slack.Group(val.Id && val.Id === obj.Id)': {
             'Id': group_id,
@@ -500,7 +493,7 @@ def get_group(client, args):
     }
 
     readable_output = tableToMarkdown(name=f"Slack Group {group_id} Members: {res_json.get('displayName')}",
-                                      t=members_list)
+                                      t=members)
 
     return (
         readable_output,
