@@ -1,0 +1,16 @@
+{
+    "name": "OktaITAdmin",
+    "description": "Integration with Okta's cloud-based identity management service",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Sona",
+    "url": "https://github.com/sonaaru/content",
+    "email": "saru@paloaltonetworks.com",
+    "created": "2020-08-17T14:32:25Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

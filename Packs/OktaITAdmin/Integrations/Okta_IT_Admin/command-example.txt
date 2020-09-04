@@ -1,0 +1,6 @@
+!get-user scim={"id":"00utiigb9kCWr4rzE0h7"} using=OktaITAdmin
+!create-user scim={"userName":"testdemisto2@paloaltonetworks.com","name":{"familyName":"Test","givenName":"Demisto"},"emails":[{"type":"work","primary":true,"value":"testdemisto2@paloaltonetworks.com"}]} using=OktaITAdmin
+!update-user oldScim={"id":"00utiigb9kCWr4rzE0h7"} newScim={"name":{"givenName":"Demisto"}} using=OktaITAdmin
+!disable-user scim={"id":"00utiigb9kCWr4rzE0h7"} using=OktaITAdmin
+!enable-user scim={"id":"00utiigb9kCWr4rzE0h7"} using=OktaITAdmin
+!okta-get-assigned-user-for-app applicationId=0oae6ioe81sQ64Aui0h7 userId=00utiigb9kCWr4rzE0h7 using=OktaITAdmin 
