@@ -2591,7 +2591,11 @@ class IndicatorsTimeline:
     """
     def __init__(self, indicators=None, category=None, message=None):
         # type: (list, str, str) -> list
-        indicators = [indicators] if isinstance(indicators, dict) else indicators
+        if indicators is None:
+            indicators = []
+        else:
+            indicators = [indicators] if isinstance(indicators, dict) else indicators
+
         for indicator in indicators:
             if category:
                 indicator['Category'] = category
@@ -2599,6 +2603,7 @@ class IndicatorsTimeline:
                 indicator['Category'] = 'Integration Update'
             if message:
                 indicator['Message'] = message
+
         self.indicators_timeline = indicators
 
 
