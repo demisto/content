@@ -1,0 +1,32 @@
+category: Utilities
+commonfields:
+  id: Computer Vision Engine
+  version: -1
+configuration:
+- display: test
+  name: test
+  required: false
+  type: 0
+description: |-
+  This integration is processing images or movies and detects objects on them by using Machine Learning.
+  It is using OpenCV with:
+  YOLO COCO,
+  Mask R-CNN,
+  Single Shot Detector(SSD)
+display: Computer Vision Engine
+name: Computer Vision Engine
+script:
+  commands:
+  - arguments:
+    - description: Image EntryID
+      name: entryid
+      required: true
+    name: yolo-coco-process-image
+  dockerimage: magicpl/yolo-coco:0.6
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
