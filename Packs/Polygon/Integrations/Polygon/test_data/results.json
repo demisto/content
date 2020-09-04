@@ -12,7 +12,7 @@
                 "Status": "In Progress"
             }
         },
-        "IndicatorTimeline": "None"
+        "IndicatorTimeline": []
     },
     "upload_url_results": {
         "Type": 1,
@@ -26,7 +26,7 @@
                 "Status": "In Progress"
             }
         },
-        "IndicatorTimeline": "None"
+        "IndicatorTimeline": []
     },
     "analysis_info_results": [
         {
@@ -94,7 +94,7 @@
                     "SHA256": "0d1b77c84c68c50932e28c3462a1962916abbbebb456ce654751ab401aa37697"
                 }
             },
-            "IndicatorTimeline": "None"
+            "IndicatorTimeline": []
         }
     ],
     "serialized_report": {
@@ -319,6 +319,6 @@
                 ]
             }
         },
-        "IndicatorTimeline": "None"
+        "IndicatorTimeline": []
     }]
 }
