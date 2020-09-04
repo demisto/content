@@ -2590,7 +2590,7 @@ class IndicatorsTimeline:
     :rtype: ``list``
     """
     def __init__(self, indicators=None, category=None, message=None):
-        # type: (list, str, str) -> list
+        # type: (list, str, str) -> None
         if indicators is None:
             indicators = []
         else:
