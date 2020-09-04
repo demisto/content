@@ -2640,7 +2640,7 @@
             "integrations": "AlienVault Reputation Feed",
             "playbookID": "AlienVaultReputationFeed_Test",
             "fromversion": "5.5.0",
-            "memory_threshold": 175
+            "memory_threshold": 190
         },
         {
             "integrations": "BruteForceBlocker Feed",
@@ -2964,6 +2964,10 @@
         {
             "integrations": "Ivanti Heat",
             "playbookID": "Ivanti Heat - Test"
+        },
+        {
+            "integrations": "MicrosoftCloudAppSecurity",
+            "playbookID": "MicrosoftCloudAppSecurity-Test"
         },
         {
             "integrations": "Blueliv ThreatCompass",
