@@ -5,46 +5,44 @@ commonfields:
 configuration:
 - display: S3 Access Key
   name: accessKey
-  type: 4
   required: true
+  type: 4
 - display: S3 Secret Key
   name: secretKey
-  type: 4
   required: true
-- display: Feed Type
+  type: 4
+- defaultvalue: Domain
+  display: Feed Type
   name: feedType
-  type: 16
   options:
-  - Host
   - Domain
   - Scam
   - Phishing
   - Malware
   - Content
-  defaultvalue: Domain
   required: true
-- display: Fetch indicators
+  type: 16
+- defaultvalue: 'true'
+  display: Fetch indicators
   name: feed
-  defaultvalue: true
+  required: false
   type: 8
-  required: false
-- display: Indicator Reputation
-  name: feedReputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   defaultvalue: feedInstanceReputationNotSet
-  type: 18
-  required: false
+  display: Indicator Reputation
+  name: feedReputation
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
-- display: Source Reliability
-  name: feedReliability
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
-  type: 15
-  required: true
+  display: Source Reliability
+  name: feedReliability
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -52,85 +50,97 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data
-- display: ""
+  required: true
+  type: 15
+- display: ''
   name: feedExpirationPolicy
-  defaultvalue: indicatorType
-  type: 17
   required: false
+  type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-- display: ""
-  name: feedExpirationInterval
-  defaultvalue: "20160"
+- name: feedExpirationInterval
+  required: false
   type: 1
-  required: false
-- display: Feed Fetch Interval
+  display: ''
+- defaultvalue: '5'
+  display: Feed Fetch Interval
   name: feedFetchInterval
-  defaultvalue: "5"
+  required: false
   type: 19
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
   required: false
-- display: Max Indicators Per Interval
-  name: MaxIndicators
-  required: true
-  defaultvalue: "2000"
   type: 0
-- display: First Fetch Time Range (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
-  additionalinfo: The historical indicators available in the time-range provided will be fetched.
-  name: firstFetchInterval
+- additionalinfo: The historical indicators available in the time-range provided will
+    be fetched.
   defaultvalue: 1 day
-  type: 0
+  display: First Fetch Time Range (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: firstFetchInterval
   required: true
-- display: Bypass exclusion list
-  name: feedBypassExclusionList
-  defaultvalue: ""
-  type: 8
-  required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
+  type: 0
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
-- display: Trust any certificate (not secure)
-  name: insecure
-  defaultvalue: "false"
-  type: 8
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  required: false
   type: 8
 description: A PassiveTotal with Security Intelligence Services Feed provides you
-  with newly observed Domain, Host, Malware, Phishing, and Scam Blacklist with
-  options for Daily and Hourly ingestion available.
+  with newly observed Domain, Malware, Phishing, Content and Scam Blacklist with Hourly ingestion available.
 display: Security Intelligence Services Feed
 name: SecurityIntelligenceServicesFeed
 script:
   commands:
-  - name: sis-get-indicators
-    description: Gets indicators from Security Intelligence Services feed. Note- Indicators
-      will fetch from the latest found object.
-    arguments:
-    - name: limit
+  - arguments:
+    - default: false
+      defaultValue: '50'
       description: The maximum number of indicators to return from S3. Note- The maximum
         limit supported is 1000.
       isArray: false
-      defaultValue: 50
-    - name: feed_type
-      description: Indicators will be fetched based on feed_type.
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: Domain
-      auto: PREDEFINED
+      description: Indicators will be fetched based on feed_type.
+      isArray: false
+      name: feed_type
       predefined:
-      - Host
       - Domain
       - Phishing
       - Content
       - Scam
       - Malware
-    - name: search
+      required: false
+      secret: false
+    - default: false
       description: Indicators that match the given search pattern will be fetched.
-  dockerimage: demisto/boto3py3:1.0.0.10113
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from Security Intelligence Services feed. Note- Indicators
+      will fetch from the latest found object.
+    execution: false
+    name: sis-get-indicators
+  dockerimage: demisto/boto3py3:1.0.0.11208
   feed: true
   isfetch: false
   longRunning: false
@@ -139,6 +149,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
 - SecurityIntelligenceServicesFeed - Test
+fromversion: 5.5.0

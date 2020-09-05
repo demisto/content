@@ -58,7 +58,7 @@ def test_validate_feed_type():
     Tests, Handle scenarios where feed type are valid or invalid.
     """
     from SecurityIntelligenceServicesFeed import validate_feeds
-    feed_types = ['host', 'domain']
+    feed_types = ['domain']
     assert validate_feeds(feed_types) is None
 
     from SecurityIntelligenceServicesFeed import validate_feeds
@@ -80,7 +80,7 @@ def test_main_proxy_error(mocker):
     params = {
         'accessKey': 'accessKey',
         'secretKey': 'secretKey',
-        'feedType': ['Host'],
+        'feedType': ['Domain'],
         'proxy': True
     }
     mocker.patch('SecurityIntelligenceServicesFeed.demisto.params', return_value=params)
@@ -99,8 +99,7 @@ def test_main(mocker):
     params = {
         'accessKey': 'accessKey',
         'secretKey': 'secretKey',
-        'feedType': ['Host'],
-        'MaxIndicators': 10
+        'feedType': ['Domain']
     }
 
     # Test module
@@ -142,14 +141,14 @@ def test_build_iterator(mocker):
     import csv
     mocker.patch.object(gzip, 'open', return_value=['007blog.icu\t1590810346',
                                                     '0122312.com\t1590809115',
-                                                    '0666639.cn\t1590812070'])
-    mocker.patch('os.path.exists', return_value=True)
-    assert isinstance(CLIENT.build_iterator(feed_type='Domain', key='key'), csv.DictReader)
+                                                    '0666639.cn\t1590812070'], create=True)
+    assert isinstance(next(CLIENT.build_iterator(feed_type='domain', key='key')), csv.DictReader)
 
-    # No Feeds
+    mocker.patch('boto3.s3.transfer.S3Transfer.download_file')
     mocker.patch.object(gzip, 'open', create=True)
     mocker.patch('os.remove')
-    assert CLIENT.build_iterator(feed_type='Domain', key='key') == []
+    with pytest.raises(StopIteration):
+        next(CLIENT.build_iterator(feed_type='Domain', key='key'))
 
     # With limit parameter.
     with open('./TestData/response_get_object.json') as f:
@@ -162,11 +161,11 @@ def test_build_iterator(mocker):
     }]
     expected_response['Payload'] = event_stream
     mocker.patch('botocore.client.BaseClient._make_api_call', return_value=expected_response)
-    assert isinstance(CLIENT.build_iterator(feed_type='Domain', key='key', limit='1', is_get_indicators=True),
+    assert isinstance(next(CLIENT.build_iterator(feed_type='Domain', key='key', limit='1', is_get_indicators=True)),
                       csv.DictReader)
 
     del expected_response['Payload'][0]['Records']
-    assert isinstance(CLIENT.build_iterator(feed_type='Domain', key='key', limit='1', is_get_indicators=True),
+    assert isinstance(next(CLIENT.build_iterator(feed_type='Domain', key='key', limit='1', is_get_indicators=True)),
                       csv.DictReader)
 
 
@@ -276,30 +275,28 @@ def test_get_last_key_from_integration_context(mocker):
     """
     Tests, Retrieving last key form integration context.
     """
-    from SecurityIntelligenceServicesFeed import get_last_key_from_integration_context
+    from SecurityIntelligenceServicesFeed import get_last_key_from_integration_context_dict
     integration_context = [{
-        'Domain': 'key',
-        'start_from': 0
+        'Domain': 'key'
     }]
 
-    mocker.patch.object(demistomock, 'getIntegrationContext', return_value={'SISContext': integration_context})
-    assert get_last_key_from_integration_context('Domain') == ('key', 0)
-    assert get_last_key_from_integration_context('Host') == ('', 0)
+    assert get_last_key_from_integration_context_dict('Domain', integration_context=integration_context) == 'key'
+    assert get_last_key_from_integration_context_dict('Malware') == ''
 
 
 def test_set_last_key_to_integration_context(mocker):
     """
     Tests, set last key to integration context.
     """
-    from SecurityIntelligenceServicesFeed import set_last_key_to_integration_context
+    from SecurityIntelligenceServicesFeed import set_last_key_to_integration_context_dict
     integration_context = [{
         'Domain': 'key'
     }]
-    mocker.patch.object(demistomock, 'getIntegrationContext', return_value={'SISContext': integration_context})
-    set_last_key_to_integration_context('Domain', 'key2')
+
+    set_last_key_to_integration_context_dict('Domain', 'key2', integration_context=integration_context)
     assert integration_context[0].get('Domain') == 'key2'
-    set_last_key_to_integration_context('Host', 'key3')
-    assert integration_context[1].get('Host') == 'key3'
+    set_last_key_to_integration_context_dict('Malware', 'key3', integration_context=integration_context)
+    assert integration_context[1].get('Malware') == 'key3'
 
 
 def test_validate_limit():
@@ -328,7 +325,7 @@ def test_fetch_indicators_command(mocker):
                           'rawJSON': OrderedDict([('value', '007blog.icu'),
                                                   ('Timestamp', '1590810346'),
                                                   ('type', 'Domain')]),
-                          'fields': {'service': 'Passive Total',
+                          'fields': {'service': 'Passive Total', 'tags': ['s3', 's4'],
                                      'firstseenbysource': datetime.fromtimestamp(1590810346,
                                                                                  timezone.utc).isoformat()}}]
 
@@ -336,21 +333,22 @@ def test_fetch_indicators_command(mocker):
                  return_value=[{'Key': 'key1.gz', 'LastModified': datetime.now(timezone.utc)}])
 
     mocker.patch('SecurityIntelligenceServicesFeed.Client.build_iterator',
-                 return_value=csv.DictReader(f=['007blog.icu\t1590810346'], fieldnames=['value', 'Timestamp'],
-                                             delimiter='\t'))
+                 return_value=[csv.DictReader(f=['007blog.icu\t1590810346'], fieldnames=['value', 'Timestamp'],
+                                              delimiter='\t')])
 
-    assert fetch_indicators_command(client=CLIENT, feed_types=['domain'],
-                                    first_fetch_interval='1 day') == expected_response
+    assert next(fetch_indicators_command(client=CLIENT, feed_types=['domain'],
+                                         first_fetch_interval='1 day', tags=['s3', 's4'])) == expected_response
 
     # When no latest key found.
     mocker.patch('SecurityIntelligenceServicesFeed.Client.request_list_objects', return_value=[])
-    mocker.patch('SecurityIntelligenceServicesFeed.get_last_key_from_integration_context',
-                 return_value=('key1', 0))
+    mocker.patch('SecurityIntelligenceServicesFeed.get_last_key_from_integration_context_dict',
+                 return_value='key1')
     mocker.patch('SecurityIntelligenceServicesFeed.Client.build_iterator',
-                 return_value=csv.DictReader(f=['007blog.icu\t1590810346'], fieldnames=['value', 'Timestamp'],
-                                             delimiter='\t'))
-    assert fetch_indicators_command(client=CLIENT, feed_types=['domain'],
-                                    first_fetch_interval='0 day', limit='1') == expected_response
+                 return_value=[csv.DictReader(f=['007blog.icu\t1590810346'], fieldnames=['value', 'Timestamp'],
+                                              delimiter='\t')])
+    assert next(fetch_indicators_command(client=CLIENT, feed_types=['domain'],
+                                         first_fetch_interval='0 day', limit='1',
+                                         tags=['s3', 's4'])) == expected_response
 
 
 def test_get_indicators_command(mocker):
@@ -359,7 +357,6 @@ def test_get_indicators_command(mocker):
     """
     import csv
     from SecurityIntelligenceServicesFeed import get_indicators_command, datetime, timezone
-
     humanreadable = '### Total indicators fetched: 1\n'
     humanreadable += '### Indicators from Security Intelligence Services feed\n'
     humanreadable += '|Value|Type|\n'
@@ -384,15 +381,16 @@ def test_get_indicators_command(mocker):
                  return_value=[{'Key': 'key1.gz', 'LastModified': datetime.now(timezone.utc)}])
 
     mocker.patch('SecurityIntelligenceServicesFeed.Client.build_iterator',
-                 return_value=csv.DictReader(f=['007blog.icu\t1590810346'], fieldnames=['value', 'Timestamp'],
-                                             delimiter='\t',
-                                             quoting=csv.QUOTE_NONE))
+                 return_value=[csv.DictReader(f=['007blog.icu\t1590810346'], fieldnames=['value', 'Timestamp'],
+                                              delimiter='\t',
+                                              quoting=csv.QUOTE_NONE)])
     args = {
         'feed_type': 'Domain',
         'limit': 1
     }
     resp = get_indicators_command(CLIENT, args)
     assert resp.to_context() == expected_resp
+
     # No records
     mocker.patch('SecurityIntelligenceServicesFeed.Client.build_iterator',
                  return_value=csv.DictReader(f='', fieldnames=['value', 'Timestamp'], delimiter='\t'))
@@ -406,30 +404,30 @@ def test_indicator_field_mapping():
     """
     from SecurityIntelligenceServicesFeed import indicator_field_mapping, datetime, timezone
     expected_res = {'service': 'Passive Total',
-                    'firstseenbysource': datetime.fromtimestamp(1590810346, timezone.utc).isoformat()}
-    assert indicator_field_mapping('domain', {'value': '007blog.icu', 'Timestamp': '1590810346'}) == expected_res
+                    'firstseenbysource': datetime.fromtimestamp(1590810346, timezone.utc).isoformat(), 'tags': ['s3']}
+    assert indicator_field_mapping('domain', {'value': '007blog.icu', 'Timestamp': '1590810346'},
+                                   tags=['s3']) == expected_res
 
     expected_res = {'service': 'Passive Total', 'siscategory': 'category',
                     'threattypes': [{'threatcategory': 'Phishing'}],
                     'sismatchtype': 'type',
-                    'sisexpiration': '2020-06-15T00:25:44+00:00'}
+                    'sisexpiration': '2020-06-15T00:25:44+00:00', 'tags': ['s3']}
 
     assert indicator_field_mapping('phish', {'value': '007blog.icu', 'type': 'URL', 'MatchType': 'type',
                                              'Category': 'category',
                                              'Expiration': '2020-06-15 00:25:44.0',
-                                             }) == expected_res
+                                             }, tags=['s3']) == expected_res
     expected_res = {'service': 'Passive Total', 'sismalwaretype': 'category',
                     'threattypes': [{'threatcategory': 'Malware'}],
                     'sismatchtype': 'type',
-                    'sisexpiration': '2020-06-15T00:25:44+00:00'}
+                    'sisexpiration': '2020-06-15T00:25:44+00:00', 'tags': ['s3']}
 
     assert indicator_field_mapping('malware',
                                    {'value': '007blog.icu', 'type': 'URL', 'MatchType': 'type',
                                     'MaliciousExpiration': '2020-06-15 00:25:44.0',
                                     'MalwareType': 'category',
                                     'Expiration': '2020-06-15 00:25:44.0',
-
-                                    }) == expected_res
+                                    }, tags=['s3']) == expected_res
 
 
 @pytest.mark.parametrize('first_fetch_interval', ['invalid_str_value', '1day', ' '])
@@ -456,15 +454,3 @@ def test_validate_first_fetch_interval_when_invalid_unit(first_fetch_interval):
         validate_first_fetch_interval(first_fetch_interval)
 
     assert MESSAGES['INVALID_FIRST_FETCH_UNIT_ERROR'] == str(e.value)
-
-
-def test_get_max_indicators():
-    """
-    Tests, when invalid unit is provided for first fetch interval, value error should raise.
-    """
-    from SecurityIntelligenceServicesFeed import get_max_indicators
-
-    assert get_max_indicators({'MaxIndicators': '100'}) == 100
-
-    with pytest.raises(ValueError):
-        get_max_indicators({'MaxIndicators': 'string'})

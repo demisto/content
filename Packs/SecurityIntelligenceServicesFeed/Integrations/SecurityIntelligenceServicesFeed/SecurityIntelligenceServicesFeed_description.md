@@ -5,6 +5,7 @@
 
 
 ### Fetch Indicators
-* Specified value in parameter Max Indicators Per Interval will be fetched for each given Feed Type. 
-* Set Max Indicators Per Interval, and Feed Fetch Interval based on the total number of selected Feed Type.
-* Large value for Max Indicators Per Interval may cause timeout issues.
+* Every interval one S3 file will be ingested if found for each given feed type.
+* Set Feed Fetch Interval based on the total number of selected Feed Type.
+* If you face error related to **Docker Timeout**,  Set or increase **feedintregrationscript.timeout** parameter in configuration (Settings > About > Troubleshooting  > Server Configuration).
+

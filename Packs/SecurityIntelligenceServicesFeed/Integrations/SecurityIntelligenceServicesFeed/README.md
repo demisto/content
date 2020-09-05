@@ -1,5 +1,5 @@
-A PassiveTotal with Security Intelligence Services Feed provides you with newly observed Domain, Host, Malware, Phishing, and Scam Blacklist with options for Daily and Hourly ingestion available.
-This integration was integrated and tested with version xx of Security Intelligence Services Feed
+A PassiveTotal with Security Intelligence Services Feed provides you with newly observed Domain, Malware, Phishing, Content, and Scam Blacklist with Hourly ingestion available.
+This integration was integrated and tested with version xx of SecurityIntelligenceServicesFeed
 ## Configure SecurityIntelligenceServicesFeed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -17,10 +17,12 @@ This integration was integrated and tested with version xx of Security Intellige
 | feedExpirationPolicy |  | False |
 | feedExpirationInterval |  | False |
 | feedFetchInterval | Feed Fetch Interval | False |
-| firstFetchInterval | First Fetch Time Range | True |
+| feedTags | Tags | False |
+| MaxIndicators | Max Indicators Per Interval | True |
+| firstFetchInterval | First Fetch Time Range \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | True |
 | feedBypassExclusionList | Bypass exclusion list | False |
 | insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings |  |
+| proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the S3 Access Key, S3 Secret Key, Feed Types, and connection.
 ## Commands

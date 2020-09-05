@@ -2,7 +2,7 @@ from CommonServerPython import *
 
 '''IMPORTS'''
 
-from typing import Dict, Any, List, Union, Optional, Tuple
+from typing import Dict, Any, List, Union, Optional, Generator
 from datetime import timezone
 import csv
 import gzip
@@ -11,15 +11,15 @@ import botocore
 import botocore.config as config
 import urllib3
 import dateparser
-from itertools import islice
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 '''CONSTANTS'''
 
+BATCH_SIZE = 2000
+
 BUCKETS: Dict[str, str] = {
-    'host': 'sis-new-observations',
     'domain': 'sis-new-observations',
     'phish': 'riq-sis-blacklist-phish',
     'malware': 'riq-sis-blacklist-malware',
@@ -28,7 +28,6 @@ BUCKETS: Dict[str, str] = {
 }
 
 FIELD_NAMES: Dict[str, List[str]] = {
-    'host': ['value', 'Timestamp'],
     'domain': ['value', 'Timestamp'],
     'phish': ['value', 'Category', 'MatchType', 'Expiration'],
     'malware': ['value', 'MalwareType', 'MatchType', 'MaliciousExpiration'],
@@ -37,7 +36,6 @@ FIELD_NAMES: Dict[str, List[str]] = {
 }
 
 INDICATOR_TYPES: Dict[str, str] = {
-    'host': FeedIndicatorType.Host,
     'domain': FeedIndicatorType.Domain,
     'phish': FeedIndicatorType.URL,
     'malware': FeedIndicatorType.URL,
@@ -45,8 +43,7 @@ INDICATOR_TYPES: Dict[str, str] = {
     'scam': FeedIndicatorType.URL
 }
 
-REGIONS: Dict[str, Union[str, None]] = {
-    'host': 'us-west-1',
+REGIONS: Dict[str, str] = {
     'domain': 'us-west-1',
     'phish': 'us-east-1',
     'malware': 'us-west-1',
@@ -200,8 +197,8 @@ class Client:
                               fieldnames=FIELD_NAMES.get(feed_type),
                               delimiter=delimiter, quoting=csv.QUOTE_NONE)
 
-    def build_iterator(self, feed_type: str, key: str, start_from: int = 0, limit: str = None, search: str = None,
-                       delimiter: str = '\t', max_indicators: int = 30000, is_get_indicators: bool = False) -> Any:
+    def build_iterator(self, feed_type: str, key: str, limit: str = None, search: str = None, batch_size: int = 2000,
+                       **kwargs) -> Any:
         """
         Retrieves all entries from the streaming response batch wise
         and prepares dictionaries of feeds.
@@ -213,33 +210,32 @@ class Client:
         :param limit: Number of records to fetch.
         :param search: To search specific feeds from S3.
         :param delimiter: character to split feed from.
-        :param max_indicators: size of feeds batch to return.
+        :param batch_size: size of feeds batch to return.
         :return: list of feed dictionaries.
         """
         try:
 
-            if is_get_indicators:
+            if kwargs.get('is_get_indicators', False):
                 # Request for get-indicators
-                return self.request_select_object_content(feed_type, key, limit, search, delimiter)
+                yield self.request_select_object_content(feed_type, key, limit, search, kwargs.get('delimiter', '\t'))
+            else:
+                if not os.path.exists(feed_type):
+                    self.s3_client.download_file(Bucket=BUCKETS.get(feed_type, ''), Key=key, Filename=feed_type)
 
-            # Request for fetch-indicators
-            if not start_from:
-                self.s3_client.download_file(Bucket=BUCKETS.get(feed_type, ''), Key=key, Filename=feed_type)
+                file_stream = gzip.open(feed_type, 'rt')
 
-            if os.path.exists(feed_type):
-                response_feeds = gzip.open(feed_type, 'rt')
+                while True:
+                    # Creating feeds batch
+                    feed_batch = [feed for _, feed in zip(range(batch_size), file_stream) if feed]
 
-                # Creating feeds batch
-                feed_batch = list(islice(response_feeds, start_from, start_from + max_indicators))
+                    if not feed_batch:
+                        file_stream.close()
+                        os.remove(feed_type)
+                        return
 
-                if not feed_batch:
-                    response_feeds.close()
-                    os.remove(feed_type)
-                    return []
-
-                return csv.DictReader(feed_batch, fieldnames=FIELD_NAMES.get(feed_type), delimiter=delimiter,
-                                      quoting=csv.QUOTE_NONE)
-            return []
+                    yield csv.DictReader(feed_batch, fieldnames=FIELD_NAMES.get(feed_type),
+                                         delimiter=kwargs.get('delimiter', '\t'),
+                                         quoting=csv.QUOTE_NONE)
 
         except botocore.exceptions.ClientError as exception:
             status_code = exception.response.get('ResponseMetadata', {}).get('HTTPStatusCode', '')
@@ -275,39 +271,38 @@ def validate_feeds(feed_types: List[str]) -> None:
             raise ValueError(MESSAGES['INVALID_FEED_TYPE_ERROR'])
 
 
-def get_last_key_from_integration_context(feed_type: str) -> Tuple[Any, Any]:
+def get_last_key_from_integration_context_dict(feed_type: str, integration_context: List[Any] = []) -> \
+        str:
     """
     To get last fetched key of feed from integration context.
 
     :param feed_type: Type of feed to get last fetched key.
+    :param integration_context: Integration context.
     :return: list of S3 object keys.
     """
-    feed_context = demisto.getIntegrationContext().get('SISContext', [])
+    feed_context = integration_context
     for cached_feed in feed_context:
         cached_key = cached_feed.get(feed_type, '')
         if cached_key:
-            return cached_key, cached_feed.get('start_from', 0)
-    return '', 0
+            return cached_key
+    return ''
 
 
-def set_last_key_to_integration_context(feed_type: str, key: str, start_from=0) -> None:
+def set_last_key_to_integration_context_dict(feed_type: str, key: str,
+                                             integration_context: List[Any]) -> None:
     """
     To set last fetched key of feed to integration context.
 
     :param feed_type: Type of feed to set.
+    :param integration_context: context retrieved from integration context.
     :param key: Key to set.
-    :param start_from: Line number to start from.
     :return: None
     """
-    feed_context = demisto.getIntegrationContext().get('SISContext', [])
-    for f_type_dict in feed_context:
+    for f_type_dict in integration_context:
         if f_type_dict.get(feed_type, ''):
             f_type_dict[feed_type] = key
-            f_type_dict['start_from'] = start_from
-            demisto.setIntegrationContext({'SISContext': feed_context})
             return
-    feed_context.append({feed_type: key, 'start_from': start_from})
-    demisto.setIntegrationContext({'SISContext': feed_context})
+    integration_context.append({feed_type: key})
 
 
 def validate_limit(limit: str) -> None:
@@ -326,23 +321,6 @@ def validate_limit(limit: str) -> None:
         raise ValueError(MESSAGES['INVALID_LIMIT_ERROR'])
 
 
-def get_max_indicators(params: Dict) -> int:
-    """
-    Validates the max indicators parameter.
-    If the max_indicators is not a positive integer then throws a ValueError.
-
-    :param params: Demisto parameters.
-    :return: Integer max indicators to fetch in an interval.
-    """
-    try:
-        max_indicators_int = int(params.get('MaxIndicators', ''))
-        if max_indicators_int <= 0:
-            raise ValueError
-        return max_indicators_int
-    except ValueError:
-        raise ValueError(MESSAGES['INVALID_MAX_INDICATORS_ERROR'])
-
-
 def prepare_date_string_for_custom_fields(date_string: str) -> str:
     """
     Prepares date string in iso format and adds timezone if not exist.
@@ -352,25 +330,27 @@ def prepare_date_string_for_custom_fields(date_string: str) -> str:
     """
     parsed_dt = dateparser.parse(date_string)
     if parsed_dt:
-        if parsed_dt.tzinfo is None or parsed_dt.tzinfo.utcoffset(parsed_dt) is None:
+        if parsed_dt.tzinfo is None:
             parsed_dt = parsed_dt.replace(tzinfo=timezone.utc)
         return parsed_dt.isoformat()
     return ''
 
 
-def indicator_field_mapping(feed_type: str, indicator: Dict[str, Any]) -> Dict[str, Any]:
+def indicator_field_mapping(feed_type: str, indicator: Dict[str, Any], tags: List[str]) -> Dict[str, Any]:
     """
     Maps the indicator fields.
 
     :param feed_type: Type of feed.
     :param indicator: Indicator dictionary.
+    :param tags: Tags specified in configuration.
     :return: Dict of fields.
     """
     fields: Dict[str, Any] = {
         'service': 'Passive Total',
+        'tags': tags
     }
 
-    if feed_type in ['host', 'domain']:
+    if feed_type == 'domain':
         if indicator.get('Timestamp'):
             fields['firstseenbysource'] = datetime.fromtimestamp(int(indicator.get('Timestamp')),  # type: ignore
                                                                  timezone.utc).isoformat()
@@ -415,20 +395,26 @@ def validate_first_fetch_interval(first_fetch_interval):
 
 
 def get_latest_key(client: Client, feed_type: str, first_fetch_interval: str,
-                   is_get_indicators: bool = False) -> Tuple[str, int]:
+                   is_get_indicators: bool = False, integration_context: List[Any] = []) -> str:
     """
     Get latest key from bucket of specified feed type.
+
+    :param first_fetch_interval: first fetch interval.
+    :param client: Client object.
+    :param feed_type: Type of feed.
+    :param is_get_indicators: True if get-indicators command is called.
+    :param integration_context: Retrieved integration context.
     :return:
     """
     # Retrieving cached key from integration context.
-    cached_key, start_from = get_last_key_from_integration_context(feed_type)
+    cached_key = get_last_key_from_integration_context_dict(feed_type, integration_context)
     object_key_list = client.request_list_objects(feed_type=feed_type, start_after=cached_key,
                                                   prefix=feed_type.lower())
     object_key_list = [object_key for object_key in object_key_list if '.gz' in object_key.get('Key', '')]
     object_key_list.sort(key=lambda key_dict: key_dict['LastModified'])
 
     if is_get_indicators:
-        return object_key_list[-1].get('Key', '') if object_key_list else cached_key, 0
+        return object_key_list[-1].get('Key', '') if object_key_list else cached_key
 
     # Parsing first fetch time.
     date_from, now = dateparser.parse(f'{first_fetch_interval} UTC'), datetime.now(timezone.utc)
@@ -438,7 +424,7 @@ def get_latest_key(client: Client, feed_type: str, first_fetch_interval: str,
                                   object_key_list if
                                   key_dict.get('LastModified', now) >= date_from]
 
-    return latest_key_list[0] if latest_key_list and not start_from else cached_key, start_from
+    return latest_key_list[0] if latest_key_list else cached_key
 
 
 ''' REQUESTS FUNCTIONS '''
@@ -474,8 +460,8 @@ def test_module(client: Client, feed_type: str) -> Optional[str]:
 
 @logger
 def fetch_indicators_command(client: Client, feed_types: List[str], first_fetch_interval: str = '7 day',
-                             limit: str = None, search: str = None, max_indicators: int = 30000,
-                             is_get_indicators: bool = False) -> List[Dict[str, Any]]:
+                             limit: str = None, search: str = None, batch_size: int = 2000,
+                             **kwargs) -> Generator:
     """
     Fetches indicators from the S3 to the indicators tab.
 
@@ -484,44 +470,44 @@ def fetch_indicators_command(client: Client, feed_types: List[str], first_fetch_
     :param first_fetch_interval: Interval to look back first time to fetch indicators.
     :param search: To search specific feeds from S3.
     :param limit: Number of records to fetch.
-    :param max_indicators: Size of the batch to create indicators.
+    :param batch_size: Size of the batch to create indicators.
     :param is_get_indicators: return true if get-indicators command called.
     :return: list of indicators.
     """
-    indicators = []
+
     for feed in feed_types:
         client.set_s3_client(region_name=REGIONS[feed])
 
-        latest_key, start_from = get_latest_key(client, feed, first_fetch_interval, is_get_indicators)
-        demisto.debug('next file ' + latest_key + ' start_from ' + str(start_from))
+        latest_key = get_latest_key(client, feed, first_fetch_interval,
+                                    kwargs.get('is_get_indicators', False),
+                                    kwargs.get('integration_context', []))
 
         if latest_key:
-            feed_dicts = client.build_iterator(feed_type=feed, key=latest_key, limit=limit, search=search,
-                                               max_indicators=max_indicators, start_from=start_from,
-                                               is_get_indicators=is_get_indicators)
-            indicators_count = 0
-            # Iterating trough each feed dictionary and creating indicators.
-            for feed_dict in feed_dicts:
-                value = feed_dict.get('value', '')
-                if value:
-                    indicator_type = INDICATOR_TYPES.get(feed)
-                    feed_dict['type'] = indicator_type
-                    remove_nulls_from_dictionary(feed_dict)
-                    indicators.append({
-                        'value': value,
-                        'type': indicator_type,
-                        'rawJSON': feed_dict,
-                        'fields': indicator_field_mapping(feed, indicator=feed_dict)
-                    })
-                    indicators_count += 1
+            feed_batches = client.build_iterator(feed_type=feed, key=latest_key, limit=limit, search=search,
+                                                 batch_size=batch_size,
+                                                 is_get_indicators=kwargs.get('is_get_indicators', False))
+            for feed_dicts in feed_batches:
+                indicators = []
+                # Iterating trough each feed dictionary and creating indicators.
+                for feed_dict in feed_dicts:
+                    value = feed_dict.get('value', '')
+                    if value:
+                        indicator_type = INDICATOR_TYPES.get(feed)
+                        feed_dict['type'] = indicator_type
+                        remove_nulls_from_dictionary(feed_dict)
+                        indicators.append({
+                            'value': value,
+                            'type': indicator_type,
+                            'rawJSON': feed_dict,
+                            'fields': indicator_field_mapping(feed, indicator=feed_dict, tags=kwargs.get('tags', []))
+                        })
+
+                yield indicators
 
             # Setting last key to context.
-            if not is_get_indicators:
-                # Setting next start_from
-                start_from = start_from + indicators_count if indicators_count else 0
-                set_last_key_to_integration_context(feed, latest_key, start_from)
-
-    return indicators
+            if not kwargs.get('is_get_indicators', False):
+                set_last_key_to_integration_context_dict(feed_type=feed, key=latest_key,
+                                                         integration_context=kwargs.get('integration_context', []))
 
 
 @logger
@@ -546,8 +532,11 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Union[Comman
     validate_feeds([feed_type])
 
     # Retrieving indicators from fetch indicators command.
-    indicators_list: List[Dict[str, Any]] = fetch_indicators_command(client, [feed_type], limit=limit, search=search,
-                                                                     is_get_indicators=True)
+    indicators_list: List[Dict] = []
+    for indicators in fetch_indicators_command(client, [feed_type], limit=limit, search=search,
+                                               is_get_indicators=True):
+        indicators_list.extend(indicators)
+
     # Generating human-readable.
     if not indicators_list:
         return MESSAGES['NO_INDICATORS_FOUND']
@@ -578,11 +567,11 @@ def main() -> None:
     first_fetch_interval = params.get('firstFetchInterval', '1 day')
 
     try:
+        # Prepare tags
+        tags = list(set(argToList(params.get('feedTags', ''))))
+
         # validate first_fetch_time_interval parameter
         validate_first_fetch_interval(first_fetch_interval)
-
-        # validate and get max_indicators parameter
-        max_indicators = get_max_indicators(params)
 
         # Validate the provided feed types.
         feed_types_lower = [feed_type.lower() if 'phish' not in feed_type.lower() else 'phish' for feed_type in
@@ -601,12 +590,16 @@ def main() -> None:
 
         elif demisto.command() == 'fetch-indicators':
 
-            indicators = fetch_indicators_command(client, feed_types=feed_types_lower,
-                                                  first_fetch_interval=first_fetch_interval,
-                                                  max_indicators=max_indicators)
+            integration_context = demisto.getIntegrationContext().get('SISContext', [])
 
-            for indicators in batch(indicators, 2000):
+            indicators_generator = fetch_indicators_command(client, feed_types=feed_types_lower,
+                                                            first_fetch_interval=first_fetch_interval,
+                                                            batch_size=BATCH_SIZE,
+                                                            integration_context=integration_context, tags=tags)
+            for indicators in indicators_generator:
                 demisto.createIndicators(indicators)  # type: ignore
+
+            demisto.setIntegrationContext({'SISContext': integration_context})
 
         elif demisto.command() == 'sis-get-indicators':
             return_results(get_indicators_command(client, demisto.args()))
