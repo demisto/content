@@ -455,7 +455,8 @@ def query_malops_command():
             'filterType': 'GreaterThan'
         })
 
-    malop_process_type, malop_loggon_session_type = query_malops(total_result_limit, per_group_limit, template_context, filters, guid_list=guid_list)
+    malop_process_type, malop_loggon_session_type = query_malops(total_result_limit, per_group_limit,
+                                                                 template_context, filters, guid_list=guid_list)
     outputs = []
 
     for response in (malop_process_type, malop_loggon_session_type):
@@ -540,10 +541,10 @@ def query_malops(total_result_limit=None, per_group_limit=None, template_context
             }
         ]
     }
-    json_body['queryPath'][0]['requestedType'] = "MalopProcess"
+    json_body['queryPath'][0]['requestedType'] = "MalopProcess"  # type: ignore
     malop_process_type = http_request('POST', '/rest/crimes/unified', json_body=json_body).json()
 
-    json_body['queryPath'][0]['requestedType'] = "MalopLogonSession"
+    json_body['queryPath'][0]['requestedType'] = "MalopLogonSession"  # type: ignore
     malop_loggon_session_type = http_request('POST', '/rest/crimes/unified', json_body=json_body).json()
 
     return malop_process_type, malop_loggon_session_type
@@ -1436,5 +1437,3 @@ def main():
 
 if __name__ in ('__builtin__', 'builtins'):
     main()
-
-main()
