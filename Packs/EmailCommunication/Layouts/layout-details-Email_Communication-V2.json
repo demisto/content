@@ -51,7 +51,7 @@
         "index": 1,
         "listId": "tijq1dxhfm-96e79950-c9dc-11ea-8aa8-5d08a1c88be4",
         "name": "Send Reply",
-        "scriptId": "c5c0d8b8-050e-4457-9463-df5dcb37c2d5",
+        "scriptId": "SendEmailReply",
         "sectionItemType": "button",
         "startCol": 0
        }
@@ -87,7 +87,7 @@
      },
      {
       "description": "",
-      "h": 5,
+      "h": 4,
       "i": "tijq1dxhfm-e71f2750-c9df-11ea-8368-c307df3eb3ba",
       "items": [
 
@@ -159,7 +159,7 @@
      },
      {
       "displayType": "CARD",
-      "h": 5,
+      "h": 4,
       "hideItemTitleOnlyOne": true,
       "hideName": false,
       "i": "tijq1dxhfm-5fff13d0-d01e-11ea-835d-95924e6ac7f8",
@@ -221,6 +221,37 @@
       "w": 1,
       "x": 2,
       "y": 3
+     },
+     {
+      "h": 2,
+      "i": "tijq1dxhfm-0eabe800-eac7-11ea-82f0-a71e1dc4d599",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Mail Attachments",
+      "query": {
+       "categories": [
+        "attachments"
+       ],
+       "lastId": "",
+       "pageSize": 100,
+       "tags": [
+
+       ],
+       "users": [
+
+       ]
+      },
+      "queryType": "warRoomFilter",
+      "static": false,
+      "type": "invTimeline",
+      "w": 3,
+      "x": 0,
+      "y": 7
      }
     ],
     "type": "custom"
@@ -352,7 +383,7 @@
       "type": "childInv",
       "w": 1,
       "x": 2,
-      "y": 4
+      "y": 6
      },
      {
       "displayType": "ROW",
@@ -377,7 +408,7 @@
       "type": "team",
       "w": 1,
       "x": 2,
-      "y": 6
+      "y": 8
      },
      {
       "displayType": "ROW",
@@ -514,6 +545,37 @@
       "w": 1,
       "x": 1,
       "y": 2
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-f10d0d10-eac6-11ea-82f0-a71e1dc4d599",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Mail Attachments",
+      "query": {
+       "categories": [
+        "attachments"
+       ],
+       "lastId": "",
+       "pageSize": 100,
+       "tags": [
+
+       ],
+       "users": [
+
+       ]
+      },
+      "queryType": "warRoomFilter",
+      "static": false,
+      "type": "invTimeline",
+      "w": 1,
+      "x": 2,
+      "y": 4
      }
     ],
     "type": "custom"
