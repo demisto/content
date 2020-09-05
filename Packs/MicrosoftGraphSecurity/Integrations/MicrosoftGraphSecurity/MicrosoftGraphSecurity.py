@@ -44,7 +44,7 @@ class MsGraphClient:
             filters.append("category eq '{}'".format(category))
         if severity:
             filters.append("severity eq '{}'".format(severity))
-        if time_from: # changed to ge and le in order to solve issue #27884
+        if time_from:  # changed to ge and le in order to solve issue #27884
             filters.append("createdDateTime ge {}".format(time_from))
         if time_to:
             filters.append("createdDateTime le {}".format(time_to))
