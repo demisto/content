@@ -1,0 +1,36 @@
+{
+    "successDomain": {
+        "totalRecords": 1,
+        "success": true,
+        "results": [
+            {
+                "firstSeen": "2019-12-10 06:06:19",
+                "lastSeen": "2020-06-02 06:05:05",
+                "attributeValue": "dummy attribute value",
+                "attributeType": "dummy attribute type",
+                "hostname": "dummy hostname"
+            }
+        ],
+        "facets": []
+    },
+    "successIP": {
+        "totalRecords": 1,
+        "success": true,
+        "results": [
+            {
+                "firstSeen": "2019-12-10 06:06:19",
+                "lastSeen": "2020-06-02 06:05:05",
+                "attributeValue": "dummy attribute value",
+                "attributeType": "dummy attribute type",
+                "address": "dummy ip"
+            }
+        ],
+        "facets": []
+    },
+    "emptyContent": {
+    "totalRecords": 0,
+    "success": true,
+    "results": [],
+    "facets": []
+}
+}
