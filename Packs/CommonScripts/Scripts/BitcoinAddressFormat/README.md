@@ -21,7 +21,7 @@ Verifies that a Bitcoin address is valid and returns the address only if it is v
 There are no outputs for this script.
 
 ## Script Example
-```!isBitcoin address=1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i```
+```!BitcoinAddressFormat address=1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i```
 
 ## Context Example
 ```
