@@ -1099,11 +1099,13 @@ def add_pr_comment(comment):
             print_warning('Add pull request comment failed: There is more then one open pull request for branch {}.'
                           .format(branch_name))
     except Exception as e:
+        print("branch: " + branch_name)
         print_warning('Add pull request comment failed: {}'.format(e))
 
 
 def handle_github_response(response):
     res_dict = response.json()
+    print(str(res_dict))
     if not res_dict.ok:
         print_warning('Add pull request comment failed: {}'.
                       format(res_dict.get('message')))
