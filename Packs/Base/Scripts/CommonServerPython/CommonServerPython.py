@@ -2634,15 +2634,15 @@ class CommandResults:
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
         raw response from the 3rd party service (originally Contents)
 
-    :type indicator_timeline: ``list``
-    param timeline: must be a list. used by the server to populate an indicator's timeline
+    :type indicator_timeline: ``IndicatorsTimeline``
+    param timeline: must be a IndicatorsTimeline. used by the server to populate an indicator's timeline
 
     :return: None
     :rtype: ``None``
     """
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None):
-        # type: (str, object, object, list, str, object, list) -> None
+        # type: (str, object, object, list, str, object, IndicatorsTimeline) -> None
         if raw_response is None:
             raw_response = outputs
 
@@ -2676,7 +2676,7 @@ class CommandResults:
         else:
             human_readable = None  # type: ignore[assignment]
         raw_response = None  # type: ignore[assignment]
-        indicators_timeline = []  # type: ignore[assignment]
+        indicators_timeline = IndicatorsTimeline().indicators_timeline  # type: ignore[assignment]
 
         if self.indicators:
             for indicator in self.indicators:
@@ -2692,7 +2692,7 @@ class CommandResults:
             raw_response = self.raw_response
 
         if self.indicators_timeline:
-            indicators_timeline = self.indicators_timeline
+            indicators_timeline = self.indicators_timeline.indicators_timeline
 
         if self.outputs is not None:
             if not self.readable_output:
