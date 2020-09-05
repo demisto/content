@@ -18,7 +18,6 @@ TOKEN: str
 SERVER: str
 FETCH_TIME: str
 BASE_URL: str
-FETCH_THREAT_RANK: int
 FETCH_LIMIT: int
 USE_SSL: bool
 HEADERS: dict
@@ -410,11 +409,8 @@ def get_threats_command():
                 'ThreatName': threat_info.get('threatName'),
                 'FileSha256': threat_info.get('fileSha256'),
                 'AgentOsType': agent_realtime_info.get('agentOsType'),
-                'FileDisplayName': threat.get('fileDisplayName'),
                 'FilePath': threat_info.get('filePath'),
                 'Username': threat_info.get('processUser'),
-                'indicators': threat.get('indicators'),
-
             })
 
         context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
@@ -822,6 +818,7 @@ def get_sites_request(updated_at, query, site_type, features, state, suite, admi
         "limit": limit,
         "siteIds": site_ids
     }
+
     response = http_request('GET', endpoint_url, params)
     if response.get('errors'):
         return_error(response.get('errors'))
@@ -1596,22 +1593,15 @@ def fetch_incidents():
     last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
     threats = get_threats_request(limit=FETCH_LIMIT, created_after=last_fetch_date_string)
     for threat in threats:
-        rank = threat.get('rank')
-        try:
-            rank = int(rank)
-        except TypeError:
-            rank = 0
-        # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if rank >= FETCH_THREAT_RANK:
-            incident = threat_to_incident(threat)
-            date_occurred_dt = parse(incident['occurred'])
-            incident_date = date_to_timestamp(date_occurred_dt, '%Y-%m-%dT%H:%M:%S.%fZ')
-            # update last run
-            if incident_date > last_fetch:
-                incidents.append(incident)
+        incident = threat_to_incident(threat)
+        date_occurred_dt = parse(incident['occurred'])
+        incident_date = date_to_timestamp(date_occurred_dt, '%Y-%m-%dT%H:%M:%S.%fZ')
+        # update last run
+        if incident_date > last_fetch:
+            incidents.append(incident)
 
-            if incident_date > current_fetch:
-                current_fetch = incident_date
+        if incident_date > current_fetch:
+            current_fetch = incident_date
 
     demisto.setLastRun({'time': current_fetch})
     demisto.incidents(incidents)
@@ -1630,14 +1620,13 @@ def main():
     ''' PARSE INTEGRATION PARAMETERS '''
 
     global TOKEN, SERVER, USE_SSL, FETCH_TIME
-    global FETCH_THREAT_RANK, FETCH_LIMIT, BASE_URL, HEADERS
+    global FETCH_LIMIT, BASE_URL, HEADERS
     params = demisto.params()
     TOKEN = params.get('token')
     SERVER = params.get('url', '').rstrip('/')
     BASE_URL = urljoin(SERVER, '/web/api/v2.1/')
     USE_SSL = not params.get('insecure', False)
     FETCH_TIME = params.get('fetch_time', '3 days')
-    FETCH_THREAT_RANK = int(params.get('fetch_threat_rank', 0))
     FETCH_LIMIT = int(params.get('fetch_limit', 10))
     HEADERS = {
         'Authorization': 'ApiToken ' + TOKEN if TOKEN else 'ApiToken',

@@ -33,12 +33,6 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '5'
-  display: Minimum risk score for importing incidents (0-10), where 0 is low risk
-    and 10 is high risk
-  name: fetch_threat_rank
-  required: false
-  type: 0
 - defaultvalue: '10'
   display: 'Fetch limit: the maximum number of incidents to fetch'
   name: fetch_limit
@@ -431,18 +425,36 @@ script:
     - contextPath: SentinelOne.Threat.Classification
       description: Classification name.
       type: string
+    - contextPath: SentinelOne.Threat.ClassificationSource
+      description: Source of the threat Classification.
+      type: string
     - contextPath: SentinelOne.Threat.MitigationStatus
       description: The agent status.
       type: String
     - contextPath: SentinelOne.Threat.AgentID
       description: The agent ID.
       type: String
-    - contextPath: SentinelOne.Threat.Rank
-      description: Number representing cloud reputation (1-10).
-      type: Number
-    - contextPath: SentinelOne.Threat.MarkedAsBenign
-      description: Whether the threat is marked as benign.
-      type: Boolean
+    - contextPath: SentinelOne.Threat.FileContentHash
+      description: SHA1 hash of file content.
+      type: String
+    - contextPath: SentinelOne.Threat.ConfidenceLevel
+      description: SentinelOne threat confidence level.
+      type: String
+    - contextPath: SentinelOne.Threat.ThreatName
+      description: Threat name.
+      type: String
+    - contextPath: SentinelOne.Threat.FileSha256
+      description: SHA256 hash of file content.
+      type: String
+    - contextPath: SentinelOne.Threat.AgentOsType
+      description: OS type.
+      type: String
+    - contextPath: SentinelOne.Threat.FilePath
+      description: File path.
+      type: String
+    - contextPath: SentinelOne.Threat.Username
+      description: Username.
+      type: String
   - arguments:
     - default: false
       description: 'CSV list of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
@@ -694,8 +706,8 @@ script:
     - contextPath: SentinelOne.Site.HealthStatus
       description: The health status of the site.
       type: boolean
-    - contextPath: SentinelOne.Site.Suite
-      description: The suite to which the site belongs.
+    - contextPath: SentinelOne.Site.Sku
+      description: The sku of product features active for this site.
       type: string
     - contextPath: SentinelOne.Site.ActiveLicenses
       description: Number of active licenses on the site.
@@ -1436,7 +1448,7 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
   longRunningPort: false
