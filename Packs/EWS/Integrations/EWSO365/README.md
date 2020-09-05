@@ -4,8 +4,6 @@ The EWS O365 integration implants EWS leading services. The integration allows g
 
 ## EWS O365 Playbook
 
-*   Office 365 Search and Delete
-*   Search And Delete Emails - EWS
 *   Get Original Email - EWS
 *   Process Email - EWS
 
@@ -50,13 +48,12 @@ The EWS integration can be used for the following use cases.
     *   **Use a self deployed Azure Application**
 4.  Click **Test** to validate the URLs, token, and connection.
 
-## Use a Self-Deployed Azure Application
+## Authentication
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
-<br/>The Tenant ID, Client ID, and Client secret are required for the integration.
-* ID - Application (Client) ID
-* Token - Tenant ID
-* Key - Application (Client) Secret
+### Required Permissions for self deployed Azure Application:
+#### Exchange
+* **full_access_as_app** - Application
 
 ## Fetched Incidents Data
 

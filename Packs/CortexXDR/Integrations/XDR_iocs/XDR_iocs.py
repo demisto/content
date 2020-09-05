@@ -257,7 +257,7 @@ def get_last_iocs(batch_size=200) -> List:
 
 def get_indicators(indicators: str) -> List:
     if indicators:
-        iocs = []
+        iocs: list = []
         not_found = []
         for indicator in indicators.split(','):
             data = demisto.searchIndicators(value=indicator).get('iocs')
@@ -422,7 +422,7 @@ def main():
     params = demisto.params()
     Client.severity = params.get('severity', '').upper()
     Client.query = params.get('query', Client.query)
-    Client.tag = params.get('tag', Client.tag)
+    Client.tag = params.get('feedTags', params.get('tag', Client.tag))
     client = Client(params)
     commands = {
         'test-module': module_test,

@@ -16,14 +16,6 @@ configuration:
   name: key
   required: true
   type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
@@ -36,6 +28,28 @@ configuration:
   name: template
   required: false
   type: 0
+- display: Use URL Filtering for auto enrichment
+  name: use_url_filtering
+  required: false
+  type: 8
+- display: URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious.
+  name: additional_suspicious
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious.
+  name: additional_malicious
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
 display: Palo Alto Networks PAN-OS
@@ -1248,11 +1262,11 @@ script:
       description: Device group for the Custom URL Category (Panorama instances).
       type: string
   - arguments:
-    - default: false
+    - default: true
       description: URL to check.
       isArray: true
       name: url
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Gets a URL category from URL Filtering.
@@ -1265,6 +1279,60 @@ script:
     - contextPath: Panorama.URLFilter.Category
       description: URL category.
       type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: URL.Category
+      description: The URL Category.
+      type: String
+  - arguments:
+    - default: true
+      description: URL to check.
+      isArray: true
+      name: url
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a URL category from URL Filtering.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: Panorama.URLFilter.URL
+      description: URL.
+      type: string
+    - contextPath: Panorama.URLFilter.Category
+      description: URL category.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: URL.Category
+      description: The URL Category.
+      type: String
   - arguments:
     - default: false
       description: URL to check.

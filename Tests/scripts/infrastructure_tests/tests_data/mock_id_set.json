@@ -90,6 +90,16 @@
           "Calculate Severity - Standard - Test"
         ]
       }
+    },
+    {
+      "Calculate Severity By Highest DBotScore": {
+        "name": "Calculate Severity By Highest DBotScore",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/fake_playbook.yml",
+        "pack": "FakePack",
+        "tests": [
+          "Calculate Severity - Standard - Test"
+        ]
+      }
     }
   ],
   "integrations": [
@@ -212,6 +222,13 @@
       "TestCommonPython": {
         "name": "TestCommonPython",
         "file_path": "TestPlaybooks/playbook-TestCommonPython.yml"
+      }
+    },
+    {
+      "fake_playbook_in_fake_pack": {
+        "name": "fake_playbook_in_fake_pack",
+        "pack": "FakePack",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_playbook_in_fake_pack.yml"
       }
     },
     {
