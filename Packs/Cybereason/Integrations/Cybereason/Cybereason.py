@@ -140,17 +140,15 @@ def update_output(output, simple_values, element_values, info_dict):
         info_type = info.get('type', '')
 
         if info_type == 'simple':
-            field = dict_safe_get(simple_values, [info.get('field')], {}, dict)
-            output[info['header']] = dict_safe_get(field, ['values', 0])
+            output[info['header']] = dict_safe_get(simple_values, [info.get('field'), 'values', 0])
 
         elif info_type == 'element':
-            field = dict_safe_get(element_values, [info.get('field')], {}, dict)
-            output[info['header']] = dict_safe_get(field, ['elementValues', 0, 'name'])
+            output[info['header']] = dict_safe_get(element_values, [info.get('field'), 'elementValues', 0, 'name'])
 
         elif info_type == 'time':
-            field = dict_safe_get(simple_values, [info.get('field')], {}, dict)
-            output[info['header']] = translate_timestamp(dict_safe_get(field, ['values', 0], u'', unicode)) if\
-                dict_safe_get(field, ['values', 0]) else ''
+            time_stamp_str = dict_safe_get(simple_values, [info.get('field'), 'values', 0], default_return_value=u'',
+                                           return_type=unicode)
+            output[info['header']] = translate_timestamp(time_stamp_str) if time_stamp_str else ''
 
     return output
 
@@ -168,7 +166,7 @@ def get_pylum_id(machine):
     ]
     json_body = build_query(query_fields, path)
     response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
-    data = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {}, dict)
+    data = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     pylum_id = dict_safe_get(data.values(), [0, 'simpleValues', 'pylumId', 'values', 0])
     if not pylum_id:
         raise ValueError('Could not find machine')
@@ -189,7 +187,7 @@ def get_machine_guid(machine_name):
     ]
     json_body = build_query(query_fields, path)
     response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body).json()
-    data = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {}, dict)
+    data = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
 
     return dict_safe_get(data.keys(), [0])
 
@@ -203,14 +201,14 @@ def is_probe_connected_command(is_remediation_commmand=False):
 
     response = is_probe_connected(machine)
 
-    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {}, dict)
+    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
 
-    for key, value in elements.iteritems():
-        if isinstance(value, dict):
-            machine_name = dict_safe_get(value, ['simpleValues', 'elementDisplayName', 'values', 0], u'', unicode)
-            if machine_name.upper() == machine.upper():
-                is_connected = True
-                break
+    for value in elements.values():
+        machine_name = dict_safe_get(value, ['simpleValues', 'elementDisplayName', 'values', 0],
+                                     default_return_value=u'', return_type=unicode)
+        if machine_name.upper() == machine.upper():
+            is_connected = True
+            break
 
     if is_remediation_commmand:
         return is_connected
@@ -222,10 +220,10 @@ def is_probe_connected_command(is_remediation_commmand=False):
         }
     }
     demisto.results({
-        'Type': entryTypes.get('note'),
+        'Type': entryTypes['note'],
         'Contents': response,
-        'ContentsFormat': formats.get('json'),
-        'ReadableContentsFormat': formats.get('markdown'),
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': is_connected,
         'EntryContext': ec
     })
@@ -263,11 +261,11 @@ def query_processes_command():
     response = query_processes(machine, process_name, only_suspicious, has_incoming_connection, has_outgoing_connection,
                                has_external_connection, unsigned_unknown_reputation, from_temporary_folder,
                                privileges_escalation, maclicious_psexec)
-    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {}, dict)
+    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     outputs = []
     for item in elements.values():
         if not isinstance(item, dict):
-            raise ValueError("Cybereason raw response is not valid, item in elements is not dict")
+            raise ValueError("Cybereason raw response is not valid, item in elements is not a dict")
 
         simple_values = item.get('simpleValues', {})
         element_values = item.get('elementValues', {})
@@ -290,10 +288,10 @@ def query_processes_command():
     }
 
     demisto.results({
-        'Type': entryTypes.get('note'),
+        'Type': entryTypes['note'],
         'Contents': response,
-        'ContentsFormat': formats.get('json'),
-        'ReadableContentsFormat': formats.get('markdown'),
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Cybereason Processes', outputs, PROCESS_HEADERS),
         'EntryContext': ec
     })
@@ -363,12 +361,12 @@ def query_connections_command():
         raise Exception('Not enough arguments given.')
 
     response = query_connections(machine, ip)
-    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {}, dict)
+    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     outputs = []
 
     for item in elements.values():
-        simple_values = dict_safe_get(item, ['simpleValues'], {})
-        element_values = dict_safe_get(item, ['elementValues'], {})
+        simple_values = dict_safe_get(item, ['simpleValues'], default_return_value={}, return_type=dict)
+        element_values = dict_safe_get(item, ['elementValues'], default_return_value={}, return_type=dict)
 
         output = update_output({}, simple_values, element_values, CONNECTION_INFO)
         outputs.append(output)
@@ -383,10 +381,10 @@ def query_connections_command():
     }
 
     demisto.results({
-        'Type': entryTypes.get('note'),
+        'Type': entryTypes['note'],
         'Contents': response,
-        'ContentsFormat': formats.get('json'),
-        'ReadableContentsFormat': formats.get('markdown'),
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Cybereason Connections', outputs),
         'EntryContext': ec
     })
@@ -461,32 +459,38 @@ def query_malops_command():
 
     for response in (malop_process_type, malop_loggon_session_type):
         data = response.get('data', {})
-        malops_map = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
+        malops_map = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
         if not data or not malops_map:
             continue
 
         for guid, malop in malops_map.iteritems():
             simple_values = dict_safe_get(malop, ['simpleValues'], {}, dict)
-            management_status = dict_safe_get(simple_values, ['managementStatus', 'values', 0], u'', unicode)
+            management_status = dict_safe_get(simple_values, ['managementStatus', 'values', 0],
+                                              default_return_value=u'',
+                                              return_type=unicode)
 
-            if management_status == 'CLOSED':
+            if management_status.upper() == u'CLOSED':
                 continue
 
             creation_time = translate_timestamp(dict_safe_get(simple_values, ['creationTime', 'values', 0]))
-            malop_last_update_time = translate_timestamp(dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0]))
-            raw_decision_failure = dict_safe_get(simple_values, ['decisionFeature', 'values', 0], u'', unicode)
+            malop_last_update_time = translate_timestamp(
+                dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0]))
+            raw_decision_failure = dict_safe_get(simple_values, ['decisionFeature', 'values', 0],
+                                                 default_return_value=u'', return_type=unicode)
             decision_failure = raw_decision_failure.replace('Process.', '')
-            raw_suspects = dict_safe_get(malop, ['elementValues', 'suspects'], {}, dict)
+            raw_suspects = dict_safe_get(malop, ['elementValues', 'suspects'], default_return_value={},
+                                         return_type=dict)
             suspects_string = ''
             if raw_suspects:
-                suspects = dict_safe_get(raw_suspects, ['elementValues', 0], {}, dict)
+                suspects = dict_safe_get(raw_suspects, ['elementValues', 0], default_return_value={}, return_type=dict)
                 suspects_string = '{}: {}'.format(suspects.get('elementType'), suspects.get('name'))
 
             affected_machines = []
-            elementValues = dict_safe_get(malop, ['elementValues', 'affectedMachines', 'elementValues'], [], list)
+            elementValues = dict_safe_get(malop, ['elementValues', 'affectedMachines', 'elementValues'],
+                                          default_return_value=[], return_type=list)
             for machine in elementValues:
                 if not isinstance(machine, dict):
-                    raise ValueError("Cybereason raw response is not valid, machine in elementValues is not dict")
+                    raise ValueError("Cybereason raw response is not valid, machine in elementValues is not a dict")
 
                 affected_machines.append(machine.get('name', ''))
 
@@ -513,10 +517,10 @@ def query_malops_command():
     }
 
     demisto.results({
-        'Type': entryTypes.get('note'),
+        'Type': entryTypes['note'],
         'Contents': data,
-        'ContentsFormat': formats.get('json'),
-        'ReadableContentsFormat': formats.get('markdown'),
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Cybereason Malops',
                                          outputs,
                                          ['GUID', 'Link', 'CreationTime', 'Status',
@@ -565,10 +569,10 @@ def isolate_machine_command():
             }
         }
         demisto.results({
-            'ContentsFormat': formats.get('json'),
-            'Type': entryTypes.get('note'),
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
             'Contents': response,
-            'ReadableContentsFormat': formats.get('markdown'),
+            'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'Machine was isolated successfully.',
             'EntryContext': ec
         })
@@ -604,10 +608,10 @@ def unisolate_machine_command():
             }
         }
         demisto.results({
-            'ContentsFormat': formats.get('json'),
-            'Type': entryTypes.get('note'),
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
             'Contents': response,
-            'ReadableContentsFormat': formats.get('markdown'),
+            'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'Machine was un-isolated successfully.',
             'EntryContext': ec
         })
@@ -639,20 +643,25 @@ def malop_processes_command():
     machine_name_list = [machine.lower() for machine in argToList(machine_name)]
 
     response = malop_processes(malop_guids)
-    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {}, dict)
+    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     outputs = []
 
     for item in elements.values():
-        simple_values = dict_safe_get(item, ['simpleValues'], {}, dict)
-        element_values = dict_safe_get(item, ['elementValues'], {}, dict)
+        simple_values = dict_safe_get(item, ['simpleValues'], default_return_value={}, return_type=dict)
+        element_values = dict_safe_get(item, ['elementValues'], default_return_value={}, return_type=dict)
 
         if machine_name_list:
-            machine_list = dict_safe_get(element_values, ['ownerMachine', 'elementValues'], [], list)
+            machine_list = dict_safe_get(element_values, ['ownerMachine', 'elementValues'], default_return_value=[],
+                                         return_type=list)
+            wanted_machine = False
             for machine in machine_list:
-                current_machine_name = machine.get('name', '').lower() if isinstance(machine, dict) else ''
+                current_machine_name = machine.get('name', '').lower()
                 if current_machine_name in machine_name_list:
-                    pass
-                    # break
+                    wanted_machine = True
+                    break
+
+            if not wanted_machine:
+                continue
 
             output = {}
             for info in PROCESS_INFO:
@@ -672,10 +681,10 @@ def malop_processes_command():
     }
 
     demisto.results({
-        'Type': entryTypes.get('note'),
+        'Type': entryTypes['note'],
         'Contents': response,
-        'ContentsFormat': formats.get('json'),
-        'ReadableContentsFormat': formats.get('markdown'),
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Cybereason Malop Processes', outputs, PROCESS_HEADERS, removeNull=True),
         'EntryContext': ec
     })
@@ -741,9 +750,9 @@ def update_malop_status_command():
         }
     }
     demisto.results({
-        'Type': entryTypes.get('note'),
+        'Type': entryTypes['note'],
         'Contents': 'Successfully updated malop {0} to status {1}'.format(malop_guid, status),
-        'ContentsFormat': formats.get('text'),
+        'ContentsFormat': formats['text'],
         'EntryContext': ec
     })
 
@@ -770,10 +779,10 @@ def prevent_file_command():
             }
         }
         entry = {
-            'ContentsFormat': formats.get('json'),
-            'Type': entryTypes.get('note'),
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
             'Contents': response,
-            'ReadableContentsFormat': formats.get('markdown'),
+            'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'File was prevented successfully',
             'EntryContext': ec
         }
@@ -804,10 +813,10 @@ def unprevent_file_command():
             }
         }
         entry = {
-            'ContentsFormat': formats.get('json'),
-            'Type': entryTypes.get('note'),
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
             'Contents': response,
-            'ReadableContentsFormat': formats.get('markdown'),
+            'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': 'File was unprevented successfully',
             'EntryContext': ec
         }
@@ -837,7 +846,8 @@ def kill_process_command():
 
     machine_guid = get_machine_guid(machine_name)
     procceses = query_processes(machine_name, file_content)
-    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], {}, dict)
+    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], default_return_value={},
+                                 return_type=dict)
     for process_guid in process_data.keys():
         response = kill_process(malop_guid, machine_guid, process_guid)
         status = dict_safe_get(response, ['statusLog', 0, 'status'])
@@ -871,7 +881,8 @@ def quarantine_file_command():
 
     machine_guid = get_machine_guid(machine_name)
     procceses = query_processes(machine_name, file_content)
-    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], {}, dict)
+    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], default_return_value={},
+                                 return_type=dict)
 
     for process_guid in process_data.keys():
         response = kill_process(malop_guid, machine_guid, process_guid)
@@ -900,7 +911,8 @@ def delete_registry_key_command():
 
     machine_guid = get_machine_guid(machine_name)
     procceses = query_processes(machine_name, file_content)
-    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], dict)
+    process_data = dict_safe_get(procceses, ['data', 'resultIdToElementDataMap'], default_return_value={},
+                                 return_type=dict)
 
     for process_guid in process_data.keys():
         response = delete_registry_key(malop_guid, machine_guid, process_guid)
@@ -952,21 +964,23 @@ def query_file_command():
         files = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
         for fname, fstat in files.iteritems():
             raw_machine_details = dict_safe_get(get_file_machine_details(fname), ['data', 'resultIdToElementDataMap'],
-                                                {}, dict)
-            machine_details = dict_safe_get(raw_machine_details, dict_safe_get(raw_machine_details.keys(), [0]), {},
-                                            dict)
-            simple_values = dict_safe_get(fstat, ['simpleValues'], {}, dict)
+                                                default_return_value={}, return_type=dict)
+            machine_details = dict_safe_get(raw_machine_details, dict_safe_get(raw_machine_details.keys(), [0]),
+                                            default_return_value={}, return_type=dict)
+            simple_values = dict_safe_get(fstat, ['simpleValues'], default_return_value={}, return_type=dict)
             file_name = dict_safe_get(simple_values, ['elementDisplayName', 'values', 0])
             md5 = dict_safe_get(simple_values, ['md5String', 'values', 0])
             sha1 = dict_safe_get(simple_values, ['sha1String', 'values', 0])
             path = dict_safe_get(simple_values, ['correctedPath', 'values', 0])
             machine = dict_safe_get(fstat, ['elementValues', 'ownerMachine', 'elementValues', 0, 'name'])
 
-            machine_element_values = dict_safe_get(machine_details, ['elementValues'], {}, dict)
-            machine_simple_values = dict_safe_get(machine_details, ['simpleValues'], {}, dict)
+            machine_element_values = dict_safe_get(machine_details, ['elementValues'], default_return_value={},
+                                                   return_type=dict)
+            machine_simple_values = dict_safe_get(machine_details, ['simpleValues'], default_return_value={},
+                                                  return_type=dict)
 
             os_version = dict_safe_get(machine_simple_values, ['ownerMachine.osVersionType', 'values', 0])
-            raw_suspicions = dict_safe_get(machine_details, ['suspicions'], {}, dict)
+            raw_suspicions = dict_safe_get(machine_details, ['suspicions'], default_return_value={}, return_type=dict)
 
             suspicions = {}
             for key, value in raw_suspicions.iteritems():
@@ -1031,10 +1045,10 @@ def query_file_command():
               outputPaths['file']: file_outputs}
 
         demisto.results({
-            'ContentsFormat': formats.get('json'),
-            'Type': entryTypes.get('note'),
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
             'Contents': data,
-            'ReadableContentsFormat': formats.get('markdown'),
+            'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Cybereason file query results', cybereason_outputs, removeNull=True),
             'EntryContext': ec
         })
@@ -1099,12 +1113,12 @@ def query_domain_command():
     if data:
         cybereason_outputs = []
         domain_outputs = []
-        domains = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
+        domains = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
         for domain in domains.values():
             if not isinstance(domain, dict):
                 raise ValueError("Cybereason raw response is not valid, domain in domains.values() is not dict")
 
-            simple_values = dict_safe_get(domain, ['simpleValues'], {}, dict)
+            simple_values = dict_safe_get(domain, ['simpleValues'], default_return_value={}, return_type=dict)
             reputation = dict_safe_get(simple_values, ['maliciousClassificationType', 'values', 0])
             is_internal_domain = dict_safe_get(simple_values, ['isInternalDomain', 'values', 0]) == 'true'
             was_ever_resolved = dict_safe_get(simple_values, ['everResolvedDomain', 'values', 0]) == 'true'
@@ -1131,10 +1145,10 @@ def query_domain_command():
               outputPaths['domain']: domain_outputs}
 
         demisto.results({
-            'ContentsFormat': formats.get('json'),
-            'Type': entryTypes.get('note'),
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
             'Contents': data,
-            'ReadableContentsFormat': formats.get('markdown'),
+            'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Cybereason domain query results', cybereason_outputs,
                                              ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved',
                                               'WasEverResolvedAsASecondLevelDomain', 'Malicious',
@@ -1176,11 +1190,11 @@ def query_user_command():
 
     if data:
         cybereason_outputs = []
-        users = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
+        users = dict_safe_get(data, ['resultIdToElementDataMap'], default_return_value={}, return_type=dict)
 
         for user in users.values():
-            simple_values = dict_safe_get(user, ['simpleValues'], {}, dict)
-            element_values = dict_safe_get(user, ['elementValues'], {}, dict)
+            simple_values = dict_safe_get(user, ['simpleValues'], default_return_value={}, return_type=dict)
+            element_values = dict_safe_get(user, ['elementValues'], default_return_value={}, return_type=dict)
 
             domain = dict_safe_get(simple_values, ['domain', 'values', 0])
             local_system = True if dict_safe_get(simple_values, ['isLocalSystem', 'values', 0]) == 'true' else False
@@ -1200,10 +1214,10 @@ def query_user_command():
             }
 
             demisto.results({
-                'ContentsFormat': formats.get('json'),
-                'Type': entryTypes.get('note'),
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
                 'Contents': data,
-                'ReadableContentsFormat': formats.get('markdown'),
+                'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': tableToMarkdown('Cybereason user query results', cybereason_outputs,
                                                  ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization',
                                                   'LocalSystem']),
@@ -1269,14 +1283,16 @@ def fetch_incidents():
     else:
         raise Exception('Given filter to fetch by is invalid.')
 
-    malop_process_type, malop_loggon_session_type = query_malops(total_result_limit=10000, per_group_limit=10000, filters=filters)
+    malop_process_type, malop_loggon_session_type = query_malops(total_result_limit=10000, per_group_limit=10000,
+                                                                 filters=filters)
     incidents = []
 
     for response in (malop_process_type, malop_loggon_session_type):
-        malops = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], {}, dict)
+        malops = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={},
+                               return_type=dict)
 
         for malop in malops.values():
-            simple_values = dict_safe_get(malop, ['simpleValues'], {}, dict)
+            simple_values = dict_safe_get(malop, ['simpleValues'], default_return_value={}, return_type=dict)
             simple_values.pop('iconBase64', None)
             simple_values.pop('malopActivityTypes', None)
             malop_update_time = dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0])
