@@ -84,9 +84,6 @@ def get_access_token():
     integration_context = demisto.getIntegrationContext()
     access_token = integration_context.get('access_token')
     valid_until = integration_context.get('valid_until')
-    calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
-    brand_name = calling_context.get('IntegrationBrand', '')
-    instance_name = calling_context.get('IntegrationInstance', '')
     if access_token and valid_until:
         if epoch_seconds() < valid_until:
             return access_token

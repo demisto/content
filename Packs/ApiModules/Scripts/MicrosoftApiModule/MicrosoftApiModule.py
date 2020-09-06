@@ -389,7 +389,7 @@ class MicrosoftClient(BaseClient):
         # pylint: disable=no-member
         headers = {}
         try:
-            headers = get_x_content_info_headers()    
+            headers = get_x_content_info_headers()
         except Exception as e:
             demisto.error('Failed getting integration info: {}'.format(str(e)))
 
