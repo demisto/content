@@ -5535,7 +5535,7 @@ def prettify_data_filtering_rules(rules: Dict) -> Union[List[Dict], Dict]:
     return [prettify_data_filtering_rule(rule) for rule in rules]
 
 
-def get_security_profile(xpath):
+def get_security_profile(xpath: str):
     params = {
         'action': 'get',
         'type': 'config',
@@ -6250,25 +6250,15 @@ def enforce_wildfire_schedule(template):
 def enforce_wildfire_system_config_command():
 
     template = demisto.args().get('template')
-    file_size_settings = enforce_wildfire_system_config(template)
-    if file_size_settings.get('response', {}).get('@status') == 'success':
-        human_readable = 'WildFire file upload for all file types is set to the maximum size.'
-    else:
-        human_readable = file_size_settings.get('response', {}).get('msg')
-
-    demisto.results(human_readable)
+    enforce_wildfire_system_config(template)
+    demisto.results('WildFire file upload for all file types is set to the maximum size.')
 
 
 def enforce_wildfire_schedule_command():
     template = demisto.args().get('template')
-    update_schedule = enforce_wildfire_schedule(template)
-    if update_schedule.get('response', {}).get('@status') == 'success':
-        human_readable = 'The schedule was updated according to the best practice.' \
-                         '\nRecurring every minute with the action of "download and install"'
-    else:
-        human_readable = update_schedule.get('response', {}).get('msg')
-
-    demisto.results(human_readable)
+    enforce_wildfire_schedule(template)
+    demisto.results('The schedule was updated according to the best practice.'
+                    '\nRecurring every minute with the action of "download and install"')
 
 
 def url_filtering_block_default_categories(profile_name: str):
@@ -6291,7 +6281,7 @@ def url_filtering_block_default_categories(profile_name: str):
 def url_filtering_block_default_categories_command():
 
     profile_name = demisto.args().get('profile_name')
-    result = url_filtering_block_default_categories(profile_name)
+    url_filtering_block_default_categories(profile_name)
     demisto.results(f'The default categories to block has been set successfully to {profile_name}')
 
 
@@ -6384,10 +6374,7 @@ def create_antivirus_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
     result = create_antivirus_best_practice_profile(profile_name)
-    if result.get('response', {}).get('@status') == 'success':
-        demisto.results(f'The profile {profile_name} was created successfully.')
-    else:
-        demisto.results(result['response']['msg'])
+    demisto.results(f'The profile {profile_name} was created successfully.')
 
 
 def create_anti_spyware_best_practice_profile(profile_name):
@@ -6417,9 +6404,8 @@ def create_anti_spyware_best_practice_profile(profile_name):
 def create_anti_spyware_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
-    result = create_anti_spyware_best_practice_profile(profile_name)
+    create_anti_spyware_best_practice_profile(profile_name)
     demisto.results(f'The profile {profile_name} was created successfully.')
-
 
 
 def create_vulnerability_best_practice_profile(profile_name):
@@ -6473,9 +6459,8 @@ def create_vulnerability_best_practice_profile(profile_name):
 def create_vulnerability_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
-    result = create_vulnerability_best_practice_profile(profile_name)
+    create_vulnerability_best_practice_profile(profile_name)
     demisto.results(f'The profile {profile_name} was created successfully.')
-
 
 
 def create_url_filtering_best_practice_profile(profile_name):
@@ -6549,7 +6534,7 @@ def create_url_filtering_best_practice_profile(profile_name):
 def create_url_filtering_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
-    result = create_url_filtering_best_practice_profile(profile_name)
+    create_url_filtering_best_practice_profile(profile_name)
     demisto.results(f'The profile {profile_name} was created successfully.')
 
 
@@ -6579,7 +6564,7 @@ def create_file_blocking_best_practice_profile(profile_name):
 def create_file_blocking_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
-    result = create_file_blocking_best_practice_profile(profile_name)
+    create_file_blocking_best_practice_profile(profile_name)
     demisto.results(f'The profile {profile_name} was created successfully.')
 
 
@@ -6600,9 +6585,8 @@ def create_wildfire_best_practice_profile(profile_name):
 def create_wildfire_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
-    result = create_wildfire_best_practice_profile(profile_name)
+    create_wildfire_best_practice_profile(profile_name)
     demisto.results(f'The profile {profile_name} was created successfully.')
-
 
 
 def main():
