@@ -390,6 +390,7 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
     """
     try:
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
+        print_error(f"metadata files are: {metadata_files}")
     except Exception as e:
         print_warning(f'Could not find metadata files in {private_index_path}: {str(e)}')
         return []
@@ -408,7 +409,7 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
             path_to_pack_in_artifacts = os.path.join(extract_destination_path, pack_id)
-            print_error(subprocess.check_output(f'ls {path_to_pack_in_artifacts}', shell=True))
+            print_error(subprocess.check_output(f'ls {extract_destination_path}', shell=True))
             print_error(
                 subprocess.check_output(f'echo path_to_pack_in_artifacts:{path_to_pack_in_artifacts}', shell=True))
             is_changed_private_pack = is_private_build and pack_id in pack_names

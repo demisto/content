@@ -1,4 +1,5 @@
-from Tests.Marketplace.upload_packs import download_and_extract_index, update_index_with_priced_packs
+from Tests.Marketplace.upload_packs import download_and_extract_index, update_index_with_priced_packs, \
+    extract_packs_artifacts
 from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
 import os
 import sys
@@ -112,10 +113,14 @@ def option_handler():
                         required=False)
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=True)
-    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-e', '--extract_public_index_path', help="Full path of folder to extract the public index",
+                        required=True)
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
                         required=False),
     parser.add_argument('-p', '--pack_name', help="Modified pack to upload to gcs.")
+    parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
+    parser.add_argument('-ea', '--extract_artifacts_path', help="Full path of folder to extract wanted packs",
+                        required=True)
 
     # disable-secrets-detection-end
     return parser.parse_args()
@@ -128,8 +133,10 @@ def main():
     public_bucket_name = upload_config.public_bucket_name
     private_bucket_name = upload_config.private_bucket_name
     storage_base_path = upload_config.storage_base_path
-    extract_public_index_path = upload_config.extract_path
+    extract_public_index_path = upload_config.extract_public_index_path
     changed_pack = upload_config.pack_name
+    extract_destination_path = upload_config.extract_artifacts_path
+    packs_artifacts_path = upload_config.artifacts_path
 
     storage_client = init_storage_client(service_account)
     public_storage_bucket = storage_client.bucket(public_bucket_name)
@@ -137,7 +144,7 @@ def main():
 
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
-
+    extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     public_index_folder_path, public_index_blob, _ = download_and_extract_index(public_storage_bucket,
                                                                                 extract_public_index_path)
 
