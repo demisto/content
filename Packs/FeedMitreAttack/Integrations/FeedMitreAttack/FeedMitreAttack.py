@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Optional
 import json
 import requests
 from stix2 import TAXIICollectionSource, Filter
@@ -41,7 +41,8 @@ requests.packages.urllib3.disable_warnings()
 
 class Client:
 
-    def __init__(self, url, proxies, verify, include_apt, reputation, tags: list = None):
+    def __init__(self, url, proxies, verify, include_apt, reputation, tags: list = None,
+                 tlp_color: Optional[str] = None):
         self.base_url = url
         self.proxies = proxies
         self.verify = verify
@@ -49,6 +50,7 @@ class Client:
         self.indicatorType = "MITRE ATT&CK"
         self.reputation = 0
         self.tags = [] if tags is None else tags
+        self.tlp_color = tlp_color
         if reputation == 'Good':
             self.reputation = 0
         elif reputation == 'Suspicious':
@@ -208,7 +210,10 @@ class Client:
                                 "score": self.reputation,
                                 "type": "MITRE ATT&CK",
                                 "rawJSON": mitre_item_json,
-                                "fields": {"tags": self.tags}
+                                "fields": {
+                                    "tags": self.tags,
+                                    'trafficlightprotocol': self.tlp_color
+                                }
                             })
                             indicator_values_list.add(value)
                             counter += 1
@@ -226,7 +231,10 @@ class Client:
                                         "score": self.reputation,
                                         "type": "MITRE ATT&CK",
                                         "rawJSON": mitre_item_json,
-                                        "fields": {"tags": self.tags}
+                                        "fields": {
+                                            "tags": self.tags,
+                                            'trafficlightprotocol': self.tlp_color
+                                        }
                                     })
                                     external_refs.add(x)
 
@@ -408,11 +416,12 @@ def main():
     proxies = handle_proxy()
     verify_certificate = not params.get('insecure', False)
     tags = argToList(params.get('feedTags', []))
+    tlp_color = params.get('tlp_color')
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(url, proxies, verify_certificate, include_apt, reputation, tags)
+        client = Client(url, proxies, verify_certificate, include_apt, reputation, tags, tlp_color)
         client.initialise()
         commands = {
             'mitre-get-indicators': get_indicators_command,
