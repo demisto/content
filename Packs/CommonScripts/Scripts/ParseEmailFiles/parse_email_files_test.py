@@ -1,6 +1,6 @@
 from __future__ import print_function
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
-    data_to_md, create_headers_map, handle_eml
+    data_to_md, create_headers_map
 from CommonServerPython import entryTypes
 import demistomock as demisto
 import pytest
@@ -803,12 +803,15 @@ def test_eml_contains_htm_attachment_empty_file(mocker):
 
 def test_double_dots_removed(mocker):
     """
+    Fixes: https://github.com/demisto/etc/issues/27229
     Given:
         an eml file with a line break (`=\r\n`) which caused the duplication of dots (`..`).
     Then:
         replace the two dots with one and test that `part.get_payload()` decodes it correctly.
     """
     import ParseEmailFiles as pef
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('multiple_to_cc.eml'))
     mocker.patch.object(pef, 'get_utf_string')
-    handle_eml('test_data/multiple_to_cc.eml')
+    main()
     assert 'http://schemas.microsoft.com/office/2004/12/omml' in pef.get_utf_string.mock_calls[0][1][0]

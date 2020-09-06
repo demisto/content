@@ -3432,7 +3432,6 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             # decode bytes taking into account BOM and re-encode to utf-8
             file_data = file_data.decode("utf-8-sig").encode("utf-8")
 
-        file_data = file_data.replace('\r\n..', '\r\n.')
         parser = HeaderParser()
         headers = parser.parsestr(file_data)
 
@@ -3586,6 +3585,10 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 demisto.setContext('AttachmentName', attachment_file_name)
 
             elif part.get_content_type() == 'text/html':
+                # This line replaces a new line that starts with `..` to a newline that starts with `.`
+                # This is because SMTP duplicate dots for lines that start with `.` and get_payload() doesn't format
+                # this correctly
+                part._payload = part._payload.replace('=\r\n..', '=\r\n.')
                 html = get_utf_string(part.get_payload(decode=True), 'HTML')
 
             elif part.get_content_type() == 'text/plain':
@@ -3746,4 +3749,4 @@ def main():
 
 
 if __name__ in ('__builtin__', '__main__'):
-    main()
+    handle_eml('/Users/olichter/dev/demisto/content/Packs/CommonScripts/Scripts/ParseEmailFiles/test_data/multiple_to_cc.eml')
