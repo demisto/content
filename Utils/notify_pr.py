@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 import argparse
+import os
+import sys
 
-from Tests.test_content import add_pr_comment
-from demisto_sdk.commands.common.tools import print_success
+import requests
+
+from demisto_sdk.commands.common.tools import print_success, print_error
 
 
 def main():
@@ -13,8 +16,20 @@ def main():
 
     pr_number = args.pr_number
     comment = args.comment
+    token = os.environ['CONTENT_GITHUB_TOKEN']
 
-    add_pr_comment(comment)
+    pr_url = f'https://api.github.com/repos/demisto/content/pulls/{pr_number}'
+    response = requests.get(pr_url)
+    response.raise_for_status()
+    pr = response.json()
+    if not pr:
+        print_error('Could not find the pull request to reply on.')
+        sys.exit(1)
+
+    comment_url = pr['comments_url']
+    headers = {'Authorization': 'Bearer ' + token}
+    response = requests.post(comment_url, json={'body': comment}, headers=headers, verify=False)
+    response.raise_for_status()
 
     print_success(f'Successfully added the comment to the PR.')
 

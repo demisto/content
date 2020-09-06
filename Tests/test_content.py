@@ -1081,9 +1081,7 @@ def manage_tests(tests_settings):
 def add_pr_comment(comment):
     token = os.environ['CONTENT_GITHUB_TOKEN']
     branch_name = os.environ['CIRCLE_BRANCH']
-    branch_name = 'contrib/blobtest_master'
     sha1 = os.environ['CIRCLE_SHA1']
-    sha1 = '9d086c4228568f2d16a5049fedfd2ddb38b7c0d8'
 
     query = '?q={}+repo:demisto/content+org:demisto+is:pr+is:open+head:{}+is:open'.format(sha1, branch_name)
     url = 'https://api.github.com/search/issues'
@@ -1101,13 +1099,11 @@ def add_pr_comment(comment):
             print_warning('Add pull request comment failed: There is more then one open pull request for branch {}.'
                           .format(branch_name))
     except Exception as e:
-        print("branch: " + branch_name)
         print_warning('Add pull request comment failed: {}'.format(e))
 
 
 def handle_github_response(response):
     res_dict = response.json()
-    print(str(res_dict))
     if not res_dict.ok:
         print_warning('Add pull request comment failed: {}'.
                       format(res_dict.get('message')))
