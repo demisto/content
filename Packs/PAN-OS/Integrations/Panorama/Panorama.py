@@ -61,8 +61,8 @@ if DEVICE_GROUP:
         XPATH_RULEBASE = "/config/shared/"
         DEVICE_GROUP = device_group_shared
     else:
-        XPATH_RULEBASE = f"/config/devices/entry[@name=\'localhost.localdomain\']/device-group/entry" \
-            f"[@name='{DEVICE_GROUP}']/"
+        XPATH_RULEBASE = "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name=\'" + \
+                         DEVICE_GROUP + "\']/"
 else:
     XPATH_RULEBASE = "/config/devices/entry[@name=\'localhost.localdomain\']/vsys/entry[@name=\'" + VSYS + "\']/"
 
@@ -122,8 +122,7 @@ class PAN_OS_Not_Found(Exception):
         pass
 
 
-def http_request(uri: str, method: str, headers: Dict = {},
-                 body: Dict = {}, params: Dict = {}, files=None) -> Any:
+def http_request(uri: str, method: str, headers: Dict = {}, body: Dict = {}, params: Dict = {}, files=None) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -5462,7 +5461,7 @@ def panorama_get_licence_command():
     available_licences = []
     result = panorama_get_licence()
     if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
-        raise Exception(f'Failed to get the information about PAN-OS available licenses and their statuses.')
+        raise Exception('Failed to get the information about PAN-OS available licenses and their statuses.')
 
     if 'response' in result and 'result' in result['response'] and 'entry' in result['response']['result']['licenses']:
         entry = result['response']['result']['licenses']['entry']
@@ -5558,7 +5557,7 @@ def get_security_profiles_command():
         raise Exception('Please commit the instance prior to getting the security profiles.')
 
     human_readable = ''
-    content = []
+    content: List[Dict[str, Any]] = []
     context = {}
     if 'spyware' in security_profiles:
         profiles = security_profiles.get('spyware').get('entry', {})
@@ -6187,7 +6186,7 @@ def get_wildfire_update_schedule_command():
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'The updated schedule for Wildfire', schedule),
+        'HumanReadable': tableToMarkdown('The updated schedule for Wildfire', schedule),
         'EntryContext': {"Panorama.WildFire": schedule}
     })
 
@@ -6244,8 +6243,8 @@ def enforce_wildifre_schedule_command():
     template = demisto.args().get('template')
     update_schedule = enforce_wildfire_schedule(template)
     if update_schedule.get('response', {}).get('@status') == 'success':
-        human_readable = 'The schedule was updated according to the best practice.\nRecurring every minute ' \
-                          'with the action of "download and install"'
+        human_readable = 'The schedule was updated according to the best practice.' \
+                         '\nRecurring every minute with the action of "download and install"'
     else:
         human_readable = update_schedule.get('response', {}).get('msg')
 

@@ -4327,7 +4327,7 @@ script:
     description: Create WildFire analysis best practice profile.
     execution: false
     name: panorama-create-wildfire-best-practice-profile
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: false
   longRunning: false
