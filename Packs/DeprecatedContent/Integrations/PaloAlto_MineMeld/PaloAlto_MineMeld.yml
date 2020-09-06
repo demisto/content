@@ -18,7 +18,7 @@ configuration:
 - additionalinfo: When Stateless is "True" does not update any indicator but the indicators
     we intend to add or remove. When Stateless is "False", when adding or removing
     an indicator, the update time for all indicators will be changed
-  defaultvalue: 'True'
+  defaultvalue: 'False'
   display: Stateless
   name: stateless
   options:
