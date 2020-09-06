@@ -1,7 +1,7 @@
 {
     "id": "incident_iotincidenturl",
     "version": -1,
-    "name": "IoT Incident URL",
+    "name": "IoT URL",
     "ownerOnly": false,
     "placeholder": "",
     "description": "The url to Palo Alto Networks IoT incident",
