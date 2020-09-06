@@ -87,7 +87,7 @@ THREAT_MODEL_MAPPING = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None, headers=None, files=None):
+def http_request(method, url_suffix, params=None, data=None, headers=None, files=None, json=None, text_response=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
     """
@@ -99,6 +99,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, files
         data=data,
         headers=headers,
         files=files,
+        json=json
     )
     # Handle error responses gracefully
     if res.status_code in {401}:
@@ -114,6 +115,8 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, files
     elif res.status_code not in {200, 201, 202}:
         return_error(F"Error in API call to ThreatStream {res.status_code} - {res.text}")
 
+    if text_response:
+        return res.text
     return res.json()
 
 
@@ -628,40 +631,44 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
         return_outputs("The data was not imported. Check if valid arguments were passed", None)
 
 
-def import_ioc_without_approval(file_id, classification="private", confidence=None, allow_unresolved=None):
+def import_ioc_without_approval(file_id, classification, confidence=None, allow_unresolved=None,
+                                source_confidence_weight=None, expiration_ts=None, severity=None,
+                                tags=None, trustedcircles=None):
     """
         Imports indicators data to ThreatStream.
-        file_id of uploaded file to war room or URL.
+        file_id of uploaded file to war room or URL. Other fields are
     """
-    try:
-        # entry id of uploaded file to war room
-        file_info = demisto.getFilePath(file_id)
-    except Exception:
-        raise DemistoException(F"Entry {file_id} does not contain a file.")
-
+    ioc_to_import = {}
     if allow_unresolved:
         allow_unresolved = allow_unresolved == 'yes'
-    uploaded_file = open(file_info['path'], 'rb')
-    tmp_dir = mkdtemp()
-    output_file_path = os.path.join(tmp_dir, file_info['name'])
-    try:
-        with open(output_file_path, 'w') as f:
-            enriched_upload_json = json.load(uploaded_file)
-            enriched_upload_json['meta'] = assign_params(
-                classification=classification,
-                confidence=confidence,
-                allow_unresolved=allow_unresolved,
-            )
-            json.dump(enriched_upload_json, f)
-    except json.JSONDecodeError:
-        raise DemistoException(F"Entry {file_id} does not contain a valid json file.")
-    if uploaded_file:
-        uploaded_file.close()
-    with open(output_file_path, 'r') as f:
-        files = {'file': (file_info['name'], f)}
-        params = build_params()
+    if tags:
+        tags = argToList(tags)
+    if trustedcircles:
+        trustedcircles = argToList(trustedcircles)
+    if file_id:
+        try:
+            # entry id of uploaded file to war room
+            file_info = demisto.getFilePath(file_id)
+            with open(file_info['path'], 'rb') as uploaded_file:
+                ioc_to_import = json.load(uploaded_file)
+        except json.JSONDecodeError:
+            raise DemistoException(F"Entry {file_id} does not contain a valid json file.")
+        except Exception:
+            raise DemistoException(F"Entry {file_id} does not contain a file.")
+    meta = ioc_to_import.get('meta', {})
+    meta.update(assign_params(
+        classification=classification,
+        confidence=confidence,
+        allow_unresolved=allow_unresolved,
+        source_confidence_weight=source_confidence_weight,
+        expiration_ts=expiration_ts,
+        severity=severity,
+        tags=tags,
+        trustedcircles=trustedcircles
+    ))
 
-        res = http_request("PATCH", "v1/intelligence/", params=params, files=files)
+    params = build_params()
+    res = http_request("PATCH", "v1/intelligence/", params=params, json=ioc_to_import, text_response=True)
     return_outputs(F"The data was imported successfully.", {}, res)
 
 
@@ -970,5 +977,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("builtins", "__builtin__", "__main__"):
     main()

@@ -627,6 +627,45 @@ script:
       name: confidence
       required: false
       secret: false
+    - default: false
+      description: To use your specified confidence entirely, set source_confidence_
+        weight to 100.
+      isArray: false
+      name: source_confidence_weight
+      required: false
+      secret: false
+    - default: false
+      description: Time stamp of when intelligence will expire on ThreatStream, in ISO
+        format. For example, 2020-12-24T00:00:00.
+      isArray: false
+      name: expiration_ts
+      required: false
+      secret: false
+    - default: false
+      description: Severity you want to assign to the observable when it is imported.
+      isArray: false
+      name: severity
+      required: false
+      predefined:
+        - low
+        - medium
+        - high
+        - very-high
+      secret: false
+    - default: false
+      description: Comma-separated list of tags. e.g. tag1,tag2
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: ID of the trusted circle with which this threat data should be shared. If
+        you want to import the threat data to multiple trusted circles, enter a
+        list of comma-separated IDs.
+      isArray: false
+      name: trustedcircles
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: private
@@ -637,11 +676,10 @@ script:
       predefined:
         - private
         - public
-      required: false
+      required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: private
       description: When set to true, domain observables included in the file which do not
         resolve will be accepted as valid in ThreatStream and imported.
       isArray: false
