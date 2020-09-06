@@ -9,6 +9,7 @@ from numpy.linalg import norm
 from email.utils import parseaddr
 import tldextract
 NO_FETCH_EXTRACT = tldextract.TLDExtract(suffix_list_urls=None)
+pd.options.mode.chained_assignment = None  # default='warn'
 
 
 SIMILARITY_THRESHOLD = 0.98

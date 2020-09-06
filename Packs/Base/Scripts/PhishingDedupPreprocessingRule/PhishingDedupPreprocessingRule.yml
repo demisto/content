@@ -55,12 +55,7 @@ args:
   required: false
   secret: false
 - default: false
-  isArray: false
-  name: fromComparison
-  required: false
-  secret: false
-- default: false
-  defaultValue: emailFrom
+  defaultValue: emailfrom
   description: 'Incident fields contains the email from value '
   isArray: false
   name: emailFrom
