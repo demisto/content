@@ -513,7 +513,7 @@ jobs:
                 name: Create Instance
                 when: on_success
                 command: |
-                  [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
+                  [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
                   if ./Tests/scripts/is_ami.sh ;
                     then
                       if [ -n "${NIGHTLY}" ] ;
