@@ -1228,6 +1228,11 @@ def test_pack_zip(content_path, target):
 
 
 def get_non_added_packs_ids(build: Build):
+    """
+
+    :param build: the build object
+    :return: all non added packs i.e. unchanged packs (dependencies) and modified packs
+    """
     all_files_changed = run_command(f'git diff --name-status origin/master..refs/heads/{build.branch_name}').split('\n')
     added_files = filter(lambda x: x.lower().startswith('a') and x.endswith('pack_metadata.json'), all_files_changed)
     added_pack_ids = map(lambda x: x.split('/')[1], added_files)
