@@ -66,27 +66,20 @@ def main():
 
     csv_data: list = []
     with open(file_path, mode='r') as csv_file:
-        csv_reader = csv.DictReader(csv_file)
-        first_row = next(csv_reader)
-
-    if header_row:
-        with open(file_path, mode='r') as csv_file:
+        if header_row:
             csv_reader = csv.DictReader(csv_file)
             for line in csv_reader:
                 csv_data.append(line)
-    elif add_row:
-        if len(first_row) != len(add_row.split(",")):
-            return_error(
-                "Added row via add_header_row has invalid length.")
-
-        with open(file_path, mode='r') as csv_file:
+        elif add_row:
             headers = add_row.split(',')
             csv_reader = csv.DictReader(csv_file, fieldnames=headers)
             for line in csv_reader:
                 csv_data.append(line)
+                if len(line) != len(add_row.split(",")):
+                    return_error(
+                        "Added row via add_header_row has invalid length.")
 
-    else:
-        with open(file_path, mode='r') as csv_file:
+        else:
             csv_reader = csv.DictReader(csv_file, fieldnames=[])
             for line in csv_reader:
                 line_values = list(line.values())
