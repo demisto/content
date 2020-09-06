@@ -892,10 +892,11 @@ def configure_servers_and_restart(build, prints_manager):
             configurations.update(MARKET_PLACE_CONFIGURATION)
 
         error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
+        manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in build.servers:
-            server.add_server_configuration(configurations, error_msg=error_msg, restart=True)
+            server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
-        if Build.run_environment == Running.WITH_LOCAL_SERVER:
+        if manual_restart:
             input('restart your server and then press enter.')
         else:
             prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
@@ -1233,9 +1234,9 @@ def get_non_added_packs_ids(build: Build):
     :param build: the build object
     :return: all non added packs i.e. unchanged packs (dependencies) and modified packs
     """
-    all_files_changed = run_command(f'git diff --name-status origin/master..refs/heads/{build.branch_name}').split('\n')
-    added_files = filter(lambda x: x.lower().startswith('a') and x.endswith('pack_metadata.json'), all_files_changed)
-    added_pack_ids = map(lambda x: x.split('/')[1], added_files)
+    added_files = run_command(f'git diff --name-only --diff-filter=A '
+                              f'origin/master..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
+    added_pack_ids = map(lambda x: x.split('/')[1], added_files.split('\n'))
     return set(get_pack_ids_to_install()) - set(added_pack_ids)
 
 
