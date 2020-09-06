@@ -3895,7 +3895,7 @@ def dict_safe_get(dict_object, keys, default_return_value=None):
 
 CONTEXT_UPDATE_RETRY_TIMES = 3
 MIN_VERSION_FOR_VERSIONED_CONTEXT = '6.0.0'
-MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT = '82511'
+MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT = '83267'
 
 
 def merge_lists(original_list, updated_list, key):
