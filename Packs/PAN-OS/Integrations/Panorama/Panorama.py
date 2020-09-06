@@ -61,8 +61,7 @@ if DEVICE_GROUP:
         XPATH_RULEBASE = "/config/shared/"
         DEVICE_GROUP = device_group_shared
     else:
-        XPATH_RULEBASE = "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name=\'" + \
-                         DEVICE_GROUP + "\']/"
+        XPATH_RULEBASE = f"/config/devices/entry[@name=\'localhost.localdomain\']/device-group/entry[@name='{DEVICE_GROUP}']/"
 else:
     XPATH_RULEBASE = "/config/devices/entry[@name=\'localhost.localdomain\']/vsys/entry[@name=\'" + VSYS + "\']/"
 
@@ -122,7 +121,8 @@ class PAN_OS_Not_Found(Exception):
         pass
 
 
-def http_request(uri: str, method: str, headers: Dict = {}, body: Dict = {}, params: Dict = {}, files=None) -> Any:
+def http_request(uri: str, method: str, headers: Dict = {},
+                 body: Dict = {}, params: Dict = {}, files=None) -> Any:
     """
     Makes an API call with the given arguments
     """
