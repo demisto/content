@@ -1333,23 +1333,28 @@ def download_export_command():
 
 
 def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
-    out_file = download_storage_object(object_ID, bucket_name)
-    out_file_json = json.loads(xml2json(out_file.getvalue()))
-    out_file.close()
+    out_file = None
+    try:
+        out_file = download_storage_object(object_ID, bucket_name)
+        out_file_json = json.loads(xml2json(out_file.getvalue()))
 
-    if not out_file_json['Root']['Batch'].get('Documents'):
-        demisto.results('The export given contains 0 documents')
-        sys.exit(0)
-    documents = out_file_json['Root']['Batch']['Documents']['Document']
+        if not out_file_json['Root']['Batch'].get('Documents'):
+            demisto.results('The export given contains 0 documents')
+            sys.exit(0)
+        documents = out_file_json['Root']['Batch']['Documents']['Document']
 
-    if type(documents) is dict:
-        documents = [documents]
+        if type(documents) is dict:
+            documents = [documents]
 
-    if len(documents) > max_results:
-        documents = documents[:max_results]
+        if len(documents) > max_results:
+            documents = documents[:max_results]
 
-    dictList = build_dict_list(documents)
-    return dictList
+        dictList = build_dict_list(documents)
+        return dictList
+
+    finally:
+        if out_file:
+            out_file.close()
 
 
 def get_drive_results_command():
