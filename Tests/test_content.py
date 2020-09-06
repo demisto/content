@@ -1083,6 +1083,7 @@ def add_pr_comment(comment):
     branch_name = os.environ['CIRCLE_BRANCH']
     branch_name = 'contrib/blobtest_master'
     sha1 = os.environ['CIRCLE_SHA1']
+    sha1 = '9d086c4228568f2d16a5049fedfd2ddb38b7c0d8'
 
     query = '?q={}+repo:demisto/content+org:demisto+is:pr+is:open+head:{}+is:open'.format(sha1, branch_name)
     url = 'https://api.github.com/search/issues'
