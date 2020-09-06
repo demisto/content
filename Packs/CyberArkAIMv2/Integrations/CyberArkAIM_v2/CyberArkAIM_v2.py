@@ -157,12 +157,12 @@ def main():
                 cf_name, kf_name = client.crt
                 if client.cf:
                     client.cf.close()
-                    os.close(cf_name)
+                    os.remove(cf_name)
                 if client.cf:
                     client.kf.close()
-                    os.close(kf_name)
+                    os.remove(kf_name)
         except Exception as err:
-            demisto.error(f"CyberArk AIM error: {str(err)}")
+            return_error(f"CyberArk AIM error: {str(err)}")
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
