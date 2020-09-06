@@ -453,6 +453,7 @@ def lookup_request(ioc, multiple=True):
         ioc_list = ioc.split(',')
     else:
         ioc_list = [ioc]
+    ioc_list = [url.replace('https://', '').replace('http://', '') for url in ioc_list]
     json_data = json.dumps(ioc_list)
     response = http_request('POST', cmd_url, json_data, DEFAULT_HEADERS)
     return response
