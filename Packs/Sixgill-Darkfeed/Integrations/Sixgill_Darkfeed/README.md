@@ -3,7 +3,7 @@ This integration was integrated and tested with version 0.1.6 of sixgill clients
 ## Configure Sixgill_Darkfeed on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Sixgill DarkFeed™ Threat Intelligence.
+2. Search for Sixgill DarkFeed Threat Intelligence.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |

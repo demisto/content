@@ -2625,7 +2625,7 @@
             "integrations": "AlienVault Reputation Feed",
             "playbookID": "AlienVaultReputationFeed_Test",
             "fromversion": "5.5.0",
-            "memory_threshold": 175
+            "memory_threshold": 190
         },
         {
             "integrations": "BruteForceBlocker Feed",
@@ -2951,6 +2951,10 @@
             "playbookID": "Ivanti Heat - Test"
         },
         {
+            "integrations": "MicrosoftCloudAppSecurity",
+            "playbookID": "MicrosoftCloudAppSecurity-Test"
+        },
+        {
             "integrations": "Blueliv ThreatCompass",
             "playbookID": "Blueliv_ThreatCompass_test",
             "fromversion": "5.0.0"
@@ -3057,6 +3061,7 @@
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
         "Infoblox": "Issue 25651",
+        "IntSights": "Issue 26742",
         "Traps": "Issue 24122",
         "McAfee Advanced Threat Defense": "Issue 16909",
         "CrowdStrike Falcon X": "Issue 26209",
