@@ -1,9 +1,29 @@
 id: detonate_url_-_crowdstrike
 version: -1
 name: Detonate URL - CrowdStrike
-description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
-  This playbook returns relevant reports to the War Room and file reputations to the
-  context data.
+description: |-
+  Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+
+    Accepted file extensions:
+    Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
+    Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
+    PDF
+    APK
+    Executable JAR
+    Windows script component: .sct
+    Windows shortcut: .lnk
+    Windows help: .chm
+    HTML application: .hta
+    Windows script file: .wsf
+    Javascript: .js
+    Visual Basic: .vbs, .vbe
+    Shockwave Flash: .swf
+    Perl: .pl
+    Powershell: .ps1, .psd1, .psm1
+    Scalable vector graphics: .svg
+    Python: .py
+    Linux ELF executables
+    Email files: MIME RFC 822 .eml, Outlook .msg.
 starttaskid: "0"
 tasks:
   "0":
@@ -286,21 +306,21 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 7aa7ae01-7cab-4d35-8c66-fe345dad3c12
+    taskid: c55608b1-7cbd-4bf9-8337-3149f0334ab3
     type: condition
     task:
-      description: "Check if file type is not supported."
-      id: 7aa7ae01-7cab-4d35-8c66-fe345dad3c12
+      id: c55608b1-7cbd-4bf9-8337-3149f0334ab3
       version: -1
-      name: Is file type not supported?
+      name: Is file type supported?
       type: condition
       iscommand: false
       brand: ""
+      description: Asserts the file type is supported
     nexttasks:
       '#default#':
-      - "13"
-      "yes":
       - "6"
+      "yes":
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -318,7 +338,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: inputs.FIlterOutRegex
+                        simple: inputs.FilterRegex
                       iscontext: true
             iscontext: true
     view: |-
@@ -374,11 +394,11 @@ inputs:
   required: false
   description: How much time to wait before a timeout occurs  (minutes)
   playbookInputQuery: null
-- key: FIlterOutRegex
+- key: FilterRegex
   value:
-    simple: .*\.((?i)(?:dtd|png))\b
+    simple: .*\.((?i)(?:EXE|DLL|COM|SCR|CPL|DOC|DOCX|XLS|XSLX|PPS|PPSX|PPT|PPTX|RTF|PDF|ETC|PUB|SCT|INK|CHM|HTA|WSF|JS|VBS|VBE|SWF|PL|PS1|PSD1|PSM1|SVG|PY|ELF|EML|MSG))\b
   required: false
-  description: A regex of files to not detonate in CrowdStrike
+  description: A regex of files' extensions to detonate in CrowdStrike
   playbookInputQuery: null
 outputs:
 - contextPath: File.SHA256
