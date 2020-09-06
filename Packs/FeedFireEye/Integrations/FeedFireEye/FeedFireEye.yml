@@ -10,7 +10,7 @@ configuration:
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: Good
+  defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -33,6 +33,16 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- additionalinfo: Traffic Light Protocol value (color) to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -43,12 +53,11 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- defaultvalue: '20160'
-  display: ''
+- display: ''
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '5'
+- defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -63,7 +72,7 @@ configuration:
   defaultvalue: "true"
 - display: Public Key
   name: credentials
-  required: false
+  required: true
   type: 9
 - additionalinfo: Supports CSV values.
   display: Tags
@@ -102,7 +111,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: fireeye-get-indicators
-  dockerimage: demisto/python3:3.8.5.10455
+  dockerimage: demisto/python3:3.8.5.10845
   feed: true
   isfetch: false
   longRunning: false

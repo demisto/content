@@ -1,4 +1,5 @@
 import random
+from typing import Optional
 
 import pytest
 import requests_mock
@@ -9,7 +10,8 @@ import demistomock as demisto
 
 
 def create_client(public_key: str = 'public_key', private_key: str = 'secret_key',
-                  polling_timeout: int = 20, insecure: bool = False, proxy: bool = False):
+                  polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
+                  tags: list = [], tlp_color: Optional[str] = 'AMBER'):
     return Client(public_key, private_key, polling_timeout, insecure, proxy)
 
 

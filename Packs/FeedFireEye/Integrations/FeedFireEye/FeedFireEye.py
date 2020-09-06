@@ -1,4 +1,4 @@
-from typing import Tuple, List, Dict, Any
+from typing import Tuple, List, Dict, Any, Optional
 
 import urllib3
 from requests.auth import HTTPBasicAuth
@@ -243,14 +243,19 @@ class Client(BaseClient):
     Args:
         insecure (bool): False if feed HTTPS server certificate should be verified, True otherwise.
         proxy (bool): False if feed HTTPS server certificate will not use proxies, True otherwise.
+        tags (list): The indicator tags.
+        tlp_color (str): Traffic Light Protocol color.
     """
 
     def __init__(self, public_key: str, private_key: str,
-                 polling_timeout: int = 20, insecure: bool = False, proxy: bool = False):
+                 polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
+                 tags: list = [], tlp_color: Optional[str] = None):
         super().__init__(base_url=API_URL, verify=not insecure, proxy=proxy)
         self.public_key = public_key
         self.private_key = private_key
         self._polling_timeout = polling_timeout
+        self.tags = tags
+        self.tlp_color = tlp_color
 
     @staticmethod
     def parse_access_token_expiration_time(expires_in: str) -> int:
@@ -450,12 +455,11 @@ def test_module(client: Client):
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, feedTags: list):
+def get_indicators_command(client: Client):
     """Retrieves indicators from the feed to the war-room.
 
     Args:
         client (Client): Client object configured according to instance arguments.
-        feedTags: The indicator tags.
 
     Returns:
         Tuple of:
@@ -463,7 +467,7 @@ def get_indicators_command(client: Client, feedTags: list):
             Dict. The raw data of the indicators.
     """
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators, raw_response = fetch_indicators_command(client, feedTags, limit)
+    indicators, raw_response = fetch_indicators_command(client, limit)
 
     human_readable = tableToMarkdown('Indicators from FireEye Feed:', indicators,
                                      headers=['value', 'type', 'rawJSON'], removeNull=True)
@@ -471,12 +475,11 @@ def get_indicators_command(client: Client, feedTags: list):
     return human_readable, {}, indicators
 
 
-def fetch_indicators_command(client: Client, feedTags: list, limit: int = -1):
+def fetch_indicators_command(client: Client, limit: int = -1):
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
         limit (int): Maximum number of indicators to return.
-        feedTags (list): Indicator tags
     Returns:
         Tuple of:
             str. Information to be printed to war room.
@@ -492,7 +495,8 @@ def fetch_indicators_command(client: Client, feedTags: list, limit: int = -1):
             'value': indicator['value'],
             'type': indicator['type'],
             'fields': indicator['fields'].update({
-                'tags': feedTags
+                'tags': client.tags,
+                'trafficlightprotocol': client.tlp_color
             }),
             'rawJSON': indicator
         })
@@ -511,6 +515,7 @@ def main():
     private_key = demisto.params().get('credentials').get('password')
 
     feedTags = argToList(demisto.params().get('feedTags'), '')
+    tlp_color = demisto.params().get('tlp_color')
 
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
@@ -521,13 +526,13 @@ def main():
     demisto.info(f'Command being called is {command}')
     command = demisto.command()
     try:
-        client = Client(public_key, private_key, polling_timeout, insecure, proxy)
+        client = Client(public_key, private_key, polling_timeout, insecure, proxy, feedTags, tlp_color)
         if command == 'test-module':
             return_outputs(*test_module(client))
         elif command == 'fireeye-get-indicators':
-            return_outputs(*get_indicators_command(client, feedTags))
+            return_outputs(*get_indicators_command(client))
         elif command == 'fetch-indicators':
-            indicators, _ = fetch_indicators_command(client, feedTags)
+            indicators, _ = fetch_indicators_command(client)
 
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
