@@ -1,6 +1,7 @@
 
 import demistomock as demisto
 from hashlib import sha256
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 DIGITS58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
@@ -23,10 +24,13 @@ def verify_is_bitcoin(bitcoin):
 
 
 def main():
-    address = demisto.args().get('input')
-
-    if verify_is_bitcoin(address):
-        demisto.results(address)
+    address_list = argToList(demisto.args().get('input'))
+    list_results = []
+    for address in address_list:
+        if verify_is_bitcoin(address):
+            list_results.append(address)
+    if list_results:
+        demisto.results(list_results)
     else:
         demisto.results("")
 
