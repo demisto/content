@@ -692,6 +692,7 @@ class Pack(object):
         current_working_dir = os.getcwd()
         os.chdir(extract_destination_path)
         output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+        subprocess.call('chmod +x ./encryptor', shell=True)
         full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
         subprocess.call(full_command, shell=True)
         os.chdir(current_working_dir)

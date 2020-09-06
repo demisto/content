@@ -8,6 +8,7 @@ import prettytable
 import glob
 import git
 import requests
+import subprocess
 from datetime import datetime
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
@@ -399,11 +400,20 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
     private_packs = []
     for metadata_file_path in metadata_files:
         try:
+            print_error("started try block")
+            print_error(subprocess.check_output(f'ls {metadata_file_path}', shell=True))
+            print_error(subprocess.check_output(f'echo metadata_file_path:{metadata_file_path}', shell=True))
+
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
+            path_to_pack_in_artifacts = os.path.join(extract_destination_path, pack_id)
+            print_error(subprocess.check_output(f'ls {path_to_pack_in_artifacts}', shell=True))
+            print_error(
+                subprocess.check_output(f'echo path_to_pack_in_artifacts:{path_to_pack_in_artifacts}', shell=True))
             is_changed_private_pack = is_private_build and pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
+                print_error("entered is_changed_private_pack")
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"), "r") as metadata_file:
                     metadata = json.load(metadata_file)
             if metadata:
@@ -452,8 +462,9 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
         private_index_path, private_index_blob, _ = download_and_extract_index(private_storage_bucket,
                                                                                os.path.join(extract_destination_path,
                                                                                             'private'))
-
+        print("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names, is_private_build, extract_destination_path)
+        print("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
         print("Finished updating index with priced packs")
     except Exception as e:
