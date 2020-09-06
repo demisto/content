@@ -88,6 +88,7 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
         "score": calculate_dbot_score(indicator.get("threatAssessScore")),
         "fields": {
             "tags": argToList(demisto.getParam("feedTags")),
+            'trafficlightprotocol': demisto.getParam('tlp_color')
         },
     }
 
