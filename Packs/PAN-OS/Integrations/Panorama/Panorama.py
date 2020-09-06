@@ -5847,9 +5847,9 @@ def prettify_profile_rule(rule: Dict) -> Dict:
     if '@maxver' in rule:
         pretty_rule['Max_version'] = rule['@maxver']
     if 'sinkhole' in rule and 'ipv4-address' in rule['sinkhole']:
-        pretty_rule['Sinkhole'] = rule['sinkhole']['ipv4-address']
+        pretty_rule['Sinkhole']['IPV4'] = rule['sinkhole']['ipv4-address']
     if 'sinkhole' in rule and 'ipv6-address' in rule['sinkhole']:
-        pretty_rule['Sinkhole'] = rule['sinkhole']['ipv6-address']
+        pretty_rule['Sinkhole']['IPV6'] = rule['sinkhole']['ipv6-address']
     if 'host' in rule:
         pretty_rule['Host'] = rule['host']
     if 'cve' in rule and 'member' in rule['cve']:
@@ -5861,7 +5861,14 @@ def prettify_profile_rule(rule: Dict) -> Dict:
     return pretty_rule
 
 
-def prettify_profiles_rules(rules):
+def prettify_profiles_rules(rules: Dict) -> Union[List, Dict]:
+    """
+    Args:
+        rules: The rules to prettify.
+
+    Returns: List with the rules that are compatible to our standard.
+
+    """
     if not isinstance(rules, list):
         return prettify_profile_rule(rules)
     pretty_rules_arr = []
@@ -5872,7 +5879,7 @@ def prettify_profiles_rules(rules):
     return pretty_rules_arr
 
 
-def get_anti_spyware_best_practice():
+def get_anti_spyware_best_practice() -> Dict:
     params = {
         'action': 'get',
         'type': 'config',
@@ -5888,7 +5895,7 @@ def get_anti_spyware_best_practice():
 def get_anti_spyware_best_practice_command():
 
     result = get_anti_spyware_best_practice()
-    spyware_profile = result['response']['result']['spyware']
+    spyware_profile = result.get('response', {}).get('result', {}).get('spyware')
     strict_profile = spyware_profile.get('entry')[1]
 
     botnet_domains = strict_profile.get('botnet-domains', {}).get('lists', {}).get('entry', [])
@@ -5926,7 +5933,7 @@ def get_anti_spyware_best_practice_command():
     })
 
 
-def get_file_blocking_best_practice():
+def get_file_blocking_best_practice() -> Dict:
     params = {
         'action': 'get',
         'type': 'config',
@@ -5998,7 +6005,7 @@ def get_antivirus_best_practice_command():
     })
 
 
-def get_vulnerability_protection_best_practice():
+def get_vulnerability_protection_best_practice() -> Dict:
     params = {
         'action': 'get',
         'type': 'config',
@@ -6034,7 +6041,7 @@ def get_vulnerability_protection_best_practice_command():
     })
 
 
-def get_wildfire_best_practice():
+def get_wildfire_best_practice() -> Dict:
     params = {
         'action': 'get',
         'type': 'config',
@@ -6111,10 +6118,10 @@ def get_wildfire_best_practice_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
         'EntryContext': {
-            "Panorama.WildFire": rules,
-            "Panorama.WildFire.File(val.Name == obj.Name)": system_settings,
-            "Panorama.WildFire.Schedule": wildfire_schedule,
-            "Panorama.WildFire.SSLDecrypt": ssl_decrypt_settings
+            'Panorama.WildFire': rules,
+            'Panorama.WildFire.File(val.Name == obj.Name)': system_settings,
+            'Panorama.WildFire.Schedule': wildfire_schedule,
+            'Panorama.WildFire.SSLDecrypt': ssl_decrypt_settings
         }
     })
 
@@ -6264,7 +6271,7 @@ def enforce_wildfire_schedule_command():
     demisto.results(human_readable)
 
 
-def url_filtering_block_default_categories(profile_name):
+def url_filtering_block_default_categories(profile_name: str):
 
     params = {
         'action': 'set',
@@ -6285,10 +6292,7 @@ def url_filtering_block_default_categories_command():
 
     profile_name = demisto.args().get('profile_name')
     result = url_filtering_block_default_categories(profile_name)
-    if result.get('response', {}).get('@status') == 'success':
-        demisto.results(f'The default categories to block has been set successfully to {profile_name}')
-    else:
-        demisto.results(result['response']['msg'])
+    demisto.results(f'The default categories to block has been set successfully to {profile_name}')
 
 
 def get_url_filtering_best_practice_command():
@@ -6414,10 +6418,8 @@ def create_anti_spyware_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
     result = create_anti_spyware_best_practice_profile(profile_name)
-    if result.get('response', {}).get('@status') == 'success':
-        demisto.results(f'The profile {profile_name} was created successfully.')
-    else:
-        demisto.results(result['response']['msg'])
+    demisto.results(f'The profile {profile_name} was created successfully.')
+
 
 
 def create_vulnerability_best_practice_profile(profile_name):
@@ -6472,10 +6474,8 @@ def create_vulnerability_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
     result = create_vulnerability_best_practice_profile(profile_name)
-    if result.get('response', {}).get('@status') == 'success':
-        demisto.results(f'The profile {profile_name} was created successfully.')
-    else:
-        demisto.results(result['response']['msg'])
+    demisto.results(f'The profile {profile_name} was created successfully.')
+
 
 
 def create_url_filtering_best_practice_profile(profile_name):
@@ -6550,10 +6550,7 @@ def create_url_filtering_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
     result = create_url_filtering_best_practice_profile(profile_name)
-    if result.get('response', {}).get('@status') == 'success':
-        demisto.results(f'The profile {profile_name} was created successfully.')
-    else:
-        demisto.results(result['response']['msg'])
+    demisto.results(f'The profile {profile_name} was created successfully.')
 
 
 def create_file_blocking_best_practice_profile(profile_name):
@@ -6583,10 +6580,7 @@ def create_file_blocking_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
     result = create_file_blocking_best_practice_profile(profile_name)
-    if result.get('response', {}).get('@status') == 'success':
-        demisto.results(f'The profile {profile_name} was created successfully.')
-    else:
-        demisto.results(result['response']['msg'])
+    demisto.results(f'The profile {profile_name} was created successfully.')
 
 
 def create_wildfire_best_practice_profile(profile_name):
@@ -6607,10 +6601,8 @@ def create_wildfire_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
     result = create_wildfire_best_practice_profile(profile_name)
-    if result.get('response', {}).get('@status') == 'success':
-        demisto.results(f'The profile {profile_name} was created successfully.')
-    else:
-        demisto.results(result['response']['msg'])
+    demisto.results(f'The profile {profile_name} was created successfully.')
+
 
 
 def main():
