@@ -415,6 +415,7 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
             is_changed_private_pack = is_private_build and pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
                 print_error("entered is_changed_private_pack")
+                print_error(subprocess.check_output(f'ls {path_to_pack_in_artifacts}', shell=True))
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"), "r") as metadata_file:
                     metadata = json.load(metadata_file)
             if metadata:
