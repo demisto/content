@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 
 import requests
 from dateutil.parser import parse
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -14,9 +14,10 @@ SOURCE_NAME = "Tor Exit Addresses"
 
 
 class Client(BaseClient):
-    def __init__(self, insecure: bool = False, proxy: bool = False):
+    def __init__(self, insecure: bool = False, proxy: bool = False, tlp_color: Optional[str] = None):
         super().__init__(base_url='https://check.torproject.org/exit-addresses', verify=not insecure, proxy=proxy)
         self.url = 'https://check.torproject.org/exit-addresses'
+        self.tlp_color = tlp_color
 
     def http_request_indicators(self):
         res = requests.get(
@@ -66,7 +67,8 @@ class Client(BaseClient):
                     'firstseenbysource': indicator.get('firstseenbysource'),
                     'lastseenbysource': indicator.get('lastseenbysource'),
                     'name': indicator.get('name'),
-                    'tags': feedTags
+                    'tags': feedTags,
+                    'trafficlightprotocol': self.tlp_color
                 }
                 indicator_list.append(indicator)
 
@@ -101,8 +103,10 @@ def module_test_command(client: Client, args: dict):
 def main():
     params = demisto.params()
     feedTags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
     client = Client(params.get('insecure'),
-                    params.get('proxy'))
+                    params.get('proxy'),
+                    tlp_color)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
