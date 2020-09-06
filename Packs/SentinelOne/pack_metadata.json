@@ -1,6 +1,6 @@
 {
     "name": "SentinelOne",
-    "description": "End point protection",
+    "description": "The SentinelOne REST API sends requests to your Management Server and responds with data that the management pulled from Agents or from the management database.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",

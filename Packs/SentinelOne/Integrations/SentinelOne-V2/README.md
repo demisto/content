@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p class="has-line-data" data-line-start="1" data-line-end="3">Use the SentinelOne v2 integration to organize your company's end points. <br> This integration was integrated and tested with version 2.1 of SentinelOne Beta</p>
+<p class="has-line-data" data-line-start="1" data-line-end="3">Use the SentinelOne v2 integration to your organize your company's end points. <br> This integration was integrated and tested with version xx of SentinelOne Beta</p>
 <h2 class="code-line" data-line-start="5" data-line-end="6">
 <a id="Configure_SentinelOne_Beta_on_Demisto_5"></a>Configure SentinelOne Beta on Demisto</h2>
 <ol>
@@ -18,6 +18,7 @@
 <li class="has-line-data" data-line-start="16" data-line-end="17"><strong>Fetch limit</strong></li>
 <li class="has-line-data" data-line-start="17" data-line-end="18"><strong>Incident type</strong></li>
 <li class="has-line-data" data-line-start="18" data-line-end="19"><strong>First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year)</strong></li>
+<li class="has-line-data" data-line-start="19" data-line-end="20"><strong>Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk</strong></li>
 </ul>
 </li>
 <li class="has-line-data" data-line-start="20" data-line-end="22">Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
@@ -32,7 +33,9 @@
 <li class="has-line-data" data-line-start="27" data-line-end="28"><a href="#h_cfc408e8-75eb-4d20-8cdd-46578930ac37" target="_self">Get the reputation of a hash: sentinelone-get-hash</a></li>
 <li class="has-line-data" data-line-start="28" data-line-end="29"><a href="#h_d96a47a0-1874-4ebf-b17b-b6ad265e4833" target="_self">Get a threat list: sentinelone-get-threats</a></li>
 <li class="has-line-data" data-line-start="29" data-line-end="30"><a href="#h_0e8d08a7-25b5-469b-ba35-27160350e04f" target="_self">Get a threat summary: sentinelone-threat-summary</a></li>
+<li class="has-line-data" data-line-start="30" data-line-end="31"><a href="#h_36d71e47-7c93-47e3-857f-01521ededa58" target="_self">Mark suspicious threats: sentinelone-mark-as-threat</a></li>
 <li class="has-line-data" data-line-start="31" data-line-end="32"><a href="#h_6255110c-9ff9-478e-afca-5a982802ac17" target="_self">Mitigate threats: sentinelone-mitigate-threat</a></li>
+<li class="has-line-data" data-line-start="32" data-line-end="33"><a href="#9_sentineloneresolvethreat_788" target="_self">Resolve threats: sentinelone-resolve-threat</a></li>
 <li class="has-line-data" data-line-start="33" data-line-end="34"><a href="#h_e4744817-ad70-417e-a772-8c2926087277" target="_self">Get agent details: sentinelone-get-agent</a></li>
 <li class="has-line-data" data-line-start="34" data-line-end="35"><a href="#h_c5e1149a-ccf8-429d-aaf8-3f55a4f190d8" target="_self">Get a list of sites: sentinelone-get-sites</a></li>
 <li class="has-line-data" data-line-start="35" data-line-end="36"><a href="#h_7a21d365-5e9f-4bfc-8244-57f65a169794" target="_self">Get a site list: sentinelone-get-site</a></li>
@@ -672,6 +675,16 @@
 <td style="width: 80px;">String</td>
 <td style="width: 291px;">The content hash.</td>
 </tr>
+<tr>
+<td style="width: 369px;">SentinelOne.Hash.Classification</td>
+<td style="width: 80px;">String</td>
+<td style="width: 291px;">The hash classification.</td>
+</tr>
+<tr>
+<td style="width: 369px;">SentinelOne.Hash.Classification Source</td>
+<td style="width: 80px;">String</td>
+<td style="width: 291px;">The hash classification source.</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -680,8 +693,10 @@
 <h5>Context Example</h5>
 <pre>{
     "SentinelOne.Hash": {
+        "ClassificationSource": "Cloud", 
         "Hash": "3aacf35d3ff2e15288851e8afe8026576f7110eb", 
         "Rank": "6", 
+        "Classification": "PUA"
     }
 }
 </pre>
@@ -693,12 +708,16 @@
 <tr>
 <th>Hash</th>
 <th>Rank</th>
+<th>ClassificationSource</th>
+<th>Classification</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>3aacf35d3ff2e15288851e8afe8026576f7110eb</td>
 <td>6</td>
+<td>Cloud</td>
+<td>PUA</td>
 </tr>
 </tbody>
 </table>
@@ -718,6 +737,11 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="width: 113.333px;">content_hash</td>
+<td style="width: 554.667px;">The content hash of the threat.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 <tr>
 <td style="width: 113.333px;">mitigation_status</td>
 <td style="width: 554.667px;">CSV list of mitigation statuses. Can be “mitigated”, “active”, “blocked”, “suspicious”, “pending”, or “suspicious_resolved”.</td>
@@ -773,6 +797,11 @@
 <td style="width: 554.667px;">CSV list of threat classifications to search, for example: “Malware”, “Network”, “Benign”.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 113.333px;">rank</td>
+<td style="width: 554.667px;">Risk level threshold to retrieve (1-10).</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -812,11 +841,6 @@
 <td style="width: 358px;">Classification name.</td>
 </tr>
 <tr>
-<td style="width: 313px;">SentinelOne.Threat.ClassificationSource</td>
-<td style="width: 70px;">string</td>
-<td style="width: 358px;">Source of the threat Classification.</td>
-</tr>
-<tr>
 <td style="width: 313px;">SentinelOne.Threat.MitigationStatus</td>
 <td style="width: 70px;">String</td>
 <td style="width: 358px;">The agent status.</td>
@@ -827,39 +851,14 @@
 <td style="width: 358px;">The agent ID.</td>
 </tr>
 <tr>
-<td style="width: 313px;">SentinelOne.Threat.FileContentHash</td>
-<td style="width: 70px;">String</td>
-<td style="width: 358px;">TSHA1 hash of file content.</td>
+<td style="width: 313px;">SentinelOne.Threat.Rank</td>
+<td style="width: 70px;">Number</td>
+<td style="width: 358px;">Number representing cloud reputation (1-10).</td>
 </tr>
 <tr>
-<td style="width: 313px;">SentinelOne.Threat.ConfidenceLevel</td>
-<td style="width: 70px;">String</td>
-<td style="width: 358px;">SentinelOne threat confidence level.</td>
-</tr>
-<tr>
-<td style="width: 313px;">SentinelOne.Threat.ThreatName</td>
-<td style="width: 70px;">String</td>
-<td style="width: 358px;">Threat name.</td>
-</tr>
-<tr>
-<td style="width: 313px;">SentinelOne.Threat.FileSha256</td>
-<td style="width: 70px;">String</td>
-<td style="width: 358px;">SHA256 hash of file content.</td>
-</tr>
-<tr>
-<td style="width: 313px;">SentinelOne.Threat.AgentOsType</td>
-<td style="width: 70px;">String</td>
-<td style="width: 358px;">OS type.</td>
-</tr>
-<tr>
-<td style="width: 313px;">SentinelOne.Threat.FilePath</td>
-<td style="width: 70px;">String</td>
-<td style="width: 358px;">File path.</td>
-</tr>
-<tr>
-<td style="width: 313px;">SentinelOne.Threat.Username</td>
-<td style="width: 70px;">String</td>
-<td style="width: 358px;">Username.</td>
+<td style="width: 313px;">SentinelOne.Threat.MarkedAsBenign</td>
+<td style="width: 70px;">Boolean</td>
+<td style="width: 358px;">Whether the threat is marked as benign.</td>
 </tr>
 </tbody>
 </table>
@@ -868,24 +867,239 @@
 <pre>!sentinelone-get-threats</pre>
 <h5>Context Example</h5>
 <pre>{
-    "SentinelOne.Threat": 
+    "SentinelOne.Threat": [
         {
-            'ID': '509259775582961234',
-            'AgentComputerName': 'MacBook-Pro',
-            'CreatedDate': '2018-12-04T15:28:16.044265Z',
-            'SiteID': '475482421366727779',
-            'Classification': 'Malware',
-            'ClassificationSource': 'Static',
-            'MitigationStatus': 'mitigated',
-            'AgentID': '507609079972312345',
-            'FileContentHash': '3395856ce81f2b7382dee72602f798b642f14140',
-            'ConfidenceLevel': 'malicious',
-            'ThreatName': 'eicar.com.txt',
-            'FileSha256': None,
-            'AgentOsType': 'macos',
-            'FilePath': '/Users/for_docs/.Trash/eicar.com.txt',
-            'Username': 'root'
+            "Username": "root", 
+            "FileSha256": null, 
+            "ThreatName": "eicar.com.txt", 
+            "Description": "static-check-on-write", 
+            "Classification": "Malware", 
+            "FilePath": "/Users/yardensade/Downloads/eicar.com.txt", 
+            "InQuarantine": null, 
+            "Rank": 7, 
+            "ID": "513526418089756174", 
+            "MarkedAsBenign": false, 
+            "FileContentHash": "3395856ce81f2b7382dee72602f798b642f14140", 
+            "SiteID": "475482421366727779", 
+            "CreatedDate": "2018-12-10T12:45:19.325000Z", 
+            "AgentOsType": "macos", 
+            "AgentID": "513505756159722818", 
+            "AgentComputerName": "Yardens-MacBook-Pro", 
+            "FileDisplayName": "eicar.com.txt", 
+            "MitigationStatus": "mitigated", 
+            "FileMaliciousContent": null
+        }, 
+        {
+            "Username": "root", 
+            "FileSha256": null, 
+            "ThreatName": "eicar.com", 
+            "Description": "static-check-on-write", 
+            "Classification": "Malware", 
+            "FilePath": "/Users/yardensade/Downloads/eicar.com", 
+            "InQuarantine": null, 
+            "Rank": 7, 
+            "ID": "513526832755426837", 
+            "MarkedAsBenign": false, 
+            "FileContentHash": "3395856ce81f2b7382dee72602f798b642f14140", 
+            "SiteID": "475482421366727779", 
+            "CreatedDate": "2018-12-10T12:46:08.771000Z", 
+            "AgentOsType": "macos", 
+            "AgentID": "513505756159722818", 
+            "AgentComputerName": "Yardens-MacBook-Pro", 
+            "FileDisplayName": "eicar.com", 
+            "MitigationStatus": "mitigated", 
+            "FileMaliciousContent": null
+        }, 
+        {
+            "Username": "root", 
+            "FileSha256": null, 
+            "ThreatName": "totally_not_a_virus.txt", 
+            "Description": "static-check-on-write", 
+            "Classification": "Malware", 
+            "FilePath": "/Users/yardensade/Downloads/totally_not_a_virus.txt", 
+            "InQuarantine": null, 
+            "Rank": 7, 
+            "ID": "513529274335282723", 
+            "MarkedAsBenign": false, 
+            "FileContentHash": "3395856ce81f2b7382dee72602f798b642f14140", 
+            "SiteID": "475482421366727779", 
+            "CreatedDate": "2018-12-10T12:50:59.855000Z", 
+            "AgentOsType": "macos", 
+            "AgentID": "513505756159722818", 
+            "AgentComputerName": "Yardens-MacBook-Pro", 
+            "FileDisplayName": "totally_not_a_virus.txt", 
+            "MitigationStatus": "mitigated", 
+            "FileMaliciousContent": null
+        }, 
+        {
+            "Username": "root", 
+            "FileSha256": null, 
+            "ThreatName": "eicar.com (1).txt", 
+            "Description": "scanner", 
+            "Classification": "Malware", 
+            "FilePath": "/Users/yardensade/Downloads/eicar.com (1).txt", 
+            "InQuarantine": null, 
+            "Rank": 7, 
+            "ID": "523732151490265554", 
+            "MarkedAsBenign": false, 
+            "FileContentHash": "3395856ce81f2b7382dee72602f798b642f14140", 
+            "SiteID": "475482421366727779", 
+            "CreatedDate": "2018-12-24T14:42:17.533000Z", 
+            "AgentOsType": "macos", 
+            "AgentID": "513505756159722818", 
+            "AgentComputerName": "Yardens-MacBook-Pro", 
+            "FileDisplayName": "eicar.com (1).txt", 
+            "MitigationStatus": "mitigated", 
+            "FileMaliciousContent": null
+        }, 
+        {
+            "Username": "root", 
+            "FileSha256": null, 
+            "ThreatName": "eicar.com (4).txt", 
+            "Description": "scanner", 
+            "Classification": "Malware", 
+            "FilePath": "/Users/yardensade/Downloads/eicar.com (4).txt", 
+            "InQuarantine": null, 
+            "Rank": 7, 
+            "ID": "523732178744852953", 
+            "MarkedAsBenign": false, 
+            "FileContentHash": "3395856ce81f2b7382dee72602f798b642f14140", 
+            "SiteID": "475482421366727779", 
+            "CreatedDate": "2018-12-24T14:42:20.792000Z", 
+            "AgentOsType": "macos", 
+            "AgentID": "513505756159722818", 
+            "AgentComputerName": "Yardens-MacBook-Pro", 
+            "FileDisplayName": "eicar.com (4).txt", 
+            "MitigationStatus": "mitigated", 
+            "FileMaliciousContent": null
+        }, 
+        {
+            "Username": "root", 
+            "FileSha256": null, 
+            "ThreatName": "eicar.com (3).txt", 
+            "Description": "scanner", 
+            "Classification": "Malware", 
+            "FilePath": "/Users/yardensade/Downloads/eicar.com (3).txt", 
+            "InQuarantine": null, 
+            "Rank": 7, 
+            "ID": "523732180305134048", 
+            "MarkedAsBenign": false, 
+            "FileContentHash": "3395856ce81f2b7382dee72602f798b642f14140", 
+            "SiteID": "475482421366727779", 
+            "CreatedDate": "2018-12-24T14:42:20.972000Z", 
+            "AgentOsType": "macos", 
+            "AgentID": "513505756159722818", 
+            "AgentComputerName": "Yardens-MacBook-Pro", 
+            "FileDisplayName": "eicar.com (3).txt", 
+            "MitigationStatus": "mitigated", 
+            "FileMaliciousContent": null
+        }, 
+        {
+            "Username": "root", 
+            "FileSha256": null, 
+            "ThreatName": "eicar.com (2).txt", 
+            "Description": "scanner", 
+            "Classification": "Malware", 
+            "FilePath": "/Users/yardensade/Downloads/eicar.com (2).txt", 
+            "InQuarantine": null, 
+            "Rank": 7, 
+            "ID": "523732207828156907", 
+            "MarkedAsBenign": false, 
+            "FileContentHash": "3395856ce81f2b7382dee72602f798b642f14140", 
+            "SiteID": "475482421366727779", 
+            "CreatedDate": "2018-12-24T14:42:24.275000Z", 
+            "AgentOsType": "macos", 
+            "AgentID": "513505756159722818", 
+            "AgentComputerName": "Yardens-MacBook-Pro", 
+            "FileDisplayName": "eicar.com (2).txt", 
+            "MitigationStatus": "mitigated", 
+            "FileMaliciousContent": null
+        }, 
+        {
+            "Username": "", 
+            "FileSha256": null, 
+            "ThreatName": "Fusion.dll", 
+            "Description": "malware detected - not mitigated yet (static engine)", 
+            "Classification": "PUA", 
+            "FilePath": "\\Device\\HarddiskVolume3\\Users\\Mayag\\AppData\\Local\\Temp\\nsi483E.tmp\\Fusion.dll", 
+            "InQuarantine": null, 
+            "Rank": 6, 
+            "ID": "579478682051177175", 
+            "MarkedAsBenign": null, 
+            "FileContentHash": "42361f19d4b3db3a3af96b3e7dba7bce8a5df265", 
+            "SiteID": "475482421366727779", 
+            "CreatedDate": "2019-03-11T12:40:42.717000Z", 
+            "AgentOsType": "windows", 
+            "AgentID": "523685228116918098", 
+            "AgentComputerName": "LAPTOP-MAYA", 
+            "FileDisplayName": "Fusion.dll", 
+            "MitigationStatus": "mitigated", 
+            "FileMaliciousContent": null
+        }, 
+        {
+            "Username": "", 
+            "FileSha256": null, 
+            "ThreatName": "BAFABC52CDF342A08CC06EFFE79F3D11.MAL", 
+            "Description": "malware detected - not mitigated yet (static engine)", 
+            "Classification": "PUA", 
+            "FilePath": "\\Device\\HarddiskVolume3\\ProgramData\\Sentinel\\Quarantine\\BAFABC52CDF342A08CC06EFFE79F3D11.MAL", 
+            "InQuarantine": null, 
+            "Rank": 6, 
+            "ID": "580921365667955680", 
+            "MarkedAsBenign": null, 
+            "FileContentHash": "42361f19d4b3db3a3af96b3e7dba7bce8a5df265", 
+            "SiteID": "475482421366727779", 
+            "CreatedDate": "2019-03-13T12:26:28.919000Z", 
+            "AgentOsType": "windows", 
+            "AgentID": "523685228116918098", 
+            "AgentComputerName": "LAPTOP-MAYA", 
+            "FileDisplayName": "BAFABC52CDF342A08CC06EFFE79F3D11.MAL", 
+            "MitigationStatus": "mitigated", 
+            "FileMaliciousContent": null
+        }, 
+        {
+            "Username": "", 
+            "FileSha256": null, 
+            "ThreatName": "f_004dba", 
+            "Description": "malware detected - not mitigated yet (static engine)", 
+            "Classification": "PUA", 
+            "FilePath": "\\Device\\HarddiskVolume3\\Users\\Mayag\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Cache\\f_004dba", 
+            "InQuarantine": null, 
+            "Rank": 6, 
+            "ID": "582523025838244347", 
+            "MarkedAsBenign": null, 
+            "FileContentHash": "3aacf35d3ff2e15288851e8afe8026576f7110eb", 
+            "SiteID": "475482421366727779", 
+            "CreatedDate": "2019-03-15T17:29:17.973000Z", 
+            "AgentOsType": "windows", 
+            "AgentID": "523685228116918098", 
+            "AgentComputerName": "LAPTOP-MAYA", 
+            "FileDisplayName": "f_004dba", 
+            "MitigationStatus": "mitigated", 
+            "FileMaliciousContent": null
+        }, 
+        {
+            "Username": "root", 
+            "FileSha256": null, 
+            "ThreatName": "eicar.com.txt", 
+            "Description": "static-check-on-write", 
+            "Classification": "Malware", 
+            "FilePath": "/Users/yardensade/.Trash/eicar.com.txt", 
+            "InQuarantine": null, 
+            "Rank": 7, 
+            "ID": "593894834529633491", 
+            "MarkedAsBenign": false, 
+            "FileContentHash": "3395856ce81f2b7382dee72602f798b642f14140", 
+            "SiteID": "475482421366727779", 
+            "CreatedDate": "2019-03-31T10:03:01.109000Z", 
+            "AgentOsType": "macos", 
+            "AgentID": "513505756159722818", 
+            "AgentComputerName": "Yardens-MacBook-Pro", 
+            "FileDisplayName": "eicar.com.txt", 
+            "MitigationStatus": "mitigated", 
+            "FileMaliciousContent": null
         }
+    ]
 }
 </pre>
 <h5 class="code-line" data-line-start="635" data-line-end="636">
@@ -902,20 +1116,154 @@
 <th>Created Date</th>
 <th>File Content Hash</th>
 <th>ID</th>
+<th>Marked As Benign</th>
 <th>Mitigation Status</th>
+<th>Rank</th>
 <th>Site ID</th>
 <th>Site Name</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>MacBook-Pro</td>
-<td>507609079972312345</td>
+<td>Yardens-MacBook-Pro</td>
+<td>513505756159722818</td>
 <td>Malware</td>
-<td>2018-12-04T15:28:16.044265Z</td>
+<td>2018-12-10T12:45:19.325000Z</td>
 <td>3395856ce81f2b7382dee72602f798b642f14140</td>
-<td>509259775582960701</td>
+<td>513526418089756174</td>
+<td>false</td>
 <td>mitigated</td>
+<td>7</td>
+<td>475482421366727779</td>
+<td>demisto</td>
+</tr>
+<tr>
+<td>Yardens-MacBook-Pro</td>
+<td>513505756159722818</td>
+<td>Malware</td>
+<td>2018-12-10T12:46:08.771000Z</td>
+<td>3395856ce81f2b7382dee72602f798b642f14140</td>
+<td>513526832755426837</td>
+<td>false</td>
+<td>mitigated</td>
+<td>7</td>
+<td>475482421366727779</td>
+<td>demisto</td>
+</tr>
+<tr>
+<td>Yardens-MacBook-Pro</td>
+<td>513505756159722818</td>
+<td>Malware</td>
+<td>2018-12-10T12:50:59.855000Z</td>
+<td>3395856ce81f2b7382dee72602f798b642f14140</td>
+<td>513529274335282723</td>
+<td>false</td>
+<td>mitigated</td>
+<td>7</td>
+<td>475482421366727779</td>
+<td>demisto</td>
+</tr>
+<tr>
+<td>Yardens-MacBook-Pro</td>
+<td>513505756159722818</td>
+<td>Malware</td>
+<td>2018-12-24T14:42:17.533000Z</td>
+<td>3395856ce81f2b7382dee72602f798b642f14140</td>
+<td>523732151490265554</td>
+<td>false</td>
+<td>mitigated</td>
+<td>7</td>
+<td>475482421366727779</td>
+<td>demisto</td>
+</tr>
+<tr>
+<td>Yardens-MacBook-Pro</td>
+<td>513505756159722818</td>
+<td>Malware</td>
+<td>2018-12-24T14:42:20.792000Z</td>
+<td>3395856ce81f2b7382dee72602f798b642f14140</td>
+<td>523732178744852953</td>
+<td>false</td>
+<td>mitigated</td>
+<td>7</td>
+<td>475482421366727779</td>
+<td>demisto</td>
+</tr>
+<tr>
+<td>Yardens-MacBook-Pro</td>
+<td>513505756159722818</td>
+<td>Malware</td>
+<td>2018-12-24T14:42:20.972000Z</td>
+<td>3395856ce81f2b7382dee72602f798b642f14140</td>
+<td>523732180305134048</td>
+<td>false</td>
+<td>mitigated</td>
+<td>7</td>
+<td>475482421366727779</td>
+<td>demisto</td>
+</tr>
+<tr>
+<td>Yardens-MacBook-Pro</td>
+<td>513505756159722818</td>
+<td>Malware</td>
+<td>2018-12-24T14:42:24.275000Z</td>
+<td>3395856ce81f2b7382dee72602f798b642f14140</td>
+<td>523732207828156907</td>
+<td>false</td>
+<td>mitigated</td>
+<td>7</td>
+<td>475482421366727779</td>
+<td>demisto</td>
+</tr>
+<tr>
+<td>LAPTOP-MAYA</td>
+<td>523685228116918098</td>
+<td>PUA</td>
+<td>2019-03-11T12:40:42.717000Z</td>
+<td>42361f19d4b3db3a3af96b3e7dba7bce8a5df265</td>
+<td>579478682051177175</td>
+<td> </td>
+<td>mitigated</td>
+<td>6</td>
+<td>475482421366727779</td>
+<td>demisto</td>
+</tr>
+<tr>
+<td>LAPTOP-MAYA</td>
+<td>523685228116918098</td>
+<td>PUA</td>
+<td>2019-03-13T12:26:28.919000Z</td>
+<td>42361f19d4b3db3a3af96b3e7dba7bce8a5df265</td>
+<td>580921365667955680</td>
+<td> </td>
+<td>mitigated</td>
+<td>6</td>
+<td>475482421366727779</td>
+<td>demisto</td>
+</tr>
+<tr>
+<td>LAPTOP-MAYA</td>
+<td>523685228116918098</td>
+<td>PUA</td>
+<td>2019-03-15T17:29:17.973000Z</td>
+<td>3aacf35d3ff2e15288851e8afe8026576f7110eb</td>
+<td>582523025838244347</td>
+<td> </td>
+<td>mitigated</td>
+<td>6</td>
+<td>475482421366727779</td>
+<td>demisto</td>
+</tr>
+<tr>
+<td>Yardens-MacBook-Pro</td>
+<td>513505756159722818</td>
+<td>Malware</td>
+<td>2019-03-31T10:03:01.109000Z</td>
+<td>3395856ce81f2b7382dee72602f798b642f14140</td>
+<td>593894834529633491</td>
+<td>false</td>
+<td>mitigated</td>
+<td>7</td>
 <td>475482421366727779</td>
 <td>demisto</td>
 </tr>
@@ -993,15 +1341,11 @@
 <a id="Context_Example_682"></a>Context Example</h5>
 <pre>{
     "SentinelOne.Threat": {
-        "InProgress": 0, 
-        "MaliciousNotResolved": 0, 
-        "NotMitigated": 0, 
-        "NotMitigatedNotResolved": 0, 
-        "NotResolved": 0, 
-        "Resolved": 11, 
-        "SuspiciousNotMitigatedNotResolved": 0, 
-        "SuspiciousNotResolved": 0, 
+        "Active": 0, 
+        "Suspicious": 0, 
+        "Mitigated": 11, 
         "Total": 11, 
+        "Blocked": 0
     }
 }
 </pre>
@@ -1012,14 +1356,10 @@
 <table class="table table-striped table-bordered" border="2">
 <thead>
 <tr>
-<th>In Progress</th>
-<th>Malicious Not Resolved</th>
-<th>Not Mitigated</th>
-<th>Not Mitigated Not Resolved</th>
-<th>Not Resolved</th>
-<th>Resolved</th>
-<th>Suspicious - Not Mitigated Not Resolved</th>
-<th>Suspicious Not Resolved</th>
+<th>Active</th>
+<th>Blocked</th>
+<th>Mitigated</th>
+<th>Suspicious</th>
 <th>Total</th>
 </tr>
 </thead>
@@ -1027,18 +1367,79 @@
 <tr>
 <td>0</td>
 <td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
 <td>11</td>
-<td>0</td>
 <td>0</td>
 <td>11</td>
 </tr>
 </tbody>
 </table>
 <p> </p>
-<h3>7. Mitigate threats</h3>
+<h3 id="h_36d71e47-7c93-47e3-857f-01521ededa58" class="code-line" data-line-start="702" data-line-end="703">
+<a id="7_sentinelonemarkasthreat_702"></a>7. Mark suspicious threats</h3>
+<hr>
+<p>Marks suspicious threats as a threat.</p>
+<h5 class="code-line" data-line-start="707" data-line-end="708">
+<a id="Base_Command_707"></a>Base Command</h5>
+<p><code>sentinelone-mark-as-threat</code></p>
+<h5 class="code-line" data-line-start="710" data-line-end="711">
+<a id="Input_710"></a>Input</h5>
+<table class="table table-striped table-bordered" style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 158.667px;"><strong>Argument Name</strong></th>
+<th style="width: 489.333px;"><strong>Description</strong></th>
+<th style="width: 92px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 158.667px;">threat_ids</td>
+<td style="width: 489.333px;">CSV list of threat IDs.</td>
+<td style="width: 92px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 158.667px;">target_scope</td>
+<td style="width: 489.333px;">Scope to use for exclusions. Can be “site” or “tenant”.</td>
+<td style="width: 92px;">Required</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5 class="code-line" data-line-start="718" data-line-end="719">
+<a id="Context_Output_718"></a>Context Output</h5>
+<table class="table table-striped table-bordered" style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 249px;"><strong>Path</strong></th>
+<th style="width: 62px;"><strong>Type</strong></th>
+<th style="width: 429px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 249px;">SentinelOne.Threat.ID</td>
+<td style="width: 62px;">String</td>
+<td style="width: 429px;">The threat ID.</td>
+</tr>
+<tr>
+<td style="width: 249px;">SentinelOne.Threat.MarkedAsThreat</td>
+<td style="width: 62px;">Boolean</td>
+<td style="width: 429px;">Whether the suspicious threat was successfully marked as a threat.</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5 class="code-line" data-line-start="726" data-line-end="727">
+<a id="Command_Example_726"></a>Command Example</h5>
+<pre>!sentinelone-mark-as-threat target_scope=site threat_ids=50925977558296070</pre>
+<h5 class="code-line" data-line-start="729" data-line-end="730">
+<a id="Human_Readable_Output_729"></a>Human Readable Output</h5>
+<h3 class="code-line" data-line-start="730" data-line-end="731">
+<a id="Sentinel_One__Marking_suspicious_threats_as_threats_730"></a>Sentinel One - Marking suspicious threats as threats</h3>
+<h3 class="code-line" data-line-start="731" data-line-end="732">
+<a id="Total_of_1_provided_threats_were_marked_successfully_731"></a>Total of 1 provided threats were marked successfully</h3>
+<p class="has-line-data" data-line-start="733" data-line-end="735">|ID|Marked As Threat|<br> |509259775582960700|true</p>
+<h3>8. Mitigate threats</h3>
 <hr>
 <p class="has-line-data" data-line-start="739" data-line-end="740">Applies a mitigation action to a group of threats.</p>
 <h5>Base Command</h5>
@@ -1134,9 +1535,92 @@
 </tr>
 </tbody>
 </table>
-
+<p> </p>
+<h3 id="h_fa9ce6b7-e9ae-45da-9364-57a42b1d722e" class="code-line" data-line-start="788" data-line-end="789">
+<a id="9_sentineloneresolvethreat_788"></a>9. Resolve threats</h3>
+<hr>
+<p class="has-line-data" data-line-start="790" data-line-end="791">Resolves threats using the threat ID.</p>
+<h5>Base Command</h5>
+<p><code>sentinelone-resolve-threat</code></p>
+<h5 class="code-line" data-line-start="796" data-line-end="797">
+<a id="Input_796"></a>Input</h5>
+<table class="table table-striped table-bordered" style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 264.333px;"><strong>Argument Name</strong></th>
+<th style="width: 325.667px;"><strong>Description</strong></th>
+<th style="width: 150px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 264.333px;">threat_ids</td>
+<td style="width: 325.667px;">CSV list of threat IDs.</td>
+<td style="width: 150px;">Required</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5 class="code-line" data-line-start="803" data-line-end="804">
+<a id="Context_Output_803"></a>Context Output</h5>
+<table class="table table-striped table-bordered" style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 256.667px;"><strong>Path</strong></th>
+<th style="width: 73.3333px;"><strong>Type</strong></th>
+<th style="width: 411px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 256.667px;">SentinelOne.Threat.ID</td>
+<td style="width: 73.3333px;">String</td>
+<td style="width: 411px;">The threat ID.</td>
+</tr>
+<tr>
+<td style="width: 256.667px;">SentinelOne.Threat.Resolved</td>
+<td style="width: 73.3333px;">Boolean</td>
+<td style="width: 411px;">Whether the threat was successfully resolved.</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5 class="code-line" data-line-start="811" data-line-end="812">
+<a id="Command_Example_811"></a>Command Example</h5>
+<pre>!sentinelone-resolve-threat threat_ids=509259775582960700</pre>
+<h5 class="code-line" data-line-start="814" data-line-end="815">
+<a id="Context_Example_814"></a>Context Example</h5>
+<pre>{
+    "SentinelOne.Threat": [
+        {
+            "Resolved": false, 
+            "ID": "509259775582960700"
+        }
+    ]
+}
+</pre>
+<h5 class="code-line" data-line-start="826" data-line-end="827">
+<a id="Human_Readable_Output_826"></a>Human Readable Output</h5>
+<h3 class="code-line" data-line-start="827" data-line-end="828">
+<a id="Sentinel_One__Resolving_threats_827"></a>Sentinel One - Resolving threats</h3>
+<p class="has-line-data" data-line-start="828" data-line-end="829">No threats were resolved</p>
+<table class="table table-striped table-bordered" border="2">
+<thead>
+<tr>
+<th>ID</th>
+<th>Resolved</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>509259775582960700</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
 <h3 id="h_e4744817-ad70-417e-a772-8c2926087277" class="code-line" data-line-start="834" data-line-end="835">
-<a id="10_sentinelonegetagent_834"></a>8. Get agent details</h3>
+<a id="10_sentinelonegetagent_834"></a>10. Get agent details</h3>
 <hr>
 <p>Gets details of an agent by agent ID.</p>
 <h5 class="code-line" data-line-start="839" data-line-end="840">
@@ -1324,7 +1808,7 @@
 </table>
 <p> </p>
 <h3 id="h_c5e1149a-ccf8-429d-aaf8-3f55a4f190d8" class="code-line" data-line-start="906" data-line-end="907">
-<a id="11_sentinelonegetsites_906"></a>9. Get a list of sites</h3>
+<a id="11_sentinelonegetsites_906"></a>11. Get a list of sites</h3>
 <hr>
 <p>Gets a list of all sites.</p>
 <h5 class="code-line" data-line-start="911" data-line-end="912">
@@ -1494,7 +1978,7 @@
             "HealthStatus": true, 
             "Expiration": null, 
             "ActiveLicenses": 5, 
-            "Sku": "Core", 
+            "Suite": "Complete", 
             "TotalLicenses": 0, 
             "Type": "Paid", 
             "ID": "475482421366727779", 
@@ -1544,7 +2028,7 @@
 </table>
 <p> </p>
 <h3 id="h_7a21d365-5e9f-4bfc-8244-57f65a169794" class="code-line" data-line-start="984" data-line-end="985">
-<a id="12_sentinelonegetsite_984"></a>10. Get a site list</h3>
+<a id="12_sentinelonegetsite_984"></a>12. Get a site list</h3>
 <hr>
 <p>Gets a site list by site ID.</p>
 <h5 class="code-line" data-line-start="989" data-line-end="990">
@@ -1730,7 +2214,7 @@
 </table>
 <p> </p>
 <h3 id="h_1d957e18-4716-458e-8b95-7b411878fc6b" class="code-line" data-line-start="1056" data-line-end="1057">
-<a id="13_sentinelonereactivatesite_1056"></a>11. Reactivate a site</h3>
+<a id="13_sentinelonereactivatesite_1056"></a>13. Reactivate a site</h3>
 <hr>
 <p>Reactivates an expired site.</p>
 <h5 class="code-line" data-line-start="1061" data-line-end="1062">
@@ -1803,7 +2287,7 @@
 </table>
 <p> </p>
 <h3 id="h_4c49234e-0661-4207-abb2-8b67bc5df039" class="code-line" data-line-start="1091" data-line-end="1092">
-<a id="14_sentinelonegetactivities_1091"></a>12. Get a list of activities</h3>
+<a id="14_sentinelonegetactivities_1091"></a>14. Get a list of activities</h3>
 <hr>
 <p class="has-line-data" data-line-start="1093" data-line-end="1094">Gets a list of activities.</p>
 <h5 class="code-line" data-line-start="1096" data-line-end="1097">
@@ -3696,7 +4180,7 @@
 </table>
 <p> </p>
 <h3 id="h_0bcee322-ce58-4884-8f3c-026a45a0f8f3" class="code-line" data-line-start="2424" data-line-end="2425">
-<a id="15_sentinelonegetgroups_2424"></a>13. Get group data</h3>
+<a id="15_sentinelonegetgroups_2424"></a>15. Get group data</h3>
 <hr>
 <p>Gets data for the specified group.</p>
 <h5 class="code-line" data-line-start="2429" data-line-end="2430">
@@ -3895,7 +4379,7 @@
 </table>
 <p> </p>
 <h3 id="h_e5eee9ec-5047-4388-a345-df9a434f34fe" class="code-line" data-line-start="2501" data-line-end="2502">
-<a id="16_sentinelonemoveagent_2501"></a>14. Move agent</h3>
+<a id="16_sentinelonemoveagent_2501"></a>16. Move agent</h3>
 <hr>
 <p>Moves agents to a new group.</p>
 <h5 class="code-line" data-line-start="2506" data-line-end="2507">
@@ -3945,7 +4429,7 @@
 </table>
 <p> </p>
 <h3 id="h_890e6bba-fb17-4027-9db9-0a5468a7b642" class="code-line" data-line-start="2530" data-line-end="2531">
-<a id="17_sentinelonedeletegroup_2530"></a>15. Delete a group</h3>
+<a id="17_sentinelonedeletegroup_2530"></a>17. Delete a group</h3>
 <hr>
 <p>Deletes a group by the group ID.</p>
 <h5 class="code-line" data-line-start="2535" data-line-end="2536">
@@ -3982,7 +4466,7 @@
 <a id="The_group_was_deleted_successfully_2553"></a>The group was deleted successfully</h3>
 <p> </p>
 <h3 id="h_b6361197-f4b1-4477-95b4-1cc5654d0f74" class="code-line" data-line-start="2555" data-line-end="2556">
-<a id="18_sentineloneagentprocesses_2555"></a>16. Retrieve agent processes</h3>
+<a id="18_sentineloneagentprocesses_2555"></a>18. Retrieve agent processes</h3>
 <hr>
 <p class="has-line-data" data-line-start="2557" data-line-end="2558">Retrieves running processes for a specific agent.</p>
 <h5 class="code-line" data-line-start="2560" data-line-end="2561">
@@ -4052,7 +4536,7 @@
 </table>
 <p> </p>
 <h3 id="h_62b6458d-750a-4457-9ea3-4cd6cfd566c1" class="code-line" data-line-start="2588" data-line-end="2589">
-<a id="19_sentineloneconnectagent_2588"></a>17. Connect an agent</h3>
+<a id="19_sentineloneconnectagent_2588"></a>19. Connect an agent</h3>
 <hr>
 <p>Connects agents to a network.</p>
 <h5 class="code-line" data-line-start="2593" data-line-end="2594">
@@ -4117,7 +4601,7 @@
 <a id="Human_Readable_Output_2624"></a>Human Readable Output</h5>
 <p class="has-line-data" data-line-start="2625" data-line-end="2626">1 agent(s) successfully connected to the network.</p>
 <h3 id="h_491ad0f2-97f3-4124-8884-91eb5c84cabc" class="code-line" data-line-start="2627" data-line-end="2628">
-<a id="20_sentinelonedisconnectagent_2627"></a>18. Disconnect an agent</h3>
+<a id="20_sentinelonedisconnectagent_2627"></a>20. Disconnect an agent</h3>
 <hr>
 <p class="has-line-data" data-line-start="2629" data-line-end="2630">Disconnects an agents from a network.</p>
 <h5>Base Command</h5>
@@ -4181,7 +4665,7 @@
 <a id="Human_Readable_Output_2663"></a>Human Readable Output</h5>
 <p class="has-line-data" data-line-start="2664" data-line-end="2665">1 agent(s) successfully disconnected from the network.</p>
 <h3 id="h_790d12ec-b824-437d-9791-6fd705f475dd" class="code-line" data-line-start="2666" data-line-end="2667">
-<a id="21_sentinelonebroadcastmessage_2666"></a>19. Broadcast a message to agents</h3>
+<a id="21_sentinelonebroadcastmessage_2666"></a>21. Broadcast a message to agents</h3>
 <hr>
 <p class="has-line-data" data-line-start="2668" data-line-end="2669">Broadcasts a message to all agents.</p>
 <h5>Base Command</h5>
@@ -4235,7 +4719,7 @@
 <a id="Human_Readable_Output_2692"></a>Human Readable Output</h5>
 <p class="has-line-data" data-line-start="2693" data-line-end="2694">The message was successfully delivered to the agent(s)</p>
 <h3 id="h_e9fd7e73-2fbe-48e0-8a28-8988b597498a" class="code-line" data-line-start="2695" data-line-end="2696">
-<a id="22_sentinelonegetevents_2695"></a>20. Get Deep Visibility events</h3>
+<a id="22_sentinelonegetevents_2695"></a>22. Get Deep Visibility events</h3>
 <hr>
 <p class="has-line-data" data-line-start="2697" data-line-end="2698">Gets all Deep Visibility events that match the query.</p>
 <h5 class="code-line" data-line-start="2700" data-line-end="2701">
@@ -4674,7 +5158,7 @@
 </table>
 <p> </p>
 <h3 id="h_7c988327-ccd8-4f2c-a296-097259bf4473" class="code-line" data-line-start="2940" data-line-end="2941">
-<a id="23_sentinelonecreatequery_2940"></a>21. Create a Deep Visibility query</h3>
+<a id="23_sentinelonecreatequery_2940"></a>23. Create a Deep Visibility query</h3>
 <hr>
 <p class="has-line-data" data-line-start="2942" data-line-end="2943">Runs a Deep Visibility Query and returns the query ID. You can use the query ID for all other commands, such as the sentinelone-get-events command.</p>
 <h5 class="code-line" data-line-start="2945" data-line-end="2946">
@@ -4747,7 +5231,7 @@
 <a id="Command_Example_2967"></a>Command Example</h5>
 <pre>!sentinelone-create-query query="AgentName Is Not Empty" from_date="2019-08-02T04:49:26.257525Z" to_date="2019-08-04T04:49:26.257525Z"</pre>
 <h3 id="h_837965e2-5e05-4b58-b192-b25e0707c6c0" class="code-line" data-line-start="2973" data-line-end="2974">
-<a id="24_sentinelonegetprocesses_2973"></a>22. Get a list of Deep Visibility events by process</h3>
+<a id="24_sentinelonegetprocesses_2973"></a>24. Get a list of Deep Visibility events by process</h3>
 <hr>
 <p class="has-line-data" data-line-start="2975" data-line-end="2976">Gets a list of Deep Visibility events from query by event type process.</p>
 <h5 class="code-line" data-line-start="2978" data-line-end="2979">
@@ -6664,7 +7148,7 @@
 </table>
 <p> </p>
 <h3 id="h_3172f88b-fc56-48e7-873d-393e69b11851" class="code-line" data-line-start="4029" data-line-end="4030">
-<a id="25_sentineloneshutdownagent_4029"></a>23. Shutdown agent</h3>
+<a id="25_sentineloneshutdownagent_4029"></a>25. Shutdown agent</h3>
 <hr>
 <p class="has-line-data" data-line-start="4031" data-line-end="4032">Shutdowns an agent by agent ID.</p>
 <h5 class="code-line" data-line-start="4034" data-line-end="4035">
@@ -6725,7 +7209,7 @@
 <a id="Human_Readable_Output_4056"></a>Human Readable Output</h5>
 <p class="has-line-data" data-line-start="4057" data-line-end="4058">Shutting down 1 agent(s).</p>
 <h3 id="h_72b83efd-8abc-48b4-897e-216cfe7d178e" class="code-line" data-line-start="4059" data-line-end="4060">
-<a id="26_sentineloneuninstallagent_4059"></a>24. Uninstall an agent</h3>
+<a id="26_sentineloneuninstallagent_4059"></a>26. Uninstall an agent</h3>
 <hr>
 <p class="has-line-data" data-line-start="4061" data-line-end="4062">Uninstalls agent by agent ID.</p>
 <h5 class="code-line" data-line-start="4064" data-line-end="4065">

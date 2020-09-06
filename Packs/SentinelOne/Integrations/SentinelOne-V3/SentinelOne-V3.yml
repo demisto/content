@@ -1,6 +1,7 @@
 category: Endpoint
+description: The SentinelOne REST API sends requests to your Management Server and responds with data that the management pulled from Agents or from the management database.
 commonfields:
-  id: SentinelOne V2
+  id: SentinelOne V3
   version: -1
 configuration:
 - display: Server URL (e.g., https://usea1.sentinelone.net)
@@ -33,21 +34,13 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '5'
-  display: Minimum risk score for importing incidents (0-10), where 0 is low risk
-    and 10 is high risk
-  name: fetch_threat_rank
-  required: false
-  type: 0
 - defaultvalue: '10'
   display: 'Fetch limit: the maximum number of incidents to fetch'
   name: fetch_limit
   required: false
   type: 0
-description: End point protection
-deprecated: true
-display: SentinelOne v2
-name: SentinelOne V2
+display: SentinelOne v3
+name: SentinelOne V3
 script:
   commands:
   - arguments:
@@ -94,7 +87,7 @@ script:
       name: min_active_threats
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Returns all agents that match the specified criteria.
     execution: false
     name: sentinelone-list-agents
@@ -210,7 +203,7 @@ script:
       name: group_ids
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Creates an exclusion item that matches the specified input filter.
     execution: false
     name: sentinelone-create-white-list-item
@@ -265,7 +258,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Lists all exclusion items that match the specified input filter.
     execution: false
     name: sentinelone-get-white-list
@@ -308,7 +301,7 @@ script:
       name: hash
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Gets the reputation of a hash.
     execution: false
     name: sentinelone-get-hash
@@ -319,19 +312,7 @@ script:
     - contextPath: SentinelOne.Hash.Hash
       description: The content hash.
       type: String
-    - contextPath: SentinelOne.Hash.Classification
-      description: The hash classification.
-      type: String
-    - contextPath: SentinelOne.Hash.Classification Source
-      description: The hash classification source.
-      type: String
   - arguments:
-    - default: false
-      description: The content hash of the threat.
-      isArray: false
-      name: content_hash
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       description: CSV list of mitigation statuses. Can be "mitigated", "active",
@@ -424,13 +405,7 @@ script:
       - Behavioral
       required: false
       secret: false
-    - default: false
-      description: Risk level threshold to retrieve (1-10).
-      isArray: false
-      name: rank
-      required: false
-      secret: false
-    deprecated: true
+    deprecated: false
     description: Returns threats according to specified filters.
     execution: false
     name: sentinelone-get-threats
@@ -450,18 +425,36 @@ script:
     - contextPath: SentinelOne.Threat.Classification
       description: Classification name.
       type: string
+    - contextPath: SentinelOne.Threat.ClassificationSource
+      description: Source of the threat Classification.
+      type: string
     - contextPath: SentinelOne.Threat.MitigationStatus
       description: The agent status.
       type: String
     - contextPath: SentinelOne.Threat.AgentID
       description: The agent ID.
       type: String
-    - contextPath: SentinelOne.Threat.Rank
-      description: Number representing cloud reputation (1-10).
-      type: Number
-    - contextPath: SentinelOne.Threat.MarkedAsBenign
-      description: Whether the threat is marked as benign.
-      type: Boolean
+    - contextPath: SentinelOne.Threat.FileContentHash
+      description: SHA1 hash of file content.
+      type: String
+    - contextPath: SentinelOne.Threat.ConfidenceLevel
+      description: SentinelOne threat confidence level.
+      type: String
+    - contextPath: SentinelOne.Threat.ThreatName
+      description: Threat name.
+      type: String
+    - contextPath: SentinelOne.Threat.FileSha256
+      description: SHA256 hash of file content.
+      type: String
+    - contextPath: SentinelOne.Threat.AgentOsType
+      description: OS type.
+      type: String
+    - contextPath: SentinelOne.Threat.FilePath
+      description: File path.
+      type: String
+    - contextPath: SentinelOne.Threat.Username
+      description: Username.
+      type: String
   - arguments:
     - default: false
       description: 'CSV list of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
@@ -469,54 +462,38 @@ script:
       name: group_ids
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Returns a dashboard threat summary.
     execution: false
     name: sentinelone-threat-summary
     outputs:
-    - contextPath: SentinelOne.Threat.Active
+    - contextPath: SentinelOne.Threat.NotResolved
+      description: Number of unresolved threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.SuspiciousNotMitigatedNotResolved
+      description: Number of unmitigated suspicious threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.SuspiciousNotResolved
+      description: Number of unresolved suspicious threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.Resolved
+      description: Number of resolved threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.InProgress
       description: Number of active threats in the system.
       type: Number
     - contextPath: SentinelOne.Threat.Total
       description: Total number of threats in the system.
       type: Number
-    - contextPath: SentinelOne.Threat.Mitigated
-      description: Number of mitigated threats in the system.
+    - contextPath: SentinelOne.Threat.NotMitigated
+      description: Number of unmitigated threats in the system.
       type: Number
-    - contextPath: SentinelOne.Threat.Suspicious
-      description: Number of suspicious threats in the system.
+    - contextPath: SentinelOne.Threat.MaliciousNotResolved
+      description: Number of unresolved malicious threats in the system.
       type: Number
-    - contextPath: SentinelOne.Threat.Blocked
-      description: Number of blocked threats in the system.
+    - contextPath: SentinelOne.Threat.NotMitigatedNotResolved
+      description: Number of unmitigated and unresolved threats in the system.
       type: Number
-  - arguments:
-    - default: false
-      description: CSV list of threat IDs.
-      isArray: true
-      name: threat_ids
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Scope to use for exclusions. Can be "site" or "tenant".
-      isArray: false
-      name: target_scope
-      predefined:
-      - site
-      - tenant
-      required: true
-      secret: false
-    deprecated: true
-    description: Mark suspicious threats as threats
-    execution: false
-    name: sentinelone-mark-as-threat
-    outputs:
-    - contextPath: SentinelOne.Threat.ID
-      description: The threat ID.
-      type: String
-    - contextPath: SentinelOne.Threat.MarkedAsThreat
-      description: Whether the suspicious threat was successfully marked as a threat.
-      type: Boolean
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -538,9 +515,10 @@ script:
       name: threat_ids
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Applies a mitigation action to a group of threats that match the
-      specified input filter.
+      specified input filter. Valid values for mitigation- "kill", "quarantine", "remediate", "rollback",
+      "disconnectFromNetwork". Rollback is applied only on Windows. Remediate is applied only on macOS and Windows.
     execution: false
     name: sentinelone-mitigate-threat
     outputs:
@@ -555,30 +533,12 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: CSV list of threat IDs.
-      isArray: true
-      name: threat_ids
-      required: true
-      secret: false
-    deprecated: true
-    description: Resolves threat using the threat ID.
-    execution: false
-    name: sentinelone-resolve-threat
-    outputs:
-    - contextPath: SentinelOne.Threat.ID
-      description: The threat ID.
-      type: String
-    - contextPath: SentinelOne.Threat.Resolved
-      description: Whether the threat was successfully resolved.
-      type: Boolean
-  - arguments:
-    - default: false
       description: The agent ID.
       isArray: false
       name: agent_id
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Returns details of an agent, by agent ID.
     execution: false
     name: sentinelone-get-agent
@@ -723,7 +683,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Returns all sites that match the specified criteria.
     execution: false
     name: sentinelone-get-sites
@@ -746,8 +706,8 @@ script:
     - contextPath: SentinelOne.Site.HealthStatus
       description: The health status of the site.
       type: boolean
-    - contextPath: SentinelOne.Site.Suite
-      description: The suite to which the site belongs.
+    - contextPath: SentinelOne.Site.Sku
+      description: The sku of product features active for this site.
       type: string
     - contextPath: SentinelOne.Site.ActiveLicenses
       description: Number of active licenses on the site.
@@ -774,7 +734,7 @@ script:
       name: site_id
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Returns a site, by site ID.
     execution: false
     name: sentinelone-get-site
@@ -831,7 +791,7 @@ script:
       name: site_id
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Reactivates an expired site.
     execution: false
     name: sentinelone-reactivate-site
@@ -849,7 +809,7 @@ script:
       name: site_id
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Expires a site.
     execution: false
     name: sentinelone-expire-site
@@ -956,7 +916,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Returns a list of activities.
     execution: false
     name: sentinelone-get-activities
@@ -1073,7 +1033,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Returns data for the specified group.
     execution: false
     name: sentinelone-get-groups
@@ -1136,7 +1096,7 @@ script:
       name: agents_ids
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Moves agents to a new group.
     execution: false
     name: sentinelone-move-agent
@@ -1151,7 +1111,7 @@ script:
       name: group_id
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Deletes a group, by the group ID.
     execution: false
     name: sentinelone-delete-group
@@ -1162,7 +1122,7 @@ script:
       name: agents_ids
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Retrieves running processes for a specific agent.
     execution: false
     name: sentinelone-agent-processes
@@ -1193,7 +1153,7 @@ script:
       name: agent_id
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Connects agents to network.
     execution: false
     name: sentinelone-connect-agent
@@ -1212,7 +1172,7 @@ script:
       name: agent_id
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Disconnects agents from network.
     execution: false
     name: sentinelone-disconnect-agent
@@ -1258,7 +1218,7 @@ script:
       name: domain
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Broadcasts a message to all agents that match the input filters.
     execution: false
     name: sentinelone-broadcast-message
@@ -1277,7 +1237,7 @@ script:
       name: query_id
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Returns all Deep Visibility events that match the query.
     execution: false
     name: sentinelone-get-events
@@ -1344,7 +1304,7 @@ script:
       name: to_date
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Runs a Deep Visibility Query and returns the queryId. You can use
       the queryId for all other commands, such as the sentinelone-get-events command.
     execution: false
@@ -1377,7 +1337,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Returns a list of Deep Visibility events from query by event type
       - process.
     execution: false
@@ -1455,7 +1415,7 @@ script:
       name: group_id
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Sends a shutdown command to all agents that match the input filter.
     execution: false
     name: sentinelone-shutdown-agent
@@ -1484,11 +1444,11 @@ script:
       name: group_id
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -1497,4 +1457,4 @@ script:
   type: python
   subtype: python3
 tests:
-- No tests
+- SentinelOne V3 - test

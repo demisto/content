@@ -838,8 +838,8 @@
             "playbookID": "Detonate File - No Files test"
         },
         {
-            "integrations": "SentinelOne V2",
-            "playbookID": "SentinelOne V2 - test"
+            "integrations": "SentinelOne V3",
+            "playbookID": "SentinelOne V3 - test"
         },
         {
             "integrations": "InfoArmor VigilanteATI",
