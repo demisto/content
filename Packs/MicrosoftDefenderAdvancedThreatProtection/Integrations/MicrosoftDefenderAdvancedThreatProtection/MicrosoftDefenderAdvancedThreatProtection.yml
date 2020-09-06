@@ -2294,7 +2294,7 @@ script:
       description: Brief description (100 characters or less) of the threat represented
         by the indicator.
     - contextPath: MicrosoftATP.Indicators.diamondModel
-      type: Unknown
+      type: String
       description: "The area of the Diamond Model in which this indicator exists.\
         \ Possible values are: unknown, adversary, capability, infrastructure, victim."
     - contextPath: MicrosoftATP.Indicators.domainName
@@ -2521,7 +2521,7 @@ script:
       description: Brief description (100 characters or less) of the threat represented
         by the indicator.
     - contextPath: MicrosoftATP.Indicators.diamondModel
-      type: Unknown
+      type: String
       description: "The area of the Diamond Model in which this indicator exists.\
         \ Possible values are: unknown, adversary, capability, infrastructure, victim."
     - contextPath: MicrosoftATP.Indicators.domainName
@@ -2912,7 +2912,7 @@ script:
       description: Brief description (100 characters or less) of the threat represented
         by the indicator.
     - contextPath: MicrosoftATP.Indicators.diamondModel
-      type: Unknown
+      type: String
       description: "The area of the Diamond Model in which this indicator exists.\
         \ Possible values are: unknown, adversary, capability, infrastructure, victim."
     - contextPath: MicrosoftATP.Indicators.domainName
@@ -3343,7 +3343,7 @@ script:
       description: Brief description (100 characters or less) of the threat represented
         by the indicator.
     - contextPath: MicrosoftATP.Indicators.diamondModel
-      type: Unknown
+      type: String
       description: "The area of the Diamond Model in which this indicator exists.\
         \ Possible values are: unknown, adversary, capability, infrastructure, victim."
     - contextPath: MicrosoftATP.Indicators.domainName
@@ -3592,7 +3592,7 @@ script:
       description: Brief description (100 characters or less) of the threat represented
         by the indicator.
     - contextPath: MicrosoftATP.Indicators.diamondModel
-      type: Unknown
+      type: String
       description: "The area of the Diamond Model in which this indicator exists.\
         \ Possible values are: unknown, adversary, capability, infrastructure, victim."
     - contextPath: MicrosoftATP.Indicators.domainName
