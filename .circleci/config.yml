@@ -329,7 +329,7 @@ references:
             name: Comment on the contribution Pull Request
             when: always
             command: |
-              SERVER_URL=$(jq 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
+              SERVER_URL=$(jq -r 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
               python3 ./Utils/notify_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Link: https://$SERVER_URL"
 jobs:
   Setup Environment:

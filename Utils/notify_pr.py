@@ -31,7 +31,7 @@ def main():
     response = requests.post(comment_url, json={'body': comment}, headers=headers, verify=False)
     response.raise_for_status()
 
-    print_success(f'Successfully added the comment to the PR.')
+    print_success('Successfully added the comment to the PR.')
 
 
 if __name__ == "__main__":
