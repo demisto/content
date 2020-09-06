@@ -4272,6 +4272,61 @@ script:
     description: Create antivirus best practice profile.
     execution: false
     name: panorama-create-antivirus-best-practice-profile
+  - arguments:
+    - default: false
+      description: The profile name.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create Anti Spyware best practice profile.
+    execution: false
+    name: panorama-create-anti-spyware-best-practice-profile
+  - arguments:
+    - default: false
+      description: The profile name.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create vulnerability protection best practice profile.
+    execution: false
+    name: panorama-create-vulnerability-best-practice-profile
+  - arguments:
+    - default: false
+      description: The profile name.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create URL filtering best practice profile.
+    execution: false
+    name: panorama-create-url-filtering-best-practice-profile
+  - arguments:
+    - default: false
+      description: The name of the profile.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create file blocking best practice profile.
+    execution: false
+    name: panorama-create-file-blocking-best-practice-profile
+  - arguments:
+    - default: false
+      description: The name of the profile.
+      isArray: false
+      name: profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create WildFire analysis best practice profile.
+    execution: false
+    name: panorama-create-wildfire-best-practice-profile
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false

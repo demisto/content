@@ -6148,7 +6148,7 @@ def get_wildfire_system_config_command():
     file_size = []
     template = demisto.args().get('template')
     result = get_wildfire_system_config(template)
-    system_config = result['response']['result']['wildfire']
+    system_config = result.get('response', {}).get('result', {}).get('wildfire')
 
     file_size_limit = system_config.get('file-size-limit').get('entry')
     for item in file_size_limit:
@@ -6177,7 +6177,11 @@ def get_wildfire_update_schedule_command():
     template = demisto.args().get('template')
     result = get_wildfire_update_schedule(template)
 
-    schedule = result['response']['result']['wildfire']
+    schedule = result.get('response', {}).get('result', {}).get('wildfire')
+    if '@dirtyId' in schedule:
+        LOG(f'Found uncommitted item:\n{schedule}')
+        raise Exception('Please commit the instance prior to getting the WildFire configuration.')
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -6269,7 +6273,7 @@ def url_filtering_block_default_categories_command():
 
     profile_name = demisto.args().get('profile_name')
     result = url_filtering_block_default_categories(profile_name)
-    if result['response']['@status'] == 'success':
+    if result.get('response', {}).get('@status') == 'success':
         demisto.results(f'The default categories to block has been set successfully to {profile_name}')
     else:
         demisto.results(result['response']['msg'])
@@ -6339,37 +6343,258 @@ def get_url_filtering_best_practice_command():
     })
 
 
-# def create_antivirus_best_practice_profile(profile_name):
-#     params = {
-#         'action': 'set',
-#         'type': 'config',
-#         'xpath': f"{XPATH_RULEBASE}profiles/virus",
-#         'key': API_KEY,
-#         'element': f'<entry name="{profile_name}"><decoder><entry name="ftp"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
-#                    '<mlav-action>reset-both</mlav-action></entry><entry name="http"><action>reset-both</action>'
-#                    '<wildfire-action>reset-both</wildfire-action><mlav-action>reset-both</mlav-action></entry>'
-#                    '<entry name="http2"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
-#                    '<mlav-action>reset-both</mlav-action></entry><entry name="smb"><action>reset-both</action>'
-#                    '<wildfire-action>reset-both</wildfire-action><mlav-action>reset-both</mlav-action></entry>'
-#                    '<entry name="smtp"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
-#                    '<mlav-action>reset-both</mlav-action></entry><entry name="imap"><action>reset-both</action>'
-#                    '<wildfire-action>reset-both</wildfire-action><mlav-action>reset-both</mlav-action></entry>'
-#                    '<entry name="pop3"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
-#                    '<mlav-action>reset-both</mlav-action></entry></decoder><mlav-engine-filebased-enabled>'
-#                    '<entry name="Windows Executables"><mlav-policy-action>enable</mlav-policy-action></entry>'
-#                    '<entry name="PowerShell Script 1"><mlav-policy-action>enable</mlav-policy-action></entry>'
-#                    '<entry name="PowerShell Script 2"><mlav-policy-action>enable</mlav-policy-action></entry>'
-#                    '</mlav-engine-filebased-enabled></entry>'
-#     }
-#     result = http_request(URL, 'POST', params=params)
-#
-#     return result
+def create_antivirus_best_practice_profile(profile_name):
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/virus/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': '<decoder><entry name="ftp"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry><entry name="http"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry><entry name="http2"><action>reset-both</action><wildfire-action>reset-both'
+                   '</wildfire-action>'
+                   '</entry><entry name="smb"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry><entry name="smtp"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry><entry name="imap"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry><entry name="pop3"><action>reset-both</action><wildfire-action>reset-both</wildfire-action>'
+                   '</entry></decoder>'
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
 
 
 def create_antivirus_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
     result = create_antivirus_best_practice_profile(profile_name)
+    if result.get('response', {}).get('@status') == 'success':
+        demisto.results(f'The profile {profile_name} was created successfully.')
+    else:
+        demisto.results(result['response']['msg'])
+
+
+def create_anti_spyware_best_practice_profile(profile_name):
+
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/spyware/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': """<rules><entry name="simple-critical"><action><reset-both /></action><severity><member>critical
+        </member></severity><threat-name>any</threat-name><category>any</category><packet-capture>disable
+        </packet-capture></entry><entry name="simple-high"><action><reset-both /></action><severity><member>high
+        </member></severity><threat-name>any</threat-name><category>any</category><packet-capture>disable
+        </packet-capture></entry><entry name="simple-medium"><action><reset-both /></action><severity><member>medium
+        </member></severity><threat-name>any</threat-name><category>any</category><packet-capture>disable
+        </packet-capture></entry><entry name="simple-informational"><action><default /></action><severity>
+        <member>informational</member></severity><threat-name>any</threat-name><category>any</category>
+        <packet-capture>disable</packet-capture></entry><entry name="simple-low"><action><default /></action><severity>
+        <member>low</member></severity><threat-name>any</threat-name><category>any</category><packet-capture>disable
+        </packet-capture></entry></rules>"""
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def create_anti_spyware_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    result = create_anti_spyware_best_practice_profile(profile_name)
+    if result.get('response', {}).get('@status') == 'success':
+        demisto.results(f'The profile {profile_name} was created successfully.')
+    else:
+        demisto.results(result['response']['msg'])
+
+
+def create_vulnerability_best_practice_profile(profile_name):
+
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/vulnerability/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': """<rules><entry name="brute-force"><action><block-ip><duration>300</duration>
+        <track-by>source-and-destination</track-by></block-ip></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>any</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>any</host><category>brute-force</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-client-critical"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>critical</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>client</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-client-high"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>high</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>client</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-client-medium"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>medium</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>client</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-client-informational"><action><default /></action><vendor-id><member>any</member>
+        </vendor-id><severity><member>informational</member></severity><cve><member>any</member></cve>
+        <threat-name>any</threat-name><host>client</host><category>any</category>
+        <packet-capture>disable</packet-capture></entry><entry name="simple-client-low"><action><default /></action>
+        <vendor-id><member>any
+        </member></vendor-id><severity><member>low</member></severity><cve><member>any</member></cve><threat-name>any
+        </threat-name><host>client</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-server-critical"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>critical</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>server</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-server-high"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>high</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>server</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-server-medium"><action><reset-both /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>medium</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>server</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-server-informational"><action><default /></action><vendor-id><member>any</member>
+        </vendor-id><severity><member>informational</member></severity><cve><member>any</member></cve><threat-name>any
+        </threat-name><host>server</host><category>any</category><packet-capture>disable</packet-capture></entry>
+        <entry name="simple-server-low"><action><default /></action><vendor-id><member>any</member></vendor-id>
+        <severity><member>low</member></severity><cve><member>any</member></cve><threat-name>any</threat-name>
+        <host>server</host><category>any</category><packet-capture>disable</packet-capture></entry></rules>"""
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def create_vulnerability_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    result = create_vulnerability_best_practice_profile(profile_name)
+    if result.get('response', {}).get('@status') == 'success':
+        demisto.results(f'The profile {profile_name} was created successfully.')
+    else:
+        demisto.results(result['response']['msg'])
+
+
+def create_url_filtering_best_practice_profile(profile_name):
+
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/url-filtering/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': """<credential-enforcement><mode><disabled /></mode><log-severity>medium</log-severity><alert>
+        <member>abortion</member><member>abused-drugs</member><member>alcohol-and-tobacco</member>
+        <member>auctions</member><member>business-and-economy</member><member>computer-and-internet-info</member>
+        <member>content-delivery-networks</member><member>cryptocurrency</member><member>dating</member>
+        <member>educational-institutions</member><member>entertainment-and-arts</member>
+        <member>financial-services</member><member>gambling</member><member>games</member><member>government</member>
+        <member>grayware</member><member>health-and-medicine</member><member>high-risk</member>
+        <member>home-and-garden</member><member>hunting-and-fishing</member><member>insufficient-content</member>
+        <member>internet-communications-and-telephony</member><member>internet-portals</member>
+        <member>job-search</member><member>legal</member><member>low-risk</member><member>medium-risk</member>
+        <member>military</member><member>motor-vehicles</member><member>music</member>
+        <member>newly-registered-domain</member><member>news</member><member>not-resolved</member>
+        <member>nudity</member>
+        <member>online-storage-and-backup</member><member>peer-to-peer</member><member>personal-sites-and-blogs</member>
+        <member>philosophy-and-political-advocacy</member><member>private-ip-addresses</member>
+        <member>questionable</member><member>real-estate</member><member>recreation-and-hobbies</member>
+        <member>reference-and-research</member><member>religion</member><member>search-engines</member>
+        <member>sex-education</member><member>shareware-and-freeware</member><member>shopping</member>
+        <member>social-networking</member><member>society</member><member>sports</member>
+        <member>stock-advice-and-tools</member><member>streaming-media</member>
+        <member>swimsuits-and-intimate-apparel</member><member>training-and-tools</member>
+        <member>translation</member><member>travel</member>
+        <member>weapons</member><member>web-advertisements</member><member>web-based-email</member>
+        <member>web-hosting</member></alert><block><member>adult</member><member>command-and-control</member>
+        <member>copyright-infringement</member><member>dynamic-dns</member><member>extremism</member>
+        <member>hacking</member><member>malware</member><member>parked</member><member>phishing</member>
+        <member>proxy-avoidance-and-anonymizers</member><member>unknown</member></block></credential-enforcement>
+        <log-http-hdr-xff>yes</log-http-hdr-xff><log-http-hdr-user-agent>yes</log-http-hdr-user-agent>
+        <log-http-hdr-referer>yes</log-http-hdr-referer><log-container-page-only>no</log-container-page-only>
+        <alert><member>abortion</member><member>abused-drugs</member><member>alcohol-and-tobacco</member>
+        <member>auctions</member><member>business-and-economy</member><member>computer-and-internet-info</member>
+        <member>content-delivery-networks</member><member>cryptocurrency</member><member>dating</member>
+        <member>educational-institutions</member><member>entertainment-and-arts</member>
+        <member>financial-services</member><member>gambling</member><member>games</member><member>government</member>
+        <member>grayware</member><member>health-and-medicine</member><member>high-risk</member>
+        <member>home-and-garden</member><member>hunting-and-fishing</member><member>insufficient-content</member>
+        <member>internet-communications-and-telephony</member><member>internet-portals</member>
+        <member>job-search</member><member>legal</member><member>low-risk</member>
+        <member>medium-risk</member><member>military</member>
+        <member>motor-vehicles</member><member>music</member><member>newly-registered-domain</member>
+        <member>news</member><member>not-resolved</member><member>nudity</member>
+        <member>online-storage-and-backup</member><member>peer-to-peer</member><member>personal-sites-and-blogs</member>
+        <member>philosophy-and-political-advocacy</member><member>private-ip-addresses</member>
+        <member>questionable</member><member>real-estate</member><member>recreation-and-hobbies</member>
+        <member>reference-and-research</member><member>religion</member><member>search-engines</member>
+        <member>sex-education</member><member>shareware-and-freeware</member><member>shopping</member>
+        <member>social-networking</member><member>society</member><member>sports</member>
+        <member>stock-advice-and-tools</member><member>streaming-media</member>
+        <member>swimsuits-and-intimate-apparel</member><member>training-and-tools</member>
+        <member>translation</member><member>travel</member>
+        <member>weapons</member><member>web-advertisements</member><member>web-based-email</member>
+        <member>web-hosting</member></alert><block><member>adult</member><member>command-and-control</member>
+        <member>copyright-infringement</member><member>dynamic-dns</member><member>extremism</member>
+        <member>hacking</member><member>malware</member><member>parked</member><member>phishing</member>
+        <member>proxy-avoidance-and-anonymizers</member><member>unknown</member></block>"""
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def create_url_filtering_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    result = create_url_filtering_best_practice_profile(profile_name)
+    if result.get('response', {}).get('@status') == 'success':
+        demisto.results(f'The profile {profile_name} was created successfully.')
+    else:
+        demisto.results(result['response']['msg'])
+
+
+def create_file_blocking_best_practice_profile(profile_name):
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/file-blocking/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': """<rules><entry name="Block all risky file types"><application><member>any</member></application>
+        <file-type><member>7z</member><member>bat</member><member>cab</member><member>chm</member><member>class</member>
+        <member>cpl</member><member>dll</member><member>exe</member><member>flash</member><member>hlp</member>
+        <member>hta</member><member>jar</member><member>msi</member><member>Multi-Level-Encoding</member>
+        <member>ocx</member><member>PE</member><member>pif</member><member>rar</member><member>scr</member>
+        <member>tar</member><member>torrent</member><member>vbe</member><member>wsf</member></file-type>
+        <direction>both</direction><action>block</action></entry><entry name="Block encrypted files"><application>
+        <member>any</member></application><file-type><member>encrypted-rar</member>
+        <member>encrypted-zip</member></file-type><direction>both</direction><action>block</action></entry>
+        <entry name="Log all other file types"><application><member>any</member></application><file-type>
+        <member>any</member></file-type><direction>both</direction><action>alert</action></entry></rules>"""
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def create_file_blocking_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    result = create_file_blocking_best_practice_profile(profile_name)
+    if result.get('response', {}).get('@status') == 'success':
+        demisto.results(f'The profile {profile_name} was created successfully.')
+    else:
+        demisto.results(result['response']['msg'])
+
+
+def create_wildfire_best_practice_profile(profile_name):
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"{XPATH_RULEBASE}profiles/wildfire-analysis/entry[@name='{profile_name}']",
+        'key': API_KEY,
+        'element': """<rules><entry name="default"><application><member>any</member></application><file-type>
+        <member>any</member></file-type><direction>both</direction><analysis>public-cloud</analysis></entry></rules>"""
+    }
+    result = http_request(URL, 'POST', params=params)
+
+    return result
+
+
+def create_wildfire_best_practice_profile_command():
+
+    profile_name = demisto.args().get('profile_name')
+    result = create_wildfire_best_practice_profile(profile_name)
     if result.get('response', {}).get('@status') == 'success':
         demisto.results(f'The profile {profile_name} was created successfully.')
     else:
@@ -6700,6 +6925,21 @@ def main():
 
         elif demisto.command() == 'panorama-create-antivirus-best-practice-profile':
             create_antivirus_best_practice_profile_command()
+
+        elif demisto.command() == 'panorama-create-anti-spyware-best-practice-profile':
+            create_anti_spyware_best_practice_profile_command()
+
+        elif demisto.command() == 'panorama-create-vulnerability-best-practice-profile':
+            create_vulnerability_best_practice_profile_command()
+
+        elif demisto.command() == 'panorama-create-url-filtering-best-practice-profile':
+            create_url_filtering_best_practice_profile_command()
+
+        elif demisto.command() == 'panorama-create-file-blocking-best-practice-profile':
+            create_file_blocking_best_practice_profile_command()
+
+        elif demisto.command() == 'panorama-create-wildfire-best-practice-profile':
+            create_wildfire_best_practice_profile_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
