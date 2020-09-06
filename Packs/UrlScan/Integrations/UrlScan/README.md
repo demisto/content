@@ -131,8 +131,8 @@
 <td style="width: 97px;">Optional</td>
 </tr>
 <tr>
-<td style="width: 165px;">public</td>
-<td style="width: 446px;">Will the submission be public or private</td>
+<td style="width: 165px;">visibility</td>
+<td style="width: 446px;">Set to "public" to make the submission public.</td>
 <td style="width: 97px;">Optional</td>
 </tr>
 </tbody>
@@ -238,8 +238,8 @@
 <td style="width: 96px;">Optional</td>
 </tr>
 <tr>
-<td style="width: 166px;">public</td>
-<td style="width: 446px;">Whether the submission will be public or private</td>
+<td style="width: 166px;">visibility</td>
+<td style="width: 446px;">Set to "public" to make the submission public.</td>
 <td style="width: 96px;">Optional</td>
 </tr>
 <tr>
