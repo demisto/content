@@ -1081,6 +1081,7 @@ def manage_tests(tests_settings):
 def add_pr_comment(comment):
     token = os.environ['CONTENT_GITHUB_TOKEN']
     branch_name = os.environ['CIRCLE_BRANCH']
+    branch_name = 'contrib/blobtest_master'
     sha1 = os.environ['CIRCLE_SHA1']
 
     query = '?q={}+repo:demisto/content+org:demisto+is:pr+is:open+head:{}+is:open'.format(sha1, branch_name)
