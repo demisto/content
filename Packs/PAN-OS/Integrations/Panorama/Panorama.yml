@@ -3786,7 +3786,7 @@ script:
     name: panorama-get-licences
     outputs:
     - contextPath: Panorama.License.Authcode
-      description: License authemtication code.
+      description: License authentication code.
       type: String
     - contextPath: Panorama.License.Base-license-name
       description: Base License name.
