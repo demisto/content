@@ -12,6 +12,7 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 1. Fetch incidents.
 2. Managing machines and performing actions on them.
 3. Blocking files and applications.
+4. Uploading and digesting threat indicators for the actions of allow, block, or alert.
 
 ## Authentication
 ---
@@ -2663,7 +2664,7 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.diamondModel | Unknown | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
+| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
 | MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
 | MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. | 
 | MicrosoftATP.Indicators.emailLanguage | String | The language of the email. | 
@@ -2774,7 +2775,7 @@ Gets an indicator by its ID.
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.diamondModel | Unknown | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
+| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
 | MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
 | MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. | 
 | MicrosoftATP.Indicators.emailLanguage | String | The language of the email. | 
@@ -2910,7 +2911,7 @@ Creates a file indicator.
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.diamondModel | Unknown | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
+| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
 | MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
 | MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. | 
 | MicrosoftATP.Indicators.emailLanguage | String | The language of the email. | 
@@ -3037,7 +3038,7 @@ Creates a file indicator
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.diamondModel | Unknown | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
+| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
 | MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
 | MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. | 
 | MicrosoftATP.Indicators.emailLanguage | String | The language of the email. | 
@@ -3151,7 +3152,7 @@ Updates the specified indicator.
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.diamondModel | Unknown | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
+| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
 | MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
 | MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. | 
 | MicrosoftATP.Indicators.emailLanguage | String | The language of the email. | 
