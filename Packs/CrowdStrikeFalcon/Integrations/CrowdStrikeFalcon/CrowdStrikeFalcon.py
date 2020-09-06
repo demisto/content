@@ -1163,21 +1163,6 @@ def get_last_fetch_time_and_last_incident_id():
     return last_fetch_time, last_fetch_timestamp, last_incident_id
 
 
-def get_incidents_ids_and_last_index_to_fetch_with(incidents_ids, last_incident_id, incidents):
-    if last_incident_id == incidents_ids[0]:
-        first_index_to_fetch = 1
-
-        if len(incidents_ids) == 1:
-            return incidents
-
-    else:
-        first_index_to_fetch = 0
-
-    last_index_to_fetch = INCIDENTS_PER_FETCH + first_index_to_fetch
-    incidents_ids = incidents_ids[first_index_to_fetch:last_index_to_fetch]
-    return incidents_ids, last_index_to_fetch
-
-
 def fetch_incidents():
     """
         Fetches incident using the detections API
@@ -1265,9 +1250,17 @@ def fetch_incidents():
 
         if incidents_ids:
 
-            incidents_ids, last_index_to_fetch = get_incidents_ids_and_last_index_to_fetch_with(incidents_ids,
-                                                                                                last_incident_id,
-                                                                                                incidents)
+            if last_incident_id == incidents_ids[0]:
+                first_index_to_fetch = 1
+
+                if len(incidents_ids) == 1:
+                    return incidents
+
+            else:
+                first_index_to_fetch = 0
+
+            last_index_to_fetch = INCIDENTS_PER_FETCH + first_index_to_fetch
+            incidents_ids = incidents_ids[first_index_to_fetch:last_index_to_fetch]
             raw_res = get_incidents_entities(incidents_ids)
 
             if "resources" in raw_res:
@@ -2107,6 +2100,7 @@ def main():
     try:
         if demisto.command() == 'test-module':
             get_token(new_token=True)
+
             demisto.results('ok')
         elif demisto.command() == 'cs-falcon-search-device':
             demisto.results(search_device_command())
