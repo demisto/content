@@ -62,7 +62,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -121,7 +121,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Date of the next scheduled rotation time. The Key Management Service automatically creates a new version of this CryptoKey and 
+        Date of the next scheduled rotation time. The Key Management Service automatically creates a new version of this CryptoKey and
         marks the new version as primary at the next rotation time.
         Key rotations performed manually through cryptoKeyVersions.create and cryptoKeys.updatePrimaryVersion do not affect nextRotationTime.
 
@@ -253,7 +253,7 @@ script:
       type: String
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-         The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
+         The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
          creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
@@ -294,7 +294,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical region where requests to Cloud KMS for a given resource are handled, 
+        The geographical region where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -352,8 +352,8 @@ script:
       secret: false
     - default: false
       description: |-
-        A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request. 
-        The optional data that must match the data originally supplied in the EncryptRequest.additional_authenticated_data.        
+        A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request.
+        The optional data that must match the data originally supplied in the EncryptRequest.additional_authenticated_data.
       isArray: false
       name: additional_authenticated_data
       required: false
@@ -389,7 +389,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For example, https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -427,7 +427,7 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A grouping of keys for organizational purposes. 
+        A grouping of keys for organizational purposes.
         Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
@@ -448,8 +448,8 @@ script:
     - default: false
       description: |-
         A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request. Must also be provided during decryption through DecryptRequest.additional_authenticated_data.
-        The maximum size depends on the key version's protection level. 
-        For SOFTWARE keys, the AAD must be no larger than 64KiB. For HSM keys, the combined length of the plain text and additionalAuthenticatedData fields must be no larger than 8KiB.        
+        The maximum size depends on the key version's protection level.
+        For SOFTWARE keys, the AAD must be no larger than 64KiB. For HSM keys, the combined length of the plain text and additionalAuthenticatedData fields must be no larger than 8KiB.
       isArray: false
       name: additional_authenticated_data
       required: false
@@ -485,7 +485,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For example, https://cloud.google.com/kms/docs/locations.
         Keyword 'default' sets the location to the default location.
       isArray: false
@@ -551,12 +551,12 @@ script:
       type: Date
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-         The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
+         The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
          creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
       description: The period for which the nextRotationTime is advanced, when the service
-        automatically rotates a key. 
+        automatically rotates a key.
         hours.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Labels
@@ -645,7 +645,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
+        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
         creates a new version of this CryptoKey and marks the new version as primary.
         Key rotations performed manually via cryptoKeyVersions.create and cryptoKeys.updatePrimaryVersion do not affect nextRotationTime.
 
@@ -763,7 +763,7 @@ script:
       type: String
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
+        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
         creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
@@ -1005,7 +1005,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -1072,7 +1072,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -1143,7 +1143,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the location to the default location.
       isArray: false
@@ -1328,7 +1328,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -1390,7 +1390,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -1511,7 +1511,7 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
         and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
         Keyword 'default' uses the default location.
       isArray: false
@@ -1581,7 +1581,7 @@ script:
     - contextPath: GoogleKMS.PublicKey.Algorithm
       description: The algorithm used in the CryptoKey
       type: String
-  dockerimage: demisto/google-kms:1.0.0.2689
+  dockerimage: demisto/google-kms:1.0.0.11103
   isfetch: false
   longRunning: false
   longRunningPort: false

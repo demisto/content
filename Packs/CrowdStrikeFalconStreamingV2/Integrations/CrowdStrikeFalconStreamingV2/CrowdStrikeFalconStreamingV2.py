@@ -159,12 +159,15 @@ class EventStream:
             last_fetch_stats_print = datetime.utcnow()
             async with ClientSession(
                 connector=TCPConnector(ssl=self.verify_ssl),
-                headers={'Authorization': f'Token {self.session_token}'},
+                headers={
+                    'Authorization': f'Token {self.session_token}',
+                    'Connection': 'keep-alive'
+                },
                 trust_env=self.proxy,
                 timeout=None
             ) as session:
                 try:
-                    integration_context = demisto.getIntegrationContext()
+                    integration_context = get_integration_context()
                     offset = integration_context.get('offset', 0) or initial_offset
                     demisto.debug(f'Starting to fetch from offset {offset} events of type {event_type} '
                                   f'from time {first_fetch_time}')
@@ -390,7 +393,7 @@ async def long_running_loop(
                 demisto.createIncidents(incident)
                 offset_to_store = int(event_offset) + 1
                 if last_integration_context_set + timedelta(minutes=1) <= datetime.utcnow():
-                    integration_context = demisto.getIntegrationContext()
+                    integration_context = get_integration_context()
                     integration_context['offset'] = offset_to_store
                     if store_samples:
                         try:
@@ -398,19 +401,17 @@ async def long_running_loop(
                             demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')
                             sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
                             sample_events += sample_events_to_store
-                            integration_context['sample_events'] = json.dumps(list(sample_events))
+                            integration_context['sample_events'] = list(sample_events)
                         except Exception as e:
                             demisto.error(f'Failed storing sample events - {e}')
                     demisto.debug(f'Storing offset {offset_to_store}')
-                    demisto.setIntegrationContext(integration_context)
+                    set_to_integration_context_with_retries(integration_context)
                     last_integration_context_set = datetime.utcnow()
     except Exception as e:
         demisto.error(f'An error occurred in the long running loop: {e}')
     finally:
         # store latest fetched event offset in case the loop crashes and we did not reach the 1 minute to store it
-        integration_context = demisto.getIntegrationContext()
-        integration_context['offset'] = offset_to_store
-        demisto.setIntegrationContext(integration_context)
+        set_to_integration_context_with_retries({'offset': offset_to_store})
 
 
 async def test_module(base_url: str, client_id: str, client_secret: str, verify_ssl: bool, proxy: bool) -> None:
@@ -425,7 +426,7 @@ def fetch_samples() -> None:
     Returns:
         None: No data returned.
     """
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context()
     sample_events = json.loads(integration_context.get('sample_events', '[]'))
     incidents = [{'rawJSON': json.dumps(event)} for event in sample_events]
     demisto.incidents(incidents)
@@ -440,7 +441,7 @@ def get_sample_events(store_samples: bool = False) -> None:
     Returns:
         None: No data returned.
     """
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context()
     sample_events = integration_context.get('sample_events')
     if sample_events:
         try:
@@ -470,9 +471,10 @@ def main():
         offset = 0
     incident_type = params.get('incidentType', '')
     store_samples = params.get('store_samples', False)
-    first_fetch_time, _ = parse_date_range(params.get('first_fetch', '1 hour'))
+    first_fetch_time, _ = parse_date_range(params.get('fetch_time', '1 hour'))
+    app_id = params.get('app_id') or 'Demisto'
 
-    stream = EventStream(base_url=base_url, app_id='Demisto', verify_ssl=verify_ssl, proxy=proxy)
+    stream = EventStream(base_url=base_url, app_id=app_id, verify_ssl=verify_ssl, proxy=proxy)
 
     LOG(f'Command being called is {demisto.command()}')
     try:
