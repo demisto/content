@@ -7,6 +7,7 @@ import shutil
 import yaml
 import google.auth
 from google.cloud import storage
+from google.cloud import bigquery
 import enum
 import base64
 import urllib.parse
@@ -37,33 +38,11 @@ class GCPConfig(object):
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
-    CORE_PACKS_LIST = [BASE_PACK,
-                       "rasterize",
-                       "DemistoRESTAPI",
-                       "DemistoLocking",
-                       "ImageOCR",
-                       "WhereIsTheEgg",
-                       "AutoFocus",
-                       "UrlScan",
-                       "Active_Directory_Query",
-                       "FeedTAXII",
-                       "VirusTotal",
-                       "Whois",
-                       "Phishing",
-                       "CommonScripts",
-                       "CommonPlaybooks",
-                       "CommonTypes",
-                       "CommonDashboards",
-                       "CommonReports",
-                       "CommonWidgets",
-                       "TIM_Processing",
-                       "TIM_SIEM",
-                       "HelloWorld",
-                       "ExportIndicators",
-                       "Malware",
-                       "DefaultPlaybook",
-                       "AccessInvestigation"
-                       ]  # cores packs list
+    DOWNLOADS_TABLE = "oproxy-dev.shared_views.top_packs"  # packs downloads statistics table
+    BIG_QUERY_MAX_RESULTS = 2000  # big query max row results
+
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
+        CORE_PACKS_LIST = json.load(core_packs_list_file)
 
 
 class Metadata(object):
@@ -182,6 +161,8 @@ class Pack(object):
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
+        self._is_feed = False  # a flag that specifies if pack is a feed pack
+        self._downloads_count = 0  # number of pack downloads
 
     @property
     def name(self):
@@ -210,6 +191,19 @@ class Pack(object):
         """ str: current status of the packs.
         """
         return self._status
+
+    @property
+    def is_feed(self):
+        """
+        bool: whether the pack is a feed pack
+        """
+        return self._is_feed
+
+    @is_feed.setter
+    def is_feed(self, is_feed):
+        """ setter of is_feed
+        """
+        self._is_feed = is_feed
 
     @status.setter
     def status(self, status_value):
@@ -298,6 +292,18 @@ class Pack(object):
         else:
             return self._sever_min_version
 
+    @property
+    def downloads_count(self):
+        """ str: packs downloads count.
+        """
+        return self._downloads_count
+
+    @downloads_count.setter
+    def downloads_count(self, download_count_value):
+        """ setter of downloads count property of the pack.
+        """
+        self._downloads_count = download_count_value
+
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 
@@ -353,6 +359,23 @@ class Pack(object):
                     pack_integration_images.append(dependency_integration)
 
         return pack_integration_images
+
+    def is_feed_pack(self, yaml_content, yaml_type):
+        """
+        Checks if an integration is a feed integration. If so, updates Pack._is_feed
+        Args:
+            yaml_content: The yaml content extracted by yaml.safe_load().
+            yaml_type: The type of object to check. Should be 'Playbook' or 'Integration'.
+
+        Returns:
+            Doesn't return
+        """
+        if yaml_type == 'Integration':
+            if yaml_content.get('script', {}).get('feed', False) is True:
+                self._is_feed = True
+        if yaml_type == 'Playbook':
+            if yaml_content.get('name').startswith('TIM '):
+                self._is_feed = True
 
     @staticmethod
     def _clean_release_notes(release_notes_lines):
@@ -456,7 +479,8 @@ class Pack(object):
 
     @staticmethod
     def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
-                             dependencies_data, server_min_version, build_number, commit_hash):
+                             dependencies_data, server_min_version, build_number, commit_hash, downloads_count,
+                             is_feed_pack=False):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -469,6 +493,8 @@ class Pack(object):
             server_min_version (str): server minimum version found during the iteration over content items.
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
+            downloads_count (int): number of packs downloads.
+            is_feed_pack (bool): a flag that indicates if the pack is a feed pack.
 
         Returns:
             dict: parsed pack metadata.
@@ -496,7 +522,10 @@ class Pack(object):
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
         pack_metadata['versionInfo'] = build_number
         pack_metadata['commit'] = commit_hash
+        pack_metadata['downloads'] = downloads_count
         pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
+        if is_feed_pack and 'TIM' not in pack_metadata['tags']:
+            pack_metadata['tags'].append('TIM')
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
@@ -540,6 +569,22 @@ class Pack(object):
                 continue
 
         return dependencies_data_result
+
+    def _get_downloads_count(self, packs_statistic_df):
+        """ Returns number of packs downloads.
+
+        Args:
+             packs_statistic_df (pandas.core.frame.DataFrame): packs downloads statistics table.
+
+        Returns:
+            int: number of packs downloads.
+        """
+        downloads_count = 0
+
+        if self._pack_name in packs_statistic_df.index.values:
+            downloads_count = int(packs_statistic_df.loc[self._pack_name]['num_count'].astype('int32'))
+
+        return downloads_count
 
     @staticmethod
     def _create_changelog_entry(release_notes, version_display_name, build_number, new_version=True):
@@ -935,13 +980,14 @@ class Pack(object):
                             'tags': content_item.get('tags', [])
                         })
                     elif current_directory == PackFolders.PLAYBOOKS.value:
+                        self.is_feed_pack(content_item, 'Playbook')
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', "")
                         })
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
-
+                        self.is_feed_pack(content_item, 'Integration')
                         folder_collected_items.append({
                             'name': content_item.get('display', ""),
                             'description': content_item.get('description', ""),
@@ -1054,7 +1100,7 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number, commit_hash):
+                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1068,6 +1114,7 @@ class Pack(object):
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
+            packs_statistic_df (pandas.core.frame.DataFrame): packs downloads statistics table.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -1088,6 +1135,8 @@ class Pack(object):
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []))
+            self.downloads_count = self._get_downloads_count(packs_statistic_df)
+
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
@@ -1095,7 +1144,9 @@ class Pack(object):
                                                            author_image=author_image,
                                                            dependencies_data=dependencies_data,
                                                            server_min_version=self.server_min_version,
-                                                           build_number=build_number, commit_hash=commit_hash)
+                                                           build_number=build_number, commit_hash=commit_hash,
+                                                           downloads_count=self.downloads_count,
+                                                           is_feed_pack=self._is_feed)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
@@ -1416,6 +1467,50 @@ def init_storage_client(service_account=None):
         return storage_client
 
 
+def init_bigquery_client(service_account=None):
+    """Initialize google cloud big query client.
+
+    In case of local dev usage the client will be initialized with user default credentials.
+    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
+
+    Args:
+        service_account (str): full path to service account json.
+
+    Return:
+         google.cloud.bigquery.client.Client: initialized google cloud big query client.
+    """
+    if service_account:
+        bq_client = bigquery.Client.from_service_account_json(service_account)
+        print("Created big query service account")
+    else:
+        # in case of local dev use, ignored the warning of non use of service account.
+        warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
+        credentials, project = google.auth.default()
+        bq_client = bigquery.Client(credentials=credentials, project=project)
+        print("Created big query private account")
+
+    return bq_client
+
+
+def get_packs_statistics_dataframe(bq_client):
+    """ Runs big query, selects all columns from top_packs table and returns table as pandas data frame.
+    Additionally table index is set to pack_name (pack unique id).
+
+    Args:
+        bq_client (google.cloud.bigquery.client.Client): google cloud big query client.
+
+    Returns:
+        pandas.core.frame.DataFrame: downloads statistics table dataframe.
+    """
+    query = f"SELECT * FROM `{GCPConfig.DOWNLOADS_TABLE}` LIMIT {GCPConfig.BIG_QUERY_MAX_RESULTS}"
+    # ignore missing package warning
+    warnings.filterwarnings("ignore", message="Cannot create BigQuery Storage client, the dependency ")
+    packs_statistic_table = bq_client.query(query).result().to_dataframe()
+    packs_statistic_table.set_index('pack_name', inplace=True)
+
+    return packs_statistic_table
+
+
 def input_to_list(input_data, capitalize_input=False):
     """ Helper function for handling input list or str from the user.
 
@@ -1431,7 +1526,7 @@ def input_to_list(input_data, capitalize_input=False):
     input_data = input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
 
     if capitalize_input:
-        return [i.title() for i in input_data]
+        return [" ".join([w.title() if w.islower() else w for w in i.split()]) for i in input_data]
     else:
         return input_data
 

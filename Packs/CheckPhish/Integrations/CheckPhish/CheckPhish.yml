@@ -3,7 +3,7 @@ commonfields:
   id: CheckPhish
   version: -1
 configuration:
-- defaultvalue: https://developers.redmarlin.ai/api/neo/scan
+- defaultvalue: https://developers.checkphish.ai/api/neo/scan
   display: CheckPhish API URL
   name: url
   required: false

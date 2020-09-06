@@ -144,7 +144,7 @@ tasks:
         simple: |-
           Hello,
 
-          A HIPPA breach incident has been opened.
+          A HIPAA breach incident has been opened.
           The breached data is encrypted, and the encryption key was not compromised.
 
           Please review the information and the incident details to make sure there was no breach.
@@ -176,7 +176,7 @@ tasks:
         readonly: false
       title: Analyst review
       description: |-
-        A HIPPA breach incident has been opened.
+        A HIPAA breach incident has been opened.
         The breached data is encrypted, and the encryption key was not compromised.
 
         Please review the information and the incident details to make sure there was no breach.
