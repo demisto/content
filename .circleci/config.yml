@@ -330,6 +330,8 @@ references:
             name: Comment on the contribution Pull Request
             when: always
             command: |
+              SERVER_IP=$(cat public_ip)
+              SERVER_URL="https://$SERVER_IP"
               python3 ./Utils/notify_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Link: $SERVER_URL"
 jobs:
   Setup Environment:
