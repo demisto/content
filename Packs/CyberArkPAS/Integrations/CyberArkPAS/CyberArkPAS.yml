@@ -23,7 +23,7 @@ configuration:
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '0'

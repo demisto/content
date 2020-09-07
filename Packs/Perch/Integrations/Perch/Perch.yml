@@ -24,7 +24,7 @@ configuration:
   type: 8
 - defaultvalue: '7'
   display: Previous days to fetch
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - display: Credentials
@@ -414,7 +414,7 @@ script:
     - contextPath: Perch.Indicator.CreatedBy
       description: ID of user that created the incident.
       type: Number
-  dockerimage: demisto/python3:3.7.2.214
+  dockerimage: demisto/python3:3.8.5.10845
   subtype: python3
   isfetch: true
   runonce: false

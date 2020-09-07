@@ -1322,7 +1322,7 @@ def main():
     proxy = params.get('proxy', False)
 
     max_fetch = min('200', params.get('max_fetch', '200'))
-    first_fetch_time = params.get('fetch_time', '3 days').strip()
+    first_fetch_time = params.get('first_fetch', '3 days').strip()
     score = params.get('score', "0")
 
     command = demisto.command()

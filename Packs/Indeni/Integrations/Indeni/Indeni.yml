@@ -50,7 +50,7 @@ configuration:
 - defaultvalue: '20'
   display: Number of issues to pull per fetch
   hidden: false
-  name: maxPullSize
+  name: max_fetch
   required: false
   type: 0
 description: Indeni is a turn-key automated monitoring providing visibility for security infrastructure. Indeni's production-ready Knowledge is curated from vetted, community-sourced experience, to deliver automation of tedious tasks with integration with your existing processes.
@@ -196,7 +196,7 @@ script:
     - contextPath: Indeni.AlertInfo.Note
       description: Notes for the given issue
       type: Unknown
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: true

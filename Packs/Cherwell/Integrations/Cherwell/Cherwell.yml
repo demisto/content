@@ -27,7 +27,7 @@ configuration:
   type: 8
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: incident
@@ -37,7 +37,7 @@ configuration:
   type: 0
 - defaultvalue: '30'
   display: Max results to fetch (defualt is 30)
-  name: max_results
+  name: max_fetch
   required: false
   type: 0
 - display: Advanced Query to fetch (see integration detailed instructions)
@@ -526,7 +526,7 @@ script:
     - contextPath: Cherwell.BusinessObjectInfo.BusinessObjectName
       description: Business object name.
       type: String
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   runonce: false
   script: '-'

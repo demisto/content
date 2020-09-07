@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings()
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
 API_KEY = demisto.params().get('api-key')
-FETCH_TIME = int(demisto.params().get('fetch_time', '7'))
+FETCH_TIME = int(demisto.params().get('first_fetch', '7'))
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
     demisto.params()['url']
 USE_SSL = not demisto.params().get('insecure', False)

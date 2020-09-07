@@ -31,12 +31,12 @@ configuration:
   type: 13
 - defaultvalue: 1 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetchTime
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '20'
   display: Fetch limit (minimum is 20)
-  name: fetchLimit
+  name: max_fetch
   required: false
   type: 0
 - display: Fetch incidents
@@ -176,7 +176,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/akamai:1.0.0.8883
+  dockerimage: demisto/akamai:1.0.0.10828
   isfetch: true
   longRunning: false
   longRunningPort: false

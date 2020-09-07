@@ -18,10 +18,10 @@ SERVER = demisto.params()['url'][:-1] if (demisto.params().get('url') and demist
 BASE_URL = f'{SERVER}/api/bit9platform/v1'
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+FETCH_TIME = demisto.params().get('first_fetch', '3 days')
 CB_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 CB_NO_MS_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-INCIDENTS_PER_FETCH = int(demisto.params().get('max_incidents_per_fetch', 15))
+INCIDENTS_PER_FETCH = int(demisto.params().get('max_fetch', 15))
 # Headers to be sent in requests
 HEADERS = {
     'X-Auth-Token': TOKEN,

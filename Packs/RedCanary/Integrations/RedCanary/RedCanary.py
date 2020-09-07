@@ -553,7 +553,7 @@ def fetch_incidents(last_run):
         last_incidents_ids = last_run.get('last_event_ids')
     else:
         # first time fetching
-        last_fetch = parse_date_range(demisto.params().get('fetch_time', '3 days'), TIME_FORMAT)[0]
+        last_fetch = parse_date_range(demisto.params().get('first_fetch', '3 days'), TIME_FORMAT)[0]
 
     LOG('iterating on detections, looking for more recent than {}'.format(last_fetch))
     incidents = []

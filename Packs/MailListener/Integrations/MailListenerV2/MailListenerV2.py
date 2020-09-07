@@ -361,7 +361,7 @@ def main():
     permitted_from_addresses = demisto.params().get('permittedFromAdd', '')
     permitted_from_domains = demisto.params().get('permittedFromDomain', '')
     delete_processed = demisto.params().get("delete_processed", False)
-    limit = int(demisto.params().get('limit', '50'))
+    limit = int(demisto.params().get('max_fetch', '50'))
     save_file = params.get('save_file', False)
     first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
     ssl_context = ssl.create_default_context()

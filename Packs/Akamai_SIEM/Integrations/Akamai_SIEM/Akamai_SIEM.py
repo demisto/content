@@ -373,8 +373,8 @@ def main():
     try:
         if command == 'fetch-incidents':
             incidents, new_last_run = fetch_incidents_command(client,
-                                                              fetch_time=params.get('fetchTime'),
-                                                              fetch_limit=params.get('fetchLimit'),
+                                                              fetch_time=params.get('first_fetch'),
+                                                              fetch_limit=params.get('max_fetch'),
                                                               config_ids=params.get('configIds'),
                                                               last_run=demisto.getLastRun().get('lastRun'))
             demisto.incidents(incidents)

@@ -24,7 +24,7 @@ configuration:
   type: 8
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - display: Username

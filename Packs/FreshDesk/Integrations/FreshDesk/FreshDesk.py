@@ -32,7 +32,7 @@ if not (USERNAME and PASSWORD) and not TOKEN:
 AUTH = (TOKEN, 'X') if TOKEN else (USERNAME, PASSWORD)
 
 # How much time before the first fetch to retrieve incidents
-FETCH_TIME = PARAMS.get('fetch_time', '24 hours')
+FETCH_TIME = PARAMS.get('first_fetch', '24 hours')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = PARAMS['url'][:-1] if (PARAMS.get('url') and PARAMS['url'].endswith('/')) else PARAMS['url']
 # Should we use SSL

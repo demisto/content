@@ -1322,9 +1322,9 @@ def handle_fetch_command(client):
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
         last_run=demisto.getLastRun(),
-        first_fetch_time=demisto.params().get("fetch_time"),
+        first_fetch_time=demisto.params().get("first_fetch"),
         event_severity_filter=demisto.params().get("alert_severity"),
-        fetch_limit=int(demisto.params().get("fetch_limit")),
+        fetch_limit=int(demisto.params().get("max_fetch")),
         include_files=demisto.params().get("include_files"),
         integration_context=integration_context,
     )

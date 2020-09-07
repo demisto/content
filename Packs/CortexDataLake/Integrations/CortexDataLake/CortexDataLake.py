@@ -875,10 +875,10 @@ def main():
         elif command == 'cdl-query-url-logs':
             return_outputs(*query_url_logs_command(args, client))
         elif command == 'fetch-incidents':
-            first_fetch_timestamp = params.get('first_fetch_timestamp', '24 hours').strip()
+            first_fetch_timestamp = params.get('first_fetch', '24 hours').strip()
             fetch_severity = params.get('firewall_severity')
             fetch_subtype = params.get('firewall_subtype')
-            fetch_limit = params.get('limit')
+            fetch_limit = params.get('max_fetch')
             last_run = demisto.getLastRun()
             next_run, incidents = fetch_incidents(client,
                                                   first_fetch_timestamp,

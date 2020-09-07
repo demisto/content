@@ -1744,7 +1744,7 @@ def main():  # pragma: no cover
     }
     try:
         if command == 'test-module':
-            fetch_time = params.get('fetch_time')
+            fetch_time = params.get('first_fetch')
             is_fetch = params.get('isFetch')
             last_run = demisto.getLastRun()
             readable_output, outputs, raw_response = test_module(client, bool(is_fetch), fetch_time, last_run)

@@ -22,7 +22,7 @@ configuration:
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
     1 year)
-  name: first_fetch_timestamp
+  name: first_fetch
   required: false
   type: 0
 - display: Severity of events to fetch (Firewall)
@@ -80,7 +80,7 @@ configuration:
   defaultvalue: '10'
   display: Incidents fetched per query
   hidden: false
-  name: limit
+  name: max_fetch
   required: false
   type: 0
 - defaultvalue: 'false'
@@ -1966,7 +1966,7 @@ script:
     - contextPath: CDL.Logging.URL.DestDeviceHost
       description: Hostname of the device session destination.
       type: String
-  dockerimage: demisto/python_pancloud_v2:1.0.0.10370
+  dockerimage: demisto/python_pancloud_v2:1.0.0.10828
   feed: false
   isfetch: true
   longRunning: false

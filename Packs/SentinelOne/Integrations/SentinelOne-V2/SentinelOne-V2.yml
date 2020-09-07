@@ -30,7 +30,7 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '5'
@@ -41,7 +41,7 @@ configuration:
   type: 0
 - defaultvalue: '10'
   display: 'Fetch limit: the maximum number of incidents to fetch'
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 description: End point protection
@@ -1487,7 +1487,7 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
   longRunningPort: false

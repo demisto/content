@@ -353,7 +353,7 @@ def fetch_incidents(base_url):
     # Get the last fetch time, if exists
     alert_id_index = last_run.get('alert_id', 0)
     only_pan_cve_issues = demisto.params().get('onlyPullPanCveIssues', False)
-    max_pull_size = int(demisto.params().get('maxPullSize', 20))
+    max_pull_size = int(demisto.params().get('max_fetch', 20))
     lowest_issue_severity = demisto.params().get('issueSeverity', 'INFO')
     lowest_issue_severity_level = issue_severity_to_issue_level(lowest_issue_severity)
     incidents = []

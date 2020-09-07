@@ -16,10 +16,10 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
 FETCHES_INCIDENTS = PARAMS.get('isFetch')
-FETCH_TIME = PARAMS.get('fetch_time')
+FETCH_TIME = PARAMS.get('first_fetch')
 FETCH_ATTACHMENTS = PARAMS.get('fetch_attachments')
 OBJECTS_TO_FETCH = PARAMS.get('objects_to_fetch').split(',')
-MAX_RESULT = PARAMS.get('max_results')
+MAX_RESULT = PARAMS.get('max_fetch')
 USERNAME = PARAMS.get('credentials').get('identifier')
 PASSWORD = PARAMS.get('credentials').get('password')
 # Remove trailing slash to prevent wrong URL path to service

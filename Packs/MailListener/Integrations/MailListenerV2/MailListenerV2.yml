@@ -44,7 +44,7 @@ configuration:
   type: 0
 - defaultvalue: '50'
   display: The maximum number of incidents to fetch each time
-  name: limit
+  name: max_fetch
   required: false
   type: 0
 - display: Delete processed emails
@@ -146,7 +146,7 @@ script:
     description: Fetches an email by message ID and returns the information in an eml file format.
     execution: false
     name: mail-listener-get-email-as-eml
-  dockerimage: demisto/imap:1.0.0.10664
+  dockerimage: demisto/imap:1.0.0.10768
   feed: false
   isfetch: true
   longRunning: false

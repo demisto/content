@@ -30,13 +30,13 @@ configuration:
   type: 16
 - defaultvalue: 24 hours
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '10'
   display: Alerts to fetch per run; note that increasing this value may result in
     slow performance if too many results are returned at once
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 - defaultvalue: 'false'
@@ -805,7 +805,7 @@ script:
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
       type: Unknown
-  dockerimage: demisto/py42:1.0.0.10664
+  dockerimage: demisto/py42:1.0.0.11140
   feed: false
   isfetch: true
   longRunning: false
