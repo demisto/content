@@ -4,8 +4,8 @@
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Harri Ruuttila",
-    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
-    "email": "",
+    "url": "",
+    "email": "harri@ruuttila.com",
     "created": "2020-09-04T05:43:51Z",
     "categories": [
         "Deception"

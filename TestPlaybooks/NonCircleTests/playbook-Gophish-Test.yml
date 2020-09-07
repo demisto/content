@@ -1,7 +1,8 @@
-id: gophish-Test
+id: Gophish-Test
+fromversion: 5.0.0
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: gophish-Test
+name: Gophish-Test
 starttaskid: "0"
 tasks:
   "0":
