@@ -2635,7 +2635,7 @@ class CommandResults:
         raw response from the 3rd party service (originally Contents)
 
     :type indicator_timeline: ``IndicatorsTimeline``
-    param timeline: must be a IndicatorsTimeline. used by the server to populate an indicator's timeline
+    param timeline: must be an IndicatorsTimeline. used by the server to populate an indicator's timeline.
 
     :return: None
     :rtype: ``None``
