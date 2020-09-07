@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Trend Micro Apex_copy
+  id: Trend Micro Apex
   version: -1
 configuration:
 - display: Server URL (e.g. https://vxsuz5.manage.trendmicro.com)
@@ -31,7 +31,7 @@ configuration:
 description: Trend Micro Apex central automation to manage agents and User-Defined
   Suspicious Objects
 display: Trend Micro Apex
-name: Trend Micro Apex_copy
+name: Trend Micro Apex
 script:
   commands:
   - arguments:

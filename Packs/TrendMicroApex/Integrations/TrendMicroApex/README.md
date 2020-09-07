@@ -746,8 +746,14 @@ Retrieves a list of all investigation results.
 
 
 #### Command Example
-``` ```
+```! trendmicro-apex-investigation-result-list scan_status=All scan_type="YARA rule file" ```
 
 #### Human Readable Output
+
+>### Investigation result list:
+>name|scanSummaryId|scanSummaryGuid|submitTime|serverGuidList|creator
+>|---|---|---|---|---|---|
+>|Test2|2|80e5f8b4-3419-455d-99ce-9699ead90781|2020-07-26T17:02:03+00:00|B220EB61-6240-44B4-9B94-4AC3F22E6A62|Demisto-PANW
+>|Test|1|5023de82-464e-4694-91a3-f27a48b42ba4|2020-07-26T14:14:37+00:00|B220EB61-6240-44B4-9B94-4AC3F22E6A62|Demisto-PANW
 
 
