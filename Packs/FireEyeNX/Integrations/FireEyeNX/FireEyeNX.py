@@ -1222,8 +1222,6 @@ def main() -> None:
         fetch_limit = get_fetch_limit()
         demisto.debug(f"Fetch Limit {fetch_limit}")
         request_timeout = get_request_timeout()
-        fetch_limit = get_fetch_limit()
-        demisto.debug(f"Fetch Limit {fetch_limit}")
         malware_type = demisto.params().get('malware_type', '')
 
         base_url = f"{url}/wsapis/{API_VERSION}"
