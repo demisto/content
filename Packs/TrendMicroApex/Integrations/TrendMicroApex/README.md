@@ -1,5 +1,5 @@
 Trend Micro Apex central automation to manage agents and User-Defined Suspicious Objects
-This integration was integrated and tested with version xx of Trend Micro Apex_copy
+This integration was integrated and tested with version 1.0 of Trend Micro Apex_copy
 ## Configure Trend Micro Apex_copy on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
