@@ -1236,7 +1236,7 @@ def get_non_added_packs_ids(build: Build):
     """
     added_files = run_command(f'git diff --name-only --diff-filter=A '
                               f'origin/master..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
-    added_files = added_files.split('\n')
+    added_files = filter(lambda x: x, added_files.split('\n'))
     added_pack_ids = map(lambda x: x.split('/')[1], added_files)
     return set(get_pack_ids_to_install()) - set(added_pack_ids)
 
