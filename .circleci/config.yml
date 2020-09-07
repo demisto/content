@@ -318,10 +318,10 @@ references:
             name: Get Contributor pack
             when: always
             command: |
-                USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+                REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-                python3 ./Utils/get_contrib_pack.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USER
-  notify_contrib_pr: &notify_contrib_pr
+                python3 ./Utils/get_contrib_pack.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO
+  comment_on_contrib_pr: &comment_on_contrib_pr
     when:
       condition: << pipeline.parameters.contrib_branch >>
       steps:
@@ -329,8 +329,9 @@ references:
             name: Comment on the contribution Pull Request
             when: always
             command: |
+              # Demisto Marketplace refers to Server Master
               SERVER_URL=$(jq -r 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
-              python3 ./Utils/notify_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Link: https://$SERVER_URL"
+              python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. ￿Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 jobs:
   Setup Environment:
     <<: *container_config
@@ -899,7 +900,7 @@ jobs:
                 command: |
                   ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
                 when: always
-            - *notify_contrib_pr
+            - *comment_on_contrib_pr
             - *destroy_instances
             - *store_artifacts
   Force Pack Upload:

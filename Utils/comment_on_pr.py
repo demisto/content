@@ -26,13 +26,20 @@ def main():
         print_error('Could not find the pull request to reply on.')
         sys.exit(1)
 
-    comment_url = pr['comments_url']
+    comments_url = pr['comments_url']
+    response = requests.get(comments_url)
+    response.raise_for_status()
+    comments = response.json()
+    link_comments = [comment for comment in comments if 'Instance is ready.' in comment.get('body', '')]
+    if link_comments:
+        comments_url = link_comments[0]['url']
+
     headers = {'Authorization': 'Bearer ' + token}
-    response = requests.post(comment_url, json={'body': comment}, headers=headers, verify=False)
+    response = requests.post(comments_url, json={'body': comment}, headers=headers)
     response.raise_for_status()
 
     print_success('Successfully added the comment to the PR.')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

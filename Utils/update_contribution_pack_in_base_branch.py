@@ -11,11 +11,11 @@ def main():
     parser = argparse.ArgumentParser(description='Deploy a pack from a contribution PR to a branch')
     parser.add_argument('-p', '--pr_number', help='Contrib PR number')
     parser.add_argument('-b', '--branch', help='The contrib branch')
-    parser.add_argument('-u', '--user', help='The contrib repo')
+    parser.add_argument('-c', '--contrib_repo', help='The contrib repo')
     args = parser.parse_args()
 
     pr_number = args.pr_number
-    user = args.user
+    repo = args.contrib_repo
     branch = args.branch
     page = 1
     pack_dir_name = ''
@@ -39,14 +39,14 @@ def main():
         sys.exit(1)
 
     pack_dir = f'Packs/{pack_dir_name}'
-    print(f'Copy the changes from the contributor branch {user}/{branch} in the pack {pack_dir_name}')
+    print(f'Copy the changes from the contributor branch {repo}/{branch} in the pack {pack_dir_name}')
 
     try:
         shutil.rmtree(pack_dir)
         commands = [
-            f'git remote add {user} git@github.com:{user}/content.git',
-            f'git fetch {user} {branch}',
-            f'git checkout {user}/{branch} {pack_dir}'
+            f'git remote add {repo} git@github.com:{repo}/content.git',
+            f'git fetch {repo} {branch}',
+            f'git checkout {repo}/{branch} {pack_dir}'
         ]
 
         for command in commands:
@@ -59,5 +59,5 @@ def main():
     print_success(f'Successfully updated the base branch with the contrib pack {pack_dir_name}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
