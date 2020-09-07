@@ -2150,7 +2150,7 @@
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
-            "timeout": 300
+            "timeout": 1500
         },
         {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
@@ -2982,7 +2982,6 @@
         "PCAP Parsing And Indicator Enrichment Test": "Merged with PCAP Analysis Test",
         "PCAP Search test": "Merged with PCAP Analysis Test",
         "Protectwise-Test": "Issue 28168",
-        "PAN-OS DAG Configuration Test": "Issue 60693",
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "CuckooTest": "Issue 25601",
         "RedLockTest": "Issue 24600",
