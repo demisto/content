@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Trend Micro Apex
+  id: Trend Micro Apex_copy
   version: -1
 configuration:
 - display: Server URL (e.g. https://vxsuz5.manage.trendmicro.com)
@@ -31,9 +31,128 @@ configuration:
 description: Trend Micro Apex central automation to manage agents and User-Defined
   Suspicious Objects
 display: Trend Micro Apex
-name: Trend Micro Apex
+name: Trend Micro Apex_copy
 script:
   commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The suspicious object type to query
+      isArray: false
+      name: type
+      predefined:
+      - ip
+      - url
+      - file_sha1
+      - domain
+      - file
+      required: false
+      secret: false
+    - default: false
+      description: Filters the list to suspicious objects that match the specified
+        string
+      isArray: false
+      name: content_filter
+      required: false
+      secret: false
+    deprecated: true
+    description: Retrieve a list of User-Defined Suspicious Objects from the Apex
+      Central server.
+    execution: false
+    name: trendmicro-apex-usdo-list
+    outputs:
+    - contextPath: TrendMicroApex.USDO.type
+      description: 'Indicator type of the USDO object, for example: ip, file, file_sha1,
+        url, domain.'
+      type: String
+    - contextPath: TrendMicroApex.USDO.content
+      description: Indicator content of the USDO object.
+      type: String
+    - contextPath: TrendMicroApex.USDO.notes
+      description: Indicator notes of the USDO object.
+      type: String
+    - contextPath: TrendMicroApex.USDO.scan_action
+      description: 'Scan action of the USDO object, for example: log, block, quarantine.'
+      type: String
+    - contextPath: TrendMicroApex.USDO.expiration_utc_date
+      description: Expiration date of the USDO object in UTC.
+      type: Date
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The suspicious object type
+      isArray: false
+      name: type
+      predefined:
+      - ip
+      - url
+      - file_sha1
+      - domain
+      - file
+      required: true
+      secret: false
+    - default: false
+      description: The suspicious object content for the specified type, for example
+        8.8.8.8 (for type "file", provide the binary content of the suspicious file
+        as a base64 string)
+      isArray: false
+      name: content
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The scan action to perform on the suspicious object (The "quarantine"
+        scan action is only available for file type objects)
+      isArray: false
+      name: scan_action
+      predefined:
+      - log
+      - block
+      - quarantine
+      required: true
+      secret: false
+    - default: false
+      description: Description of the object.
+      isArray: false
+      name: notes
+      required: false
+      secret: false
+    - default: false
+      description: 'The UTC expiration date and time of the suspicious object, for
+        example: 2020-01-25T09:00:00Z'
+      isArray: false
+      name: expiration
+      required: false
+      secret: false
+    deprecated: true
+    description: Add suspicious file, file SHA-1, IP address, domain, or URL objects
+      to the User-Defined Suspicious Object list.
+    execution: false
+    name: trendmicro-apex-usdo-add
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The suspicious object type
+      isArray: false
+      name: type
+      predefined:
+      - ip
+      - url
+      - file_sha1
+      - domain
+      required: true
+      secret: false
+    - default: false
+      description: The suspicious object content for the specified type
+      isArray: false
+      name: content
+      required: true
+      secret: false
+    deprecated: true
+    description: Delete suspicious file SHA-1, IP address, domain, or URL objects
+      from the User-Defined Suspicious Object list.
+    execution: false
+    name: trendmicro-apex-usdo-delete
   - arguments:
     - auto: PREDEFINED
       default: false
