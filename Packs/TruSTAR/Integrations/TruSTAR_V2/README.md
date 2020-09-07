@@ -1,5 +1,5 @@
 TruSTAR is an Intelligence Management Platform that helps you operationalize data across tools and teams, helping you prioritize investigations and accelerate incident response.
-This integration was integrated and tested with version xx of TruSTAR v2
+This integration was integrated and tested with version 0.3.31 of TruSTAR v2
 ## Configure TruSTAR v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
