@@ -2396,7 +2396,6 @@ def prettify_get_url_filter(url_filter):
             pretty_url_filter['OverrideAllowList'] = url_filter['allow-list']['member']
         else:
             pretty_url_filter['OverrideBlockList'] = url_filter['block-list']['member']
-
     return pretty_url_filter
 
 
@@ -5571,9 +5570,9 @@ def get_security_profiles_command():
         raise Exception('Please commit the instance prior to getting the security profiles.')
 
     human_readable = ''
-    content: Union[List[Dict[str, Any]], Dict[str, Any]] = []
+    content = []
     context = {}
-    if 'spyware' in security_profiles:
+    if 'spyware' in security_profiles and security_profiles['spyware'] is not None:
         profiles = security_profiles.get('spyware', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
@@ -5594,7 +5593,7 @@ def get_security_profiles_command():
         human_readable = tableToMarkdown('Anti Spyware Profiles', content)
         context.update({"Panorama.Spyware(val.Name == obj.Name)": content})
 
-    if 'virus' in security_profiles:
+    if 'virus' in security_profiles and security_profiles['virus'] is not None:
         profiles = security_profiles.get('virus', {}).get('entry', [])
         if isinstance(profiles, list):
             for profile in profiles:
@@ -5615,7 +5614,7 @@ def get_security_profiles_command():
         human_readable += tableToMarkdown('Antivirus Profiles', content)
         context.update({"Panorama.Antivirus(val.Name == obj.Name)": content})
 
-    if 'file-blocking' in security_profiles:
+    if 'file-blocking' in security_profiles and security_profiles['file-blocking'] is not None:
         profiles = security_profiles.get('file-blocking', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
@@ -5636,7 +5635,7 @@ def get_security_profiles_command():
         human_readable += tableToMarkdown('File Blocking Profiles', content)
         context.update({"Panorama.FileBlocking(val.Name == obj.Name)": content})
 
-    if 'vulnerability' in security_profiles:
+    if 'vulnerability' in security_profiles and security_profiles['vulnerability'] is not None:
         profiles = security_profiles.get('vulnerability', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
@@ -5657,7 +5656,7 @@ def get_security_profiles_command():
         human_readable += tableToMarkdown('Vulnerability Protection Profiles', content)
         context.update({"Panorama.Vulnerability(val.Name == obj.Name)": content})
 
-    if 'data-filtering' in security_profiles:
+    if 'data-filtering' in security_profiles and security_profiles['data-filtering'] is not None:
         profiles = security_profiles.get('data-filtering', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
@@ -5678,12 +5677,12 @@ def get_security_profiles_command():
         human_readable += tableToMarkdown('Data Filtering Profiles', content)
         context.update({"Panorama.DataFiltering(val.Name == obj.Name)": content})
 
-    if 'url-filtering' in security_profiles:
-        profiles = security_profiles.get('url-filtering', {}).get('entry', [])
+    if 'url-filtering' in security_profiles and security_profiles['url-filtering'] is not None:
+        profiles = security_profiles.get('url-filtering', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 url_filtering_rules = prettify_get_url_filter(profile)
-                content.append({
+                content.update({
                     'Name': profile['@name'],
                     'Rules': url_filtering_rules
                 })
@@ -5695,9 +5694,9 @@ def get_security_profiles_command():
             }
 
         human_readable += tableToMarkdown('URL Filtering Profiles', content)
-        context.update({"Panorama.URLFilter(val.Name == obj.Name)": content})
+        context.update({'Panorama.URLFilter(val.Name == obj.Name)': content})
 
-    if 'wildfire-analysis' in security_profiles:
+    if 'wildfire-analysis' in security_profiles and security_profiles['wildfire-analysis'] is not None:
         profiles = security_profiles.get('wildfire-analysis', {}).get('entry', [])
         if isinstance(profiles, list):
             for profile in profiles:
