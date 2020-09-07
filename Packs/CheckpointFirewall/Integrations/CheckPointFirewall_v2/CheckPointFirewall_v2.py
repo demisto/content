@@ -1,5 +1,5 @@
 import requests
-from typing import Optional, List
+from typing import Optional
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -1747,7 +1747,7 @@ def main():
             response = checkpoint_login_and_get_sid_command(base_url, username, password,
                                                             verify_certificate, 600).outputs
             if response:
-                sid = response.get('session-id')
+                sid = response.get('session-id')  # type: ignore
                 demisto.results(test_module(base_url, sid, verify_certificate))
                 checkpoint_logout_command(base_url, sid, verify_certificate)
                 return
