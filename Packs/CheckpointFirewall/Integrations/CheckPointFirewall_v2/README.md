@@ -1,4 +1,3 @@
-
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -26,7 +25,7 @@ Show all host objects
 | CheckPoint.Host.name | String | object name | 
 | CheckPoint.Host.uid | String | object uid | 
 | CheckPoint.Host.type | String | object type | 
-| CheckPoint.Host.ipv4 | String | IP\-v4 address of a spesific host | 
+| CheckPoint.Host.ipv4 | String | IP-v4 address of a spesific host | 
 
 
 #### Command Example
@@ -38,34 +37,64 @@ Show all host objects
     "CheckPoint": {
         "Host": [
             {
-                "ipv4": "200.200.200.111",
-                "name": "200.200.200.111",
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": "18.88.8.7",
+                "last-modifier": null,
+                "name": "18.88.8.7",
+                "read-only": null,
                 "type": "host",
-                "uid": "3b80b631-2241-42c9-af12-c00e3ef16801"
+                "uid": "f083d3ce-8e95-460f-a386-0bc4eca1214a"
             },
             {
-                "ipv4": "200.200.200.112",
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": "18.88.8.8",
+                "last-modifier": null,
+                "name": "18.88.8.8",
+                "read-only": null,
+                "type": "host",
+                "uid": "b032c0a7-096c-4b27-9a09-8d9437312135"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": "192.168.30.2",
+                "last-modifier": null,
+                "name": "192.168.30.2",
+                "read-only": null,
+                "type": "host",
+                "uid": "5bd98c85-f848-45ab-aa4c-c729fb8b1723"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": "200.200.200.112",
+                "last-modifier": null,
                 "name": "200.200.200.112",
+                "read-only": null,
                 "type": "host",
                 "uid": "23c4b2cf-0adc-4282-8f15-262cfec7f5f5"
             },
             {
-                "ipv4": "200.200.200.113",
-                "name": "200.200.200.113",
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": "192.192.10.10",
+                "last-modifier": null,
+                "name": "Demisto - 2096",
+                "read-only": null,
                 "type": "host",
-                "uid": "1404bc91-2a3b-4b42-a8ec-cc5637a8782f"
-            },
-            {
-                "ipv4": "200.200.200.114",
-                "name": "200.200.200.114",
-                "type": "host",
-                "uid": "635bb5af-05d9-4754-a2ce-0e5c9e2df6b2"
-            },
-            {
-                "ipv4": "200.200.200.115",
-                "name": "200.200.200.115",
-                "type": "host",
-                "uid": "d5558fe3-f6de-48e9-9029-5f8711e9654d"
+                "uid": "cded0c90-3402-4766-ad1b-adaf972b254f"
             }
         ]
     }
@@ -74,14 +103,14 @@ Show all host objects
 
 #### Human Readable Output
 
->### CheckPoint data for listing Hosts:
->|name|uid|type|ipv4|
+>### CheckPoint data for all hosts:
+>|name|uid|type|ipv4-address|
 >|---|---|---|---|
->| 200.200.200.111 | 3b80b631-2241-42c9-af12-c00e3ef16801 | host | 200.200.200.111 |
+>| 18.88.8.7 | f083d3ce-8e95-460f-a386-0bc4eca1214a | host | 18.88.8.7 |
+>| 18.88.8.8 | b032c0a7-096c-4b27-9a09-8d9437312135 | host | 18.88.8.8 |
+>| 192.168.30.2 | 5bd98c85-f848-45ab-aa4c-c729fb8b1723 | host | 192.168.30.2 |
 >| 200.200.200.112 | 23c4b2cf-0adc-4282-8f15-262cfec7f5f5 | host | 200.200.200.112 |
->| 200.200.200.113 | 1404bc91-2a3b-4b42-a8ec-cc5637a8782f | host | 200.200.200.113 |
->| 200.200.200.114 | 635bb5af-05d9-4754-a2ce-0e5c9e2df6b2 | host | 200.200.200.114 |
->| 200.200.200.115 | d5558fe3-f6de-48e9-9029-5f8711e9654d | host | 200.200.200.115 |
+>| Demisto - 2096 | cded0c90-3402-4766-ad1b-adaf972b254f | host | 192.192.10.10 |
 
 
 ### checkpoint-host-get
@@ -130,19 +159,13 @@ get all data of a given host
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
-            "groups": [
-                {
-                    "name": "test_group",
-                    "uid": "d3347224-ee5e-435a-b274-bdc29b5e707c"
-                }
-            ],
-            "ipv4-address": "11.22.33.45",
-            "ipv6-address": "11.22.33.45",
+            "groups": [],
+            "ipv4-address": "1.1.1.1",
             "last-modifier": "adminsh",
             "name": "host_test",
             "read-only": false,
             "type": "host",
-            "uid": "badfe307-d517-46e8-bc66-abdec61d7a53"
+            "uid": "11c194c4-db5f-46de-a9e2-95b8e858b98f"
         }
     }
 }
@@ -150,14 +173,10 @@ get all data of a given host
 
 #### Human Readable Output
 
->### CheckPoint data for getting Host:
->|creator|domain-name|domain-uid|ipv4-address|ipv6-address|last-modifier|name|read-only|type|uid|
->|---|---|---|---|---|---|---|---|---|---|
->| adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | 11.22.33.45 | 11.22.33.45 | adminsh | host_test | false | host | badfe307-d517-46e8-bc66-abdec61d7a53 |
->### CheckPoint data for Host groups:
->|name|uid|
->|---|---|
->| test_group | d3347224-ee5e-435a-b274-bdc29b5e707c |
+>### CheckPoint data of host object host_test:
+>|name|uid|type|ipv4-address|domain-name|domain-uid|read-only|creator|last-modifier|
+>|---|---|---|---|---|---|---|---|---|
+>| host_test | 11c194c4-db5f-46de-a9e2-95b8e858b98f | host | 1.1.1.1 | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | false | adminsh | adminsh |
 
 
 ### checkpoint-host-add
@@ -174,7 +193,7 @@ Add new host
 | --- | --- | --- |
 | name | name of the new host | Required | 
 | ip_address | ip address | Required | 
-| groups | Collection of group identifiers. | Optional | 
+| groups | group identifier. | Optional | 
 | session_id | Execute command with a specific session ID | Required | 
 
 
@@ -197,7 +216,7 @@ Add new host
 
 
 #### Command Example
-```!checkpoint-host-add name=test_host ip_address=8.8.8.8 session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-host-add name=test_host_1 ip_address=18.18.18.18 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
@@ -208,13 +227,14 @@ Add new host
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
-            "ipv4-address": "8.8.8.8",
-            "ipv6-address": "8.8.8.8",
+            "groups": [],
+            "ipv4-address": "18.18.18.18",
+            "ipv6-address": null,
             "last-modifier": "adminsh",
-            "name": "test_host",
+            "name": "test_host_1",
             "read-only": true,
             "type": "host",
-            "uid": "dfeb5a46-40f3-4937-bda9-3321ffa02251"
+            "uid": "7290f66a-fdd4-40fb-a639-774e3f387113"
         }
     }
 }
@@ -222,10 +242,10 @@ Add new host
 
 #### Human Readable Output
 
->### CheckPoint data for adding Host:
->|creator|domain-name|domain-uid|ipv4-address|ipv6-address|last-modifier|name|read-only|type|uid|
->|---|---|---|---|---|---|---|---|---|---|
->| adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | 8.8.8.8 | 8.8.8.8 | adminsh | test_host | true | host | dfeb5a46-40f3-4937-bda9-3321ffa02251 |
+>### CheckPoint data for adding host:
+>|name|uid|type|domain-name|domain-uid|creator|last-modifier|ipv4-address|read-only|
+>|---|---|---|---|---|---|---|---|---|
+>| test_host_1 | 7290f66a-fdd4-40fb-a639-774e3f387113 | host | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | adminsh | 18.18.18.18 | true |
 
 
 ### checkpoint-host-update
@@ -241,7 +261,7 @@ update host changes
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | identifier | Object unique identifier or name | Required | 
-| ip | IPv4 or IPv6 address. | Optional | 
+| ip_address | IPv4 or IPv6 address. | Optional | 
 | new_name | New name of the object. | Optional | 
 | comments | Comments string. | Optional | 
 | ignore_warnings | Apply changes ignoring warnings. | Optional | 
@@ -269,23 +289,24 @@ update host changes
 
 
 #### Command Example
-```!checkpoint-host-update identifier=host_test session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-host-update identifier=host_test session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
 {
     "CheckPoint": {
         "Host": {
+            "comments": "",
+            "creator": "adminsh",
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
-            "groups": "test_group",
-            "ipv4-address": "11.22.33.45",
-            "ipv6-address": "11.22.33.45",
+            "ipv4-address": "1.1.1.1",
+            "last-modifier": "adminsh",
             "name": "host_test",
-            "total-number": null,
+            "read-only": false,
             "type": "host",
-            "uid": "badfe307-d517-46e8-bc66-abdec61d7a53"
+            "uid": "11c194c4-db5f-46de-a9e2-95b8e858b98f"
         }
     }
 }
@@ -293,10 +314,10 @@ update host changes
 
 #### Human Readable Output
 
->### CheckPoint Data for updating Host:
->|domain-name|domain-uid|groups|ipv4-address|ipv6-address|name|type|uid|
->|---|---|---|---|---|---|---|---|
->| SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | test_group | 11.22.33.45 | 11.22.33.45 | host_test | host | badfe307-d517-46e8-bc66-abdec61d7a53 |
+>### CheckPoint data for updating a host:
+>|name|uid|type|domain-name|domain-uid|creator|ipv4-address|last-modifier|read-only|
+>|---|---|---|---|---|---|---|---|---|
+>| host_test | 11c194c4-db5f-46de-a9e2-95b8e858b98f | host | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | 1.1.1.1 | adminsh | false |
 
 
 ### checkpoint-host-delete
@@ -323,24 +344,10 @@ delete host
 
 
 #### Command Example
-``` !checkpoint-host-delete identifier="host_test" session_id="TEAK9kWnZ9Dhql9hYP5IR4aZEw1mrKdPjw3lRnxvp88"```
+``` ```
 
-#### Context Example
-#### Context Example
-```
-{
-    "CheckPoint": {
-        "Host": {
-            "message": "ok"
-        }
-    }
-}
-```
 #### Human Readable Output
-### CheckPoint Data for deleting Host:
-|message|
-|---|
-| OK |
+
 
 
 ### checkpoint-group-list
@@ -378,34 +385,64 @@ Show a list of all groups
     "CheckPoint": {
         "Group": [
             {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "bensar",
+                "read-only": null,
                 "type": "group",
                 "uid": "fe26adc1-c0e1-4424-9a9e-f74f511a7f28"
             },
             {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "group10",
+                "read-only": null,
+                "type": "group",
+                "uid": "cf069504-5ea5-4eb2-9b97-ccdc500db118"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "group9",
+                "read-only": null,
+                "type": "group",
+                "uid": "c4635886-15c9-4416-8160-5c70d68462cd"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "group_test",
+                "read-only": null,
                 "type": "group",
                 "uid": "35a46b01-47f5-496f-9329-d55c7d2ab083"
             },
             {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "Group_test_for_demisto",
+                "read-only": null,
                 "type": "group",
                 "uid": "1deaead0-136c-4791-8d58-9229c143b8c5"
-            },
-            {
-                "ipv4": null,
-                "name": "new_empty_group",
-                "type": "group",
-                "uid": "46bc7185-ad43-4792-b9be-40364a1d0883"
-            },
-            {
-                "ipv4": null,
-                "name": "new_host_group",
-                "type": "group",
-                "uid": "a4f0f6c4-7b60-44c1-8dce-6307069fcccf"
             }
         ]
     }
@@ -414,14 +451,14 @@ Show a list of all groups
 
 #### Human Readable Output
 
->### CheckPoint data for listing Groups:
+>### CheckPoint data for all groups:
 >|name|uid|type|
 >|---|---|---|
 >| bensar | fe26adc1-c0e1-4424-9a9e-f74f511a7f28 | group |
+>| group10 | cf069504-5ea5-4eb2-9b97-ccdc500db118 | group |
+>| group9 | c4635886-15c9-4416-8160-5c70d68462cd | group |
 >| group_test | 35a46b01-47f5-496f-9329-d55c7d2ab083 | group |
 >| Group_test_for_demisto | 1deaead0-136c-4791-8d58-9229c143b8c5 | group |
->| new_empty_group | 46bc7185-ad43-4792-b9be-40364a1d0883 | group |
->| new_host_group | a4f0f6c4-7b60-44c1-8dce-6307069fcccf | group |
 
 
 ### checkpoint-group-get
@@ -456,7 +493,7 @@ Get all data of a given group
 
 
 #### Command Example
-```!checkpoint-group-get identifier=test_group```
+```!checkpoint-group-get identifier=group_test```
 
 #### Context Example
 ```
@@ -467,31 +504,13 @@ Get all data of a given group
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "groups": [],
             "ipv4-address": null,
-            "ipv6-address": null,
             "last-modifier": "adminsh",
-            "members": [
-                {
-                    "member-domain-name": "SMC User",
-                    "member-domain-type": null,
-                    "member-domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
-                    "member-name": "host_test",
-                    "member-type": "host",
-                    "member-uid": "badfe307-d517-46e8-bc66-abdec61d7a53"
-                },
-                {
-                    "member-domain-name": "SMC User",
-                    "member-domain-type": null,
-                    "member-domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
-                    "member-name": "200.200.200.114",
-                    "member-type": "host",
-                    "member-uid": "635bb5af-05d9-4754-a2ce-0e5c9e2df6b2"
-                }
-            ],
-            "name": "test_group",
+            "name": "group_test",
             "read-only": false,
             "type": "group",
-            "uid": "d3347224-ee5e-435a-b274-bdc29b5e707c"
+            "uid": "35a46b01-47f5-496f-9329-d55c7d2ab083"
         }
     }
 }
@@ -499,15 +518,10 @@ Get all data of a given group
 
 #### Human Readable Output
 
->### CheckPoint data for getting Group:
->|creator|domain-name|domain-uid|last-modifier|name|read-only|type|uid|
+>### CheckPoint for group_test group:
+>|name|uid|type|domain-name|domain-uid|read-only|creator|last-modifier|
 >|---|---|---|---|---|---|---|---|
->| adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | test_group | false | group | d3347224-ee5e-435a-b274-bdc29b5e707c |
->### CheckPoint member data:
->|member-name|member-uid|member-type|member-domain-name|member-domain-uid|
->|---|---|---|---|---|
->| host_test | badfe307-d517-46e8-bc66-abdec61d7a53 | host | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde |
->| 200.200.200.114 | 635bb5af-05d9-4754-a2ce-0e5c9e2df6b2 | host | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde |
+>| group_test | 35a46b01-47f5-496f-9329-d55c7d2ab083 | group | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | false | adminsh | adminsh |
 
 
 ### checkpoint-group-add
@@ -538,37 +552,15 @@ add a group
 | CheckPoint.Group.domain-type | String | domain type | 
 | CheckPoint.Group.creator | String | Indicates the object creator | 
 | CheckPoint.Group.last-modifier | String | Indicates the last user modified the object | 
-| CheckPoint.Group.read-only | Boolean | Indicates whether the object is read\-only | 
+| CheckPoint.Group.read-only | Boolean | Indicates whether the object is read-only | 
 | CheckPoint.Group.groups-name | Unknown | groups name | 
 
 
 #### Command Example
-```!checkpoint-group-add name=test_group_1 session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
-
-#### Context Example
-```
-{
-    "CheckPoint": {
-        "Group": {
-            "creator": "adminsh",
-            "domain-name": "SMC User",
-            "domain-type": null,
-            "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
-            "last-modifier": "adminsh",
-            "name": "test_group_1",
-            "type": "group",
-            "uid": "11e751da-a0e7-499a-bcde-5bc638c73fb5"
-        }
-    }
-}
-```
+``` ```
 
 #### Human Readable Output
 
->### CheckPoint data for adding Group:
->|creator|domain-name|domain-uid|last-modifier|name|type|uid|
->|---|---|---|---|---|---|---|
->| adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | test_group_1 | group | 11e751da-a0e7-499a-bcde-5bc638c73fb5 |
 
 
 ### checkpoint-group-update
@@ -608,22 +600,22 @@ update group object
 
 
 #### Command Example
-```!checkpoint-group-update identifier=test_group session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-group-update identifier=group_test session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
 {
     "CheckPoint": {
         "Group": {
+            "creator": "adminsh",
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
-            "ipv4-address": null,
-            "ipv6-address": null,
-            "name": "test_group",
-            "total-number": null,
+            "last-modifier": "adminsh",
+            "name": "group_test",
+            "read-only": false,
             "type": "group",
-            "uid": "d3347224-ee5e-435a-b274-bdc29b5e707c"
+            "uid": "35a46b01-47f5-496f-9329-d55c7d2ab083"
         }
     }
 }
@@ -631,10 +623,10 @@ update group object
 
 #### Human Readable Output
 
->### CheckPoint Data for updating Group:
->|domain-name|domain-uid|name|type|uid|
->|---|---|---|---|---|
->| SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | test_group | group | d3347224-ee5e-435a-b274-bdc29b5e707c |
+>### CheckPoint data for updating a group:
+>|name|uid|type|domain-name|domain-uid|creator|last-modifier|read-only|
+>|---|---|---|---|---|---|---|---|
+>| group_test | 35a46b01-47f5-496f-9329-d55c7d2ab083 | group | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | adminsh | false |
 
 
 ### checkpoint-group-delete
@@ -661,7 +653,7 @@ delete a group object
 
 
 #### Command Example
-```!checkpoint-group-delete identifier=test_group session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-group-delete identifier=group_test session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
@@ -676,7 +668,7 @@ delete a group object
 
 #### Human Readable Output
 
->### CheckPoint Data for deleting Group:
+>### CheckPoint data for deleting group_test:
 >|message|
 >|---|
 >| OK |
@@ -717,26 +709,62 @@ List all address range objects
     "CheckPoint": {
         "AddressRange": [
             {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "address_range_1",
+                "read-only": null,
+                "type": "address-range",
+                "uid": "d4543195-8744-4592-906e-1cdcd534a564"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "address_range_test",
+                "read-only": null,
                 "type": "address-range",
-                "uid": "459d883d-8c1f-40b2-b269-450dc4f857ac"
+                "uid": "26887214-d639-4acd-ab48-508d900cdfc2"
             },
             {
-                "ipv4": null,
-                "name": "address_range_test_2",
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "address_range_test_1",
+                "read-only": null,
                 "type": "address-range",
-                "uid": "1f9b89c7-a4e5-4f1e-b59a-e9c3029e7572"
+                "uid": "46800cfe-e3ff-4101-867c-27772ade9d72"
             },
             {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "All_Internet",
+                "read-only": null,
                 "type": "address-range",
                 "uid": "f90e0a2b-f166-427a-b47f-a107b6fe43b9"
             },
             {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "LocalMachine_Loopback",
+                "read-only": null,
                 "type": "address-range",
                 "uid": "5d3b2752-4072-41e1-9aa0-488813b02a40"
             }
@@ -747,11 +775,12 @@ List all address range objects
 
 #### Human Readable Output
 
->### CheckPoint data for listing AddressRanges:
+>### CheckPoint data for all address ranges:
 >|name|uid|type|
 >|---|---|---|
->| address_range_test | 459d883d-8c1f-40b2-b269-450dc4f857ac | address-range |
->| address_range_test_2 | 1f9b89c7-a4e5-4f1e-b59a-e9c3029e7572 | address-range |
+>| address_range_1 | d4543195-8744-4592-906e-1cdcd534a564 | address-range |
+>| address_range_test | 26887214-d639-4acd-ab48-508d900cdfc2 | address-range |
+>| address_range_test_1 | 46800cfe-e3ff-4101-867c-27772ade9d72 | address-range |
 >| All_Internet | f90e0a2b-f166-427a-b47f-a107b6fe43b9 | address-range |
 >| LocalMachine_Loopback | 5d3b2752-4072-41e1-9aa0-488813b02a40 | address-range |
 
@@ -775,6 +804,7 @@ Add address range object
 | ignore_warnings | Apply changes ignoring warnings. | Optional | 
 | ignore_errors | Apply changes ignoring errors. | Optional | 
 | session_id | Execute command with a specific session ID | Required | 
+| groups | Collection of group identifiers.  | Optional | 
 
 
 #### Context Output
@@ -791,38 +821,44 @@ Add address range object
 | CheckPoint.AddressRange.ipv4-address-last | String | Last IPv4 address in the range | 
 | CheckPoint.AddressRange.ipv6-address-first | String | First IPv4 address in the range | 
 | CheckPoint.AddressRange.ipv6-address-last | String | Last IPv6 address in the range | 
-| CheckPoint.AddressRange.read-only | Boolean | Indicates whether the object is read\-only. | 
+| CheckPoint.AddressRange.read-only | Boolean | Indicates whether the object is read-only. | 
 | CheckPoint.AddressRange.creator | String | Indicates the creator of the object | 
 | CheckPoint.AddressRange.last-modifier | String | Indicates the last user modified the object | 
+| CheckPoint.AddressRange.groups | String | Name of the group object | 
 
 
 #### Command Example
-``` !checkpoint-address-range-add name="address_range_test_1" ip_address_first="100.100.100.3" ip_address_last="100.100.100.5" session_id="TEAK9kWnZ9Dhql9hYP5IR4aZEw1mrKdPjw3lRnxvp88"```
+```!checkpoint-address-range-add name=address_range_test_2 ip_address_first=8.8.8.8 ip_address_last=9.9.9.9 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
 {
     "CheckPoint": {
-        "AddressRange":
-                    {
-                      'name': 'address_range_test_1',
-                      'uid': '13b34d0b-64a6-4a35-837d-8d25e3faf995',
-                      'type': 'address-range',
-                      'domain-name': 'SMC User',
-                      'domain-uid': '41e821a0-3720-11e3-aa6e-0800200c9fde',
-                      'domain-type': None,
-                      'creator': 'adminsh',
-                      'last-modifier': 'adminsh'
-                    }
+        "AddressRange": {
+            "creator": "adminsh",
+            "domain-name": "SMC User",
+            "domain-type": null,
+            "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "ipv4-address-first": "8.8.8.8",
+            "ipv4-address-last": "9.9.9.9",
+            "ipv6-address-first": "",
+            "ipv6-address-last": "",
+            "last-modifier": "adminsh",
+            "name": "address_range_test_2",
+            "read-only": true,
+            "type": "address-range",
+            "uid": "4fb8174d-89db-42f8-88b8-525c8fe818be"
+        }
     }
 }
 ```
 
 #### Human Readable Output
-### CheckPoint data for adding AddressRange:
-|creator|domain-name|domain-uid|last-modifier|name|type|uid|
-|---|---|---|---|---|---|---|
-| adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | address_range_test_1 | address-range | 13b34d0b-64a6-4a35-837d-8d25e3faf995 |
+
+>### CheckPoint data for adding an address range:
+>|name|uid|type|domain-name|domain-uid|creator|ipv4-address-first|ipv4-address-last|last-modifier|read-only|
+>|---|---|---|---|---|---|---|---|---|---|
+>| address_range_test_2 | 4fb8174d-89db-42f8-88b8-525c8fe818be | address-range | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | 8.8.8.8 | 9.9.9.9 | adminsh | true |
 
 
 ### checkpoint-address-range-update
@@ -862,27 +898,29 @@ Update an address range object
 | CheckPoint.AddressRange.ipv4-address-last | String | Last IPv4 address in the range | 
 | CheckPoint.AddressRange.ipv6-address-first | String | First IPv4 address in the range | 
 | CheckPoint.AddressRange.ipv6-address-last | String | Last IPv6 address in the range | 
-| CheckPoint.AddressRange.read-only | Boolean | Indicates whether the object is read\-only. | 
+| CheckPoint.AddressRange.read-only | Boolean | Indicates whether the object is read-only. | 
 | CheckPoint.AddressRange.groups | String | List of all groups the address range is linked to | 
 
 
 #### Command Example
-```!checkpoint-address-range-update identifier=address_range_test layer=Network session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-address-range-update identifier=address_range_test layer=Network session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
 {
     "CheckPoint": {
         "AddressRange": {
+            "comments": "",
+            "creator": "adminsh",
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
             "ipv4-address": null,
-            "ipv6-address": null,
+            "last-modifier": "adminsh",
             "name": "address_range_test",
-            "total-number": null,
+            "read-only": false,
             "type": "address-range",
-            "uid": "459d883d-8c1f-40b2-b269-450dc4f857ac"
+            "uid": "26887214-d639-4acd-ab48-508d900cdfc2"
         }
     }
 }
@@ -890,10 +928,10 @@ Update an address range object
 
 #### Human Readable Output
 
->### CheckPoint Data for updating AddressRange:
->|domain-name|domain-uid|name|type|uid|
->|---|---|---|---|---|
->| SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | address_range_test | address-range | 459d883d-8c1f-40b2-b269-450dc4f857ac |
+>### CheckPoint data for updating an address range:
+>|name|uid|type|domain-name|domain-uid|creator|last-modifier|read-only|
+>|---|---|---|---|---|---|---|---|
+>| address_range_test | 26887214-d639-4acd-ab48-508d900cdfc2 | address-range | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | adminsh | false |
 
 
 ### checkpoint-address-range-delete
@@ -920,7 +958,7 @@ Delete a given address range
 
 
 #### Command Example
-```!checkpoint-address-range-delete identifier=address_range_test session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-address-range-delete identifier=address_range_test session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
@@ -935,7 +973,7 @@ Delete a given address range
 
 #### Human Readable Output
 
->### CheckPoint Data for deleting AddressRange:
+>### CheckPoint data for deleting address range:
 >|message|
 >|---|
 >| OK |
@@ -976,22 +1014,64 @@ List all threat indicators
     "CheckPoint": {
         "ThreatIndicator": [
             {
-                "ipv4": null,
-                "name": "My_Indicator",
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "My_Indicator!",
+                "read-only": null,
                 "type": "threat-indicator",
                 "uid": "a40ec97c-e286-474b-bff7-b922e3b3294d"
             },
             {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "test_indicator",
+                "read-only": null,
                 "type": "threat-indicator",
                 "uid": "3e6a22c0-0416-4a2d-b7c0-f81df12916e1"
             },
             {
-                "ipv4": null,
-                "name": "threat_test",
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "threat_test_1",
+                "read-only": null,
                 "type": "threat-indicator",
-                "uid": "2830048d-0836-4ad0-a7bf-545e0fa00779"
+                "uid": "88e502f1-2bd5-4ad4-ba6b-dbbb2fef8260"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "threat_test_2",
+                "read-only": null,
+                "type": "threat-indicator",
+                "uid": "f34c89f1-b18f-4cf2-b2bb-672462178b9d"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "threat_test_3",
+                "read-only": null,
+                "type": "threat-indicator",
+                "uid": "ee17772c-94aa-4e42-93e4-f0ba49de339b"
             }
         ]
     }
@@ -1000,12 +1080,14 @@ List all threat indicators
 
 #### Human Readable Output
 
->### CheckPoint data for listing ThreatIndicators:
+>### CheckPoint data for all threat indicators:
 >|name|uid|type|
 >|---|---|---|
->| My_Indicator | a40ec97c-e286-474b-bff7-b922e3b3294d | threat-indicator |
+>| My_Indicator! | a40ec97c-e286-474b-bff7-b922e3b3294d | threat-indicator |
 >| test_indicator | 3e6a22c0-0416-4a2d-b7c0-f81df12916e1 | threat-indicator |
->| threat_test | 2830048d-0836-4ad0-a7bf-545e0fa00779 | threat-indicator |
+>| threat_test_1 | 88e502f1-2bd5-4ad4-ba6b-dbbb2fef8260 | threat-indicator |
+>| threat_test_2 | f34c89f1-b18f-4cf2-b2bb-672462178b9d | threat-indicator |
+>| threat_test_3 | ee17772c-94aa-4e42-93e4-f0ba49de339b | threat-indicator |
 
 
 ### checkpoint-threat-indicator-get
@@ -1036,11 +1118,11 @@ Get data for a given list indicator
 | CheckPoint.ThreatIndicator.domain-type | Unknown | domain type | 
 | CheckPoint.ThreatIndicator.creator | String | creator | 
 | CheckPoint.ThreatIndicator.last-modifier | String | Indicates the last user modified the object | 
-| CheckPoint.ThreatIndicator.read-only | Boolean | Indicates whether the object is read\-only. | 
+| CheckPoint.ThreatIndicator.read-only | Boolean | Indicates whether the object is read-only. | 
 
 
 #### Command Example
-```!checkpoint-threat-indicator-get identifier=threat_test```
+```!checkpoint-threat-indicator-get identifier=threat_test_1```
 
 #### Context Example
 ```
@@ -1051,13 +1133,14 @@ Get data for a given list indicator
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "groups": null,
             "ipv4-address": null,
-            "ipv6-address": null,
             "last-modifier": "adminsh",
-            "name": "threat_test",
+            "name": "threat_test_1",
+            "number-of-observables": 1,
             "read-only": false,
             "type": "threat-indicator",
-            "uid": "2830048d-0836-4ad0-a7bf-545e0fa00779"
+            "uid": "88e502f1-2bd5-4ad4-ba6b-dbbb2fef8260"
         }
     }
 }
@@ -1065,10 +1148,10 @@ Get data for a given list indicator
 
 #### Human Readable Output
 
->### CheckPoint data for getting ThreatIndicator:
->|creator|domain-name|domain-uid|last-modifier|name|read-only|type|uid|
->|---|---|---|---|---|---|---|---|
->| adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | threat_test | false | threat-indicator | 2830048d-0836-4ad0-a7bf-545e0fa00779 |
+>### CheckPoint data for threat_test_1 threat indicator:
+>|name|uid|type|domain-name|domain-uid|read-only|creator|last-modifier|number-of-observables|
+>|---|---|---|---|---|---|---|---|---|
+>| threat_test_1 | 88e502f1-2bd5-4ad4-ba6b-dbbb2fef8260 | threat-indicator | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | false | adminsh | adminsh | 1 |
 
 
 ### checkpoint-threat-indicator-add
@@ -1096,18 +1179,7 @@ Add a threat indicator
 
 
 #### Command Example
-```!checkpoint-threat-indicator-add name=threat_test2 observables=[] session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4 ```
-
-#### Context Example
-```
-{
-    "CheckPoint": {
-        "ThreatIndicator": {
-                    'task-id': 'c3b11fff-c58d-4242-af44-f549c40b0af5'
-        }
-    }
-}
-```
+``` ```
 
 #### Human Readable Output
 
@@ -1129,7 +1201,7 @@ Update a given indicator
 | action | the action to set. | Optional | 
 | new_name | New name of the object. | Optional | 
 | comments | Comments string. | Optional | 
-| session_id | Execute command with a specific session ID | Optional | 
+| session_id | Execute command with a specific session ID | Required | 
 
 
 #### Context Output
@@ -1145,26 +1217,28 @@ Update a given indicator
 | CheckPoint.ThreatIndicator.domain-type | String | domain type | 
 | CheckPoint.ThreatIndicator.creator | String | Indicates the creator of the object | 
 | CheckPoint.ThreatIndicator.last-modifier | String | Indicates the last user modified the object | 
-| CheckPoint.ThreatIndicator.read-only | Boolean | Indicates whether the object is read\-only. | 
+| CheckPoint.ThreatIndicator.read-only | Boolean | Indicates whether the object is read-only. | 
 
 
 #### Command Example
-```!checkpoint-threat-indicator-update identifier=threat_test session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-threat-indicator-update identifier=threat_test_1 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
 {
     "CheckPoint": {
         "ThreatIndicator": {
+            "comments": "",
+            "creator": "adminsh",
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
             "ipv4-address": null,
-            "ipv6-address": null,
-            "name": "threat_test",
-            "total-number": null,
+            "last-modifier": "adminsh",
+            "name": "threat_test_1",
+            "read-only": false,
             "type": "threat-indicator",
-            "uid": "2830048d-0836-4ad0-a7bf-545e0fa00779"
+            "uid": "88e502f1-2bd5-4ad4-ba6b-dbbb2fef8260"
         }
     }
 }
@@ -1172,10 +1246,10 @@ Update a given indicator
 
 #### Human Readable Output
 
->### CheckPoint Data for updating ThreatIndicator:
->|domain-name|domain-uid|name|type|uid|
->|---|---|---|---|---|
->| SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | threat_test | threat-indicator | 2830048d-0836-4ad0-a7bf-545e0fa00779 |
+>### CheckPoint data for update threat_test_1 threat indicator
+>|name|uid|type|domain-name|domain-uid|creator|last-modifier|read-only|
+>|---|---|---|---|---|---|---|---|
+>| threat_test_1 | 88e502f1-2bd5-4ad4-ba6b-dbbb2fef8260 | threat-indicator | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | adminsh | false |
 
 
 ### checkpoint-address-range-get
@@ -1220,13 +1294,13 @@ Get all date of a given address range object
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "groups": [],
             "ipv4-address": null,
-            "ipv6-address": null,
             "last-modifier": "adminsh",
             "name": "address_range_test",
             "read-only": false,
             "type": "address-range",
-            "uid": "459d883d-8c1f-40b2-b269-450dc4f857ac"
+            "uid": "26887214-d639-4acd-ab48-508d900cdfc2"
         }
     }
 }
@@ -1234,10 +1308,10 @@ Get all date of a given address range object
 
 #### Human Readable Output
 
->### CheckPoint data for getting AddressRange:
->|creator|domain-name|domain-uid|last-modifier|name|read-only|type|uid|
+>### CheckPoint data for address_range_test address range:
+>|name|uid|type|domain-name|domain-uid|read-only|creator|last-modifier|
 >|---|---|---|---|---|---|---|---|
->| adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | address_range_test | false | address-range | 459d883d-8c1f-40b2-b269-450dc4f857ac |
+>| address_range_test | 26887214-d639-4acd-ab48-508d900cdfc2 | address-range | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | false | adminsh | adminsh |
 
 
 ### checkpoint-threat-indicator-delete
@@ -1264,7 +1338,7 @@ delete threat indicator
 
 
 #### Command Example
-```!checkpoint-threat-indicator-delete identifier=threat_test session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-threat-indicator-delete identifier=threat_test_1 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
@@ -1279,7 +1353,7 @@ delete threat indicator
 
 #### Human Readable Output
 
->### CheckPoint Data for deleting ThreatIndicator:
+>### CheckPoint status for deleting threat_test_1threat indicator:
 >|message|
 >|---|
 >| OK |
@@ -1320,44 +1394,64 @@ Shows the entire Access Rules layer. This layer is divided into sections. An Acc
     "CheckPoint": {
         "AccessRule": [
             {
-                "ipv4": null,
-                "name": "Any",
-                "uid": "97aeb369-9aea-11d5-bd16-0090272ccb30"
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": null,
+                "read-only": null,
+                "type": "access-rule",
+                "uid": "6521b7b9-d340-44ec-a104-17d5ea669bc0"
             },
             {
-                "ipv4": "192.192.10.45",
-                "name": "Demisto - 2110",
-                "uid": "35f582cc-cbfd-4e7e-b39e-7b6ffe636c6c"
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": null,
+                "read-only": null,
+                "type": "access-rule",
+                "uid": "bb6016e3-36e8-4214-b17f-89623160dd10"
             },
             {
-                "ipv4": "192.192.10.97",
-                "name": "Demisto - 2111",
-                "uid": "644179b3-98c9-4b49-851d-6bdc7e3f2e3f"
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "test_access_rule_8",
+                "read-only": null,
+                "type": "access-rule",
+                "uid": "0c71cc44-a5ad-43cd-9af0-79e5f153f62f"
             },
             {
-                "ipv4": "192.152.10.45",
-                "name": "Demisto - 2114",
-                "uid": "877955ea-6587-4db7-83cd-41d213043dea"
-            },
-            {
-                "ipv4": "192.152.22.45",
-                "name": "Demisto - 2122",
-                "uid": "b48b07fe-1acd-493c-af10-4a9e75c7fe9a"
-            },
-            {
-                "ipv4": null,
-                "name": "Drop",
-                "uid": "6c488338-8eec-4103-ad21-cd461ac2c473"
-            },
-            {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "None",
-                "uid": "29e53e3d-23bf-48fe-b6b1-d59bd88036f9"
+                "read-only": null,
+                "type": "access-rule",
+                "uid": "c44add02-0f02-4b29-8ab3-d5ac687d31f7"
             },
             {
-                "ipv4": null,
-                "name": "Policy Targets",
-                "uid": "6c488338-8eec-4103-ad21-cd461ac2c476"
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "est_access_rule",
+                "read-only": null,
+                "type": "access-rule",
+                "uid": "e5bc5918-7155-493e-89ce-5562586d3acc"
             }
         ]
     }
@@ -1366,17 +1460,14 @@ Shows the entire Access Rules layer. This layer is divided into sections. An Acc
 
 #### Human Readable Output
 
->### CheckPoint data for listing AccessRules:
->|name|uid|ipv4|
+>### CheckPoint data for all access rule bases:
+>|name|uid|type|
 >|---|---|---|
->| Any | 97aeb369-9aea-11d5-bd16-0090272ccb30 |  |
->| Demisto - 2110 | 35f582cc-cbfd-4e7e-b39e-7b6ffe636c6c | 192.192.10.45 |
->| Demisto - 2111 | 644179b3-98c9-4b49-851d-6bdc7e3f2e3f | 192.192.10.97 |
->| Demisto - 2114 | 877955ea-6587-4db7-83cd-41d213043dea | 192.152.10.45 |
->| Demisto - 2122 | b48b07fe-1acd-493c-af10-4a9e75c7fe9a | 192.152.22.45 |
->| Drop | 6c488338-8eec-4103-ad21-cd461ac2c473 |  |
->| None | 29e53e3d-23bf-48fe-b6b1-d59bd88036f9 |  |
->| Policy Targets | 6c488338-8eec-4103-ad21-cd461ac2c476 |  |
+>|  | 6521b7b9-d340-44ec-a104-17d5ea669bc0 | access-rule |
+>|  | bb6016e3-36e8-4214-b17f-89623160dd10 | access-rule |
+>| test_access_rule_8 | 0c71cc44-a5ad-43cd-9af0-79e5f153f62f | access-rule |
+>| None | c44add02-0f02-4b29-8ab3-d5ac687d31f7 | access-rule |
+>| est_access_rule | e5bc5918-7155-493e-89ce-5562586d3acc | access-rule |
 
 
 ### checkpoint-access-rule-add
@@ -1419,7 +1510,7 @@ Create new access rule
 
 
 #### Command Example
-```!checkpoint-access-rule-add name=test_access_rule_1 layer=Network position=top session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-access-rule-add name=test_access_rule layer=Network position=top session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
@@ -1433,9 +1524,9 @@ Create new access rule
             "enabled": true,
             "last-modifier": "adminsh",
             "layer": "c0264a80-1832-4fce-8a90-d0849dc4ba33",
-            "name": "test_access_rule_1",
+            "name": "test_access_rule",
             "type": "access-rule",
-            "uid": "7ab4a92f-384d-4dc3-bfd9-f0da00e45a4d"
+            "uid": "a9f00b65-bb3b-4548-b06a-6c5672df6c8b"
         }
     }
 }
@@ -1443,10 +1534,10 @@ Create new access rule
 
 #### Human Readable Output
 
->### CheckPoint data for adding AccessRule:
->|creator|domain-name|domain-uid|enabled|last-modifier|layer|name|type|uid|
+>### CheckPoint data for adding access rule:
+>|name|uid|type|domain-name|domain-uid|enabled|layer|creator|last-modifier|
 >|---|---|---|---|---|---|---|---|---|
->| adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | true | adminsh | c0264a80-1832-4fce-8a90-d0849dc4ba33 | test_access_rule_1 | access-rule | 7ab4a92f-384d-4dc3-bfd9-f0da00e45a4d |
+>| test_access_rule | a9f00b65-bb3b-4548-b06a-6c5672df6c8b | access-rule | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | true | c0264a80-1832-4fce-8a90-d0849dc4ba33 | adminsh | adminsh |
 
 
 ### checkpoint-access-rule-update
@@ -1494,22 +1585,26 @@ Edit existing access rule using object name or uid.
 
 
 #### Command Example
-```!checkpoint-access-rule-update identifier=test_access_rule layer=Network session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-access-rule-update identifier=7867e584-0e68-42b4-ba18-2dd16cdbd436 layer=Network session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
 {
     "CheckPoint": {
         "AccessRule": {
+            "action-name": "Drop",
+            "action-type": "RulebaseAction",
+            "action-uid": "6c488338-8eec-4103-ad21-cd461ac2c473",
+            "content-direction": "any",
+            "creator": "adminsh",
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
-            "ipv4-address": null,
-            "ipv6-address": null,
+            "enabled": true,
+            "last-modifier": "adminsh",
             "name": "None",
-            "total-number": null,
             "type": "access-rule",
-            "uid": "064775c9-2603-4af2-bb04-9c90e0cd29f8"
+            "uid": "7867e584-0e68-42b4-ba18-2dd16cdbd436"
         }
     }
 }
@@ -1517,10 +1612,10 @@ Edit existing access rule using object name or uid.
 
 #### Human Readable Output
 
->### CheckPoint Data for updating AccessRule:
->|domain-name|domain-uid|name|type|uid|
->|---|---|---|---|---|
->| SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | None | access-rule | 064775c9-2603-4af2-bb04-9c90e0cd29f8 |
+>### CheckPoint data for updating an access rule:
+>|name|uid|type|domain-name|domain-uid|action-name|action-uid|action-type|content-direction|creator|enabled|last-modifier|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| None | 7867e584-0e68-42b4-ba18-2dd16cdbd436 | access-rule | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | Drop | 6c488338-8eec-4103-ad21-cd461ac2c473 | RulebaseAction | any | adminsh | true | adminsh |
 
 
 ### checkpoint-access-rule-delete
@@ -1548,10 +1643,25 @@ Delete access rule
 
 
 #### Command Example
-``` !checkpoint-access-rule-delete identifier=test_access_rule layer=Network session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-access-rule-delete identifier=7867e584-0e68-42b4-ba18-2dd16cdbd436 layer=Network session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+#### Context Example
+```
+{
+    "CheckPoint": {
+        "AccessRule": {
+            "message": "OK"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### CheckPoint data for deleting access rule range: 7867e584-0e68-42b4-ba18-2dd16cdbd436
+>|message|
+>|---|
+>| OK |
 
 
 ### checkpoint-application-site-list
@@ -1589,34 +1699,64 @@ Retrieve all objects.
     "CheckPoint": {
         "ApplicationSite": [
             {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "#hashtags",
+                "read-only": null,
                 "type": "application-site",
                 "uid": "00fa9e3c-36ef-0f65-e053-08241dc22da2"
             },
             {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "050 Plus",
+                "read-only": null,
                 "type": "application-site",
                 "uid": "00fa9e44-4035-0f65-e053-08241dc22da2"
             },
             {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "0test_application_site_10",
+                "read-only": null,
+                "type": "application-site",
+                "uid": "446cff2c-7e1f-4dbc-a943-66740e890d67"
+            },
+            {
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "1000keyboards",
+                "read-only": null,
                 "type": "application-site",
                 "uid": "00fa9e3d-a077-0f65-e053-08241dc22da2"
             },
             {
-                "ipv4": null,
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
                 "name": "1000memories",
+                "read-only": null,
                 "type": "application-site",
                 "uid": "00fa9e43-56d7-0f65-e053-08241dc22da2"
-            },
-            {
-                "ipv4": null,
-                "name": "1001",
-                "type": "application-site",
-                "uid": "00fa9e3d-1ab6-0f65-e053-08241dc22da2"
             }
         ]
     }
@@ -1625,14 +1765,14 @@ Retrieve all objects.
 
 #### Human Readable Output
 
->### CheckPoint data for listing ApplicationSites:
+>### CheckPoint data for all access rule bases:
 >|name|uid|type|
 >|---|---|---|
 >| #hashtags | 00fa9e3c-36ef-0f65-e053-08241dc22da2 | application-site |
 >| 050 Plus | 00fa9e44-4035-0f65-e053-08241dc22da2 | application-site |
+>| 0test_application_site_10 | 446cff2c-7e1f-4dbc-a943-66740e890d67 | application-site |
 >| 1000keyboards | 00fa9e3d-a077-0f65-e053-08241dc22da2 | application-site |
 >| 1000memories | 00fa9e43-56d7-0f65-e053-08241dc22da2 | application-site |
->| 1001 | 00fa9e3d-1ab6-0f65-e053-08241dc22da2 | application-site |
 
 
 ### checkpoint-application-site-add
@@ -1673,35 +1813,10 @@ Add application site
 
 
 #### Command Example
-``` !checkpoint-application-site-add name="test_application_site_1" primary_category="Test Category" identifier="qmasters.co" session_id="TEAK9kWnZ9Dhql9hYP5IR4aZEw1mrKdPjw3lRnxvp88"```
-
-#### Context Example
-```
-{
-    "CheckPoint": {
-        "ApplicationSite": {
-                'name': 'test_application_site_1',
-                'uid': '452f6cff-e7fb-47b8-abfe-53c668dc0038',
-                'type': 'application-site',
-                'domain-name': 'SMC User',
-                'domain-uid': '41e821a0-3720-11e3-aa6e-0800200c9fde',
-                'domain-type': None,
-                'creator': 'adminsh',
-                'last-modifier': 'adminsh',
-                'application-id': 0,
-                'description': '',
-                'url-list': [
-                  'qmasters.co'
-                ]
-    }
-}
-``` 
+``` ```
 
 #### Human Readable Output
-### CheckPoint data for adding ApplicationSite:
-|application-id|creator|domain-name|domain-uid|last-modifier|name|type|uid|url-list|
-|---|---|---|---|---|---|---|---|---|
-| 0 | adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | test_application_site_1 | application-site | 452f6cff-e7fb-47b8-abfe-53c668dc0038 | qmasters.co |
+
 
 
 ### checkpoint-application-site-update
@@ -1723,9 +1838,11 @@ It's impossible to set  'application-signature' when the application was initial
 | application_signature | Application signature generated by Signature Tool. | Optional | 
 | new_name | New name of the object. | Optional | 
 | urls_defined_as_regular_expression | States whether the URL is defined as a Regular Expression or not. | Optional | 
-| url_list | URLs that determine this particular application. | Optional | 
-| session_id | Execute command with a specific session ID | Required | 
+| url_list | URLs that determine this particular application. This will replace the current url collection. | Optional | 
+| url_list_to_add | Adds to collection of values. | Optional | 
+| url_list_to_remove | Removes from collection of values. | Optional | 
 | groups | Collection of group identifiers. Can be a single group or a list of groups. | Optional | 
+| session_id | Execute command with a specific session ID | Required | 
 
 
 #### Context Output
@@ -1742,25 +1859,30 @@ It's impossible to set  'application-signature' when the application was initial
 | CheckPoint.ApplicationSite.domain-type | String | domain type | 
 | CheckPoint.ApplicationSite.url-list | String | URLs that determine this particular application. | 
 | CheckPoint.ApplicationSite.groups | String | Collection of group identifiers | 
+| CheckPoint.ApplicationSite.primary-category | String | Objects primary category. | 
 
 
 #### Command Example
-```!checkpoint-application-site-update identifier=test_application_site session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-application-site-update identifier=test_application_site session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
 {
     "CheckPoint": {
         "ApplicationSite": {
+            "application-id": 1073741861,
+            "description": "",
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
-            "ipv4-address": null,
-            "ipv6-address": null,
+            "groups": [],
             "name": "test_application_site",
-            "total-number": null,
+            "primary-category": "Test Category",
             "type": "application-site",
-            "uid": "463b6c43-0de9-4ec7-80c5-7e2163099510"
+            "uid": "ccc788d1-b798-4e5c-8530-a6c375853730",
+            "url-list": [
+                "qmasters.co"
+            ]
         }
     }
 }
@@ -1768,10 +1890,10 @@ It's impossible to set  'application-signature' when the application was initial
 
 #### Human Readable Output
 
->### CheckPoint Data for updating ApplicationSite:
->|domain-name|domain-uid|name|type|uid|
->|---|---|---|---|---|
->| SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | test_application_site | application-site | 463b6c43-0de9-4ec7-80c5-7e2163099510 |
+>### CheckPoint data for updating an application site:
+>|name|uid|type|application-id|primary-category|url-list|domain-name|domain-uid|
+>|---|---|---|---|---|---|---|---|
+>| test_application_site | ccc788d1-b798-4e5c-8530-a6c375853730 | application-site | 1073741861 | Test Category | qmasters.co | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde |
 
 
 ### checkpoint-application-site-delete
@@ -1798,7 +1920,7 @@ Delete existing application site object using object name or uid.
 
 
 #### Command Example
-```!checkpoint-application-site-delete identifier=test_application_site session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-application-site-delete identifier=test_application_site session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
@@ -1813,7 +1935,7 @@ Delete existing application site object using object name or uid.
 
 #### Human Readable Output
 
->### CheckPoint Data for deleting ApplicationSite:
+>### CheckPoint data for deleting application site : test_application_site
 >|message|
 >|---|
 >| OK |
@@ -1842,14 +1964,14 @@ publish changes
 
 
 #### Command Example
-```!checkpoint-publish session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-publish session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
 {
     "CheckPoint": {
         "Publish": {
-            "task-id": "01234567-89ab-cdef-bf09-149f8cd4d2b3"
+            "task-id": "01234567-89ab-cdef-9338-e44df5384ac3"
         }
     }
 }
@@ -1857,10 +1979,10 @@ publish changes
 
 #### Human Readable Output
 
->### CheckPoint data for Publish:
+>### CheckPoint data for publishing current session:
 >|task-id|
 >|---|
->| 01234567-89ab-cdef-bf09-149f8cd4d2b3 |
+>| 01234567-89ab-cdef-9338-e44df5384ac3 |
 
 
 ### checkpoint-install-policy
@@ -1889,14 +2011,14 @@ Intsalling policy
 
 
 #### Command Example
-```!checkpoint-install-policy policy_package=standard targets=test-gw session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-install-policy policy_package=standard targets=test-gw session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
 {
     "CheckPoint": {
         "InstallPolicy": {
-            "task-id": "0317d452-efce-4c89-a6e2-29ff83ed1e9b"
+            "task-id": "d461078b-cc1e-41b6-869b-096438673323"
         }
     }
 }
@@ -1904,10 +2026,10 @@ Intsalling policy
 
 #### Human Readable Output
 
->### CheckPoint data for InstallPolicy:
+>### CheckPoint data for installing policy:
 >|task-id|
 >|---|
->| 0317d452-efce-4c89-a6e2-29ff83ed1e9b |
+>| d461078b-cc1e-41b6-869b-096438673323 |
 
 
 ### checkpoint-verify-policy
@@ -1934,7 +2056,7 @@ Verifies the policy of the selected package.
 
 
 #### Command Example
-```!checkpoint-policy-verify policy_package=standard session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4 ```
+``` ```
 
 #### Human Readable Output
 
@@ -1968,7 +2090,7 @@ Show task progress and details.
 
 
 #### Command Example
-```!checkpoint-show-task task_id=01234567-89ab-cdef-8dba-36edc2efb5b0```
+```!checkpoint-show-task task_id=01234567-89ab-cdef-997f-2e3e3b4b2541```
 
 #### Context Example
 ```
@@ -1978,7 +2100,7 @@ Show task progress and details.
             "progress-percentage": 100,
             "status": "succeeded",
             "suppressed": false,
-            "task-id": "01234567-89ab-cdef-8dba-36edc2efb5b0",
+            "task-id": "01234567-89ab-cdef-997f-2e3e3b4b2541",
             "task-name": "Publish operation"
         }
     }
@@ -1987,10 +2109,10 @@ Show task progress and details.
 
 #### Human Readable Output
 
->### CheckPoint data for listing tasks:
+>### CheckPoint data for tasks:
 >|task-name|task-id|status|suppressed|progress-percentage|
 >|---|---|---|---|---|
->| Publish operation | 01234567-89ab-cdef-8dba-36edc2efb5b0 | succeeded | false | 100 |
+>| Publish operation | 01234567-89ab-cdef-997f-2e3e3b4b2541 | succeeded | false | 100 |
 
 
 ### checkpoint-login-and-get-session-id
@@ -2016,14 +2138,14 @@ Login to CheckPoint and get the session id
 
 
 #### Command Example
-```!checkpoint-login-and-get-session-id timeout=60```
+```!checkpoint-login-and-get-session-id```
 
 #### Context Example
 ```
 {
     "CheckPoint": {
         "Login": {
-            "session-id": "PJZcuoWM5IKd4CeAa9Dc_pmDOUBfY2eELgqQSEP6mug"
+            "session-id": "LoUhF29pRkJsBiIWlMdBFy1LhHWXzE0VJT_lWpz4v0k"
         }
     }
 }
@@ -2034,7 +2156,7 @@ Login to CheckPoint and get the session id
 >### CheckPoint session data:
 >|session-id|
 >|---|
->| PJZcuoWM5IKd4CeAa9Dc_pmDOUBfY2eELgqQSEP6mug |
+>| LoUhF29pRkJsBiIWlMdBFy1LhHWXzE0VJT_lWpz4v0k |
 
 
 ### checkpoint-logout
@@ -2057,7 +2179,7 @@ Logout from a given session
 There is no context output for this command.
 
 #### Command Example
-```!checkpoint-logout session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-logout session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
@@ -2098,7 +2220,7 @@ List all packages.
 
 
 #### Command Example
-```!checkpoint-packages-list session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-packages-list session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
@@ -2106,27 +2228,11 @@ List all packages.
     "CheckPoint": {
         "Packages": [
             {
-                "domain": {
-                    "domain-type": "domain",
-                    "name": "SMC User",
-                    "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
-                },
-                "domain-name": "SMC User",
-                "domain-type": null,
-                "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
                 "name": "BenLayer",
                 "type": "package",
                 "uid": "9daac370-ad2d-4a21-a503-a312755aceaf"
             },
             {
-                "domain": {
-                    "domain-type": "domain",
-                    "name": "SMC User",
-                    "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
-                },
-                "domain-name": "SMC User",
-                "domain-type": null,
-                "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
                 "name": "Standard",
                 "type": "package",
                 "uid": "ca4e32a8-bee0-423c-84f0-19bab6751d5e"
@@ -2138,11 +2244,11 @@ List all packages.
 
 #### Human Readable Output
 
->### CheckPoint data for: Packages:
->|name|uid|type|domain-name|domain-uid|
->|---|---|---|---|---|
->| BenLayer | 9daac370-ad2d-4a21-a503-a312755aceaf | package | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde |
->| Standard | ca4e32a8-bee0-423c-84f0-19bab6751d5e | package | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde |
+>### CheckPoint data for all packages:
+>|name|uid|type|
+>|---|---|---|
+>| BenLayer | 9daac370-ad2d-4a21-a503-a312755aceaf | package |
+>| Standard | ca4e32a8-bee0-423c-84f0-19bab6751d5e | package |
 
 
 ### checkpoint-gateways-list
@@ -2178,7 +2284,7 @@ Retrieve all gateways and servers
 
 
 #### Command Example
-```!checkpoint-gateways-list session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-gateways-list session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
@@ -2186,14 +2292,6 @@ Retrieve all gateways and servers
     "CheckPoint": {
         "Gateways": [
             {
-                "domain": {
-                    "domain-type": "domain",
-                    "name": "SMC User",
-                    "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
-                },
-                "domain-name": "SMC User",
-                "domain-type": null,
-                "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
                 "management-blades": {
                     "logging-and-status": true,
                     "network-policy-management": true
@@ -2205,14 +2303,6 @@ Retrieve all gateways and servers
                 "version": "R80.30"
             },
             {
-                "domain": {
-                    "domain-type": "domain",
-                    "name": "SMC User",
-                    "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
-                },
-                "domain-name": "SMC User",
-                "domain-type": null,
-                "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
                 "management-blades": {},
                 "name": "test-gw",
                 "network-security-blades": {
@@ -2229,11 +2319,11 @@ Retrieve all gateways and servers
 
 #### Human Readable Output
 
->### CheckPoint data for: Gateways:
->|name|uid|type|domain-name|domain-uid|version|network-security-blades|management-blades|
->|---|---|---|---|---|---|---|---|
->| gw-88a290 | 98bee60f-23ab-bf41-ba29-4c574b9d6f7c | CpmiHostCkp | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | R80.30 |  | network-policy-management: true<br/>logging-and-status: true |
->| test-gw | 3b83b6cb-d3cb-4596-8d90-ba9735d7d53c | simple-gateway | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | R80.30 | firewall: true |  |
+>### CheckPoint data for all gateways:
+>|name|uid|type|version|network-security-blades|management-blades|
+>|---|---|---|---|---|---|
+>| gw-88a290 | 98bee60f-23ab-bf41-ba29-4c574b9d6f7c | CpmiHostCkp | R80.30 |  | network-policy-management: true<br/>logging-and-status: true |
+>| test-gw | 3b83b6cb-d3cb-4596-8d90-ba9735d7d53c | simple-gateway | R80.30 | firewall: true |  |
 
 
 ### checkpoint-application-site-category-list
@@ -2274,34 +2364,64 @@ Retrieve all application site category.
     "CheckPoint": {
         "ApplicationSiteCategory": [
             {
-                "ipv4": null,
-                "name": "Adds other software",
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "0new_app_site_category",
+                "read-only": null,
                 "type": "application-site-category",
-                "uid": "00fa9e44-40c9-0f65-e053-08241dc22da2"
+                "uid": "d42e14e7-1c50-48d5-9412-2306dc8e5219"
             },
             {
-                "ipv4": null,
-                "name": "Alcohol",
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "0new_category_1",
+                "read-only": null,
                 "type": "application-site-category",
-                "uid": "00fa9e44-409e-0f65-e053-08241dc22da2"
+                "uid": "13e91cb3-1025-41a5-8203-89e28102f82f"
             },
             {
-                "ipv4": null,
-                "name": "Allows remote connect",
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "0new_category_2",
+                "read-only": null,
                 "type": "application-site-category",
-                "uid": "00fa9e44-40c3-0f65-e053-08241dc22da2"
+                "uid": "f49849de-9132-479d-b73a-56696976c235"
             },
             {
-                "ipv4": null,
-                "name": "Allows remote control",
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "0new_category_3",
+                "read-only": null,
                 "type": "application-site-category",
-                "uid": "00fa9e44-40ca-0f65-e053-08241dc22da2"
+                "uid": "51ebf347-290f-4d8c-b99d-7aba73a5698c"
             },
             {
-                "ipv4": null,
-                "name": "Anonymizer",
+                "creator": null,
+                "domain-name": null,
+                "domain-uid": null,
+                "groups": null,
+                "ipv4-address": null,
+                "last-modifier": null,
+                "name": "0new_category_4",
+                "read-only": null,
                 "type": "application-site-category",
-                "uid": "00fa9e44-415a-0f65-e053-08241dc22da2"
+                "uid": "6b996605-099c-41fa-a4c6-1733ff895bac"
             }
         ]
     }
@@ -2310,14 +2430,14 @@ Retrieve all application site category.
 
 #### Human Readable Output
 
->### CheckPoint data for listing ApplicationSiteCategorys:
+>### CheckPoint data for all application site category:
 >|name|uid|type|
 >|---|---|---|
->| Adds other software | 00fa9e44-40c9-0f65-e053-08241dc22da2 | application-site-category |
->| Alcohol | 00fa9e44-409e-0f65-e053-08241dc22da2 | application-site-category |
->| Allows remote connect | 00fa9e44-40c3-0f65-e053-08241dc22da2 | application-site-category |
->| Allows remote control | 00fa9e44-40ca-0f65-e053-08241dc22da2 | application-site-category |
->| Anonymizer | 00fa9e44-415a-0f65-e053-08241dc22da2 | application-site-category |
+>| 0new_app_site_category | d42e14e7-1c50-48d5-9412-2306dc8e5219 | application-site-category |
+>| 0new_category_1 | 13e91cb3-1025-41a5-8203-89e28102f82f | application-site-category |
+>| 0new_category_2 | f49849de-9132-479d-b73a-56696976c235 | application-site-category |
+>| 0new_category_3 | 51ebf347-290f-4d8c-b99d-7aba73a5698c | application-site-category |
+>| 0new_category_4 | 6b996605-099c-41fa-a4c6-1733ff895bac | application-site-category |
 
 
 ### checkpoint-application-site-category-add
@@ -2333,6 +2453,7 @@ Add new application site category
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | identifier | Object name or uid. Must be unique in the domain. | Required | 
+| groups | Collection of group identifiers. | Optional | 
 | session_id | Execute command with a specific session ID | Required | 
 
 
@@ -2353,21 +2474,25 @@ Add new application site category
 
 
 #### Command Example
-```!checkpoint-application-site-category-add identifier=new_app_site_category session_id=fQqLms8Gzf3uXrWo3rOWvKhlxL_tWKx0i4BxeM8vJT4```
+```!checkpoint-application-site-category-add identifier=application_site_category_0101 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Context Example
 ```
 {
     "CheckPoint": {
-        "ApplicationSiteCategory": {
+        "ApplicationSite": {
+            "application-id": null,
             "creator": "adminsh",
+            "description": "",
             "domain-name": "SMC User",
             "domain-type": null,
             "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "groups": [],
             "last-modifier": "adminsh",
-            "name": "new_app_site_category",
+            "name": "application_site_category_0101",
             "type": "application-site-category",
-            "uid": "59105cbd-0267-4ab0-8e78-4771fb837cc0"
+            "uid": "5fb2e946-7e9c-42db-8b0a-cf5056f427d8",
+            "url-list": null
         }
     }
 }
@@ -2375,10 +2500,10 @@ Add new application site category
 
 #### Human Readable Output
 
->### CheckPoint data for adding ApplicationSiteCategory:
->|creator|domain-name|domain-uid|last-modifier|name|type|uid|
+>### CheckPoint data for adding application site category application_site_category_0101:
+>|name|uid|type|domain-name|domain-uid|creator|last-modifier|
 >|---|---|---|---|---|---|---|
->| adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | new_app_site_category | application-site-category | 59105cbd-0267-4ab0-8e78-4771fb837cc0 |
+>| application_site_category_0101 | 5fb2e946-7e9c-42db-8b0a-cf5056f427d8 | application-site-category | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | adminsh |
 
 
 ### checkpoint-application-site-category-get
@@ -2423,8 +2548,8 @@ Retrieve application site category object using object name or uid.
             "domain-name": "APPI Data",
             "domain-type": null,
             "domain-uid": "8bf4ac51-2df7-40e1-9bce-bedbedbedbed",
+            "groups": [],
             "ipv4-address": null,
-            "ipv6-address": null,
             "last-modifier": "System",
             "name": "Alcohol",
             "read-only": false,
@@ -2437,10 +2562,10 @@ Retrieve application site category object using object name or uid.
 
 #### Human Readable Output
 
->### CheckPoint data for getting ApplicationSiteCategory:
->|creator|domain-name|domain-uid|last-modifier|name|read-only|type|uid|
+>### CheckPoint data for adding application site category:
+>|name|uid|type|domain-name|domain-uid|read-only|creator|last-modifier|
 >|---|---|---|---|---|---|---|---|
->| System | APPI Data | 8bf4ac51-2df7-40e1-9bce-bedbedbedbed | System | Alcohol | false | application-site-category | 00fa9e44-409e-0f65-e053-08241dc22da2 |
+>| Alcohol | 00fa9e44-409e-0f65-e053-08241dc22da2 | application-site-category | APPI Data | 8bf4ac51-2df7-40e1-9bce-bedbedbedbed | false | System | System |
 
 
 ### checkpoint-show-objects
@@ -2470,12 +2595,36 @@ Retrieve data about objects.
 | CheckPoint.Object.name | String | object name | 
 | CheckPoint.Object.uid | String | object uid | 
 | CheckPoint.Object.type | String | object type | 
-| CheckPoint.Object.ipv4 | String | IP\-v4 address of a spesific object | 
+| CheckPoint.Object.ipv4 | String | IP-v4 address of a spesific object | 
 
 
 #### Command Example
-``` !checkpoint-show-object limit=3 filter_search=1.2.3.4 ip_only=true```
+```!checkpoint-show-objects limit=3 filter_search=1.2.3.4 ip_only=true```
+
+#### Context Example
+```
+{
+    "CheckPoint": {
+        "Objects": {
+            "creator": null,
+            "domain-name": null,
+            "domain-uid": null,
+            "groups": null,
+            "ipv4-address": null,
+            "last-modifier": null,
+            "name": "All_Internet",
+            "read-only": null,
+            "type": "address-range",
+            "uid": "f90e0a2b-f166-427a-b47f-a107b6fe43b9"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### CheckPoint data for objects:
+>|name|uid|type|
+>|---|---|---|
+>| All_Internet | f90e0a2b-f166-427a-b47f-a107b6fe43b9 | address-range |
 

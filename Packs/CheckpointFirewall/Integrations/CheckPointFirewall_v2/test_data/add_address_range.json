@@ -1,0 +1,41 @@
+{
+  "uid": "1234",
+  "name": "address_range_1",
+  "type": "address-range",
+  "domain": {
+    "uid": "9876",
+    "name": "SMC User",
+    "domain-type": "domain"
+  },
+  "ipv4-address-first": "255.255.255.32",
+  "ipv4-address-last": "255.255.255.64",
+  "ipv6-address-first": "",
+  "ipv6-address-last": "",
+  "nat-settings": {
+    "auto-rule": false
+  },
+  "groups": [
+    
+  ],
+  "comments": "",
+  "color": "black",
+  "icon": "Objects/ip",
+  "tags": [
+    
+  ],
+  "meta-info": {
+    "lock": "unlocked",
+    "validation-state": "ok",
+    "last-modify-time": {
+      "posix": 1599483294348,
+      "iso-8601": "2020-09-07T15:54+0300"
+    },
+    "last-modifier": "admin",
+    "creation-time": {
+      "posix": 1599483294348,
+      "iso-8601": "2020-09-07T15:54+0300"
+    },
+    "creator": "admin"
+  },
+  "read-only": true
+}

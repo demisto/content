@@ -1,4 +1,3 @@
-from typing import Tuple
 import requests
 
 import demistomock as demisto
@@ -7,6 +6,9 @@ from CommonServerUserPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
+DEFAULT_LIST_FIELD = ['name', 'uid', 'type', 'ipv4-address', 'domain-name', 'domain-uid', 'groups',
+                      'read-only', 'creator', 'last-modifier']
 
 
 class Client(BaseClient):
@@ -25,159 +27,29 @@ class Client(BaseClient):
                         'X-chkp-sid': sid}
         self.verify = use_ssl
 
-    def checkpoint_show_access_rule_command(self, identifier: str, limit: int, offset: int):
-        """
-        Show existing access rule base objects using object name or uid.
+    def checkpoint_logout(self):
+        """logout from current session"""
+        response = self._http_request(method='POST', url_suffix='logout', headers=self.headers,
+                                      json_data={})
+        demisto.setIntegrationContext({})
+        return response
 
-        Args:
-            identifier(str): uid or name.
-            limit(int): The maximal number of returned results.
-            offset(int): Number of the results to initially skip.
-        """
+    def list_hosts(self, limit: int, offset: int):
+        return self._http_request(method='POST', url_suffix='show-hosts',
+                                  headers=self.headers, resp_type='json',
+                                  json_data={'limit': limit, 'offset': offset})
 
-        body = {'name': identifier,
-                'limit': limit,
-                'offset': offset}
-        response = self._http_request(method='POST', url_suffix='show-access-rulebase',
-                                      headers=self.headers, json_data=body)
+    def get_host(self, identifier: str):
+        return self._http_request(method='POST', url_suffix='show-host', headers=self.headers,
+                                  json_data={'name': identifier})
 
-        response['objects'] = response.pop('objects-dictionary')
-        return format_list_objects(response, 'AccessRule')
+    def add_host(self, name, ip_address, groups):
+        return self._http_request(method='POST', url_suffix='add-host', headers=self.headers,
+                                  json_data={"name": name, "ip-address": ip_address,
+                                             'groups': groups})
 
-    def checkpoint_add_rule_command(self, layer: str, position, action: str, name: str = None,
-                                    vpn: str = None, destination=None, service=None, source=None):
-        """
-        Add access rule object.
-
-        Args:
-            layer(str): Layer that the rule belongs to identified by the name or UID.
-            position(int or str): IPosition in the rulebase.
-                                  int - add rule at a specific position
-                                  str - add rule at the position. vaild value: top, bottom
-            name(str): rule name
-            action(str): Action settings. valid values are: Accept, Drop, Apply Layer, Ask and Info
-                         default value is Drop.
-
-            vpn(str): Communities or Directional. Valid values: Any, All_GwToGw.
-            destination(str or list): Collection of Network objects identified by the name or UID.
-            service(str or list): Collection of Network objects identified by the name or UID.
-            source(str or list): Collection of Network objects identified by the name or UID.
-        """
-        body = {'layer': layer, 'position': position, 'name': name,
-                'action': action, 'destination': destination, 'service': service,
-                'source': source, 'vpn': vpn, }
-        response = self._http_request(method='POST', url_suffix='add-access-rule',
-                                      headers=self.headers, json_data=body)
-        return format_add_object(response, 'AccessRule')
-
-    def checkpoint_update_rule_command(self, identifier: str, layer: str, ignore_warnings: bool,
-                                       ignore_errors: bool, enabled: bool, action: str = None,
-                                       new_name: str = None, new_position=None):
-        """
-        Edit existing access rule object using object name or uid.
-
-        Args:
-            identifier (str): uid, name or rule-number.
-            layer (str): Layer that the rule belongs to identified by the name or UID.
-            ignore_warnings(bool):Apply changes ignoring warnings.
-            ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
-            a changes. If ignore-warnings flag was omitted- warnings will also be ignored
-            enabled(bool): Enable/Disable the rule
-            action (str): the action to set. available options:
-                                        "Accept", "Drop", "Ask", "Inform", "Reject", "User Auth",
-                                        "Client Auth", "Apply Layer".
-            new_name(str): New name of the object.
-            new_position(int or str): New position in the rulebase. value can be int or str:
-                                    int- add rule at the specific position
-                                    str- add rule at the position. valid values: top, bottom.
-        """
-
-        body = {'name': identifier,
-                'layer': layer,
-                'action': action,
-                'enabled': enabled,
-                'new-name': new_name,
-                'new-position': new_position,
-                'ignore-warnings': ignore_warnings,
-                'ignore-errors': ignore_errors
-                }
-        response = self._http_request(method='POST', url_suffix='set-access-rule',
-                                      headers=self.headers, json_data=body)
-        return format_update_object(response, 'AccessRule')
-
-    def checkpoint_delete_rule_command(self, identifier: str, layer: str):
-        """
-        Delete existing rule object using object name or uid.
-
-        Args:
-            identifier(str): uid, name or rule-number.
-            layer(str): Layer that the rule belongs to identified by the name or UID.
-        """
-        response = self._http_request(method='POST', url_suffix='delete-access-rule',
-                                      headers=self.headers,
-                                      json_data={'name': identifier, 'layer': layer})
-        return format_delete_object(response, 'AccessRule')
-
-    def checkpoint_list_hosts_command(self, limit: int, offset: int):
-        """
-        Retrieve all host objects.
-
-        Args:
-            limit(int): The maximal number of returned results. default is 50.
-            offset(int): Number of the results to initially skip. default is 0.
-
-        """
-
-        response = self._http_request(method='POST', url_suffix='show-hosts',
-                                      headers=self.headers, resp_type='json',
-                                      json_data={'limit': limit, 'offset': offset})
-        return format_list_objects(response, 'Host')
-
-    def checkpoint_get_host_command(self, identifier: str):
-        """
-        Show existing host object using object name or uid.
-
-        Args:
-            identifier(str): uid or name.
-        """
-        body = {'name': identifier}
-        response = self._http_request(method='POST', url_suffix='show-host', headers=self.headers,
-                                      json_data=body)
-        return format_get_object(response, 'Host')
-
-    def checkpoint_add_host_command(self, name: str, ip_address: str, groups=None):
-        """
-        Add host objects.
-
-        Args:
-            name(str): Object name. Must be unique in the domain.
-            ip_address(str): IPv4 or IPv6 address.
-            groups(str or list): Collection of group identifiers.
-        """
-        response = self._http_request(method='POST', url_suffix='add-host', headers=self.headers,
-                                      json_data={"name": name, "ip-address": ip_address,
-                                                 'groups': groups})
-        return format_add_object(response, 'Host')
-
-    def checkpoint_update_host_command(self, identifier: str, ignore_warnings: bool,
-                                       ignore_errors: bool, ip_address: str = None,
-                                       new_name: str = None, comments: str = None,
-                                       groups=None):
-        """
-        Edit existing host object using object name or uid.
-
-        Args:
-            identifier(str): uid or name.
-            ip_address(str): IPv4 or IPv6 address.
-            ignore_warnings(bool):Apply changes ignoring warnings.
-            ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
-                                 a changes. If ignore-warnings flag was omitted- warnings will also
-                                 be ignored
-            new_name(str): New name of the object.
-            comments(str): Comments string.
-            groups (str or list): Collection of group identifiers.
-
-        """
+    def update_host(self, identifier: str, ignore_warnings: bool, ignore_errors: bool,
+                    ip_address: str, new_name: str, comments: str, groups):
         body = {'name': identifier,
                 'ip-address': ip_address,
                 'new-name': new_name,
@@ -188,70 +60,26 @@ class Client(BaseClient):
                 }
         response = self._http_request(method='POST', url_suffix='set-host', headers=self.headers,
                                       json_data=body)
-        return format_update_object(response, 'Host')
+        return response
 
-    def checkpoint_delete_host_command(self, identifier: str):
-        """
-        Delete existing host object using object name or uid.
+    def delete_host(self, identifier: str):
+        return self._http_request(method='POST', url_suffix='delete-host', headers=self.headers,
+                                  json_data={'name': identifier})
 
-        Args:
-            identifier(str): uid or name.
-        """
-        response = self._http_request(method='POST', url_suffix='delete-host', headers=self.headers,
-                                      json_data={'name': identifier})
-        return format_delete_object(response, 'Host')
+    def list_groups(self, limit: int, offset: int):
+        return self._http_request(method='POST', url_suffix='show-groups', headers=self.headers,
+                                  json_data={"limit": limit, "offset": offset})
 
-    def checkpoint_list_groups_command(self, limit: int, offset: int):
-        """
-        Retrieve all group objects from checkpoint.
+    def get_group(self, identifier: str):
+        return self._http_request(method='POST', url_suffix='show-group', headers=self.headers,
+                                  json_data={'name': identifier})
 
-        Args:
-            limit(int): The maximal number of returned results. default is 50.
-            offset(int): Number of the results to initially skip. default is 0.
-        """
-        response = self._http_request(method='POST', url_suffix='show-groups', headers=self.headers,
-                                      json_data={"limit": limit, "offset": offset})
-        return format_list_objects(response, 'Group')
+    def add_group(self, name: str):
+        return self._http_request(method='POST', url_suffix='add-group', headers=self.headers,
+                                  json_data={"name": name})
 
-    def checkpoint_get_group_command(self, identifier: str):
-        """
-        Show existing group object using object name or uid.
-
-        Args:
-            identifier(str): name or uid.
-        """
-        response = self._http_request(method='POST', url_suffix='show-group', headers=self.headers,
-                                      json_data={'name': identifier})
-        return format_get_object(response, 'Group')
-
-    def checkpoint_add_group_command(self, name: str):
-        """
-        add group objects.
-
-        Args:
-            name(str): Object name. Must be unique in the domain.
-
-        """
-        response = self._http_request(method='POST', url_suffix='add-group', headers=self.headers,
-                                      json_data={"name": name})
-        return format_add_object(response, 'Group')
-
-    def checkpoint_update_group_command(self, identifier: str, ignore_warnings: bool,
-                                        ignore_errors: bool, members=None,
-                                        new_name: str = None, comments: str = None):
-        """
-        Edit existing object using object name or uid.
-
-        Args:
-            identifier(str): uid or name.
-            ignore_warnings(bool):Apply changes ignoring warnings.
-            ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
-                                 a changes. If ignore-warnings flag was omitted- warnings will also
-                                 be ignored
-            members(object): Collection of Network objects identified by the name or UID.
-            new_name(str): New name of the object.
-            comments(str): Comments string.
-        """
+    def update_group(self, identifier: str, ignore_warnings: bool, ignore_errors: bool, members,
+                     new_name: str, comments: str):
         body = {'name': identifier,
                 'new-name': new_name,
                 'members': members,
@@ -260,90 +88,37 @@ class Client(BaseClient):
                 'ignore-errors': ignore_errors}
         response = self._http_request(method='POST', url_suffix='set-group', headers=self.headers,
                                       json_data=body)
-        return format_update_object(response, 'Group')
+        return response
 
-    def checkpoint_delete_group_command(self, identifier: str):
-        """
-        Delete existing group object using object name or uid.
+    def delete_group(self, identifier: str):
+        return self._http_request(method='POST', url_suffix='delete-group',
+                                  headers=self.headers, json_data={'name': identifier})
 
-        Args:
-            identifier(str): uid or name.
-        """
-        response = self._http_request(method='POST', url_suffix='delete-group',
-                                      headers=self.headers,
-                                      json_data={'name': identifier})
-        return format_delete_object(response, 'Group')
+    def list_address_ranges(self, limit: int, offset: int):
+        return self._http_request(method='POST', url_suffix='show-address-ranges',
+                                  headers=self.headers,
+                                  json_data={"limit": limit, "offset": offset})
 
-    def checkpoint_list_address_ranges_command(self, limit: int, offset: int):
-        """
-        Retrieve all address range objects from checkpoint.
+    def get_address_range(self, identifier: str):
+        return self._http_request(method='POST', url_suffix='show-address-range',
+                                  headers=self.headers, json_data={'name': identifier})
 
-        Args:
-            limit(int): The maximal number of returned results. default is 50.
-            offset(int): Number of the results to initially skip. default is 0.
-        """
-        response = self._http_request(method='POST', url_suffix='show-address-ranges',
-                                      headers=self.headers,
-                                      json_data={"limit": limit, "offset": offset})
-        return format_list_objects(response, 'AddressRange')
-
-    def checkpoint_get_address_range_command(self, identifier: str):
-        """
-        Show existing address range object using object name or uid.
-
-        Args:
-            identifier(str): uid or name of the address range object.
-        """
-        response = self._http_request(method='POST', url_suffix='show-address-range',
-                                      headers=self.headers, json_data={'name': identifier})
-        return format_get_object(response, 'AddressRange')
-
-    def checkpoint_add_address_range_command(self, name: str, ip_address_first: str,
-                                             ip_address_last: str, set_if_exists: bool,
-                                             ignore_warnings: bool, ignore_errors: bool):
-        """
-        add address_range objects.
-
-        Args:
-            name(str): Object name. Must be unique in the domain.
-            ip_address_first(str): First IP address in the range. IPv4 or IPv6 address.
-            ip_address_last(str): Last IP address in the range. IPv4 or IPv6 address.
-            set_if_exists(bool): If another object with the same identifier already exists,
-                                 it will be updated.
-            ignore_warnings(bool): Apply changes ignoring warnings.
-            ignore_errors(bool): Apply changes ignoring errors
-        """
-
+    def add_address_range(self, name: str, ip_address_first: str, ip_address_last: str,
+                          set_if_exists: bool, ignore_warnings: bool, ignore_errors: bool, groups):
         body = {'name': name,
                 'ip-address-first': ip_address_first,
                 'ip-address-last': ip_address_last,
                 'set-if-exists': set_if_exists,
                 'ignore-warnings': ignore_warnings,
-                'ignore-errors': ignore_errors
+                'ignore-errors': ignore_errors,
+                'groups': groups,
                 }
-        response = self._http_request(method='POST', url_suffix='add-address-range',
-                                      headers=self.headers, json_data=body)
-        return format_add_object(response, 'AddressRange')
+        return self._http_request(method='POST', url_suffix='add-address-range',
+                                  headers=self.headers, json_data=body)
 
-    def checkpoint_update_address_range_command(self, identifier: str, ignore_warnings: bool,
-                                                ignore_errors: bool, ip_address_first: str = None,
-                                                ip_address_last: str = None, new_name: str = None,
-                                                comments: str = None, groups=None):
-        """
-        Edit existing address_range object using object name or uid.
-
-        Args:
-            identifier(str): uid or name.
-            ignore_warnings(bool):Apply changes ignoring warnings.
-            ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
-                                a changes.
-                                 If ignore-warnings flag was omitted- warnings will also be ignored
-            ip_address_first(str): First IP address in the range. IPv4 or IPv6 address.
-            ip_address_last(str): Last IP address in the range. IPv4 or IPv6 address.
-            new_name(str): New name of the object.
-            comments(str): Comments string.
-            groups(str or list): Collection of group identifiers.
-        """
+    def update_address_range(self, identifier: str, ignore_warnings: bool, ignore_errors: bool,
+                             ip_address_first: str, ip_address_last: str, new_name: str,
+                             comments: str, groups):
         body = {'name': identifier,
                 'ip-address-first': ip_address_first,
                 'ip-address-last': ip_address_last,
@@ -353,156 +128,89 @@ class Client(BaseClient):
                 'ignore-errors': ignore_errors,
                 'groups': groups,
                 }
+        return self._http_request(method='POST', url_suffix='set-address-range',
+                                  headers=self.headers, json_data=body)
 
-        response = self._http_request(method='POST', url_suffix='set-address-range',
-                                      headers=self.headers, json_data=body)
-        return format_update_object(response, 'AddressRange')
+    def delete_address_range(self, identifier: str):
+        return self._http_request(method='POST', url_suffix='delete-address-range',
+                                  headers=self.headers, json_data={'name': identifier})
 
-    def checkpoint_delete_address_range_command(self, identifier: str):
-        """
-        Delete existing address range object using object name or uid.
+    def list_threat_indicators(self, limit: int, offset: int):
+        return self._http_request(method='POST', url_suffix='show-threat-indicators',
+                                  headers=self.headers,
+                                  json_data={"limit": limit, "offset": offset})
 
-        Args:
-            identifier(str): uid or name.
-        """
-        response = self._http_request(method='POST', url_suffix='delete-address-range',
-                                      headers=self.headers,
-                                      json_data={'name': identifier})
-        return format_delete_object(response, 'AddressRange')
+    def get_threat_indicator(self, identifier):
+        return self._http_request(method='POST', url_suffix='show-threat-indicator',
+                                  headers=self.headers, json_data={'name': identifier})
 
-    def checkpoint_list_threat_indicators_command(self, limit: int, offset: int):
-        """
-        Display a list of Threat-Indicators.
+    def add_threat_indicator(self, name: str, observables: list):
+        return self._http_request(method='POST', url_suffix='add-threat-indicator',
+                                  headers=self.headers,
+                                  json_data={'name': name, 'observables': observables})
 
-        Args:
-            limit(int): The maximal number of returned results. default is 50.
-            offset(int): Number of the results to initially skip. default is 0.
-        """
-        response = self._http_request(method='POST', url_suffix='show-threat-indicators',
-                                      headers=self.headers,
-                                      json_data={"limit": limit, "offset": offset})
-        response['objects'] = response.pop('indicators')
-        return format_list_objects(response, 'ThreatIndicator')
-
-    def checkpoint_get_threat_indicator_command(self, identifier):
-        """
-        Show existing threat indicator using object name or uid.
-
-        Args:
-            identifier(str): uid or name.
-
-        """
-        response = self._http_request(method='POST', url_suffix='show-threat-indicator',
-                                      headers=self.headers, json_data={'name': identifier})
-
-        return format_get_object(response, 'ThreatIndicator')
-
-    def checkpoint_add_threat_indicator_command(self, name: str, observables: list):
-        """
-        Create new Threat-Indicator.
-
-        Args:
-            name(str): Object name. Must be unique in the domain.
-            observables(list): The indicator's observables.
-        """
-        response = self._http_request(method='POST', url_suffix='add-threat-indicator',
-                                      headers=self.headers,
-                                      json_data={"name": name, "observables": observables})
-        return format_add_object(response, 'ThreatIndicator')
-
-    def checkpoint_update_threat_indicator_command(self, identifier: str, action: str = None,
-                                                   new_name: str = None, comments: str = None):
-        """
-        Edit existing object using object name or uid.
-
-        Args:
-            identifier(str): uid or name.
-            action (str): the action to set. available options:
-                                "Accept", "Drop", "Ask", "Inform", "Reject", "User Auth",
-                                "Client Auth", "Apply Layer".
-            new_name(str): New name of the object.
-            comments(str): Comments string.
-        """
+    def update_threat_indicator(self, identifier: str, action: str = None,
+                                new_name: str = None, comments: str = None):
         body = {'name': identifier,
                 'action': action,
                 'new-name': new_name,
                 'comments': comments
                 }
-        response = self._http_request(method='POST', url_suffix='set-threat-indicator',
-                                      headers=self.headers, json_data=body)
-        return format_update_object(response, 'ThreatIndicator')
+        return self._http_request(method='POST', url_suffix='set-threat-indicator',
+                                  headers=self.headers, json_data=body)
 
-    def checkpoint_delete_threat_indicator_command(self, identifier: str):
-        """
-        Delete existing group object using object name or uid.
+    def delete_threat_indicator(self, identifier: str):
+        return self._http_request(method='POST', url_suffix='delete-threat-indicator',
+                                  headers=self.headers, json_data={'name': identifier})
 
-        Args:
-            identifier(str): uid or name.
-        """
-        response = self._http_request(method='POST', url_suffix='delete-threat-indicator',
-                                      headers=self.headers, json_data={'name': identifier})
-        return format_delete_object(response, 'ThreatIndicator')
-
-    def checkpoint_list_application_sites_command(self, limit: int, offset: int):
-        """
-        Show all application sites.
-
-        Args:
-            limit(int): The maximal number of returned results.
-            offset(int): Number of the results to initially skip.
-        """
-
-        body = {'limit': limit,
+    def list_access_rule(self, identifier: str, limit: int, offset: int):
+        body = {'name': identifier,
+                'limit': limit,
                 'offset': offset}
-        response = self._http_request(method='POST', url_suffix='show-application-sites',
-                                      headers=self.headers, json_data=body)
-        return format_list_objects(response, 'ApplicationSite')
+        return self._http_request(method='POST', url_suffix='show-access-rulebase',
+                                  headers=self.headers, json_data=body)
 
-    def checkpoint_add_application_site_command(self, name: str, primary_category: str, identifier,
-                                                groups=None):
-        """
-        Add application site objects.
+    def add_rule(self, layer: str, position, action: str, name: str,
+                 vpn: str, destination, service, source):
+        body = {'layer': layer, 'position': position, 'name': name, 'action': action,
+                'destination': destination, 'service': service, 'source': source, 'vpn': vpn}
+        return self._http_request(method='POST', url_suffix='add-access-rule',
+                                  headers=self.headers, json_data=body)
 
-        Args:
-            name(str): Object name. Must be unique in the domain.
-            primary_category(str): Each application is assigned to one primary category
-                                    based on its most defining aspect.
-            identifier(str or list): can be-
-                                   url-list(str or list): URLs that determine this particular
-                                                          application
-                                   application-signature(str): Application signature generated by
-                                                                Signature Tool.
-            groups(str or list): Collection of group identifiers.
-        """
+    def update_rule(self, identifier: str, layer: str, ignore_warnings: bool, ignore_errors: bool,
+                    enabled: bool, action: str, new_name: str, new_position):
+        body = {'name': identifier,
+                'layer': layer,
+                'action': action,
+                'enabled': enabled,
+                'new-name': new_name,
+                'new-position': new_position,
+                'ignore-warnings': ignore_warnings,
+                'ignore-errors': ignore_errors
+                }
+        return self._http_request(method='POST', url_suffix='set-access-rule',
+                                  headers=self.headers, json_data=body)
+
+    def delete_rule(self, identifier: str, layer: str):
+        return self._http_request(method='POST', url_suffix='delete-access-rule',
+                                  headers=self.headers,
+                                  json_data={'name': identifier, 'layer': layer})
+
+    def list_application_site(self, limit: int, offset: int):
+        body = {'limit': limit, 'offset': offset}
+        return self._http_request(method='POST', url_suffix='show-application-sites',
+                                  headers=self.headers, json_data=body)
+
+    def add_application_site(self, name: str, primary_category: str, identifier, groups):
         body = {"name": name, "primary-category": primary_category,
                 'url-list': identifier, 'groups': groups}
-        response = self._http_request(method='POST', url_suffix='add-application-site',
-                                      headers=self.headers, json_data=body)
-        return format_add_object(response, 'ApplicationSite')
+        return self._http_request(method='POST', url_suffix='add-application-site',
+                                  headers=self.headers, json_data=body)
 
-    def checkpoint_update_application_site_command(self, identifier: str,
-                                                   urls_defined_as_regular_expression: bool,
-                                                   groups=None, url_list=None,
-                                                   description: str = None, new_name: str = None,
-                                                   primary_category: str = None,
-                                                   application_signature: str = None):
-        """
-        Edit existing application site object using object name or uid.
-
-        Args:
-            identifier: uid or name.
-            url_list(str or list): URLs that determine this particular application.
-                                    can be a string of a URL or a list of URLs.
-            urls_defined_as_regular_expression(bool): States whether the URL is defined as a
-                                                      Regular Expression or not.
-            groups(str or list): Collection of group identifiers.
-            description(str): A description for the application.
-            new_name(str): New name of the object.
-            primary_category (str): Each application is assigned to one primary category based on
-                                    its most defining aspect
-            application_signature(str): Application signature generated by Signature Tool
-        """
-
+    def update_application_site(self, identifier: str,
+                                urls_defined_as_regular_expression: bool,
+                                groups, url_list, description: str, new_name: str,
+                                primary_category: str, application_signature: str):
         body = {'name': identifier,
                 'description': description,
                 'new-name': new_name,
@@ -512,173 +220,1470 @@ class Client(BaseClient):
                 'application-signature': application_signature,
                 'url-list': url_list,
                 }
+        return self._http_request(method='POST', url_suffix='set-application-site',
+                                  headers=self.headers, json_data=body)
 
-        response = self._http_request(method='POST', url_suffix='set-application-site',
-                                      headers=self.headers, json_data=body)
-        return format_update_object(response, 'ApplicationSite')
+    def delete_application_site(self, identifier: str):
+        return self._http_request(method='POST', url_suffix='delete-application-site',
+                                  headers=self.headers, json_data={'name': identifier})
 
-    def checkpoint_delete_application_site_command(self, identifier: str):
-        """
-        Delete existing application site object using object name or uid.
+    def show_task(self, task_id):
+        return self._http_request(method='POST', url_suffix='show-task',
+                                  headers=self.headers, json_data={"task-id": task_id})
 
-        Args:
-            identifier(str): uid or name.
-        """
-        response = self._http_request(method='POST', url_suffix='delete-application-site',
-                                      headers=self.headers, json_data={'name': identifier})
-        return format_delete_object(response, 'ApplicationSite')
+    def list_objects(self, limit: int, offset: int, filter_search: str,
+                     ip_only: bool, object_type: str):
+        body = {'limit': limit, 'offset': offset, 'filter': filter_search,
+                "ip-only": ip_only, 'type': object_type}
+        return self._http_request(method='POST', url_suffix='v1.5/show-objects',
+                                  headers=self.headers, json_data=body)
 
-    def checkpoint_list_application_site_categories_command(self, limit: int, offset: int):
-        """
-        Show all application site categories.
-
-        Args:
-            limit(int): The maximal number of returned results.
-            offset(int): Number of the results to initially skip.
-        """
-
+    def list_application_site_categories(self, limit: int, offset: int):
         body = {'limit': limit,
                 'offset': offset}
-        response = self._http_request(method='POST', url_suffix='show-application-site-categories',
-                                      headers=self.headers, json_data=body)
-        return format_list_objects(response, 'ApplicationSiteCategory')
+        return self._http_request(method='POST', url_suffix='show-application-site-categories',
+                                  headers=self.headers, json_data=body)
 
-    def checkpoint_get_application_site_category_command(self, identifier: str):
-        """
-        Retrieve application site category object using object name or uid.
+    def get_application_site_category(self, identifier: str):
+        return self._http_request(method='POST', url_suffix='show-application-site-category',
+                                  headers=self.headers, json_data={'name': identifier})
 
-        Args:
-            identifier(str): application site category object name or UID.
-        """
-        response = self._http_request(method='POST', url_suffix='show-application-site-category',
-                                      headers=self.headers, json_data={'name': identifier})
-        return format_get_object(response, 'ApplicationSiteCategory')
+    def add_application_site_category(self, identifier: str, groups):
+        body = {"name": identifier, 'groups': groups}
+        return self._http_request(method='POST', url_suffix='add-application-site-category',
+                                  headers=self.headers, json_data=body)
 
-    def checkpoint_add_application_site_category_command(self, identifier: str):
-        """
-        Add application site objects.
-
-        Args:
-            identifier(str): Object name or uid. Must be unique in the domain.
-            new_name(str): New name of the object.
-        """
-        body = {"name": identifier}
-        response = self._http_request(method='POST', url_suffix='add-application-site-category',
-                                      headers=self.headers, json_data=body)
-        return format_add_object(response, 'ApplicationSiteCategory')
-
-    def checkpoint_list_packages_command(self, limit: int, offset: int):
-        """
-        Retrieve all policy packages.
-
-        Args:
-            limit(int): The maximal number of returned results.
-            offset(int): Number of the results to initially skip.
-        """
-
+    def list_packages(self, limit: int, offset: int):
         response = self._http_request(method='POST', url_suffix='show-packages',
                                       headers=self.headers,
                                       json_data={'limit': limit, 'offset': offset})
-        response = response.get('packages')
-        return format_list_servers(response, 'Packages')
+        return response.get('packages')
 
-    def checkpoint_list_gateways_command(self, limit: int, offset: int):
-        """
-        Retrieve all gateways and servers.
-
-        Args:
-            limit(int): The maximal number of returned results.
-            offset(int): Number of the results to initially skip.
-        """
+    def list_gateways(self, limit: int, offset: int):
         response = self._http_request(method='POST', url_suffix='show-gateways-and-servers',
                                       headers=self.headers,
                                       json_data={'limit': limit, 'offset': offset,
                                                  'details-level': 'full'})
-        response = response.get('objects')
-        return format_list_servers(response, 'Gateways')
+        return response.get('objects')
 
-    def checkpoint_install_policy_command(self, policy_package: str, targets, access: bool):
-        """
-        installing policy.
+    def publish(self):
+        return self._http_request(method='POST', url_suffix='publish', headers=self.headers,
+                                  json_data={})
 
-        Args:
-            policy_package(str): The name of the Policy Package to be installed.
-            targets(str or list):On what targets to execute this command. Targets may be identified
-                                by their name, or object unique identifier.
-            access(bool): Set to be true in order to install the Access Control policy.
-                            By default, the value is true if Access Control policy is enabled
-                            on the input policy package, otherwise false.
-        """
+    def install_policy(self, policy_package: str, targets, access: bool):
         body = {
             'policy-package': policy_package,
             'targets': targets,
             'access': access,
         }
-        response = self._http_request(method='POST', url_suffix='install-policy',
-                                      headers=self.headers, json_data=body)
+        return self._http_request(method='POST', url_suffix='install-policy',
+                                  headers=self.headers, json_data=body)
 
-        return format_task_id(response, 'InstallPolicy')
-
-    def checkpoint_verify_policy_command(self, policy_package: str):
-        """
-        Verifies the policy of the selected package.
-
-        Args:
-            policy_package(str): The name of the Policy Package to be installed.
-        """
+    def verify_policy(self, policy_package: str):
         body = {'policy-package': policy_package, }
-        response = self._http_request(method='POST', url_suffix='verify-policy',
-                                      headers=self.headers, json_data=body)
-        return format_task_id(response, 'VerifyPolicy')
+        return self._http_request(method='POST', url_suffix='verify-policy',
+                                  headers=self.headers, json_data=body)
 
-    def checkpoint_list_objects_command(self, limit: int, offset: int, filter_search: str,
-                                        ip_only: bool, object_type: str):
-        """
-        Retrieve data about objects.
+
+def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> CommandResults:
+    """
+    Retrieve all host objects.
+
+    Args:
+        client (Client): CheckPoint client.
+        limit (int): The maximal number of returned results. default is 50.
+        offset (int): Number of the results to initially skip. default is 0.
+    """
+    result = client.list_hosts(limit, offset)
+    result = result.get('objects')
+
+    printable_result = []
+    readable_output = ''
+
+    if result:
+        for element in result:
+            current_printable_result = {}
+            for endpoint in DEFAULT_LIST_FIELD:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+
+        readable_output = tableToMarkdown('CheckPoint data for all hosts:', printable_result,
+                                          DEFAULT_LIST_FIELD, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Host',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_get_host_command(client: Client, identifier: str) -> CommandResults:
+    """
+    Show existing host object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+    """
+    result = client.get_host(identifier)
+    printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
+    readable_output = tableToMarkdown(f'CheckPoint data of host object {identifier}:',
+                                      printable_result, headers=DEFAULT_LIST_FIELD,
+                                      removeNull=True)
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Host',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_add_host_command(client: Client, name, ip_address,
+                                groups: str = None) -> CommandResults:
+    """
+    Add new host object.
+
+    Args:
+        client (Client): CheckPoint client.
+        name(str): host name.
+        ip_address: ip address linked to the host.
+        groups (str or list): Collection of group identifiers.
+    """
+    name = argToList(name)
+    ip_address = argToList(ip_address)
+    groups = argToList(groups)
+
+    result = []
+    printable_result = {}
+    readable_output = ''
+    headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'creator',
+               'last-modifier', 'ipv4-address', 'ipv6-address', 'read-only', 'groups']
+
+    if len(name) != len(ip_address):
+        raise ValueError('Number of host-names and host-IP has to be equal')
+    else:
+        for index, item in enumerate(name):
+            current_result = client.add_host(item, ip_address[index], groups)
+            printable_result = build_printable_result(headers, current_result)
+            current_readable_output = tableToMarkdown('CheckPoint data for adding host:',
+                                                      printable_result, headers=headers,
+                                                      removeNull=True)
+            readable_output = readable_output + current_readable_output
+            result.append(current_result)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Host',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_update_host_command(client: Client, identifier: str, ignore_warnings: bool,
+                                   ignore_errors: bool, ip_address: str = None,
+                                   new_name: str = None, comments: str = None,
+                                   groups=None) -> CommandResults:
+    """
+    Edit existing host using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+        ignore_warnings(bool):Apply changes ignoring warnings.
+        ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
+                             a changes. If ignore-warnings flag was omitted- warnings will also
+                             be ignored
+        ip_address (object): ip address linked to the host.
+        new_name(str): New name of the object.
+        comments(str): Comments string.
+        groups (str or list): Collection of group identifiers.
+
+    """
+    groups = argToList(groups)
+    result = client.update_host(identifier, ignore_warnings, ignore_errors, ip_address, new_name,
+                                comments, groups)
+
+    headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'creator',
+               'comments', 'ipv4-address', 'last-modifier', 'read-only']
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown('CheckPoint data for updating a host:', printable_result,
+                                      headers=headers, removeNull=True)
+
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Host',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_delete_host_command(client: Client, identifier) -> CommandResults:
+    """
+    delete host object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+    """
+    identifier = argToList(identifier)
+    readable_output = ''
+    printable_result = {}
+    result = []
+    for item in enumerate(identifier):
+        current_result = client.delete_host(item[1])
+        result.append(current_result)
+        printable_result = {'message': current_result.get('message')}
+        current_readable_output = tableToMarkdown('CheckPoint data for deleting host:',
+                                                  printable_result)
+        readable_output = readable_output + current_readable_output
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Host',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_list_groups_command(client: Client, limit: int, offset: int) -> CommandResults:
+    """
+    Retrieve all group objects.
+
+    Args:
+        client (Client): CheckPoint client.
+        limit (int): The maximal number of returned results. default is 50.
+        offset (int): Number of the results to initially skip. default is 0.
+    """
+    result = client.list_groups(limit, offset)
+    result = result.get('objects')
+
+    printable_result = []
+    readable_output = ''
+
+    if result:
+        for element in result:
+            current_printable_result = {}
+            for endpoint in DEFAULT_LIST_FIELD:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+
+        readable_output = tableToMarkdown('CheckPoint data for all groups:', printable_result,
+                                          DEFAULT_LIST_FIELD, removeNull=True)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Group',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_get_group_command(client: Client, identifier: str) -> CommandResults:
+    """
+    Show existing group object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+    """
+    result = client.get_group(identifier)
+    printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
+    readable_output = tableToMarkdown(f'CheckPoint for {identifier} group:', printable_result,
+                                      headers=DEFAULT_LIST_FIELD, removeNull=True)
+    readable_output, printable_result = build_member_data(result, readable_output, printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Group',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_add_group_command(client: Client, name) -> CommandResults:
+    """
+    add group objects.
+
+    Args:
+        client (Client): CheckPoint client.
+        name(str): Object name. Must be unique in the domain.
+    """
+    headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'creator',
+               'last-modifier', 'ipv4-address', 'ipv6-address', 'read-only', 'groups']
+    name = argToList(name)
+    result = []
+    printable_result = {}
+    readable_output = ''
+
+    for item in enumerate(name):
+        current_result = client.add_group(item[1])
+        printable_result = build_printable_result(headers, current_result)
+        current_readable_output = tableToMarkdown('CheckPoint data for adding group:',
+                                                  printable_result, headers=headers,
+                                                  removeNull=True)
+        readable_output = readable_output + current_readable_output
+        result.append(current_result)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Group',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_update_group_command(client: Client, identifier: str, ignore_warnings: bool,
+                                    ignore_errors: bool, members=None, new_name: str = None,
+                                    comments: str = None) -> CommandResults:
+    """
+    Edit existing group using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+        ignore_warnings(bool):Apply changes ignoring warnings.
+        ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
+                             a changes. If ignore-warnings flag was omitted- warnings will also
+                             be ignored
+        members(object): Collection of Network objects identified by the name or UID.
+        new_name(str): New name of the object.
+        comments(str): Comments string.
+    """
+    if members:
+        members = argToList(members)
+    result = client.update_group(identifier, ignore_warnings, ignore_errors,
+                                 members, new_name, comments)
+    headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'creator',
+               'last-modifier', 'read-only']
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown('CheckPoint data for updating a group:', printable_result,
+                                      headers=headers, removeNull=True)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Group',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_delete_group_command(client: Client, identifier) -> CommandResults:
+    """
+    delete group object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+    """
+    identifier = argToList(identifier)
+    readable_output = ''
+    printable_result = {}
+    result = {}
+
+    for item in enumerate(identifier):
+        current_result = client.delete_group(item[1])
+        result.update(current_result)
+        printable_result = {'message': current_result.get('message')}
+        current_readable_output = tableToMarkdown(f'CheckPoint data for deleting {item[1]}:',
+                                                  printable_result)
+        readable_output = readable_output + current_readable_output
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Group',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_list_address_range_command(client: Client, limit: int,
+                                          offset: int) -> CommandResults:
+    """
+    Retrieve all address range objects.
+
+    Args:
+        client (Client): CheckPoint client.
+        limit (int): The maximal number of returned results. default is 50.
+        offset (int): Number of the results to initially skip. default is 0.
+    """
+    result = client.list_address_ranges(limit, offset)
+    result = result.get('objects')
+
+    printable_result = []
+    readable_output = ''
+
+    if result:
+        for element in result:
+            current_printable_result = {}
+            for endpoint in DEFAULT_LIST_FIELD:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+
+        readable_output = tableToMarkdown('CheckPoint data for all address ranges:',
+                                          printable_result, DEFAULT_LIST_FIELD, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AddressRange',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_get_address_range_command(client: Client, identifier: str) -> CommandResults:
+    """
+    Show existing address range object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+    """
+    result = client.get_address_range(identifier)
+    print(result)
+    printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
+    readable_output = tableToMarkdown(f'CheckPoint data for {identifier} address range:',
+                                      printable_result, headers=DEFAULT_LIST_FIELD,
+                                      removeNull=True)
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AddressRange',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_add_address_range_command(client: Client, name: str, ip_address_first: str,
+                                         ip_address_last: str, set_if_exists: bool,
+                                         ignore_warnings: bool, ignore_errors: bool,
+                                         groups=None) -> CommandResults:
+    """
+    add address range object.
+
+    Args:
+        client (Client): CheckPoint client.
+        name(str): Object name. Must be unique in the domain.
+        ip_address_first(str): First IP address in the range. IPv4 or IPv6 address.
+        ip_address_last(str): Last IP address in the range. IPv4 or IPv6 address.
+        set_if_exists(bool): If another object with the same identifier already exists,
+                             it will be updated.
+        ignore_warnings(bool): Apply changes ignoring warnings.
+        ignore_errors(bool): Apply changes ignoring errors
+        groups(str or list): Collection of group identifiers.
+    """
+    if groups:
+        groups = argToList(groups)
+    headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'creator',
+               'ipv4-address-first', 'ipv4-address-last', 'ipv6-address-first', 'ipv6-address-last',
+               'last-modifier', 'read-only']
+
+    result = client.add_address_range(name, ip_address_first, ip_address_last, set_if_exists,
+                                      ignore_warnings, ignore_errors, groups)
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown('CheckPoint data for adding an address range:',
+                                      printable_result, headers=headers, removeNull=True)
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AddressRange',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_update_address_range_command(client: Client, identifier: str,
+                                            ignore_warnings: bool, ignore_errors: bool,
+                                            ip_address_first: str = None,
+                                            ip_address_last: str = None, new_name: str = None,
+                                            comments: str = None, groups=None) -> CommandResults:
+    """
+    Edit existing address range object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+        ignore_warnings(bool):Apply changes ignoring warnings.
+        ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
+                            a changes.
+                             If ignore-warnings flag was omitted- warnings will also be ignored
+        ip_address_first(str): First IP address in the range. IPv4 or IPv6 address.
+        ip_address_last(str): Last IP address in the range. IPv4 or IPv6 address.
+        new_name(str): New name of the object.
+        comments(str): Comments string.
+        groups(str or list): Collection of group identifiers.
+    """
+    if groups:
+        groups = argToList(groups)
+    result = client.update_address_range(identifier, ignore_warnings, ignore_errors,
+                                         ip_address_first, ip_address_last, new_name,
+                                         comments, groups)
+    headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'creator',
+               'comments', 'ipv4-address', 'last-modifier', 'read-only']
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown('CheckPoint data for updating an address range:',
+                                      printable_result, headers=headers, removeNull=True)
+
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AddressRange',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_delete_address_range_command(client: Client, identifier) -> CommandResults:
+    """
+    delete address range object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+    """
+    identifier = argToList(identifier)
+    readable_output = ''
+    printable_result = {}
+    result = {}
+    for item in enumerate(identifier):
+        current_result = client.delete_address_range(item[1])
+        result.update(current_result)
+        printable_result = {'message': current_result.get('message')}
+        current_readable_output = tableToMarkdown('CheckPoint data for deleting address range:',
+                                                  printable_result)
+        readable_output = readable_output + current_readable_output
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AddressRange',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_list_threat_indicator_command(client: Client, limit: int,
+                                             offset: int) -> CommandResults:
+    """
+    Retrieve all threat indicator objects.
+
+    Args:
+        client (Client): CheckPoint client.
+        limit (int): The maximal number of returned results. default is 50.
+        offset (int): Number of the results to initially skip. default is 0.
+    """
+    result = client.list_threat_indicators(limit, offset)
+    result['objects'] = result.pop('indicators')
+    printable_result = []
+    readable_output = ''
+
+    result = result.get('objects')
+    if result:
+        for element in result:
+            current_printable_result = {}
+            for endpoint in DEFAULT_LIST_FIELD:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+
+        readable_output = tableToMarkdown('CheckPoint data for all threat indicators:',
+                                          printable_result, DEFAULT_LIST_FIELD, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ThreatIndicator',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_get_threat_indicator_command(client: Client, identifier: str) -> CommandResults:
+    """
+    Show existing threat indicator object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+    """
+    result = client.get_threat_indicator(identifier)
+    print(result)
+    headers = DEFAULT_LIST_FIELD + ['number-of-observables']
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(f'CheckPoint data for {identifier} threat indicator:',
+                                      printable_result, headers=headers,
+                                      removeNull=True)
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ThreatIndicator',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_add_threat_indicator_command(client: Client, name: str,
+                                            observables: list) -> CommandResults:
+    """
+    Create new threat indicator.
+
+    Args:
+        client (Client): CheckPoint client.
+        name(str): Object name. Must be unique in the domain.
+        observables(list): The indicator's observables.
+    """
+    observables = argToList(observables)
+    result = client.add_threat_indicator(name, observables)
+    printable_result = {'task-id': result.get('task-id')}
+    readable_output = tableToMarkdown('CheckPoint data for adding an threat indicator:',
+                                      printable_result)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ThreatIndicator',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_update_threat_indicator_command(client: Client, identifier: str, action: str = None,
+                                               new_name: str = None,
+                                               comments: str = None) -> CommandResults:
+    """
+    Edit existing threat indicator object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+        action (str): the action to set. available options:
+                            "Accept", "Drop", "Ask", "Inform", "Reject", "User Auth",
+                            "Client Auth", "Apply Layer".
+        new_name(str): New name of the object.
+        comments(str): Comments string.
+    """
+
+    result = client.update_threat_indicator(identifier, action, new_name, comments)
+    headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'creator',
+               'comments', 'ipv4-address', 'last-modifier', 'read-only']
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown(f'CheckPoint data for update {identifier} threat indicator',
+                                      printable_result, headers=headers, removeNull=True)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ThreatIndicator',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_delete_threat_indicator_command(client: Client, identifier) -> CommandResults:
+    """
+    delete threat indicator object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+    """
+    identifier = argToList(identifier)
+    readable_output = ''
+    printable_result = {}
+    result = {}
+    for item in enumerate(identifier):
+        current_result = client.delete_threat_indicator(item[1])
+        result.update(current_result)
+        printable_result = {'message': current_result.get('message')}
+        current_readable_output = tableToMarkdown(f'CheckPoint status for deleting {item[1]}'
+                                                  f'threat indicator:', printable_result)
+        readable_output = readable_output + current_readable_output
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ThreatIndicator',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_list_access_rule_command(client: Client, identifier: str, limit: int,
+                                        offset: int) -> CommandResults:
+    """
+    Show existing access rule base objects using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+        limit (int): The maximal number of returned results.
+        offset (int): Number of the results to initially skip.
+    """
+    printable_result = []
+    readable_output = ''
+
+    result = client.list_access_rule(identifier, limit, offset)
+    result = result.get('rulebase')
+
+    if result:
+        for element in result:
+            current_printable_result = {}
+            for endpoint in DEFAULT_LIST_FIELD:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+
+        readable_output = tableToMarkdown('CheckPoint data for all access rule bases:',
+                                          printable_result, DEFAULT_LIST_FIELD, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AccessRule',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_add_access_rule_command(client: Client, layer: str, position, action: str,
+                                       name: str = None, vpn: str = None, destination=None,
+                                       service=None, source=None) -> CommandResults:
+    """
+    Add new access rule object.
+
+    Args:
+        client (Client): CheckPoint client.
+        layer(str): Layer that the rule belongs to identified by the name or UID.
+        position(int or str): IPosition in the rulebase.
+                              int - add rule at a specific position
+                              str - add rule at the position. vaild value: top, bottom
+        name(str): rule name
+        action(str): Action settings. valid values are: Accept, Drop, Apply Layer, Ask and Info
+                     default value is Drop.
+
+        vpn(str): Communities or Directional. Valid values: Any, All_GwToGw.
+        destination(str or list): Collection of Network objects identified by the name or UID.
+        service(str or list): Collection of Network objects identified by the name or UID.
+        source(str or list): Collection of Network objects identified by the name or UID.
+    """
+    headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'enabled',
+               'layer', 'creator', 'last-modifier']
+
+    result = client.add_rule(layer, position, action, name, vpn, destination, service, source)
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown('CheckPoint data for adding access rule:', printable_result,
+                                      headers=headers, removeNull=True)
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AccessRule',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_update_access_rule_command(client: Client, identifier: str, layer: str,
+                                          ignore_warnings: bool, ignore_errors: bool,
+                                          enabled: bool, action: str = None, new_name: str = None,
+                                          new_position=None) -> CommandResults:
+    """
+    Edit existing access rule object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str): uid, name or rule-number.
+        layer (str): Layer that the rule belongs to identified by the name or UID.
+        ignore_warnings(bool):Apply changes ignoring warnings.
+        ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
+        a changes. If ignore-warnings flag was omitted- warnings will also be ignored
+        enabled(bool): Enable/Disable the rule
+        action (str): the action to set. available options:
+                                    "Accept", "Drop", "Ask", "Inform", "Reject", "User Auth",
+                                    "Client Auth", "Apply Layer".
+        new_name(str): New name of the object.
+        new_position(int or str): New position in the rulebase. value can be int or str:
+                                int- add rule at the specific position
+                                str- add rule at the position. valid values: top, bottom.
+    """
+
+    result = client.update_rule(identifier, layer, ignore_warnings, ignore_errors, enabled, action,
+                                new_name, new_position)
+    headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid',
+               'action-name', 'action-uid', 'action-type', 'content-direction',
+               'creator', 'enabled', 'last-modifier']
+    printable_result = build_printable_result(headers, result)
+
+    action_data = result.get('action')
+    if action_data:
+        printable_result['action-name'] = action_data.get('name')
+        printable_result['action-uid'] = action_data.get('uid')
+        printable_result['action-type'] = action_data.get('type')
+
+    readable_output = tableToMarkdown('CheckPoint data for updating an access rule:',
+                                      printable_result, headers=headers, removeNull=True)
+
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AccessRule',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_delete_access_rule_command(client: Client, identifier,
+                                          layer: str) -> CommandResults:
+    """
+    Delete existing rule object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid, name or rule-number.
+        layer(str): Layer that the rule belongs to identified by the name or UID.
+    """
+    identifier = argToList(identifier)
+    readable_output = ''
+    printable_result = {}
+    result = {}
+    for item in enumerate(identifier):
+        current_result = client.delete_rule(item[1], layer)
+        result.update(current_result)
+        printable_result = {'message': current_result.get('message')}
+        current_readable_output = tableToMarkdown(f'CheckPoint data for deleting access rule '
+                                                  f'range: {item[1]}', printable_result)
+        readable_output = readable_output + current_readable_output
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AccessRule',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_list_application_site_command(client: Client, limit: int,
+                                             offset: int) -> CommandResults:
+    """
+    Show existing application site objects using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        limit (int): The maximal number of returned results.
+        offset (int): Number of the results to initially skip.
+    """
+    printable_result = []
+    readable_output = ''
+
+    result = client.list_application_site(limit, offset)
+    result = result.get('objects')
+    if result:
+        for element in result:
+            current_printable_result = {}
+            for endpoint in DEFAULT_LIST_FIELD:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+        readable_output = tableToMarkdown('CheckPoint data for all access rule bases:',
+                                          printable_result, DEFAULT_LIST_FIELD, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ApplicationSite',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_add_application_site_command(client: Client, name: str, primary_category: str,
+                                            identifier, groups=None):
+    """
+    Add application site objects.
+
+    Args:
+        client (Client): CheckPoint client.
+        name(str): Object name. Must be unique in the domain.
+        primary_category(str): Each application is assigned to one primary category
+                                based on its most defining aspect.
+        identifier(str or list): can be-
+                               url-list(str or list): URLs that determine this particular
+                               application
+                               application-signature(str): Application signature generated by
+                                                            Signature Tool.
+        groups(str or list): Collection of group identifiers.
+    """
+    identifier = argToList(identifier)
+    groups = argToList(groups)
+    headers = ['name', 'uid', 'type', 'url-list', 'application-id', 'domain-name',
+               'domain-type', 'domain-uid', 'description', 'creator', 'last-modifier', 'groups']
+
+    result = client.add_application_site(name, primary_category, identifier, groups)
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown('CheckPoint data for adding application site:',
+                                      printable_result, headers=headers, removeNull=True)
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ApplicationSite',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_update_application_site_command(client: Client, identifier: str,
+                                               urls_defined_as_regular_expression: bool,
+                                               groups=None, url_list=None, url_list_to_add=None,
+                                               url_list_to_remove=None,
+                                               description: str = None, new_name: str = None,
+                                               primary_category: str = None,
+                                               application_signature: str = None):
+    """
+    Edit existing application site object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier: uid or name.
+        url_list(str or list): URLs that determine this particular application.
+                                can be a string of a URL or a list of URLs.
+        url_list_to_add (str or list): Adds to collection of values.
+        url_list_to_remove (str or list): Removes from collection of values.
+        urls_defined_as_regular_expression(bool): States whether the URL is defined as a
+                                                  Regular Expression or not.
+        groups(str or list): Collection of group identifiers.
+        description(str): A description for the application.
+        new_name(str): New name of the object.
+        primary_category (str): Each application is assigned to one primary category based on
+                                its most defining aspect
+        application_signature(str): Application signature generated by Signature Tool
+    """
+
+    url_list_object = None
+    if url_list:
+        url_list_object = argToList(url_list)
+
+    elif url_list_to_add:
+        url_list_to_add = argToList(url_list_to_add)
+        url_list_object = {'add': url_list_to_add}
+
+    elif url_list_to_remove:
+        url_list_to_remove = argToList(url_list_to_remove)
+        url_list_object = {'add': url_list_to_remove}
+
+    if groups:
+        groups = argToList(groups)
+    result = client.update_application_site(identifier, urls_defined_as_regular_expression, groups,
+                                            url_list_object, description, new_name,
+                                            primary_category, application_signature)
+    headers = ['name', 'uid', 'type', 'application-id', 'primary-category', 'url-list',
+               'domain-name', 'domain-type', 'domain-uid', 'description', 'groups']
+    printable_result = build_printable_result(headers, result)
+    readable_output = tableToMarkdown('CheckPoint data for updating an application site:',
+                                      printable_result, headers=headers, removeNull=True)
+    readable_output, printable_result = build_group_data(result, readable_output, printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ApplicationSite',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_delete_application_site_command(client: Client, identifier) -> CommandResults:
+    """
+    Delete existing application site object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid, name or rule-number.
+    """
+    identifier = argToList(identifier)
+    readable_output = ''
+    printable_result = {}
+    result = {}
+    for item in enumerate(identifier):
+        current_result = client.delete_application_site(item[1])
+        result.update(current_result)
+        printable_result = {'message': current_result.get('message')}
+        current_readable_output = tableToMarkdown(f'CheckPoint data for deleting application site '
+                                                  f': {item[1]}', printable_result)
+        readable_output = readable_output + current_readable_output
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ApplicationSite',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_list_application_site_categories_command(client: Client, limit: int,
+                                                        offset: int) -> CommandResults:
+    """
+    Retrieve all application site categories objects.
+
+    Args:
+        client (Client): CheckPoint client.
+        limit (int): The maximal number of returned results. default is 50.
+        offset (int): Number of the results to initially skip. default is 0.
+    """
+    result = client.list_application_site_categories(limit, offset)
+    result = result.get('objects')
+
+    printable_result = []
+    readable_output = ''
+
+    if result:
+        for element in result:
+            current_printable_result = {}
+            for endpoint in DEFAULT_LIST_FIELD:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+
+        readable_output = tableToMarkdown('CheckPoint data for all application site category:',
+                                          printable_result,
+                                          DEFAULT_LIST_FIELD, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ApplicationSiteCategory',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_get_application_site_category_command(client: Client,
+                                                     identifier: str) -> CommandResults:
+    """
+    Show existing application site category object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+    """
+    result = client.get_application_site_category(identifier)
+    printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
+    readable_output = tableToMarkdown('CheckPoint data for adding application site category:',
+                                      printable_result,
+                                      headers=DEFAULT_LIST_FIELD, removeNull=True)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ApplicationSiteCategory',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_add_application_site_category_command(client: Client, identifier: str,
+                                                     groups=None) -> CommandResults:
+    """
+    Add application site objects.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier (str or list): Object name or unique identifier.
+        groups (str or list): Collection of group identifiers.
+    """
+    identifier = argToList(identifier)
+    groups = argToList(groups)
+
+    headers = ['name', 'uid', 'type', 'url-list', 'application-id', 'domain-name',
+               'domain-type', 'domain-uid', 'description', 'creator', 'last-modifier', 'groups']
+    readable_output = ''
+    printable_result = {}
+    result = {}
+    for item in enumerate(identifier):
+        current_result = client.add_application_site_category(item[1], groups)
+        result.update(current_result)
+
+        printable_result = build_printable_result(headers, current_result)
+        current_readable_output = tableToMarkdown(f'CheckPoint data for adding application site'
+                                                  f' category {item[1]}:', printable_result,
+                                                  headers=headers, removeNull=True)
+        readable_output = readable_output + current_readable_output
+        readable_output, printable_result = build_group_data(current_result, readable_output,
+                                                             printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ApplicationSite',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_list_objects_command(client: Client, limit: int, offset: int, filter_search: str,
+                                    ip_only: bool, object_type: str) -> CommandResults:
+    """
+    Retrieve data about objects.
 
         Args:
-            limit(int): The maximal number of returned results.
-            offset(int): Number of the results to initially skip.
-            filter_search(str): Search expression to filter objects by. To use IP search only, set the
-                         "ip-only" parameter to true.
+            client (Client): CheckPoint client.
+            limit (int): The maximal number of returned results.
+            offset (int): Number of the results to initially skip.
+            filter_search(str): Search expression to filter objects by. To use IP search only,
+                                set the "ip-only" parameter to true.
             ip_only(bool): If using "filter", use this field to search objects by their IP address
                            only, without involving the textual search. Default value is False.
             object_type(str): The objects' type, e.g.: host, service-tcp, network, address-range.
                        Default value is object.
         """
-        body = {'limit': limit, 'offset': offset, 'filter': filter_search,
-                "ip-only": ip_only, 'type': object_type}
 
-        response = self._http_request(method='POST', url_suffix='v1.5/show-objects',
-                                      headers=self.headers, json_data=body)
-        return format_list_objects(response, 'Objects')
+    printable_result = []
+    readable_output = ''
 
-    def checkpoint_show_task_command(self, task_id):
-        """
-        Show task progress and details.
+    result = client.list_objects(limit, offset, filter_search, ip_only, object_type)
+    result = result.get('objects')
+    if result:
+        for element in result:
+            current_printable_result = {}
+            for endpoint in DEFAULT_LIST_FIELD:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+        readable_output = tableToMarkdown('CheckPoint data for objects:', printable_result,
+                                          DEFAULT_LIST_FIELD, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Objects',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
 
-        ARGs:
-            task_id(str): Unique identifier of one or more tasks.
-        """
-        response = self._http_request(method='POST', url_suffix='show-task',
-                                      headers=self.headers, json_data={"task-id": task_id})
-        return format_show_task(response)
 
-    def checkpoint_publish_command(self):
-        """
-        publish changes. All the changes done by this user will be seen by all users only
-        after publish is called.
-        """
-        response = self._http_request(method='POST', url_suffix='publish', headers=self.headers,
-                                      json_data={})
-        return format_task_id(response, 'Publish')
+def checkpoint_list_packages_command(client: Client, limit: int, offset: int) -> CommandResults:
+    """
+    Retrieve all policy packages.
 
-    def checkpoint_logout(self):
-        """logout from current session"""
-        response = self._http_request(method='POST', url_suffix='logout', headers=self.headers,
-                                      json_data={})
-        demisto.setIntegrationContext({})
-        return response
+    Args:
+        client (Client): CheckPoint client.
+        limit (int): The maximal number of returned results.
+        offset (int): Number of the results to initially skip.
+    """
+    printable_result = []
+    readable_output = ''
+    headers = ['name', 'uid', 'type']
+    result = client.list_packages(limit, offset)
+    if result:
+        for element in result:
+            current_printable_result = {}
+            for endpoint in headers:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+        readable_output = tableToMarkdown('CheckPoint data for all packages:', printable_result,
+                                          headers, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Packages',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_list_gateways_command(client: Client, limit: int, offset: int) -> CommandResults:
+    """
+    Retrieve all policy gateways.
+
+    Args:
+        client (Client): CheckPoint client.
+        limit (int): The maximal number of returned results.
+        offset (int): Number of the results to initially skip.
+    """
+    printable_result = []
+    readable_output = ''
+    headers = ['name', 'uid', 'type', 'version', 'network-security-blades', 'management-blades']
+    result = client.list_gateways(limit, offset)
+    if result:
+        for element in result:
+            current_printable_result = {}
+            for endpoint in headers:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+        readable_output = tableToMarkdown('CheckPoint data for all gateways:', printable_result,
+                                          headers, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Gateways',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_publish_command(client: Client) -> CommandResults:
+    """
+    publish changes. All the changes done by this user will be seen by all users only after publish
+    is called.
+    Args:
+        client (Client): CheckPoint client.
+    """
+    printable_result = []
+    readable_output = ''
+
+    result = client.publish()
+    if result:
+        printable_result = {'task-id': result.get('task-id')}
+        readable_output = tableToMarkdown('CheckPoint data for publishing current session:',
+                                          printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Publish',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_show_task_command(client: Client, task_id: str) -> CommandResults:
+    """
+    Show task status with the given task id
+
+    Args:
+        client (Client): CheckPoint client.
+        task_id (str): task id.
+    """
+    printable_result = []
+    result = client.show_task(task_id)
+    task_list = result.get('tasks')
+    if task_list:
+        for task in task_list:
+            current_object_data = {'task-id': task.get('task-id'),
+                                   'task-name': task.get('task-name'),
+                                   'status': task.get('status'),
+                                   'suppressed': task.get('suppressed'),
+                                   'progress-percentage': task.get('progress-percentage'),
+                                   }
+            printable_result.append(current_object_data)
+
+    readable_output = tableToMarkdown('CheckPoint data for tasks:', printable_result,
+                                      ['task-name', 'task-id', 'status', 'suppressed',
+                                       'progress-percentage'], removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.ShowTask',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_install_policy_command(client: Client, policy_package: str, targets,
+                                      access: bool) -> CommandResults:
+    """
+    installing policy.
+
+    Args:
+        client (Client): CheckPoint client.
+        policy_package(str): The name of the Policy Package to be installed.
+        targets(str or list):On what targets to execute this command. Targets may be identified
+                            by their name, or object unique identifier.
+        access(bool): Set to be true in order to install the Access Control policy.
+                        By default, the value is true if Access Control policy is enabled
+                        on the input policy package, otherwise false.
+    """
+    printable_result = []
+    readable_output = ''
+
+    result = client.install_policy(policy_package, targets, access)
+    if result:
+        printable_result = {'task-id': result.get('task-id')}
+        readable_output = tableToMarkdown('CheckPoint data for installing policy:',
+                                          printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.InstallPolicy',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_verify_policy_command(client: Client, policy_package: str) -> CommandResults:
+    """
+    Verifies the policy of the selected package.
+
+    Args:
+        client (Client): CheckPoint client.
+        policy_package(str): The name of the Policy Package to be installed.
+    """
+    printable_result = []
+    readable_output = ''
+
+    result = client.verify_policy(policy_package)
+    if result:
+        printable_result = {'task-id': result.get('task-id')}
+        readable_output = tableToMarkdown('CheckPoint data for verifying policy', printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.VerifyPolicy',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_login_and_get_sid_command(base_url: str, username: str, password: str,
+                                         verify_certificate: bool,
+                                         session_timeout: int) -> CommandResults:
+    """login to checkpoint admin account using username and password."""
+    response = requests.post(base_url + 'login', verify=verify_certificate,
+                             headers={'Content-Type': 'application/json'},
+                             json={'user': username, 'password': password,
+                                   'session-timeout': session_timeout}).json()
+    printable_result = {'session-id': response.get('sid')}
+    readable_output = tableToMarkdown('CheckPoint session data:', printable_result)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Login',
+        outputs_key_field='uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=response
+    )
+    return command_results
+
+
+def build_member_data(result: dict, readable_output: str, printable_result: dict) -> (str, dict):
+    """helper function. Builds the member data for group endpoints."""
+    members = result.get('members')
+    members_printable_result = []
+
+    if members:
+        for member in members:
+            current_object_data = {'member-name': member.get('name'),
+                                   'member-uid': member.get('uid'),
+                                   'member-type': member.get('type'),
+                                   }
+
+            member_domain = member.get('domain')
+            if member_domain:
+                current_object_data.update({'member-domain-name': member_domain.get('name'),
+                                            'member-domain-uid': member_domain.get('uid'),
+                                            'member-domain-type': member_domain.get('type'),
+                                            })
+
+            members_printable_result.append(current_object_data)
+        printable_result['members'] = members_printable_result
+        member_readable_output = tableToMarkdown('CheckPoint member data:',
+                                                 members_printable_result,
+                                                 ['member-name', 'member-uid', 'member-type',
+                                                  'member-domain-name', 'member-domain-uid'],
+                                                 removeNull=True)
+        readable_output = readable_output + member_readable_output
+    return readable_output, printable_result
+
+
+def build_printable_result(headers: list, result: dict) -> dict:
+    """helper function. Builds the printable results."""
+
+    printable_result = {}
+    for endpoint in headers:
+        printable_result[endpoint] = result.get(endpoint)
+
+        domain_data = result.get('domain')
+        if domain_data:
+            printable_result.update({
+                'domain-name': domain_data.get('name'),
+                'domain-uid': domain_data.get('uid'),
+                'domain-type': domain_data.get('type'),
+            })
+
+        meta_info = result.get('meta-info')
+        if meta_info:
+            result.update({
+                'creator': meta_info.get('creator'),
+                'last-modifier': meta_info.get('last-modifier'),
+            })
+
+        groups = result.get('groups')
+        if groups:
+            group_list = []
+            for group_object in groups:
+                group_list.append(group_object.get('name'))
+            printable_result['groups'] = group_list
+
+    return printable_result
+
+
+def build_group_data(result: dict, readable_output: str, printable_result: dict) -> (str, dict):
+    """helper function. Builds new table of group objects related to an object."""
+    groups_printable_result = []
+    groups_info = result.get('groups')
+    if groups_info:
+        for group in groups_info:
+            current_object_data = {'name': group.get('name'),
+                                   'uid': group.get('uid'),
+                                   }
+            groups_printable_result.append(current_object_data)
+        printable_result['groups'] = groups_printable_result
+        groups_readable_output = tableToMarkdown('Additional group data:',
+                                                 groups_printable_result, removeNull=True)
+        readable_output = readable_output + groups_readable_output
+
+    return readable_output, printable_result
 
 
 def login(base_url: str, username: str, password: str, verify_certificate: bool):
@@ -692,19 +1697,6 @@ def login(base_url: str, username: str, password: str, verify_certificate: bool)
         demisto.setIntegrationContext({'cp_sid': sid})
         return
     demisto.setIntegrationContext({})
-
-
-def checkpoint_login_and_get_sid_command(base_url: str, username: str, password: str,
-                                         verify_certificate: bool, session_timeout: int):
-    """login to checkpoint admin account using username and password."""
-    response = requests.post(base_url + 'login', verify=verify_certificate,
-                             headers={'Content-Type': 'application/json'},
-                             json={'user': username, 'password': password,
-                                   'session-timeout': session_timeout}).json()
-    printable_result = {'session-id': response.get('sid')}
-    outputs = {'CheckPoint.Login(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown('CheckPoint session data:', printable_result)
-    return readable_output, outputs, response
 
 
 def checkpoint_logout_command(base_url: str, sid: str, verify_certificate: bool) -> str:
@@ -729,367 +1721,6 @@ def test_module(base_url: str, sid: str, verify_certificate) -> str:
     return 'ok' if response else f'Connection failed.{reason}\nFull response: {response.json()}'
 
 
-def format_list_objects(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
-    """
-        Formats all objects info from CheckPoint into Demisto's outputs.
-
-    Args:
-        result (dict): the report from CheckPoint.
-        endpoint (str): The endpoint that needs to be formatted.
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from CheckPoint (used for debugging).
-    """
-    printable_result = []
-    object_list = result.get('objects')
-    if not object_list:
-        return 'No data to show.', {}, result
-
-    for element in object_list:
-        current_object_data = {'name': element.get('name'),
-                               'uid': element.get('uid'),
-                               'ipv4': element.get('ipv4-address')}
-        if endpoint != 'AccessRule':
-            current_object_data['type'] = element.get('type')
-        printable_result.append(current_object_data)
-
-    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown(f'CheckPoint data for listing {endpoint}s:', printable_result,
-                                      ['name', 'uid', 'type', 'ipv4'], removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_get_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
-    """
-        Formats object info from CheckPoint into Demisto's outputs.
-
-    Args:
-        result (dict): the report from CheckPoint.
-        endpoint (str): The endpoint that needs to be formatted.
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from CheckPoint (used for debugging).
-    """
-    if not result:
-        return 'No data to show.', {}, result
-    printable_result = {
-        'name': result.get('name'),
-        'uid': result.get('uid'),
-        'type': result.get('type'),
-        'ipv4-address': result.get('ipv4-address'),
-        'ipv6-address': result.get('ipv4-address'),
-        'read-only': result.get('read-only'),
-    }
-    domain_data = result.get('domain')
-    if domain_data:
-        printable_result.update({
-            'domain-name': domain_data.get('name'),
-            'domain-uid': domain_data.get('uid'),
-            'domain-type': domain_data.get('type'),
-        })
-
-    meta_info = result.get('meta-info')
-    if meta_info:
-        printable_result.update({
-            'creator': meta_info.get('creator'),
-            'last-modifier': meta_info.get('last-modifier')
-        })
-    readable_output = tableToMarkdown(f'CheckPoint data for getting {endpoint}:', printable_result,
-                                      removeNull=True)
-
-    # add new table for group objects related to current object
-    groups_printable_result = []
-    groups_info = result.get('groups')
-    if groups_info:
-        for group in groups_info:
-            current_object_data = {'name': group.get('name'),
-                                   'uid': group.get('uid'),
-                                   }
-            groups_printable_result.append(current_object_data)
-        printable_result['groups'] = groups_printable_result
-        groups_readable_output = tableToMarkdown(f'CheckPoint data for {endpoint} groups:',
-                                                 groups_printable_result, removeNull=True)
-        readable_output = readable_output + groups_readable_output
-
-    # add new table for group members objects
-    if endpoint == 'Group':
-        members = result.get('members')
-        members_printable_result = []
-        if members:
-            for member in members:
-                current_object_data = {'member-name': member.get('name'),
-                                       'member-uid': member.get('uid'),
-                                       'member-type': member.get('type'),
-                                       }
-                member_domain = member.get('domain')
-                if member_domain:
-                    current_object_data.update({'member-domain-name': member_domain.get('name'),
-                                                'member-domain-uid': member_domain.get('uid'),
-                                                'member-domain-type': member_domain.get('type'),
-                                                })
-                members_printable_result.append(current_object_data)
-            printable_result['members'] = members_printable_result
-
-        member_readable_output = tableToMarkdown('CheckPoint member data:',
-                                                 members_printable_result,
-                                                 ['member-name', 'member-uid', 'member-type',
-                                                  'member-domain-name', 'member-domain-uid'],
-                                                 removeNull=True)
-        readable_output = readable_output + member_readable_output
-
-    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': printable_result}
-    return readable_output, outputs, result
-
-
-def format_add_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
-    """
-        Formats adding object result from CheckPoint into Demisto's outputs.
-
-    Args:
-        result (dict): the report from CheckPoint.
-        endpoint (str): The endpoint that needs to be formatted.
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from CheckPoint (used for debugging).
-    """
-    if not result:
-        return 'No data to show.', {}, result
-
-    readable_output = {
-        'name': result.get('name'),
-        'uid': result.get('uid'),
-        'type': result.get('type'),
-    }
-
-    domain_data = result.get('domain')
-    if domain_data:
-        readable_output.update({
-            'domain-name': domain_data.get('name'),
-            'domain-uid': domain_data.get('uid'),
-            'domain-type': domain_data.get('type'),
-        })
-
-    meta_info = result.get('meta-info')
-    if meta_info:
-        readable_output.update({
-            'creator': meta_info.get('creator'),
-            'last-modifier': meta_info.get('last-modifier'),
-        })
-    groups = result.get('groups')
-    if groups:
-        group_list = []
-        for group in groups:
-            group_list.append(group.get('name'))
-        readable_output['groups'] = group_list
-
-    unique_outputs = {}
-    if endpoint == 'ApplicationSite':
-        unique_outputs = {
-            'application-id': result.get('application-id'),
-            'description': result.get('description'),
-            'url-list': result.get('url-list'),
-        }
-    elif endpoint == 'AccessRule':
-        unique_outputs = {
-            'layer': result.get('layer'),
-            'enabled': result.get('enabled'),
-        }
-    elif endpoint == 'address range':
-        unique_outputs = {
-            'ipv4-address-first': result.get('ipv4-address-first'),
-            'ipv4-address-last': result.get('ipv4-address-last'),
-            'ipv6-address-first': result.get('ipv6-address-first'),
-            'ipv6-address-last': result.get('ipv6-address-last'),
-            'read-only': result.get('read-only')
-        }
-    elif endpoint == 'Group':
-        groups = result.get('groups')
-        if groups:
-            unique_outputs = {'groups-name': groups[0]}
-    elif endpoint == 'Host':
-        unique_outputs = {
-            'ipv4-address': result.get('ipv4-address'),
-            'ipv6-address': result.get('ipv4-address'),
-            'read-only': result.get('read-only')
-        }
-    readable_output.update(unique_outputs)
-
-    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': readable_output}
-    readable_output = tableToMarkdown(f'CheckPoint data for adding {endpoint}:', readable_output,
-                                      removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_update_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
-    """
-        Formats updated object result from CheckPoint into Demisto's outputs.
-
-    Args:
-        result (dict): the report from CheckPoint.
-        endpoint (str): The endpoint that needs to be formatted.
-
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from CheckPoint (used for debugging).
-    """
-    if not result:
-        return 'No data to show.', {}, result
-
-    readable_output = {
-        'name': result.get('name'),
-        'uid': result.get('uid'),
-        'type': result.get('type'),
-        'ipv4-address': result.get('ipv4-address'),
-        'ipv6-address': result.get('ipv4-address'),
-        'total-number': result.get('total-number'),
-    }
-
-    domain_data = result.get('domain')
-    if domain_data:
-        readable_output.update({
-            'domain-name': domain_data.get('name'),
-            'domain-uid': domain_data.get('uid'),
-            'domain-type': domain_data.get('type'),
-        })
-    groups_data = result.get('groups')
-    if groups_data:
-        groups_data = groups_data[0]
-        readable_output.update({'groups': groups_data.get('name')})
-
-    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': readable_output}
-    readable_output = tableToMarkdown(f'CheckPoint Data for updating {endpoint}:', readable_output,
-                                      removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_delete_object(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
-    """
-        Formats deleted object result from CheckPoint into Demisto's outputs.
-
-    Args:
-        result (dict): the report from CheckPoint.
-        endpoint (str): The endpoint that needs to be formatted.
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from CheckPoint (used for debugging).
-    """
-    if not result:
-        return 'No data to show.', {}, result
-
-    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': {
-        'message': result.get('message'),
-    }}
-    table_data = outputs[f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)']
-    readable_output = tableToMarkdown(f'CheckPoint Data for deleting {endpoint}:', table_data,
-                                      removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_show_task(result: dict) -> Tuple[str, dict, dict]:
-    """
-        Formats show task command from CheckPoint into Demisto's outputs.
-
-    Args:
-        result (dict): the report from CheckPoint.
-        endpoint (str): The endpoint that needs to be formatted.
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from CheckPoint (used for debugging).
-    """
-    printable_result = []
-    task_list = result.get('tasks')
-    if not task_list:
-        return 'No data to show.', {}, result
-
-    for task in task_list:
-        current_object_data = {'task-id': task.get('task-id'),
-                               'task-name': task.get('task-name'),
-                               'status': task.get('status'),
-                               'suppressed': task.get('suppressed'),
-                               'progress-percentage': task.get('progress-percentage'),
-                               }
-        printable_result.append(current_object_data)
-
-    outputs = {'CheckPoint.ShowTask(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown('CheckPoint data for listing tasks:', printable_result,
-                                      ['task-name', 'task-id', 'status', 'suppressed',
-                                       'progress-percentage'], removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_task_id(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
-    """
-        Formats task ID into Demisto's outputs.
-
-    Args:
-        result (dict): the report from CheckPoint.
-        endpoint (str): The endpoint that needs to be formatted.
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from CheckPoint (used for debugging).
-    """
-    if not result:
-        return 'No data to show.', {}, result
-
-    printable_result = {'task-id': result.get('task-id'), }
-
-    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown(f'CheckPoint data for {endpoint}:', printable_result,
-                                      removeNull=True)
-    return readable_output, outputs, result
-
-
-def format_list_servers(result: dict, endpoint: str) -> Tuple[str, dict, dict]:
-    """
-        Formats gateway and server data into outputs.
-
-    Args:
-        result (dict): the report from CheckPoint.
-        endpoint (str): The endpoint that needs to be formatted.
-    Returns:
-        str: the markdown to display inside Demisto.
-        dict: the context to return into Demisto.
-        dict: the report from CheckPoint (used for debugging).
-    """
-    printable_result = []
-
-    if not result:
-        return 'No data to show.', {}, result
-
-    for element in result:
-        current_object_data = {'name': element.get('name'),
-                               'uid': element.get('uid'),
-                               'type': element.get('type'),
-                               'domain': element.get('domain'),
-                               }
-        domain = element.get('domain')
-        if domain:
-            current_object_data['domain-name'] = domain.get('name')
-            current_object_data['domain-uid'] = domain.get('uid')
-            current_object_data['domain-type'] = domain.get('type')
-
-        if endpoint == 'Gateways':
-            current_object_data['version'] = element.get('version')
-            current_object_data['network-security-blades'] = element.get('network-security-blades')
-            current_object_data['management-blades'] = element.get('management-blades')
-
-        printable_result.append(current_object_data)
-
-    outputs = {f'CheckPoint.{endpoint}(val.uid && val.uid == obj.uid)': printable_result}
-    readable_output = tableToMarkdown(f'CheckPoint data for: {endpoint}:', printable_result,
-                                      ['name', 'uid', 'type', 'domain-name', 'domain-uid',
-                                       'version', 'network-security-blades', 'management-blades'],
-                                      removeNull=True)
-    return readable_output, outputs, result
-
-
 def main():
     """
         Client is created with a session id. if a session id was given as argument
@@ -1110,23 +1741,21 @@ def main():
 
     try:
         command = demisto.command()
-
         if demisto.command() == 'test-module':
-            _, _, response = checkpoint_login_and_get_sid_command(base_url, username, password,
-                                                                  verify_certificate, 600)
-            sid = response.get('sid')
+            response = checkpoint_login_and_get_sid_command(base_url, username, password,
+                                                            verify_certificate, 600).outputs
+            sid = response.get('session-id')
             demisto.results(test_module(base_url, sid, verify_certificate))
             checkpoint_logout_command(base_url, sid, verify_certificate)
             return
 
-        elif command == 'checkpoint-login-and-get-session-id':
-            readable_output, outputs, result = \
-                checkpoint_login_and_get_sid_command(base_url, username, password,
-                                                     verify_certificate, **demisto.args())
-            return_outputs(readable_output, outputs, result)
+        if command == 'checkpoint-login-and-get-session-id':
+            return_results(checkpoint_login_and_get_sid_command(base_url, username, password,
+                                                                verify_certificate,
+                                                                **demisto.args()))
             return
 
-        elif command == 'checkpoint-logout':
+        if command == 'checkpoint-logout':
             sid = demisto.args().get('session_id', {})
             demisto.results(checkpoint_logout_command(base_url, sid, verify_certificate))
             return
@@ -1150,62 +1779,122 @@ def main():
             use_ssl=verify_certificate,
             use_proxy=proxy)
 
-        commands = {
-            'checkpoint-host-list': client.checkpoint_list_hosts_command,
-            'checkpoint-host-get': client.checkpoint_get_host_command,
-            'checkpoint-host-add': client.checkpoint_add_host_command,
-            'checkpoint-host-update': client.checkpoint_update_host_command,
-            'checkpoint-host-delete': client.checkpoint_delete_host_command,
+        if command == 'checkpoint-host-list':
+            return_results(checkpoint_list_hosts_command(client, **demisto.args()))
 
-            'checkpoint-group-list': client.checkpoint_list_groups_command,
-            'checkpoint-group-get': client.checkpoint_get_group_command,
-            'checkpoint-group-add': client.checkpoint_add_group_command,
-            'checkpoint-group-update': client.checkpoint_update_group_command,
-            'checkpoint-group-delete': client.checkpoint_delete_group_command,
+        elif command == 'checkpoint-host-get':
+            return_results(checkpoint_get_host_command(client, **demisto.args()))
 
-            'checkpoint-address-range-list': client.checkpoint_list_address_ranges_command,
-            'checkpoint-address-range-get': client.checkpoint_get_address_range_command,
-            'checkpoint-address-range-add': client.checkpoint_add_address_range_command,
-            'checkpoint-address-range-update': client.checkpoint_update_address_range_command,
-            'checkpoint-address-range-delete': client.checkpoint_delete_address_range_command,
+        elif command == 'checkpoint-host-add':
+            return_results(checkpoint_add_host_command(client, **demisto.args()))
 
-            'checkpoint-threat-indicator-list': client.checkpoint_list_threat_indicators_command,
-            'checkpoint-threat-indicator-get': client.checkpoint_get_threat_indicator_command,
-            'checkpoint-threat-indicator-add': client.checkpoint_add_threat_indicator_command,
-            'checkpoint-threat-indicator-update': client.checkpoint_update_threat_indicator_command,
-            'checkpoint-threat-indicator-delete': client.checkpoint_delete_threat_indicator_command,
+        elif command == 'checkpoint-host-update':
+            return_results(checkpoint_update_host_command(client, **demisto.args()))
 
-            'checkpoint-access-rule-list': client.checkpoint_show_access_rule_command,
-            'checkpoint-access-rule-add': client.checkpoint_add_rule_command,
-            'checkpoint-access-rule-update': client.checkpoint_update_rule_command,
-            'checkpoint-access-rule-delete': client.checkpoint_delete_rule_command,
+        elif command == 'checkpoint-host-delete':
+            return_results(checkpoint_delete_host_command(client, **demisto.args()))
 
-            'checkpoint-application-site-list': client.checkpoint_list_application_sites_command,
-            'checkpoint-application-site-add': client.checkpoint_add_application_site_command,
-            'checkpoint-application-site-update': client.checkpoint_update_application_site_command,
-            'checkpoint-application-site-delete': client.checkpoint_delete_application_site_command,
+        elif command == 'checkpoint-group-list':
+            return_results(checkpoint_list_groups_command(client, **demisto.args()))
 
-            'checkpoint-show-task': client.checkpoint_show_task_command,
-            'checkpoint-show-objects': client.checkpoint_list_objects_command,
-            'checkpoint-install-policy': client.checkpoint_install_policy_command,
-            'checkpoint-verify-policy': client.checkpoint_verify_policy_command,
-            'checkpoint-publish': client.checkpoint_publish_command,
+        elif command == 'checkpoint-group-get':
+            return_results(checkpoint_get_group_command(client, **demisto.args()))
 
-            'checkpoint-packages-list': client.checkpoint_list_packages_command,
-            'checkpoint-gateways-list': client.checkpoint_list_gateways_command,
+        elif command == 'checkpoint-group-add':
+            return_results(checkpoint_add_group_command(client, **demisto.args()))
 
-            'checkpoint-application-site-category-list':
-                client.checkpoint_list_application_site_categories_command,
-            'checkpoint-application-site-category-get':
-                client.checkpoint_get_application_site_category_command,
-            'checkpoint-application-site-category-add':
-                client.checkpoint_add_application_site_category_command,
+        elif command == 'checkpoint-group-update':
+            return_results(checkpoint_update_group_command(client, **demisto.args()))
 
-        }
-        if command in commands:
-            readable_output, outputs, result = \
-                (commands[demisto.command()](**demisto.args()))  # type: ignore
-            return_outputs(readable_output, outputs, result)
+        elif command == 'checkpoint-group-delete':
+            return_results(checkpoint_delete_group_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-address-range-list':
+            return_results(checkpoint_list_address_range_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-address-range-get':
+            return_results(checkpoint_get_address_range_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-address-range-add':
+            return_results(checkpoint_add_address_range_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-address-range-update':
+            return_results(checkpoint_update_address_range_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-address-range-delete':
+            return_results(checkpoint_delete_address_range_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-threat-indicator-list':
+            return_results(checkpoint_list_threat_indicator_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-threat-indicator-get':
+            return_results(checkpoint_get_threat_indicator_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-threat-indicator-add':
+            return_results(checkpoint_add_threat_indicator_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-threat-indicator-update':
+            return_results(checkpoint_update_threat_indicator_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-threat-indicator-delete':
+            return_results(checkpoint_delete_threat_indicator_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-access-rule-list':
+            return_results(checkpoint_list_access_rule_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-access-rule-add':
+            return_results(checkpoint_add_access_rule_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-access-rule-update':
+            return_results(checkpoint_update_access_rule_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-access-rule-delete':
+            return_results(checkpoint_delete_access_rule_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-application-site-list':
+            return_results(checkpoint_list_application_site_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-application-site-add':
+            return_results(checkpoint_add_application_site_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-application-site-update':
+            return_results(checkpoint_update_application_site_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-application-site-delete':
+            return_results(checkpoint_delete_application_site_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-application-site-category-list':
+            return_results(checkpoint_list_application_site_categories_command(client,
+                                                                               **demisto.args()))
+
+        elif command == 'checkpoint-application-site-category-get':
+            return_results(checkpoint_get_application_site_category_command(client,
+                                                                            **demisto.args()))
+
+        elif command == 'checkpoint-application-site-category-add':
+            return_results(checkpoint_add_application_site_category_command(client,
+                                                                            **demisto.args()))
+
+        elif command == 'checkpoint-packages-list':
+            return_results(checkpoint_list_packages_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-gateways-list':
+            return_results(checkpoint_list_gateways_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-show-objects':
+            return_results(checkpoint_list_objects_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-show-task':
+            return_results(checkpoint_show_task_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-publish':
+            return_results(checkpoint_publish_command(client))
+
+        elif command == 'checkpoint-install-policy':
+            return_results(checkpoint_install_policy_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-verify-policy':
+            return_results(checkpoint_verify_policy_command(client, **demisto.args()))
 
         if not is_sid_provided:
             client.checkpoint_logout()
@@ -1215,14 +1904,15 @@ def main():
             demisto.setIntegrationContext({})
             return_error(f'Failed to execute {demisto.command()} command.\n'
                          f'The current session is unreachable. All changes done after last publish'
-                         f'are saved. Please contact IT for more information.\n\nError: {str(e)}')
+                         f' are saved.\nPlease contact IT for more information.'
+                         f'\n\nError: {str(e)}')
 
         elif 'Missing header: [X-chkp-sid]' in e.args[0] or \
                 'Authentication to server failed' in e.args[0]:
             demisto.setIntegrationContext({})
             return_error(f'Failed to execute {demisto.command()} command.\n'
-                         f'Wrong credentials! Please check the username and password you entered'
-                         f' and try again.\n{str(e)}')
+                         f'Wrong credentials! Please check the username and password you entered '
+                         f'and try again.\n{str(e)}')
 
         else:
             return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
