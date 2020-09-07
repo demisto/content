@@ -664,7 +664,6 @@ def checkpoint_get_address_range_command(client: Client, identifier: str) -> Com
         identifier(str): uid or name.
     """
     result = client.get_address_range(identifier)
-    print(result)
     printable_result = build_printable_result(DEFAULT_LIST_FIELD, result)
     readable_output = tableToMarkdown(f'CheckPoint data for {identifier} address range:',
                                       printable_result, headers=DEFAULT_LIST_FIELD,
@@ -839,7 +838,6 @@ def checkpoint_get_threat_indicator_command(client: Client, identifier: str) -> 
         identifier(str): uid or name.
     """
     result = client.get_threat_indicator(identifier)
-    print(result)
     headers = DEFAULT_LIST_FIELD + ['number-of-observables']
     printable_result = build_printable_result(headers, result)
     readable_output = tableToMarkdown(f'CheckPoint data for {identifier} threat indicator:',
