@@ -2720,7 +2720,7 @@ class CommandResults:
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs,
-            'IndicatorTimeline': indicators_timeline
+            'IndicatorTimeline': indicators_timeline,
         }
 
         return return_entry
