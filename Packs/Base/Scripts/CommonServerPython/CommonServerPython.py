@@ -3247,8 +3247,9 @@ def is_demisto_version_ge(version, build_number=''):
     """
     try:
         server_version = get_demisto_version()
-        return server_version.get('version') >= version and \
-               (not build_number or server_version.get('buildNumber') >= build_number)
+        return \
+            server_version.get('version') >= version and \
+            (not build_number or server_version.get('buildNumber') >= build_number)
     except AttributeError:
         # demistoVersion was added in 5.0.0. We are currently running in 4.5.0 and below
         if version >= "5.0.0":
@@ -4011,8 +4012,9 @@ def is_versioned_context_available():
     :rtype: ``bool``
     :return: Whether versioned integration context is available
     """
-    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT) or \
-           is_demisto_version_ge('5.5.0', MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT)
+    return \
+        is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT) or \
+        is_demisto_version_ge('5.5.0', MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT)
 
 
 def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
