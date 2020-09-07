@@ -545,9 +545,11 @@ def query_malops(total_result_limit=None, per_group_limit=None, template_context
             }
         ]
     }
+    # By Cybereason documentation - Inorder to get all malops, The client should send 2 requests as follow:
+    # First request - "MalopProcess"
     json_body['queryPath'][0]['requestedType'] = "MalopProcess"  # type: ignore
     malop_process_type = http_request('POST', '/rest/crimes/unified', json_body=json_body).json()
-
+    # Second request - "MalopLogonSession"
     json_body['queryPath'][0]['requestedType'] = "MalopLogonSession"  # type: ignore
     malop_loggon_session_type = http_request('POST', '/rest/crimes/unified', json_body=json_body).json()
 
