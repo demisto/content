@@ -183,9 +183,6 @@ def test_checkpoint_get_address_range_command(mocker):
     mocked_client.get_address_range.return_value = mock_response
     result = checkpoint_get_address_range_command(mocked_client, 'address_range_1').outputs
     assert result.get('name') == 'address_range_1'
-    assert result.get('uid') == '1234'
-    assert result.get('type') == 'address-range'
-    assert len(result) == 7
 
 
 def test_checkpoint_add_address_range_command(mocker):
@@ -242,9 +239,6 @@ def test_checkpoint_get_threat_indicator_command(mocker):
     mocked_client.get_threat_indicator.return_value = mock_response
     result = checkpoint_get_threat_indicator_command(mocked_client, 'threat_indicator_1').outputs
     assert result.get('name') == 'threat_indicator_1'
-    assert result.get('uid') == '1234'
-    assert result.get('type') == 'threat-indicator'
-    assert len(result) == 7
 
 
 def test_checkpoint_add_threat_indicator_command(mocker):
