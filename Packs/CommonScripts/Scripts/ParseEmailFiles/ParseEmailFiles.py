@@ -3749,4 +3749,4 @@ def main():
 
 
 if __name__ in ('__builtin__', '__main__'):
-    handle_eml('/Users/olichter/dev/demisto/content/Packs/CommonScripts/Scripts/ParseEmailFiles/test_data/multiple_to_cc.eml')
+    main()
