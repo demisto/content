@@ -167,10 +167,7 @@ def convert_id_to_object_id(entries: Union[List[dict], dict]) -> Union[List[dict
             if isinstance(id_data, str):
                 entry['_id'] = ObjectId(id_data)
             if isinstance(id_data, dict):
-                new_dict = {}
-                for key, value in id_data.items():
-                    new_dict[key] = ObjectId(value)
-                entry['_id'] = new_dict
+                entry['_id'] = dict((key, ObjectId(value)) for new_dict)
 
         return entry
 
