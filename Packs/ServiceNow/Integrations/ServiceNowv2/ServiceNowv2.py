@@ -3,7 +3,6 @@ import dateparser
 from typing import List, Tuple, Dict, Callable, Any, Optional, Union
 
 from CommonServerPython import *
-from demistomock import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -550,7 +549,7 @@ class Client(BaseClient):
         """
         query_params = {'sysparm_limit': 1, 'sysparm_query': f'name={template_name}'}
 
-        result = self.send_request('GET', 'table/sys_template', params=query_params)
+        result = self.send_request('table/sys_template', 'GET', params=query_params)
 
         if len(result['result']) == 0:
             raise ValueError("Incorrect template name.")
