@@ -1151,16 +1151,16 @@ def timestamp_length_equalization(timestamp1, timestamp2):
 ''' COMMANDS FUNCTIONS '''
 
 
-def get_last_fetch_time_and_last_incident_id():
+def get_last_fetch_time_and_last_event_id(incident_type):
     last_run = demisto.getLastRun()
-    last_fetch_time = last_run.get('first_behavior_incident_time')
+    last_fetch_time = last_run.get(f'first_behavior_{incident_type}_time')
 
     if not last_fetch_time:
-        last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+        last_fetch_time, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
 
     last_fetch_timestamp = int(parse(last_fetch_time).timestamp() * 1000)
-    last_incident_id = str(last_run.get('last_incident_id'))
-    return last_fetch_time, last_fetch_timestamp, last_incident_id
+    last_event_id = str(last_run.get(f'last_{incident_type}_id'))
+    return last_fetch_time, last_fetch_timestamp, last_event_id
 
 
 def fetch_incidents():
@@ -1169,40 +1169,27 @@ def fetch_incidents():
         :return: Fetched detections in incident format
     """
     incidents = []  # type:List
+
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections', '')
+
     if 'detections' in fetch_incidents_or_detections or not fetch_incidents_or_detections:
-
-        last_run = demisto.getLastRun()
-        # Get the last fetch time, if exists
-        last_fetch = last_run.get('first_behavior_time')
-
-        # Handle first time fetch, fetch incidents retroactively
-        if last_fetch is None:
-            last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
-
-        last_fetch_timestamp = int(parse(last_fetch).timestamp() * 1000)
-
-        last_detection_id = str(last_run.get('last_detection_id'))
+        incident_type = 'detection'
+        last_fetch_time, last_fetch_timestamp, last_detection_id = get_last_fetch_time_and_last_event_id(incident_type)
 
         fetch_query = demisto.params().get('fetch_query')
-
         if fetch_query:
-            fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch, query=fetch_query)
+            fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
             detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
-
         else:
-            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch), 'resources')
+            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch_time), 'resources')
 
         if detections_ids:
-
             # make sure we do not fetch the same detection again.
             if last_detection_id == detections_ids[0]:
                 first_index_to_fetch = 1
-
                 # if this is the only detection - dont fetch.
                 if len(detections_ids) == 1:
                     return incidents
-
             # if the first detection in this pull is different than the last detection fetched we bring it as well
             else:
                 first_index_to_fetch = 0
@@ -1227,17 +1214,18 @@ def fetch_incidents():
 
                     # Update last run and add incident if the incident is newer than last fetch
                     if incident_date_timestamp > last_fetch_timestamp:
-                        last_fetch = incident_date
+                        last_fetch_time = incident_date
                         last_fetch_timestamp = incident_date_timestamp
                         last_detection_id = json.loads(incident['rawJSON']).get('detection_id')
 
                     incidents.append(incident)
 
-            demisto.setLastRun({'first_behavior_time': last_fetch, 'last_detection_id': last_detection_id})
+            demisto.setLastRun({'first_behavior_detection_time': last_fetch_time, 'last_detection_id': last_detection_id})
 
     if 'incidents' in fetch_incidents_or_detections:
+        incident_type = 'incident'
 
-        last_fetch_time, last_fetch_timestamp, last_incident_id = get_last_fetch_time_and_last_incident_id()
+        last_fetch_time, last_fetch_timestamp, last_incident_id = get_last_fetch_time_and_last_event_id(incident_type)
 
         fetch_query = demisto.params().get('fetch_query')
 
