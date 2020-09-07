@@ -29,7 +29,6 @@ MOCK_AGENTS_LIST = load_test_data('./test_data/agent_list_command_mock.json')
 MOCK_SENSORS_LIST = load_test_data('./test_data/sensors_list_command_mock.json')
 MOCK_HISTORICAL_INVESTIGATION = load_test_data('./test_data/historical_investigation_command_mock.json')
 MOCK_RESULT_LIST = load_test_data('./test_data/result_list_command_mock.json')
-MOCK_RESULT_LIST_BY_STATUS = load_test_data('./test_data/result_list_by_status_mock.json')
 
 
 def test_list_logs_command(requests_mock, mocker):
