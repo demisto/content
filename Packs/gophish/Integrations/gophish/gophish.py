@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings()
 
 def results_return(command, thingtoreturn):
     results = CommandResults(
-        outputs_prefix='GoPhish.' + str(command),
+        outputs_prefix='Gophish.' + str(command),
         outputs_key_field='',
         outputs=thingtoreturn
     )

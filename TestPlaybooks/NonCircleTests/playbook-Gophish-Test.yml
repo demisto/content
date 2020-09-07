@@ -110,7 +110,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.Users
+              simple: Gophish.Users
             iscontext: true
     view: |-
       {
@@ -142,7 +142,7 @@ tasks:
     scriptarguments:
       id:
         complex:
-          root: ${GoPhish.Users
+          root: ${Gophish.Users
           accessor: id}
           transformers:
           - operator: atIndex
@@ -184,7 +184,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.User
+              simple: Gophish.User
             iscontext: true
     view: |-
       {
@@ -254,7 +254,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.NewUser
+              simple: Gophish.NewUser
             iscontext: true
     view: |-
       {
@@ -285,13 +285,13 @@ tasks:
       - "9"
     scriptarguments:
       id:
-        simple: ${GoPhish.NewUser.id}
+        simple: ${Gophish.NewUser.id}
       password:
         simple: Thisisthenewpassword
       role:
         simple: admin
       username:
-        simple: ${GoPhish.NewUser.username}
+        simple: ${Gophish.NewUser.username}
     separatecontext: false
     view: |-
       {
@@ -326,7 +326,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.ModifiedUser
+              simple: Gophish.ModifiedUser
             iscontext: true
     view: |-
       {
@@ -358,7 +358,7 @@ tasks:
     scriptarguments:
       id:
         complex:
-          root: ${GoPhish.NewUser
+          root: ${Gophish.NewUser
           accessor: id}
     separatecontext: false
     view: |-
@@ -394,7 +394,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.DeletedUser
+              simple: Gophish.DeletedUser
             iscontext: true
     view: |-
       {
@@ -457,7 +457,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.AllSendingProfiles
+              simple: Gophish.AllSendingProfiles
             iscontext: true
     view: |-
       {
@@ -488,7 +488,7 @@ tasks:
       - "15"
     scriptarguments:
       id:
-        simple: ${GoPhish.AllSendingProfiles.id}
+        simple: ${Gophish.AllSendingProfiles.id}
     separatecontext: false
     view: |-
       {
@@ -523,7 +523,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.SendingProfile
+              simple: Gophish.SendingProfile
             iscontext: true
     view: |-
       {
@@ -600,7 +600,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.CreatedSendingProfile
+              simple: Gophish.CreatedSendingProfile
             iscontext: true
     view: |-
       {
@@ -632,7 +632,7 @@ tasks:
     scriptarguments:
       id:
         complex:
-          root: GoPhish.CreatedSendingProfile
+          root: Gophish.CreatedSendingProfile
           accessor: id
     separatecontext: false
     view: |-
@@ -668,7 +668,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.DeletedSendingProfile
+              simple: Gophish.DeletedSendingProfile
             iscontext: true
     view: |-
       {
@@ -731,7 +731,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.AllLandingPages
+              simple: Gophish.AllLandingPages
             iscontext: true
     view: |-
       {
@@ -763,7 +763,7 @@ tasks:
     scriptarguments:
       id:
         complex:
-          root: GoPhish.AllLandingPages
+          root: Gophish.AllLandingPages
           accessor: id
     separatecontext: false
     view: |-
@@ -799,7 +799,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.LandingPage
+              simple: Gophish.LandingPage
             iscontext: true
     view: |-
       {
@@ -830,7 +830,7 @@ tasks:
       - "25"
     scriptarguments:
       id:
-        simple: ${GoPhish.CreatedLandingPage.id}
+        simple: ${Gophish.CreatedLandingPage.id}
     separatecontext: false
     view: |-
       {
@@ -865,7 +865,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.DeletedLandingPage
+              simple: Gophish.DeletedLandingPage
             iscontext: true
     view: |-
       {
@@ -933,7 +933,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.ImportedSite
+              simple: Gophish.ImportedSite
             iscontext: true
     view: |-
       {
@@ -996,7 +996,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.AllTemplates
+              simple: Gophish.AllTemplates
             iscontext: true
     view: |-
       {
@@ -1028,7 +1028,7 @@ tasks:
     scriptarguments:
       id:
         complex:
-          root: GoPhish.AllTemplates
+          root: Gophish.AllTemplates
           accessor: id
     separatecontext: false
     view: |-
@@ -1064,7 +1064,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.Template
+              simple: Gophish.Template
             iscontext: true
     view: |-
       {
@@ -1095,7 +1095,7 @@ tasks:
       - "33"
     scriptarguments:
       id:
-        simple: ${GoPhish.CreatedTemplate.id}
+        simple: ${Gophish.CreatedTemplate.id}
     separatecontext: false
     view: |-
       {
@@ -1130,7 +1130,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.DeletedTemplate
+              simple: Gophish.DeletedTemplate
             iscontext: true
     view: |-
       {
@@ -1198,7 +1198,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.ImportedTemplate
+              simple: Gophish.ImportedTemplate
             iscontext: true
     view: |-
       {
@@ -1300,7 +1300,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.AllCampaigns
+              simple: Gophish.AllCampaigns
             iscontext: true
     view: |-
       {
@@ -1332,7 +1332,7 @@ tasks:
     scriptarguments:
       id:
         complex:
-          root: GoPhish.AllCampaigns
+          root: Gophish.AllCampaigns
           accessor: id
     separatecontext: false
     view: |-
@@ -1364,7 +1364,7 @@ tasks:
       - "42"
     scriptarguments:
       id:
-        simple: ${GoPhish.AllCampaigns.id}
+        simple: ${Gophish.AllCampaigns.id}
     separatecontext: false
     view: |-
       {
@@ -1399,7 +1399,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.CampaignResults
+              simple: Gophish.CampaignResults
             iscontext: true
     view: |-
       {
@@ -1430,7 +1430,7 @@ tasks:
       - "44"
     scriptarguments:
       id:
-        simple: ${GoPhish.AllCampaigns.id}
+        simple: ${Gophish.AllCampaigns.id}
     separatecontext: false
     view: |-
       {
@@ -1465,7 +1465,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.CampaignSummary
+              simple: Gophish.CampaignSummary
             iscontext: true
     view: |-
       {
@@ -1496,7 +1496,7 @@ tasks:
       - "46"
     scriptarguments:
       id:
-        simple: ${GoPhish.CreatedCampaign.id}
+        simple: ${Gophish.CreatedCampaign.id}
     separatecontext: false
     view: |-
       {
@@ -1531,7 +1531,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.DeletedCampaign
+              simple: Gophish.DeletedCampaign
             iscontext: true
     view: |-
       {
@@ -1562,7 +1562,7 @@ tasks:
       - "48"
     scriptarguments:
       id:
-        simple: ${GoPhish.CreatedCampaign.id}
+        simple: ${Gophish.CreatedCampaign.id}
     separatecontext: false
     view: |-
       {
@@ -1597,7 +1597,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.CompletedCampaign
+              simple: Gophish.CompletedCampaign
             iscontext: true
     view: |-
       {
@@ -1633,7 +1633,7 @@ tasks:
         simple: "True"
       html:
         complex:
-          root: GoPhish.ImportedSite
+          root: Gophish.ImportedSite
           accessor: html
       name:
         simple: TestPlaybook
@@ -1673,7 +1673,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.CreatedLandingPage
+              simple: Gophish.CreatedLandingPage
             iscontext: true
     view: |-
       {
@@ -1705,7 +1705,7 @@ tasks:
     scriptarguments:
       groups:
         complex:
-          root: ${GoPhish.AllGroups
+          root: ${Gophish.AllGroups
           accessor: name}
           transformers:
           - operator: atIndex
@@ -1718,12 +1718,12 @@ tasks:
       name:
         simple: TestingPlaybookCampaign
       page:
-        simple: ${GoPhish.AllLandingPages.name}
+        simple: ${Gophish.AllLandingPages.name}
       send_by_date: {}
       smtp:
-        simple: ${GoPhish.AllSendingProfiles.name}
+        simple: ${Gophish.AllSendingProfiles.name}
       template:
-        simple: ${GoPhish.AllTemplates.name}
+        simple: ${Gophish.AllTemplates.name}
       url:
         simple: https://192.168.1.1:80
     separatecontext: false
@@ -1760,7 +1760,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.CreatedCampaign
+              simple: Gophish.CreatedCampaign
             iscontext: true
     view: |-
       {
@@ -1823,7 +1823,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.AllGroups
+              simple: Gophish.AllGroups
             iscontext: true
     view: |-
       {
@@ -1855,7 +1855,7 @@ tasks:
     scriptarguments:
       id:
         complex:
-          root: ${GoPhish.AllGroups
+          root: ${Gophish.AllGroups
           accessor: id}
           transformers:
           - operator: atIndex
@@ -1897,7 +1897,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.Group
+              simple: Gophish.Group
             iscontext: true
     view: |-
       {
@@ -1960,7 +1960,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.AllGroupsSummary
+              simple: Gophish.AllGroupsSummary
             iscontext: true
     view: |-
       {
@@ -1992,7 +1992,7 @@ tasks:
     scriptarguments:
       id:
         complex:
-          root: ${GoPhish.AllGroups
+          root: ${Gophish.AllGroups
           accessor: id}
           transformers:
           - operator: atIndex
@@ -2034,7 +2034,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.GroupSummary
+              simple: Gophish.GroupSummary
             iscontext: true
     view: |-
       {
@@ -2102,7 +2102,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.CreatedGroup
+              simple: Gophish.CreatedGroup
             iscontext: true
     view: |-
       {
@@ -2133,7 +2133,7 @@ tasks:
       - "64"
     scriptarguments:
       id:
-        simple: ${GoPhish.CreatedGroup.id}
+        simple: ${Gophish.CreatedGroup.id}
     separatecontext: false
     view: |-
       {
@@ -2168,7 +2168,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.DeletedGroup
+              simple: Gophish.DeletedGroup
             iscontext: true
     view: |-
       {
@@ -2227,7 +2227,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.CreatedTemplate
+              simple: Gophish.CreatedTemplate
             iscontext: true
     view: |-
       {
@@ -2262,7 +2262,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoPhish.CampaignDetails
+              simple: Gophish.CampaignDetails
             iscontext: true
     view: |-
       {

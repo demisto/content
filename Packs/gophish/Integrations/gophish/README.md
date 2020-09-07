@@ -1,6 +1,5 @@
-Gophish is a powerful, open-source phishing framework that makes it easy to test your organization's exposure to phishing.
+Gophish is a powerful, open-source phishing framework that makes it easy to test your organization's exposure to phishing. For Free
 
-For Free
 This integration was integrated and tested with version 0.11.0 of gophish
 ## Configure gophish on Cortex XSOAR
 
@@ -37,7 +36,7 @@ Gets all users from gophish
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.Users | String | All users details | 
+| Gophish.Users | String | All users details | 
 
 
 #### Command Example
@@ -46,7 +45,7 @@ Gets all users from gophish
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "Users": [
             {
                 "api_key": "c805d2ec901b09b0d6bc8d12ed12f9c7e1f630f1a2115f1649f15b1d36082585",
@@ -103,7 +102,7 @@ Get single user details from gophish
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.User | string | User details | 
+| Gophish.User | string | User details | 
 
 
 #### Command Example
@@ -112,7 +111,7 @@ Get single user details from gophish
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "User": {
             "api_key": "c805d2ec901b09b0d6bc8d12ed12f9c7e1f630f1a2115f1649f15b1d36082585",
             "id": 1,
@@ -157,7 +156,7 @@ Creates a new user
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.NewUser | String | New user details that was created | 
+| Gophish.NewUser | String | New user details that was created | 
 
 
 #### Command Example
@@ -166,7 +165,7 @@ Creates a new user
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "NewUser": {
             "api_key": "457f41db94228d9c3bbde2394115bbfa420bc4239ac7ba3dd8a3f011e20e45cc",
             "id": 6,
@@ -212,7 +211,7 @@ Modifies a user account. This can be used to change the role, reset the password
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.ModifiedUser | String | Modified user details | 
+| Gophish.ModifiedUser | String | Modified user details | 
 
 
 #### Command Example
@@ -221,7 +220,7 @@ Modifies a user account. This can be used to change the role, reset the password
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "ModifiedUser": {
             "api_key": "d5d97dc332924ee141f936a8f54e5f553cf574e415b0313a98506eb100a01e77",
             "id": 5,
@@ -264,7 +263,7 @@ Deletes a user, as well as every object (landing page, template, etc.) and campa
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.DeletedUser | string | Info about the deleted user | 
+| Gophish.DeletedUser | string | Info about the deleted user | 
 
 
 #### Command Example
@@ -273,7 +272,7 @@ Deletes a user, as well as every object (landing page, template, etc.) and campa
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "DeletedUser": {
             "data": null,
             "message": "User deleted Successfully!",
@@ -309,7 +308,7 @@ Gets a list of the sending profiles created by the authenticated user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.AllSendingProfiles | String | Sending profiles information | 
+| Gophish.AllSendingProfiles | String | Sending profiles information | 
 
 
 #### Command Example
@@ -318,7 +317,7 @@ Gets a list of the sending profiles created by the authenticated user.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "AllSendingProfiles": [
             {
                 "from_address": "Phil <emailaddress>",
@@ -377,7 +376,7 @@ Returns a sending profile given an ID, returning a 404 error if no sending profi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.SendingProfile | String | info about the sending profile | 
+| Gophish.SendingProfile | String | info about the sending profile | 
 
 
 #### Command Example
@@ -386,7 +385,7 @@ Returns a sending profile given an ID, returning a 404 error if no sending profi
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "SendingProfile": {
             "from_address": "Phil <emailaddress>",
             "headers": [],
@@ -436,7 +435,7 @@ Creates a sending profile.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.CreatedSendingProfile | String | Info about the newly created Sendin Profile | 
+| Gophish.CreatedSendingProfile | String | Info about the newly created Sendin Profile | 
 
 
 #### Command Example
@@ -445,7 +444,7 @@ Creates a sending profile.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "CreatedSendingProfile": {
             "from_address": "John <john@acme.com>",
             "headers": null,
@@ -489,7 +488,7 @@ Deletes a sending profile by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.DeletedSendingProfile | String | This method returns a status message indicating the sending profile was deleted successfully. | 
+| Gophish.DeletedSendingProfile | String | This method returns a status message indicating the sending profile was deleted successfully. | 
 
 
 #### Command Example
@@ -498,7 +497,7 @@ Deletes a sending profile by ID.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "DeletedSendingProfile": {
             "data": null,
             "message": "SMTP Deleted Successfully",
@@ -534,7 +533,7 @@ Returns a list of landing pages.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.AllLandingPages | String | Returns a list of landing pages. | 
+| Gophish.AllLandingPages | String | Returns a list of landing pages. | 
 
 
 #### Command Example
@@ -543,7 +542,7 @@ Returns a list of landing pages.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "AllLandingPages": [
             {
                 "capture_credentials": true,
@@ -600,7 +599,7 @@ Creates a landing page.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.CreatedLandingPage | String | info about the created page | 
+| Gophish.CreatedLandingPage | String | info about the created page | 
 
 
 #### Command Example
@@ -609,7 +608,7 @@ Creates a landing page.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "CreatedLandingPage": {
             "capture_credentials": true,
             "capture_passwords": true,
@@ -650,7 +649,7 @@ Deletes a landing page.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.DeletedLandingPage | String | Deletes a landing page. | 
+| Gophish.DeletedLandingPage | String | Deletes a landing page. | 
 
 
 #### Command Example
@@ -659,7 +658,7 @@ Deletes a landing page.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "DeletedLandingPage": {
             "data": null,
             "message": "Page Deleted Successfully",
@@ -697,7 +696,7 @@ Fetches a URL to be later imported as a landing page
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.ImportedSite | String | This API endpoint doesn't actually create a new landing page. Instead, you can use the HTML returned from this endpoint as an input to the Create Landing Page method. | 
+| Gophish.ImportedSite | String | This API endpoint doesn't actually create a new landing page. Instead, you can use the HTML returned from this endpoint as an input to the Create Landing Page method. | 
 
 
 #### Command Example
@@ -706,7 +705,7 @@ Fetches a URL to be later imported as a landing page
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "ImportedSite": {
             "HTML GOES HERE"
         }
@@ -740,7 +739,7 @@ Returns a list of templates.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.AllTemplates | String | Info about all templates | 
+| Gophish.AllTemplates | String | Info about all templates | 
 
 
 #### Command Example
@@ -749,7 +748,7 @@ Returns a list of templates.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "AllTemplates": [
             {
                 "attachments": [],
@@ -802,7 +801,7 @@ Returns a template with the provided ID.Returns a 404: Not Found error if the sp
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.Template | String | Returns a template with the provided ID | 
+| Gophish.Template | String | Returns a template with the provided ID | 
 
 
 #### Command Example
@@ -811,7 +810,7 @@ Returns a template with the provided ID.Returns a 404: Not Found error if the sp
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "Template": {
             "attachments": [],
             "html": "",
@@ -852,7 +851,7 @@ Deletes a template by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.DeletedTemplate | String | Deleted Template | 
+| Gophish.DeletedTemplate | String | Deleted Template | 
 
 
 #### Command Example
@@ -861,7 +860,7 @@ Deletes a template by ID.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "DeletedTemplate": {
             "data": null,
             "message": "Template deleted successfully!",
@@ -899,7 +898,7 @@ This method doesn't fully import the email as a template. Instead, it parses the
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.ImportedTemplate | string | Info about the imported template | 
+| Gophish.ImportedTemplate | string | Info about the imported template | 
 
 
 #### Command Example
@@ -908,7 +907,7 @@ This method doesn't fully import the email as a template. Instead, it parses the
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "ImportedTemplate": {
             "html": "<html><head></head><body></body></html>",
             "subject": "",
@@ -951,7 +950,7 @@ Creates a new template from the provided data
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.CreatedTemplate | string | Information about the created template | 
+| Gophish.CreatedTemplate | string | Information about the created template | 
 
 
 #### Command Example
@@ -960,7 +959,7 @@ Creates a new template from the provided data
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "CreatedTemplate": {
             "attachments": [],
             "html": "",
@@ -1000,7 +999,7 @@ Returns a list of campaigns.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.AllCampaigns | String | List of all campaigns | 
+| Gophish.AllCampaigns | String | List of all campaigns | 
 
 
 #### Command Example
@@ -1009,7 +1008,7 @@ Returns a list of campaigns.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "AllCampaigns": [
             {
                 "completed_date": "0001-01-01T00:00:00Z",
@@ -1201,7 +1200,7 @@ Returns a campaign given an ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.CampaignDetails | string | info about the campaign details | 
+| Gophish.CampaignDetails | string | info about the campaign details | 
 
 
 #### Command Example
@@ -1210,7 +1209,7 @@ Returns a campaign given an ID.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "CampaignDetails": {
             "completed_date": "0001-01-01T00:00:00Z",
             "created_date": "2020-09-03T08:09:42.08969595Z",
@@ -1321,7 +1320,7 @@ Gets the results for a campaign.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.CampaignResults | String | Results of the campaign | 
+| Gophish.CampaignResults | String | Results of the campaign | 
 
 
 #### Command Example
@@ -1330,7 +1329,7 @@ Gets the results for a campaign.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "CampaignResults": {
             "id": 1,
             "name": "NewCampaign",
@@ -1406,7 +1405,7 @@ Returns summary information about a campaign.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.CampaignSummary | String | Summary stats of the campaign | 
+| Gophish.CampaignSummary | String | Summary stats of the campaign | 
 
 
 #### Command Example
@@ -1415,7 +1414,7 @@ Returns summary information about a campaign.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "CampaignSummary": {
             "completed_date": "0001-01-01T00:00:00Z",
             "created_date": "2020-09-03T08:09:42.08969595Z",
@@ -1465,7 +1464,7 @@ Deletes a campaign by ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.DeletedCampaign | String | The delelted campaign | 
+| Gophish.DeletedCampaign | String | The delelted campaign | 
 
 
 #### Command Example
@@ -1474,7 +1473,7 @@ Deletes a campaign by ID
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "DeletedCampaign": {
             "data": null,
             "message": "Campaign deleted successfully!",
@@ -1511,7 +1510,7 @@ Marks a campaign as complete.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.CompletedCampaign | String | Details about the completed campaign | 
+| Gophish.CompletedCampaign | String | Details about the completed campaign | 
 
 
 #### Command Example
@@ -1520,7 +1519,7 @@ Marks a campaign as complete.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "CompletedCampaign": {
             "data": null,
             "message": "Campaign completed successfully!",
@@ -1564,7 +1563,7 @@ Creates and launches a new campaign.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.CreatedCampaign | String | info about the created campaign | 
+| Gophish.CreatedCampaign | String | info about the created campaign | 
 
 
 #### Command Example
@@ -1573,7 +1572,7 @@ Creates and launches a new campaign.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "CreatedCampaign": {
             "completed_date": "0001-01-01T00:00:00Z",
             "created_date": "2020-09-04T05:20:59.3716417Z",
@@ -1695,7 +1694,7 @@ Returns a list of groups.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.AllGroups | String | List of all groups | 
+| Gophish.AllGroups | String | List of all groups | 
 
 
 #### Command Example
@@ -1704,7 +1703,7 @@ Returns a list of groups.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "AllGroups": [
             {
                 "id": 1,
@@ -1771,7 +1770,7 @@ Returns a group with the given ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.Group | String | Info about the group | 
+| Gophish.Group | String | Info about the group | 
 
 
 #### Command Example
@@ -1780,7 +1779,7 @@ Returns a group with the given ID.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "Group": {
             "id": 1,
             "modified_date": "2020-09-03T08:09:17.940720135Z",
@@ -1830,7 +1829,7 @@ Returns a summary of each group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.AllGroupsSummary | String | Summary data of all groups | 
+| Gophish.AllGroupsSummary | String | Summary data of all groups | 
 
 
 #### Command Example
@@ -1839,7 +1838,7 @@ Returns a summary of each group.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "AllGroupsSummary": {
             "groups": [
                 {
@@ -1888,7 +1887,7 @@ It may be the case that you just want the number of members in a group, not nece
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.GroupSummary | String | Summary data for the group | 
+| Gophish.GroupSummary | String | Summary data for the group | 
 
 
 #### Command Example
@@ -1897,7 +1896,7 @@ It may be the case that you just want the number of members in a group, not nece
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "GroupSummary": {
             "id": 1,
             "modified_date": "2020-09-03T08:09:17.940720135Z",
@@ -1936,7 +1935,7 @@ Creates a new group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.CreatedGroup | String | details about the created group | 
+| Gophish.CreatedGroup | String | details about the created group | 
 
 
 #### Command Example
@@ -1945,7 +1944,7 @@ Creates a new group.
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "CreatedGroup": {
             "id": 5,
             "modified_date": "2020-09-04T05:17:31.959112924Z",
@@ -1990,7 +1989,7 @@ Deletes a group
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.DeletedGroup | String | info about the group that was deleted | 
+| Gophish.DeletedGroup | String | info about the group that was deleted | 
 
 
 #### Command Example
@@ -1999,7 +1998,7 @@ Deletes a group
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "DeletedGroup": {
             "data": null,
             "message": "Group deleted successfully!",
@@ -2036,7 +2035,7 @@ Gets a landing page info
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoPhish.LandingPage | string | info about the landing page | 
+| Gophish.LandingPage | string | info about the landing page | 
 
 
 #### Command Example
@@ -2045,7 +2044,7 @@ Gets a landing page info
 #### Context Example
 ```
 {
-    "GoPhish": {
+    "Gophish": {
         "LandingPage": {
             "capture_credentials": true,
             "capture_passwords": false,

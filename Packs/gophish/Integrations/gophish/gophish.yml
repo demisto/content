@@ -1,15 +1,14 @@
 commonfields:
-  id: gophish
+  id: Gophish
   version: -1
-name: gophish
-display: gophish
+vcShouldKeepItemLegacyProdMachine: false
+name: Gophish
+display: Gophish
 category: Deception
-description: |-
-  Gophish is a powerful, open-source phishing framework that makes it easy to test your organization's exposure to phishing.
-
-  For Free
+description: Gophish is a powerful, open-source phishing framework that makes it easy
+  to test your organization's exposure to phishing. For Free
 configuration:
-- display: Server URL (e.g. https://example.net)
+- display: Server URL (e.g. https://fqdnofyourserver:3333)
   name: url
   type: 0
   required: true
@@ -33,7 +32,7 @@ script:
   - name: gophish-get-users
     arguments: []
     outputs:
-    - contextPath: GoPhish.Users
+    - contextPath: Gophish.Users
       description: All users details
       type: String
     description: Gets all users from gophish
@@ -43,7 +42,7 @@ script:
       required: true
       description: ID of the user as an integer
     outputs:
-    - contextPath: GoPhish.User
+    - contextPath: Gophish.User
       description: User details
       type: string
     description: Get single user details from gophish
@@ -63,7 +62,7 @@ script:
       required: true
       description: Password for the new user
     outputs:
-    - contextPath: GoPhish.NewUser
+    - contextPath: Gophish.NewUser
       description: New user details that was created
       type: String
     description: Creates a new user
@@ -84,7 +83,7 @@ script:
       required: true
       description: The username for the account
     outputs:
-    - contextPath: GoPhish.ModifiedUser
+    - contextPath: Gophish.ModifiedUser
       description: Modified user details
       type: String
     description: Modifies a user account. This can be used to change the role, reset
@@ -95,7 +94,7 @@ script:
       required: true
       description: The user ID
     outputs:
-    - contextPath: GoPhish.DeletedUser
+    - contextPath: Gophish.DeletedUser
       description: Info about the deleted user
       type: string
     description: Deletes a user, as well as every object (landing page, template,
@@ -103,7 +102,7 @@ script:
   - name: gophish-get-all-sending-profiles
     arguments: []
     outputs:
-    - contextPath: GoPhish.AllSendingProfiles
+    - contextPath: Gophish.AllSendingProfiles
       description: Sending profiles information
       type: String
     description: Gets a list of the sending profiles created by the authenticated
@@ -114,7 +113,7 @@ script:
       required: true
       description: The sending profile ID to return
     outputs:
-    - contextPath: GoPhish.SendingProfile
+    - contextPath: Gophish.SendingProfile
       description: info about the sending profile
       type: String
     description: Returns a sending profile given an ID, returning a 404 error if no
@@ -148,7 +147,7 @@ script:
         etc
       isArray: true
     outputs:
-    - contextPath: GoPhish.CreatedSendingProfile
+    - contextPath: Gophish.CreatedSendingProfile
       description: Info about the newly created Sendin Profile
       type: String
     description: Creates a sending profile.
@@ -158,7 +157,7 @@ script:
       required: true
       description: ID of the profile to be deleted
     outputs:
-    - contextPath: GoPhish.DeletedSendingProfile
+    - contextPath: Gophish.DeletedSendingProfile
       description: This method returns a status message indicating the sending profile
         was deleted successfully.
       type: String
@@ -166,7 +165,7 @@ script:
   - name: gophish-get-all-landing-pages
     arguments: []
     outputs:
-    - contextPath: GoPhish.AllLandingPages
+    - contextPath: Gophish.AllLandingPages
       description: Returns a list of landing pages.
       type: String
     description: Returns a list of landing pages.
@@ -200,7 +199,7 @@ script:
       description: Gophish also provides the ability to redirect users to a URL after
         they submit credentials. This is controlled by setting the redirect_url attribute.
     outputs:
-    - contextPath: GoPhish.CreatedLandingPage
+    - contextPath: Gophish.CreatedLandingPage
       description: info about the created page
       type: String
     description: Creates a landing page.
@@ -210,7 +209,7 @@ script:
       required: true
       description: ID of the page to be deleted
     outputs:
-    - contextPath: GoPhish.DeletedLandingPage
+    - contextPath: Gophish.DeletedLandingPage
       description: Deletes a landing page.
       type: String
     description: Deletes a landing page.
@@ -229,7 +228,7 @@ script:
         resolve static references (recommended: false)'
       defaultValue: "False"
     outputs:
-    - contextPath: GoPhish.ImportedSite
+    - contextPath: Gophish.ImportedSite
       description: This API endpoint doesn't actually create a new landing page. Instead,
         you can use the HTML returned from this endpoint as an input to the Create
         Landing Page method.
@@ -238,7 +237,7 @@ script:
   - name: gophish-get-all-templates
     arguments: []
     outputs:
-    - contextPath: GoPhish.AllTemplates
+    - contextPath: Gophish.AllTemplates
       description: Info about all templates
       type: String
     description: Returns a list of templates.
@@ -248,7 +247,7 @@ script:
       required: true
       description: The template ID
     outputs:
-    - contextPath: GoPhish.Template
+    - contextPath: Gophish.Template
       description: Returns a template with the provided ID
       type: String
     description: 'Returns a template with the provided ID.Returns a 404: Not Found
@@ -259,7 +258,7 @@ script:
       required: true
       description: The template ID to delete
     outputs:
-    - contextPath: GoPhish.DeletedTemplate
+    - contextPath: Gophish.DeletedTemplate
       description: Deleted Template
       type: String
     description: Deletes a template by ID.
@@ -278,7 +277,7 @@ script:
       description: The original email content in RFC 2045 format, including the original
         headers.
     outputs:
-    - contextPath: GoPhish.ImportedTemplate
+    - contextPath: Gophish.ImportedTemplate
       description: Info about the imported template
       type: string
     description: This method doesn't fully import the email as a template. Instead,
@@ -307,14 +306,14 @@ script:
       description: Name of the attachment
       isArray: true
     outputs:
-    - contextPath: GoPhish.CreatedTemplate
+    - contextPath: Gophish.CreatedTemplate
       description: Information about the created template
       type: string
     description: Creates a new template from the provided data
   - name: gophish-get-all-campaigns
     arguments: []
     outputs:
-    - contextPath: GoPhish.AllCampaigns
+    - contextPath: Gophish.AllCampaigns
       description: List of all campaigns
       type: String
     description: Returns a list of campaigns.
@@ -324,7 +323,7 @@ script:
       required: true
       description: The campaign ID
     outputs:
-    - contextPath: GoPhish.CampaignDetails
+    - contextPath: Gophish.CampaignDetails
       description: info about the campaign details
       type: string
     description: Returns a campaign given an ID.
@@ -334,7 +333,7 @@ script:
       required: true
       description: The campaign ID
     outputs:
-    - contextPath: GoPhish.CampaignResults
+    - contextPath: Gophish.CampaignResults
       description: Results of the campaign
       type: String
     description: Gets the results for a campaign.
@@ -344,7 +343,7 @@ script:
       required: true
       description: The campaign ID
     outputs:
-    - contextPath: GoPhish.CampaignSummary
+    - contextPath: Gophish.CampaignSummary
       description: Summary stats of the campaign
       type: String
     description: Returns summary information about a campaign.
@@ -354,7 +353,7 @@ script:
       required: true
       description: The campaign ID
     outputs:
-    - contextPath: GoPhish.DeletedCampaign
+    - contextPath: Gophish.DeletedCampaign
       description: The delelted campaign
       type: String
     description: Deletes a campaign by ID
@@ -364,7 +363,7 @@ script:
       required: true
       description: The campaign ID
     outputs:
-    - contextPath: GoPhish.CompletedCampaign
+    - contextPath: Gophish.CompletedCampaign
       description: Details about the completed campaign
       type: String
     description: Marks a campaign as complete.
@@ -394,14 +393,14 @@ script:
       required: true
       description: Group names to send to as a list (Group1,group2 etc)
     outputs:
-    - contextPath: GoPhish.CreatedCampaign
+    - contextPath: Gophish.CreatedCampaign
       description: info about the created campaign
       type: String
     description: Creates and launches a new campaign.
   - name: gophish-get-all-groups
     arguments: []
     outputs:
-    - contextPath: GoPhish.AllGroups
+    - contextPath: Gophish.AllGroups
       description: List of all groups
       type: String
     description: Returns a list of groups.
@@ -411,14 +410,14 @@ script:
       required: true
       description: The group ID
     outputs:
-    - contextPath: GoPhish.Group
+    - contextPath: Gophish.Group
       description: Info about the group
       type: String
     description: Returns a group with the given ID.
   - name: gophish-get-all-groups-summary
     arguments: []
     outputs:
-    - contextPath: GoPhish.AllGroupsSummary
+    - contextPath: Gophish.AllGroupsSummary
       description: Summary data of all groups
       type: String
     description: Returns a summary of each group.
@@ -428,7 +427,7 @@ script:
       required: true
       description: The group ID
     outputs:
-    - contextPath: GoPhish.GroupSummary
+    - contextPath: Gophish.GroupSummary
       description: Summary data for the group
       type: String
     description: It may be the case that you just want the number of members in a
@@ -444,7 +443,7 @@ script:
       description: 'List of targets format: email,firstname,lastname,position:email,firstname,lastname,position
         etc'
     outputs:
-    - contextPath: GoPhish.CreatedGroup
+    - contextPath: Gophish.CreatedGroup
       description: details about the created group
       type: String
     description: Creates a new group.
@@ -454,7 +453,7 @@ script:
       required: true
       description: The group ID
     outputs:
-    - contextPath: GoPhish.DeletedGroup
+    - contextPath: Gophish.DeletedGroup
       description: info about the group that was deleted
       type: String
     description: Deletes a group
@@ -464,11 +463,10 @@ script:
       required: true
       description: id of the page to get
     outputs:
-    - contextPath: GoPhish.LandingPage
+    - contextPath: Gophish.LandingPage
       description: info about the landing page
       type: string
     description: Gets a landing page info
   dockerimage: demisto/python3:3.8.5.10845
   runonce: false
   subtype: python3
-fromversion: 5.0.0
