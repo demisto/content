@@ -11,10 +11,10 @@ requests.packages.urllib3.disable_warnings()
 
 ACCEPT_TYPE = "application/json"
 CONTENT_API_WORKFLOWS_URI = "https://circleci.com/api/v2/insights/gh/demisto/content/workflows/commit"
-ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
+ARTIFACTS_PATH = '/Users/gkeller/Downloads'
 STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN', '907c3fecb32f2618a94d66183780465384653f96')
-GCS_PATH = f"gs://{STORAGE_BUCKET_NAME}/content/"
+GCS_PATH = "content/"  # f"gs://{STORAGE_BUCKET_NAME}/content/"
 
 
 def init_storage_client(service_account=None):
@@ -150,7 +150,7 @@ def download_zip_file_from_gcp(current_feature_content_zip_file_path, zip_destin
 
     if not os.path.exists(zip_destination_path):
         os.mkdir(zip_destination_path)
-    index_blob.download_to_filename(zip_destination_path)
+    index_blob.download_to_filename(f'{zip_destination_path}/content_new.zip')
 
     if os.path.exists(f'{zip_destination_path}/content_new.zip'):
         return f'{zip_destination_path}/content_new.zip'
@@ -190,7 +190,7 @@ def get_new_feature_zip_file_path(feature_branch_name, job_num):
 
     """
     current_feature_content_zip_file_path = f'{GCS_PATH}{feature_branch_name}/{job_num}/0/content_new.zip'
-    zip_destination_path = f'{ARTIFACTS_PATH}/feature_content_new_zip'
+    zip_destination_path = './Utils'  # f'{ARTIFACTS_PATH}feature_content_new_zip'
     new_feature_content_zip_file_path = download_zip_file_from_gcp(current_feature_content_zip_file_path,
                                                                    zip_destination_path)
     return new_feature_content_zip_file_path
