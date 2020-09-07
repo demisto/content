@@ -6,7 +6,7 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-		"CrowdStrike Falcon Detection"
+		"Microsoft CAS Alert"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
