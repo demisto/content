@@ -10,10 +10,11 @@ import argparse
 requests.packages.urllib3.disable_warnings()
 
 ACCEPT_TYPE = "application/json"
-CONTENT_API_WORKFLOWS_URI = "api/v2/insights/gh/demisto/content/workflows/commit"
+CONTENT_API_WORKFLOWS_URI = "https://circleci.com/api/v2/insights/gh/demisto/content/workflows/commit"
 ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
-CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
+CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN', '907c3fecb32f2618a94d66183780465384653f96')
+GCS_PATH = f"gs://{STORAGE_BUCKET_NAME}/content/"
 
 
 def init_storage_client(service_account=None):
@@ -58,8 +59,8 @@ def http_request(method, url, params=None):
     if r.status_code not in {200, 201}:
         try:
             error = r.json().get('error')
-            msg = error['message'] if 'message' in error else r.reason
-            print('Error in API call[%d] - %s' % (r.status_code, msg))
+            #msg = error['message'] if 'message' in error else r.reason
+            print('Error in API call[%d] - %s' % (r.status_code, error))
         except ValueError:
             msg = r.text if r.text else r.reason
             print('Error in API call [%d] - %s' % (r.status_code, msg))
@@ -79,7 +80,7 @@ def get_recent_workflows_data_request(feature_branch_name):
         list. List of last 10 successful builds.
     """
     cmd_url = f"{CONTENT_API_WORKFLOWS_URI}?branch={feature_branch_name}"
-    params = {'limit': 10, 'filter': 'success'}
+    params = {'limit': 20}
     response = http_request('GET', cmd_url, params=params)
     return response
 
@@ -93,9 +94,10 @@ def get_last_successful_workflow(feature_branch_name):
     Returns:
         Last successful build number of the given branch
     """
-    recent_successful_workflows = get_recent_workflows_data_request(feature_branch_name)
-    last_successful_workflow_id = recent_successful_workflows[0]['id']
-    return last_successful_workflow_id
+    recent_workflows = get_recent_workflows_data_request(feature_branch_name).get('items')
+    for workflow in recent_workflows:
+        if workflow.get('status') == "success":
+            return workflow.get('id')
 
 
 def get_workflow_jobs_request(workflow_id):
@@ -107,9 +109,8 @@ def get_workflow_jobs_request(workflow_id):
     Returns:
         str.
     """
-    cmd_url = f"api/v2/workflow/{workflow_id}/job"
-    params = {'name': 'Create Instances'}
-    response = http_request('GET', cmd_url, params=params)
+    cmd_url = f"https://circleci.com/api/v2/workflow/{workflow_id}/job"
+    response = http_request('GET', cmd_url)
     return response
 
 
@@ -122,9 +123,12 @@ def get_job_num(workflow_id):
     Returns:
         Create instances stage job number of the given branch
     """
-    job_data = get_workflow_jobs_request(workflow_id)
-    job_number = job_data['job_number']
-    return job_number
+
+    jobs_data = get_workflow_jobs_request(workflow_id)['items']
+    for job in jobs_data:
+        if job['name'] == 'Create Instances':
+            return job['job_number']
+    return ''
 
 
 def download_zip_file_from_gcp(current_feature_content_zip_file_path, zip_destination_path,
@@ -177,26 +181,24 @@ def merge_zip_files(master_branch_content_zip_file_path, feature_branch_content_
     feature_branch_content_dir.close()
 
 
-def get_new_feature_zip_file_path(feature_branch_name, job_num, gcp_service_account):
+def get_new_feature_zip_file_path(feature_branch_name, job_num):
     """Merge content_new zip files and remove the unnecessary files.
 
     Args:
         feature_branch_name (str): The name of the feature branch.
         job_num (str): Last successful create instance job of the feature branch.
-        gcp_service_account: Full path to service account json.
 
     """
-    current_feature_content_zip_file_path = f'/content/{feature_branch_name}/{job_num}/0/content_new.zip'
+    current_feature_content_zip_file_path = f'{GCS_PATH}{feature_branch_name}/{job_num}/0/content_new.zip'
     zip_destination_path = f'{ARTIFACTS_PATH}/feature_content_new_zip'
     new_feature_content_zip_file_path = download_zip_file_from_gcp(current_feature_content_zip_file_path,
-                                                                   zip_destination_path, gcp_service_account)
+                                                                   zip_destination_path)
     return new_feature_content_zip_file_path
 
 
 def option_handler():
     parser = argparse.ArgumentParser(description='Merging two content_new.zip files from different builds.')
     parser.add_argument('-f', '--feature_branch', help='The name of the feature branch', required=True)
-    parser.add_argument('-g', '--gcp', help='full path to service account json', required=False)
     parser.add_argument('-v', '--version', help='The version which was entered in content creator. for example 4_1',
                         required=True)
 
@@ -208,15 +210,13 @@ def option_handler():
 def main():
     options = option_handler()
     feature_branch_name = options.feature_branch
-    gcp_service_account = options.gcp
     version = options.version
 
     feature_branch_successful_workflow_id = get_last_successful_workflow(feature_branch_name)
     if not feature_branch_successful_workflow_id:
         print("Couldn't find successful workflow for this branch")
-    job_num = get_job_num(feature_branch_successful_workflow_id)
-    new_feature_content_zip_file_path = get_new_feature_zip_file_path(feature_branch_name, job_num,
-                                                                      gcp_service_account)
+    create_instances_job_num = get_job_num(feature_branch_successful_workflow_id)
+    new_feature_content_zip_file_path = get_new_feature_zip_file_path(feature_branch_name, create_instances_job_num)
 
     files_to_remove = [f'content-descriptor_{version}.json', f'doc-CommonServer_{version}.json',
                        f'doc-howto_{version}.json', f'reputations_{version}.json']
