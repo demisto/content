@@ -972,7 +972,6 @@ class TestCommandResults:
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
-
     def test_readable_only_context(self):
         """
         Given:
@@ -1640,6 +1639,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
 
@@ -1662,6 +1662,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert outputs == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
 
@@ -1676,6 +1677,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert timeline == results['IndicatorTimeline']
@@ -1691,6 +1693,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert 'Category' in results['IndicatorTimeline'][0].keys()
@@ -1707,9 +1710,21 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert ignore_auto_extract == results['IgnoreAutoExtract']
+
+    def test_return_outputs_text_raw_response(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        raw_response = 'string'
+        return_outputs(md, raw_response=raw_response)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert raw_response == results['Contents']
+        assert 'text' == results['ContentsFormat']
 
 
 def test_argToBoolean():
@@ -1987,12 +2002,25 @@ def test_handle_proxy(mocker):
                              ({'a': '1'}, ['a'], '1', None),
                              ({'a': {'b': '2'}}, ['a', 'b'], '2', None),
                              ({'a': {'b': '2'}}, ['a', 'c'], 'test', 'test'),
+                             ({'a': ['0', '1']}, ['a', 0], '0', None),  # Nested list
+                             ({'a': ['0', '1']}, ['a', 0, 1], '3', '3')  # Access object with attribute index
                          ])
 def test_safe_get(dict_obj, keys, expected, default_return_value):
     from CommonServerPython import dict_safe_get
-    assert expected == dict_safe_get(dict_object=dict_obj,
-                                     keys=keys,
-                                     default_return_value=default_return_value)
+    assert expected == dict_safe_get(dict_object=dict_obj, keys=keys, default_return_value=default_return_value)
+
+
+@pytest.mark.parametrize(argnames="raise_type_error",
+                         argvalues=[True, False])
+def test_safe_get_return_type(raise_type_error):
+    from CommonServerPython import dict_safe_get
+    if raise_type_error:
+        with pytest.raises(TypeError):
+            dict_safe_get(dict_object={'a': '1'}, keys=['a'],
+                          return_type=int, raise_return_type=raise_type_error)
+    else:
+        assert dict_safe_get(dict_object={'a': '1'}, keys=['a'],
+                             return_type=int, raise_return_type=raise_type_error) is None
 
 
 MIRRORS = '''
@@ -2240,7 +2268,8 @@ def test_update_context_no_merge(mocker):
     conversations.extend([new_conversation])
 
     # Arrange
-    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS, True)
+    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS,
+                                                                     True)
     new_conversations = json.loads(context['conversations'])
 
     # Assert
