@@ -191,3 +191,26 @@ def test_slightly_different_texts(mocker):
     mocker.patch.object(demisto, 'results', side_effect=results)
     main()
     assert not duplicated_incidents_found(existing_incident)
+
+
+def test_html_text(mocker):
+    global RESULTS, EXISTING_INCIDENT_ID, DUP_INCIDENT_ID, text, text2
+    EXISTING_INCIDENT_ID = DUP_INCIDENT_ID = None
+    html = '<!DOCTYPE html>\
+            <html>\
+            <body>\
+            <h1>{}</h1>\
+            <p>{}</p>\
+            </body>\
+            </html>\
+            '.format(text, text2)
+    clean_text = '{}\n{}'.format(text, text2)
+    existing_incident = create_incident(body=clean_text, emailfrom='mt.kb.user@gmail.com')
+    set_existing_incidents_list([existing_incident])
+    mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'Domain'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    new_incident = create_incident(html=html, emailfrom='mt.kb.user2@gmail.com')
+    mocker.patch.object(demisto, 'incidents', return_value=[new_incident])
+    mocker.patch.object(demisto, 'results', side_effect=results)
+    main()
+    assert duplicated_incidents_found(existing_incident)

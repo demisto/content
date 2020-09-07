@@ -61,7 +61,6 @@ def extract_domain(address):
 
 
 def get_text_from_html(html):
-    return html
     # todo: change to docker which supports
     soup = BeautifulSoup(html)
     # kill all script and style elements
