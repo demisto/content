@@ -34,7 +34,7 @@ The base URL would be of the [Query.AI Proxy](https://proxy.query.ai:443) . Repl
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. [Returns response for the query being run on Query.AI: queryai-run-query](#queryai-run-query)
+1. [Returns response for the query being run on Query.AI: queryai-run-query](#1-queryai-run-query)
 
 ### 1. queryai-run-query
 ************************
