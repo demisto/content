@@ -55,7 +55,8 @@ def edit_index_json_file(path_to_public_index, build_number):
         json.dump(pack_metadata, pack_metadata_file, indent=4)
 
 
-def upload_modified_index(public_index_folder_path, extract_destination_path, public_ci_index_blob, build_number):
+def upload_modified_index(public_index_folder_path, extract_destination_path, public_ci_index_blob, build_number,
+                          private_packs):
     """Upload updated index zip to cloud storage.
 
     Args:
@@ -69,9 +70,12 @@ def upload_modified_index(public_index_folder_path, extract_destination_path, pu
 
     """
     with open(os.path.join(public_index_folder_path, "index.json"), "w+") as index_file:
+        for private_pack in private_packs:
+            private_pack['price'] = 0
         index = {
             'revision': build_number,
-            'modified': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+            'modified': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'packs': private_packs
         }
         json.dump(index, index_file, indent=4)
 
@@ -127,6 +131,8 @@ def option_handler():
 
 
 def main():
+    import ipdb
+    ipdb.set_trace()
     upload_config = option_handler()
     service_account = upload_config.service_account
     build_number = upload_config.ci_build_number
@@ -144,16 +150,22 @@ def main():
 
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
+
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     public_index_folder_path, public_index_blob, _ = download_and_extract_index(public_storage_bucket,
                                                                                 extract_public_index_path)
 
-    update_index_with_priced_packs(private_storage_bucket, extract_public_index_path, public_index_folder_path,
-                                   changed_pack, True)
     # In order for the packs to be downloaded successfully, their price has to be 0
     change_packs_price_to_zero(public_index_folder_path)
-    edit_index_json_file(public_index_folder_path, build_number)
-    upload_modified_index(public_index_folder_path, extract_public_index_path, public_index_blob, build_number)
+
+    private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
+                                                                                           extract_destination_path,
+                                                                                           public_index_folder_path,
+                                                                                           changed_pack, True)
+
+    # edit_index_json_file(public_index_folder_path, build_number)
+    upload_modified_index(public_index_folder_path, extract_public_index_path, public_index_blob, build_number,
+                          private_packs)
 
 
 if __name__ == '__main__':
