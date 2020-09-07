@@ -1236,7 +1236,8 @@ def get_non_added_packs_ids(build: Build):
     """
     added_files = run_command(f'git diff --name-only --diff-filter=A '
                               f'origin/master..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
-    added_pack_ids = map(lambda x: x.split('/')[1], added_files.split('\n'))
+    added_files = added_files.split('\n')
+    added_pack_ids = map(lambda x: x.split('/')[1], added_files)
     return set(get_pack_ids_to_install()) - set(added_pack_ids)
 
 
@@ -1274,7 +1275,7 @@ def main():
                                                               pre_update=True)
     if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
         update_content_till_v6(build)
-    else:
+    elif not build.is_nightly:
         set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
         installed_content_packs_successfully = install_packs(build, prints_manager) and installed_content_packs_successfully
 
