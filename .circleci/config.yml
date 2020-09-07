@@ -164,7 +164,7 @@ references:
         GCS_PATH=$(mktemp)
         ZIP_FOLDER=$(mktemp -d)
         echo $GCS_MARKET_KEY > $GCS_PATH
-        python3 Utils/merge_content_new_zip.py -f "4.5.0" -g $GCS_PATH -v "4_5"
+        python3 Utils/merge_content_new_zip.py -f "4.5.0" -g $GCS_PATH
         rm $GCS_PATH
 
   restore_cache: &restore_cache

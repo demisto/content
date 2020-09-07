@@ -11,10 +11,10 @@ requests.packages.urllib3.disable_warnings()
 
 ACCEPT_TYPE = "application/json"
 CONTENT_API_WORKFLOWS_URI = "https://circleci.com/api/v2/insights/gh/demisto/content/workflows/commit"
-ARTIFACTS_PATH = '/Users/gkeller/Downloads'
+ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
-CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN', '907c3fecb32f2618a94d66183780465384653f96')
-GCS_PATH = "content/"  # f"gs://{STORAGE_BUCKET_NAME}/content/"
+CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN', '')
+GCS_PATH = "content/"
 
 
 def init_storage_client(service_account=None):
@@ -59,8 +59,8 @@ def http_request(method, url, params=None):
     if r.status_code not in {200, 201}:
         try:
             error = r.json().get('error')
-            #msg = error['message'] if 'message' in error else r.reason
-            print('Error in API call[%d] - %s' % (r.status_code, error))
+            msg = error['message'] if 'message' in error else r.reason
+            print('Error in API call[%d] - %s' % (r.status_code, msg))
         except ValueError:
             msg = r.text if r.text else r.reason
             print('Error in API call [%d] - %s' % (r.status_code, msg))
@@ -168,17 +168,17 @@ def merge_zip_files(master_branch_content_zip_file_path, feature_branch_content_
 
     """
 
-    feature_branch_content_dir = z.ZipFile(feature_branch_content_zip_file_path, 'r')
-    master_content_zip = z.ZipFile(master_branch_content_zip_file_path, 'w')
-    extract_dir = f'{ARTIFACTS_PATH}/feature_content_new_dir'
-    feature_branch_content_dir.extractall(extract_dir)
-    feature_content_zip_files = os.listdir(extract_dir)
+    unified_zip = z.ZipFile(f'{ARTIFACTS_PATH}/unified_content.zip', 'a')
+    with z.ZipFile(master_branch_content_zip_file_path, 'r') as master_zip:
+        feature_zip = z.ZipFile(feature_branch_content_zip_file_path, 'r')
+        for name in feature_zip.namelist():
+            if name not in files_to_remove:
+                unified_zip.writestr(name, feature_zip.open(name).read())
+        for name in master_zip.namelist():
+            unified_zip.writestr(name, master_zip.open(name).read())
 
-    for file_name in feature_content_zip_files:
-        if file_name not in files_to_remove:
-            master_content_zip.write(f'{extract_dir}/{file_name}')
-    master_content_zip.close()
-    feature_branch_content_dir.close()
+    master_zip.close()
+    feature_zip.close()
 
 
 def get_new_feature_zip_file_path(feature_branch_name, job_num):
@@ -190,7 +190,7 @@ def get_new_feature_zip_file_path(feature_branch_name, job_num):
 
     """
     current_feature_content_zip_file_path = f'{GCS_PATH}{feature_branch_name}/{job_num}/0/content_new.zip'
-    zip_destination_path = './Utils'  # f'{ARTIFACTS_PATH}feature_content_new_zip'
+    zip_destination_path = f'{ARTIFACTS_PATH}feature_content_new_zip'
     new_feature_content_zip_file_path = download_zip_file_from_gcp(current_feature_content_zip_file_path,
                                                                    zip_destination_path)
     return new_feature_content_zip_file_path
@@ -199,9 +199,6 @@ def get_new_feature_zip_file_path(feature_branch_name, job_num):
 def option_handler():
     parser = argparse.ArgumentParser(description='Merging two content_new.zip files from different builds.')
     parser.add_argument('-f', '--feature_branch', help='The name of the feature branch', required=True)
-    parser.add_argument('-v', '--version', help='The version which was entered in content creator. for example 4_1',
-                        required=True)
-
     options = parser.parse_args()
 
     return options
@@ -210,16 +207,16 @@ def option_handler():
 def main():
     options = option_handler()
     feature_branch_name = options.feature_branch
-    version = options.version
 
     feature_branch_successful_workflow_id = get_last_successful_workflow(feature_branch_name)
     if not feature_branch_successful_workflow_id:
         print("Couldn't find successful workflow for this branch")
+
     create_instances_job_num = get_job_num(feature_branch_successful_workflow_id)
     new_feature_content_zip_file_path = get_new_feature_zip_file_path(feature_branch_name, create_instances_job_num)
 
-    files_to_remove = [f'content-descriptor_{version}.json', f'doc-CommonServer_{version}.json',
-                       f'doc-howto_{version}.json', f'reputations_{version}.json']
+    files_to_remove = ['content-descriptor.json', 'doc-CommonServer.json', 'doc-howto.json', 'reputations.json',
+                       'tools-o365.zip', 'tools-exchange.zip', 'tools-winpmem.zip']
 
     master_content_zip_path = f"{ARTIFACTS_PATH}/content_new.zip"
 
