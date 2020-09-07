@@ -167,7 +167,7 @@ def convert_id_to_object_id(entries: Union[List[dict], dict]) -> Union[List[dict
             if isinstance(id_data, str):
                 entry['_id'] = ObjectId(id_data)
             if isinstance(id_data, dict):
-                entry['_id'] = dict((key, ObjectId(value)) for new_dict)
+                entry['_id'] = dict((key, ObjectId(id_data[key])) for key in id_data)
 
         return entry
 
@@ -337,11 +337,10 @@ def format_sort(sort_str: str) -> list:
     for field in sort_fields:
         if ':' not in field:
             raise ValueError("`sort` is not in the correct format.")
-        field, type = field.split(':')
+        field, type = field.split(':', 1)
         if type not in SORT_TYPE_DICT.keys():
             raise ValueError("`sort` is not in the correct format. Please make sure it's either 'asc' or 'desc'")
-        else:
-            sort_list.append((field, SORT_TYPE_DICT[type]))
+        sort_list.append((field, SORT_TYPE_DICT[type]))
     return sort_list
 
 
