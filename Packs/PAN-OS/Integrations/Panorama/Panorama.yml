@@ -4063,7 +4063,7 @@ script:
       description: The template name.
       isArray: false
       name: template
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Retrieve Wildfire Configuration
@@ -4081,7 +4081,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The url-filtering profile name.
+      description: The url-filtering profile name. Get the name by running get-security-profiles
+        command.
       isArray: false
       name: profile_name
       required: true
@@ -4254,7 +4255,7 @@ script:
       description: The template name.
       isArray: false
       name: template
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Enforce wildfire file upload to the maximum size + all file types

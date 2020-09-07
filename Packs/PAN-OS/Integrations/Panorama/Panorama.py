@@ -5444,6 +5444,7 @@ def panorama_show_location_ip_command():
     })
 
 
+@logger
 def panorama_get_licence():
     params = {
         'type': 'op',
@@ -5535,6 +5536,7 @@ def prettify_data_filtering_rules(rules: Dict) -> Union[List[Dict], Dict]:
     return [prettify_data_filtering_rule(rule) for rule in rules]
 
 
+@logger
 def get_security_profile(xpath: str):
     params = {
         'action': 'get',
@@ -5726,6 +5728,7 @@ def get_security_profiles_command():
     })
 
 
+@logger
 def apply_security_profile(pre_post: str, rule_name: str, profile_type: str, profile_name: str):
     params = {
         'action': 'set',
@@ -5756,6 +5759,7 @@ def apply_security_profile_command():
     demisto.results(f'The profile {profile_name} has been applied to the rule {rule_name}')
 
 
+@logger
 def get_ssl_decryption_rules(xpath: str):
     params = {
         'action': 'get',
@@ -5879,6 +5883,7 @@ def prettify_profiles_rules(rules: Dict) -> Union[List, Dict]:
     return pretty_rules_arr
 
 
+@logger
 def get_anti_spyware_best_practice() -> Dict:
     params = {
         'action': 'get',
@@ -5933,6 +5938,7 @@ def get_anti_spyware_best_practice_command():
     })
 
 
+@logger
 def get_file_blocking_best_practice() -> Dict:
     params = {
         'action': 'get',
@@ -5969,6 +5975,7 @@ def get_file_blocking_best_practice_command():
     })
 
 
+@logger
 def get_antivirus_best_practice():
     params = {
         'action': 'get',
@@ -6005,6 +6012,7 @@ def get_antivirus_best_practice_command():
     })
 
 
+@logger
 def get_vulnerability_protection_best_practice() -> Dict:
     params = {
         'action': 'get',
@@ -6041,6 +6049,7 @@ def get_vulnerability_protection_best_practice_command():
     })
 
 
+@logger
 def get_wildfire_best_practice() -> Dict:
     params = {
         'action': 'get',
@@ -6054,7 +6063,14 @@ def get_wildfire_best_practice() -> Dict:
     return result
 
 
-def prettify_wildfire_rule(rule):
+def prettify_wildfire_rule(rule: Dict) -> Dict:
+    """
+    Args:
+        rule: The profile security rule to prettify.
+
+    Returns: The rule dict compatible with our standard.
+
+    """
     pretty_rule = {
         'Name': rule['@name'],
     }
@@ -6068,7 +6084,14 @@ def prettify_wildfire_rule(rule):
     return pretty_rule
 
 
-def prettify_wildfire_rules(rules):
+def prettify_wildfire_rules(rules: Dict) -> Union[List, Dict]:
+    """
+    Args:
+        rules: WildFire rules to prettify.
+
+    Returns: List of the rules that are compatible to our standard.
+
+    """
     if not isinstance(rules, list):
         return prettify_wildfire_rule(rules)
     pretty_rules_arr = []
@@ -6139,7 +6162,8 @@ def set_xpath_wildfire(template: str = None) -> str:
     return xpath_wildfire
 
 
-def get_wildfire_system_config(template):
+@logger
+def get_wildfire_system_config(template: str):
 
     params = {
         'action': 'get',
@@ -6152,6 +6176,7 @@ def get_wildfire_system_config(template):
     return result
 
 
+@logger
 def get_wildfire_update_schedule(template):
     params = {
         'action': 'get',
@@ -6211,7 +6236,8 @@ def get_wildfire_update_schedule_command():
     })
 
 
-def enforce_wildfire_system_config(template):
+@logger
+def enforce_wildfire_system_config(template: str):
     params = {
         'action': 'set',
         'type': 'config',
@@ -6232,7 +6258,8 @@ def enforce_wildfire_system_config(template):
     return result
 
 
-def enforce_wildfire_schedule(template):
+@logger
+def enforce_wildfire_schedule(template: str):
     params = {
         'action': 'set',
         'type': 'config',
@@ -6261,6 +6288,7 @@ def enforce_wildfire_schedule_command():
                     '\nRecurring every minute with the action of "download and install"')
 
 
+@logger
 def url_filtering_block_default_categories(profile_name: str):
 
     params = {
@@ -6349,7 +6377,8 @@ def get_url_filtering_best_practice_command():
     })
 
 
-def create_antivirus_best_practice_profile(profile_name):
+@logger
+def create_antivirus_best_practice_profile(profile_name: str):
     params = {
         'action': 'set',
         'type': 'config',
@@ -6373,11 +6402,12 @@ def create_antivirus_best_practice_profile(profile_name):
 def create_antivirus_best_practice_profile_command():
 
     profile_name = demisto.args().get('profile_name')
-    result = create_antivirus_best_practice_profile(profile_name)
+    create_antivirus_best_practice_profile(profile_name)
     demisto.results(f'The profile {profile_name} was created successfully.')
 
 
-def create_anti_spyware_best_practice_profile(profile_name):
+@logger
+def create_anti_spyware_best_practice_profile(profile_name: str):
 
     params = {
         'action': 'set',
@@ -6408,7 +6438,8 @@ def create_anti_spyware_best_practice_profile_command():
     demisto.results(f'The profile {profile_name} was created successfully.')
 
 
-def create_vulnerability_best_practice_profile(profile_name):
+@logger
+def create_vulnerability_best_practice_profile(profile_name: str):
 
     params = {
         'action': 'set',
@@ -6463,7 +6494,8 @@ def create_vulnerability_best_practice_profile_command():
     demisto.results(f'The profile {profile_name} was created successfully.')
 
 
-def create_url_filtering_best_practice_profile(profile_name):
+@logger
+def create_url_filtering_best_practice_profile(profile_name: str):
 
     params = {
         'action': 'set',
@@ -6538,7 +6570,8 @@ def create_url_filtering_best_practice_profile_command():
     demisto.results(f'The profile {profile_name} was created successfully.')
 
 
-def create_file_blocking_best_practice_profile(profile_name):
+@logger
+def create_file_blocking_best_practice_profile(profile_name: str):
     params = {
         'action': 'set',
         'type': 'config',
@@ -6568,7 +6601,8 @@ def create_file_blocking_best_practice_profile_command():
     demisto.results(f'The profile {profile_name} was created successfully.')
 
 
-def create_wildfire_best_practice_profile(profile_name):
+@logger
+def create_wildfire_best_practice_profile(profile_name: str):
     params = {
         'action': 'set',
         'type': 'config',
