@@ -331,7 +331,7 @@ references:
             command: |
               # Demisto Marketplace refers to Server Master
               SERVER_URL=$(jq -r 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
-              python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. ￿Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
+              python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 jobs:
   Setup Environment:
     <<: *container_config
