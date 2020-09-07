@@ -1,5 +1,5 @@
 import requests
-
+from typing import Optional, List
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -49,7 +49,8 @@ class Client(BaseClient):
                                              'groups': groups})
 
     def update_host(self, identifier: str, ignore_warnings: bool, ignore_errors: bool,
-                    ip_address: str, new_name: str, comments: str, groups):
+                    ip_address: Optional[str], new_name: Optional[str],
+                    comments: Optional[str], groups):
         body = {'name': identifier,
                 'ip-address': ip_address,
                 'new-name': new_name,
@@ -79,7 +80,7 @@ class Client(BaseClient):
                                   json_data={"name": name})
 
     def update_group(self, identifier: str, ignore_warnings: bool, ignore_errors: bool, members,
-                     new_name: str, comments: str):
+                     new_name: Optional[str], comments: Optional[str]):
         body = {'name': identifier,
                 'new-name': new_name,
                 'members': members,
@@ -117,8 +118,8 @@ class Client(BaseClient):
                                   headers=self.headers, json_data=body)
 
     def update_address_range(self, identifier: str, ignore_warnings: bool, ignore_errors: bool,
-                             ip_address_first: str, ip_address_last: str, new_name: str,
-                             comments: str, groups):
+                             ip_address_first: Optional[str], ip_address_last: Optional[str],
+                             new_name: Optional[str], comments: Optional[str], groups):
         body = {'name': identifier,
                 'ip-address-first': ip_address_first,
                 'ip-address-last': ip_address_last,
@@ -170,15 +171,15 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix='show-access-rulebase',
                                   headers=self.headers, json_data=body)
 
-    def add_rule(self, layer: str, position, action: str, name: str,
-                 vpn: str, destination, service, source):
+    def add_rule(self, layer: str, position, action: str, name: Optional[str],
+                 vpn: Optional[str], destination, service, source):
         body = {'layer': layer, 'position': position, 'name': name, 'action': action,
                 'destination': destination, 'service': service, 'source': source, 'vpn': vpn}
         return self._http_request(method='POST', url_suffix='add-access-rule',
                                   headers=self.headers, json_data=body)
 
     def update_rule(self, identifier: str, layer: str, ignore_warnings: bool, ignore_errors: bool,
-                    enabled: bool, action: str, new_name: str, new_position):
+                    enabled: bool, action: Optional[str], new_name: Optional[str], new_position):
         body = {'name': identifier,
                 'layer': layer,
                 'action': action,
@@ -209,8 +210,9 @@ class Client(BaseClient):
 
     def update_application_site(self, identifier: str,
                                 urls_defined_as_regular_expression: bool,
-                                groups, url_list, description: str, new_name: str,
-                                primary_category: str, application_signature: str):
+                                groups, url_list, description: Optional[str],
+                                new_name: Optional[str], primary_category: Optional[str],
+                                application_signature: Optional[str]):
         body = {'name': identifier,
                 'description': description,
                 'new-name': new_name,
@@ -440,7 +442,7 @@ def checkpoint_delete_host_command(client: Client, identifier) -> CommandResults
     readable_output = ''
     printable_result = {}
     result = []
-    for item in enumerate(identifier):
+    for index, item in enumerate(identifier):
         current_result = client.delete_host(item[1])
         result.append(current_result)
         printable_result = {'message': current_result.get('message')}
@@ -1473,7 +1475,7 @@ def checkpoint_publish_command(client: Client) -> CommandResults:
     Args:
         client (Client): CheckPoint client.
     """
-    printable_result = []
+    printable_result = {}
     readable_output = ''
 
     result = client.publish()
@@ -1540,7 +1542,7 @@ def checkpoint_install_policy_command(client: Client, policy_package: str, targe
                         By default, the value is true if Access Control policy is enabled
                         on the input policy package, otherwise false.
     """
-    printable_result = []
+    printable_result = {}
     readable_output = ''
 
     result = client.install_policy(policy_package, targets, access)
@@ -1567,7 +1569,7 @@ def checkpoint_verify_policy_command(client: Client, policy_package: str) -> Com
         client (Client): CheckPoint client.
         policy_package(str): The name of the Policy Package to be installed.
     """
-    printable_result = []
+    printable_result = {}
     readable_output = ''
 
     result = client.verify_policy(policy_package)
@@ -1606,7 +1608,7 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
     return command_results
 
 
-def build_member_data(result: dict, readable_output: str, printable_result: dict) -> (str, dict):
+def build_member_data(result: dict, readable_output: str, printable_result: dict):
     """helper function. Builds the member data for group endpoints."""
     members = result.get('members')
     members_printable_result = []
@@ -1668,7 +1670,7 @@ def build_printable_result(headers: list, result: dict) -> dict:
     return printable_result
 
 
-def build_group_data(result: dict, readable_output: str, printable_result: dict) -> (str, dict):
+def build_group_data(result: dict, readable_output: str, printable_result: dict):
     """helper function. Builds new table of group objects related to an object."""
     groups_printable_result = []
     groups_info = result.get('groups')
@@ -1744,18 +1746,19 @@ def main():
         if demisto.command() == 'test-module':
             response = checkpoint_login_and_get_sid_command(base_url, username, password,
                                                             verify_certificate, 600).outputs
-            sid = response.get('session-id')
-            demisto.results(test_module(base_url, sid, verify_certificate))
-            checkpoint_logout_command(base_url, sid, verify_certificate)
-            return
+            if response:
+                sid = response.get('session-id')
+                demisto.results(test_module(base_url, sid, verify_certificate))
+                checkpoint_logout_command(base_url, sid, verify_certificate)
+                return
 
-        if command == 'checkpoint-login-and-get-session-id':
+        elif command == 'checkpoint-login-and-get-session-id':
             return_results(checkpoint_login_and_get_sid_command(base_url, username, password,
                                                                 verify_certificate,
                                                                 **demisto.args()))
             return
 
-        if command == 'checkpoint-logout':
+        elif command == 'checkpoint-logout':
             sid = demisto.args().get('session_id', {})
             demisto.results(checkpoint_logout_command(base_url, sid, verify_certificate))
             return

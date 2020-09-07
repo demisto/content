@@ -1,12 +1,5 @@
-import pytest
-import demistomock as demisto
-import os
-from CheckPointFirewall_v2 import Client, checkpoint_list_hosts_command
-import requests
 import json
 import io
-
-KEY = '(val.uid && val.uid == obj.uid)'
 
 
 def util_load_json(path):
@@ -344,5 +337,5 @@ def test_show_task_command(mocker):
     result = checkpoint_show_task_command(mocked_client, '01234567').outputs
     assert result[0].get('task-id') == "01234567"
     assert result[0].get("task-name") == "Publish operation"
-    assert result[0].get("status") ==  "succeeded"
+    assert result[0].get("status") == "succeeded"
     assert result[0].get("progress-percentage") == 100
