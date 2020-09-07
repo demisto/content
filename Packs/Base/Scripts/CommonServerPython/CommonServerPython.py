@@ -2002,7 +2002,7 @@ class Common(object):
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
 
         :type dbot_score: ``DBotScore``
-        :param dbot_score:
+        :param dbot_score: If IP has a score then create and set a DBotScore object.
 
         :return: None
         :rtype: ``None``
@@ -2688,7 +2688,7 @@ def return_results(results):
     This function wraps the demisto.results(), supports.
 
     :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget``
-    :param results:
+    :param results: A result object to return as a War-Room entry.
 
     :return: None
     :rtype: ``None``
