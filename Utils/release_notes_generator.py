@@ -182,19 +182,22 @@ def get_all_modified_release_note_files(git_sha1):
     return release_notes_files
 
 
-def get_pack_name_from_metdata(pack_path):
+def get_pack_metadata(pack_path):
     pack_metadata_path = os.path.join(pack_path, PACK_METADATA)
     with open(pack_metadata_path, 'r') as json_file:
         pack_metadata = json.load(json_file)
-        pack_name = pack_metadata.get('name')
 
-    return pack_name
+    return pack_metadata
 
 
-def get_pack_name_from_release_note(file_path):
+def is_partner_supported_in_metadata(metadata):
+    return metadata and metadata.get('support') == 'partner'
+
+
+def get_pack_path_from_release_note(file_path):
     match = re.search(r'(.*)/ReleaseNotes/.*', file_path)
     if match:
-        return get_pack_name_from_metdata(match.group(1))
+        return match.group(1)
 
     raise ValueError('Pack name was not found for file path {}'.format(file_path))
 
@@ -223,10 +226,15 @@ def get_release_notes_dict(release_notes_files):
 
     Returns:
         (dict) A mapping from pack names to dictionaries of pack versions to release notes.
+        (dict) A mapping from pack name to the pack metadata object
     """
     release_notes_dict = {}
+    packs_metadata_dict = {}
     for file_path in release_notes_files:
-        pack_name = get_pack_name_from_release_note(file_path)
+        pack_path = get_pack_path_from_release_note(file_path)
+        pack_metadata = get_pack_metadata(pack_path)
+        pack_name = pack_metadata.get('name')
+        packs_metadata_dict[pack_name] = pack_metadata
         pack_version = get_pack_version_from_path(file_path)
 
         release_note = read_and_format_release_note(file_path)
@@ -236,10 +244,10 @@ def get_release_notes_dict(release_notes_files):
         else:
             print('Ignoring release notes for pack {} {}...'.format(pack_name, pack_version))
 
-    return release_notes_dict
+    return release_notes_dict, packs_metadata_dict
 
 
-def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
+def merge_version_blocks(pack_name: str, pack_versions_dict: dict, pack_metadata: dict):
     """
     merge several pack release note versions into a single block.
 
@@ -282,17 +290,20 @@ def merge_version_blocks(pack_name: str, pack_versions_dict: dict):
                     entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
 
     pack_release_notes = construct_entities_block(entities_data)
-    return (f'### {pack_name} Pack v{latest_version}\n'
+
+    partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
+    return (f'### {pack_name} Pack v{latest_version}{partner}\n'
             f'{pack_release_notes.strip()}')
 
 
-def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, version, asset_id,
-                                   release_notes_file):
+def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, packs_metadata_dict, version,
+                                   asset_id, release_notes_file):
     """ Creates a release notes summary markdown file.
 
     Args:
         new_packs_release_notes (dict): A mapping from pack names to pack summary.
         modified_release_notes_dict (dict): A mapping from pack names to dictionaries of pack versions to release notes.
+        packs_metadata_dict (dict): A mapping from pack names to the packs metadata
         version (str): Content version.
         asset_id (str): The asset ID.
         release_notes_file (str): release notes output file path
@@ -306,11 +317,14 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
 
     pack_rn_blocks = []
     for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
-        pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0\n'
+        pack_metadata = packs_metadata_dict[pack_name]
+        partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
+        pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0{partner}\n'
                               f'{pack_summary}')
 
     for pack_name, pack_versions_dict in sorted(modified_release_notes_dict.items()):
-        pack_rn_blocks.append(merge_version_blocks(pack_name, pack_versions_dict))
+        pack_metadata = packs_metadata_dict[pack_name]
+        pack_rn_blocks.append(merge_version_blocks(pack_name, pack_versions_dict, pack_metadata))
         # for pack_version, pack_release_notes in sorted(pack_versions_dict.items(),
         #                                                key=lambda pack_item: LooseVersion(pack_item[0])):
         #     pack_rn_blocks.append(f'### {pack_name} Pack v{pack_version}\n'
@@ -402,14 +416,21 @@ def main():
 
     new_packs = get_new_packs(args.git_sha1)
     new_packs_release_notes = {}
+    new_packs_metadata = {}
+    new_packs
     for pack in new_packs:
-        pack_name = get_pack_name_from_metdata(pack)
+        pack_metadata = get_pack_metadata(pack)
+        pack_name = pack_metadata.get('name')
         new_packs_release_notes[pack_name] = get_pack_entities(pack)
+        new_packs_metadata[pack_name] = pack_metadata
 
+    packs_metadata_dict = {}
     modified_release_notes = get_all_modified_release_note_files(args.git_sha1)
-    modified_release_notes_dict = get_release_notes_dict(modified_release_notes)
+    modified_release_notes_dict, modified_packs_metadata = get_release_notes_dict(modified_release_notes)
+    packs_metadata_dict.update(new_packs_metadata)
+    packs_metadata_dict.update(modified_packs_metadata)
     release_notes = generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict,
-                                                   args.version, args.asset_id, args.output)
+                                                   packs_metadata_dict, args.version, args.asset_id, args.output)
     create_content_descriptor(release_notes, args.version, args.asset_id, args.github_token)
 
 

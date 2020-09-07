@@ -1,0 +1,30 @@
+args:
+- default: true
+  description: domain or email indicator value that need to enrich
+  isArray: false
+  name: indicator_value
+  required: true
+  secret: false
+comment: Enhancement script to enrich whois information for Domain and Email type
+  of indicators.
+commonfields:
+  id: RiskIQPassiveTotalWhoisScript
+  version: -1
+enabled: true
+name: RiskIQPassiveTotalWhoisScript
+script: '-'
+subtype: python3
+dependson:
+  must:
+  - '|||pt-whois-search'
+system: false
+tags:
+- enhancement
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.5.10845
+runas: DBotWeakRole
+runonce: false
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
