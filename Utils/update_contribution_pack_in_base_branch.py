@@ -17,29 +17,8 @@ def main():
     pr_number = args.pr_number
     repo = args.contrib_repo
     branch = args.branch
-    page = 1
-    pack_dir_name = ''
-    while True:
-        response = requests.get(f'https://api.github.com/repos/demisto/content/pulls/{pr_number}/files',
-                                params={'page': str(page)})
-        response.raise_for_status()
-        files = response.json()
-        if not files:
-            break
-        for pr_file in files:
-            if pr_file['filename'].startswith('Packs/'):
-                pack_dir_name = pr_file['filename'].split('/')[1]
-                break
-        if pack_dir_name:
-            break
-        page += 1
-
-    if not pack_dir_name:
-        print_error('Did not find a pack in the PR')
-        sys.exit(1)
-
+    pack_dir_name = get_pack_dir(branch, pr_number, repo)
     pack_dir = f'Packs/{pack_dir_name}'
-    print(f'Copy the changes from the contributor branch {repo}/{branch} in the pack {pack_dir_name}')
 
     try:
         shutil.rmtree(pack_dir)
@@ -57,6 +36,42 @@ def main():
         sys.exit(1)
 
     print_success(f'Successfully updated the base branch with the contrib pack {pack_dir_name}')
+
+
+def get_pack_dir(branch: str, pr_number: str, repo: str) -> str:
+    """
+    Get a pack dir name from a contribution pull request chagned files
+    Args:
+        branch: The contrib branch
+        pr_number: The contrib PR
+        repo: The contrib repo
+
+    Returns:
+        A pack dir name, if found.
+    """
+
+    page = 1
+    pack_dir_name = ''
+    while True:
+        response = requests.get(f'https://api.github.com/repos/demisto/content/pulls/{pr_number}/files',
+                                params={'page': str(page)})
+        response.raise_for_status()
+        files = response.json()
+        if not files:
+            break
+        for pr_file in files:
+            if pr_file['filename'].startswith('Packs/'):
+                pack_dir_name = pr_file['filename'].split('/')[1]
+                break
+        if pack_dir_name:
+            break
+        page += 1
+    if not pack_dir_name:
+        print_error('Did not find a pack in the PR')
+        sys.exit(1)
+
+    print(f'Copy the changes from the contributor branch {repo}/{branch} in the pack {pack_dir_name}')
+    return pack_dir_name
 
 
 if __name__ == '__main__':
