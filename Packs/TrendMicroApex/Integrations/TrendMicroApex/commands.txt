@@ -1,0 +1,12 @@
+trendmicro-apex-endpoint-sensors-list
+trendmicro-apex-security-agents-list
+trendmicro-apex-managed-servers-list
+trendmicro-apex-list-logs log_type="Web Violation" limit=2 since_time="Jun 21 2020 07:56:09 GMT+00:00"
+trendmicro-apex-udso-add type="ip" content="8.8.8.8" scan_action="log" notes="Documentation"
+trendmicro-apex-udso-file-add entry_id=10378@f6e9c46f-e2e9-446f-8cd9-909bd5f72dbf file_scan_action=Log note="Documentation"
+trendmicro-apex-udso-list
+trendmicro-apex-udso-delete type=ip content=8.8.8.8
+trendmicro-apex-isolate multi_match="true" ip_address="8.8.8.8"
+trendmicro-apex-restore multi_match="true" ip_address="8.8.8.8"
+trendmicro-apex-historical-investigation-create operator=OR file_name_is=notepad.exe criteria_kvp="File name: notepad.exe" criteria_source=56 search_period="Twelve months"
+trendmicro-apex-investigation-result-list scan_status=All scan_type="YARA rule file"

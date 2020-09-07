@@ -1,4 +1,3 @@
-from typing import Dict, List
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -22,6 +21,15 @@ urllib3.disable_warnings()
 UDSOAPIPATH = '/WebApp/api/SuspiciousObjects/UserDefinedSO'
 PRODAGENTAPIPATH = '/WebApp/API/AgentResource/ProductAgents'
 FIELDS_TO_REMOVE_FROM_CONTEXT = ['FeatureCtrl', 'Meta', 'PermissionCtrl', 'SystemCtrl']
+
+CEF_HEADERS_TO_TREND_MICRO_HEADERS = {
+    'CEFVersion': 'LogVersion',
+    'Name': 'EventName',
+    'DeviceEventClassID': 'EventID',
+    'DeviceVersion': 'ApplianceVersion',
+    'DeviceProduct': 'ApplianceProduct',
+    'DeviceVendor': 'ApplianceVendor'
+}
 
 LOG_NAME_TO_LOG_TYPE = {
     "Data Loss Prevention": "data_loss_prevention",
@@ -144,6 +152,16 @@ AGENT_ISOLATION_STATUS_NUM_TO_VALUE = {
     2: "Isolated",
     3: "Isolate command sent -pending",
     4: "Restore agent from isolation -pending",
+}
+
+INVESTIGATION_STATUS_NUM_TO_VALUE = {
+    0: "Pending",
+    1: "Running",
+    2: "Cancel",
+    3: "Complete",
+    4: "Invalid",
+    5: "Purged",
+    6: "Error (All servers failed)"
 }
 
 
@@ -306,10 +324,14 @@ class Client(BaseClient):
             list. The updated list with the readable time and type values
         """
         time_keys = ['triggerTime', 'submitTime', 'finishTime']
+        status_keys = ['status', 'statusForUI']
         for result in results_list:
             for time_key in time_keys:
                 if result.get(time_key):
                     result[time_key] = datetime.fromtimestamp(result.get(time_key), timezone.utc).isoformat()
+            for status_key in status_keys:
+                if result.get(status_key):
+                    result[status_key] = INVESTIGATION_STATUS_NUM_TO_VALUE[result.get(status_key)]
             if result.get('scanType'):
                 result['scanType'] = SCAN_NUM_TO_TYPE[result['scanType']]
         return results_list
@@ -435,17 +457,47 @@ class Client(BaseClient):
                                                                headers='', request_body=json.dumps(request_data))}
 
         response = self._http_request("PUT", self.suffix, headers=headers, data=json.dumps(request_data))
-        # return_error(response)
         self.validate_response(response, error_message="Endpoint sensors list operation failed")
         return response
 
     @staticmethod
-    def parse_cef_logs_to_dict_logs(response):
+    def fix_log_headers(log: dict):
+        """
+        Fix the cef log headers according to TrendMicro headers
+        Args:
+            log(dict): the cef log to fix.
+
+        Returns:
+            the fixed log with the correct headers mapping.
+
+        """
+
+        remove_from_dict = ['DeviceName',
+                            'DeviceSeverity']  # duplicate keys from pycef - backwards compatibility reasons
+        keys_to_fix = CEF_HEADERS_TO_TREND_MICRO_HEADERS.keys()
+
+        # remove unnecessary keys
+        for key in remove_from_dict:
+            log.pop(key, None)
+
+        # fix the keys to their correct name
+        new_log = log.copy()
+        for key in log.keys():
+            if key in keys_to_fix:
+                new_log[CEF_HEADERS_TO_TREND_MICRO_HEADERS[key]] = new_log.pop(key)
+            if key == 'rt':  # this key is always referencing to 'Creation Time' header
+                new_log['CreationTime'] = new_log.pop('rt')
+
+        return new_log
+
+    def parse_cef_logs_to_dict_logs(self, response):
         logs_list_in_cef_format = response.get('Data', {}).get('Logs', [])
         parsed_logs_list = []
         for log in logs_list_in_cef_format:
             parsed_log = pycef.parse(log)
-            parsed_logs_list.append(parsed_log)
+            if parsed_log:
+                parsed_trendmicro_log = self.fix_log_headers(parsed_log)
+                parsed_logs_list.append(parsed_trendmicro_log)
 
         return parsed_logs_list
 
@@ -567,7 +619,8 @@ class Client(BaseClient):
 
         return payload
 
-    def investigation_result_list(self, scan_type: str, limit: str = '50', offset: str = '0', filter_by_task_name: str = '',
+    def investigation_result_list(self, scan_type: str, limit: str = '50', offset: str = '0',
+                                  filter_by_task_name: str = '',
                                   filter_by_creator_name: str = '', filter_by_scan_type: str = '',
                                   filter_by_criteria_name: str = '', scan_schedule_id: str = ''):
 
@@ -579,7 +632,6 @@ class Client(BaseClient):
             "TaskType": 4,  # For Endpoint Sensor, the value is always 4.
             "Payload": payload
         }
-        return_error(json.dumps(request_data, indent=4))
         headers = {
             'Content-Type': 'application/json;charset=utf-8',
             'Authorization': 'Bearer ' + self.create_jwt_token(http_method='PUT', api_path=self.suffix,
@@ -713,13 +765,14 @@ def list_logs_command(client: Client, args):
             parsed_logs_list = client.parse_cef_logs_to_dict_logs(response)[:limit]
 
     log_type = args.get('log_type')
-    readable_output = tableToMarkdown(f'Trend Micro Apex - {log_type} Logs', parsed_logs_list, removeNull=True)
-    context = parsed_logs_list
+    headers = ['EventName', 'EventID', 'CreationTime', 'LogVersion', 'ApplianceVersion', 'ApplianceProduct', 'ApplianceVendor']
+    readable_output = tableToMarkdown(f'Trend Micro Apex - {log_type} Logs', parsed_logs_list, headers=headers,
+                                      removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroApex.Log',
-        outputs=context,
+        outputs=parsed_logs_list,
         raw_response=response
     )
 
@@ -780,7 +833,8 @@ def agents_list_command(client: Client, args):
         if response.get('result_content'):
             context = human_readable_table = response.get('result_content')
 
-    readable_output = tableToMarkdown('Trend Micro Apex Agents List', human_readable_table, headerTransform=string_to_table_header,
+    readable_output = tableToMarkdown('Trend Micro Apex Agents List', human_readable_table,
+                                      headerTransform=string_to_table_header,
                                       removeNull=True)
 
     return CommandResults(
@@ -856,31 +910,6 @@ def investigation_result_list_command(client: Client, args):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='TrendMicroApex.InvestigationResult',
-        outputs=context,
-        outputs_key_field='scanSummaryGuid',
-        raw_response=response
-    )
-
-
-def investigation_result_list_by_status_command(client: Client, args):
-    client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
-    response = client.investigation_result_list_by_status(**assign_params(**args))
-    context = {}
-    if response:
-        if response.get('Data', {}).get('Message', '') == 'OK':
-            content_list = response.get('Data', {}).get('Data', {}).get('content', [])
-            if content_list:
-                results_list = content_list[0].get('content', {}).get('scanEntity', [])
-
-                if results_list:
-                    context = results_list = client.convert_timestamps_and_scan_type_to_readable(results_list)
-
-                headers = ['name', 'scanSummaryGuid', 'submitTime', 'agentGuid', 'serverGuid', 'creator']
-                readable_output = tableToMarkdown('Investigation result list by status:', results_list, headers=headers)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='TrendMicroApex.InvestigationResultByStatus',
         outputs=context,
         outputs_key_field='scanSummaryGuid',
         raw_response=response

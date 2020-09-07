@@ -54,8 +54,8 @@ def test_list_logs_command(requests_mock, mocker):
     outputs = response.outputs
     assert outputs
     assert len(outputs) == 5
-    assert outputs[0].get('DeviceVendor')  # check that the cef parse was successful
-    assert 'Logs List' in response.readable_output
+    assert outputs[0].get('EventID')  # check that the cef parse was successful
+    assert 'Trend Micro Apex - Web Violation Logs' in response.readable_output
     assert response.outputs_prefix == 'TrendMicroApex.Log'
 
 
@@ -231,6 +231,7 @@ def test_investigation_result_list_command(requests_mock, mocker):
     assert len(outputs) == 2
     assert 'Meta' not in outputs  # check that unnecessary fields was removed from the response
     assert 'Investigation result list' in response.readable_output
+    assert outputs[0].get('status') == 'Complete'
     assert outputs[0].get('submitTime') == '2020-07-26T17:02:03+00:00'  # check that time values were parsed
     assert response.outputs_prefix == 'TrendMicroApex.InvestigationResult'
 
@@ -306,8 +307,8 @@ def test_convert_timestamps_and_scan_type_to_readable():
         {
             "scanSummaryId": 2,
             "scanSummaryGuid": "80e5f8b4-3419-455d-99ce-9699ead90781",
-            "status": 3,
-            "statusForUI": 3,
+            "status": "Complete",
+            "statusForUI": "Complete",
             "scanType": "YARA rule file",
             "submitTime": '2020-07-26T17:02:03+00:00',
             "finishTime": '2020-07-27T17:04:03+00:00',
@@ -316,8 +317,8 @@ def test_convert_timestamps_and_scan_type_to_readable():
         {
             "scanSummaryId": 1,
             "scanSummaryGuid": "5023de82-464e-4694-91a3-f27a48b42ba4",
-            "status": 3,
-            "statusForUI": 3,
+            "status": "Complete",
+            "statusForUI": "Complete",
             "scanType": "YARA rule file",
             "submitTime": '2020-07-26T14:14:37+00:00',
             "finishTime": '2020-07-27T14:15:03+00:00',

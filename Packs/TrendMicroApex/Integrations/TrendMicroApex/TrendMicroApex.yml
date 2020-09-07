@@ -303,9 +303,30 @@ script:
     deprecated: false
     description: Retrieves a maximum of 1000 logs of detection types from the server.
       The `Pattern Update Status` and `Engine Update Status` log types returns all
-      logs (no maximum) from the specified "since_time".
+      logs (no maximum) from the specified "since_time". In some cases the command
+      might return alerts that were created before the specified time. This is a known
+      issue with the API.
     execution: false
     name: trendmicro-apex-list-logs
+    outputs:
+    - contextPath: TrendMicroApex.Log.LogVersion
+      description: The version of the log.
+      type: Number
+    - contextPath: TrendMicroApex.Log.EventName
+      description: The name of the event.
+      type: String
+    - contextPath: TrendMicroApex.Log.EventID
+      description: The event ID.
+      type: String
+    - contextPath: TrendMicroApex.Log.ApplianceVersion
+      description: The version of the appliance.
+      type: Number
+    - contextPath: TrendMicroApex.Log.ApplianceProduct
+      description: The product name.
+      type: String
+    - contextPath: TrendMicroApex.Log.ApplianceVendor
+      description: The vendor name.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
