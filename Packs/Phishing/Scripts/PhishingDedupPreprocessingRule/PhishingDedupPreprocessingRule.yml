@@ -80,7 +80,7 @@ args:
   secret: false
 comment: An out-of-the-box deduplication preprocessing script based on ML algorithm
 commonfields:
-  id: 7d14bbd7-1da5-4c87-95fc-0be0178879ad
+  id: PhishingDedupPreprocessingRule
   version: -1
 enabled: false
 name: PhishingDedupPreprocessingRule
