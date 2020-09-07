@@ -614,8 +614,8 @@ def upload_script(name: str, permission_type: str, content: str, entry_id: str) 
         body['content'] = (None, content)
     else:  # entry_id was provided
         file_ = demisto.getFilePath(entry_id)
-        file_name = file_.get('name')
-        body['file'] = (file_name, open(file_.get('path'), 'rb'))
+        file_name = file_.get('name')  # pylint: disable=E1101
+        body['file'] = (file_name, open(file_.get('path'), 'rb'))  # pylint: disable=E1101
 
     headers = {
         'Authorization': HEADERS['Authorization'],
@@ -694,11 +694,11 @@ def upload_file(entry_id: str, description: str) -> Tuple:
     endpoint_url = '/real-time-response/entities/put-files/v1'
 
     file_ = demisto.getFilePath(entry_id)
-    file_name = file_.get('name')
+    file_name = file_.get('name')  # pylint: disable=E1101
     body = {
         'name': (None, file_name),
         'description': (None, description),
-        'file': (file_name, open(file_.get('path'), 'rb'))
+        'file': (file_name, open(file_.get('path'), 'rb'))  # pylint: disable=E1101
     }
     headers = {
         'Authorization': HEADERS['Authorization'],
@@ -1115,8 +1115,6 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     # Get the last fetch time, if exists
     last_fetch = last_run.get('first_behavior_time')
-    demisto.debug("############################")
-    demisto.debug(f"last fetch parameters are: {str(last_run)}")
     offset = last_run.get('offset', 0)
 
     # Handle first time fetch, fetch incidents retroactively
@@ -1165,8 +1163,6 @@ def fetch_incidents():
             demisto.setLastRun({'first_behavior_time': prev_fetch, 'offset': offset + INCIDENTS_PER_FETCH})
         else:
             demisto.setLastRun({'first_behavior_time': last_fetch})
-    demisto.debug("############################")
-    demisto.debug(f"Fetched: {str(len(incidents))} incidents")
     return incidents
 
 
