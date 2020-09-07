@@ -522,8 +522,9 @@ class Pack(object):
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         if pack_metadata['price'] > 0:
+            print_error(f'pack_metadata in price > 0 is: {pack_metadata}')
             pack_metadata['premium'] = True
-            pack_metadata['previewOnly'] = True
+            pack_metadata['previewOnly'] = user_metadata.get('previewOnly', False)
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
