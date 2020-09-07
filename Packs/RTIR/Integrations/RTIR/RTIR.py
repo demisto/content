@@ -885,7 +885,7 @@ def fetch_incidents():
         raw_query += status_query + ')'
     tickets = parse_ticket_data(raw_query)
     tickets.sort(key=get_ticket_id)
-    fetch_batch_limit = int(demisto.params().get('fetch_limit', 0))
+    fetch_batch_limit = int(demisto.params().get('max_fetch', 0))
     tickets = tickets if (fetch_batch_limit == 0) else tickets[:fetch_batch_limit]
     incidents = []
     max_ticket_id = last_ticket_id

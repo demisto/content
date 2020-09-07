@@ -41,13 +41,13 @@ configuration:
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
   hidden: false
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '50'
   display: Fetch limit
   hidden: false
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and
@@ -1553,7 +1553,7 @@ script:
       description: The total number of file paths that have been observed, by this
         organization, for this file.
       type: Number
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false

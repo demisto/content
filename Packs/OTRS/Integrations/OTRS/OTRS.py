@@ -17,7 +17,7 @@ USE_SSL = not demisto.params().get('unsecure', False)
 FETCH_QUEUE = demisto.params().get('fetch_queue', 'Any')
 FETCH_PRIORITY = demisto.params().get('fetch_priority')
 FETCH_TIME_DEFAULT = '3 days'
-FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
+FETCH_TIME = demisto.params().get('first_fetch', FETCH_TIME_DEFAULT)
 FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
 
 

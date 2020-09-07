@@ -38,7 +38,7 @@ configuration:
   type: 13
 - defaultvalue: 1 hour
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '50'
@@ -1029,7 +1029,7 @@ script:
     - contextPath: Securonix.Incidents.IsWhitelisted
       description: Whether the incident is whitelisted.
       type: Boolean
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false

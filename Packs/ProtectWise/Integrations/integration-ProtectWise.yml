@@ -67,7 +67,7 @@ configuration:
   type: 8
   required: false
 - display: "Maximum events to fetch per fetch"
-  name: maxFetch
+  name: max_fetch
   defaultvalue: "50"
   type: 0
   required: false
@@ -220,7 +220,7 @@ script:
             }
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
-                if (incidents.length >= Math.min(parseInt(params.maxFetch), 50)) {
+                if (incidents.length >= Math.min(parseInt(params.max_fetch), 50)) {
                     break;
                 }
                 var skip = true;

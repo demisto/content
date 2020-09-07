@@ -18,7 +18,7 @@ configuration:
   required: true
 - defaultvalue: 7 days
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
-  name: first_fetch_time
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '0'
@@ -43,7 +43,7 @@ configuration:
   - inactive
 - defaultvalue: '20'
   display: The number of results returned in each fetch
-  name: fetch_size
+  name: max_fetch
   required: false
   type: 0
 - display: Fetch incidents
@@ -380,7 +380,7 @@ script:
       description: 'Number of results returned per page. The default page_size is 50, max. is 5000.'
     description: "Runs an advanced search on hosts and detections."
   isfetch: true
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.5.10845
   dockerimage45: demisto/python3:3.7.4.2245
 tests:
   - No test 

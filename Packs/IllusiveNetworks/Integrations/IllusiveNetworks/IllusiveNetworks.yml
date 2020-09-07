@@ -32,7 +32,7 @@ configuration:
 - defaultvalue: 3 days
   display: The initial time to fetch from
   hidden: false
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: ALL
@@ -645,7 +645,7 @@ script:
     description: Retrieve forensics artifacts from Illusive's forensics
     execution: false
     name: illusive-get-forensics-artifacts
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false

@@ -61,7 +61,7 @@ configuration:
 - defaultvalue: 1 hour
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
     - Proofpoint supports maximum 1 hour fetch back
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - display: Fetch incidents

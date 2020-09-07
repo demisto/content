@@ -24,7 +24,7 @@ USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
 SERVER_URL = demisto.params().get('server')[:-1] if demisto.params().get('server').endswith('/') else \
     demisto.params().get('server')
-FETCH_TIME = demisto.params().get('fetch_time', '3 days').strip()
+FETCH_TIME = demisto.params().get('first_fetch', '3 days').strip()
 FETCH_NOTIFICATIONS = demisto.params().get('fetch_notifications')
 FETCH_BEHAVIORS = demisto.params().get('fetch_behviors')
 

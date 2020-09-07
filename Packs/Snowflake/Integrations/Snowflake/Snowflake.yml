@@ -55,7 +55,7 @@ configuration:
   type: 0
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - display: The name of the field/column that contains the datetime object or timestamp
@@ -71,7 +71,7 @@ configuration:
   type: 0
 - defaultvalue: '10000'
   display: The maximum number of rows to be returned by a fetch
-  name: limit
+  name: max_fetch
   required: false
   type: 0
 - display: Incident type
@@ -179,7 +179,7 @@ script:
     description: Makes a DML change in the database.
     execution: true
     name: snowflake-update
-  dockerimage: demisto/snowflake:1.0.0.211
+  dockerimage: demisto/snowflake:1.0.0.2505
   isfetch: true
   runonce: false
   script: '-'

@@ -49,12 +49,12 @@ configuration:
   - LOW
   - INFO
 - display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
-  name: fetch_time
+  name: first_fetch
   defaultvalue: 1 hour
   type: 0
   required: false
 - display: Max. number of incidents fetched per run
-  name: fetch_count
+  name: max_fetch
   defaultvalue: '50'
   type: 0
   required: false
@@ -124,7 +124,7 @@ script:
       type: date
     description: Fetches the logs that triggered a security event in Logz.io Cloud
       SIEM
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   runonce: false
   subtype: python3

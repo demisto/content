@@ -1798,7 +1798,7 @@ def main():
     self_deployed: bool = params.get('self_deployed', False)
     alert_severities_to_fetch = params.get('fetch_severity')
     alert_status_to_fetch = params.get('fetch_status')
-    alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
+    alert_time_to_fetch = params.get('first_fetch', '3 days')
     last_run = demisto.getLastRun()
 
     LOG('command is %s' % (demisto.command()))

@@ -29,11 +29,11 @@ ROLE = PARAMS.get('role')
 INSECURE = PARAMS.get('insecure', False)
 # How much time before the first fetch to retrieve incidents
 IS_FETCH = PARAMS.get('isFetch')
-FETCH_TIME = PARAMS.get('fetch_time')
+FETCH_TIME = PARAMS.get('first_fetch')
 FETCH_QUERY = PARAMS.get('fetch_query')
 DATETIME_COLUMN = PARAMS.get('datetime_column')
 INCIDENT_NAME_COLUMN = PARAMS.get('incident_name_column')
-MAX_ROWS = int(PARAMS.get('limit')) if PARAMS.get('limit') else 10000
+MAX_ROWS = int(PARAMS.get('max_fetch')) if PARAMS.get('max_fetch') else 10000
 
 TYPE_CODE_TO_DATATYPE = {
     0: 'number/int',
@@ -331,7 +331,7 @@ def fetch_incidents():
 def snowflake_query(args):
     params = get_connection_params(args)
     query = args.get('query')
-    limit = args.get('limit', '100')
+    limit = args.get('max_fetch', '100')
     try:
         limit = int(limit)
     except ValueError:

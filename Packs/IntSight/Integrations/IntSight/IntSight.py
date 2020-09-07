@@ -735,7 +735,7 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     demisto.info("IntSight fetch last run time is: {}".format(str(last_run)))
     if not last_run or 'time' not in last_run:
-        fetch_delta, _ = parse_date_range(demisto.params().get('fetch_delta', DEFAULT_TIME_RANGE), to_timestamp=True)
+        fetch_delta, _ = parse_date_range(demisto.params().get('first_fetch', DEFAULT_TIME_RANGE), to_timestamp=True)
     else:
         fetch_delta = last_run.get('time')
 

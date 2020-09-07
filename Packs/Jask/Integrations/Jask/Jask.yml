@@ -37,7 +37,7 @@ configuration:
   type: 0
 - defaultvalue: '100'
   display: Limit the maximum incidents amount per fetch
-  name: fetchLimit
+  name: max_fetch
   required: false
   type: 0
 description: Freeing the analyst with autonomous decisions

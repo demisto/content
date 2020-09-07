@@ -828,9 +828,9 @@ def main():
                     client_id=params.get('client_id'),
                     client_secret=params.get('client_secret'),
                     refresh_token=params.get('refresh_token'),
-                    fetch_time=params.get('fetch_time') if params.get('fetch_time') else '7 days',
+                    fetch_time=params.get('first_fetch') if params.get('first_fetch') else '7 days',
                     fetch_status=params.get('fetch_status'),
-                    fetch_limit=int(params.get('fetch_limit')) if params.get('fetch_limit') else 50,
+                    fetch_limit=int(params.get('max_fetch')) if params.get('max_fetch') else 50,
                     fetch_filter=params.get('fetch_filter') if params.get('fetch_filter') else '')
 
     commands = {

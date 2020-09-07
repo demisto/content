@@ -12,7 +12,7 @@ URL = demisto.getParam('URL')
 if URL[-1] != '/':
     URL += '/'
 QUERY = {'username': demisto.getParam('Username'), 'api_key': demisto.getParam('APIKey')}
-FETCH_LIMIT = int(demisto.params().get('fetchLimit', 100))
+FETCH_LIMIT = int(demisto.params().get('max_fetch', 100))
 USE_SSL = not demisto.params().get('insecure', False)
 
 

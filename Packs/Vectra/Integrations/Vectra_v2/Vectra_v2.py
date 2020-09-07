@@ -593,13 +593,13 @@ def main():
     state = demisto.params().get('state')
 
     # How many time before the first fetch to retrieve incidents
-    first_fetch_time = demisto.params().get('first_fetch_time', '7 days')
+    first_fetch_time = demisto.params().get('first_fetch', '7 days')
     first_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT)
 
     # Remove proxy if not set to true in params
     proxies = handle_proxy()
 
-    fetch_size = int(demisto.params().get('fetch_size', 20))
+    fetch_size = int(demisto.params().get('max_fetch', 20))
     verify_certificate = not demisto.params().get('insecure', False)
 
     LOG(f'Command being called is {demisto.command()}')

@@ -233,8 +233,8 @@ def validate_configuration_parameters(param: Dict[str, Any]):
     """
     # get configuration parameters
     service_account_json = param.get('service_account_credential', '')
-    fetch_days = param.get('first_fetch_time_interval_days', '3 days').lower()
-    page_size = param.get('fetch_limit', '10')
+    fetch_days = param.get('first_fetch', '3 days').lower()
+    page_size = param.get('max_fetch', '10')
 
     try:
         # validate service_account_credential configuration parameter
@@ -1394,8 +1394,8 @@ def fetch_incidents(client_obj, params: Dict[str, Any]):
     :param params:
     :return:
     """
-    first_fetch_in_days = params.get('first_fetch_time_interval_days', '3 days').lower()  # 3 days as default
-    fetch_limit = params.get('fetch_limit', 10)  # default page size
+    first_fetch_in_days = params.get('first_fetch', '3 days').lower()  # 3 days as default
+    fetch_limit = params.get('max_fetch', 10)  # default page size
     filter_severity = params.get('incident_severity', 'ALL')  # All to get all type of severity
 
     # getting numeric value from string representation

@@ -461,7 +461,7 @@ def main():
 
     verify_certificate = not params.get('insecure', False)
     # How many time before the first fetch to retrieve incidents
-    fetch_time = params.get('fetch_time', '60 minutes')
+    fetch_time = params.get('first_fetch', '60 minutes')
 
     threat_status = argToList(params.get('threat_status'))
 

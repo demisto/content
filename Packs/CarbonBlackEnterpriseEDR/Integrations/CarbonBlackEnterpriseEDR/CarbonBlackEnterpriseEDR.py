@@ -1203,8 +1203,8 @@ def main():
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            fetch_time = demisto.params().get('fetch_time', '3 days')
-            fetch_limit = demisto.params().get('fetch_limit', '50')
+            fetch_time = demisto.params().get('first_fetch', '3 days')
+            fetch_limit = demisto.params().get('max_fetch', '50')
             # Set and define the fetch incidents command to run after activated via integration settings.
             incidents, last_run = fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun())
             demisto.incidents(incidents)

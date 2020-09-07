@@ -1248,7 +1248,7 @@ def main():
             'securonix-add-entity-to-watchlist': add_entity_to_watchlist
         }
         if command == 'fetch-incidents':
-            fetch_time = params.get('fetch_time', '1 hour')
+            fetch_time = params.get('first_fetch', '1 hour')
             incident_status = params.get('incident_status') if 'incident_status' in params else 'opened'
             max_fetch = str(params.get('max_fetch', '50'))
             max_fetch = str(min('50', max_fetch))  # fetch size should no exceed 50

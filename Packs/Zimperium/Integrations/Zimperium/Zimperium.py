@@ -710,7 +710,7 @@ def main():
     # fetch params
     fetch_query = params.get('fetch_query')
     max_fetch = min('50', params.get('max_fetch', '50'))
-    first_fetch_time = params.get('fetch_time', '3 days').strip()
+    first_fetch_time = params.get('first_fetch', '3 days').strip()
 
     command = demisto.command()
     LOG(f'Command being called is {demisto.command()}')

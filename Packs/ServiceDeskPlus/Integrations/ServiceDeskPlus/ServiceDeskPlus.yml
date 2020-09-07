@@ -56,12 +56,12 @@ configuration:
 - additionalinfo: 'Input format: <number> <time unit>, e.g., 1 hour, 30 minutes'
   defaultvalue: 7 days
   display: First fetch time
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '50'
   display: Fetch limit - maximum number of incidents per fetch
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 - display: Fetch query -  see (?). Overrides the status filter, if given.
@@ -873,7 +873,7 @@ script:
     description: Closes the specified request.
     execution: false
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false

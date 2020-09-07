@@ -246,10 +246,10 @@ def main():
             raise ValueError('No tokens were provided. Please provide either Logz.io Operational API token,'
                              ' Logz.io Security API token, or both.')
         region = demisto.params().get('region')
-        first_fetch_time = demisto.params().get('fetch_time', '1 hours')
+        first_fetch_time = demisto.params().get('first_fetch', '1 hours')
         severities = demisto.params().get('severities')
         search = demisto.params().get('search')
-        max_fetch = demisto.params().get('fetch_count', DEFAULT_LIMIT)
+        max_fetch = demisto.params().get('max_fetch', DEFAULT_LIMIT)
         verify = not demisto.params().get('insecure', False)
         proxy = demisto.params().get('proxy', False)
 

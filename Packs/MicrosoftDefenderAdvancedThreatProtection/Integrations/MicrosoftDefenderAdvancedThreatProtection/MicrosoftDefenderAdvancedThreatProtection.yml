@@ -66,7 +66,7 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
-  name: first_fetch_timestamp
+  name: first_fetch
   required: false
   type: 0
 description: Microsoft Defender Advanced Threat Protection (ATP) is a unified platform
@@ -2252,7 +2252,7 @@ script:
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags
       type: String
-  dockerimage: demisto/crypto:1.0.0.8854
+  dockerimage: demisto/crypto:1.0.0.10743
   feed: false
   isfetch: true
   longRunning: false

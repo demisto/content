@@ -42,7 +42,7 @@ configuration:
   type: 0
 - defaultvalue: '50'
   display: Maximum number of emails to pull per fetch
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -1018,7 +1018,7 @@ script:
     description: Sends a draft email using Microsoft Graph.
     execution: false
     name: msgraph-mail-send-draft
-  dockerimage: demisto/crypto:1.0.0.10277
+  dockerimage: demisto/crypto:1.0.0.10743
   feed: false
   isfetch: true
   longRunning: false
