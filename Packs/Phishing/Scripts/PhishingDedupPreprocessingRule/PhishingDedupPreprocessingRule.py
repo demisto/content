@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import pandas as pd
-# from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 from sklearn.feature_extraction.text import TfidfVectorizer
 from numpy import dot
 from numpy.linalg import norm
