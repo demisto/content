@@ -1,4 +1,4 @@
-from Tests.Marketplace.upload_packs import download_and_extract_index, update_index_with_priced_packs, \
+from Tests.Marketplace.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
     extract_packs_artifacts
 from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
 import os
@@ -55,14 +55,14 @@ def edit_index_json_file(path_to_public_index, build_number):
         json.dump(pack_metadata, pack_metadata_file, indent=4)
 
 
-def upload_modified_index(public_index_folder_path, extract_destination_path, public_ci_index_blob, build_number,
+def upload_modified_index(public_index_folder_path, extract_destination_path, public_ci_dummy_index_blob, build_number,
                           private_packs):
     """Upload updated index zip to cloud storage.
 
     Args:
         index_folder_path (str): index folder full path.
         extract_destination_path (str): extract folder full path.
-        public_ci_index_blob (Blob): google cloud storage object that represents index.zip blob.
+        public_ci_dummy_index_blob (Blob): google cloud storage object that represents the dummy index.zip blob.
         build_number (str): circleCI build number, used as an index revision.
         private_packs (list): List of private packs and their price.
         current_commit_hash (str): last commit hash of head.
@@ -83,9 +83,9 @@ def upload_modified_index(public_index_folder_path, extract_destination_path, pu
     index_zip_path = shutil.make_archive(base_name=public_index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
-        public_ci_index_blob.reload()
-        public_ci_index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
-        public_ci_index_blob.upload_from_filename(index_zip_path)
+        public_ci_dummy_index_blob.reload()
+        public_ci_dummy_index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
+        public_ci_dummy_index_blob.upload_from_filename(index_zip_path)
 
         print_color(f"Finished uploading index.zip to storage.", LOG_COLORS.GREEN)
     except Exception as e:
@@ -125,14 +125,15 @@ def option_handler():
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
     parser.add_argument('-ea', '--extract_artifacts_path', help="Full path of folder to extract wanted packs",
                         required=True)
+    parser.add_argument('-di', '--dummy_index_path', help="Full path to the dummy index in the private CI bucket",
+                        required=True)
 
     # disable-secrets-detection-end
     return parser.parse_args()
 
 
 def main():
-    import ipdb
-    ipdb.set_trace()
+
     upload_config = option_handler()
     service_account = upload_config.service_account
     build_number = upload_config.ci_build_number
@@ -143,10 +144,13 @@ def main():
     changed_pack = upload_config.pack_name
     extract_destination_path = upload_config.extract_artifacts_path
     packs_artifacts_path = upload_config.artifacts_path
+    dummy_index_path = upload_config.dummy_index_path
 
     storage_client = init_storage_client(service_account)
     public_storage_bucket = storage_client.bucket(public_bucket_name)
     private_storage_bucket = storage_client.bucket(private_bucket_name)
+
+    dummy_index_blob = public_storage_bucket.blob(dummy_index_path)
 
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
@@ -164,7 +168,7 @@ def main():
                                                                                            changed_pack, True)
 
     # edit_index_json_file(public_index_folder_path, build_number)
-    upload_modified_index(public_index_folder_path, extract_public_index_path, public_index_blob, build_number,
+    upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
                           private_packs)
 
 
