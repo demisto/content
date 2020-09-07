@@ -5571,7 +5571,7 @@ def get_security_profiles_command():
         raise Exception('Please commit the instance prior to getting the security profiles.')
 
     human_readable = ''
-    content: List[Dict[str, Any]] = []
+    content: Union[List[Dict[str, Any]], Dict[str, Any]] = []
     context = {}
     if 'spyware' in security_profiles:
         profiles = security_profiles.get('spyware', {}).get('entry', {})
@@ -5736,7 +5736,7 @@ def apply_security_profile(pre_post: str, rule_name: str, profile_type: str, pro
         'xpath': f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"
         f"profiles/{profile_type}",
         'key': API_KEY,
-        'element':  f'<member>{profile_name}</member>'
+        'element': f'<member>{profile_name}</member>'
     }
     result = http_request(URL, 'POST', params=params)
 
@@ -5900,8 +5900,8 @@ def get_anti_spyware_best_practice() -> Dict:
 def get_anti_spyware_best_practice_command():
 
     result = get_anti_spyware_best_practice()
-    spyware_profile = result.get('response', {}).get('result', {}).get('spyware')
-    strict_profile = spyware_profile.get('entry')[1]
+    spyware_profile = result.get('response', {}).get('result', {}).get('spyware').get('entry', {})
+    strict_profile = next(item for item in spyware_profile if item['@name'] == 'strict')
 
     botnet_domains = strict_profile.get('botnet-domains', {}).get('lists', {}).get('entry', [])
     pretty_botnet_domains = prettify_profiles_rules(botnet_domains)
@@ -5955,8 +5955,9 @@ def get_file_blocking_best_practice() -> Dict:
 def get_file_blocking_best_practice_command():
 
     results = get_file_blocking_best_practice()
-    file_blocking_profile = results.get('response', {}).get('result', {}).get('file-blocking', {})
-    strict_profile = file_blocking_profile.get('entry')[1]
+    file_blocking_profile = results.get('response', {}).get('result', {}).get('file-blocking', {}).get('entry', [])
+
+    strict_profile = next(item for item in file_blocking_profile if item['@name'] == 'strict file blocking')
     file_blocking_rules = strict_profile.get('rules', {}).get('entry', [])
 
     rules = prettify_profiles_rules(file_blocking_rules)
@@ -6029,8 +6030,8 @@ def get_vulnerability_protection_best_practice() -> Dict:
 def get_vulnerability_protection_best_practice_command():
 
     results = get_vulnerability_protection_best_practice()
-    vulnerability_protection = results.get('response', {}).get('result', {}).get('vulnerability', {})
-    strict_profile = vulnerability_protection.get('entry', [])[0]
+    vulnerability_protection = results.get('response', {}).get('result', {}).get('vulnerability', {}).get('entry', [])
+    strict_profile = next(item for item in vulnerability_protection if item['@name'] == 'strict')
     vulnerability_rules = strict_profile.get('rules', {}).get('entry', [])
     rules = prettify_profiles_rules(vulnerability_rules)
     human_readable = tableToMarkdown('vulnerability Protection Best Practice Profile', rules,
@@ -6177,7 +6178,7 @@ def get_wildfire_system_config(template: str):
 
 
 @logger
-def get_wildfire_update_schedule(template):
+def get_wildfire_update_schedule(template: str):
     params = {
         'action': 'get',
         'type': 'config',
@@ -6317,7 +6318,7 @@ def get_url_filtering_best_practice_command():
 
     best_practice = {
         '@name': 'best-practice', 'credential-enforcement': {
-            'mode': {'disabled': None},
+            'mode': {'disabled': False},
             'log-severity': 'medium',
             'alert': {
                 'member': [
