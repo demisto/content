@@ -185,7 +185,6 @@ def option_handler():
 def main():
     options = option_handler()
     feature_branch_name = options.feature_branch
-    gcp_service_account = options.gcp
 
     feature_branch_successful_workflow_id = get_last_successful_workflow(feature_branch_name)
     if not feature_branch_successful_workflow_id:
