@@ -1,0 +1,90 @@
+args:
+- default: false
+  description: hostname of a Carbon Black sensor (Could be IP).
+  isArray: false
+  name: endpoint
+  required: true
+  secret: false
+- default: false
+  description: Comma seprated files path to download from the endpoint..
+  isArray: true
+  name: path
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: '2000'
+  description: Session timeout (ms).
+  isArray: false
+  name: timeout
+  predefined:
+  - Session timeout (If a command will not be issued after this time the session will
+    be closed)
+  required: false
+  secret: false
+comment: 'This automation translate endpoint (hostname/IP) to sensor id, Than it downloads
+  given file paths by opening session and closing it.  '
+commonfields:
+  id: CBLiveGetFile_v2
+  version: -1
+enabled: false
+name: CBLiveGetFile_v2
+outputs:
+- contextPath: CbLiveResponse.Commands.CbCommandID
+  description: Unique command identifier.
+  type: Number
+- contextPath: CbLiveResponse.Commands.CommandName
+  description: The command name.
+  type: String
+- contextPath: CbLiveResponse.Commands.Status
+  description: The command Status ('pending', 'in progress', 'complete', 'error',
+    'canceled').
+  type: String
+- contextPath: CbLiveResponse.Commands.CommandCompletionTime
+  description: The command completion time (0 if not complete).
+  type: String
+- contextPath: CbLiveResponse.Commands.OperandObject
+  description: The source path of the file.
+  type: String
+- contextPath: CbLiveResponse.Commands.FileID
+  description: Unique file ID.
+  type: Number
+- contextPath: CbLiveResponse.File.Size
+  description: File size.
+  type: String
+- contextPath: CbLiveResponse.File.SHA1
+  description: File SHA1.
+  type: String
+- contextPath: CbLiveResponse.File.SHA256
+  description: File SHA256.
+  type: String
+- contextPath: CbLiveResponse.File.Name
+  description: File name.
+  type: String
+- contextPath: CbLiveResponse.File.SSDeep
+  description: File SSDeep.
+  type: String
+- contextPath: CbLiveResponse.File.EntryID
+  description: File EntryID.
+  type: Number
+- contextPath: CbLiveResponse.File.Info
+  description: File info.
+  type: String
+- contextPath: CbLiveResponse.File.Type
+  description: File type.
+  type: String
+- contextPath: CbLiveResponse.File.MD5
+  description: File MD5.
+  type: String
+- contextPath: CbLiveResponse.File.Extension
+  description: File extension.
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- carbon-black
+- endpoint
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.3.8715
