@@ -1144,10 +1144,6 @@
             "playbookID": "decodemimeheader_-_test"
         },
         {
-            "integrations": "CVE Search v2",
-            "playbookID": "cve_enrichment_-_generic_-_test"
-        },
-        {
             "playbookID": "test_url_regex"
         },
         {
