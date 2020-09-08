@@ -1189,6 +1189,19 @@ def get_indicators_list(indicator_query, limit, page):
     return indicators_values_list, indicators_data_list
 
 
+def get_mapping_fields_command():
+    all_mappings = GetMappingFieldsResponse()
+    schema_options = ['custom_event_properties', 'offense_properties', 'builtin_event_properties', 'asset_properties']
+    for schema in schema_options:
+        if schema == 'offense_properties':
+            schema_type = SchemeTypeMapping(type_name='offense_properties')
+            demisto.debug(f'Collecting incident mapping for incident type - "{schema_type}"')
+            res = get_offenses(_range='0-0')
+            for field in res:
+                schema_type.add_field(field)
+            all_mappings.add_scheme_type(schema_type)
+
+
 # Command selector
 try:
     LOG('Command being called is {command}'.format(command=demisto.command()))

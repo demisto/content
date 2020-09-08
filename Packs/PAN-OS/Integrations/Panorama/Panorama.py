@@ -5462,7 +5462,7 @@ def panorama_get_licence_command():
     available_licences = []
     result = panorama_get_licence()
     if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
-        LOG(result)
+        demisto.debug(str(result))
         raise Exception('Failed to get the information about PAN-OS available licenses and their statuses.')
 
     entry = result.get('response', {}).get('result', {}).get('licenses', {}).get('entry', [])
@@ -5566,7 +5566,7 @@ def get_security_profiles_command():
         security_profiles = result.get('response', {}).get('result', {}).get('profiles', {})
 
     if '@dirtyId' in security_profiles:
-        LOG(f'Found uncommitted item:\n{security_profiles}')
+        demisto.debug(f'Found uncommitted item:\n{security_profiles}')
         raise Exception('Please commit the instance prior to getting the security profiles.')
 
     human_readable = ''
@@ -5784,7 +5784,7 @@ def get_ssl_decryption_rules_command():
     result = get_ssl_decryption_rules(xpath)
     ssl_decryption_rules = result.get('response', {}).get('result', {}).get('rules', {}).get('entry', {})
     if '@dirtyId' in ssl_decryption_rules:
-        LOG(f'Found uncommitted item:\n{ssl_decryption_rules}')
+        demisto.debug(f'Found uncommitted item:\n{ssl_decryption_rules}')
         raise Exception('Please commit the instance prior to getting the ssl decryption rules.')
 
     for item in ssl_decryption_rules:
@@ -6223,7 +6223,7 @@ def get_wildfire_update_schedule_command():
 
     schedule = result.get('response', {}).get('result', {}).get('wildfire')
     if '@dirtyId' in schedule:
-        LOG(f'Found uncommitted item:\n{schedule}')
+        demisto.debug(f'Found uncommitted item:\n{schedule}')
         raise Exception('Please commit the instance prior to getting the WildFire configuration.')
 
     demisto.results({
