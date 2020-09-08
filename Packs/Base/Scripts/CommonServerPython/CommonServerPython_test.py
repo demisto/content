@@ -972,6 +972,7 @@ class TestCommandResults:
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
+
     def test_readable_only_context(self):
         """
         Given:
@@ -1061,7 +1062,8 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1144,7 +1146,8 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1172,7 +1175,8 @@ class TestCommandResults:
             'HumanReadable': tableToMarkdown('Results', tickets),
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
+            },
+            'IndicatorTimeline': []
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1203,7 +1207,8 @@ class TestCommandResults:
             'HumanReadable': None,
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
+            },
+            'IndicatorTimeline': []
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1346,7 +1351,8 @@ class TestCommandResults:
                         'Type': 'domain'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
 
 
@@ -2002,25 +2008,12 @@ def test_handle_proxy(mocker):
                              ({'a': '1'}, ['a'], '1', None),
                              ({'a': {'b': '2'}}, ['a', 'b'], '2', None),
                              ({'a': {'b': '2'}}, ['a', 'c'], 'test', 'test'),
-                             ({'a': ['0', '1']}, ['a', 0], '0', None),  # Nested list
-                             ({'a': ['0', '1']}, ['a', 0, 1], '3', '3')  # Access object with attribute index
                          ])
 def test_safe_get(dict_obj, keys, expected, default_return_value):
     from CommonServerPython import dict_safe_get
-    assert expected == dict_safe_get(dict_object=dict_obj, keys=keys, default_return_value=default_return_value)
-
-
-@pytest.mark.parametrize(argnames="raise_type_error",
-                         argvalues=[True, False])
-def test_safe_get_return_type(raise_type_error):
-    from CommonServerPython import dict_safe_get
-    if raise_type_error:
-        with pytest.raises(TypeError):
-            dict_safe_get(dict_object={'a': '1'}, keys=['a'],
-                          return_type=int, raise_return_type=raise_type_error)
-    else:
-        assert dict_safe_get(dict_object={'a': '1'}, keys=['a'],
-                             return_type=int, raise_return_type=raise_type_error) is None
+    assert expected == dict_safe_get(dict_object=dict_obj,
+                                     keys=keys,
+                                     default_return_value=default_return_value)
 
 
 MIRRORS = '''
@@ -2268,8 +2261,7 @@ def test_update_context_no_merge(mocker):
     conversations.extend([new_conversation])
 
     # Arrange
-    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS,
-                                                                     True)
+    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS, True)
     new_conversations = json.loads(context['conversations'])
 
     # Assert
