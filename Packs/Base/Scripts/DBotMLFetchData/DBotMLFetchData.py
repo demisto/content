@@ -560,7 +560,8 @@ def extract_features_from_incident(row):
         'ml_features': ml_features,
         'headers_features': headers_features,
         'url_features': url_feautres,
-        'attachments_features': attachments_features
+        'attachments_features': attachments_features,
+        'created': str(row['created']) if 'created' in row else None,
     }
 
 
@@ -573,7 +574,8 @@ def extract_features_from_all_incidents(incidents_df):
         'ml_features': [],
         'headers_features': [],
         'url_features': [],
-        'attachments_features': []
+        'attachments_features': [],
+        'created': [],
     }   # type: ignore
     exceptions_log = []
     exception_indices = set()

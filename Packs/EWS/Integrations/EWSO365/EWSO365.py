@@ -742,7 +742,12 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
     ]:
         value = getattr(item, dict_field, None)
         if value:
-            raw_dict[dict_field] = parse_object_as_dict(value)
+            if isinstance(value, list):
+                raw_dict[dict_field] = []
+                for single_val in value:
+                    raw_dict[dict_field].append(parse_object_as_dict(single_val))
+            else:
+                raw_dict[dict_field] = parse_object_as_dict(value)
 
     for list_dict_field in ["headers", "cc_recipients", "to_recipients"]:
         value = getattr(item, list_dict_field, None)
