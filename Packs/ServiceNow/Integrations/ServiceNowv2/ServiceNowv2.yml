@@ -62,8 +62,8 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-- additionalinfo: Choose the direction to mirror the incident: Incoming (from
-    ServiceNow to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to XSOAR and ServiceNow).
+- additionalinfo: "Choose the direction to mirror the incident: Incoming (from
+    ServiceNow to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to XSOAR and ServiceNow)."
   defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
