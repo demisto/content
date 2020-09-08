@@ -342,12 +342,26 @@ delete host
 | --- | --- | --- |
 | CheckPoint.Host.message | String | operation status | 
 
-
 #### Command Example
-``` ```
+```!checkpoint-host-delete identifier=host_test session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+#### Context Example
+```
+{
+    "CheckPoint": {
+        "Host": {
+            "message": "OK"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### CheckPoint data for deleting host_test:
+>|message|
+>|---|
+>| OK |
 
 
 ### checkpoint-group-list
@@ -557,10 +571,32 @@ add a group
 
 
 #### Command Example
-``` ```
+```!checkpoint-group-add name=test_group_1 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+#### Context Example
+```
+{
+    "CheckPoint": {
+        "Group": {
+            "creator": "adminsh",
+            "domain-name": "SMC User",
+            "domain-type": null,
+            "domain-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde",
+            "last-modifier": "adminsh",
+            "name": "test_group_1",
+            "type": "group",
+            "uid": "11e751da-a0e7-499a-bcde-5bc638c73fb5"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### CheckPoint data for adding Group:
+>|creator|domain-name|domain-uid|last-modifier|name|type|uid|
+>|---|---|---|---|---|---|---|
+>| adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | test_group_1 | group | 11e751da-a0e7-499a-bcde-5bc638c73fb5 |
 
 
 ### checkpoint-group-update
@@ -1179,7 +1215,18 @@ Add a threat indicator
 
 
 #### Command Example
-``` ```
+```!checkpoint-threat-indicator-add name=threat_test2 observables=[] session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew ```
+
+#### Context Example
+```
+{
+    "CheckPoint": {
+        "ThreatIndicator": {
+                    'task-id': 'c3b11fff-c58d-4242-af44-f549c40b0af5'
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
@@ -1813,9 +1860,36 @@ Add application site
 
 
 #### Command Example
-``` ```
+``` !checkpoint-application-site-add name="test_application_site_1" primary_category="Test Category" identifier="qmasters.co" session_id="TEAK9kWnZ9Dhql9hYP5IR4aZEw1mrKdPjw3lRnxvp88"```
+
+#### Context Example
+```
+{
+    "CheckPoint": {
+        "ApplicationSite": {
+                'name': 'test_application_site_1',
+                'uid': '452f6cff-e7fb-47b8-abfe-53c668dc0038',
+                'type': 'application-site',
+                'domain-name': 'SMC User',
+                'domain-uid': '41e821a0-3720-11e3-aa6e-0800200c9fde',
+                'domain-type': None,
+                'creator': 'adminsh',
+                'last-modifier': 'adminsh',
+                'application-id': 0,
+                'description': '',
+                'url-list': [
+                  'qmasters.co'
+                ]
+    }
+}
+``` 
 
 #### Human Readable Output
+### CheckPoint data for adding application site:
+|application-id|creator|domain-name|domain-uid|last-modifier|name|type|uid|url-list|
+|---|---|---|---|---|---|---|---|---|
+| 0 | adminsh | SMC User | 41e821a0-3720-11e3-aa6e-0800200c9fde | adminsh | test_application_site_1 | application-site | 452f6cff-e7fb-47b8-abfe-53c668dc0038 | qmasters.co |
+
 
 
 
@@ -2056,7 +2130,7 @@ Verifies the policy of the selected package.
 
 
 #### Command Example
-``` ```
+```!checkpoint-policy-verify policy_package=standard session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
 
 #### Human Readable Output
 
