@@ -525,6 +525,7 @@ class Pack(object):
             print_error(f'pack_metadata in price > 0 is: {pack_metadata}')
             pack_metadata['premium'] = True
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
+            pack_metadata['testField'] = user_metadata.get('testField')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
             if user_metadata.get('previewOnly'):
                 pack_metadata['previewOnly'] = True

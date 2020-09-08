@@ -430,7 +430,8 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
-                    'vendorName': metadata.get('vendorName')
+                    'vendorName': metadata.get('vendorName'),
+                    'testField': metadata.get('testField')
                 })
         except ValueError as e:
             print_error(f'Invalid JSON in the metadata file [{metadata_file_path}]: {str(e)}')
