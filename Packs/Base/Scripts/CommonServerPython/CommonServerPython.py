@@ -2637,7 +2637,7 @@ class CommandResults:
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
         raw response from the 3rd party service (originally Contents)
 
-    :type indicator_timeline: ``IndicatorsTimeline``
+    :type indicators_timeline: ``IndicatorsTimeline``
     param timeline: must be an IndicatorsTimeline. used by the server to populate an indicator's timeline.
 
     :return: None
