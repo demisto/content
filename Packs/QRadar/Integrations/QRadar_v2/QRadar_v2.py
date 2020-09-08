@@ -690,7 +690,7 @@ def enrich_offense_with_events(
         )
     except Exception as e:
         print_debug_msg(
-            f"(0) Failed events fetch for offense {offense['id']}: {str(e)}.",
+            f"Failed events fetch for offense {offense['id']}: {str(e)}.",
             client.lock,
         )
     return offense
@@ -718,14 +718,14 @@ def perform_offense_events_enrichment(
     )
     events_query = {"headers": "", "query_expression": query_expression}
     print_debug_msg(
-        f'(1) Starting events fetch for offense {offense["id"]}.', client.lock
+        f'Starting events fetch for offense {offense["id"]}.', client.lock
     )
     try:
         query_status, search_id = try_create_search_with_retry(client, events_query, offense)
         offense["events"] = try_poll_offense_events_with_retry(client, offense["id"], query_status, search_id)
     except Exception as e:
         print_debug_msg(
-            f'(5) Failed fetching event for offense {offense["id"]}: {str(e)}.',
+            f'Failed fetching event for offense {offense["id"]}: {str(e)}.',
             client.lock,
         )
     finally:
@@ -755,7 +755,7 @@ def try_poll_offense_events_with_retry(
             if query_status in TERMINATING_SEARCH_STATUSES:
                 raw_search_results = client.get_search_results(search_id)
                 print_debug_msg(
-                    f"(3) Events fetched for offense {offense_id}.", client.lock
+                    f"Events fetched for offense {offense_id}.", client.lock
                 )
                 events = raw_search_results.get("events", [])
                 for event in events:
@@ -771,7 +771,7 @@ def try_poll_offense_events_with_retry(
                 i = i % 60 + EVENTS_INTERVAL_SECS
                 if i >= 60:  # print status debug every fetch sleep (or after)
                     print_debug_msg(
-                        f"(2) Still fetching offense {offense_id} events, search_id: {search_id}.",
+                        f"Still fetching offense {offense_id} events, search_id: {search_id}.",
                         client.lock,
                     )
                 time.sleep(EVENTS_INTERVAL_SECS)
@@ -827,7 +827,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich
     # fetch offenses
     raw_offenses, fetch_query = seek_fetchable_offenses(client, offense_id, user_query)
     if raw_offenses:
-        print_debug_msg(f"(7) Fetched {fetch_query}successfully.", client.lock)
+        print_debug_msg(f"Fetched {fetch_query}successfully.", client.lock)
 
     return raw_offenses
 
@@ -847,7 +847,7 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
             end_offense_id,
             "AND ({})".format(user_query) if user_query else "",
         )
-        print_debug_msg(f"(10) Fetching {fetch_query}.")
+        print_debug_msg(f"Fetching {fetch_query}.")
         raw_offenses = client.get_offenses(
             _range="0-{0}".format(client.offenses_per_fetch - 1), _filter=fetch_query
         )
@@ -882,7 +882,7 @@ def is_reset_triggered(lock, handle_reset=False):
         ctx = get_integration_context(SYNC_CONTEXT)
         if RESET_KEY in ctx:
             if handle_reset:
-                print_debug_msg("(16) Reset fetch-incidents.")
+                print_debug_msg("Reset fetch-incidents.")
                 set_integration_context(
                     {"samples": ctx.get("samples", [])}, sync=SYNC_CONTEXT
                 )
@@ -934,9 +934,9 @@ def fetch_incidents_long_running_events(
 
     enriched_offenses.sort(key=lambda offense: offense.get("id", 0))
     if full_enrich:
-        print_debug_msg("(8) Enriching offenses")
+        print_debug_msg("Enriching offenses")
         enrich_offense_result(client, enriched_offenses, full_enrich)
-        print_debug_msg("(9) Enriched offenses successfully.")
+        print_debug_msg("Enriched offenses successfully.")
     new_incidents_samples = try_create_incidents(enriched_offenses)
     incidents_batch_for_sample = (
         new_incidents_samples if new_incidents_samples else last_run.get("samples", [])
@@ -953,7 +953,7 @@ def try_create_incidents(enriched_offenses):
     incidents = []
     for offense in enriched_offenses:
         incidents.append(create_incident_from_offense(offense))
-    print_debug_msg(f"(12) Creating {len(incidents)} incidents")
+    print_debug_msg(f"Creating {len(incidents)} incidents")
     demisto.createIncidents(incidents)
     return incidents
 
@@ -1823,7 +1823,7 @@ def fetch_loop_with_events(
     while True:
         is_reset_triggered(client.lock, handle_reset=True)
 
-        print_debug_msg("(14) Starting fetch loop with events.")
+        print_debug_msg("Starting fetch loop with events.")
         fetch_incidents_long_running_events(
             client, user_query, full_enrich, fetch_mode, events_columns, events_limit
         )
@@ -1834,7 +1834,7 @@ def fetch_loop_no_events(client: QRadarClient, user_query, full_enrich):
     while True:
         is_reset_triggered(client.lock, handle_reset=True)
 
-        print_debug_msg("(14) Starting fetch loop with no events.")
+        print_debug_msg("Starting fetch loop with no events.")
         fetch_incidents_long_running_no_events(client, user_query, full_enrich)
         time.sleep(FETCH_SLEEP)
 
@@ -1847,7 +1847,7 @@ def long_running_main(
     events_columns,
     events_limit,
 ):
-    print_debug_msg(f'(15) Starting fetch with "{fetch_mode}".')
+    print_debug_msg(f'Starting fetch with "{fetch_mode}".')
     if fetch_mode in (FetchMode.all_events, FetchMode.correlations_only):
         fetch_loop_with_events(
             client, user_query, full_enrich, fetch_mode, events_columns, events_limit
@@ -1872,7 +1872,11 @@ def main():
         globals_ = globals()
         for adv_p in adv_params.split(","):
             adv_p_kv = adv_p.split("=")
-            if len(adv_p_kv) == 2 and adv_p_kv[0] in ADVANCED_PARAMETER_NAMES:
+            if len(adv_p_kv) != 2:
+                return_error(f"Could not read advanced parameter: {adv_p} - please make sure you entered it correctly.")
+            if adv_p_kv[0] not in ADVANCED_PARAMETER_NAMES:
+                return_error(f"The parameter: {adv_p_kv[0]} is not a valid advanced parameter. Please remove it")
+            else:
                 globals_[adv_p_kv[0]] = try_parse_integer(adv_p_kv[1])
 
     server = params.get("server")
