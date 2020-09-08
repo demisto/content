@@ -402,29 +402,18 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
     for metadata_file_path in metadata_files:
         try:
             print_error("started try block")
-            print_error(subprocess.check_output(f'ls {metadata_file_path}', shell=True))
-            print_error(subprocess.check_output(f'echo metadata_file_path:{metadata_file_path}', shell=True))
 
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
             path_to_pack_in_artifacts = os.path.join(extract_destination_path, pack_id)
-            print_error(subprocess.check_output(f'ls {extract_destination_path}', shell=True))
-            print_error(
-                subprocess.check_output(f'echo path_to_pack_in_artifacts:{path_to_pack_in_artifacts}', shell=True))
             is_changed_private_pack = is_private_build and pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
                 print_error("entered is_changed_private_pack")
                 print_error(subprocess.check_output(f'ls {path_to_pack_in_artifacts}', shell=True))
-                try:
-                    print_error("trying to get pack_metadata")
-                    with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
-                              "r") as metadata_file:
-                        metadata = json.load(metadata_file)
-                except Exception as e:
-                    print_error("trying to get plain metadata")
-                    with open(os.path.join(extract_destination_path, pack_id, "metadata.json"), "r") as metadata_file:
-                        metadata = json.load(metadata_file)
+                with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
+                          "r") as metadata_file:
+                    metadata = json.load(metadata_file)
             if metadata:
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
