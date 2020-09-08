@@ -1,5 +1,6 @@
-Verifies that a Bitcoin address is valid and returns the address only if it is valid
-.
+ Verifies that a Bitcoin address is valid and only returns the address if
+  it is valid.
+  
 ## Script Data
 ---
 
