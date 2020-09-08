@@ -41,12 +41,13 @@ def get_csv_arg(
 ) -> List[str]:
     """Get string values from CSV."""
     args: dict = demisto.args()
-    value: str = args.get(key, default)
+    value: List[str] = argToList(arg=args.get(key, default))
+    value = [x for x in value if x]
 
     if not value and required:
         raise ValueError(f"No value supplied for argument {key!r}")
 
-    return [x.strip() for x in value.split(",") if x.strip()]
+    return value
 
 
 def test_module(client: Connect) -> str:
@@ -86,31 +87,13 @@ def parse_asset(asset: dict) -> dict:
     }
 
 
-def check_asset_count(api_obj: Union[Users, Devices], assets: List[dict], src: str):
-    """Raise exception for no assets found."""
-    if not assets:
-        api_name = api_obj.__class__.__name__
-        raise Exception(f"No {api_name} assets returned from {src}.")
-
-
 def get_by_sq(api_obj: Union[Users, Devices]) -> CommandResults:  # noqa: F821, F405
     """Get assets with their defined fields returned by a saved query."""
-    api_name = api_obj.__class__.__name__
     args: dict = demisto.args()
     name: str = args["saved_query_name"]
     max_rows: int = get_int_arg(key="max_results", required=False, default=MAX_ROWS)
-
     assets = api_obj.get_by_saved_query(name=name, max_rows=max_rows)
-    check_asset_count(
-        api_obj=api_obj, assets=assets, src=f"{api_name} Saved Query named {name}"
-    )
-    results = [parse_asset(asset=asset) for asset in assets]
-
-    return CommandResults(  # noqa: F821, F405
-        outputs_prefix=f"Axonius.{api_name}",
-        outputs_key_field="internal_axon_id",
-        outputs=results,
-    )
+    return command_results(assets=assets, api_obj=api_obj)
 
 
 def get_by_value(
@@ -138,24 +121,34 @@ def get_by_value(
 
     method = getattr(api_obj, api_method_name)
     assets = method(value=value, max_rows=max_rows, fields=fields)
+    return command_results(assets=assets, api_obj=api_obj)
 
-    check_asset_count(
-        api_obj=api_obj, assets=assets, src=f"{api_name} by {method_name} {value}"
-    )
+
+def command_results(
+    assets: List[dict], api_obj: Union[Users, Devices]
+) -> CommandResults:  # noqa: F821, F405
+    """Parse assets into CommandResults."""
+    api_name = api_obj.__class__.__name__
+    aql = api_obj._LAST_GET["filter"]
+
     results = [parse_asset(asset=asset) for asset in assets]
 
-    if len(results) == 1:
-        return CommandResults(  # noqa: F821, F405
-            outputs_prefix=f"Axonius.{api_name}",
-            outputs_key_field="internal_axon_id",
-            outputs=results[0],
-        )
+    readable_output: Optional[str] = None
+    outputs: List[dict] = results
 
-    return CommandResults(  # noqa: F821, F405
+    if not results:
+        readable_output = f"No {api_name} assets found using AQL: {aql}"
+
+    if len(results) == 1:
+        outputs = results[0]
+
+    return CommandResults(
         outputs_prefix=f"Axonius.{api_name}",
         outputs_key_field="internal_axon_id",
-        outputs=results,
-    )
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=assets,
+    )  # noqa: F821, F405
 
 
 def main():
