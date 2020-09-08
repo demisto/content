@@ -2521,6 +2521,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "EWSO365",
+            "playbookID": "EWS_O365_send_mail_test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "QRadar",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 600,
