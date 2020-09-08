@@ -15,7 +15,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy
+    appendContext, auto_detect_indicator_type, handle_proxy, MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT
 
 try:
     from StringIO import StringIO
@@ -835,6 +835,22 @@ def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
         is_demisto_version_ge('4.5.0')
 
 
+def test_is_demisto_version_build_ge(mocker):
+    mocker.patch.object(
+        demisto,
+        'demistoVersion',
+        return_value={
+            'version': '6.0.0',
+            'buildNumber': '50000'
+        }
+    )
+    assert is_demisto_version_ge('6.0.0', '49999')
+    assert is_demisto_version_ge('6.0.0', '50000')
+    assert not is_demisto_version_ge('6.0.0', '50001')
+    assert not is_demisto_version_ge('6.1.0', '49999')
+    assert not is_demisto_version_ge('5.5.0', '50001')
+
+
 def test_assign_params():
     from CommonServerPython import assign_params
     res = assign_params(a='1', b=True, c=None, d='')
@@ -971,7 +987,6 @@ class TestCommandResults:
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
-
 
     def test_readable_only_context(self):
         """
@@ -2003,12 +2018,25 @@ def test_handle_proxy(mocker):
                              ({'a': '1'}, ['a'], '1', None),
                              ({'a': {'b': '2'}}, ['a', 'b'], '2', None),
                              ({'a': {'b': '2'}}, ['a', 'c'], 'test', 'test'),
+                             ({'a': ['0', '1']}, ['a', 0], '0', None),  # Nested list
+                             ({'a': ['0', '1']}, ['a', 0, 1], '3', '3')  # Access object with attribute index
                          ])
 def test_safe_get(dict_obj, keys, expected, default_return_value):
     from CommonServerPython import dict_safe_get
-    assert expected == dict_safe_get(dict_object=dict_obj,
-                                     keys=keys,
-                                     default_return_value=default_return_value)
+    assert expected == dict_safe_get(dict_object=dict_obj, keys=keys, default_return_value=default_return_value)
+
+
+@pytest.mark.parametrize(argnames="raise_type_error",
+                         argvalues=[True, False])
+def test_safe_get_return_type(raise_type_error):
+    from CommonServerPython import dict_safe_get
+    if raise_type_error:
+        with pytest.raises(TypeError):
+            dict_safe_get(dict_object={'a': '1'}, keys=['a'],
+                          return_type=int, raise_return_type=raise_type_error)
+    else:
+        assert dict_safe_get(dict_object={'a': '1'}, keys=['a'],
+                             return_type=int, raise_return_type=raise_type_error) is None
 
 
 MIRRORS = '''
@@ -2180,7 +2208,14 @@ def test_merge_lists():
         assert obj in expected
 
 
-@pytest.mark.parametrize('version, expected', [({'version': '5.5.0'}, False), ({'version': '6.0.0'}, True)])
+@pytest.mark.parametrize('version, expected',
+                         [
+                             ({'version': '5.5.0'}, False),
+                             ({'version': '6.0.0'}, True),
+                             ({'version': '5.5.0', 'buildNumber': MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT}, True),
+                             ({'version': '5.5.0', 'buildNumber': str(int(MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT) - 1)}, False)
+                         ]
+                         )
 def test_is_versioned_context_available(mocker, version, expected):
     from CommonServerPython import is_versioned_context_available
     # Set
@@ -2256,7 +2291,8 @@ def test_update_context_no_merge(mocker):
     conversations.extend([new_conversation])
 
     # Arrange
-    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS, True)
+    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS,
+                                                                     True)
     new_conversations = json.loads(context['conversations'])
 
     # Assert
