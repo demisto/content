@@ -465,7 +465,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH != master ]] && [[ $CIRCLE_BRANCH != 20\.* ]] && [[ $CIRCLE_BRANCH != 21\.* ]]; then
               echo "Skipping packs download to artifact on non master or release branch"
-              exit 0K
+              exit 0
             fi
 
             GCS_PATH=$(mktemp)
