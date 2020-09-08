@@ -1,5 +1,5 @@
 id: DNSDB - IPs from Hostname
-version: -1
+version: 5
 name: DNSDB - IPs from Hostname
 description: A playbook that uses DNSDB to retrieve all IPs seen for a given hostname
   around the time of observation.
@@ -7,19 +7,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2ecfb186-4f5f-4d0b-8bde-69c4525f80e0
+    taskid: 1181cc1e-8bba-4390-8e71-f499ad53eb01
     type: start
     task:
-      id: 2ecfb186-4f5f-4d0b-8bde-69c4525f80e0
+      id: 1181cc1e-8bba-4390-8e71-f499ad53eb01
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "1"
-      - "4"
+      - "5"
     separatecontext: false
     view: |-
       {
@@ -35,17 +33,17 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 2756f03c-70fd-4368-8e78-f4c0aebd0e7f
+    taskid: 970c848d-48f8-4ace-8cdc-3fc114ae8194
     type: regular
     task:
-      id: 2756f03c-70fd-4368-8e78-f4c0aebd0e7f
+      id: 970c848d-48f8-4ace-8cdc-3fc114ae8194
       version: -1
       name: DNSDB Lookup RRSet/A
       description: Lookup RRset records
-      script: DNSDB|||dnsdb-rrset
+      script: DNSDB_v2|||dnsdb-rrset
       type: regular
       iscommand: true
-      brand: DNSDB
+      brand: DNSDB_v2
     nexttasks:
       '#none#':
       - "3"
@@ -87,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -97,22 +95,21 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: dc616fbe-7c1c-410f-89e8-952ea361fd51
+    taskid: 97f47e3b-7bcc-44fd-8f96-af8670bfff10
     type: title
     task:
-      id: dc616fbe-7c1c-410f-89e8-952ea361fd51
+      id: 97f47e3b-7bcc-44fd-8f96-af8670bfff10
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -122,17 +119,17 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 708d1707-0d22-4bb2-8b7b-36db1d3191f4
+    taskid: d29d938a-74dd-403e-80a7-d3cfcf309ec9
     type: regular
     task:
-      id: 708d1707-0d22-4bb2-8b7b-36db1d3191f4
+      id: d29d938a-74dd-403e-80a7-d3cfcf309ec9
       version: -1
       name: DNSDB Lookup RRSet/AAAA
       description: Lookup RRset records
-      script: DNSDB|||dnsdb-rrset
+      script: DNSDB_v2|||dnsdb-rrset
       type: regular
       iscommand: true
-      brand: DNSDB
+      brand: DNSDB_v2
     nexttasks:
       '#none#':
       - "3"
@@ -174,6 +171,61 @@ tasks:
       {
         "position": {
           "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c083cbda-b3ff-4dc8-8d7f-7d527c3c1d1d
+    type: condition
+    task:
+      id: c083cbda-b3ff-4dc8-8d7f-7d527c3c1d1d
+      version: -1
+      name: Is DNSDB v2 Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "1"
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DNSDB_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
           "y": 195
         }
       }
@@ -187,7 +239,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 385,
+        "height": 560,
         "width": 810,
         "x": 50,
         "y": 50
@@ -202,12 +254,9 @@ inputs:
       accessor: Name
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: DNSDB.Record.RData
   description: |
     An array of one or more Rdata values. The Rdata values are converted to the standard presentation format based on the rrtype value. If the encoder lacks a type-specific presentation format for the RRset's rrtype, then the RFC 3597 generic Rdata encoding will be used.
   type: string
-fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
