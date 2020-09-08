@@ -839,7 +839,7 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
     if full_pack_path is not None:
         bucket_path = f'https://console.cloud.google.com/storage/browser/' \
                       f'marketplace-ci-build/{branch_name}/{build_number}'
-        bucket_url = bucket_path.join(full_pack_path)
+        bucket_url = bucket_path + full_pack_path
     else:
         bucket_url = 'Pack was not uploaded.'
     pack.bucket_url = bucket_url
