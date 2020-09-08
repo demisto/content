@@ -18,6 +18,25 @@ def main():
     comment = args.comment
     token = os.environ['CONTENT_GITHUB_TOKEN']
 
+    comments_url = get_pr_comments_url(pr_number)
+
+    headers = {'Authorization': 'Bearer ' + token}
+    response = requests.post(comments_url, json={'body': comment}, headers=headers)
+    response.raise_for_status()
+
+    print_success('Successfully added the comment to the PR.')
+
+
+def get_pr_comments_url(pr_number: str) -> str:
+    """
+    Get the comments URL for a PR. If the PR contains a comment about an instance test (for contrib PRs),
+    it will use that comment.
+    Args:
+        pr_number: The pull request number
+
+    Returns:
+        The comments URL for the PR.
+    """
     pr_url = f'https://api.github.com/repos/demisto/content/pulls/{pr_number}'
     response = requests.get(pr_url)
     response.raise_for_status()
@@ -25,20 +44,22 @@ def main():
     if not pr:
         print_error('Could not find the pull request to reply on.')
         sys.exit(1)
-
+    page = 1
     comments_url = pr['comments_url']
-    response = requests.get(comments_url)
-    response.raise_for_status()
-    comments = response.json()
-    link_comments = [comment for comment in comments if 'Instance is ready.' in comment.get('body', '')]
-    if link_comments:
-        comments_url = link_comments[0]['url']
+    while True:
+        response = requests.get(comments_url, params={'page': str(page)})
+        response.raise_for_status()
+        comments = response.json()
+        if not comments:
+            break
 
-    headers = {'Authorization': 'Bearer ' + token}
-    response = requests.post(comments_url, json={'body': comment}, headers=headers)
-    response.raise_for_status()
+        link_comments = [comment for comment in comments if 'Instance is ready.' in comment.get('body', '')]
+        if link_comments:
+            comments_url = link_comments[0]['url']
+            break
+        page += 1
 
-    print_success('Successfully added the comment to the PR.')
+    return comments_url
 
 
 if __name__ == '__main__':

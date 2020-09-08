@@ -18,6 +18,10 @@ def main():
     repo = args.contrib_repo
     branch = args.branch
     pack_dir_name = get_pack_dir(branch, pr_number, repo)
+    if not pack_dir_name:
+        print_error('Did not find a pack in the PR')
+        sys.exit(1)
+
     pack_dir = f'Packs/{pack_dir_name}'
 
     try:
@@ -40,7 +44,7 @@ def main():
 
 def get_pack_dir(branch: str, pr_number: str, repo: str) -> str:
     """
-    Get a pack dir name from a contribution pull request chagned files
+    Get a pack dir name from a contribution pull request changed files
     Args:
         branch: The contrib branch
         pr_number: The contrib PR
@@ -66,9 +70,6 @@ def get_pack_dir(branch: str, pr_number: str, repo: str) -> str:
         if pack_dir_name:
             break
         page += 1
-    if not pack_dir_name:
-        print_error('Did not find a pack in the PR')
-        sys.exit(1)
 
     print(f'Copy the changes from the contributor branch {repo}/{branch} in the pack {pack_dir_name}')
     return pack_dir_name
