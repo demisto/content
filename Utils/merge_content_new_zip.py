@@ -1,9 +1,8 @@
 import zipfile as z
 import requests
 import os
+import json
 from google.cloud import storage
-import google.auth
-import warnings
 import argparse
 
 # disable insecure warnings
@@ -14,33 +13,6 @@ CONTENT_API_WORKFLOWS_URI = "https://circleci.com/api/v2/insights/gh/demisto/con
 ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN', '')
-
-
-def init_storage_client(service_account=None):
-    """Initialize google cloud storage client.
-
-    In case of local dev usage the client will be initialized with user default credentials.
-    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
-
-    Args:
-        service_account (str): full path to service account json.
-
-    Return:
-        storage.Client: initialized google cloud storage client.
-    """
-    if service_account:
-        storage_client = storage.Client.from_service_account_json(service_account)
-        print("Created gcp service account")
-
-        return storage_client
-    else:
-        # in case of local dev use, ignored the warning of non use of service account.
-        warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
-        credentials, project = google.auth.default()
-        storage_client = storage.Client(credentials=credentials, project=project)
-        print("Created gcp private account")
-
-        return storage_client
 
 
 def http_request(method, url, params=None):
@@ -130,23 +102,29 @@ def get_job_num(workflow_id):
     return ''
 
 
-def download_zip_file_from_gcp(current_feature_content_zip_file_path, zip_destination_path,
-                               gcp_service_account=None):
+def download_zip_file_from_gcp(current_feature_content_zip_file_path, zip_destination_path):
     """Save the content_new.zip file from the feature branch into artifacts folder.
 
     Args:
         current_feature_content_zip_file_path (str): Content_new.zip file path in google cloud.
         zip_destination_path: The folder path to download the content_new.zip file to.
-        gcp_service_account: Full path to service account json.
 
     Returns:
         The new path of the content_new.zip file.
     """
-    storage_client = init_storage_client(gcp_service_account)
+
+    file_path = "creds.json"
+    json_content = os.environ.get('$GCS_ARTIFACTS_KEY')
+
+    with open(file_path, "w") as file:
+        file.write(json.dumps(json_content))
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = file_path
+
+    storage_client = storage.Client()
     storage_bucket = storage_client.bucket(STORAGE_BUCKET_NAME)
 
     index_blob = storage_bucket.blob(current_feature_content_zip_file_path)
-
+    os.remove(file_path)
     if not os.path.exists(zip_destination_path):
         os.mkdir(zip_destination_path)
     index_blob.download_to_filename(f'{zip_destination_path}/content_new.zip')
@@ -180,7 +158,7 @@ def merge_zip_files(master_branch_content_zip_file_path, feature_branch_content_
     feature_zip.close()
 
 
-def get_new_feature_zip_file_path(feature_branch_name, job_num, gcp_service_account):
+def get_new_feature_zip_file_path(feature_branch_name, job_num):
     """Merge content_new zip files and remove the unnecessary files.
 
     Args:
@@ -188,7 +166,7 @@ def get_new_feature_zip_file_path(feature_branch_name, job_num, gcp_service_acco
         job_num (str): Last successful create instance job of the feature branch.
 
     """
-    current_feature_content_zip_file_path = f'{gcp_service_account}{feature_branch_name}/{job_num}/0/content_new.zip'
+    current_feature_content_zip_file_path = f'content/{feature_branch_name}/{job_num}/0/content_new.zip'
     zip_destination_path = f'{ARTIFACTS_PATH}feature_content_new_zip'
     new_feature_content_zip_file_path = download_zip_file_from_gcp(current_feature_content_zip_file_path,
                                                                    zip_destination_path)
@@ -198,7 +176,6 @@ def get_new_feature_zip_file_path(feature_branch_name, job_num, gcp_service_acco
 def option_handler():
     parser = argparse.ArgumentParser(description='Merging two content_new.zip files from different builds.')
     parser.add_argument('-f', '--feature_branch', help='The name of the feature branch', required=True)
-    parser.add_argument('-g', '--gcp', help='full path to service account json', required=False)
 
     options = parser.parse_args()
 
@@ -210,14 +187,12 @@ def main():
     feature_branch_name = options.feature_branch
     gcp_service_account = options.gcp
 
-
     feature_branch_successful_workflow_id = get_last_successful_workflow(feature_branch_name)
     if not feature_branch_successful_workflow_id:
         print("Couldn't find successful workflow for this branch")
 
     create_instances_job_num = get_job_num(feature_branch_successful_workflow_id)
-    new_feature_content_zip_file_path = get_new_feature_zip_file_path(feature_branch_name, create_instances_job_num,
-                                                                      gcp_service_account)
+    new_feature_content_zip_file_path = get_new_feature_zip_file_path(feature_branch_name, create_instances_job_num)
 
     files_to_remove = ['content-descriptor.json', 'doc-CommonServer.json', 'doc-howto.json', 'reputations.json',
                        'tools-o365.zip', 'tools-exchange.zip', 'tools-winpmem.zip']
@@ -226,6 +201,7 @@ def main():
 
     if new_feature_content_zip_file_path:
         merge_zip_files(master_content_zip_path, new_feature_content_zip_file_path, files_to_remove)
+
         print('Done merging content_new.zip files')
     else:
         print(f'Failed to download content_new.zip from feature branch {feature_branch_name}')
