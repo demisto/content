@@ -217,8 +217,8 @@ def get_latest_incident_from_xdr(incident_id):
 
 
 def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run, first_run, xdr_alerts_field,
-                      xdr_file_artifacts_field, xdr_network_artifacts_field, incident_in_demisto, verbose=True):
-
+                      xdr_file_artifacts_field, xdr_network_artifacts_field, incident_in_demisto, playbook_to_run,
+                      verbose=True):
     latest_incident_in_xdr_result, latest_incident_in_xdr, latest_incident_in_xdr_markdown = \
         get_latest_incident_from_xdr(incident_id)
 
@@ -296,8 +296,12 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
                 "Incident in XDR was modified, updating incident in Demisto accordingly.\n\n{}".format(demisto_update_args),
                 None)
 
-        # rerun the playbook the current playbook
-        demisto.executeCommand("setPlaybook", {})
+        if playbook_to_run:
+            demisto.executeCommand("setPlaybook", {"name": playbook_to_run})
+        else:
+            # rerun the playbook the current playbook
+            demisto.executeCommand("setPlaybook", {})
+
         return latest_incident_in_xdr
 
     if first_run:

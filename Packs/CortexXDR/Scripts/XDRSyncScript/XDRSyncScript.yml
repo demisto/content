@@ -13,12 +13,12 @@ args:
   required: true
   secret: false
 - default: false
-  description: DEPRECATED
+  description: In case incident in XDR is the latest, incident in Demisto will be
+    updated accordingly and rerun this playbook.
   isArray: false
   name: playbook_to_run
   required: false
   secret: false
-  deprecated: true
 - default: false
   defaultValue: xdrassigneduseremail
   description: The assigned_user_mail field name in Demisto.
