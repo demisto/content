@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -104,6 +105,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -190,6 +192,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "Yes":
       - "1"
@@ -254,9 +257,10 @@ inputs:
       accessor: Name
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DNSDB.Record.RData
   description: |
     An array of one or more Rdata values. The Rdata values are converted to the standard presentation format based on the rrtype value. If the encoder lacks a type-specific presentation format for the RRset's rrtype, then the RFC 3597 generic Rdata encoding will be used.
   type: string
+fromversion: 5.0.0
