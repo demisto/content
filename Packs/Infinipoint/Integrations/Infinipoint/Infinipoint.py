@@ -81,9 +81,9 @@ COMMANDS_CONFIG = {
         "outputs_key_field": "alias"
     },
 
-    "infinipoint-get-assets-hardware": {
+    "infinipoint-get-assets-devices": {
         "args": {
-            "host": "contains",
+            "$host": "contains",
             "os_type": "contains"
         },
         "route": "/api/assets/hardware",
@@ -121,7 +121,7 @@ COMMANDS_CONFIG = {
         "outputs_key_field": "actionId"
     },
 
-    "infinipoint-run-queries": {
+    "infinipoint-execute-action": {
         "args": {
             "id": "contains",
             "target": "contains"
@@ -156,7 +156,7 @@ COMMANDS_CONFIG = {
         "get_req": True,
     },
 
-    "infinipoint-get-action": {
+    "infinipoint-get-action-results": {
         "args": {
             "action_id": "contains"
         },
@@ -448,9 +448,9 @@ def main():
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time)
 
-        elif demisto.command() == "infinipoint-run-queries":
+        elif demisto.command() == "infinipoint-execute-action":
             return_results(run_queries_command(client=client, args=demisto.args(),
-                                               optional_args=COMMANDS_CONFIG["infinipoint-run-queries"]))
+                                               optional_args=COMMANDS_CONFIG["infinipoint-execute-action"]))
 
         elif demisto.command() in COMMANDS_CONFIG:
             return_results(infinipoint_command(client=client, args=demisto.args(),
