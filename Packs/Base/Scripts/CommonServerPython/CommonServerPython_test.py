@@ -1371,7 +1371,16 @@ class TestCommandResults:
             'IndicatorTimeline': []
         }
 
-    def test_indicator_timeline(self):
+    def test_indicator_timeline_with_list_of_indicators(self):
+        """
+       Given:
+           -  a list of indicators
+       When
+           - creating an IndicatorTimeline object
+           - creating a CommandResults objects using the IndicatorTimeline object
+       Then
+           - the IndicatorTimeline receives the appropriate category and message
+       """
         from CommonServerPython import CommandResults, IndicatorTimeline
 
         indicators = ['8.8.8.8', '1.1.1.1']
@@ -1388,6 +1397,33 @@ class TestCommandResults:
         assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
             {'Value': '8.8.8.8', 'Category': 'test', 'Message': 'message'},
             {'Value': '1.1.1.1', 'Category': 'test', 'Message': 'message'}
+        ])
+
+    def test_indicator_timeline_with_list_of_dict_of_indicators(self):
+        """
+       Given:
+           -  a dict of an indicator
+       When
+           - creating an IndicatorTimeline object
+           - creating a CommandResults objects using the IndicatorTimeline object
+       Then
+           - the IndicatorTimeline receives the appropriate category and message
+       """
+        from CommonServerPython import CommandResults, IndicatorTimeline
+
+        indicators = {'Value': '8.8.8.8', 'Category': 'benign'}
+        timeline = IndicatorTimeline(indicators=indicators)
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=timeline
+        )
+
+        assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
+            {'Value': '8.8.8.8', 'Category': 'benign'}
         ])
 
 
