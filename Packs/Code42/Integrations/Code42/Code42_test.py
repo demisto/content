@@ -2145,22 +2145,6 @@ def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
     assert next_run["last_fetch"]
     assert not remaining_incidents
 
-# TODO
-# def test_fetch_incidents_when_given_pdf_works_as_expected(code42_fetch_incidents_mock):
-#     client = create_client(code42_fetch_incidents_mock)
-#     asdf
-#     next_run, incidents, remaining_incidents = fetch_incidents(
-#         client=client,
-#         last_run={"last_fetch": None},
-#         first_fetch_time=MOCK_FETCH_TIME,
-#         event_severity_filter=None,
-#         fetch_limit=10,
-#         include_files=True,
-#         integration_context=None,
-#     )
-#     assert len(incidents) == 3
-#     assert next_run["last_fetch"]
-
 
 @pytest.mark.parametrize(
     "query",
