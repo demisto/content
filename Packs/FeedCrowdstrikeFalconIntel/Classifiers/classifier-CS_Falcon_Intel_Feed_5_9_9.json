@@ -1,0 +1,69 @@
+{
+	"id": "CS Falcon Intel Feed",
+	"version": -1,
+	"defaultIncidentType": "",
+	"brandName": "CS Falcon Intel Feed Classifier",
+	"mapping": {
+		"STIX Threat Actor": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Actor Capability": {
+					"complex": null,
+					"simple": "capability.value"
+				},
+				"Creation Date": {
+					"complex": null,
+					"simple": "created_date"
+				},
+				"Geo Country": {
+					"complex": null,
+					"simple": "origins.id"
+				},
+				"Region": {
+					"complex": null,
+					"simple": "region.slug"
+				},
+				"STIX Aliases": {
+					"complex": null,
+					"simple": "known_as"
+				},
+				"STIX Description": {
+					"complex": null,
+					"simple": "short_description"
+				},
+				"STIX ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"STIX Primary Motivation.": {
+					"complex": null,
+					"simple": "motivations.slug"
+				},
+				"Target Countries ": {
+					"complex": null,
+					"simple": "target_countries.value"
+				},
+				"Target Industries ": {
+					"complex": null,
+					"simple": "target_industries.value"
+				},
+				"Updated Date": {
+					"complex": null,
+					"simple": "last_modified_date"
+				}
+			}
+		}
+	},
+	"keyTypeMap": {},
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"unclassifiedCases": {},
+	"fromVersion": "5.0.0",
+	"toVersion": "5.9.9"
+}
