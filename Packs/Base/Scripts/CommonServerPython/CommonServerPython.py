@@ -2599,15 +2599,21 @@ class IndicatorsTimeline:
         else:
             indicators = [indicators] if isinstance(indicators, dict) else indicators
 
+        timelines = []
+        timeline = {}
         for indicator in indicators:
+            timeline['Value'] = indicator
             if category:
-                indicator['Category'] = category
+                timeline['Category'] = category
             elif 'Category' not in indicator.keys():
-                indicator['Category'] = 'Integration Update'
-            if message:
-                indicator['Message'] = message
+                timeline['Category'] = 'Integration Update'
 
-        self.indicators_timeline = indicators
+            if message:
+                timeline['Message'] = message
+
+            timelines.append(timeline)
+
+        self.indicators_timeline = timelines
 
 
 class CommandResults:

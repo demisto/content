@@ -1371,6 +1371,25 @@ class TestCommandResults:
             'IndicatorTimeline': []
         }
 
+    def test_indicator_timeline(self):
+        from CommonServerPython import CommandResults, IndicatorTimeline
+
+        indicators = ['8.8.8.8', '1.1.1.1']
+        timeline = IndicatorTimeline(indicators=indicators, category='test', message='message')
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=timeline
+        )
+
+        assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
+            {'Value': '8.8.8.8', 'Category': 'test', 'Message': 'message'},
+            {'Value': '1.1.1.1', 'Category': 'test', 'Message': 'message'}
+        ])
+
 
 class TestBaseClient:
     from CommonServerPython import BaseClient
