@@ -92,7 +92,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Choose the tag to add to an entry to mirror it as
-    a filein ServiceNow.
+    a file in ServiceNow.
   defaultvalue: ForServiceNow
   display: File Entry Tag
   hidden: false
