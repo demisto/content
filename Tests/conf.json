@@ -3,7 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": ["Mail Listener v2", "Mail Sender (New)"],
+            "integrations": [
+                "Mail Listener v2",
+                "Mail Sender (New)"
+            ],
             "playbookID": "Mail-Listener Test Playbook",
             "fromversion": "5.0.0",
             "instance_names": [
@@ -2054,7 +2057,6 @@
             "integrations": "DUO Admin",
             "playbookID": "DuoAdmin API test playbook",
             "fromversion": "5.0.0"
-
         },
         {
             "integrations": [
@@ -3047,12 +3049,15 @@
         "Infinipoint-Test": "Issue 27453",
         "663e1ec3-5590-4e23-8d99-d8a4e0c22a52": "Issue 27454",
         "Init_McAfee_ESM_v2_Test": "issue #26187",
+        "MISP V2 Test": "Issue 26905",
+        "Logzio - Test": "Issue 26729",
 
         "_comment": "~~~ DEPRECATED ~~~",
         "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
+
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -3148,12 +3153,12 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
@@ -3162,7 +3167,7 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-
+        
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
@@ -3170,7 +3175,7 @@
         "Recorded Future v2": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-
+        
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3286,7 +3291,6 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "QRadar": "Playbooks has parallel steps which are causing inconsistent results"
-
     },
     "parallel_integrations": [
         "SNDBOX",
@@ -3337,7 +3341,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
