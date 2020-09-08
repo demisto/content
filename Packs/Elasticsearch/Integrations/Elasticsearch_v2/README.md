@@ -329,11 +329,11 @@
 <p>For more information about the correct time format, see <a href="http://strftime.org/" target="_self">http://strftime.org/</a>.</p>
 <h2>Schema Mapping</h2>
 <p>Cortex XSOAR version 6.0 introduces an improved classification & mapping experience, which includes fetching schema data.</p>
-<p>Elasticsearch v2 integration supports fetching the schema of indexes that are set in the <strong>Index from which to fetch incidents</strong> integration parameter, and by that allows mapping fields per index.</p>
+<p>Elasticsearch v2 integration supports fetching the schema of indexes that are set in the <strong>Index from which to fetch incidents</strong> integration parameter, thereby enabling mapping fields per index.</p>
 <h3>Setup schema mapping</h3> 
-<ul>
+<ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Classification &amp; Mapping</strong>.</li>
 <li>Create a new mapper and edit an existing one</li>
-<li>Set <strong>Get data</strong> to <strong>Select schema</strong> and <strong>Select instance</strong> to the Elasticsearch v2 integration instance you would like to fetch from.</li>
-<li>Map field according to fetched index schema</li>
-</ul>
+<li>Set <strong>Get data</strong> to <strong>Select schema</strong> and <strong>Select instance</strong> to the Elasticsearch v2 integration instance to fetch from.</li>
+<li>Map fields according to the fetched index schema.</li>
+</ol>
