@@ -56,7 +56,7 @@ args:
   secret: false
 - default: false
   defaultValue: emailfrom
-  description: 'Incident fields contains the email from value '
+  description: 'Incident fields contains the email from value. '
   isArray: false
   name: emailFrom
   required: false
@@ -69,7 +69,7 @@ args:
     only, ignoring the sender's adress. "Exact" - incidented will be considered as
     duplicated if their text is similar and their sender is the same. "Domain" -  incidented
     will be considered as duplicated if their text is similar and their senders' adress
-    has the same domain. Default is "Domain"
+    has the same domain. Default is "Domain".
   isArray: false
   name: fromPolicy
   predefined:
@@ -78,7 +78,7 @@ args:
   - Domain
   required: false
   secret: false
-comment: An out-of-the-box deduplication preprocessing script based on ML algorithm
+comment: An out-of-the-box deduplication preprocessing script based on a machine learning algorithm.
 commonfields:
   id: PhishingDedupPreprocessingRule
   version: -1
