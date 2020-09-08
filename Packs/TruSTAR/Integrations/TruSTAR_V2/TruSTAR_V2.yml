@@ -105,16 +105,16 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     description: Searches for all indicators that contain the given search term.
   - name: trustar-get-enclaves
@@ -195,16 +195,16 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     description: Finds all reports that contain any of the given indicators 
       and returns correlated indicators from those reports.
@@ -263,16 +263,16 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     description: Find indicators that are trending in the community.
   - name: trustar-indicators-metadata
@@ -344,16 +344,16 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     description: Provide metadata associated with a list of indicators, including value, indicatorType, noteCount,
       sightings, lastSeen, enclaveIds, and tags. The metadata is determined based on the enclaves the user making
@@ -441,16 +441,16 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     description: Provides structured summaries about indicators, which are derived from 
       intelligence sources on the TruSTAR Marketplace.
@@ -497,16 +497,16 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     description: Gets a list of indicators that the user’s company has whitelisted.
   - name: trustar-get-reports
@@ -602,16 +602,16 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     description: Return a list of indicators extracted from a report.
   - name: trustar-move-report
@@ -1005,16 +1005,16 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     description: Get phishing indicators that match the given criteria.
   isfetch: false
