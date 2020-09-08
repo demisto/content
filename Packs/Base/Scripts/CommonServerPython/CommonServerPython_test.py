@@ -1381,7 +1381,7 @@ class TestCommandResults:
        Then
            - the IndicatorTimeline receives the appropriate category and message
        """
-        from CommonServerPython import CommandResults, IndicatorTimeline
+        from CommonServerPython import CommandResults, IndicatorsTimeline
 
         indicators = ['8.8.8.8', '1.1.1.1']
         timeline = IndicatorTimeline(indicators=indicators, category='test', message='message')
@@ -1409,7 +1409,7 @@ class TestCommandResults:
        Then
            - the IndicatorTimeline receives the appropriate category and message
        """
-        from CommonServerPython import CommandResults, IndicatorTimeline
+        from CommonServerPython import CommandResults, IndicatorsTimeline
 
         indicators = {'Value': '8.8.8.8', 'Category': 'benign'}
         timeline = IndicatorTimeline(indicators=indicators)
