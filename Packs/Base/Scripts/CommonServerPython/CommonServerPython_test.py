@@ -1384,7 +1384,7 @@ class TestCommandResults:
         from CommonServerPython import CommandResults, IndicatorsTimeline
 
         indicators = ['8.8.8.8', '1.1.1.1']
-        timeline = IndicatorTimeline(indicators=indicators, category='test', message='message')
+        timeline = IndicatorsTimeline(indicators=indicators, category='test', message='message')
 
         results = CommandResults(
             outputs_prefix=None,
@@ -1412,7 +1412,7 @@ class TestCommandResults:
         from CommonServerPython import CommandResults, IndicatorsTimeline
 
         indicators = {'Value': '8.8.8.8', 'Category': 'benign'}
-        timeline = IndicatorTimeline(indicators=indicators)
+        timeline = IndicatorsTimeline(indicators=indicators)
 
         results = CommandResults(
             outputs_prefix=None,
