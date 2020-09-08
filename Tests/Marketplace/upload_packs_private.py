@@ -746,6 +746,7 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
                                        private_storage_bucket=None, content_repo=None, current_commit_hash='',
                                        remote_previous_commit_hash='', packs_statistic_df=None):
     build_number = upload_config.ci_build_number
+    branch_name = upload_config.branch_name
     remove_test_playbooks = upload_config.remove_test_playbooks
     signature_key = upload_config.key_string
     extract_destination_path = upload_config.extract_path
@@ -836,10 +837,8 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
                                                                  bucket_for_uploading,
                                                                  override_all_packs or pack_was_modified)
     if full_pack_path is not None:
-        branch_name = os.environ['CIRCLE_BRANCH']
-        build_num = os.environ['CIRCLE_BUILD_NUM']
         bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-                      f'marketplace-ci-build/{branch_name}/{build_num}'
+                      f'marketplace-ci-build/{branch_name}/{build_number}'
         bucket_url = bucket_path.join(full_pack_path)
     else:
         bucket_url = 'Pack was not uploaded.'
@@ -907,6 +906,7 @@ def option_handler():
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False,
                         default=str(uuid.uuid4()))
+    parser.add_argument('-bn', '--branch_name', help="Name of the branch CI is being ran on.", default='unknown')
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         default=False, action='store_true', required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
