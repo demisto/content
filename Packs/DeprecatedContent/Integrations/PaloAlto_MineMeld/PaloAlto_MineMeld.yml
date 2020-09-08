@@ -15,9 +15,8 @@ configuration:
   name: blacklist
   required: false
   type: 0
-- additionalinfo: When Stateless is "True" does not update any indicator but the indicators
-    we intend to add or remove. When Stateless is "False", when adding or removing
-    an indicator, the update time for all indicators will be changed
+- additionalinfo: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing
+    an indicator, the update time for all indicators will be changed.
   defaultvalue: 'False'
   display: Stateless
   name: stateless
@@ -68,9 +67,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: When Stateless is "True" does not update any indicator but the
-        indicators we intend to add. When Stateless is "False", when adding an indicator,
-        the update time for all indicators will be changed.
+      description: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing
+    an indicator, the update time for all indicators will be changed.
       isArray: false
       name: stateless
       predefined:
@@ -104,9 +102,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: When Stateless is "True" does not update any indicator but the
-        indicators we intend to remove. When Stateless is "False", when removing an
-        indicator the update time for all indicators will be changed.
+      description: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing
+    an indicator, the update time for all indicators will be changed.
       isArray: false
       name: stateless
       predefined:
