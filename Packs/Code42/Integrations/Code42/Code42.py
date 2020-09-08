@@ -527,10 +527,6 @@ def _create_exposure_filter(exposure_arg):
 
 def get_file_category_value(key):
     # Meant to handle all possible cases
-    # Key conversion examples:
-    #   SourceCode -> sourcecode
-    #   SOURCE_CODE -> sourcecode
-    #   Pdf -> pdf
     key = key.lower().replace("-", "").replace("_", "")
     category_map = {
         "sourcecode": FileCategory.SOURCE_CODE,
