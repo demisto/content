@@ -531,7 +531,6 @@ def dnsdb_rdata(client, args):
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}',
         outputs_key_field='',
         outputs=[build_result_context(r) for r in res],
-        #indicators=
     )
 
 
@@ -563,7 +562,6 @@ def dnsdb_rrset(client, args):
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}',
         outputs_key_field='',
         outputs=[build_result_context(r) for r in res],
-        #indicators =
     )
 
 
