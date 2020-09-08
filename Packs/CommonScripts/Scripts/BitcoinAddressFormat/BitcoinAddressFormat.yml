@@ -5,7 +5,7 @@ args:
   name: input
   required: true
   secret: false
-comment: Verifies that a Bitcoin address is valid and returns the address only if
+comment: Verifies that a Bitcoin address is valid and only returns the address if
   it is valid.
 commonfields:
   id: BitcoinAddressFormat
