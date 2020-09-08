@@ -939,13 +939,13 @@ def main():
             test_result = test_module(client)
             return_results(test_result)
 
-        elif command == 'trendmicro-apex-udso-list':
+        elif command in ('trendmicro-apex-udso-list', 'trendmicro-apex-usdo-list'):  # For bc reasons.
             return_results(udso_list_command(client, demisto.args()))
 
-        elif command == 'trendmicro-apex-udso-add':
+        elif command in ('trendmicro-apex-udso-add', 'trendmicro-apex-usdo-add'):  # For bc reasons
             return_results(udso_add_command(client, demisto.args()))
 
-        elif command == 'trendmicro-apex-udso-delete':
+        elif command in ('trendmicro-apex-udso-delete', 'trendmicro-apex-usdo-delete'):  # For bc reasons
             return_results(udso_delete_command(client, demisto.args()))
 
         elif command == 'trendmicro-apex-isolate':
