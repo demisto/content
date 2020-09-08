@@ -15,7 +15,7 @@ configuration:
   name: query
   required: false
   type: 0
-- defaultvalue: '50'
+- defaultvalue: '20'
   display: Number of offenses to pull per API call (max 50)
   name: offenses_per_fetch
   required: false
@@ -72,7 +72,7 @@ configuration:
   name: adv_params
   required: false
   type: 12
-description: Fetch offenses as incidents and search QRadar
+description: Fetch offenses and related events and assets as incidents and search QRadar.
 display: IBM QRadar v2
 name: QRadar_v2
 script:
