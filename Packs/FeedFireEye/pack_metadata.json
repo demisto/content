@@ -1,6 +1,6 @@
 {
     "name": "FireEye Feed",
-    "description": "FireEye Intelligence Feed",
+    "description": "FireEye indicators and reports feed for Cortex XSOAR TIM",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

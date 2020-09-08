@@ -20,13 +20,18 @@ class STIX21Processor:
         relationships (Dict): Dict of `id: STIX 2.1 relationship object`.
         entities (Dict): Dict of `id: STIX 2.1 entity object`.
         reports (List): List of STIX 2.1 reports objects.
+        tags (list): tags to assign fetched indicators
+        tlp_color (str): Traffic Light Protocol color
     """
 
-    def __init__(self, raw_indicators: List, relationships: Dict, entities: Dict, reports: List):
+    def __init__(self, raw_indicators: List, relationships: Dict, entities: Dict, reports: List,
+                 tags: list = [], tlp_color: Optional[str] = None):
         self.raw_indicators = raw_indicators
         self.relationships = relationships
         self.entities = entities
         self.reports = reports
+        self.tags = tags
+        self.tlp_color = tlp_color
 
         self.type_to_processor = {
             'report': self.process_report,
@@ -34,7 +39,7 @@ class STIX21Processor:
             'threat-actor': self.process_threat_actor,
         }
 
-    def process_indicators(self):
+    def process_indicators(self) -> List:
         processed_indicators = list()  # type: List
 
         for raw_data in self.raw_indicators:
@@ -98,7 +103,10 @@ class STIX21Processor:
             indicator['type'] = auto_detect_indicator_type(value)
             if indicator['type']:
                 indicator['value'] = value
-                indicator['fields'] = {}
+                indicator['fields'] = {
+                    'tags': self.tags,
+                    'trafficlightprotocol': self.tlp_color
+                }
                 indicator['rawJSON'] = {
                     'fireeye_id': raw_data.get('id'),
                     'fireeye_labels': raw_data.get('labels'),
@@ -128,30 +136,32 @@ class STIX21Processor:
 
         for entity_type, value in self.entities.items():
             if value.get('type') in self.type_to_processor:
-                processed_entity = self.type_to_processor[value.get('type')](value)
+                processed_entity = self.type_to_processor[value.get('type')](value, self.tags, self.tlp_color)
                 if processed_entity:
                     processed_entities.append(processed_entity)
 
         return processed_entities
 
-    def process_reports(self):
+    def process_reports(self) -> List:
         processed_reports = list()  # type: List
 
         for raw_data in self.reports:
-            processed_report = self.process_report(raw_data)
+            processed_report = self.process_report(raw_data, self.tags, self.tlp_color)
             if processed_report:
                 processed_reports.append(processed_report)
 
         return processed_reports
 
     @staticmethod
-    def process_malware(raw_data):
+    def process_malware(raw_data, tags: list = [], tlp_color: Optional[str] = None) -> Dict:
         entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Malware'
         entity['value'] = raw_data.get('name')
         entity['fields'] = {
+            'tags': tags,
             'stixid': raw_data.get('id'),
+            'trafficlightprotocol': tlp_color,
             'stixdescription': raw_data.get('description'),
             'stixismalwarefamily': raw_data.get('is_family'),
             'stixmalwaretypes': raw_data.get('malware_types')
@@ -173,13 +183,15 @@ class STIX21Processor:
         return entity
 
     @staticmethod
-    def process_threat_actor(raw_data):
+    def process_threat_actor(raw_data, tags: list = [], tlp_color: Optional[str] = None) -> Dict:
         entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Threat Actor'
         entity['value'] = raw_data.get('name')
         entity['fields'] = {
+            'tags': tags,
             'stixid': raw_data.get('id'),
+            'trafficlightprotocol': tlp_color,
             'stixaliases': raw_data.get('aliases'),
             'stixdescription': raw_data.get('description'),
             'stixsophistication': raw_data.get('sophistication'),
@@ -206,13 +218,15 @@ class STIX21Processor:
         return entity
 
     @staticmethod
-    def process_report(raw_data):
+    def process_report(raw_data, tags: list = [], tlp_color: Optional[str] = None) -> Dict:
         report = dict()  # type: Dict[str, Any]
 
         report['type'] = 'STIX Report'
         report['value'] = raw_data.get('name')
         report['fields'] = {
+            'tags': tags,
             'stixid': raw_data.get('id'),
+            'trafficlightprotocol': tlp_color,
             'published': raw_data.get('published'),
             'stixdescription': raw_data.get('description'),
         }
@@ -345,7 +359,7 @@ class Client(BaseClient):
         if limit == -1:
             query_url = '/collections/indicators/objects?length=1000'
         else:
-            query_url = f'/collections/indicators/objects?length={limit}'
+            query_url = f'/collections/indicators/objects?length={min(limit, 1000)}'
 
         while True:
             response = self._http_request(
@@ -441,7 +455,8 @@ class Client(BaseClient):
         raw_indicators, relationships, stix_entities = self.fetch_all_indicators_from_api(limit)
         raw_reports = self.fetch_all_reports_from_api(limit)
 
-        stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports)
+        stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports,
+                                         self.tags, self.tlp_color)
 
         indicators = stix_processor.process_indicators()
         stix_indicators = stix_processor.process_stix_entities()
