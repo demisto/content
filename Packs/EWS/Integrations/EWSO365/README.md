@@ -1347,28 +1347,28 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 ##### Input
 
-|**Argument Name**|**Description**|**Required**|
-|--- |--- |--- |
-|to|Email addresses for the 'To' field. Supports comma-separated values|Optional|
-|cc|Email addresses for the 'Cc' field. Supports comma-separated values|Optional|
-|bcc|Email addresses for the 'Bcc' field. Supports comma-separated values|Optional|
-|subject|Subject for the email to be sent|Optional|
-|body|The contents (body) of the email to be sent in plain text|Optional|
-|htmlBody|The contents (body) of the email to be sent in HTML format|Optional|
-|attachIDs|A comma-separated list of IDs of war room entries that contains the files that should be attached to the email|Optional|
-|attachNames|A comma-separated list to rename file-names of corresponding attachments IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3)|Optional|
-|attachCIDs|A comma-separated list of CIDs to embed attachments inside the email itself|Optional|
-|transientFile|Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")|Optional|
-|transientFileContent|Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")|Optional|
-|transientFileCID|Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")|Optional|
-|templateParams|Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from|Optional|
-|additionalHeader|A comma-separated list list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2"|Optional|
-|raw_message|Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored|Optional|
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to | Email addresses for the 'To' field. Supports comma-separated values | Optional | 
+| cc | Email addresses for the 'Cc' field. Supports comma-separated values | Optional | 
+| bcc | Email addresses for the 'Bcc' field. Supports comma-separated values | Optional | 
+| subject | Subject for the email to be sent | Optional | 
+| body | The contents (body) of the email to be sent in plain text | Optional | 
+| htmlBody | The contents (body) of the email to be sent in HTML format | Optional | 
+| attachIDs | A comma-separated list of IDs of war room entries that contains the files that should be attached to the email | Optional | 
+| attachNames | A comma-separated list to rename file-names of corresponding attachments IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3) | Optional | 
+| attachCIDs | A comma-separated list of CIDs to embed attachments inside the email itself | Optional | 
+| transientFile | Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| transientFileContent | Content for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| transientFileCID | CID for attached file if we want it inline. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| templateParams | Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from | Optional | 
+| additionalHeader | A comma-separated list list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
+| raw_message | Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
-None.
+There is no context output for this command.
 
 ##### Command Example
 
