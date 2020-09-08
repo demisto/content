@@ -343,6 +343,7 @@ def main(args):
     xdr_file_artifacts_field = args.get('xdr_file_artifacts')
     xdr_network_artifacts_field = args.get('xdr_network_artifacts')
     verbose = args.get('verbose') == 'true'
+    playbook_to_run = args.get('playbook_to_run')
 
     # get current running incident
     incident_in_demisto = demisto.incidents()[0]
@@ -370,7 +371,8 @@ def main(args):
     try:
         latest_incident_in_xdr = xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run,
                                                    first_run, xdr_alerts_field, xdr_file_artifacts_field,
-                                                   xdr_network_artifacts_field, incident_in_demisto, verbose)
+                                                   xdr_network_artifacts_field, incident_in_demisto,playbook_to_run,
+                                                   verbose)
     except Exception as ex:
         if verbose:
             raise
