@@ -1009,7 +1009,7 @@ def create_incident_from_offense(offense):
     }
 
 
-def get_offenses_command(client: QRadarClient, range=None, filter=None, fields=None):
+def get_offenses_command(client: QRadarClient, range=None, filter=None, fields=None, headers=None):
     raw_offenses = client.get_offenses(range, filter, fields)
     offenses = deepcopy(raw_offenses)
     enrich_offense_result(client, offenses)
@@ -1018,7 +1018,6 @@ def get_offenses_command(client: QRadarClient, range=None, filter=None, fields=N
     )
 
     # prepare for printing:
-    headers = demisto.args().get("headers")
     if not headers:
         offenses_names_map_cpy = dict(OFFENSES_NAMES_MAP)
         offenses_names_map_cpy.pop("id", None)
@@ -1200,7 +1199,7 @@ def enrich_offense_times(offense):
 
 
 def get_offense_by_id_command(
-    client: QRadarClient, offense_id=None, filter=None, fields=None
+    client: QRadarClient, offense_id=None, filter=None, fields=None, headers=None
 ):
     raw_offense = client.get_offense_by_id(offense_id, filter, fields)
     offense = deepcopy(raw_offense)
@@ -1212,7 +1211,7 @@ def get_offense_by_id_command(
         "QRadar Offenses",
         offense,
         raw_offense,
-        demisto.args().get("headers"),
+        headers,
         "QRadar.Offense(val.ID === obj.ID)",
     )
 
@@ -1227,6 +1226,7 @@ def update_offense_command(
     follow_up=None,
     status=None,
     fields=None,
+    headers=None
 ):
     args = assign_params(
         closing_reason_name=closing_reason_name,
@@ -1256,7 +1256,7 @@ def update_offense_command(
         "QRadar Offense",
         offense,
         raw_offense,
-        demisto.args().get("headers"),
+        headers,
         "QRadar.Offense(val.ID === obj.ID)",
     )
 
@@ -1272,7 +1272,7 @@ def search_command(client: QRadarClient, query_expression=None, headers=None):
         "QRadar Search",
         search_res,
         raw_search,
-        demisto.args().get("headers"),
+        headers,
         "QRadar.Search(val.ID === obj.ID)",
     )
 
@@ -1292,13 +1292,13 @@ def get_search_command(client: QRadarClient, search_id=None, headers=None):
     )
 
 
-def get_search_results_command(client: QRadarClient, search_id=None, range=None, headers=None):
+def get_search_results_command(client: QRadarClient, search_id=None, range=None, headers=None, output_path=None):
     raw_search_results = client.get_search_results(search_id, range)
     result_key = list(raw_search_results.keys())[0]
     title = "QRadar Search Results from {}".format(str(result_key))
     context_key = (
-        demisto.args().get("output_path")
-        if demisto.args().get("output_path")
+        output_path
+        if output_path
         else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     )
     context_obj = raw_search_results[result_key]
@@ -1311,7 +1311,7 @@ def get_search_results_command(client: QRadarClient, search_id=None, range=None,
     )
 
 
-def get_assets_command(client: QRadarClient, range=None, filter=None, fields=None):
+def get_assets_command(client: QRadarClient, range=None, filter=None, fields=None, headers=None):
     raw_assets = client.get_assets(range, filter, fields)
     assets_result, human_readable_res = create_assets_result(deepcopy(raw_assets))
     return get_entry_for_assets(
@@ -1319,11 +1319,11 @@ def get_assets_command(client: QRadarClient, range=None, filter=None, fields=Non
         assets_result,
         raw_assets,
         human_readable_res,
-        demisto.args().get("headers"),
+        headers,
     )
 
 
-def get_asset_by_id_command(client: QRadarClient, asset_id=None):
+def get_asset_by_id_command(client: QRadarClient, asset_id=None, headers=None):
     _filter = f"id={asset_id}"
     raw_asset = client.get_assets(_filter=_filter)
     asset_result, human_readable_res = create_assets_result(
@@ -1334,7 +1334,7 @@ def get_asset_by_id_command(client: QRadarClient, asset_id=None):
         asset_result,
         raw_asset,
         human_readable_res,
-        demisto.args().get("headers"),
+        headers,
     )
 
 
@@ -1503,7 +1503,7 @@ def get_closing_reasons_command(
     )
 
 
-def get_note_command(client: QRadarClient, offense_id=None, note_id=None, fields=None):
+def get_note_command(client: QRadarClient, offense_id=None, note_id=None, fields=None, headers=None):
     raw_note = client.get_note(offense_id, note_id, fields)
     note_names_map = {
         "id": "ID",
@@ -1518,16 +1518,16 @@ def get_note_command(client: QRadarClient, offense_id=None, note_id=None, fields
         if "CreateTime" in note:
             note["CreateTime"] = epoch_to_iso(note["CreateTime"])
     return get_entry_for_object(
-        "QRadar note for offense: {0}".format(str(demisto.args().get("offense_id"))),
+        "QRadar note for offense: {0}".format(str(offense_id)),
         notes,
         raw_note,
-        demisto.args().get("headers"),
-        'QRadar.Note(val.ID === "{0}")'.format(demisto.args().get("note_id")),
+        headers,
+        'QRadar.Note(val.ID === "{0}")'.format(note_id),
     )
 
 
 def create_note_command(
-    client: QRadarClient, offense_id=None, note_text=None, fields=None
+    client: QRadarClient, offense_id=None, note_text=None, fields=None, headers=None
 ):
     raw_note = client.create_note(offense_id, note_text, fields)
     note_names_map = {
@@ -1539,7 +1539,7 @@ def create_note_command(
     note = replace_keys(raw_note, note_names_map)
     note["CreateTime"] = epoch_to_iso(note["CreateTime"])
     return get_entry_for_object(
-        "QRadar Note", note, raw_note, demisto.args().get("headers"), "QRadar.Note"
+        "QRadar Note", note, raw_note, headers, "QRadar.Note"
     )
 
 
@@ -1659,7 +1659,7 @@ def get_domains_command(client: QRadarClient, range=None, filter=None, fields=No
         domain = replace_keys(raw_domain, DEVICE_MAP)
         domains.append(domain)
     if len(domains) == 0:
-        return demisto.results("No Domains Found")
+        return "No Domains Found"
     else:
         ec = {"QRadar.Domains": createContext(domains, removeNull=True)}
         return {
@@ -1677,7 +1677,7 @@ def get_domains_by_id_command(client: QRadarClient, id=None, fields=None):
     formatted_domain = replace_keys(raw_domains, DEVICE_MAP)
 
     if len(formatted_domain) == 0:
-        return demisto.results("No Domain Found")
+        return "No Domain Found"
     else:
         ec = {"QRadar.Domains": createContext(formatted_domain, removeNull=True)}
         return {
