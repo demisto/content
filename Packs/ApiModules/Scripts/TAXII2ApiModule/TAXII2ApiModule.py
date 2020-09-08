@@ -1,4 +1,5 @@
 import demistomock as demisto
+import requests
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -8,7 +9,7 @@ import re
 import copy
 import types
 import urllib3
-from taxii2client import v20, v21
+from taxii2client import v20, v21, MEDIA_TYPE_STIX_V20
 from taxii2client.common import TokenAuth, _HTTPConnection
 
 # disable insecure warnings
@@ -60,20 +61,50 @@ STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
 }
 
 
+def override_v20_get_objects(self, accept=MEDIA_TYPE_STIX_V20, start=0, per_request=0, **filter_kwargs):
+    """
+
+    Overriding the v20.Collection.get_object method, which uses the `Range` header without the '=' sign.
+
+    """
+    self._verify_can_read()
+    query_params = v20._filter_kwargs_to_query_params(filter_kwargs)
+    headers = {"Accept": accept}
+
+    if per_request > 0:
+        headers["Range"] = "items={}-{}".format(start, (start + per_request) - 1)
+
+    try:
+        response = self._conn.get(self.objects_url, headers=headers, params=query_params)
+
+    except requests.HTTPError as e:
+        if per_request > 0:
+            headers["Range"] = "items {}-{}".format(start, (start + per_request) - 1)
+
+            response = self._conn.get(self.objects_url, headers=headers, params=query_params)
+        else:
+            raise requests.HTTPError(e)
+
+    return response
+
+
+v20.Collection.get_objects = override_v20_get_objects
+
+
 class Taxii2FeedClient:
     def __init__(
-        self,
-        url: str,
-        collection_to_fetch,
-        proxies,
-        verify: bool,
-        skip_complex_mode: bool = False,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        field_map: Optional[dict] = None,
-        tags: Optional[list] = None,
-        tlp_color: Optional[str] = None,
-        limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
+            self,
+            url: str,
+            collection_to_fetch,
+            proxies,
+            verify: bool,
+            skip_complex_mode: bool = False,
+            username: Optional[str] = None,
+            password: Optional[str] = None,
+            field_map: Optional[dict] = None,
+            tags: Optional[list] = None,
+            tlp_color: Optional[str] = None,
+            limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -237,7 +268,7 @@ class Taxii2FeedClient:
         return indicators
 
     def extract_indicators_from_envelope_and_parse(
-        self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1
+            self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1
     ) -> List[Dict[str, str]]:
         """
         Extract indicators from an 2.0 envelope generator, or 2.1 envelope (which then polls and repeats process)
@@ -301,7 +332,7 @@ class Taxii2FeedClient:
         return indicators
 
     def poll_collection(
-        self, page_size: int, **kwargs
+            self, page_size: int, **kwargs
     ) -> Union[types.GeneratorType, Dict[str, str]]:
         """
         Polls a taxii collection
@@ -329,7 +360,7 @@ class Taxii2FeedClient:
 
     @staticmethod
     def extract_indicators_from_stix_objects(
-        stix_objs: List[Dict[str, str]]
+            stix_objs: List[Dict[str, str]]
     ) -> List[Dict[str, str]]:
         """
         Extracts indicators from taxii objects
@@ -343,7 +374,7 @@ class Taxii2FeedClient:
         return indicators_objs
 
     def parse_indicators_list(
-        self, indicators_objs: List[Dict[str, str]]
+            self, indicators_objs: List[Dict[str, str]]
     ) -> List[Dict[str, str]]:
         """
         Parses a list of indicator objects, and updates the client.latest_fetched_indicator_created
@@ -369,7 +400,7 @@ class Taxii2FeedClient:
         return indicators
 
     def parse_single_indicator(
-        self, indicator_obj: Dict[str, str]
+            self, indicator_obj: Dict[str, str]
     ) -> List[Dict[str, str]]:
         """
         Parses a single indicator object
@@ -411,11 +442,11 @@ class Taxii2FeedClient:
         return indicators
 
     def get_indicators_from_indicator_groups(
-        self,
-        indicator_groups: List[Tuple[str, str]],
-        indicator_obj: Dict[str, str],
-        indicator_types: Dict[str, str],
-        field_map: Dict[str, str],
+            self,
+            indicator_groups: List[Tuple[str, str]],
+            indicator_obj: Dict[str, str],
+            indicator_types: Dict[str, str],
+            field_map: Dict[str, str],
     ) -> List[Dict[str, str]]:
         """
         Get indicators from indicator regex groups
@@ -490,7 +521,7 @@ class Taxii2FeedClient:
 
     @staticmethod
     def extract_indicator_groups_from_pattern(
-        pattern: str, regexes: List
+            pattern: str, regexes: List
     ) -> List[Tuple[str, str]]:
         """
         Extracts indicator [`type`, `indicator`] groups from pattern
