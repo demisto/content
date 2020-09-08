@@ -699,7 +699,7 @@ class TestRDataCommand:
                     ### Farsight DNSDB Lookup
                     No results found.
                                         ''')
-        expected_output_prefix='DNSDB.Record'
+        expected_output_prefix = 'DNSDB.Record'
         expected_outputs = []
 
         self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
@@ -723,7 +723,7 @@ class TestRDataCommand:
                     |farsightsecurity.com|NS|ns5.dnsmadeeasy.com.|706617|2013-07-17T21:26:20Z|2016-07-12T14:48:46Z|False|
                     ''')
 
-        expected_output_prefix='DNSDB.Record'
+        expected_output_prefix = 'DNSDB.Record'
         expected_outputs = [
             {
                 'Count': 1078,
@@ -767,7 +767,7 @@ class TestRDataCommand:
             ''')
 
         expected_prefix = 'DNSDB.Record'
-        expected_outputs= [
+        expected_outputs = [
             {'Count': 24,
              'FromZoneFile': False,
              'RData': '104.244.13.104',
@@ -789,7 +789,8 @@ class TestRDataCommand:
         self._run_test(requests_mock, args, input, expected_readable, expected_prefix, expected_outputs)
 
     @staticmethod
-    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str, expected_outputs: list):
+    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str,
+                  expected_outputs: list):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/lookup/rdata/{args["type"]}/{args["value"]}'
                           f'?limit={args["limit"]}'
@@ -863,7 +864,7 @@ class TestSummarizeRDataCommand:
                  : False
                 ''')
 
-        expected_output_prefix='DNSDB.Summary'
+        expected_output_prefix = 'DNSDB.Summary'
         expected_outputs = {
             'Count': 1127,
             'NumResults': 2,
@@ -897,7 +898,7 @@ class TestSummarizeRDataCommand:
                          : True
                         ''')
 
-        expected_output_prefix='DNSDB.Summary'
+        expected_output_prefix = 'DNSDB.Summary'
         expected_outputs = {
             'Count': 1127,
             'NumResults': 2,
@@ -909,7 +910,8 @@ class TestSummarizeRDataCommand:
         self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     @staticmethod
-    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str, expected_outputs: dict):
+    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str,
+                  expected_outputs: dict):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/summarize/rdata/{args["type"]}/{args["value"]}'
                           f'?limit={args["limit"]}'
@@ -938,7 +940,7 @@ class TestRRSetCommand:
                     ### Farsight DNSDB Lookup
                     No results found.
                                         ''')
-        expected_output_prefix='DNSDB.Record'
+        expected_output_prefix = 'DNSDB.Record'
         expected_outputs = []
 
         self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
@@ -961,7 +963,7 @@ class TestRRSetCommand:
             |farsightsecurity.com|A|com|104.244.13.104|17381|2015-04-01T13:07:24Z|2016-07-12T13:14:32Z|True|
                                 ''')
 
-        expected_output_prefix='DNSDB.Record'
+        expected_output_prefix = 'DNSDB.Record'
         expected_outputs = [
             {
                 'Count': 5059,
@@ -988,7 +990,8 @@ class TestRRSetCommand:
         self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     @staticmethod
-    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str, expected_outputs: list):
+    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str,
+                expected_outputs: list):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/lookup/rrset/name/{DNSDB.quote(args["owner_name"])}'
                           f'?limit={args["limit"]}'
@@ -1073,7 +1076,8 @@ class TestSummarizeRRSetCommand:
         self._run_test(requests_mock, args, input, expected_readable, expected_output_prefix, expected_outputs)
 
     @staticmethod
-    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str, expected_outputs: dict):
+    def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str,
+                expected_outputs: dict):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/summarize/rrset/name/{args["owner_name"]}'
                           f'?limit={args["limit"]}'
