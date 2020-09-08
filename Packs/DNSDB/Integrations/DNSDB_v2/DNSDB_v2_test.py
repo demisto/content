@@ -991,7 +991,7 @@ class TestRRSetCommand:
 
     @staticmethod
     def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str,
-                expected_outputs: list):
+                    expected_outputs: list):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/lookup/rrset/name/{DNSDB.quote(args["owner_name"])}'
                           f'?limit={args["limit"]}'
@@ -1077,7 +1077,7 @@ class TestSummarizeRRSetCommand:
 
     @staticmethod
     def _run_test(requests_mock, args: dict, input: dict, expected_readable: str, expected_output_prefix: str,
-                expected_outputs: dict):
+                    expected_outputs: dict):
         client = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
         requests_mock.get(f'{DNSDB.DEFAULT_DNSDB_SERVER}/summarize/rrset/name/{args["owner_name"]}'
                           f'?limit={args["limit"]}'
