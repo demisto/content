@@ -1,5 +1,5 @@
 id: DNSDB - IPs from Hostname
-version: 5
+version: -1
 name: DNSDB - IPs from Hostname
 description: A playbook that uses DNSDB to retrieve all IPs seen for a given hostname
   around the time of observation.

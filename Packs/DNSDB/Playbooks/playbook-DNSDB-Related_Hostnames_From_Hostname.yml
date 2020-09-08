@@ -1,5 +1,5 @@
 id: DNSDB - Related Hostnames from Hostname
-version: 5
+version: -1
 name: DNSDB - Related Hostnames from Hostname
 description: A playbook that “pivots” in DNSDB to retrieve a limited number of other
   hostnames seen on the same IPs as the target hostname.
