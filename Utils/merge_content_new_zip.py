@@ -14,7 +14,6 @@ CONTENT_API_WORKFLOWS_URI = "https://circleci.com/api/v2/insights/gh/demisto/con
 ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN', '')
-GCS_PATH = "content/"
 
 
 def init_storage_client(service_account=None):
@@ -181,7 +180,7 @@ def merge_zip_files(master_branch_content_zip_file_path, feature_branch_content_
     feature_zip.close()
 
 
-def get_new_feature_zip_file_path(feature_branch_name, job_num):
+def get_new_feature_zip_file_path(feature_branch_name, job_num, gcp_service_account):
     """Merge content_new zip files and remove the unnecessary files.
 
     Args:
@@ -189,7 +188,7 @@ def get_new_feature_zip_file_path(feature_branch_name, job_num):
         job_num (str): Last successful create instance job of the feature branch.
 
     """
-    current_feature_content_zip_file_path = f'{GCS_PATH}{feature_branch_name}/{job_num}/0/content_new.zip'
+    current_feature_content_zip_file_path = f'{gcp_service_account}{feature_branch_name}/{job_num}/0/content_new.zip'
     zip_destination_path = f'{ARTIFACTS_PATH}feature_content_new_zip'
     new_feature_content_zip_file_path = download_zip_file_from_gcp(current_feature_content_zip_file_path,
                                                                    zip_destination_path)
@@ -199,6 +198,8 @@ def get_new_feature_zip_file_path(feature_branch_name, job_num):
 def option_handler():
     parser = argparse.ArgumentParser(description='Merging two content_new.zip files from different builds.')
     parser.add_argument('-f', '--feature_branch', help='The name of the feature branch', required=True)
+    parser.add_argument('-g', '--gcp', help='full path to service account json', required=False)
+
     options = parser.parse_args()
 
     return options
@@ -207,13 +208,16 @@ def option_handler():
 def main():
     options = option_handler()
     feature_branch_name = options.feature_branch
+    gcp_service_account = options.gcp
+
 
     feature_branch_successful_workflow_id = get_last_successful_workflow(feature_branch_name)
     if not feature_branch_successful_workflow_id:
         print("Couldn't find successful workflow for this branch")
 
     create_instances_job_num = get_job_num(feature_branch_successful_workflow_id)
-    new_feature_content_zip_file_path = get_new_feature_zip_file_path(feature_branch_name, create_instances_job_num)
+    new_feature_content_zip_file_path = get_new_feature_zip_file_path(feature_branch_name, create_instances_job_num,
+                                                                      gcp_service_account)
 
     files_to_remove = ['content-descriptor.json', 'doc-CommonServer.json', 'doc-howto.json', 'reputations.json',
                        'tools-o365.zip', 'tools-exchange.zip', 'tools-winpmem.zip']
