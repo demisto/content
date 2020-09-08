@@ -114,4 +114,3 @@ def test_get_pack_dir_no_pack(requests_mock):
     pack_dir = get_pack_dir(branch, pr_number, repo)
 
     assert pack_dir == ''
-
