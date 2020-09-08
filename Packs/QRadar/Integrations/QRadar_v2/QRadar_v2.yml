@@ -1299,6 +1299,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  isFetchSamples: true
 defaultmapperin: QRadar-mapper
 defaultclassifier: QRadar
 fromversion: 6.0.0
