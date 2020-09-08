@@ -1934,7 +1934,7 @@ def main():
             args = demisto.args()
             demisto.results(normal_commands[command](client, **args))  # type: ignore[operator]
         elif command == "fetch-incidents":
-            fetch_incidents_long_running_samples()
+            demisto.incidents(fetch_incidents_long_running_samples())
         elif command == "long-running-execution":
             long_running_main(
                 client,
