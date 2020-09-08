@@ -290,24 +290,16 @@ def get_alert_details():
         'ResourceAccessKeyAge': demisto.get(response, 'resource.additionalInfo.accessKeyAge'),
         'ResourceInactiveSinceTs': demisto.get(response, 'resource.additionalInfo.inactiveSinceTs')
     })
+    ec = alert_to_context(response)
+    ec['AlertRules'] = [alert_rule.get('name') for alert_rule in response.get('alertRules')]
+    context = {'Redlock.Alert(val.ID === obj.ID)': ec}
 
-    context = {'Redlock.Alert(val.ID === obj.ID)': alert_to_context(response)}
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
         'EntryContext': context,
-        'HumanReadable': tableToMarkdown('Alert', [alert],
-                                         ['ID', 'Status', 'FirstSeen', 'LastSeen', 'AlertTime', 'PolicyID',
-                                          'PolicyName', 'PolicyType', 'PolicySystemDefault', 'PolicyLabels',
-                                          'PolicyDescription', 'PolicySeverity', 'PolicyRecommendation',
-                                          'PolicyDeleted', 'PolicyRemediable', 'PolicyLastModifiedOn',
-                                          'PolicyLastModifiedBy', 'RiskScore', 'RiskRating',
-                                          'ResourceName', 'ResourceRRN', 'ResourceID', 'ResourceAccount',
-                                          'ResourceAccountID', 'ResourceType',
-                                          'ResourceRegionID', 'ResourceApiName', 'ResourceUrl', 'ResourceData',
-                                          'ResourceAccessKeyAge', 'ResourceInactiveSinceTs', 'ResourceCloudType'
-                                          ])
+        'HumanReadable': tableToMarkdown('Alert', alert, removeNull=True)
     })
 
 

@@ -6,8 +6,8 @@ import re
 import shutil
 import yaml
 import google.auth
-from google.cloud import storage
-from google.cloud import bigquery
+# from google.cloud import storage
+# from google.cloud import bigquery
 import enum
 import base64
 import urllib.parse
