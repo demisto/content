@@ -2574,6 +2574,7 @@ class Common(object):
 
             return ret_value
 
+
 class IndicatorsTimeline:
     """
     IndicatorsTimeline class - use to return Indicator Timeline object to CommandResults
@@ -2607,6 +2608,7 @@ class IndicatorsTimeline:
                 indicator['Message'] = message
 
         self.indicators_timeline = indicators
+
 
 class CommandResults:
     """
