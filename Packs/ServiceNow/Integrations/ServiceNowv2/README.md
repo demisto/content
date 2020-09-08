@@ -54,9 +54,9 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 | incidentType | Incident type | False |
 | get_attachments | Get incident attachments | False |
 | mirror_direction | Chose whenever to mirror the incident. You can mirror only In (from ServiceNow to XSOAR), only out(from XSOAR to ServiceNow) or both direction. | None |
-| comment_tag | Choose the tag you will want to add to an entry to mirror it as a comment in ServiceNow. | comments |
-| work_notes_tag | Choose the tag you will want to add to an entry to mirror it as a work note in ServiceNow. | work_notes |
-| file_tag | Choose the tag you will want to add to an entry to mirror it as a file in ServiceNow. | ForServiceNow |
+| comment_tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | comments |
+| work_notes_tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | work_notes |
+| file_tag | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | ForServiceNow |
 | close_incident | Close XSOAR Incident. When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
 | close_ticket | Close ServiceNow Ticket. When selected, closing the XSOAR incident is mirrored in ServiceNow. | False |
 | proxy | Use system proxy settings | False |
