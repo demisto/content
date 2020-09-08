@@ -37,9 +37,9 @@ tasks:
     task:
       id: 69adada1-5371-4317-8bad-f9b0d1a941fb
       version: -1
-      name: microsoft-atp-file-indicator-create
+      name: microsoft-atp-indicator-create-file
       description: Creates a file indicator
-      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-file-indicator-create
+      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-indicator-create-file
       type: regular
       iscommand: true
       brand: Microsoft Defender Advanced Threat Protection
@@ -135,9 +135,9 @@ tasks:
     task:
       id: 67e546cf-5a5d-4028-834e-5992311b3039
       version: -1
-      name: microsoft-atp-network-indicator-create
+      name: microsoft-atp-indicator-create-network
       description: Creates a file indicator
-      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-network-indicator-create
+      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-indicator-create-network
       type: regular
       iscommand: true
       brand: Microsoft Defender Advanced Threat Protection

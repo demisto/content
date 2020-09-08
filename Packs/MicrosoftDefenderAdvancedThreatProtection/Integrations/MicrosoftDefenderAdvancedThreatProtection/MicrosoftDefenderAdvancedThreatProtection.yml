@@ -2882,7 +2882,7 @@ script:
     deprecated: false
     description: Creates a file indicator.
     execution: false
-    name: microsoft-atp-file-indicator-create
+    name: microsoft-atp-indicator-create-file
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
       type: String
@@ -3313,7 +3313,7 @@ script:
     deprecated: false
     description: Creates a file indicator.
     execution: false
-    name: microsoft-atp-network-indicator-create
+    name: microsoft-atp-indicator-create-network
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
       type: String

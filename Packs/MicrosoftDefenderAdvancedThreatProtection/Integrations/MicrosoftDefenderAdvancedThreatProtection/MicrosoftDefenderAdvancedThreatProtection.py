@@ -2289,9 +2289,9 @@ def main():
 
         elif command in ('microsoft-atp-list-indicators', 'microsoft-atp-indicator-get-by-id'):
             return_outputs(*list_indicators_command(client, args))
-        elif command == 'microsoft-atp-file-indicator-create':
+        elif command == 'microsoft-atp-indicator-create-file':
             return_outputs(*create_file_indicator_command(client, args))
-        elif command == 'microsoft-atp-network-indicator-create':
+        elif command == 'microsoft-atp-indicator-create-network':
             return_outputs(*create_network_indicator_command(client, args))
         elif command == 'microsoft-atp-indicator-update':
             return_outputs(*update_indicator_command(client, args))
