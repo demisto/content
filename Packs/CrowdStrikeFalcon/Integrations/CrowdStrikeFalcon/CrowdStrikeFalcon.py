@@ -1220,7 +1220,8 @@ def fetch_incidents():
 
                     incidents.append(incident)
 
-            demisto.setLastRun({'first_behavior_detection_time': last_fetch_time, 'last_detection_id': last_detection_id})
+            demisto.setLastRun({'first_behavior_detection_time': last_fetch_time,
+                                'last_detection_id': last_detection_id})
 
     if 'incidents' in fetch_incidents_or_detections:
         incident_type = 'incident'
@@ -2075,6 +2076,19 @@ def list_incident_summaries_command():
     )
 
 
+def test_module():
+    try:
+        get_token(new_token=True)
+    except ValueError:
+        return 'Connection Error: The URL or The API key you entered is probably incorrect, please try again.'
+    if demisto.params().get('isFetch'):
+        try:
+            fetch_incidents()
+        except ValueError:
+            return 'Error: Something is wrong with the filters you entered for the fetch incident, please try again.'
+    return 'ok'
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -2087,9 +2101,9 @@ def main():
 
     try:
         if demisto.command() == 'test-module':
-            get_token(new_token=True)
+            result = test_module()
+            return_results(result)
 
-            demisto.results('ok')
         elif demisto.command() == 'cs-falcon-search-device':
             demisto.results(search_device_command())
         elif demisto.command() == 'cs-falcon-get-behavior':
