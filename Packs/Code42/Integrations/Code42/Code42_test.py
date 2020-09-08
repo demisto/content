@@ -3,6 +3,7 @@ import pytest
 from requests import Response
 from py42.sdk import SDKClient
 from py42.response import Py42Response
+from py42.sdk.queries.alerts.filters import Severity
 from Code42 import (
     Code42Client,
     Code42LegalHoldMatterNotFoundError,
@@ -1992,8 +1993,8 @@ def test_fetch_incidents_handles_multi_severity(code42_fetch_incidents_mock):
         integration_context=None,
     )
     call_args = str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
-    assert "HIGH" in call_args
-    assert "LOW" in call_args
+    assert Severity.HIGH in call_args
+    assert Severity.LOW in call_args
 
 
 def test_fetch_when_include_files_includes_files(code42_fetch_incidents_mock):
@@ -2089,6 +2090,9 @@ def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
     assert len(incidents) == 1
     assert next_run["last_fetch"]
     assert not remaining_incidents
+
+
+def test_fetch_incidents_when_given_
 
 
 @pytest.mark.parametrize(

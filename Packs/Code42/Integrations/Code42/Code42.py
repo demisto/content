@@ -88,22 +88,6 @@ FILE_CONTEXT_FIELD_MAPPER = {
     "osHostName": "Hostname",
 }
 
-CODE42_FILE_CATEGORY_MAPPER = {
-    "SourceCode": FileCategory.SOURCE_CODE,
-    "Audio": FileCategory.AUDIO,
-    "Executable": FileCategory.EXECUTABLE,
-    "Document": FileCategory.DOCUMENT,
-    "Image": FileCategory.IMAGE,
-    "Pdf": FileCategory.PDF,
-    "PDF": FileCategory.PDF,
-    "Presentation": FileCategory.PRESENTATION,
-    "Script": FileCategory.SCRIPT,
-    "Spreadsheet": FileCategory.SPREADSHEET,
-    "Video": FileCategory.VIDEO,
-    "VirtualDiskImage": FileCategory.VIRTUAL_DISK_IMAGE,
-    "Archive": FileCategory.ZIP,
-}
-
 SECURITY_EVENT_HEADERS = [
     "EventType",
     "FileName",
@@ -541,8 +525,28 @@ def _create_exposure_filter(exposure_arg):
     return ExposureType.is_in(exposure_arg)
 
 
-def _get_file_category_value(key):
-    return CODE42_FILE_CATEGORY_MAPPER.get(key, "UNCATEGORIZED")
+def get_file_category_value(key):
+    # Meant to handle all possible cases
+    # Key conversion examples:
+    #   SourceCode -> sourcecode
+    #   SOURCE_CODE -> sourcecode
+    #   Pdf -> pdf
+    key = key.lower().replace("-", "")
+    category_map = {
+        "sourcecode": FileCategory.SOURCE_CODE,
+        "audio": FileCategory.AUDIO,
+        "executable": FileCategory.EXECUTABLE,
+        "document": FileCategory.DOCUMENT,
+        "image": FileCategory.IMAGE,
+        "pdf": FileCategory.PDF,
+        "presentation": FileCategory.PRESENTATION,
+        "script": FileCategory.SCRIPT,
+        "spreadsheet": FileCategory.SPREADSHEET,
+        "video": FileCategory.VIDEO,
+        "virtualdiskimage": FileCategory.VIRTUAL_DISK_IMAGE,
+        "archive": FileCategory.ZIP,
+    }
+    return category_map.get(key, "UNCATEGORIZED")
 
 
 class ObservationToSecurityQueryMapper(object):
@@ -643,7 +647,7 @@ class ObservationToSecurityQueryMapper(object):
         observed_file_categories = self._observation_data.get("fileCategories")
         if observed_file_categories:
             categories = [
-                _get_file_category_value(c.get("category"))
+                get_file_category_value(c.get("category"))
                 for c in observed_file_categories
                 if c.get("isSignificant") and c.get("category")
             ]
