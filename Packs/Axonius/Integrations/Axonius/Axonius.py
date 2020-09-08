@@ -134,7 +134,7 @@ def command_results(
     results = [parse_asset(asset=asset) for asset in assets]
 
     readable_output: Optional[str] = None
-    outputs: List[dict] = results
+    outputs: Union[List[dict], dict] = results
 
     if not results:
         readable_output = f"No {api_name} assets found using AQL: {aql}"

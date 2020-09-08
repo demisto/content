@@ -82,12 +82,7 @@ Gather device info by saved query
                 "Windows Server - 2012 - R2"
             ],
             "aggregated_network_interfaces_ips": [
-                "192.168.20.17",
-                "192.168.20.58",
-                "fe80::2dba:9118:1fc8:7759",
-                "192.168.20.36",
-                "192.168.20.50",
-                "192.168.20.61"
+                "x.x.x.x",
             ],
             "aggregated_network_interfaces_mac": [
                 "00:0C:29:B6:DA:46",
@@ -352,12 +347,7 @@ Gather device info by hostname
                 "DC4"
             ],
             "aggregated_network_interfaces_ips": [
-                "192.168.20.17",
-                "192.168.20.58",
-                "fe80::2dba:9118:1fc8:7759",
-                "192.168.20.36",
-                "192.168.20.50",
-                "192.168.20.61"
+                "x.x.x.x",
             ],
             "aggregated_network_interfaces_mac": [
                 "00:0C:29:B6:DA:46",
@@ -367,7 +357,7 @@ Gather device info by hostname
                 "00:50:56:91:21:B3"
             ],
             "aggregated_network_interfaces_subnets": [
-                "192.168.20.0/24"
+                "x.x.x.x/24"
             ],
             "internal_axon_id": "d530db3cfef6a2220b315d54fa1901b2"
         }
@@ -380,7 +370,7 @@ Gather device info by hostname
 >### Results
 >|adapter_list_length|adapters|aggregated_hostname|aggregated_network_interfaces_ips|aggregated_network_interfaces_mac|aggregated_network_interfaces_subnets|internal_axon_id|
 >|---|---|---|---|---|---|---|
->| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | 192.168.20.0/24 | d530db3cfef6a2220b315d54fa1901b2 |
+>| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
 
 
 ### axonius-get-devices-by-ip
@@ -441,12 +431,7 @@ Gather device info by IP address
                 "DC4"
             ],
             "aggregated_network_interfaces_ips": [
-                "192.168.20.17",
-                "192.168.20.58",
-                "fe80::2dba:9118:1fc8:7759",
-                "192.168.20.36",
-                "192.168.20.50",
-                "192.168.20.61"
+                "x.x.x.x",
             ],
             "aggregated_network_interfaces_mac": [
                 "00:0C:29:B6:DA:46",
@@ -456,7 +441,7 @@ Gather device info by IP address
                 "00:50:56:91:21:B3"
             ],
             "aggregated_network_interfaces_subnets": [
-                "192.168.20.0/24"
+                "x.x.x.x/24"
             ],
             "internal_axon_id": "d530db3cfef6a2220b315d54fa1901b2"
         }
@@ -469,7 +454,7 @@ Gather device info by IP address
 >### Results
 >|adapter_list_length|adapters|aggregated_hostname|aggregated_network_interfaces_ips|aggregated_network_interfaces_mac|aggregated_network_interfaces_subnets|internal_axon_id|
 >|---|---|---|---|---|---|---|
->| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | 192.168.20.0/24 | d530db3cfef6a2220b315d54fa1901b2 |
+>| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
 
 
 ### axonius-get-devices-by-mac
@@ -530,12 +515,7 @@ Gather device info by MAC address
                 "DC4"
             ],
             "aggregated_network_interfaces_ips": [
-                "192.168.20.17",
-                "192.168.20.58",
-                "fe80::2dba:9118:1fc8:7759",
-                "192.168.20.36",
-                "192.168.20.50",
-                "192.168.20.61"
+                "x.x.x.x",
             ],
             "aggregated_network_interfaces_mac": [
                 "00:0C:29:B6:DA:46",
@@ -545,7 +525,7 @@ Gather device info by MAC address
                 "00:50:56:91:21:B3"
             ],
             "aggregated_network_interfaces_subnets": [
-                "192.168.20.0/24"
+                "x.x.x.x/24"
             ],
             "internal_axon_id": "d530db3cfef6a2220b315d54fa1901b2"
         }
@@ -558,5 +538,5 @@ Gather device info by MAC address
 >### Results
 >|adapter_list_length|adapters|aggregated_hostname|aggregated_network_interfaces_ips|aggregated_network_interfaces_mac|aggregated_network_interfaces_subnets|internal_axon_id|
 >|---|---|---|---|---|---|---|
->| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | 192.168.20.0/24 | d530db3cfef6a2220b315d54fa1901b2 |
+>| 5 | nexpose_adapter,<br/>esx_adapter,<br/>active_directory_adapter,<br/>solarwinds_orion_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>crowd_strike_adapter,<br/>esx_adapter | DC4 | 192.168.20.17,<br/>192.168.20.58,<br/>fe80::2dba:9118:1fc8:7759,<br/>192.168.20.36,<br/>192.168.20.50,<br/>192.168.20.61 | 00:0C:29:B6:DA:46,<br/>00:50:56:91:DE:BB,<br/>00:50:56:91:3A:EC,<br/>00:50:56:91:33:E2,<br/>00:50:56:91:21:B3 | x.x.x.x/24 | d530db3cfef6a2220b315d54fa1901b2 |
 
