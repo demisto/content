@@ -1383,7 +1383,7 @@ class TestCommandResults:
        """
         from CommonServerPython import CommandResults, IndicatorsTimeline
 
-        indicators = ['8.8.8.8', '1.1.1.1']
+        indicators = ['8.8.8.8']
         timeline = IndicatorsTimeline(indicators=indicators, category='test', message='message')
 
         results = CommandResults(
@@ -1395,8 +1395,7 @@ class TestCommandResults:
         )
 
         assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
-            {'Value': '8.8.8.8', 'Category': 'test', 'Message': 'message'},
-            {'Value': '1.1.1.1', 'Category': 'test', 'Message': 'message'}
+            {'Value': '8.8.8.8', 'Category': 'test', 'Message': 'message'}
         ])
 
     def test_indicator_timeline_with_list_of_dict_of_indicators(self):

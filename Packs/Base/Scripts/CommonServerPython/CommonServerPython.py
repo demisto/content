@@ -2626,8 +2626,6 @@ class IndicatorsTimeline:
                 else:
                     timeline['Category'] = 'Integration Update'
 
-                timeline['Category'] = 'Integration Update'
-
                 if message:
                     timeline['Message'] = message
 
