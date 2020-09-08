@@ -434,15 +434,15 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
-        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status", "Pack Bucket URL"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
-            else [index, pack.name, pack.display_name, pack.latest_version]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message, pack.bucket_url] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
         table.add_row(row)
 
     return table
@@ -845,10 +845,19 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
+        task_status, skipped_pack_uploading, full_pack_path = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
                                                                      override_all_packs or pack_was_modified)
+        if full_pack_path is not None:
+            branch_name = os.environ['CIRCLE_BRANCH']
+            build_num = os.environ['CIRCLE_BUILD_NUM']
+            bucket_path = f'https://console.cloud.google.com/storage/browser/' \
+                          f'marketplace-ci-build/{branch_name}/{build_num}'
+            bucket_url = bucket_path.join(full_pack_path)
+        else:
+            bucket_url = 'Pack was not uploaded.'
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
+            pack.bucket_url = bucket_url
             pack.cleanup()
             continue
 
