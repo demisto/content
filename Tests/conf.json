@@ -2262,11 +2262,6 @@
             "playbookID": "Exabeam - Test"
         },
         {
-            "integrations": "DomainTools Iris",
-            "playbookID": "DomainTools Iris - Test",
-            "fromversion": "4.1.0"
-        },
-        {
             "integrations": "Cisco Spark",
             "playbookID": "Cisco Spark Test New"
         },
