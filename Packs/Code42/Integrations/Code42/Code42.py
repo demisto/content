@@ -531,7 +531,7 @@ def get_file_category_value(key):
     #   SourceCode -> sourcecode
     #   SOURCE_CODE -> sourcecode
     #   Pdf -> pdf
-    key = key.lower().replace("-", "")
+    key = key.lower().replace("-", "").replace("_", "")
     category_map = {
         "sourcecode": FileCategory.SOURCE_CODE,
         "audio": FileCategory.AUDIO,
