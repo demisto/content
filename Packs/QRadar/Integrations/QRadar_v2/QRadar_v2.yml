@@ -46,7 +46,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- defaultvalue: "QIDNAME(qid) AS 'Event Name',LOGSOURCENAME(logsourceid) AS 'Log Source', CATEGORYNAME(highlevelcategory) AS 'High-level Category', CATEGORYNAME(category) AS 'Low-level Category', PROTOCOLNAME(protocolid), sourceip AS 'Source IP', sourceport AS 'Source Port', destinationip AS 'Destination IP', destinationport AS 'Destinaion Port', username AS 'Username'"
+- defaultvalue: "QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, username"
   display: Event columns to return from the events query
   name: events_columns
   required: false
