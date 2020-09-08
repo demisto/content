@@ -82,7 +82,6 @@ configuration:
   name: proxy
   type: 8
   required: false
-- defaultvalue: 'true'
 script:
   script: ''
   type: python
