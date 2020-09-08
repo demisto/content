@@ -94,6 +94,7 @@ CODE42_FILE_CATEGORY_MAPPER = {
     "Executable": FileCategory.EXECUTABLE,
     "Document": FileCategory.DOCUMENT,
     "Image": FileCategory.IMAGE,
+    "Pdf": FileCategory.PDF,
     "PDF": FileCategory.PDF,
     "Presentation": FileCategory.PRESENTATION,
     "Script": FileCategory.SCRIPT,
