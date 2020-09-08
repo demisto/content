@@ -23,11 +23,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch incidents
-  hidden: false
-  name: isFetch
-  required: false
-  type: 8
 description: Trend Micro Apex central automation to manage agents and User-Defined
   Suspicious Objects
 display: Trend Micro Apex
