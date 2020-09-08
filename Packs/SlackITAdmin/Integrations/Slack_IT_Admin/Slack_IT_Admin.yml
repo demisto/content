@@ -1,0 +1,348 @@
+category: IT Services
+commonfields:
+  id: Slack IT Admin
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Slack API access token
+  name: access_token
+  required: true
+  type: 4
+- additionalinfo: An optional custom mapping that takes custom values in the SCIM
+    data into the integration.
+  defaultvalue: ""
+  display: Custom Mapping for Create User
+  name: customMappingCreateUser
+  required: false
+  type: 12
+- additionalinfo: An optional custom mapping that takes custom values in the SCIM
+    data into the integration.
+  defaultvalue: ""
+  display: Custom Mapping used for Update User
+  name: customMappingUpdateUser
+  required: false
+  type: 12
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+description: Perform Slack Admin action in a Slack Enterprise Grid environment.
+display: Slack IT Admin
+name: Slack IT Admin
+script:
+  commands:
+  - arguments:
+    - description: Group Display name
+      name: groupName
+      required: true
+    - description: 'List of slack user Ids (Example: ["U0W0NQFFC","U0W0C30RE"]). A
+        maximum of 15,000 users can be added per call.'
+      isArray: true
+      name: memberIds
+    description: Creates a group.
+    execution: true
+    name: slack-create-group
+  - arguments:
+    - description: Group ID
+      name: groupId
+    - description: Group Name
+      name: groupName
+    description: Retrieves the group information including members
+    name: slack-get-group
+    outputs:
+    - contextPath: Slack.Group.Id
+      description: Group Id
+      type: String
+    - contextPath: Slack.Group.DisplayName
+      description: Display Name of the Group
+      type: String
+    - contextPath: Slack.Group.Members.display
+      description: Display Name of the group member
+      type: String
+    - contextPath: Slack.Group.Members.value
+      description: Id of the group member
+      type: String
+  - arguments:
+    - description: Group ID to Delete
+      name: groupId
+    - description: Group name to Delete
+      name: groupName
+    description: Permanently removes a group (members are not deleted, only the group).
+    execution: true
+    name: slack-delete-group
+  - arguments:
+    - description: Group ID
+      name: groupId
+    - auto: PREDEFINED
+      description: Group Name
+      name: groupName
+      predefined:
+      - ""
+    - description: List of members ids to add. A maximum of 15,000 users per call
+        can be modified using this command
+      isArray: true
+      name: memberIdsToAdd
+    - description: List of members ids to be deleted from the group. A maximum of
+        15,000 users per call can be modified using this command
+      isArray: true
+      name: memberIdsToDelete
+    description: Updates an existing group resource. This command allows individual
+      (or groups of) users to be added or removed from the group with a single operation.
+      A max of 15,000 users can be modified in 1 call
+    execution: true
+    name: slack-update-group-members
+    outputs:
+    - contextPath: Slack.Group.id
+      description: Group Id
+      type: string
+    - contextPath: Slack.Group.displayName
+      description: Display Name of the Group
+      type: string
+    - contextPath: Slack.Group.members
+      description: Id of the group member
+      type: string
+  - arguments:
+    - description: Group ID
+      name: groupId
+    - description: Group name of the group to replace
+      name: groupName
+    - description: New Group Name if the group name needs to be updated. If no update
+        is needed,, provide the old group name
+      name: newGroupName
+      required: true
+    - description: 'List of slack user ID values (example: ["U0W0NQFFC","U0W0C30RE"]).
+        This will replace all members of a group with the members provided here'
+      isArray: true
+      name: memberIds
+    description: Updates an existing group resource, overwriting all values for a
+      group even if an attribute is empty or not provided. A maximum of 15,000 users
+      per call can be updated using this endpoint. If the member list is not provided,
+      all members will be removed from the group
+    name: slack-replace-group
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    - description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+      name: customMapping
+    description: Creates a user.
+    execution: true
+    name: create-user
+    outputs:
+    - contextPath: CreateUser
+      description: Command context path
+      type: unknown
+    - contextPath: CreateUser.active
+      description: Gives the active status of user. Can be true of false
+      type: boolean
+    - contextPath: CreateUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: CreateUser.details
+      description: Gives the detail error information
+      type: string
+    - contextPath: CreateUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: CreateUser.errorCode
+      description: HTTP error response code
+      type: number
+    - contextPath: CreateUser.errorMessage
+      description: Reason why the API is failed
+      type: string
+    - contextPath: CreateUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: CreateUser.instanceName
+      description: Name of the instance used for testing
+      type: string
+    - contextPath: CreateUser.success
+      description: Status of the result. Can be true or false
+      type: boolean
+    - contextPath: CreateUser.username
+      description: Value of username passed as argument
+      type: string
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    description: Enable active users by setting the active attribute equal to true.
+    execution: true
+    name: enable-user
+    outputs:
+    - contextPath: EnableUser
+      description: Command context path
+      type: unknown
+    - contextPath: EnableUser.active
+      description: Gives the active status of user. Can be true of false.
+      type: boolean
+    - contextPath: EnableUser.details
+      description: Gives the detail error information
+      type: string
+    - contextPath: EnableUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: EnableUser.errorCode
+      description: HTTP error response code
+      type: number
+    - contextPath: EnableUser.errorMessage
+      description: Reason why the API is failed
+      type: string
+    - contextPath: EnableUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: EnableUser.instanceName
+      description: ' Name of the instance used for testing'
+      type: string
+    - contextPath: EnableUser.success
+      description: Status of the result. Can be true or false
+      type: boolean
+    - contextPath: EnableUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: EnableUser.username
+      description: Value of username passed as argument
+      type: string
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    description: Disable active users by setting the active attribute equal to false.
+    execution: true
+    name: disable-user
+    outputs:
+    - contextPath: DisableUser
+      description: Command context path
+      type: boolean
+    - contextPath: DisableUser.active
+      description: Gives the active status of user. Can be true of false
+      type: boolean
+    - contextPath: DisableUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: DisableUser.details
+      description: Gives the detail error information
+      type: string
+    - contextPath: DisableUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: DisableUser.errorCode
+      description: HTTP error response code
+      type: number
+    - contextPath: DisableUser.errorMessage
+      description: Reason why the API is failed
+      type: string
+    - contextPath: DisableUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: DisableUser.instanceName
+      description: ' Name of the instance used for testing'
+      type: string
+    - contextPath: DisableUser.success
+      description: Status of the result. Can be true or false
+      type: boolean
+    - contextPath: DisableUser.username
+      description: Value of username passed as argument
+      type: string
+  - arguments:
+    - description: Old SCIM content in JSON format
+      name: oldScim
+      required: true
+    - description: New SCIM content in JSON format
+      name: newScim
+      required: true
+    - description: An optional custom mapping that takes custom values in the SCIM
+        data into the integration.
+      name: customMapping
+    description: Updates an existing user resource found with the "oldscim" with the
+      data in the "newscim"
+    name: update-user
+    outputs:
+    - contextPath: UpdateUser
+      description: Command context path
+      type: unknown
+    - contextPath: UpdateUser.active
+      description: Gives the active status of user. Can be true of false
+      type: boolean
+    - contextPath: UpdateUser.brand
+      description: Name of the Integration
+      type: string
+    - contextPath: UpdateUser.details
+      description: Gives the detail error information
+      type: string
+    - contextPath: UpdateUser.email
+      description: Value of email ID passed as argument
+      type: string
+    - contextPath: UpdateUser.errorCode
+      description: HTTP error response code
+      type: number
+    - contextPath: UpdateUser.errorMessage
+      description: Reason why the API is failed
+      type: string
+    - contextPath: UpdateUser.id
+      description: Value of id passed as argument
+      type: string
+    - contextPath: UpdateUser.instanceName
+      description: Name of the instance used for testing
+      type: string
+    - contextPath: UpdateUser.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: UpdateUser.username
+      description: Value of username passed as argument
+      type: string
+  - arguments:
+    - description: SCIM content in JSON format
+      name: scim
+      required: true
+    description: Retrieves a single user resource.
+    name: get-user
+    outputs:
+    - contextPath: GetUser
+      description: Command context path
+      type: Unknown
+    - contextPath: GetUser.active
+      description: 'User status, set to one of the following values:  true or false'
+      type: boolean
+    - contextPath: GetUser.brand
+      description: User's brand name
+      type: string
+    - contextPath: GetUser.details
+      description: Gives the user information if the API is success else error information
+      type: string
+    - contextPath: GetUser.email
+      description: User's email address
+      type: string
+    - contextPath: GetUser.errorCode
+      description: 'Error code in the case of exception.  Example: 404'
+      type: number
+    - contextPath: GetUser.errorMessage
+      description: Error message in the case of exception
+      type: string
+    - contextPath: GetUser.id
+      description: User''s id
+      type: string
+    - contextPath: GetUser.instanceName
+      description: Instance name for the Integration
+      type: string
+    - contextPath: GetUser.success
+      description: Success status. Can be True or False
+      type: boolean
+    - contextPath: GetUser.username
+      description: User''s username
+      type: string
+  dockerimage: demisto/python3:3.8.5.10845
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
