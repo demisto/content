@@ -530,7 +530,7 @@ def build_summary_table_md(packs_input_list, include_pack_status=False):
     for index, pack in enumerate(packs_input_list):
         pack_status_message = PackStatus[pack.status].value if include_pack_status else ''
 
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message, pack.bucket_url] if include_pack_status \
             else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
 
         row_hr = '|'
@@ -842,9 +842,10 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
         bucket_url = bucket_path.join(full_pack_path)
     else:
         bucket_url = 'Pack was not uploaded.'
+    pack.bucket_url = bucket_url
+
     if not task_status:
         pack.status = PackStatus.FAILED_UPLOADING_PACK.name
-        pack.bucket_url = bucket_url
         pack.cleanup()
         return
 
