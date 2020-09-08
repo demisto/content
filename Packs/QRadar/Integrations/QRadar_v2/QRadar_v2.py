@@ -805,7 +805,7 @@ def try_create_search_with_retry(client, events_query, offense, max_retries=None
     return query_status, search_id
 
 
-def fetch_raw_offenses(client: QRadarClient, offense_id, user_query, full_enrich):
+def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
     """
     Use filter frames based on id ranges: "id>offense_id AND id<(offense_id+incidents_per_fetch)"
 
@@ -903,7 +903,7 @@ def fetch_incidents_long_running_events(
     last_run = get_integration_context(SYNC_CONTEXT)
     offense_id = last_run["id"] if last_run and "id" in last_run else 0
 
-    raw_offenses = fetch_raw_offenses(client, offense_id, user_query, full_enrich)
+    raw_offenses = fetch_raw_offenses(client, offense_id, user_query)
 
     if len(raw_offenses) == 0:
         return
@@ -964,18 +964,23 @@ def fetch_incidents_long_running_no_events(
     last_run = get_integration_context(SYNC_CONTEXT)
     offense_id = last_run["id"] if last_run and "id" in last_run else 0
 
-    raw_offenses = fetch_raw_offenses(client, offense_id, user_query, full_enrich)
+    raw_offenses = fetch_raw_offenses(client, offense_id, user_query)
     if len(raw_offenses) == 0:
         return
 
-    incidents_batch = []
     for offense in raw_offenses:
         offense_id = max(offense_id, offense["id"])
-        incidents_batch.append(create_incident_from_offense(offense))
+
+    if full_enrich:
+        print_debug_msg("Enriching offenses")
+        enrich_offense_result(client, raw_offenses, full_enrich)
+        print_debug_msg("Enriched offenses successfully.")
+    incidents_batch = try_create_incidents(raw_offenses)
 
     # handle reset signal
     if is_reset_triggered(client.lock, handle_reset=True):
         return
+
     demisto.createIncidents(incidents_batch)
     incidents_batch_for_sample = (
         incidents_batch if incidents_batch else last_run.get("samples", [])
