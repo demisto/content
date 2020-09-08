@@ -2973,7 +2973,7 @@
         },
         {
             "integrations": "Talos Feed",
-            "playbookID": "TalosFeed_Test",
+            "playbookID": "FeedTalosTestPlaybook",
             "fromversion": "5.5.0"
         }
     ],

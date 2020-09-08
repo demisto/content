@@ -83,15 +83,6 @@ configuration:
   type: 8
   required: false
 - defaultvalue: 'true'
-  display: Fetch indicators
-  name: feed
-  type: 8
-  required: false
-- defaultvalue: 'true'
-  display: Fetch indicators
-  name: feed
-  type: 8
-  required: false
 script:
   script: ''
   type: python
