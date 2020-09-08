@@ -62,8 +62,8 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-- additionalinfo: Chose whenever to mirror the incident. You can mirror only In (from
-    ServiceNow to XSOAR), only out(from XSOAR to ServiceNow) or both dircetion.
+- additionalinfo: Choose the direction to mirror the incident: Incoming (from
+    ServiceNow to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to XSOAR and ServiceNow).
   defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -75,7 +75,7 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
-- additionalinfo: Choose the tag you will want to add to an entry to mirror it as
+- additionalinfo: Choose the tag to add to an entry to mirror it as
     a comment in ServiceNow.
   defaultvalue: comments
   display: Comment Entry Tag
@@ -83,7 +83,7 @@ configuration:
   name: comment_tag
   required: false
   type: 0
-- additionalinfo: Choose the tag you will want to add to an entry to mirror it as
+- additionalinfo: Choose the tag to add to an entry to mirror it as
     a work note in ServiceNow.
   defaultvalue: work_notes
   display: Work Note Entry Tag
@@ -91,7 +91,7 @@ configuration:
   name: work_notes_tag
   required: false
   type: 0
-- additionalinfo: Choose the tag you will want to add to an entry to mirror it as
+- additionalinfo: Choose the tag to add to an entry to mirror it as
     a filein ServiceNow.
   defaultvalue: ForServiceNow
   display: File Entry Tag
