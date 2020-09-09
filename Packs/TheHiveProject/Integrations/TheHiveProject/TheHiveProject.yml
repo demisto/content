@@ -1178,7 +1178,7 @@ script:
     name: thehive-get-case-tasks
   - arguments:
     - name: id
-      required: true
+      required: true,
     description: Get a specific task.
     name: thehive-get-task
     outputs:
@@ -1418,7 +1418,7 @@ script:
       - Deleted
     description: Update an observable
     name: thehive-update-observable
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   ismappable: true
   isremotesyncin: true
