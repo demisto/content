@@ -384,7 +384,6 @@ def get_RQL_response():
     if not RQL:
         return_error('You must specify an RQL to retrieve the response')
     response = req('POST', 'search/config', payload, None)
-    context = {}
     #MD = tableToMarkdown("RQLoutput", response)
     #TODO add check here that data exists
 
@@ -410,8 +409,6 @@ def remediate_alerts():
     if not alert_ids:
         return_error('You must specify the alert-id to retrieve with CLI remediation')
 
-    md_data = []
-    context = []
     response = req('PATCH', 'alert/remediation/'+ demisto.getArg('alert-id'), None, None)
 
     demisto.results(str(response))
