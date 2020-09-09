@@ -3908,13 +3908,13 @@ script:
     - contextPath: Panorama.Antivirus.Name
       description: Antivirus profile name.
       type: String
-    - contextPath: Panorama.Antivirus.Rules.Action
+    - contextPath: Panorama.Antivirus.Decoder.Action
       description: Rule action.
       type: String
-    - contextPath: Panorama.Antivirus.Rules.Name
+    - contextPath: Panorama.Antivirus.Decoder.Name
       description: Rule name.
       type: String
-    - contextPath: Panorama.Antivirus.Rules.WildFire-action
+    - contextPath: Panorama.Antivirus.Decoder.WildFire-action
       description: WildFire action.
       type: String
     - contextPath: Panorama.FileBlocking.Name
@@ -4076,7 +4076,7 @@ script:
     - contextPath: Panorama.WildFire.Size-limit
       description: File size limit.
       type: String
-    - contextPath: Panorama.WildFire.recurring
+    - contextPath: Panorama.WildFire.Schedule.recurring
       description: Schedule recurring
       type: String
   - arguments:

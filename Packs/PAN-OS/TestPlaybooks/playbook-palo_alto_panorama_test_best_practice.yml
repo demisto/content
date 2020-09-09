@@ -1,7 +1,7 @@
-id: ead11cb4-205a-4fa0-87b8-f50c18d3d17b
-version: 8
+id: Panorama Best Practise - Test
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: playbook-palo_alto_panorama_test_best_practice
+name: Panorama Best Practise - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -150
         }
       }
     note: false
@@ -45,8 +45,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
-      - "7"
+      - "17"
     scriptarguments:
       all:
         simple: "yes"
@@ -59,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 200
+          "y": 0
         }
       }
     note: false
@@ -85,8 +84,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 360
+          "x": 450,
+          "y": 555
         }
       }
     note: false
@@ -109,7 +108,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "15"
     scriptarguments:
       template:
         simple: WildFire
@@ -117,8 +116,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 490
+          "x": 450,
+          "y": 710
         }
       }
     note: false
@@ -146,8 +145,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 650
+          "x": 450,
+          "y": 1020
         }
       }
     note: false
@@ -184,8 +183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 810
+          "x": 450,
+          "y": 1180
         }
       }
     note: false
@@ -207,6 +206,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
     scriptarguments:
       template:
         simple: WildFire
@@ -214,8 +216,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 980
+          "x": 450,
+          "y": 1340
         }
       }
     note: false
@@ -225,12 +227,12 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: c0924941-c20d-4a77-8186-e08d0dc5908c
+    taskid: f6874694-c51f-42c6-8f5a-0768d0e8446b
     type: title
     task:
-      id: c0924941-c20d-4a77-8186-e08d0dc5908c
+      id: f6874694-c51f-42c6-8f5a-0768d0e8446b
       version: -1
-      name: Security profiles best practices
+      name: Get Security Profiles Best Practices
       type: title
       iscommand: false
       brand: ""
@@ -241,8 +243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 360
+          "x": 450,
+          "y": 1675
         }
       }
     note: false
@@ -270,8 +272,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 500
+          "x": 450,
+          "y": 1815
         }
       }
     note: false
@@ -316,8 +318,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 650
+          "x": 450,
+          "y": 1970
         }
       }
     note: false
@@ -345,8 +347,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 820
+          "x": 450,
+          "y": 2160
         }
       }
     note: false
@@ -385,8 +387,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 970
+          "x": 450,
+          "y": 2310
         }
       }
     note: false
@@ -417,8 +419,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1130
+          "x": 450,
+          "y": 2470
         }
       }
     note: false
@@ -428,10 +430,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: f2008802-24c1-44ed-8c7d-e82320deaa72
+    taskid: 11225825-80ee-4972-888c-95981f5c2dd2
     type: condition
     task:
-      id: f2008802-24c1-44ed-8c7d-e82320deaa72
+      id: 11225825-80ee-4972-888c-95981f5c2dd2
       version: -1
       name: Verify Outputs
       type: condition
@@ -439,31 +441,40 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: in
           left:
             value:
-              simple: Panorama.Antivirus.Rules.Name
+              simple: ftp
+          right:
+            value:
+              simple: Panorama.Antivirus.Decoder.Name
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
-              simple: Panorama.Antivirus.Rules.Action
+              simple: Panorama.Antivirus.Decoder.Action
             iscontext: true
-      - - operator: isNotEmpty
+          right:
+            value:
+              simple: default
+      - - operator: isEqualString
           left:
             value:
-              simple: Panorama.Antivirus.Rules.WildFire-action
+              simple: Panorama.Antivirus.Decoder.WildFire-action
             iscontext: true
+          right:
+            value:
+              simple: default
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1310
+          "x": 450,
+          "y": 2650
         }
       }
     note: false
@@ -471,12 +482,714 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
-    taskid: e8e7767d-839a-4335-8b53-b5d90296802f
+  "15":
+    id: "15"
+    taskid: 731e55db-13a0-4c81-8108-e1b0648bfe3a
+    type: condition
+    task:
+      id: 731e55db-13a0-4c81-8108-e1b0648bfe3a
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: download-and-install
+          right:
+            value:
+              simple: Panorama.WildFire.Schedule.recurring.every-min.action
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: pe
+          right:
+            value:
+              simple: Panorama.WildFire.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 963ca776-db8a-4bdc-8b13-d262c7119119
+    type: regular
+    task:
+      id: 963ca776-db8a-4bdc-8b13-d262c7119119
+      version: -1
+      name: Verify command success
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: The schedule was updated according to the best practice.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: e1303709-d709-4f6b-8fe6-6e0d7fdc8e49
+    type: regular
+    task:
+      id: e1303709-d709-4f6b-8fe6-6e0d7fdc8e49
+      version: -1
+      name: Panorama-commit
+      description: Commits a configuration to Palo Alto Firewall or Panorama, but
+        does not validate if the commit was successful. Committing to Panorama does
+        not push the configuration to the Firewalls. To push the configuration, run
+        the panorama-push-to-device-group command.
+      script: '|||panorama-commit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: b98f2524-c220-48e1-8bd6-f8e3a7d55b63
+    type: regular
+    task:
+      id: b98f2524-c220-48e1-8bd6-f8e3a7d55b63
+      version: -1
+      name: get-antivirus-best-practice
+      description: Show anti-virus best practices.
+      script: '|||panorama-get-antivirus-best-practice'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: c258da8c-fdd1-415c-807c-64c9d6133727
+    type: condition
+    task:
+      id: c258da8c-fdd1-415c-807c-64c9d6133727
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.Antivirus.Decoder.Action
+            iscontext: true
+          right:
+            value:
+              simple: default
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.Antivirus.Decoder.WildFire-action
+            iscontext: true
+          right:
+            value:
+              simple: default
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: ddf31fe5-dbbe-4b32-89c0-0b18e3d5e542
+    type: regular
+    task:
+      id: ddf31fe5-dbbe-4b32-89c0-0b18e3d5e542
+      version: -1
+      name: get-vulnerability-protection-best-practice
+      description: Show vulnerability-protection best practices.
+      script: '|||panorama-get-vulnerability-protection-best-practice'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 7b64ec93-82ea-4c93-85af-599464ba97cd
+    type: condition
+    task:
+      id: 7b64ec93-82ea-4c93-85af-599464ba97cd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: simple-client-critical
+          right:
+            value:
+              simple: Panorama.Vulnerability.Rule.Name
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.Vulnerability.Rule.Severity
+            iscontext: true
+          right:
+            value:
+              simple: critical
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.Vulnerability.Rule.CVE
+            iscontext: true
+          right:
+            value:
+              simple: any
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 7a140420-b17f-422a-8a78-bf5f791904bc
+    type: regular
+    task:
+      id: 7a140420-b17f-422a-8a78-bf5f791904bc
+      version: -1
+      name: get-url-filtering-best-practice
+      description: Show URL Filtering best practices.
+      script: '|||panorama-get-url-filtering-best-practice'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 3d04a2ae-4a46-4b9b-8e55-89fba0f38438
+    type: condition
+    task:
+      id: 3d04a2ae-4a46-4b9b-8e55-89fba0f38438
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: abortion
+          right:
+            value:
+              simple: Panorama.URLFilter.Category.Name
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.URLFilter.Category.Action
+            iscontext: true
+          right:
+            value:
+              simple: alert
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 0eb02c73-5c14-4d4f-8036-ee449257dbbe
     type: title
     task:
-      id: e8e7767d-839a-4335-8b53-b5d90296802f
+      id: 0eb02c73-5c14-4d4f-8036-ee449257dbbe
+      version: -1
+      name: Security Profiles Creation
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 457583cb-19b4-47f1-80f4-ce664483fc84
+    type: regular
+    task:
+      id: 457583cb-19b4-47f1-80f4-ce664483fc84
+      version: -1
+      name: create-antivirus-best-practice
+      description: Create antivirus best practice profile.
+      script: '|||panorama-create-antivirus-best-practice-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      profile_name:
+        simple: test-profile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 9f9cbaa3-d54d-480e-8f3e-3eeaef542131
+    type: regular
+    task:
+      id: 9f9cbaa3-d54d-480e-8f3e-3eeaef542131
+      version: -1
+      name: Verify creation succcess
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: The profile test-profile was created successfully.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: aeadaa71-f69a-450f-82a9-ba0299d6165c
+    type: regular
+    task:
+      id: aeadaa71-f69a-450f-82a9-ba0299d6165c
+      version: -1
+      name: create-anti-spyware-best-practice
+      description: Create Anti Spyware best practice profile.
+      script: '|||panorama-create-anti-spyware-best-practice-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      profile_name:
+        simple: test-profile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: fbd96852-73d9-4b17-8c9a-b56ea4bca505
+    type: regular
+    task:
+      id: fbd96852-73d9-4b17-8c9a-b56ea4bca505
+      version: -1
+      name: Verify creation success
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: The profile test-profile was created successfully.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: e77f11c4-a0a9-4e23-8599-df275e1ec4c2
+    type: regular
+    task:
+      id: e77f11c4-a0a9-4e23-8599-df275e1ec4c2
+      version: -1
+      name: create-vulnerability-best-practice
+      description: Create vulnerability protection best practice profile.
+      script: '|||panorama-create-vulnerability-best-practice-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      profile_name:
+        simple: test-profile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 18d665dc-8db3-4327-83d5-4bd32d15d7ad
+    type: regular
+    task:
+      id: 18d665dc-8db3-4327-83d5-4bd32d15d7ad
+      version: -1
+      name: Verify creation success
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: The profile test-profile was created successfully.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 4579eab2-ce4f-44bb-8b47-04b8c70dec7f
+    type: regular
+    task:
+      id: 4579eab2-ce4f-44bb-8b47-04b8c70dec7f
+      version: -1
+      name: create-url-filtering-best-practice
+      description: Create URL filtering best practice profile.
+      script: '|||panorama-create-url-filtering-best-practice-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      profile_name:
+        simple: test-profile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 6b7c10f2-16ac-47ff-8beb-8b79f8dec2a5
+    type: regular
+    task:
+      id: 6b7c10f2-16ac-47ff-8beb-8b79f8dec2a5
+      version: -1
+      name: Verify creation success
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: The profile test-profile was created successfully.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: abb07dee-66cd-46dc-8c53-db3a0ad24860
+    type: regular
+    task:
+      id: abb07dee-66cd-46dc-8c53-db3a0ad24860
+      version: -1
+      name: create-file-blocking-best-practice
+      description: Create file blocking best practice profile.
+      script: '|||panorama-create-file-blocking-best-practice-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      profile_name:
+        simple: test-profile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: fb2e8b30-56e9-4c06-849e-3127861c1184
+    type: regular
+    task:
+      id: fb2e8b30-56e9-4c06-849e-3127861c1184
+      version: -1
+      name: Verify creation success
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: The profile test-profile was created successfully.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: d3501773-9f71-4fdf-80c7-5bcf53369802
+    type: title
+    task:
+      id: d3501773-9f71-4fdf-80c7-5bcf53369802
       version: -1
       name: Done
       type: title
@@ -486,8 +1199,40 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1480
+          "x": 450,
+          "y": 5680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 9d9a5a79-7fc0-45df-8705-24726830911e
+    type: regular
+    task:
+      id: 9d9a5a79-7fc0-45df-8705-24726830911e
+      version: -1
+      name: wait
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
         }
       }
     note: false
@@ -500,10 +1245,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1495,
-        "width": 840,
-        "x": 240,
-        "y": 50
+        "height": 5895,
+        "width": 380,
+        "x": 450,
+        "y": -150
       }
     }
   }

@@ -6423,17 +6423,17 @@ def create_anti_spyware_best_practice_profile(profile_name: str) -> Dict:
         'type': 'config',
         'xpath': f"{XPATH_RULEBASE}profiles/spyware/entry[@name='{profile_name}']",
         'key': API_KEY,
-        'element': """<rules><entry name="simple-critical"><action><reset-both /></action><severity><member>critical
-        </member></severity><threat-name>any</threat-name><category>any</category><packet-capture>disable
-        </packet-capture></entry><entry name="simple-high"><action><reset-both /></action><severity><member>high
-        </member></severity><threat-name>any</threat-name><category>any</category><packet-capture>disable
-        </packet-capture></entry><entry name="simple-medium"><action><reset-both /></action><severity><member>medium
-        </member></severity><threat-name>any</threat-name><category>any</category><packet-capture>disable
-        </packet-capture></entry><entry name="simple-informational"><action><default /></action><severity>
-        <member>informational</member></severity><threat-name>any</threat-name><category>any</category>
+        'element': """<rules><entry name="simple-critical"><action><reset-both /></action><severity>
+        <member>critical</member></severity><threat-name>any</threat-name><category>any</category>
+        <packet-capture>disable</packet-capture></entry><entry name="simple-high"><action><reset-both /></action>
+        <severity><member>high</member></severity><threat-name>any</threat-name><category>any</category>
+        <packet-capture>disable</packet-capture></entry><entry name="simple-medium"><action><reset-both />
+        </action><severity><member>medium</member></severity><threat-name>any</threat-name><category>any</category>
+        <packet-capture>disable</packet-capture></entry><entry name="simple-informational"><action><default /></action>
+        <severity><member>informational</member></severity><threat-name>any</threat-name><category>any</category>
         <packet-capture>disable</packet-capture></entry><entry name="simple-low"><action><default /></action><severity>
-        <member>low</member></severity><threat-name>any</threat-name><category>any</category><packet-capture>disable
-        </packet-capture></entry></rules>"""
+        <member>low</member></severity><threat-name>any</threat-name><category>any</category>
+        <packet-capture>disable</packet-capture></entry></rules>"""
     }
     result = http_request(URL, 'POST', params=params)
 
