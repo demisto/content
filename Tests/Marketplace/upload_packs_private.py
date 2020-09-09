@@ -279,6 +279,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
             'packs': private_packs,
             'commit': current_commit_hash
         }
+        print_error(f"uploading. index when uploading is: {index}")
         json.dump(index, index_file, indent=4)
 
     index_zip_name = os.path.basename(index_folder_path)
@@ -290,6 +291,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
 
         if is_private or current_index_generation == index_generation:
+            print_error("uploading index")
             index_blob.upload_from_filename(index_zip_path)
             print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
         else:
@@ -420,7 +422,8 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName'),
-                    'testField': metadata.get('testField')
+                    'testField': metadata.get('testField'),
+                    'test2': metadata.get('test2')
                 })
         except ValueError as e:
             print_error(f'Invalid JSON in the metadata file [{metadata_file_path}]: {str(e)}')
@@ -745,6 +748,7 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
     is_private_build = upload_config.is_private
 
     task_status, user_metadata = pack.load_user_metadata()
+    print_error(f"user_metadata after task is: {user_metadata}")
     if not task_status:
         pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
         pack.cleanup()
@@ -957,13 +961,16 @@ def main():
                                                                                                index_folder_path,
                                                                                                pack_names,
                                                                                                is_private_build)
+        print_error(f"private_packs are {private_packs}")
     else:  # skipping private packs
         print("Skipping index update of priced packs")
         private_packs = []
 
     # google cloud bigquery client initialized
-    bq_client = init_bigquery_client(service_account)
-    packs_statistic_df = get_packs_statistics_dataframe(bq_client)
+    packs_statistic_df = None
+    if not is_private_build:
+        bq_client = init_bigquery_client(service_account)
+        packs_statistic_df = get_packs_statistics_dataframe(bq_client)
 
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket)

@@ -522,8 +522,9 @@ class Pack(object):
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         if pack_metadata['price'] > 0:
-            print_error(f'pack_metadata in price > 0 is: {pack_metadata}')
+            print_error(f'user_metadata in price > 0 is: {user_metadata}')
             pack_metadata['premium'] = True
+            pack_metadata['test2'] = user_metadata.get('test2')
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
             pack_metadata['testField'] = user_metadata.get('testField')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
@@ -1168,7 +1169,9 @@ class Pack(object):
             dependencies_data = self._load_pack_dependencies(index_folder_path,
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []))
-            self.downloads_count = self._get_downloads_count(packs_statistic_df)
+
+            if packs_statistic_df:
+                self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
@@ -1180,6 +1183,7 @@ class Pack(object):
                                                            build_number=build_number, commit_hash=commit_hash,
                                                            downloads_count=self.downloads_count,
                                                            is_feed_pack=self._is_feed)
+            print_error(f"formatted_metadata is: {formatted_metadata}")
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
