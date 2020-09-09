@@ -3050,8 +3050,8 @@
         "663e1ec3-5590-4e23-8d99-d8a4e0c22a52": "Issue 27454",
         "Init_McAfee_ESM_v2_Test": "issue #26187",
         "MISP V2 Test": "Issue 26905",
-        "Logzio - Test": "Issue 26729"
-
+        "Logzio - Test": "Issue 26729",
+        "pyEWS_Test": "Issue 28339"
     },
     "skipped_integrations": {
         
