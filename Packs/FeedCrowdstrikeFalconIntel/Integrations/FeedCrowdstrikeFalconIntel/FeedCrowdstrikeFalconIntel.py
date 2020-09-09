@@ -76,7 +76,17 @@ class Client(BaseClient):
     def add_target_industries_to_filter(self, industry):
         return f'target_industries%3A"{industry}"%2B'
 
-    def convert_the_list_of_countries_and_industries_to_url_shape(self, list_of_targets):
+    def convert_countries_and_industries_to_url_shape(self, list_of_targets):
+        """
+        This function converts a list of targets into the form of a URL filter.
+        (united states -> united%20states)
+
+        Args:
+            list_of_targets: List of countries or industries.
+
+        Returns:
+            The URL filter to filter with.
+        """
         list_of_targets = list_of_targets.split(',')
         list_of_targets = [target.replace(' ', '%20') for target in list_of_targets if len(target) > 1]
         return list_of_targets
@@ -88,12 +98,12 @@ class Client(BaseClient):
             return actors_filter
 
         if target_countries:
-            target_countries = self.convert_the_list_of_countries_and_industries_to_url_shape(target_countries)
+            target_countries = self.convert_countries_and_industries_to_url_shape(target_countries)
             for country in target_countries:
                 actors_filter += self.add_target_countries_to_filter(country)
 
         if target_industries:
-            target_industries = self.convert_the_list_of_countries_and_industries_to_url_shape(target_industries)
+            target_industries = self.convert_countries_and_industries_to_url_shape(target_industries)
             for industry in target_industries:
                 actors_filter += self.add_target_industries_to_filter(industry)
 
