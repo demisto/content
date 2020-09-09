@@ -40,6 +40,7 @@ class Client(BaseClient):
         except Exception as e:
             if "Not Found" in str(e):
                 return "Not Found"
+            raise
         return response.get('result')
 
     def cve_report(self, code: str) -> dict:
@@ -208,7 +209,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
     for domain in domains:
         report = client.url_report(domain)
         if report == "Not Found":
-            markdown += f'Domain: {domain} not found'
+            markdown += f'Domain: {domain} not found\n'
             continue
         outputs = {'Name': report['url']}
         dbot_score = {
@@ -257,7 +258,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     for url in urls:
         report = client.url_report(url)
         if report == "Not Found":
-            markdown += f'URL: {url} not found'
+            markdown += f'URL: {url} not found\n'
             continue
         outputs = {'Data': report['url']}
         dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
