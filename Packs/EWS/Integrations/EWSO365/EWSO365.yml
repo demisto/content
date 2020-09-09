@@ -1036,6 +1036,113 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
+  - arguments:
+    - default: true
+      description: Email addresses for the 'To' field. Supports comma-separated values.
+      isArray: true
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: Email addresses for the 'Cc' field. Supports comma-separated values.
+      isArray: true
+      name: cc
+      required: false
+      secret: false
+    - default: false
+      description: Email addresses for the 'Bcc' field. Supports comma-separated values.
+      isArray: true
+      name: bcc
+      required: false
+      secret: false
+    - default: false
+      description: The email subject.
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
+      description: The content (body) of the email (in plain text).
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: The content (body) of the email (in HTML format).
+      isArray: false
+      name: htmlBody
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of War Room entry IDs that contain
+        the files to attach to the email.
+      isArray: true
+      name: attachIDs
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list to rename file names of corresponding attachment
+        IDs. For example, rename the first two files - attachNames=file_name1,file_name2. rename
+        first and third file - attachNames=file_name1,,file_name3)
+      isArray: true
+      name: attachNames
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of CIDs to embed attachments inside the
+        email itself.
+      isArray: true
+      name: attachCIDs
+      required: false
+      secret: false
+    - default: false
+      description: A name for the attached file. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
+      isArray: true
+      name: transientFile
+      required: false
+      secret: false
+    - default: false
+      description: Content for the attached file. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+        2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
+      isArray: true
+      name: transientFileContent
+      required: false
+      secret: false
+    - default: false
+      description: CID for the attached file if it's inline. You can pass multiple files in a comma-separated list, e.g., transientFile="t1.txt,temp.txt,t3.txt"
+        transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
+      isArray: true
+      name: transientFileCID
+      required: false
+      secret: false
+    - default: false
+      description: 'Replace {varname} variables with values from this argument. Expected
+      values are in the form of a JSON document, such ase {"varname": {"value": "some
+      value", "key": "context key"}}. Each var name can either be provided with
+      the value or a context key from which to retrieve the value.'
+      isArray: false
+      name: templateParams
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of additional headers in the format: headerName=headerValue.
+      For example: "headerName1=headerValue1,headerName2=headerValue2".'
+      isArray: true
+      name: additionalHeader
+      required: false
+      secret: false
+    - default: false
+      description: Raw email message. If provided, all other arguments will be ignored except
+        "to", "cc", and "bcc".
+      isArray: false
+      name: raw_message
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends an email.
+    execution: false
+    name: send-mail
   dockerimage: demisto/py3ews:1.0.0.10664
   feed: false
   isfetch: true
