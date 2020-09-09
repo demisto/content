@@ -325,7 +325,7 @@ class Client(BaseClient):
             str. Authentication token.
         """
         last_token_fetched_expiration_time = demisto.getIntegrationContext().get('expiration_time')
-        current_time = int(datetime.now().strftime('%s'))
+        current_time = int(datetime.now().timestamp())
 
         if last_token_fetched_expiration_time and last_token_fetched_expiration_time > current_time:
             auth_token = demisto.getIntegrationContext().get('auth_token')
