@@ -5444,7 +5444,7 @@ def panorama_show_location_ip_command():
 
 
 @logger
-def panorama_get_licence():
+def panorama_get_licence() -> Dict:
     params = {
         'type': 'op',
         'cmd': '<request><license><info/></license></request>',
@@ -5521,7 +5521,7 @@ def prettify_data_filtering_rule(rule: Dict) -> Dict:
     return pretty_rule
 
 
-def prettify_data_filtering_rules(rules: Dict) -> Union[List[Dict], Dict]:
+def prettify_data_filtering_rules(rules: Dict) -> List[Dict]:
     """
 
     Args:
@@ -5536,7 +5536,7 @@ def prettify_data_filtering_rules(rules: Dict) -> Union[List[Dict], Dict]:
 
 
 @logger
-def get_security_profile(xpath: str):
+def get_security_profile(xpath: str) -> Dict:
     params = {
         'action': 'get',
         'type': 'config',
@@ -5728,7 +5728,7 @@ def get_security_profiles_command():
 
 
 @logger
-def apply_security_profile(pre_post: str, rule_name: str, profile_type: str, profile_name: str):
+def apply_security_profile(pre_post: str, rule_name: str, profile_type: str, profile_name: str) -> Dict:
     params = {
         'action': 'set',
         'type': 'config',
@@ -5759,7 +5759,7 @@ def apply_security_profile_command():
 
 
 @logger
-def get_ssl_decryption_rules(xpath: str):
+def get_ssl_decryption_rules(xpath: str) -> Dict:
     params = {
         'action': 'get',
         'type': 'config',
@@ -5782,27 +5782,43 @@ def get_ssl_decryption_rules_command():
     else:
         xpath = XPATH_RULEBASE
     result = get_ssl_decryption_rules(xpath)
-    ssl_decryption_rules = result.get('response', {}).get('result', {}).get('rules', {}).get('entry', {})
+    ssl_decryption_rules = result.get('response', {}).get('result', {}).get('rules', {}).get('entry')
     if '@dirtyId' in ssl_decryption_rules:
         demisto.debug(f'Found uncommitted item:\n{ssl_decryption_rules}')
         raise Exception('Please commit the instance prior to getting the ssl decryption rules.')
-
-    for item in ssl_decryption_rules:
-        content.append({
-            'Name': item.get('@name'),
-            'UUID': item.get('@uuid'),
-            'Target': item.get('target'),
-            'Category': item.get('category'),
-            'Service': item.get('service').get('member'),
-            'Type': item.get('type'),
-            'From': item.get('from').get('member'),
-            'To': item.get('to').get('member'),
-            'Source': item.get('source').get('member'),
-            'Destination': item.get('destination', {}).get('member'),
-            'Source-user': item.get('source-user', {}).get('member'),
-            'Action': item.get('action'),
-            'Description': item.get('description')
-        })
+    if isinstance(ssl_decryption_rules, list):
+        for item in ssl_decryption_rules:
+            content.append({
+                'Name': item.get('@name'),
+                'UUID': item.get('@uuid'),
+                'Target': item.get('target'),
+                'Category': item.get('category'),
+                'Service': item.get('service', {}).get('member'),
+                'Type': item.get('type'),
+                'From': item.get('from').get('member'),
+                'To': item.get('to').get('member'),
+                'Source': item.get('source').get('member'),
+                'Destination': item.get('destination', {}).get('member'),
+                'Source-user': item.get('source-user', {}).get('member'),
+                'Action': item.get('action'),
+                'Description': item.get('description')
+            })
+    else:
+        content = {
+            'Name': ssl_decryption_rules.get('@name'),
+            'UUID': ssl_decryption_rules.get('@uuid'),
+            'Target': ssl_decryption_rules.get('target'),
+            'Category': ssl_decryption_rules.get('category'),
+            'Service': ssl_decryption_rules.get('service', {}).get('member'),
+            'Type': ssl_decryption_rules.get('type'),
+            'From': ssl_decryption_rules.get('from').get('member'),
+            'To': ssl_decryption_rules.get('to').get('member'),
+            'Source': ssl_decryption_rules.get('source').get('member'),
+            'Destination': ssl_decryption_rules.get('destination', {}).get('member'),
+            'Source-user': ssl_decryption_rules.get('source-user', {}).get('member'),
+            'Action': ssl_decryption_rules.get('action'),
+            'Description': ssl_decryption_rules.get('description')
+        }
 
     headers = ['Name', 'UUID', 'Description', 'Target', 'Service', 'Category', 'Type', 'From', 'To', 'Source',
                'Destination', 'Action', 'Source-user']
@@ -5849,6 +5865,8 @@ def prettify_profile_rule(rule: Dict) -> Dict:
         pretty_rule['Packet-capture'] = rule['packet-capture']
     if '@maxver' in rule:
         pretty_rule['Max_version'] = rule['@maxver']
+    if 'sinkhole' in rule:
+        pretty_rule['Sinkhole'] = {}
     if 'sinkhole' in rule and 'ipv4-address' in rule['sinkhole']:
         pretty_rule['Sinkhole']['IPV4'] = rule['sinkhole']['ipv4-address']
     if 'sinkhole' in rule and 'ipv6-address' in rule['sinkhole']:
@@ -5864,7 +5882,7 @@ def prettify_profile_rule(rule: Dict) -> Dict:
     return pretty_rule
 
 
-def prettify_profiles_rules(rules: Dict) -> Union[List, Dict]:
+def prettify_profiles_rules(rules: Dict) -> List:
     """
     Args:
         rules: The rules to prettify.
@@ -5899,7 +5917,7 @@ def get_anti_spyware_best_practice() -> Dict:
 def get_anti_spyware_best_practice_command():
 
     result = get_anti_spyware_best_practice()
-    spyware_profile = result.get('response', {}).get('result', {}).get('spyware').get('entry', {})
+    spyware_profile = result.get('response', {}).get('result', {}).get('spyware').get('entry', [])
     strict_profile = next(item for item in spyware_profile if item['@name'] == 'strict')
 
     botnet_domains = strict_profile.get('botnet-domains', {}).get('lists', {}).get('entry', [])
@@ -6084,7 +6102,7 @@ def prettify_wildfire_rule(rule: Dict) -> Dict:
     return pretty_rule
 
 
-def prettify_wildfire_rules(rules: Dict) -> Union[List, Dict]:
+def prettify_wildfire_rules(rules: Dict) -> List:
     """
     Args:
         rules: WildFire rules to prettify.
@@ -6163,7 +6181,7 @@ def set_xpath_wildfire(template: str = None) -> str:
 
 
 @logger
-def get_wildfire_system_config(template: str):
+def get_wildfire_system_config(template: str) -> Dict:
 
     params = {
         'action': 'get',
@@ -6177,7 +6195,7 @@ def get_wildfire_system_config(template: str):
 
 
 @logger
-def get_wildfire_update_schedule(template: str):
+def get_wildfire_update_schedule(template: str) -> Dict:
     params = {
         'action': 'get',
         'type': 'config',
@@ -6190,7 +6208,7 @@ def get_wildfire_update_schedule(template: str):
     return result
 
 
-def get_wildfire_system_config_command():
+def get_wildfire_configuration_command():
 
     file_size = []
     template = demisto.args().get('template')
@@ -6205,39 +6223,33 @@ def get_wildfire_system_config_command():
         })
 
     report_grayware_file = system_config.get('report-grayware-file') or 'No'
+    human_readable = tableToMarkdown(f'WildFire Configuration\n Report Grayware File: {report_grayware_file}',
+                                     file_size, ['Name', 'Size-limit'], removeNull=True)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'WildFire Configuration\n Report Grayware File: {report_grayware_file}',
-                                         file_size, ['Name', 'Size-limit'], removeNull=True),
-        'EntryContext': {"Panorama.WildFire(val.Name == obj.Name)": file_size}
-    })
+    result_schedule = get_wildfire_update_schedule(template)
 
-
-def get_wildfire_update_schedule_command():
-    template = demisto.args().get('template')
-    result = get_wildfire_update_schedule(template)
-
-    schedule = result.get('response', {}).get('result', {}).get('wildfire')
+    schedule = result_schedule.get('response', {}).get('result', {}).get('wildfire')
     if '@dirtyId' in schedule:
         demisto.debug(f'Found uncommitted item:\n{schedule}')
         raise Exception('Please commit the instance prior to getting the WildFire configuration.')
 
+    human_readable += tableToMarkdown('The updated schedule for Wildfire', schedule)
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('The updated schedule for Wildfire', schedule),
-        'EntryContext': {"Panorama.WildFire": schedule}
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Panorama.WildFire(val.Name == obj.Name)': file_size,
+            'Panorama.WildFire.Schedule': schedule
+        }
     })
 
 
 @logger
-def enforce_wildfire_system_config(template: str):
+def enforce_wildfire_system_config(template: str) -> Dict:
     params = {
         'action': 'set',
         'type': 'config',
@@ -6274,22 +6286,19 @@ def enforce_wildfire_schedule(template: str):
     return result
 
 
-def enforce_wildfire_system_config_command():
+def enforce_wildfire_best_practice_command():
 
     template = demisto.args().get('template')
     enforce_wildfire_system_config(template)
-    demisto.results('WildFire file upload for all file types is set to the maximum size.')
-
-
-def enforce_wildfire_schedule_command():
-    template = demisto.args().get('template')
     enforce_wildfire_schedule(template)
+
     demisto.results('The schedule was updated according to the best practice.'
-                    '\nRecurring every minute with the action of "download and install"')
+                    '\nRecurring every minute with the action of "download and install"\n'
+                    'The file upload for all file types is set to the maximum size.')
 
 
 @logger
-def url_filtering_block_default_categories(profile_name: str):
+def url_filtering_block_default_categories(profile_name: str) -> Dict:
 
     params = {
         'action': 'set',
@@ -6378,7 +6387,7 @@ def get_url_filtering_best_practice_command():
 
 
 @logger
-def create_antivirus_best_practice_profile(profile_name: str):
+def create_antivirus_best_practice_profile(profile_name: str) -> Dict:
     params = {
         'action': 'set',
         'type': 'config',
@@ -6407,7 +6416,7 @@ def create_antivirus_best_practice_profile_command():
 
 
 @logger
-def create_anti_spyware_best_practice_profile(profile_name: str):
+def create_anti_spyware_best_practice_profile(profile_name: str) -> Dict:
 
     params = {
         'action': 'set',
@@ -6439,7 +6448,7 @@ def create_anti_spyware_best_practice_profile_command():
 
 
 @logger
-def create_vulnerability_best_practice_profile(profile_name: str):
+def create_vulnerability_best_practice_profile(profile_name: str) -> Dict:
 
     params = {
         'action': 'set',
@@ -6495,7 +6504,7 @@ def create_vulnerability_best_practice_profile_command():
 
 
 @logger
-def create_url_filtering_best_practice_profile(profile_name: str):
+def create_url_filtering_best_practice_profile(profile_name: str) -> Dict:
 
     params = {
         'action': 'set',
@@ -6571,7 +6580,7 @@ def create_url_filtering_best_practice_profile_command():
 
 
 @logger
-def create_file_blocking_best_practice_profile(profile_name: str):
+def create_file_blocking_best_practice_profile(profile_name: str) -> Dict:
     params = {
         'action': 'set',
         'type': 'config',
@@ -6602,7 +6611,7 @@ def create_file_blocking_best_practice_profile_command():
 
 
 @logger
-def create_wildfire_best_practice_profile(profile_name: str):
+def create_wildfire_best_practice_profile(profile_name: str) -> Dict:
     params = {
         'action': 'set',
         'type': 'config',
@@ -6917,15 +6926,13 @@ def main():
             get_ssl_decryption_rules_command()
 
         elif demisto.command() == 'panorama-get-wildfire-configuration':
-            get_wildfire_system_config_command()
-            get_wildfire_update_schedule_command()
+            get_wildfire_configuration_command()
 
         elif demisto.command() == 'panorama-get-wildfire-best-practice':
             get_wildfire_best_practice_command()
 
         elif demisto.command() == 'panorama-enforce-wildfire-best-practice':
-            enforce_wildfire_system_config_command()
-            enforce_wildfire_schedule_command()
+            enforce_wildfire_best_practice_command()
 
         elif demisto.command() == 'panorama-url-filtering-block-default-categories':
             url_filtering_block_default_categories_command()
