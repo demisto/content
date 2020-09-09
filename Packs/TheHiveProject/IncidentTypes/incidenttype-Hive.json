@@ -11,6 +11,7 @@
  "layout": "2772b108-f1f6-43ad-829e-d3621f08f5ef",
  "locked": false,
  "name": "Hive",
+ "description": "This is the default incident type for Hive generated incidents",
  "readonly": false,
  "reputationCalc": 0,
  "system": false,
