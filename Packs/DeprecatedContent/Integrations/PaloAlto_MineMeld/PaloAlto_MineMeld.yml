@@ -103,7 +103,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: When set to "True", only updates indicators that are added or removed. When set to "False", when adding
-      or removing an indicator, the update time for all indicators will be changed.
+        or removing an indicator, the update time for all indicators will be changed.
       isArray: false
       name: stateless
       predefined:
