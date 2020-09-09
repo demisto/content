@@ -373,7 +373,7 @@ def main(args):
                                                    first_run, xdr_alerts_field, xdr_file_artifacts_field,
                                                    xdr_network_artifacts_field, incident_in_demisto,playbook_to_run,
                                                    verbose)
-    except Exception as ex:
+    except Exception:
         if verbose:
             raise
 
