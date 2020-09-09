@@ -1,5 +1,5 @@
 Lacework is focused on giving customers visibility and control over their cloud operations at cloud scale to the monitoring of all activities across all cloud components.
-This integration was integrated and tested with version xx of Lacework
+This integration was integrated and tested with version 3.32 and higher of Lacework
 ## Configure Lacework on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

@@ -56,11 +56,18 @@ def create_entry(title, data, ec):
 
 def format_compliance_data(compliance_data):
 
-    return CommandResults(
-        outputs_prefix='Lacework.ComplianceReport.recommendations',
-        outputs_key_field=['reportTime'],
-        outputs=compliance_data['data'][0]['recommendations']
-    )
+    if len(compliance_data['data']) > 0:
+        return CommandResults(
+            outputs_prefix='Lacework.ComplianceReport.recommendations',
+            outputs_key_field=['reportTime'],
+            outputs=compliance_data['data'][0]['recommendations']
+        )
+    else:
+        return {
+            "Type": entryTypes["error"],
+            "ContentsFormat": formats["text"],
+            "Contents": 'No compliance data was returned.'
+        }
 
 
 ''' COMMANDS FUNCTIONS '''
@@ -247,6 +254,7 @@ def get_host_vulnerabilities():
     start_time = demisto.args().get('start_time', None)
     end_time = demisto.args().get('end_time', None)
     cve = demisto.args().get('cve', None)
+    limit = demisto.args().get('limit', None)
 
     response = lacework_client.vulnerabilities.get_host_vulnerabilities(fixable=fixable,
                                                                         namespace=namespace,
@@ -254,6 +262,11 @@ def get_host_vulnerabilities():
                                                                         start_time=start_time,
                                                                         end_time=end_time,
                                                                         cve=cve)
+
+    # If a limit is set, then use it
+    if limit:
+        limit = int(limit)
+        response['data'] = response['data'][0:limit]
 
     ec = {"Lacework.Vulnerability.Host(val.last_evaluation_time === obj.last_evaluation_time)": response['data']}
     return create_entry("Lacework Host Vulnerability Data",

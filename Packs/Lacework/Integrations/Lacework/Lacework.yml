@@ -568,7 +568,8 @@ script:
       description: The instance name of the machine associated with the event.
       type: String
     - contextPath: Lacework.Event.ENTITY_MAP.Machine.CPU_PERCENTAGE
-      description: The CPU utiliztion percentage of the machine associated with the event.
+      description: The CPU utiliztion percentage of the machine associated with the
+        event.
       type: Number
     - contextPath: Lacework.Event.ENTITY_MAP.Machine.INTERNAL_IP_ADDRESS
       description: The internal IP of the machine associated with the event.
@@ -592,7 +593,8 @@ script:
       description: The time when the container was first seen.
       type: Date
     - contextPath: Lacework.Event.ENTITY_MAP.Container.POD_NAMESPACE
-      description: The pod namespace the container associated with the event resides within.
+      description: The pod namespace the container associated with the event resides
+        within.
       type: String
     - contextPath: Lacework.Event.ENTITY_MAP.Container.POD_IP_ADDR
       description: The pod IP address of the container associated with the event.
@@ -601,22 +603,27 @@ script:
       description: The hostname used in a DNS query associated with the event.
       type: String
     - contextPath: Lacework.Event.ENTITY_MAP.DnsName.PORT_LIST
-      description: The ports used to communicate to a specific DNS name associated with the event.
+      description: The ports used to communicate to a specific DNS name associated
+        with the event.
       type: Number
     - contextPath: Lacework.Event.ENTITY_MAP.DnsName.TOTAL_IN_BYTES
-      description: The total bytes in for a specific DNS name associated with the event.
+      description: The total bytes in for a specific DNS name associated with the
+        event.
       type: Number
     - contextPath: Lacework.Event.ENTITY_MAP.DnsName.TOTAL_OUT_BYTES
-      description: The total bytes out for a specific DNS name associated with the event.
+      description: The total bytes out for a specific DNS name associated with the
+        event.
       type: Number
     - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.IP_ADDRESS
       description: An IP address associated with the event.
       type: String
     - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.TOTAL_IN_BYTES
-      description: The total bytes in for a specific IP address associated with the event.
+      description: The total bytes in for a specific IP address associated with the
+        event.
       type: Number
     - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.TOTAL_OUT_BYTES
-      description: The total bytes out for a specific IP address associated with the event.
+      description: The total bytes out for a specific IP address associated with the
+        event.
       type: Number
     - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.THREAT_TAGS
       description: A treat tag associated with the IP.
@@ -628,7 +635,8 @@ script:
       description: The region that the IP address resides within.
       type: String
     - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.PORT_LIST
-      description: The ports used to communicate to the IP address associated with the event.
+      description: The ports used to communicate to the IP address associated with
+        the event.
       type: Number
     - contextPath: Lacework.Event.ENTITY_MAP.IpAddress.FIRST_SEEN_TIME
       description: The time when the IP address was first seen.
@@ -643,10 +651,12 @@ script:
       description: The start time of the process associated with the event.
       type: Date
     - contextPath: Lacework.Event.ENTITY_MAP.Process.CMDLINE
-      description: The command-line entry used to run the process associated with the event.
+      description: The command-line entry used to run the process associated with
+        the event.
       type: String
     - contextPath: Lacework.Event.ENTITY_MAP.Process.CPU_PERCENTAGE
-      description: The CPU utilization percentage of the process associated with the event.
+      description: The CPU utilization percentage of the process associated with the
+        event.
       type: Number
     - contextPath: Lacework.Event.ENTITY_MAP.FileDataHash.FILEDATA_HASH
       description: The hash of the binary associated with the event.
@@ -709,16 +719,20 @@ script:
       description: The account ID of the CloudTrail user associated with the event.
       type: String
     - contextPath: Lacework.Event.ENTITY_MAP.CT_User.MFA
-      description: An integer representing whether MFA was used for the CloudTrail user.
+      description: An integer representing whether MFA was used for the CloudTrail
+        user.
       type: Number
     - contextPath: Lacework.Event.ENTITY_MAP.CT_User.API_LIST
-      description: A list of APIs used by the CloudTrail user associated with the event.
+      description: A list of APIs used by the CloudTrail user associated with the
+        event.
       type: String
     - contextPath: Lacework.Event.ENTITY_MAP.CT_User.REGION_LIST
-      description: A list of regions used by the CloudTrail user associated with the event.
+      description: A list of regions used by the CloudTrail user associated with the
+        event.
       type: String
     - contextPath: Lacework.Event.ENTITY_MAP.CT_User.PRINCIPAL_ID
-      description: The principal ID used by the CloudTrail user associated with the event.
+      description: The principal ID used by the CloudTrail user associated with the
+        event.
       type: String
     - contextPath: Lacework.Event.ENTITY_MAP.Resource.NAME
       description: The name of the resource associated with the event.
@@ -891,46 +905,58 @@ script:
       description: The package namespaces that exist in the container image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.fix_available
-      description: A variable representing if a fix is available for a vulnerability in the container image layer.
+      description: A variable representing if a fix is available for a vulnerability
+        in the container image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.version
       description: The package versions that exist in the contianer image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.vulnerabilities.name
-      description: The vulnerability names that exist in packages in the container image layer.
+      description: The vulnerability names that exist in packages in the container
+        image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.vulnerabilities.description
-      description: The vulnerability descriptions that exist in packages in the container image layer.
+      description: The vulnerability descriptions that exist in packages in the container
+        image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.vulnerabilities.link
-      description: The informational links for vulnerabilities that exist in packages in the container image layer.
+      description: The informational links for vulnerabilities that exist in packages
+        in the container image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.vulnerabilities.severity
-      description: The vulnerability severities that exist in packages in the container image layer.
+      description: The vulnerability severities that exist in packages in the container
+        image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.vulnerabilities.fix_version
-      description: The vulnerability fix versions that exist for packages in the container image layer.
+      description: The vulnerability fix versions that exist for packages in the container
+        image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.fixed_version
-      description: The fixed version of vulnerabilities in packages of the container image layer.
+      description: The fixed version of vulnerabilities in packages of the container
+        image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.host_count
       description: The host count of the packages in the container image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.severity
-      description: The severity of package vulnerabilities of the container image layer.
+      description: The severity of package vulnerabilities of the container image
+        layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.cve_link
-      description: The informational links for package vulnerabilities in the container image layer.
+      description: The informational links for package vulnerabilities in the container
+        image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.cvss_score
-      description: The CVSS score for package vulnerabilities in the container image layer.
+      description: The CVSS score for package vulnerabilities in the container image
+        layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.cvss_v3_score
-      description: The CVSS v3 score for package vulnerabilities in the container image layer.
+      description: The CVSS v3 score for package vulnerabilities in the container
+        image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.cvss_v2_score
-      description: The CVSS v2 score for package vulnerabilities in the container image layer.
+      description: The CVSS v2 score for package vulnerabilities in the container
+        image layer.
       type: String
     - contextPath: Lacework.Vulnerability.Container.image.image_layers.packages.status
       description: The status for package vulnerabilities in the container image layer.
@@ -1014,6 +1040,12 @@ script:
         results.
       isArray: false
       name: namespace
+      required: false
+      secret: false
+    - default: false
+      description: An integer representing the maximum number of results to return.
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
