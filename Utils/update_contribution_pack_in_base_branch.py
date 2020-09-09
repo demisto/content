@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import os
 import shutil
 import sys
 
@@ -25,7 +26,10 @@ def main():
     pack_dir = f'Packs/{pack_dir_name}'
 
     try:
-        shutil.rmtree(pack_dir)
+        if os.path.isdir(pack_dir):
+            # Remove existing pack
+            shutil.rmtree(pack_dir)
+
         commands = [
             f'git remote add {repo} git@github.com:{repo}/content.git',
             f'git fetch {repo} {branch}',
