@@ -1,4 +1,4 @@
-comment: Common Microsoft code that will be appended into each Microsoft integration
+comment: Common Microsoft code that is appended to each Microsoft integration.
   when it's deployed
 commonfields:
   id: MicrosoftApiModule

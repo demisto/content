@@ -70,7 +70,7 @@ script:
       secret: false
     - default: false
       description: The timespan over which to query data. This is an ISO8601 time
-        period value. This timespan is applied in addition to any that are specified
+        period value. This timespan is applied in addition to any timespans specified
         in the query expression.
       isArray: false
       name: timespan
@@ -94,7 +94,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of saved searches to return.
+      description: The maximum number of saved searches to return. Deafault is 50.
       isArray: false
       name: limit
       required: false
@@ -118,17 +118,17 @@ script:
       description: The ETag of the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.category
-      description: The category of the saved search. This helps the user to find a
-        saved search faster.
+      description: The category of the saved search. This helps users quickly find a
+        saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.displayName
-      description: Saved search display name.
+      description: Display name of the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.functionAlias
-      description: The function alias if query serves as a function.
+      description: The function alias if the query serves as a function.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.functionParameters
-      description: 'The optional function parameters if query serves as a function.
+      description: 'The optional function parameters if the query serves as a function.
         Value should be in the following format: ''param-name1:type1 = default_value1,
         param-name2:type2 = default_value2''. For more examples and proper syntax
         please refer to https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions'
@@ -140,16 +140,16 @@ script:
       description: The tags attached to the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.version
-      description: The version number of the query language. The current version is
-        2 and is the default.
+      description: The version number of the query language. The current version and default is
+        2.
       type: Number
     - contextPath: AzureLogAnalytics.SavedSearch.type
-      description: The type of the resource, e.g. Microsoft.Compute/virtualMachines
+      description: The resource type, e.g., Microsoft.Compute/virtualMachines
         or Microsoft.Storage/storageAccounts.
       type: String
   - arguments:
     - default: false
-      description: The id of the saved search.
+      description: The ID of the saved search.
       isArray: false
       name: saved_search_id
       required: true
@@ -166,20 +166,20 @@ script:
       description: The ETag of the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.category
-      description: The category of the saved search. This helps the user to find a
-        saved search faster.
+      description: The category of the saved search. This helps users quickly find a
+        saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.displayName
-      description: Saved search display name.
+      description: The display name of the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.functionAlias
-      description: The function alias if query serves as a function.
+      description: The function alias if the query serves as a function.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.functionParameters
-      description: 'The optional function parameters if query serves as a function.
+      description: 'The optional function parameters if the query serves as a function.
         Value should be in the following format: ''param-name1:type1 = default_value1,
         param-name2:type2 = default_value2''. For more examples and proper syntax
-        please refer to https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions'
+        see the Microsoft documention, https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions'
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.query
       description: The query expression for the saved search.
@@ -188,16 +188,16 @@ script:
       description: The tags attached to the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.version
-      description: The version number of the query language. The current version is
-        2 and is the default.
+      description: The version number of the query language. The current version and default is
+        2.
       type: Number
     - contextPath: AzureLogAnalytics.SavedSearch.type
-      description: The type of the resource, e.g. Microsoft.Compute/virtualMachines
+      description: The resource type, e.g., Microsoft.Compute/virtualMachines
         or Microsoft.Storage/storageAccounts.
       type: String
   - arguments:
     - default: false
-      description: The id of the saved search.
+      description: The ID of the saved search.
       isArray: false
       name: saved_search_id
       required: true
@@ -210,26 +210,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: The category of the saved search. This helps the user to find a
-        saved search faster.
+      description: The category of the saved search. This helps users quickly find a
+        saved search.
       isArray: false
       name: category
       required: true
       secret: false
     - default: false
-      description: Saved search display name.
+      description: The display name of the saved search.
       isArray: false
       name: display_name
       required: true
       secret: false
     - default: false
-      description: The function alias if query serves as a function.
+      description: The function alias if the query serves as a function.
       isArray: false
       name: function_alias
       required: false
       secret: false
     - default: false
-      description: 'The optional function parameters if query serves as a function.
+      description: 'The optional function parameters if the query serves as a function.
         Value should be in the following format: ''param-name1:type1 = default_value1,
         param-name2:type2 = default_value2''. For more examples and proper syntax
         please refer to https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions.'
@@ -256,23 +256,23 @@ script:
     name: azure-log-analytics-create-or-update-saved-search
     outputs:
     - contextPath: AzureLogAnalytics.SavedSearch.id
-      description: The id of the saved search.
+      description: The ID of the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.etag
       description: The ETag of the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.category
-      description: The category of the saved search. This helps the user to find a
-        saved search faster.
+      description: The category of the saved search. This helps users quickly find a
+        saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.displayName
-      description: Saved search display name.
+      description: The display name of the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.functionAlias
-      description: The function alias if query serves as a function.
+      description: The function alias if the query serves as a function.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.functionParameters
-      description: 'The optional function parameters if query serves as a function.
+      description: 'The optional function parameters if the query serves as a function.
         Value should be in the following format: ''param-name1:type1 = default_value1,
         param-name2:type2 = default_value2''. For more examples and proper syntax
         please refer to https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions'
@@ -284,16 +284,16 @@ script:
       description: The tags attached to the saved search.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.version
-      description: The version number of the query language. The current version is
-        2 and is the default.
+      description: The version number of the query language. The current version and default is
+        2.
       type: Number
     - contextPath: AzureLogAnalytics.SavedSearch.type
-      description: The type of the resource, e.g. Microsoft.Compute/virtualMachines
+      description: The resource type, e.g., Microsoft.Compute/virtualMachines
         or Microsoft.Storage/storageAccounts.
       type: String
   - arguments:
     - default: false
-      description: The id of the saved search.
+      description: The ID of the saved search.
       isArray: false
       name: saved_search_id
       required: true

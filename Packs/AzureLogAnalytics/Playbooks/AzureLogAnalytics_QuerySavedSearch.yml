@@ -40,7 +40,7 @@ tasks:
       id: a32b7b41-e4ab-4bb9-8241-d07518cad2db
       version: -1
       name: Get saved search details
-      description: Gets a specified saved search from the Log Analytics workspace.
+      description: Gets thespecified saved search from the Log Analytics workspace.
       script: '|||azure-log-analytics-get-saved-search-by-id'
       type: regular
       iscommand: true
@@ -147,7 +147,7 @@ inputs:
   value: {}
   required: false
   description: The timespan over which to query data. This is an ISO8601 time period
-    value. This timespan is applied in addition to any that are specified in the query
+    value. This timespan is applied in addition to timespans that are specified in the query
     expression.
   playbookInputQuery: null
 outputs:
