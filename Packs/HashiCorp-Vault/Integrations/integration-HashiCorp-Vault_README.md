@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Secure, store and tightly control access to tokens, passwords, certificates, encryption keys for protecting secrets and other sensitive data using HashiCorp Vault. This integration fetches credentials. For more information, see <a href="https://support.demisto.com/hc/en-us/articles/115002567894">Managing Credentials</a>.</p>
+<p>Secure, store and tightly control access to tokens, passwords, certificates, encryption keys for protecting secrets and other sensitive data using HashiCorp Vault. This integration fetches credentials. For more information, see <a href="https://xsoar.pan.dev/docs/reference/articles/managing-credentials">Managing Credentials</a>.</p>
 <p>This integration was integrated and tested with version 0.11.5 of HashiCorp Vault.</p>
 <h2>Configure HashiCorp Vault on Demisto</h2>
 <ol>
