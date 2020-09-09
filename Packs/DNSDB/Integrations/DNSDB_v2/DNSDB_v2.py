@@ -521,6 +521,8 @@ def test_module(client, _):
     try:
         client.rate_limit()
         return 'ok'
+    except DemistoException:
+        raise
     except Exception as e:
         raise DemistoException from e
 
