@@ -61,9 +61,9 @@ def get_user_emails():
             msg = Parser().parsestr(msg_content)
             msg['index'] = index
             mails.append(msg)
-        except Exception as e:
+        except Exception:
             demisto.error("Failed to get email with index " + index + 'from the server.')
-            raise e
+            raise
 
     return mails
 
@@ -214,10 +214,14 @@ def parse_mail_parts(parts):
             if headers.get('content-transfer-encoding') == 'base64':
                 text = base64.b64decode(part._payload).decode('utf-8')
             elif headers.get('content-transfer-encoding') == 'quoted-printable':
-                decoded_string = quopri.decodestring(part._payload)
-                text = unicode(decoded_string, "utf-8")
+                str_utf8 = part._payload.decode('cp1252')
+                str_utf8 = str_utf8.encode('utf-8')
+                decoded_string = quopri.decodestring(str_utf8)
+                text = unicode(decoded_string, errors='ignore').encode("utf-8")
             else:
-                text = quopri.decodestring(part._payload)
+                str_utf8 = part._payload.decode('cp1252')
+                str_utf8 = str_utf8.encode('utf-8')
+                text = quopri.decodestring(str_utf8)
 
             if not isinstance(text, unicode):
                 text = text.decode('unicode-escape')
@@ -310,10 +314,10 @@ def fetch_incidents():
     for msg in messages:
         try:
             incident = mail_to_incident(msg)
-        except Exception as e:
+        except Exception:
             demisto.error("failed to create incident from email, index = {}, subject = {}, date = {}".format(
                 msg['index'], msg['subject'], msg['date']))
-            raise e
+            raise
 
         temp_date = datetime.strptime(
             incident['occurred'], DATE_FORMAT)
@@ -353,7 +357,7 @@ def main():
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
-        raise e
+        raise
     finally:
         close_pop3_server_connection()
 
