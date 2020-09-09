@@ -279,7 +279,6 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
             'packs': private_packs,
             'commit': current_commit_hash
         }
-        print_error(f"uploading. index when uploading is: {index}")
         json.dump(index, index_file, indent=4)
 
     index_zip_name = os.path.basename(index_folder_path)
@@ -318,7 +317,6 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
     core_packs_public_urls = []
     found_core_packs = set()
     for pack in os.scandir(index_folder_path):
-        print_error(f'current pack is:{pack.name}')
         if pack.is_dir() and pack.name in GCPConfig.CORE_PACKS_LIST:
             pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
 
@@ -392,7 +390,6 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
     """
     try:
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
-        print_error(f"metadata files are: {metadata_files}")
     except Exception as e:
         print_warning(f'Could not find metadata files in {private_index_path}: {str(e)}')
         return []
@@ -403,16 +400,12 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
     private_packs = []
     for metadata_file_path in metadata_files:
         try:
-            print_error("started try block")
-
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
             path_to_pack_in_artifacts = os.path.join(extract_destination_path, pack_id)
             is_changed_private_pack = is_private_build and pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
-                print_error("entered is_changed_private_pack")
-                print_error(subprocess.check_output(f'ls {path_to_pack_in_artifacts}', shell=True))
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
                           "r") as metadata_file:
                     metadata = json.load(metadata_file)
@@ -748,7 +741,6 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
     is_private_build = upload_config.is_private
 
     task_status, user_metadata = pack.load_user_metadata()
-    print_error(f"user_metadata after task is: {user_metadata}")
     if not task_status:
         pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
         pack.cleanup()
@@ -967,7 +959,6 @@ def main():
                                                                                                index_folder_path,
                                                                                                pack_names,
                                                                                                is_private_build)
-        print_error(f"private_packs are {private_packs}")
     else:  # skipping private packs
         print("Skipping index update of priced packs")
         private_packs = []
