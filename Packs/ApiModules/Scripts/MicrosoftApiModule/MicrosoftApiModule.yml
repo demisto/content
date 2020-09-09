@@ -13,6 +13,6 @@ tags:
 - server
 timeout: 0s
 type: python
-dockerimage: demisto/crypto:1.0.0.10277
+dockerimage: demisto/crypto:1.0.0.10743
 dependson: {
   }
