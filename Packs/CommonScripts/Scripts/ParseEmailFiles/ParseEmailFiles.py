@@ -43,7 +43,6 @@ reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member
 
 MAX_DEPTH_CONST = 3
-IS_NESTED_EML = False
 
 """
 https://github.com/vikramarsid/msg_parser
@@ -3420,7 +3419,6 @@ def unfold(s):
 
 def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False):
     global ENCODINGS_TYPES
-    global IS_NESTED_EML
 
     if max_depth == 0:
         return None, []
@@ -3528,7 +3526,6 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                         try:
                             f.write(file_content)
                             f.close()
-                            IS_NESTED_EML = True
                             inner_eml, inner_attached_emails = handle_eml(file_path=f.name,
                                                                           file_name=attachment_file_name,
                                                                           max_depth=max_depth - 1)
@@ -3551,7 +3548,11 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                         for indiv_msg in msgs:
                             msg = indiv_msg.get_payload()
                             attachment_file_name = indiv_msg.get_filename()
-                            msg_info = base64.b64decode(msg).decode('utf-8')
+                            try:
+                                # In some cases the body content is empty and cannot be decoded.
+                                msg_info = base64.b64decode(msg).decode('utf-8')
+                            except TypeError:
+                                msg_info = str(msg)
                             attached_emails.append(msg_info)
                             if attachment_file_name is None:
                                 attachment_file_name = "unknown_file_name{}".format(i)
@@ -3584,16 +3585,20 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 demisto.setContext('AttachmentName', attachment_file_name)
 
             elif part.get_content_type() == 'text/html':
+                # This line replaces a new line that starts with `..` to a newline that starts with `.`
+                # This is because SMTP duplicate dots for lines that start with `.` and get_payload() doesn't format
+                # this correctly
+                part._payload = part._payload.replace('=\r\n..', '=\r\n.')
                 html = get_utf_string(part.get_payload(decode=True), 'HTML')
 
             elif part.get_content_type() == 'text/plain':
                 text = get_utf_string(part.get_payload(decode=True), 'TEXT')
         email_data = None
         # if we are parsing a signed attachment there can be one of two options:
-        # 1. it is a wrapper and we can ignore the outer "email"
-        # 2. it is not a wrapper and will not get into recursion, therefore we need the second condition
+        # 1. it is 'multipart/signed' so it is probably a wrapper and we can ignore the outer "email"
+        # 2. if it is 'multipart/signed' but has 'to' address so it is actually a real mail.
         if 'multipart/signed' not in eml.get_content_type()\
-                or ('multipart/signed' in eml.get_content_type() and IS_NESTED_EML is False):
+                or ('multipart/signed' in eml.get_content_type() and extract_address_eml(eml, 'to')):
             email_data = {
                 'To': extract_address_eml(eml, 'to'),
                 'CC': extract_address_eml(eml, 'cc'),
@@ -3608,7 +3613,6 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'Format': eml.get_content_type(),
                 'Depth': MAX_DEPTH_CONST - max_depth
             }
-
         return email_data, attached_emails
 
 
@@ -3651,7 +3655,6 @@ def main():
         return_error('Minimum max_depth is 1, the script will parse just the top email')
 
     parse_only_headers = demisto.args().get('parse_only_headers', 'false').lower() == 'true'
-
     try:
         result = demisto.executeCommand('getFilePath', {'id': entry_id})
         if is_error(result):
@@ -3659,7 +3662,6 @@ def main():
 
         file_path = result[0]['Contents']['path']
         file_name = result[0]['Contents']['name']
-
         result = demisto.executeCommand('getEntry', {'id': entry_id})
         if is_error(result):
             return_error(get_error(result))

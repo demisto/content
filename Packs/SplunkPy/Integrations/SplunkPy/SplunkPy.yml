@@ -70,13 +70,13 @@ configuration:
   name: unsecure
   required: false
   type: 8
-- defaultvalue: index_earliest
+- defaultvalue: earliest_time
   display: Earliest time to fetch (the name of the Splunk field whose value defines
     the query's earliest time to fetch)
   name: earliest_fetch_time_fieldname
   required: false
   type: 0
-- defaultvalue: index_latest
+- defaultvalue: latest_time
   display: Latest time to fetch (the name of the Splunk field whose value defines
     the query's latest time to fetch)
   name: latest_fetch_time_fieldname
@@ -246,7 +246,7 @@ script:
       description: Comment to add to the notable event.
       isArray: false
       name: comment
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -630,7 +630,7 @@ script:
     execution: false
     name: splunk-kv-store-collection-delete-entry
   dockerimage45: demisto/splunksdk:1.0
-  dockerimage: demisto/splunksdk:1.0.0.8854
+  dockerimage: demisto/splunksdk:1.0.0.10663
   feed: false
   isfetch: true
   longRunning: false
@@ -642,5 +642,6 @@ script:
 tests:
 - SplunkPy-Test-V2
 - SplunkPy KV commands
+- SplunkPy parse-raw - Test
 defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper

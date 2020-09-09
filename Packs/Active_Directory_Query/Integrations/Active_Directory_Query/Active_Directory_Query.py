@@ -180,7 +180,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
     Args:
         search_base: the location in the DIT where the search will start
-        search_filte: LDAP query string
+        search_filter: LDAP query string
         attributes: the attributes to specify for each entrxy found in the DIT
 
     """
@@ -215,9 +215,9 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
         if (size_limit and size_limit <= total_entries) or (time_limit and time_diff >= time_limit) or (not cookie):
             break
 
-    # keep the raw entry for raw content (backward compatability)
+    # keep the raw entry for raw content (backward compatibility)
     raw = []
-    # flaten the entries
+    # flatten the entries
     flat = []
 
     for entry in entries:
@@ -337,8 +337,10 @@ def search_users(default_base_dn, page_size):
     attributes: List[str] = []
     custom_attributes: List[str] = []
 
-    # zero is actually no limitation
-    limit = int(args.get('limit', '0'))
+    # zero is actually no limitation, default is 20
+    limit = int(args.get('limit', '20'))
+    if limit <= 0:
+        limit = 20
 
     # default query - list all users
     query = "(&(objectClass=User)(objectCategory=person))"
@@ -1116,5 +1118,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
     main()

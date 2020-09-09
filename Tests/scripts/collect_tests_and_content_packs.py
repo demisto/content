@@ -76,6 +76,17 @@ class TestConf(object):
 
         return tested_integrations
 
+    def get_packs_of_collected_tests(self, collected_tests, id_set):
+        packs = set([])
+        if collected_tests:
+            for test_obj in id_set.get('TestPlaybooks', []):
+                for test_id, test_data in test_obj.items():
+                    test_obj_name = test_obj[test_id].get('name')
+                    test_obj_pack = test_obj[test_id].get('pack')
+                    if test_obj_name in collected_tests and test_obj_pack:
+                        packs.add(test_obj_pack)
+        return packs
+
     def get_packs_of_tested_integrations(self, collected_tests, id_set):
         packs = set([])
         tested_integrations = self.get_tested_integrations_for_collected_tests(collected_tests)
@@ -1175,6 +1186,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
 
+    packs_of_collected_tests = conf.get_packs_of_collected_tests(tests, id_set)
+    packs_to_install = packs_to_install.union(packs_of_collected_tests)
+
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
 
     return tests, packs_to_install
@@ -1218,12 +1232,17 @@ def create_filter_envs_file(from_version: str, to_version: str, two_before_ga=No
     two_before_ga = two_before_ga or AMI_BUILDS.get('TwoBefore-GA', '0').split('-')[0]
     one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
     ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
+    """
+    The environment naming is being phased out due to it being difficult to follow. In this case,
+    Demisto 6.0 is the GA, Demisto PreGA is (5.5), Demisto GA is one before GA (5.0), Demisto one
+    before GA is two before GA (4.5)
+    """
     envs_to_test = {
         'Demisto PreGA': True,
         'Demisto Marketplace': True,
-        'Demisto two before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
-        'Demisto one before GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
-        'Demisto GA': is_runnable_in_server_version(from_version, ga, to_version),
+        'Demisto one before GA': is_runnable_in_server_version(from_version, two_before_ga, to_version),
+        'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
+        'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
     }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:

@@ -17,6 +17,7 @@ The required scope is Event streams.
     * __Cloud Base URL (e.g. https://api.crowdstrike.com)__
     * __Client ID__
     * __Client Secret__
+    * __Application ID__
     * __Event type to fetch__
     * __Offset to fetch events from__
     * __Incident type__
@@ -41,6 +42,8 @@ The required scope is Event streams.
    In order to fetch all events of all types, you can leave it empty.
    
    You can also add event type that is not listed, by entering it in the parameter value.
+    
+ - In order to run multiple clients (stream consumers) simultaneously, each integration instance should have unique application ID. The application ID can be of length up to 32 characters.
 
 ## Fetched Incidents Data
 Event metadata will be fetched as the incident details, which contain the following:
