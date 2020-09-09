@@ -12,3 +12,6 @@ ignore=IF107
 
 [file:incidentfield-IllusionBLACK_Decoy_ID.json]
 ignore=IF107
+
+[file:Smokescreen_IllusionBLACK.yml]
+ignore=IN126
