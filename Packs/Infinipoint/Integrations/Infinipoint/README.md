@@ -1,5 +1,3 @@
-Use the Infinipoint integration to retrieve security and policy incompliance events, vulnerabilities or incidents. Investigate and respond to events in real-time.
-This integration was integrated and tested with version xx of Infinipoint
 ## Configure Infinipoint on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -11,7 +9,7 @@ This integration was integrated and tested with version xx of Infinipoint
 | access_key | Access Key | True |
 | private_key | Private Key | True |
 | isFetch | Fetch incidents | False |
-| incident_type | Incident type | False |
+| incident_type | Incident type - event, alert | False |
 | max_fetch | Maximum number of incidents per fetch | False |
 | first_fetch | First fetch time | False |
 | insecure | Trust any certificate \(not secure\) | False |
@@ -61,20 +59,8 @@ Get Vulnerable Devices
         "Vulnerability": {
             "Devices": [
                 {
-                    "$device": "37dee181-dd6e-48ce-9591-19e803a41bd9",
-                    "$host": "OSX-Sign-Machine",
-                    "cve_id": null,
-                    "device_risk": 10,
-                    "device_risk_type": 4,
-                    "mac_address": "-",
-                    "os_name": "Mac OS X 10.15.3",
-                    "platform": "darwin",
-                    "software_name": null,
-                    "vulnerability_count": 103
-                },
-                {
-                    "$device": "25e862a4-18b2-4f48-a657-dcebd0b94726",
-                    "$host": "ubuntu",
+                    "$device": "XXXX-XXXX-XXXX-XXXX-XXXX",
+                    "$host": "ubuntu-test",
                     "cve_id": null,
                     "device_risk": 10,
                     "device_risk_type": 4,
@@ -85,8 +71,8 @@ Get Vulnerable Devices
                     "vulnerability_count": 245
                 },
                 {
-                    "$device": "22ddf738-7e1c-4f20-a9c7-07620d1f2110",
-                    "$host": "DESKTOP-U0QSLQ8",
+                    "$device": "XXXX-XXXX-YYYY-XXXX-YYYY",
+                    "$host": "DESKTOP-test",
                     "cve_id": null,
                     "device_risk": 6.34,
                     "device_risk_type": 3,
@@ -107,9 +93,9 @@ Get Vulnerable Devices
 >### Results
 >|$device|$host|cve_id|device_risk|device_risk_type|mac_address|os_name|platform|software_name|vulnerability_count|
 >|---|---|---|---|---|---|---|---|---|---|
->| 37dee181-dd6e-48ce-9591-19e803a41bd9 | OSX-Sign-Machine |  | 10 | 4 | - | Mac OS X 10.15.3 | darwin |  | 103 |
->| 25e862a4-18b2-4f48-a657-dcebd0b94726 | ubuntu |  | 10 | 4 | - | Ubuntu | ubuntu |  | 245 |
->| 22ddf738-7e1c-4f20-a9c7-07620d1f2110 | DESKTOP-U0QSLQ8 |  | 6.34 | 3 | - | Microsoft Windows 10 Enterprise Evaluation | windows |  | 83 |
+>| XXXX-XXXX-XXXX-XXXX-XXXX | OSX-Machine |  | 10 | 4 | - | Mac OS X 10.15.3 | darwin |  | 103 |
+>| XXXX-XXXX-XXXX-XXXX-YYYY | ubuntu |  | 10 | 4 | - | Ubuntu | ubuntu |  | 245 |
+>| XXXX-XXXX-XXXX-XXXX-WWWW | DESKTOP-Machine |  | 6.34 | 3 | - | Microsoft Windows 10 Enterprise Evaluation | windows |  | 83 |
 
 
 ### infinipoint-get-assets-programs
@@ -156,8 +142,8 @@ infinipoint get assets programs
         "Assets": {
             "Programs": [
                 {
-                    "$device": "25e862a4-18b2-4f48-a657-dcebd0b94726",
-                    "$host": "ubuntu",
+                    "$device": "XXXX-XXXX-XXXX-XXXX-XXXX",
+                    "$host": "ubuntu-VM",
                     "$time": "2020-08-04T10:30:37+00:00",
                     "$type": "csv",
                     "name": "xserver-xorg-video-vmware-hwe-18.04",
@@ -167,8 +153,8 @@ infinipoint get assets programs
                     "version": "1:13.3.0-2build1~18.04.1"
                 },
                 {
-                    "$device": "22ddf738-7e1c-4f20-a9c7-07620d1f2110",
-                    "$host": "DESKTOP-U0QSLQ8",
+                    "$device": "XXXX-XXXX-XXXX-XXXX-YYYY",
+                    "$host": "DESKTOP-VM",
                     "$time": "2020-07-13T10:52:59+00:00",
                     "$type": "csv",
                     "install_update_date": "2020-05-21",
@@ -189,9 +175,9 @@ infinipoint get assets programs
 >### Results
 >|$device|$host|$time|$type|name|os_type|program_exists|publisher|version|
 >|---|---|---|---|---|---|---|---|---|
->| cd7a8db7-673f-4e34-89be-b99e899e0807 | ubuntu | 2020-07-20T09:13:31+00:00 | csv | xserver-xorg-video-vmware-hwe-18.04 | 2 |  |  | 1:13.3.0-2build1~18.04.1 |
->| 25e862a4-18b2-4f48-a657-dcebd0b94726 | ubuntu | 2020-08-04T10:30:37+00:00 | csv | xserver-xorg-video-vmware-hwe-18.04 | 2 |  |  | 1:13.3.0-2build1~18.04.1 |
->| 22ddf738-7e1c-4f20-a9c7-07620d1f2110 | DESKTOP-U0QSLQ8 | 2020-07-13T10:52:59+00:00 | csv | VMware Tools | 1 | Found On Disk | VMware, Inc. | 11.0.5.15389592 |
+>| XXXX-XXXX-XXXX-XXXX-XXXX | ubuntu-VM | 2020-07-20T09:13:31+00:00 | csv | xserver-xorg-video-vmware-hwe-18.04 | 2 |  |  | 1:13.3.0-2build1~18.04.1 |
+>| XXXX-XXXX-XXXX-XXXX-YYYY | ubuntu-VM | 2020-08-04T10:30:37+00:00 | csv | xserver-xorg-video-vmware-hwe-18.04 | 2 |  |  | 1:13.3.0-2build1~18.04.1 |
+>| XXXX-XXXX-XXXX-XXXX-ZZZZ | DESKTOP-VM | 2020-07-13T10:52:59+00:00 | csv | VMware Tools | 1 | Found On Disk | VMware, Inc. | 11.0.5.15389592 |
 
 
 ### infinipoint-get-cve
@@ -362,12 +348,12 @@ infinipoint get cve
                 "cwe_id": "CWE-400",
                 "devices": [
                     {
-                        "$device": "37dee181-dd6e-48ce-9591-19e803a41bd9",
-                        "device_name_string": "OSX-Sign-Machine",
+                        "$device": "XXXX-XXXX-XXXX-XXXX-YYYY",
+                        "device_name_string": "OSX-Machine",
                         "device_os": "Mac OS X 10.15.3",
                         "device_risk": 10,
                         "is_managed": true,
-                        "map_id": "37dee181-dd6e-48ce-9591-19e803a41bd9CVE-2020-9859",
+                        "map_id": "XXXX-XXXX-XXXX-XXXX-YYYY",
                         "vulnerableProduct": "Mac OS X 10.15.3",
                         "vulnerableVersion": "Mac OS X 10.15.3"
                     }
@@ -382,12 +368,12 @@ infinipoint get cve
                 ],
                 "top_devices": [
                     {
-                        "$device": "37dee181-dd6e-48ce-9591-19e803a41bd9",
-                        "device_name_string": "OSX-Sign-Machine",
+                        "$device": "XXXX-XXXX-XXXX-XXXX-YYYY",
+                        "device_name_string": "OSX-Machine",
                         "device_os": "Mac OS X 10.15.3",
                         "device_risk": 10,
                         "is_managed": true,
-                        "map_id": "37dee181-dd6e-48ce-9591-19e803a41bd9CVE-2020-9859",
+                        "map_id": "XXXX-XXXX-XXXX-XXXX-YYYY",
                         "vulnerableProduct": "Mac OS X 10.15.3",
                         "vulnerableVersion": "Mac OS X 10.15.3"
                     }
@@ -403,7 +389,7 @@ infinipoint get cve
 >### Results
 >|campaign_intelligence|cve_description|cve_dynamic_data|cve_id|cwe_description|cwe_id|devices|scan_date|software_list|top_devices|
 >|---|---|---|---|---|---|---|---|---|---|
->| {'apt': 'Publicly Available Exploit', 'description': 'The zero-day vulnerability tracked as CVE-2020-9859 is exploited by the Unc0ver jailbreak tool ', 'targeted_countries': [''], 'targeted_industries': ['']} | A memory consumption issue was addressed with improved memory handling. This issue is fixed in iOS 13.5.1 and iPadOS 13.5.1, macOS Catalina 10.15.5 Supplemental Update, tvOS 13.4.6, watchOS 6.2.6. An application may be able to execute arbitrary code with kernel privileges. | infinipoint_base_metric: {"device_count": 1, "risk_level": 10, "attack_complexity": "10", "campaigns": 1, "exploits": 1, "trends_level": "10", "exploitability_risk": "3.9", "risk_label": "Critical", "risk_type": 4}<br/>base_metric_v2: {"vector_string": "AV:L/AC:L/Au:N/C:C/I:C/A:C", "access_vector": "LOCAL", "attack_complexity": "LOW", "authentication": "NONE", "confidentiality_impact": "COMPLETE", "integrity_impact": "COMPLETE", "availability_impact": "COMPLETE", "base_score": "7.2", "severity": "HIGH", "exploitability_score": "3.9", "impact_score": "10.0", "ac_insuf_info": "False", "obtain_all_privilege": "False", "obtain_other_privilege": "False", "obtain_user_privilege": "False", "user_interaction_required": "False"}<br/>base_metric_v3: {"vector_string": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H", "attack_vector": "LOCAL", "attack_complexity": "LOW", "privileges_required": "LOW", "user_interaction": "NONE", "scope": "UNCHANGED", "confidentiality_impact": "HIGH", "integrity_impact": "HIGH", "availability_impact": "HIGH", "base_score": "7.8", "base_severity": "HIGH", "exploitability_score": "1.8", "impact_score": "5.9"} | CVE-2020-9859 | Uncontrolled Resource Consumption (Resource Exhaustion) | CWE-400 | {'$device': '37dee181-dd6e-48ce-9591-19e803a41bd9', 'device_name_string': 'OSX-Sign-Machine', 'vulnerableProduct': 'Mac OS X 10.15.3', 'vulnerableVersion': 'Mac OS X 10.15.3', 'device_risk': 10, 'map_id': '37dee181-dd6e-48ce-9591-19e803a41bd9CVE-2020-9859', 'device_os': 'Mac OS X 10.15.3', 'is_managed': True} |  | {'cpe_name_string': 'Mac OS X 10.15.3 10.15.3', 'cpe_type': 'OS_ONLY', 'cpe_strings': []} | {'$device': '37dee181-dd6e-48ce-9591-19e803a41bd9', 'device_name_string': 'OSX-Sign-Machine', 'vulnerableProduct': 'Mac OS X 10.15.3', 'vulnerableVersion': 'Mac OS X 10.15.3', 'device_risk': 10, 'map_id': '37dee181-dd6e-48ce-9591-19e803a41bd9CVE-2020-9859', 'device_os': 'Mac OS X 10.15.3', 'is_managed': True} |
+>| {'apt': 'Publicly Available Exploit', 'description': 'The zero-day vulnerability tracked as CVE-2020-9859 is exploited by the Unc0ver jailbreak tool ', 'targeted_countries': [''], 'targeted_industries': ['']} | A memory consumption issue was addressed with improved memory handling. This issue is fixed in iOS 13.5.1 and iPadOS 13.5.1, macOS Catalina 10.15.5 Supplemental Update, tvOS 13.4.6, watchOS 6.2.6. An application may be able to execute arbitrary code with kernel privileges. | infinipoint_base_metric: {"device_count": 1, "risk_level": 10, "attack_complexity": "10", "campaigns": 1, "exploits": 1, "trends_level": "10", "exploitability_risk": "3.9", "risk_label": "Critical", "risk_type": 4}<br/>base_metric_v2: {"vector_string": "AV:L/AC:L/Au:N/C:C/I:C/A:C", "access_vector": "LOCAL", "attack_complexity": "LOW", "authentication": "NONE", "confidentiality_impact": "COMPLETE", "integrity_impact": "COMPLETE", "availability_impact": "COMPLETE", "base_score": "7.2", "severity": "HIGH", "exploitability_score": "3.9", "impact_score": "10.0", "ac_insuf_info": "False", "obtain_all_privilege": "False", "obtain_other_privilege": "False", "obtain_user_privilege": "False", "user_interaction_required": "False"}<br/>base_metric_v3: {"vector_string": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H", "attack_vector": "LOCAL", "attack_complexity": "LOW", "privileges_required": "LOW", "user_interaction": "NONE", "scope": "UNCHANGED", "confidentiality_impact": "HIGH", "integrity_impact": "HIGH", "availability_impact": "HIGH", "base_score": "7.8", "base_severity": "HIGH", "exploitability_score": "1.8", "impact_score": "5.9"} | CVE-2020-9859 | Uncontrolled Resource Consumption (Resource Exhaustion) | CWE-400 | {'$device': 'XXXX-XXXX-XXXX-XXXX-YYYY', 'device_name_string': 'OSX-Machine', 'vulnerableProduct': 'Mac OS X 10.15.3', 'vulnerableVersion': 'Mac OS X 10.15.3', 'device_risk': 10, 'map_id': 'XXXX-XXXX-XXXX-XXXX-YYYY', 'device_os': 'Mac OS X 10.15.3', 'is_managed': True} |  | {'cpe_name_string': 'Mac OS X 10.15.3 10.15.3', 'cpe_type': 'OS_ONLY', 'cpe_strings': []} | {'$device': 'XXXX-XXXX-XXXX-XXXX-YYYY', 'device_name_string': 'OSX-Machine', 'vulnerableProduct': 'Mac OS X 10.15.3', 'vulnerableVersion': 'Mac OS X 10.15.3', 'device_risk': 10, 'map_id': 'XXXX-XXXX-XXXX-XXXX-YYYY', 'device_os': 'Mac OS X 10.15.3', 'is_managed': True} |
 
 
 ### infinipoint-get-device
@@ -480,11 +466,11 @@ get device
             "ftDidRespond": false,
             "ftIsSuccessful": false,
             "ftResult": "",
-            "gatewayIp": -1062671102,
-            "gatewayMACAddress": "00:50:56:F9:90:54",
+            "gatewayIp": -10000001,
+            "gatewayMACAddress": "00:50:56:00:00:00",
             "host": "DESKTOP-U0QSLQ8",
-            "id": "22ddf738-7e1c-4f20-a9c7-07620d1f2110",
-            "ip": -1062670975,
+            "id": "XXXX-XXXX-XXXX-XXXX-YYYY",
+            "ip": -10000001,
             "lastSeen": "2020-07-13T11:06:06.632976Z",
             "macAddress": "00:0C:29:BB:74:92",
             "networkAlias": "GCP",
@@ -493,8 +479,8 @@ get device
                 {
                     "alias": "GCP",
                     "cidr": "192.1.1.0/24",
-                    "gatewayIp": -1062671102,
-                    "gatewayMACAddress": "00:50:56:F9:90:54"
+                    "gatewayIp": -10000001,
+                    "gatewayMACAddress": "00:50:56:00:00:00"
                 }
             ],
             "osName": "windows-10.0.17763.1282",
@@ -510,7 +496,7 @@ get device
                 {
                     "color": "fefb08",
                     "name": "et",
-                    "tagId": "6d0b5156-eb2d-4b28-9c7c-3cb6e80f2cfb"
+                    "tagId": "XXXX-XXXX-XXXX-XXXX-YYYY"
                 }
             ],
             "uniqueHostname": "DESKTOP-U0QSLQ8-xkp"
@@ -524,7 +510,7 @@ get device
 >### Results
 >|agentVersion|clientType|discoveryId|domain|edge|ftDidRespond|ftIsSuccessful|ftResult|gatewayIp|gatewayMACAddress|host|id|ip|lastSeen|macAddress|networkAlias|networkId|networks|osName|osType|policyVersion|productType|regDate|status|statusCode|statusDescription|supportId|tags|uniqueHostname|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 3.200.20.0 | 0 |  | WORKGROUP | true | false | false |  | -1062671102 | 00:50:56:F9:90:54 | DESKTOP-U0QSLQ8 | 22ddf738-7e1c-4f20-a9c7-07620d1f2110 | -1062670975 | 2020-07-13T11:06:06.632976Z | 00:0C:29:BB:74:92 | GCP | 5866697 | {'alias': 'GCP', 'cidr': '192.1.1.0/24', 'gatewayIp': -1062671102, 'gatewayMACAddress': '00:50:56:F9:90:54'} | windows-10.0.17763.1282 | 1 | 1.0.0 | Work Station | 2020-07-13T09:46:43.385267Z | 0 |  |  |  | {'color': 'fefb08', 'name': 'et', 'tagId': '6d0b5156-eb2d-4b28-9c7c-3cb6e80f2cfb'} | DESKTOP-U0QSLQ8-xkp |
+>| 3.200.20.0 | 0 |  | WORKGROUP | true | false | false |  | -1062671102 | 00:50:56:00:00:00 | DESKTOP-VM | XXXX-XXXX-XXXX-XXXX-YYYY | -10000001 | 2020-07-13T11:06:06.632976Z | 00:0C:29:BB:74:92 | GCP | 5866697 | {'alias': 'GCP', 'cidr': '192.1.1.0/24', 'gatewayIp': -100000001, 'gatewayMACAddress': '00:50:56:00:00:00'} | windows-10.0.17763.1282 | 1 | 1.0.0 | Work Station | 2020-07-13T09:46:43.385267Z | 0 |  |  |  | {'color': 'fefb08', 'name': 'et', 'tagId': 'XXXX-XXXX-XXXX-XXXX-YYYY'} | DESKTOP-VM-xkp |
 
 
 ### infinipoint-get-tag
@@ -566,7 +552,7 @@ get tag
             "count": 1,
             "description": "et",
             "name": "et",
-            "tagId": "6d0b5156-eb2d-4b28-9c7c-3cb6e80f2cfb",
+            "tagId": "XXXX-XXXX-XXXX-XXXX-YYYY",
             "type": 0
         }
     }
@@ -641,7 +627,7 @@ get networks
         "Networks": {
             "Info": {
                 "alias": "GCP",
-                "cidr": "192.1.1.0/24",
+                "cidr": "192.0.0.0/24",
                 "city": null,
                 "country": null,
                 "cronExpression": "",
@@ -649,8 +635,8 @@ get networks
                 "externalIp": 0,
                 "firstSeen": "2020-07-13T09:46:43.376984Z",
                 "floor": "",
-                "gatewayIp": -1062671102,
-                "gatewayMacAddress": "00:50:56:F9:90:54",
+                "gatewayIp": -10000001,
+                "gatewayMacAddress": "00:50:56:00:00:00",
                 "hidden": false,
                 "ip": 0,
                 "ipSubnetMask": 0,
@@ -683,14 +669,14 @@ get networks
 >| GCP | 192.1.1.0/24 |  |  |  |  | 0 | 2020-07-13T09:46:43.376984Z |  | -1062671102 | 00:50:56:F9:90:54 | false | 0 | 0 | 1970-01-01T00:00:00Z | 2020-08-09T14:13:47.084573Z |  |  | 3 |  | 5866697 | 1970-01-01T00:00:00Z | false |  | 3 |  |  | 0 | 0 |
 
 
-### infinipoint-get-assets-hardware
+### infinipoint-get-assets-devices
 ***
 get assets hardware
 
 
 #### Base Command
 
-`infinipoint-get-assets-hardware`
+`infinipoint-get-assets-devices`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -725,7 +711,7 @@ get assets hardware
 
 
 #### Command Example
-```!infinipoint-get-assets-hardware os_type="1"```
+```!infinipoint-get-assets-devices os_type="1"```
 
 #### Context Example
 ```
@@ -733,8 +719,8 @@ get assets hardware
     "Infinipoint": {
         "Assets": {
             "Hardware": {
-                "$device": "22ddf738-7e1c-4f20-a9c7-07620d1f2110",
-                "$host": "DESKTOP-U0QSLQ8",
+                "$device": "XXXX-XXXX-XXXX-XXXX-YYYY",
+                "$host": "DESKTOP-VM",
                 "$time": "2020-07-13T11:19:57+00:00",
                 "$type": "csv",
                 "cpu_brand": "Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz",
@@ -823,7 +809,7 @@ get assets cloud
     "Infinipoint": {
         "Assets": {
             "Cloud": {
-                "$device": "a523014f-1612-4b65-90a8-7974b116cb44",
+                "$device": "XXXX-XXXX-XXXX-XXXX-YYYY",
                 "$host": "ubu-et",
                 "$time": "2020-07-13T13:19:37+00:00",
                 "$type": "csv",
@@ -834,7 +820,7 @@ get assets cloud
                 "hardware_model": "Google Compute Engine",
                 "hardware_serial": "GoogleCloud-46BCBFA9C0E1789A71BA4A36CAD5E7A0",
                 "hardware_vendor": "Google",
-                "instance_id": "7730283300603950466",
+                "instance_id": "10000000001",
                 "kernel_version": "5.4.0-1019-gcp",
                 "os_build": "",
                 "os_name": "Ubuntu",
@@ -844,7 +830,7 @@ get assets cloud
                 "physical_memory": "4.0",
                 "platform": "ubuntu",
                 "source": "GCP API",
-                "user": "eturjeman_riscale_com"
+                "user": "et"
             }
         }
     }
@@ -898,8 +884,8 @@ get assets users
         "Assets": {
             "User": [
                 {
-                    "$device": "37dee181-dd6e-48ce-9591-19e803a41bd9",
-                    "$host": "OSX-Sign-Machine",
+                    "$device": "XXXX-XXXX-XXXX-XXXX-YYYY",
+                    "$host": "OSX-Machine",
                     "$time": "2020-08-05T07:01:49+00:00",
                     "$type": "csv",
                     "description": "ET",
@@ -907,8 +893,8 @@ get assets users
                     "username": "et"
                 },
                 {
-                    "$device": "22ddf738-7e1c-4f20-a9c7-07620d1f2110",
-                    "$host": "DESKTOP-U0QSLQ8",
+                    "$device": "XXXX-XXXX-XXXX-XXXX-ZZZZ",
+                    "$host": "DESKTOP-VM",
                     "$time": "2020-07-13T10:52:41+00:00",
                     "$type": "csv",
                     "description": "",
@@ -916,13 +902,13 @@ get assets users
                     "username": "et"
                 },
                 {
-                    "$device": "a523014f-1612-4b65-90a8-7974b116cb44",
+                    "$device": "XXXX-XXXX-XXXX-XXXX-QQQQ",
                     "$host": "ubu-et",
                     "$time": "2020-07-13T12:42:17+00:00",
                     "$type": "csv",
                     "description": "",
-                    "directory": "/home/eturjeman_riscale_com",
-                    "username": "eturjeman_riscale_com"
+                    "directory": "/home/et",
+                    "username": "et"
                 }
             ]
         }
@@ -935,20 +921,20 @@ get assets users
 >### Results
 >|$device|$host|$time|$type|description|directory|username|
 >|---|---|---|---|---|---|---|
->| 37dee181-dd6e-48ce-9591-19e803a41bd9 | OSX-Sign-Machine | 2020-08-05T07:01:49+00:00 | csv | Setup User | /var/setup | _mbsetupuser |
->| 22ddf738-7e1c-4f20-a9c7-07620d1f2110 | DESKTOP-U0QSLQ8 | 2020-07-13T10:52:41+00:00 | csv |  |  | et |
->| 37dee181-dd6e-48ce-9591-19e803a41bd9 | OSX-Sign-Machine | 2020-08-05T07:01:49+00:00 | csv | ET | /Users/et | et |
->| a523014f-1612-4b65-90a8-7974b116cb44 | ubu-et | 2020-07-13T12:42:17+00:00 | csv |  | /home/eturjeman_riscale_com | eturjeman_riscale_com |
+>| XXXX-XXXX-XXXX-XXXX-YYYY | OSX-Machine | 2020-08-05T07:01:49+00:00 | csv | Setup User | /var/setup | _mbsetupuser |
+>| XXXX-XXXX-XXXX-XXXX-QQQQ | DESKTOP-VM | 2020-07-13T10:52:41+00:00 | csv |  |  | et |
+>| XXXX-XXXX-XXXX-XXXX-WWWW | OSX-VM | 2020-08-05T07:01:49+00:00 | csv | ET | /Users/et | et |
+>| XXXX-XXXX-XXXX-XXXX-EEEE | ubu-et | 2020-07-13T12:42:17+00:00 | csv |  | /home/et | et |
 
 
-### infinipoint-get-action
+### infinipoint-get-action-results
 ***
 get action
 
 
 #### Base Command
 
-`infinipoint-get-action`
+`infinipoint-get-action-results`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -968,7 +954,7 @@ get action
 
 
 #### Command Example
-``` ```
+```!infinipoint-get-action-results action_id=8761df7a-05fd-4343-8c7e-794bc6d06940```
 
 #### Human Readable Output
 
@@ -1016,7 +1002,7 @@ get queries
                 "createdOn": "2020-02-02T09:28:00.500226Z",
                 "description": "Retrieves information FROM the Operative Systems.",
                 "format": 2,
-                "id": "d266875f-c674-4143-8e77-b008a8843687",
+                "id": "XXXX-XXXX-XXXX-XXXX-YYYY",
                 "interp": 0,
                 "module": 4,
                 "name": "OS versions",
@@ -1032,23 +1018,23 @@ get queries
 >### Results
 >|aggregation|createdOn|description|format|id|interp|module|name|osType|
 >|---|---|---|---|---|---|---|---|---|
->| true | 2020-02-02T09:28:00.500226Z | Retrieves information FROM the Operative Systems. | 2 | d266875f-c674-4143-8e77-b008a8843687 | 0 | 4 | OS versions | 7 |
+>| true | 2020-02-02T09:28:00.500226Z | Retrieves information FROM the Operative Systems. | 2 | XXXX-XXXX-XXXX-XXXX-YYYY | 0 | 4 | OS versions | 7 |
 
 
-### infinipoint-run-queries
+### infinipoint-execute-action
 ***
 run queries
 
 
 #### Base Command
 
-`infinipoint-run-queries`
+`infinipoint-execute-action`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Query ID, e.g 9b071f4c-da87-409c-9cd1-59a275e52c9d | Required | 
-| target | Target devices ID,e.g ["4f16532e-d41a-4b78-9a5c-946d3d3619ca"] | Optional | 
+| target | Target devices ID,e.g ["4f16532e-AAAAA-4b78-BBBB-946d3d3619ca"] | Optional | 
 
 
 #### Context Output
@@ -1062,7 +1048,7 @@ run queries
 
 
 #### Command Example
-```!infinipoint-run-queries id=0b5004ce-0a18-11ea-9a9f-362b9e155667```
+```!infinipoint-execute-action id=0b5004ce-0a18-11ea-9a9f-362b9e155667```
 
 #### Context Example
 ```
@@ -1124,7 +1110,7 @@ get non compliance devices
 
 
 #### Command Example
-``` ```
+``` !infinipoint-get-non-compliance limit=100 offset=0```
 
 #### Human Readable Output
 
@@ -1183,7 +1169,7 @@ get device details
 
 
 #### Command Example
-``` ```
+```!infinipoint-get-device-details discoveryId=23eb50e7ceb907975686ba5cebbd3520```
 
 #### Human Readable Output
 
@@ -1213,7 +1199,7 @@ get compliance status
 
 
 #### Command Example
-``` ```
+``` !infinipoint-get-compliance-status device_id=40151026-c5a6-4a3a-92a4-39a0bbee5902```
 
 #### Human Readable Output
 

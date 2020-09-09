@@ -96,11 +96,48 @@ class TestGenerateReleaseNotesSummary:
             'FakePack3': get_pack_entities(os.path.join(TEST_DATA_PATH, 'FakePack3')),
             'FakePack4': get_pack_entities(os.path.join(TEST_DATA_PATH, 'FakePack4')),
         }
+        packs_metadta_dict = {
+            'FakePack3': {},
+            'FakePack4': {}
+        }
 
-        rn_summary = generate_release_notes_summary(new_packs_rn, {}, self._version, self._asset_id, 'temp.md')
+        rn_summary = generate_release_notes_summary(
+            new_packs_rn, {}, packs_metadta_dict, self._version, self._asset_id, 'temp.md')
 
         assert '## New: FakePack3 Pack v1.0.0' in rn_summary
         assert '## New: FakePack4 Pack v1.0.0' in rn_summary
+
+    def test_added_partner_pack(self):
+        """
+        Given
+        - A repository of two new packs:
+          - FakePack3 version 1.0.0, metadata "supports" field has value "partner"
+          - FakePack4 version 1.0.0
+
+        When
+        - Generating a release notes summary file.
+
+        Then
+        - Ensure release notes generator creates a valid summary, by checking:
+          - the release notes summary contains two packs:
+            - FakePack3 with version 1.0.0 and has the string "(Partner Supported)" after the version
+            - FakePack4 with version 1.0.0 dose not have the string "(Partner Supported)" after the version
+        """
+        new_packs_rn = {
+            'FakePack3': get_pack_entities(os.path.join(TEST_DATA_PATH, 'FakePack3')),
+            'FakePack4': get_pack_entities(os.path.join(TEST_DATA_PATH, 'FakePack4')),
+        }
+        packs_metadta_dict = {
+            'FakePack3': {'support': 'partner'},
+            'FakePack4': {'support': 'xsoar'}
+        }
+
+        rn_summary = generate_release_notes_summary(
+            new_packs_rn, {}, packs_metadta_dict, self._version, self._asset_id, 'temp.md')
+
+        assert '## New: FakePack3 Pack v1.0.0 (Partner Supported)' in rn_summary
+        assert '## New: FakePack4 Pack v1.0.0' in rn_summary
+        assert '## New: FakePack4 Pack v1.0.0 (Partner Supported)' not in rn_summary
 
     def test_two_packs(self):
         """
@@ -125,13 +162,18 @@ class TestGenerateReleaseNotesSummary:
             os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md'),
         ]
 
-        rn_dict = get_release_notes_dict(release_notes_files)
+        rn_dict, _ = get_release_notes_dict(release_notes_files)
+
+        packs_metadta_dict = {
+            'FakePack1': {},
+            'FakePack2': {}
+        }
 
         assert '1.1.0' in rn_dict['FakePack1'].keys()
         assert '2.0.0' in rn_dict['FakePack1'].keys()
         assert '1.1.0' in rn_dict['FakePack2'].keys()
 
-        rn_summary = generate_release_notes_summary({}, rn_dict, self._version, self._asset_id, self._outfile)
+        rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
         assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
         assert '### FakePack1 Pack v2.0.0' in rn_summary
@@ -141,6 +183,46 @@ class TestGenerateReleaseNotesSummary:
         assert '### FakePack2 Pack v1.1.0' in rn_summary
         assert '##### FakePack2_Script1' in rn_summary
         assert 'This is a fake2 major release note.' in rn_summary
+
+    def test_updated_partner_pack(self):
+        """
+        Given
+        - A repository of two packs updates and release notes:
+          - FakePack1 with version 2.0.0 metadata "supports" field has value "partner"
+          - FakePack2 version 1.1.0
+
+        When
+        - Generating a release notes summary file.
+
+        Then
+        - Ensure release notes generator creates a valid summary, by checking:
+          - the output of get_release_notes_dict() is a valid dict of (pack_name, dict(pack_version, release_note)).
+          - the release notes summary contains two packs with the flowing:
+            - FakePack1 with version 2.0.0 and has the string "(Partner Supported)" after the version
+            - FakePack2 with version 1.1.0 dose not have the string "(Partner Supported)" after the version
+        """
+        release_notes_files = [
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md'),
+        ]
+
+        rn_dict, _ = get_release_notes_dict(release_notes_files)
+
+        packs_metadta_dict = {
+            'FakePack1': {'support': 'partner'},
+            'FakePack2': {'support': 'xsoar'}
+        }
+
+        assert '2.0.0' in rn_dict['FakePack1'].keys()
+        assert '1.1.0' in rn_dict['FakePack2'].keys()
+
+        rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
+
+        assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
+        assert '### FakePack1 Pack v2.0.0 (Partner Supported)' in rn_summary
+        assert '### FakePack2 Pack v1.1.0' in rn_summary
+        assert '### FakePack2 Pack v1.1.0 (Partner Supported)' not in rn_summary
 
     def test_release_notes_summary_with_empty_lines_in_rn(self):
         """
@@ -159,12 +241,16 @@ class TestGenerateReleaseNotesSummary:
             os.path.join(TEST_DATA_PATH, 'FakePack3', 'ReleaseNotes', '1_0_1.md')
         ]
 
-        rn_dict = get_release_notes_dict(release_notes_files)
+        packs_metadta_dict = {
+            'FakePack3': {}
+        }
+
+        rn_dict, _ = get_release_notes_dict(release_notes_files)
 
         assert '1.0.1' in rn_dict['FakePack3'].keys()
         assert len(rn_dict) == 1
 
-        rn_summary = generate_release_notes_summary({}, rn_dict, self._version, self._asset_id, self._outfile)
+        rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
         print(rn_summary)
 
@@ -191,13 +277,16 @@ class TestGenerateReleaseNotesSummary:
             os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_1.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_1_0.md'),
         ]
+        packs_metadta_dict = {
+            'FakePack4': {}
+        }
 
-        rn_dict = get_release_notes_dict(release_notes_files)
+        rn_dict, _ = get_release_notes_dict(release_notes_files)
 
         assert '1.1.0' in rn_dict['FakePack4'].keys()
         assert len(rn_dict) == 1
 
-        rn_summary = generate_release_notes_summary({}, rn_dict, self._version, self._asset_id, self._outfile)
+        rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
         assert '### FakePack4 Pack v1.1.0' in rn_summary
         assert '##### FakePack4_Script1' in rn_summary
@@ -225,7 +314,7 @@ class TestMergeVersionBlocks:
             with open(path) as file_:
                 pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
 
-        rn_block = merge_version_blocks('FakePack', pack_versions_dict)
+        rn_block = merge_version_blocks('FakePack', pack_versions_dict, {})
 
         assert 'FakePack1_Playbook1' in rn_block
         assert 'FakePack1_Playbook2' in rn_block
@@ -256,7 +345,7 @@ class TestMergeVersionBlocks:
             with open(path) as file_:
                 pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
 
-        rn_block = merge_version_blocks('FakePack', pack_versions_dict)
+        rn_block = merge_version_blocks('FakePack', pack_versions_dict, {})
 
         assert rn_block.count('Integrations') == 1
         assert rn_block.count('FakePack1_Integration1') == 1

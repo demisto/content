@@ -27,20 +27,28 @@ parameters:
   time_to_live:
     type: string
     default: ""
+  pr_number:
+    type: string
+    default: ""
   contrib_branch:
     type: string
     default: ""
   contrib_pack_name:
     type: string
     default: ""
-
+  force_pack_upload:
+    type: string
+    default: ""
+  packs_to_upload:
+    type: string
+    default: ""
 
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.8.2"
+      CONTENT_VERSION: "20.9.0"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "6bee490e79e851e5f23572ad65cd456022eea753" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "26c4af211bc71167005408ba70bbd72bba6daab0" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -51,9 +59,12 @@ references:
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Setup Environment' step.
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
+      PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
       DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
+      FORCE_PACK_UPLOAD_PARAMETER: << pipeline.parameters.force_pack_upload >>
+      PACKS_TO_UPLOAD_PARAMETER: << pipeline.parameters.packs_to_upload >>
 
   container_config: &container_config
     docker:
@@ -103,6 +114,15 @@ references:
         then
             echo "export TIME_TO_LIVE=$TIME_TO_LIVE_PARAMETER" >> $BASH_ENV
         fi
+        if [ -n "${FORCE_PACK_UPLOAD_PARAMETER}" ];
+        then
+            echo "export FORCE_PACK_UPLOAD=$FORCE_PACK_UPLOAD_PARAMETER" >> $BASH_ENV
+        fi
+        if [ -n "${PACKS_TO_UPLOAD_PARAMETER}" ];
+        then
+            echo "export PACKS_TO_UPLOAD=$PACKS_TO_UPLOAD_PARAMETER" >> $BASH_ENV
+        fi
+
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
         sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
@@ -129,7 +149,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH="
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD="
         python --version
         python3 --version
         demisto-sdk --version
@@ -298,16 +318,20 @@ references:
             name: Get Contributor pack
             when: always
             command: |
-                USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+                REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-                PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
-                echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
-                git remote add $USER git@github.com:$USER/content.git
-                git fetch $USER $BRANCH
-                rm -rf $PACK
-                git checkout $USER/$BRANCH $PACK
-                exit 0
-
+                python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO
+  comment_on_contrib_pr: &comment_on_contrib_pr
+    when:
+      condition: << pipeline.parameters.contrib_branch >>
+      steps:
+        - run:
+            name: Comment on the contribution Pull Request
+            when: always
+            command: |
+              # Demisto Marketplace refers to Server Master
+              SERVER_URL=$(jq -r 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
+              python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 jobs:
   Setup Environment:
     <<: *container_config
@@ -364,6 +388,7 @@ jobs:
             - *prepare_environment
             - *secrets
             - *create_id_set
+            - *update_tests_step
             - *validate_files_and_yaml
             - run:
                 name: Content Docs Site
@@ -436,11 +461,11 @@ jobs:
       - *prepare_environment
       - *get_contribution_pack
       - *add_ssh_keys
-      - *update_tests_step
       - *create_id_set
       - *build_content_descriptor
       - *common_server_documentation
       - *create_artifact
+      - *update_tests_step
       - run:
           name: Download Configuration
           when: always
@@ -497,7 +522,7 @@ jobs:
                 name: Create Instance
                 when: on_success
                 command: |
-                  [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=180
+                  [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
                   if ./Tests/scripts/is_ami.sh ;
                     then
                       if [ -n "${NIGHTLY}" ] ;
@@ -876,8 +901,43 @@ jobs:
                 command: |
                   ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
                 when: always
+            - *comment_on_contrib_pr
             - *destroy_instances
             - *store_artifacts
+  Force Pack Upload:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - run:
+          name: Check User Permissions to Force Upload Pack
+          command: |
+            CONTENT_LEADERS=$(curl -sS https://api.github.com/orgs/demisto/teams/content-leaders/members -H "Authorization: token ${GITHUB_TOKEN}")
+            LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
+            if [[ -z "${CIRCLE_USERNAME}" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "${CIRCLE_USERNAME}"`" ]]; then
+                echo -e "User '${CIRCLE_USERNAME}' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
+                exit 1
+            else
+                echo "User '${CIRCLE_USERNAME}' is allowed to force pack uploads."
+            fi
+
+      - run:
+          name: Upload Packs To Marketplace Storage
+          command: |
+            EXTRACT_FOLDER=$(mktemp -d)
+            PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+            PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+            ID_SET=$CIRCLE_ARTIFACTS/id_set.json
+            GCS_PATH=$(mktemp)
+            echo $GCS_MARKET_KEY > $GCS_PATH
+            python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -d $PACKS_DEPENDENCIES -i $ID_SET -s $GCS_PATH -n $CIRCLE_BUILD_NUM -k $PACK_SIGNING_KEY -pb 'marketplace-dist-private' -p "${PACKS_TO_UPLOAD}" -o
+            rm $GCS_PATH
+          when: on_success
+      - *destroy_instances
+      - *store_artifacts
 
   Instance Test:
     <<: *container_config
@@ -925,6 +985,7 @@ jobs:
       - *restore_cache
       - *prepare_environment
       - *secrets
+      - *update_tests_step
       - *validate_files_and_yaml
       - *run_unit_testing_and_lint
       - *infrastructure_testing
@@ -933,7 +994,6 @@ jobs:
       - *common_server_documentation
       - *collect_test_list_and_content_packs
       - *calculate_packs_dependencies
-      - *update_tests_step
       - *store_artifacts
       - run:
           name: Slack Notifier
@@ -947,6 +1007,7 @@ jobs:
 workflows:
   version: 2
   commit:
+    unless: << pipeline.parameters.force_pack_upload >>
     jobs:
       - Setup Environment
       - Create Instances:
@@ -990,6 +1051,26 @@ workflows:
           requires:
             - Create Instances
       - Instance Test:
+          requires:
+            - Create Instances
+
+  force_pack_upload:
+    when: << pipeline.parameters.force_pack_upload >>
+    jobs:
+      - Setup Environment
+      - Run Validations:
+          requires:
+            - Setup Environment
+      - Create Instances:
+          filters:
+            branches:
+              only:
+                - master
+      - Force Pack Upload:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - Create Instances
 

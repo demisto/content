@@ -1,0 +1,14 @@
+{
+	"id": "Microsoft CAS",
+	"name": "Microsoft CAS Classifier",
+	"type": "classification",
+	"description": "Classifies Microsoft CAS Alerts",
+	"version": -1,
+	"defaultIncidentType": "Microsoft CAS Alert",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"keyTypeMap": {},
+	"fromVersion": "6.0.0"
+}
