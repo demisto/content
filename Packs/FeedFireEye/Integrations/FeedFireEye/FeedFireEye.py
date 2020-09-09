@@ -376,9 +376,8 @@ class Client(BaseClient):
                 return [], {}, {}
 
             if response.status_code != 200:
-                demisto.debug(f'{INTEGRATION_NAME} debug - '
-                              f'API Status Code: {response.status_code} Error Reason: {response.text}')
-                return [], {}, {}
+                return_error(f'{INTEGRATION_NAME} indicators fetching - '
+                             f'API Status Code: {response.status_code} Error Reason: {response.text}')
 
             objects_fetched = response.json().get('objects')
             for obj in objects_fetched:
@@ -432,9 +431,8 @@ class Client(BaseClient):
             )
 
             if response.status_code != 200:
-                demisto.debug(f'{INTEGRATION_NAME} debug - '
-                              f'API Status Code: {response.status_code} Error Reason: {response.text}')
-                return []
+                return_error(f'{INTEGRATION_NAME} reports fetching - '
+                             f'API Status Code: {response.status_code} Error Reason: {response.text}')
 
             raw_reports += [report for report in response.json().get('objects')]
 
