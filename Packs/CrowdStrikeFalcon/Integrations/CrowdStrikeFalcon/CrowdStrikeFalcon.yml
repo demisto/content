@@ -778,7 +778,32 @@ script:
       required: true
       description: The ID of the host to extend the session
     description: Refresh a session timeout on a single host.
-  dockerimage: demisto/python3:3.8.3.9324
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The type of indicator from the list of supported indicator types.
+      isArray: false
+      name: type
+      predefined:
+        - domain
+        - ipv4
+        - ipv6
+        - md5
+        - sha1
+        - sha256
+      required: true
+      secret: false
+    - default: false
+      description: The actual string representation of the indicator.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a list of device IDs on which an indicator ran.
+    execution: false
+    name: cs-device-ran-on
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
   longRunningPort: false
