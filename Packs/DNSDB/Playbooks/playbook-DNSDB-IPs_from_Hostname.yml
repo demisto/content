@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1181cc1e-8bba-4390-8e71-f499ad53eb01
+    taskid: 0a31d939-06bc-4a9b-8f8c-eeeffc69423e
     type: start
     task:
-      id: 1181cc1e-8bba-4390-8e71-f499ad53eb01
+      id: 0a31d939-06bc-4a9b-8f8c-eeeffc69423e
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 50
         }
       }
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 970c848d-48f8-4ace-8cdc-3fc114ae8194
+    taskid: 05d9b64c-06f2-4a65-8176-5e35cdd573c1
     type: regular
     task:
-      id: 970c848d-48f8-4ace-8cdc-3fc114ae8194
+      id: 05d9b64c-06f2-4a65-8176-5e35cdd573c1
       version: -1
       name: DNSDB Lookup RRSet/A
       description: Lookup RRset records
@@ -96,10 +96,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 97f47e3b-7bcc-44fd-8f96-af8670bfff10
+    taskid: 60a56587-4d3c-472e-8852-f1db1e4dad7d
     type: title
     task:
-      id: 97f47e3b-7bcc-44fd-8f96-af8670bfff10
+      id: 60a56587-4d3c-472e-8852-f1db1e4dad7d
       version: -1
       name: Done
       type: title
@@ -110,7 +110,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 545
         }
       }
@@ -121,10 +121,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: d29d938a-74dd-403e-80a7-d3cfcf309ec9
+    taskid: 53008f80-3327-4887-8536-edc26d3c5cf9
     type: regular
     task:
-      id: d29d938a-74dd-403e-80a7-d3cfcf309ec9
+      id: 53008f80-3327-4887-8536-edc26d3c5cf9
       version: -1
       name: DNSDB Lookup RRSet/AAAA
       description: Lookup RRset records
@@ -183,10 +183,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: c083cbda-b3ff-4dc8-8d7f-7d527c3c1d1d
+    taskid: 68442846-1f22-4d25-8713-e1367730c17e
     type: condition
     task:
-      id: c083cbda-b3ff-4dc8-8d7f-7d527c3c1d1d
+      id: 68442846-1f22-4d25-8713-e1367730c17e
       version: -1
       name: Is DNSDB v2 Enabled?
       type: condition
@@ -194,6 +194,8 @@ tasks:
       brand: ""
       description: ''
     nexttasks:
+      '#default#':
+      - "3"
       "Yes":
       - "1"
       - "4"
@@ -228,7 +230,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 195
         }
       }
@@ -264,5 +266,3 @@ outputs:
     An array of one or more Rdata values. The Rdata values are converted to the standard presentation format based on the rrtype value. If the encoder lacks a type-specific presentation format for the RRset's rrtype, then the RFC 3597 generic Rdata encoding will be used.
   type: string
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 254c5a1b-8a26-4fb1-8c23-f92ad42c1fd1
+    taskid: b14976f3-b538-46a9-83ea-3684648f4eeb
     type: start
     task:
-      id: 254c5a1b-8a26-4fb1-8c23-f92ad42c1fd1
+      id: b14976f3-b538-46a9-83ea-3684648f4eeb
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 50
         }
       }
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 66658202-09ca-4ae8-8c89-2c82ca6b6c7f
+    taskid: b962ac3f-d4c0-4278-8828-0bdf77aacdd9
     type: regular
     task:
-      id: 66658202-09ca-4ae8-8c89-2c82ca6b6c7f
+      id: b962ac3f-d4c0-4278-8828-0bdf77aacdd9
       version: -1
       name: DNSDB Lookup RRSet/A
       description: Lookup RRset records
@@ -97,10 +97,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: be8649d9-ad42-4e3b-8b65-0a93fa23dbea
+    taskid: 7e6b8848-c7e8-4212-80ec-0386aceefe5e
     type: regular
     task:
-      id: be8649d9-ad42-4e3b-8b65-0a93fa23dbea
+      id: 7e6b8848-c7e8-4212-80ec-0386aceefe5e
       version: -1
       name: DNSDB Lookup RData/IP
       description: Lookup RData records
@@ -163,10 +163,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 9fca0a41-0c7a-4959-806c-b1dc4e45fd80
+    taskid: 264cf4e7-e9e8-422c-8d27-071878ad182a
     type: title
     task:
-      id: 9fca0a41-0c7a-4959-806c-b1dc4e45fd80
+      id: 264cf4e7-e9e8-422c-8d27-071878ad182a
       version: -1
       name: Done
       type: title
@@ -177,7 +177,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 807.5,
           "y": 720
         }
       }
@@ -188,10 +188,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 2208a9d3-0b3d-47f5-8918-7c72d6c8864a
+    taskid: 5520ee84-6445-49ec-8145-bba45a09b2b9
     type: regular
     task:
-      id: 2208a9d3-0b3d-47f5-8918-7c72d6c8864a
+      id: 5520ee84-6445-49ec-8145-bba45a09b2b9
       version: -1
       name: DNSDB Lookup RRSet/AAAA
       description: Lookup RRset records
@@ -251,10 +251,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: fe9a9e8a-4330-45bc-8faa-ad4d17553df2
+    taskid: c2cfde1c-f18c-4eb1-8654-074df5e1b485
     type: regular
     task:
-      id: fe9a9e8a-4330-45bc-8faa-ad4d17553df2
+      id: c2cfde1c-f18c-4eb1-8654-074df5e1b485
       version: -1
       name: DNSDB Lookup RRSet/CNAME
       description: Lookup RRset records
@@ -314,10 +314,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 4b6fefd0-86d8-442d-8572-406bf69dcc2a
+    taskid: ee5ce4bf-66cb-4014-8c3e-ebe25caad964
     type: condition
     task:
-      id: 4b6fefd0-86d8-442d-8572-406bf69dcc2a
+      id: ee5ce4bf-66cb-4014-8c3e-ebe25caad964
       version: -1
       name: Is DNSDB v2 Enabled
       type: condition
@@ -325,6 +325,8 @@ tasks:
       brand: ""
       description: ''
     nexttasks:
+      '#default#':
+      - "5"
       "Yes":
       - "1"
       - "7"
@@ -360,7 +362,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 195
         }
       }
@@ -395,5 +397,3 @@ outputs:
   description: The owner name of the RRset in DNS presentation format.
   type: string
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

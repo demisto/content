@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7c1101cf-3350-4d55-8dfb-ea1a91bc2c68
+    taskid: 0cd15349-08c0-4228-87bf-8d00b679f2ed
     type: start
     task:
-      id: 7c1101cf-3350-4d55-8dfb-ea1a91bc2c68
+      id: 0cd15349-08c0-4228-87bf-8d00b679f2ed
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: f6839c6a-b2c3-4009-8ec9-baabcd5f4ae2
+    taskid: 233ec784-5add-4113-8584-4d62c21dbdcf
     type: regular
     task:
-      id: f6839c6a-b2c3-4009-8ec9-baabcd5f4ae2
+      id: 233ec784-5add-4113-8584-4d62c21dbdcf
       version: -1
       name: DNSDB Lookup RData/IP
       description: Lookup RData records
@@ -80,7 +80,7 @@ tasks:
       type:
         simple: ip
       value:
-        simple: ${IP}
+        simple: ${inputs.IP}
     separatecontext: false
     view: |-
       {
@@ -100,10 +100,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 21aa3fc7-9f70-4970-8d39-d0a76eb95ca9
+    taskid: 4d8f2984-005a-4f4c-8c19-dfaa13f96d67
     type: title
     task:
-      id: 21aa3fc7-9f70-4970-8d39-d0a76eb95ca9
+      id: 4d8f2984-005a-4f4c-8c19-dfaa13f96d67
       version: -1
       name: Done
       type: title
@@ -125,10 +125,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: e7815403-590f-4fc7-8d9a-ebde9844f5fd
+    taskid: 7a12d04b-0bae-41ba-8df6-82b40e83a1e0
     type: condition
     task:
-      id: e7815403-590f-4fc7-8d9a-ebde9844f5fd
+      id: 7a12d04b-0bae-41ba-8df6-82b40e83a1e0
       version: -1
       name: Is DNSDB v2 Enabled?
       type: condition
@@ -136,6 +136,8 @@ tasks:
       brand: ""
       description: ''
     nexttasks:
+      '#default#':
+      - "2"
       "Yes":
       - "1"
     separatecontext: false
@@ -224,5 +226,3 @@ outputs:
   description: The owner name of the resource record in DNS presentation format.
 quiet: true
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
