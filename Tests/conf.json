@@ -2521,6 +2521,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "EWSO365",
+            "playbookID": "EWS_O365_send_mail_test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "QRadar",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 600,
@@ -3045,10 +3050,7 @@
         "663e1ec3-5590-4e23-8d99-d8a4e0c22a52": "Issue 27454",
         "Init_McAfee_ESM_v2_Test": "issue #26187",
         "MISP V2 Test": "Issue 26905",
-        "Logzio - Test": "Issue 26729",
-
-        "_comment": "~~~ DEPRECATED ~~~",
-        "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
+        "Logzio - Test": "Issue 26729"
 
     },
     "skipped_integrations": {
@@ -3193,6 +3195,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "BPA": "Playbook using GenericPolling which is inconsistent",
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "AWS - Security Hub": "Issue 24926",
