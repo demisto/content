@@ -3783,7 +3783,7 @@ script:
   - deprecated: false
     description: Get information about PAN-OS available licenses and their statuses.
     execution: false
-    name: panorama-get-licences
+    name: panorama-get-licenses
     outputs:
     - contextPath: Panorama.License.Authcode
       description: License authentication code.

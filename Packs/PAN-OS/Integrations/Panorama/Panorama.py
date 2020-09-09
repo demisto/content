@@ -2,7 +2,7 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple, Union
+from typing import Dict, List, Any, Optional, Tuple
 import uuid
 import json
 import requests
@@ -5444,7 +5444,7 @@ def panorama_show_location_ip_command():
 
 
 @logger
-def panorama_get_licence() -> Dict:
+def panorama_get_license() -> Dict:
     params = {
         'type': 'op',
         'cmd': '<request><license><info/></license></request>',
@@ -5455,12 +5455,12 @@ def panorama_get_licence() -> Dict:
     return result
 
 
-def panorama_get_licence_command():
+def panorama_get_license_command():
     """
     Get information about PAN-OS available licenses and their statuses.
     """
     available_licences = []
-    result = panorama_get_licence()
+    result = panorama_get_license()
     if 'response' not in result or '@status' not in result['response'] or result['response']['@status'] != 'success':
         demisto.debug(str(result))
         raise Exception('Failed to get the information about PAN-OS available licenses and their statuses.')
@@ -5484,7 +5484,7 @@ def panorama_get_licence_command():
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('PAN-OS Available Instances', available_licences, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('PAN-OS Available Licenses', available_licences, headers, removeNull=True),
         'EntryContext': {"Panorama.License(val.Feature == obj.Feature)": available_licences}
     })
 
@@ -6913,8 +6913,8 @@ def main():
         elif demisto.command() == 'panorama-show-location-ip':
             panorama_show_location_ip_command()
 
-        elif demisto.command() == 'panorama-get-licences':
-            panorama_get_licence_command()
+        elif demisto.command() == 'panorama-get-licenses':
+            panorama_get_license_command()
 
         elif demisto.command() == 'panorama-get-security-profiles':
             get_security_profiles_command()
