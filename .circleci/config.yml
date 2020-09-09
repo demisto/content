@@ -27,6 +27,9 @@ parameters:
   time_to_live:
     type: string
     default: ""
+  pr_number:
+    type: string
+    default: ""
   contrib_branch:
     type: string
     default: ""
@@ -56,6 +59,7 @@ references:
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Setup Environment' step.
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
+      PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       INSTANCE_TESTS_PARAMETER: << pipeline.parameters.instance_tests >>
       DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
@@ -154,13 +158,7 @@ references:
     run:
       name: Create Content Artifacts
       when: always
-      command: |
-        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
-        # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
-        cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
-        unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
-        zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
-        rm -r test_content_dir
+      command: demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
 
   restore_cache: &restore_cache
     restore_cache:
@@ -255,6 +253,7 @@ references:
       when: always
       command: |
         demisto-sdk create-id-set -o ./Tests/id_set.json
+        cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
   build_content_descriptor: &build_content_descriptor
     run:
@@ -314,16 +313,20 @@ references:
             name: Get Contributor pack
             when: always
             command: |
-                USER=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+                REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-                PACK=$(echo $CONTRIB_BRANCH | cut -d ":" -f 3)
-                echo 'Copy the changes from the contributor branch $USER/$BRANCH in the pack $PACK'
-                git remote add $USER git@github.com:$USER/content.git
-                git fetch $USER $BRANCH
-                rm -rf $PACK
-                git checkout $USER/$BRANCH $PACK
-                exit 0
-
+                python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO
+  comment_on_contrib_pr: &comment_on_contrib_pr
+    when:
+      condition: << pipeline.parameters.contrib_branch >>
+      steps:
+        - run:
+            name: Comment on the contribution Pull Request
+            when: always
+            command: |
+              # Demisto Marketplace refers to Server Master
+              SERVER_URL=$(jq -r 'select(.[].Role == "Demisto Marketplace") | .[].InstanceDNS' ./env_results.json)
+              python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 jobs:
   Setup Environment:
     <<: *container_config
@@ -893,6 +896,7 @@ jobs:
                 command: |
                   ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
                 when: always
+            - *comment_on_contrib_pr
             - *destroy_instances
             - *store_artifacts
   Force Pack Upload:
