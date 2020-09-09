@@ -121,7 +121,8 @@ def open_session(endpoint: str, timeout: str):
         if sensor_id == ERROR_SENSOR:
             raise Exception(f"Sensor with {endpoint} is not connected!")
         # Get session to communicate with sensor.
-        if not (active_session := search_active_session(sensor_id)):
+        active_session = search_active_session(sensor_id)
+        if not active_session:
             active_session = create_active_session(sensor_id, timeout)
         # Validate that session established succesfully
         if active_session == ERROR_SESSION:
