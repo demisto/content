@@ -66,8 +66,8 @@ args:
   defaultValue: TextOnly
   description: Whether to take into account the email from field for deduplication.
     "TextOnly" - incidents will be considered as duplicated based on test similarity
-    only, ignoring the sender's adress. "Exact" - incidented will be considered as
-    duplicated if their text is similar and their sender is the same. "Domain" -  incidented
+    only, ignoring the sender's adress. "Exact" - incidents will be considered as
+    duplicated if their text is similar and their sender is the same. "Domain" -  incidents
     will be considered as duplicated if their text is similar and their senders' adress
     has the same domain. Default is "Domain".
   isArray: false
@@ -78,7 +78,21 @@ args:
   - Domain
   required: false
   secret: false
-comment: An out-of-the-box deduplication preprocessing script based on a machine learning algorithm.
+- auto: PREDEFINED
+  default: false
+  defaultValue: All
+  description: Whether to compare the new incident to past closed or non closed incidents
+    only. Default is "All".
+  isArray: false
+  name: statusScope
+  predefined:
+  - All
+  - ClosedOnly
+  - NonClosedOnly
+  required: false
+  secret: false
+comment: An out-of-the-box deduplication preprocessing script based on a machine learning
+  algorithm.
 commonfields:
   id: PhishingDedupPreprocessingRule
   version: -1

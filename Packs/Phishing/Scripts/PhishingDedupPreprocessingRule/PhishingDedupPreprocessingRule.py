@@ -8,15 +8,17 @@ from numpy import dot
 from numpy.linalg import norm
 from email.utils import parseaddr
 import tldextract
-NO_FETCH_EXTRACT = tldextract.TLDExtract(suffix_list_urls=None)
+
+
+no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 pd.options.mode.chained_assignment = None  # default='warn'
 
-
-SIMILARITY_THRESHOLD = 0.98
+SIMILARITY_THRESHOLD = 0.99
 
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
+CREATED_FIELD = 'created'
 FROM_FIELD = 'emailfrom'
 FROM_DOMAIN_FIELD = 'fromdomain'
 MERGED_TEXT_FIELD = 'mereged_text'
@@ -45,6 +47,17 @@ def get_existing_incidents(input_args):
         get_incidents_args['fromDate'] = input_args['exsitingIncidentsLookback']
     elif 'exsitingIncidentsLookback' in DEFAULT_ARGS:
         get_incidents_args['fromDate'] = DEFAULT_ARGS['exsitingIncidentsLookback']
+    status_scope = input_args.get('statusScope', 'All')
+    if status_scope == 'ClosedOnly':
+        if 'query' in get_incidents_args:
+            get_incidents_args['query'] = '({}) and (status:Closed)'.format(get_incidents_args['query'])
+        else:
+            get_incidents_args['query'] = 'status:Closed'
+    elif status_scope == 'NonClosedOnly':
+        if 'query' in get_incidents_args:
+            get_incidents_args['query'] = '({}) and (-status:Closed)'.format(get_incidents_args['query'])
+        else:
+            get_incidents_args['query'] = '-status:Closed'
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
@@ -53,10 +66,11 @@ def get_existing_incidents(input_args):
 
 
 def extract_domain(address):
+    global no_fetch_extract
     if address == '':
         return ''
     email_address = parseaddr(address)[1]
-    ext = NO_FETCH_EXTRACT(email_address)
+    ext = no_fetch_extract(email_address)
     return ext.domain
 
 
@@ -139,7 +153,7 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
     existing_incidents_df['similarity'] = existing_incidents_df['vector'].apply(
         lambda x: cosine_sim(x, new_incident_vector))
     if FROM_POLICY == FROM_POLICY_DOMAIN:
-        mask = (existing_incidents_df[FROM_DOMAIN_FIELD] != '') &\
+        mask = (existing_incidents_df[FROM_DOMAIN_FIELD] != '') & \
                (existing_incidents_df[FROM_DOMAIN_FIELD] == new_incident[FROM_DOMAIN_FIELD])
         existing_incidents_df = existing_incidents_df[mask]
     elif FROM_POLICY == FROM_POLICY_EXACT:
@@ -155,11 +169,14 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
 
 def close_new_incident_and_link_to_existing(new_incident, existing_incident, similarity):
     entries = []
-    # dumpable_new_incident = {k: v for k, v in new_incident.items() if not isinstance(v, (np.floating, np.integer))}
+    hr_incident = {}
+    for field in [EMAIL_SUBJECT_FIELD, EMAIL_BODY_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, CREATED_FIELD]:
+        if field in new_incident:
+            hr_incident[field] = new_incident[field]
     entries.append({'Contents': "Duplicate incident: " + new_incident['name']})
     entries.append({"Type": entryTypes['note'],
                     "ContentsFormat": "json",
-                    "Contents": json.dumps(new_incident)
+                    "Contents": hr_incident
                     })
     entries_str = json.dumps(entries)
     demisto.executeCommand("addEntries", {"id": existing_incident["id"], "entries": entries_str})
@@ -168,7 +185,9 @@ def close_new_incident_and_link_to_existing(new_incident, existing_incident, sim
         'incidentId': existing_incident['id']})
     if is_error(res):
         return_error(res)
-    demisto.results('Duplicated incident found: {}, {}'.format(new_incident['id'], existing_incident['id']))
+    demisto.results('Duplicated incident found: {}, {} with similarity of {:.1f}%.'.format(new_incident['id'],
+                                                                                           existing_incident['id'],
+                                                                                           similarity * 100))
 
 
 def create_new_incident():
