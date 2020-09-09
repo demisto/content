@@ -6,7 +6,7 @@ import json
 import time
 
 from contextlib import contextmanager
-from typing import Dict, Tuple, Union
+from typing import Tuple, Union
 
 '''Globals'''
 ERROR_SENSOR = '-1'
@@ -29,7 +29,8 @@ def search_sensor_id(endpoint: str) -> str:
     sensor_id = ERROR_SENSOR
     # Execute command and extract sensors
     output = demisto.executeCommand("cb-list-sensors", {})
-    sensors = dict_safe_get(output, [0, 'EntryContext', 'CbResponse.Sensors(val.CbSensorID==obj.CbSensorID)'])
+    sensors = dict_safe_get(output, [0, 'EntryContext', 'CbResponse.Sensors(val.CbSensorID==obj.CbSensorID)'],
+                            default_return_value=[], return_type=list)  # type: ignore
     # Search for sensor with endpoint or ip
     for sensor in sensors:
         is_same_ipaddress = endpoint in dict_safe_get(sensor, ["IPAddress", "IPAddresses"],
@@ -53,7 +54,7 @@ def search_active_session(sensor_id: str) -> str:
     """
     output = demisto.executeCommand("cb-list-sessions", {'sensor': sensor_id, 'status': 'active'})
     session_id = dict_safe_get(output, [0, 'EntryContext', 'CbLiveResponse.Sessions(val.CbSessionID==obj.CbSessionID)',
-                                        0, 'CbSessionID'])
+                                        0, 'CbSessionID'], ERROR_SESSION, str)
 
     return session_id
 
@@ -95,7 +96,7 @@ def close_session(session_id):
 
 
 @contextmanager
-def open_session(endpoint: str, timeout: str) -> Optional[str]:
+def open_session(endpoint: str, timeout: str):
     """ Handler to Carbon Black sessions.
 
     Enter:
@@ -194,7 +195,7 @@ def build_table_dict(entry_contexts: List[dict]) -> List[dict]:
     root_ec = 'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID&&val.CbSessionID==obj.CbSessionID)'
 
     table = []
-    for file_ec in [ec.get(root_ec) for ec in entry_contexts]:
+    for file_ec in [ec.get(root_ec, {}) for ec in entry_contexts]:
         table_entry = {}
 
         for key, value in file_ec.items():
@@ -211,7 +212,7 @@ def build_table_dict(entry_contexts: List[dict]) -> List[dict]:
 ''' COMMAND FUNCTION '''
 
 
-def cb_live_get_file_command(**kwargs) -> Tuple[str, dict, str]:
+def cb_live_get_file_command(**kwargs) -> Tuple[str, dict, dict]:
     entry_contexts = cb_live_get_file(**kwargs)
     human_readable = tableToMarkdown(name=f"Files downloaded from endpoint {kwargs.get('endpoint')}",
                                      t=build_table_dict(entry_contexts))

@@ -25,10 +25,10 @@ args:
 comment: 'This automation translate endpoint (hostname/IP) to sensor id, Than it downloads
   given file paths by opening session and closing it.  '
 commonfields:
-  id: CBLiveGetFile_v2
+  id: CBLiveGetFile_V2
   version: -1
 enabled: false
-name: CBLiveGetFile_v2
+name: CBLiveGetFile_V2
 outputs:
 - contextPath: CbLiveResponse.Commands.CbCommandID
   description: Unique command identifier.
@@ -87,4 +87,4 @@ tags:
 - endpoint
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.3.8715
+dockerimage: demisto/python3:3.8.5.10845
