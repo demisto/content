@@ -16,9 +16,9 @@ configuration:
   name: database
   required: true
   type: 0
-- display: Use SSL/TLS secured connection
+- defaultvalue: 'false'
+  display: Use SSL/TLS secured connection
   hidden: false
-  defaultvalue: false
   name: use_ssl
   required: false
   type: 8
@@ -76,6 +76,12 @@ script:
       description: Limits the result returned from MongoDB
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Sorting order for the query results. Use the format "field1:asc,field2:desc".
+      isArray: false
+      name: sort
       required: false
       secret: false
     deprecated: false
@@ -212,7 +218,8 @@ script:
     description: Drops a collection from the database.
     execution: true
     name: mongodb-drop-collection
-  dockerimage: demisto/pymongo:1.0.0.8854
+  dockerimage45: demisto/pymongo:1.0.0.8854
+  dockerimage: demisto/pymongo:1.0.0.10664
   feed: false
   isfetch: false
   longRunning: false
