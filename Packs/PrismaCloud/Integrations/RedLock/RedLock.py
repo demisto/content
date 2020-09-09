@@ -214,7 +214,7 @@ def alert_to_context(alert):
     """
     Transform a single alert to context struct
     """
-    return {
+    ec = {
         'ID': alert.get('id'),
         'Status': alert.get('status'),
         'AlertTime': convert_unix_to_date(alert.get('alertTime')),
@@ -236,6 +236,10 @@ def alert_to_context(alert):
             'AccountID': demisto.get(alert, 'resource.accountId')
         }
     }
+    if alert.get('alertRules'):
+        ec['AlertRules'] = [alert_rule.get('name') for alert_rule in alert.get('alertRules')]
+
+    return ec
 
 
 def search_alerts():
@@ -290,10 +294,8 @@ def get_alert_details():
         'ResourceAccessKeyAge': demisto.get(response, 'resource.additionalInfo.accessKeyAge'),
         'ResourceInactiveSinceTs': demisto.get(response, 'resource.additionalInfo.inactiveSinceTs')
     })
-    ec = alert_to_context(response)
-    ec['AlertRules'] = [alert_rule.get('name') for alert_rule in response.get('alertRules')]
-    context = {'Redlock.Alert(val.ID === obj.ID)': ec}
 
+    context = {'Redlock.Alert(val.ID === obj.ID)': alert_to_context(response)}
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
