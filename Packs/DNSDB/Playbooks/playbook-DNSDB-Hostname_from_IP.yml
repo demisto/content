@@ -224,3 +224,5 @@ outputs:
   description: The owner name of the resource record in DNS presentation format.
 quiet: true
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

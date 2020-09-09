@@ -264,3 +264,5 @@ outputs:
     An array of one or more Rdata values. The Rdata values are converted to the standard presentation format based on the rrtype value. If the encoder lacks a type-specific presentation format for the RRset's rrtype, then the RFC 3597 generic Rdata encoding will be used.
   type: string
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
