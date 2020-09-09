@@ -1,3 +1,17 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+## The Hive Project
+- This section explains how to configure the instance of TheHiveProject in Cortex XSOAR.
+
+
+- Start by logging in to your Hive Project server
+- Navigate to the user configuration
+- The the user you would like to use as authantication in XSOAR, select `Create API Key`
+- Copy the key then fill in the following in the instance:
+
+**Host:** The host (such as https://127.0.0.1:9000)
+
+**API Key:** Key key you have just copied
+
+- Optionally select whether you would like to create incidents from the incidents in Hive
+- Optionally select whether you would like to use the default `incident type` and `classifiers`
+- Ensure to tick `Trust any certificate (not secure)` if you are using self-signed certs
+- Select whether you would like case mirroring enabled 
