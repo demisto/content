@@ -901,7 +901,7 @@ def rerun_simulation_command(client: Client, args: dict):
         return_error('Error in rerun_simulation', e)
 
 
-def safebreach_test_module(url: str, api_key: str) -> str:
+def safebreach_test_module(url: str, api_key: str, verify: bool) -> str:
     """A simple test module
        Arguments:
            url {String} -- SafeBreach Management URL.
@@ -912,6 +912,7 @@ def safebreach_test_module(url: str, api_key: str) -> str:
     response = requests.request(
         'GET',
         full_url,
+        verify=verify,
         headers={'Accept': 'application/json', 'x-apitoken': api_key}
     )
     if response.status_code == 201:
@@ -967,7 +968,7 @@ def main():
             return_outputs(hr, {}, entry_result)
 
         elif command == 'test-module':
-            results = safebreach_test_module(url, api_key)
+            results = safebreach_test_module(url, api_key, verify_certificate)
             return_outputs(results)
         else:
             return_error(f'Command: {command} is not supported.')
