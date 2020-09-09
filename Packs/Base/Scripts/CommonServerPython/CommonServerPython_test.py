@@ -2212,8 +2212,6 @@ def test_merge_lists():
                          [
                              ({'version': '5.5.0'}, False),
                              ({'version': '6.0.0'}, True),
-                             ({'version': '5.5.0', 'buildNumber': MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT}, True),
-                             ({'version': '5.5.0', 'buildNumber': str(int(MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT) - 1)}, False)
                          ]
                          )
 def test_is_versioned_context_available(mocker, version, expected):
