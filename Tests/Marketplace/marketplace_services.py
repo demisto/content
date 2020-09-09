@@ -166,6 +166,7 @@ class Pack(object):
         self._display_name = None  # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
+        self._bucket_url = None # URL of where the pack was uploaded.
 
     @property
     def name(self):
@@ -306,6 +307,18 @@ class Pack(object):
         """ setter of downloads count property of the pack.
         """
         self._downloads_count = download_count_value
+
+    @property
+    def bucket_url(self):
+        """ str: pack bucket_url.
+        """
+        return self._bucket_url
+
+    @bucket_url.setter
+    def bucket_url(self, bucket_url):
+        """ str: pack bucket_url.
+        """
+        self._bucket_url = bucket_url
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -807,7 +820,7 @@ class Pack(object):
             if existing_files and not override_pack:
                 print_warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
                 print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-                return task_status, True
+                return task_status, True, None
 
             pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
             blob = storage_bucket.blob(pack_full_path)
@@ -819,11 +832,11 @@ class Pack(object):
             self.public_storage_path = blob.public_url
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
 
-            return task_status, False
+            return task_status, False, pack_full_path
         except Exception as e:
             task_status = False
             print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
-            return task_status, True
+            return task_status, True, None
 
     def prepare_release_notes(self, index_folder_path, build_number):
         """

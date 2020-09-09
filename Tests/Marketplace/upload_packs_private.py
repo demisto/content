@@ -486,15 +486,15 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
-        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status", "Pack Bucket URL"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
-            else [index, pack.name, pack.display_name, pack.latest_version]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message, pack.bucket_url] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
         table.add_row(row)
 
     return table
@@ -511,8 +511,8 @@ def build_summary_table_md(packs_input_list, include_pack_status=False):
         Markdown table: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status"] if include_pack_status \
-        else ["Index", "Pack ID", "Pack Display Name", "Latest Version"]
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status", "Pack Bucket URL"] if include_pack_status \
+        else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
 
     table = ['|', '|']
 
@@ -523,8 +523,8 @@ def build_summary_table_md(packs_input_list, include_pack_status=False):
     for index, pack in enumerate(packs_input_list):
         pack_status_message = PackStatus[pack.status].value if include_pack_status else ''
 
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
-            else [index, pack.name, pack.display_name, pack.latest_version]
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message, pack.bucket_url] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
 
         row_hr = '|'
         for _value in row:
@@ -739,6 +739,7 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
                                        private_storage_bucket=None, content_repo=None, current_commit_hash='',
                                        remote_previous_commit_hash='', packs_statistic_df=None):
     build_number = upload_config.ci_build_number
+    branch_name = upload_config.branch_name
     remove_test_playbooks = upload_config.remove_test_playbooks
     signature_key = upload_config.key_string
     extract_destination_path = upload_config.extract_path
@@ -826,9 +827,17 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
         pack_was_modified = False
 
     bucket_for_uploading = private_storage_bucket if private_storage_bucket else storage_bucket
-    task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version,
+    task_status, skipped_pack_uploading, full_pack_path = pack.upload_to_storage(zip_pack_path, pack.latest_version,
                                                                  bucket_for_uploading,
                                                                  override_all_packs or pack_was_modified)
+    if full_pack_path is not None:
+        bucket_path = f'https://console.cloud.google.com/storage/browser/' \
+                      f'marketplace-ci-build/{branch_name}/{build_number}'
+        bucket_url = bucket_path + full_pack_path
+    else:
+        bucket_url = 'Pack was not uploaded.'
+    pack.bucket_url = bucket_url
+
     if not task_status:
         pack.status = PackStatus.FAILED_UPLOADING_PACK.name
         pack.cleanup()
@@ -892,6 +901,7 @@ def option_handler():
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False,
                         default=str(uuid.uuid4()))
+    parser.add_argument('-bn', '--branch_name', help="Name of the branch CI is being ran on.", default='unknown')
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         default=False, action='store_true', required=False)
     parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
