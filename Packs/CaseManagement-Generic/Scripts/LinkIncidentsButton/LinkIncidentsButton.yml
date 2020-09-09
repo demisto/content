@@ -1,18 +1,16 @@
 args:
-- description: Incident ID to link to, or a comma separated list of related Incident
-    IDs.
-  name: linkedIncidentIDs
+- name: linkedIncidentIDs
   required: true
-- defaultValue: "2"
-  description: Number of retries to perform after a failure.
-  name: retryLimit
-- auto: PREDEFINED
-  description: Action to perform - Link or Unlink Incidents
-  name: action
+  description: Incident ID to link to, or a comma separated list of related Incident
+    IDs.
+- name: action
+  required: true
+  auto: PREDEFINED
   predefined:
   - link
   - unlink
-  required: true
+  description: Action to perform - Link or Unlink Incidents
+  defaultValue: link
 comment: |
   Incident action button script to link or unlink Incidents from an Incident
 commonfields:
