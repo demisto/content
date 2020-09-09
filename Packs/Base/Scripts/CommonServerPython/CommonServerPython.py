@@ -2580,7 +2580,7 @@ class IndicatorsTimeline:
     IndicatorsTimeline class - use to return Indicator Timeline object to CommandResults
     :type indicators: ``list`` or ``dict``
 
-    :param indicators: expects a list of indicators or a list of dict of indicators.
+    :param indicators: expects a list of indicators.
     :type category: ``str``
 
     :param category: indicator category.
@@ -2596,38 +2596,19 @@ class IndicatorsTimeline:
         # type: (list, str, str) -> None
         if indicators is None:
             indicators = []
-        else:
-            indicators = [indicators] if isinstance(indicators, dict) else indicators
 
         timelines = []
         timeline = {}
         for indicator in indicators:
-            if isinstance(indicator, dict):
-                if 'Value' in indicator.keys():
-                    timeline['Value'] = indicator['Value']
+            timeline['Value'] = indicator
 
-                if 'Category' in indicator.keys():
-                    timeline['Category'] = indicator['Category']
-                elif category:
-                    timeline['Category'] = category
-                else:
-                    timeline['Category'] = 'Integration Update'
+            if category:
+                timeline['Category'] = category
+            else:
+                timeline['Category'] = 'Integration Update'
 
-                if 'Message' in indicator.keys():
-                    timeline['Message'] = indicator['Message']
-                elif message:
-                    timeline['Message'] = message
-
-            elif isinstance(indicator, str):
-                timeline['Value'] = indicator
-
-                if category:
-                    timeline['Category'] = category
-                else:
-                    timeline['Category'] = 'Integration Update'
-
-                if message:
-                    timeline['Message'] = message
+            if message:
+                timeline['Message'] = message
 
             timelines.append(timeline)
 

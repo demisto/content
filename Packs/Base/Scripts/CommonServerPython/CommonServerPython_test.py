@@ -1410,7 +1410,7 @@ class TestCommandResults:
        """
         from CommonServerPython import CommandResults, IndicatorsTimeline
 
-        indicators = {'Value': '8.8.8.8', 'Category': 'benign'}
+        indicators = ['8.8.8.8']
         timeline = IndicatorsTimeline(indicators=indicators)
 
         results = CommandResults(
@@ -1422,7 +1422,7 @@ class TestCommandResults:
         )
 
         assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
-            {'Value': '8.8.8.8', 'Category': 'benign'}
+            {'Value': '8.8.8.8', 'Category': 'Integration Update'}
         ])
 
 
