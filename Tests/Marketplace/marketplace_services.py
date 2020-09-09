@@ -536,9 +536,7 @@ class Pack(object):
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         if pack_metadata['price'] > 0:
             pack_metadata['premium'] = True
-            pack_metadata['test2'] = user_metadata.get('test2')
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
-            pack_metadata['testField'] = user_metadata.get('testField')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
             if user_metadata.get('previewOnly'):
                 pack_metadata['previewOnly'] = True
