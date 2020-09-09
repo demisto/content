@@ -609,13 +609,14 @@ def upload_script(name: str, permission_type: str, content: str, entry_id: str) 
         'name': (None, name),
         'permission_type': (None, permission_type)
     }
-
+    temp_file = None
     if content:
         body['content'] = (None, content)
     else:  # entry_id was provided
         file_ = demisto.getFilePath(entry_id)
         file_name = file_.get('name')  # pylint: disable=E1101
-        body['file'] = (file_name, open(file_.get('path'), 'rb'))  # pylint: disable=E1101
+        temp_file = open(file_.get('path'), 'rb')  # pylint: disable=E1101
+        body['file'] = (file_name, temp_file)
 
     headers = {
         'Authorization': HEADERS['Authorization'],
@@ -623,6 +624,8 @@ def upload_script(name: str, permission_type: str, content: str, entry_id: str) 
     }
 
     response = http_request('POST', endpoint_url, files=body, headers=headers)
+    if temp_file:
+        temp_file.close()
     return response
 
 
@@ -695,16 +698,19 @@ def upload_file(entry_id: str, description: str) -> Tuple:
 
     file_ = demisto.getFilePath(entry_id)
     file_name = file_.get('name')  # pylint: disable=E1101
+    temp_file = open(file_.get('path'), 'rb')  # pylint: disable=E1101
     body = {
         'name': (None, file_name),
         'description': (None, description),
-        'file': (file_name, open(file_.get('path'), 'rb'))  # pylint: disable=E1101
+        'file': (file_name, temp_file)
     }
     headers = {
         'Authorization': HEADERS['Authorization'],
         'Accept': 'application/json'
     }
     response = http_request('POST', endpoint_url, files=body, headers=headers)
+    if temp_file:
+        temp_file.close()
     return response, file_name
 
 
@@ -1123,8 +1129,6 @@ def fetch_incidents():
     prev_fetch = last_fetch
 
     last_fetch_timestamp = int(parse(last_fetch).timestamp() * 1000)
-
-    # last_detection_id = str(last_run.get('last_detection_id'))
 
     fetch_query = demisto.params().get('fetch_query')
 
