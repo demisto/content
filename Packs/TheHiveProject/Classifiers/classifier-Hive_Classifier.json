@@ -1,7 +1,7 @@
 {
  "defaultIncidentType": "Hive",
  "feed": false,
- "id": "30778892-2dca-4b17-884f-3b67babe3170",
+ "id": "Hive_Classifier",
  "keyTypeMap": {
   "case": "Hive"
  },
