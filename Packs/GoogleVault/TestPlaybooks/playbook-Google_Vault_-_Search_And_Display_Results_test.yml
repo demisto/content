@@ -216,12 +216,12 @@ tasks:
         simple: "30"
       searchMethod:
         simple: Team Drive
-      startTime:
-        simple: 2020-07-10T00:00:00.000000Z
+      startTime: {}
       teamDrive:
         simple: 0ANbMMsaWJNw2Uk9PVA,0AOM4L2G2JU4NUk9PVA
       terms: {}
-      timeFrame: {}
+      timeFrame:
+        simple: 1 day ago
     separatecontext: true
     loop:
       iscommand: false
