@@ -2301,33 +2301,6 @@ script:
       type: String
       description: Domain name associated with this indicator. Should be in the format
         subdomain.domain.topleveldomain.
-    - contextPath: MicrosoftATP.Indicators.emailEncoding
-      type: String
-      description: The type of text encoding used in the email.
-    - contextPath: MicrosoftATP.Indicators.emailLanguage
-      type: String
-      description: The language of the email.
-    - contextPath: MicrosoftATP.Indicators.emailRecipient
-      type: String
-      description: Recipient email address.
-    - contextPath: MicrosoftATP.Indicators.emailSenderAddress
-      type: String
-      description: Email address of the attacker|victim.
-    - contextPath: MicrosoftATP.Indicators.emailSenderName
-      type: String
-      description: Display name of the attacker|victim.
-    - contextPath: MicrosoftATP.Indicators.emailSourceDomain
-      type: String
-      description: Domain used in the email.
-    - contextPath: MicrosoftATP.Indicators.emailSourceIpAddress
-      type: String
-      description: Source IP address of the email.
-    - contextPath: MicrosoftATP.Indicators.emailSubject
-      type: String
-      description: Subject line of the email.
-    - contextPath: MicrosoftATP.Indicators.emailXMailer
-      type: String
-      description: X-Mailer value used in the email.
     - contextPath: MicrosoftATP.Indicators.expirationDateTime
       type: Date
       description: "DateTime string indicating when the indicator expires. To avoid\
@@ -2528,33 +2501,6 @@ script:
       type: String
       description: Domain name associated with this indicator. Should be in the format
         subdomain.domain.topleveldomain.
-    - contextPath: MicrosoftATP.Indicators.emailEncoding
-      type: String
-      description: The type of text encoding used in the email.
-    - contextPath: MicrosoftATP.Indicators.emailLanguage
-      type: String
-      description: The language of the email.
-    - contextPath: MicrosoftATP.Indicators.emailRecipient
-      type: String
-      description: Recipient email address.
-    - contextPath: MicrosoftATP.Indicators.emailSenderAddress
-      type: String
-      description: Email address of the attacker|victim.
-    - contextPath: MicrosoftATP.Indicators.emailSenderName
-      type: String
-      description: Display name of the attacker|victim.
-    - contextPath: MicrosoftATP.Indicators.emailSourceDomain
-      type: String
-      description: Domain used in the email.
-    - contextPath: MicrosoftATP.Indicators.emailSourceIpAddress
-      type: String
-      description: Source IP address of the email.
-    - contextPath: MicrosoftATP.Indicators.emailSubject
-      type: String
-      description: Subject line of the email.
-    - contextPath: MicrosoftATP.Indicators.emailXMailer
-      type: String
-      description: X-Mailer value used in the email.
     - contextPath: MicrosoftATP.Indicators.expirationDateTime
       type: Date
       description: "DateTime string indicating when the indicator expires. To avoid\
@@ -2919,33 +2865,6 @@ script:
       type: String
       description: Domain name associated with this indicator. Should be in the format
         subdomain.domain.topleveldomain.
-    - contextPath: MicrosoftATP.Indicators.emailEncoding
-      type: String
-      description: The type of text encoding used in the email.
-    - contextPath: MicrosoftATP.Indicators.emailLanguage
-      type: String
-      description: The language of the email.
-    - contextPath: MicrosoftATP.Indicators.emailRecipient
-      type: String
-      description: Recipient email address.
-    - contextPath: MicrosoftATP.Indicators.emailSenderAddress
-      type: String
-      description: Email address of the attacker|victim.
-    - contextPath: MicrosoftATP.Indicators.emailSenderName
-      type: String
-      description: Display name of the attacker|victim.
-    - contextPath: MicrosoftATP.Indicators.emailSourceDomain
-      type: String
-      description: Domain used in the email.
-    - contextPath: MicrosoftATP.Indicators.emailSourceIpAddress
-      type: String
-      description: Source IP address of the email.
-    - contextPath: MicrosoftATP.Indicators.emailSubject
-      type: String
-      description: Subject line of the email.
-    - contextPath: MicrosoftATP.Indicators.emailXMailer
-      type: String
-      description: X-Mailer value used in the email.
     - contextPath: MicrosoftATP.Indicators.expirationDateTime
       type: Date
       description: "DateTime string indicating when the indicator expires. To avoid\
@@ -3350,33 +3269,6 @@ script:
       type: String
       description: Domain name associated with this indicator. Should be in the format
         subdomain.domain.topleveldomain.
-    - contextPath: MicrosoftATP.Indicators.emailEncoding
-      type: String
-      description: The type of text encoding used in the email.
-    - contextPath: MicrosoftATP.Indicators.emailLanguage
-      type: String
-      description: The language of the email.
-    - contextPath: MicrosoftATP.Indicators.emailRecipient
-      type: String
-      description: Recipient email address.
-    - contextPath: MicrosoftATP.Indicators.emailSenderAddress
-      type: String
-      description: Email address of the attacker|victim.
-    - contextPath: MicrosoftATP.Indicators.emailSenderName
-      type: String
-      description: Display name of the attacker|victim.
-    - contextPath: MicrosoftATP.Indicators.emailSourceDomain
-      type: String
-      description: Domain used in the email.
-    - contextPath: MicrosoftATP.Indicators.emailSourceIpAddress
-      type: String
-      description: Source IP address of the email.
-    - contextPath: MicrosoftATP.Indicators.emailSubject
-      type: String
-      description: Subject line of the email.
-    - contextPath: MicrosoftATP.Indicators.emailXMailer
-      type: String
-      description: X-Mailer value used in the email.
     - contextPath: MicrosoftATP.Indicators.expirationDateTime
       type: Date
       description: "DateTime string indicating when the indicator expires. To avoid\
@@ -3599,33 +3491,6 @@ script:
       type: String
       description: Domain name associated with this indicator. Should be in the format
         subdomain.domain.topleveldomain.
-    - contextPath: MicrosoftATP.Indicators.emailEncoding
-      type: String
-      description: The type of text encoding used in the email.
-    - contextPath: MicrosoftATP.Indicators.emailLanguage
-      type: String
-      description: The language of the email.
-    - contextPath: MicrosoftATP.Indicators.emailRecipient
-      type: String
-      description: Recipient email address.
-    - contextPath: MicrosoftATP.Indicators.emailSenderAddress
-      type: String
-      description: Email address of the attacker|victim.
-    - contextPath: MicrosoftATP.Indicators.emailSenderName
-      type: String
-      description: Display name of the attacker|victim.
-    - contextPath: MicrosoftATP.Indicators.emailSourceDomain
-      type: String
-      description: Domain used in the email.
-    - contextPath: MicrosoftATP.Indicators.emailSourceIpAddress
-      type: String
-      description: Source IP address of the email.
-    - contextPath: MicrosoftATP.Indicators.emailSubject
-      type: String
-      description: Subject line of the email.
-    - contextPath: MicrosoftATP.Indicators.emailXMailer
-      type: String
-      description: X-Mailer value used in the email.
     - contextPath: MicrosoftATP.Indicators.expirationDateTime
       type: Date
       description: "DateTime string indicating when the indicator expires. To avoid\
