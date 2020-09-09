@@ -371,7 +371,7 @@ def main(args):
     try:
         latest_incident_in_xdr = xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run,
                                                    first_run, xdr_alerts_field, xdr_file_artifacts_field,
-                                                   xdr_network_artifacts_field, incident_in_demisto,playbook_to_run,
+                                                   xdr_network_artifacts_field, incident_in_demisto, playbook_to_run,
                                                    verbose)
     except Exception as e:
         if verbose:
