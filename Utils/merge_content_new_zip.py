@@ -114,7 +114,7 @@ def download_zip_file_from_gcp(current_feature_content_zip_file_path, zip_destin
     """
 
     file_path = "creds.json"
-    json_content = os.environ.get('$GCS_ARTIFACTS_KEY')
+    json_content = os.environ.get('GCS_ARTIFACTS_KEY')
 
     with open(file_path, "w") as file:
         file.write(json.dumps(json_content))
