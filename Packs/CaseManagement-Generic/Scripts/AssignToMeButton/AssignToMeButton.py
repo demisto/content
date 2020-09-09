@@ -1,5 +1,4 @@
 import demistomock as demisto
-from CommonServerPython import *
 
 # get incident id
 incident_id = demisto.incidents()[0].get('id')
