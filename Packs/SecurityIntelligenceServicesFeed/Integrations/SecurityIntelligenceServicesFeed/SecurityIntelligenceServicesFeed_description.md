@@ -5,6 +5,7 @@
 
 
 ### Fetch Indicators
+* The XSOAR instance with **ElasticSearch** is required as this integration would ingest large amount of indicators from SIS to XSOAR.
 * Every interval one S3 file will be ingested if found for each given feed type.
 * Set Feed Fetch Interval based on the total number of selected Feed Type.
 * If you face error related to **Docker Timeout**,  Set or increase **feedintregrationscript.timeout** parameter in configuration (Settings > About > Troubleshooting  > Server Configuration).
