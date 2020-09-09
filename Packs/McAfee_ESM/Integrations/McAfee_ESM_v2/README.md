@@ -1222,13 +1222,16 @@ Create a new watchlist.
   
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
-| name | The new watchlist name. | Required | | type | The type of the new watchlist. | Required |   
+| name | The new watchlist name. | Required |
+| type | The type of the new watchlist. | Required |   
   
 #### Context Output  
   
 | **Path** | **Type** | **Description** |  
 | --- | --- | --- |  
-| McAfeeESM.Watchlists.name | string | The watchlist name | | McAfeeESM.Watchlists.id | number | The watchlist id | | McAfeeESM.Watchlists.type | string | The watchlist type |   
+| McAfeeESM.Watchlists.name | string | The watchlist name |
+| McAfeeESM.Watchlists.id | number | The watchlist id |
+| McAfeeESM.Watchlists.type | string | The watchlist type |   
   
 #### Command Example  
 ```!esm-create-watchlist name=test_watchlist type=IPAddress```  
@@ -1262,7 +1265,8 @@ Delete a watchlist.
   
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
-| ids | the watch list ids to delete. | Optional | | names | the watch list names to delete. | Optional |   
+| ids | the watch list ids to delete. | Optional |
+| names | the watch list names to delete. | Optional |   
   
 #### Context Output  
   
@@ -1287,7 +1291,9 @@ Create a new watchlist entry.
   
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
-| watchlist_name | The watchlist name. | Optional | | watchlist_id | The watchlist id. | Optional | | values | The values you want to add to watchlist. | Required |   
+| watchlist_name | The watchlist name. | Optional |
+| watchlist_id | The watchlist id. | Optional |
+| values | The values you want to add to watchlist. | Required |   
   
 #### Context Output  
   
@@ -1338,13 +1344,16 @@ Get watchlist entrys.
   
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
-| watchlist_name | The watchlist name. | Optional | | watchlist_id | The watchlist id. | Optional | | limit | max count of values. | Required | | offset | values offset. | Required |   
+| watchlist_name | The watchlist name. | Optional |
+| watchlist_id | The watchlist id. | Optional |
+| limit | max count of values. | Required |
+| offset | values offset. | Required |   
   
 #### Context Output  
   
 | **Path** | **Type** | **Description** |  
 | --- | --- | --- |  
-| McAfeeESM.<Watchlist name>.data | string | The watchlist name |   
+| McAfeeESM.\<Watchlist name>.data | string | The watchlist name |   
   
 #### Command Example  
 ```!esm-watchlist-data-list watchlist_name=test_watchlist```  
