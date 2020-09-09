@@ -1353,7 +1353,7 @@ Get watchlist entrys.
   
 | **Path** | **Type** | **Description** |  
 | --- | --- | --- |  
-| McAfeeESM.\<Watchlist name>.data | string | The watchlist name |   
+| McAfeeESM.\[Watchlist name].data | string | The watchlist name |   
   
 #### Command Example  
 ```!esm-watchlist-data-list watchlist_name=test_watchlist```  
