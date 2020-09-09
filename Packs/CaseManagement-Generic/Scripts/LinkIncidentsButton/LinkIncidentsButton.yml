@@ -10,7 +10,6 @@ args:
   - link
   - unlink
   description: Action to perform - Link or Unlink Incidents
-  defaultValue: link
 comment: |
   Incident action button script to link or unlink Incidents from an Incident
 commonfields:
