@@ -1,0 +1,488 @@
+id: PANW IoT Incident Handling with ServiceNow
+version: -1
+name: PANW IoT Incident Handling with ServiceNow
+description: This playbook creates a ServiceNow ticket after the incident is enriched by Palo Alto Networks IoT security portal (previously Zingbox Cloud).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b49efade-d3b4-4113-8f8f-8bfa278956f6
+    type: start
+    task:
+      id: b49efade-d3b4-4113-8f8f-8bfa278956f6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 82d2db59-0b8e-4e89-8c03-adbecf1eddd9
+    type: title
+    task:
+      id: 82d2db59-0b8e-4e89-8c03-adbecf1eddd9
+      version: -1
+      name: Incident Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4fb395f3-072b-4719-8cec-be1f6dc702c0
+    type: regular
+    task:
+      id: 4fb395f3-072b-4719-8cec-be1f6dc702c0
+      version: -1
+      name: Get Device Details from IoT Server
+      description: IoT get device command - get a single device details.
+      script: Palo Alto Networks IoT|||iot-security-get-device
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks IoT
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        simple: ${incident.labels.deviceid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b12a7728-2e6d-40b0-8186-26dc0ed078b6
+    type: title
+    task:
+      id: b12a7728-2e6d-40b0-8186-26dc0ed078b6
+      version: -1
+      name: Applying RACI model
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2185d265-79b6-4c3c-8072-e07af5df536b
+    type: regular
+    task:
+      id: 2185d265-79b6-4c3c-8072-e07af5df536b
+      version: -1
+      name: Calculate RACI
+      description: IoT RACI model script
+      scriptName: iot-security-get-raci
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      alert_name:
+        simple: ${incident.name}
+      category:
+        simple: ${PaloAltoNetworksIoT.Device.category}
+      model:
+        simple: ${PaloAltoNetworksIoT.Device.model}
+      profile:
+        simple: ${PaloAltoNetworksIoT.Device.profile}
+      raw_type:
+        simple: ${incident.rawType}
+      vendor:
+        simple: ${PaloAltoNetworksIoT.Device.vendor}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9b974236-9370-4e30-81a0-a3b860afe2a4
+    type: title
+    task:
+      id: 9b974236-9370-4e30-81a0-a3b860afe2a4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c8b4ea7e-efc0-410d-820b-e54f4b7e2bc3
+    type: condition
+    task:
+      id: c8b4ea7e-efc0-410d-820b-e54f4b7e2bc3
+      version: -1
+      name: IOT_CONFIG list configured?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: 'Check whether the IOT_CONFIG is defined.'
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: lists.IOT_CONFIG
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: be71d420-9199-41ce-8cee-31f7db39a642
+    type: condition
+    task:
+      id: be71d420-9199-41ce-8cee-31f7db39a642
+      version: -1
+      name: ServiceNow Table Exists?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        simple: ${PaloAltoNetworksIoT.RACI.r_snow.table}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: aca86a67-dc23-4563-833f-1307866b85e1
+    type: regular
+    task:
+      id: aca86a67-dc23-4563-833f-1307866b85e1
+      version: -1
+      name: servicenow-create-record
+      description: Creates a new record in the specified ServiceNow table.
+      script: ServiceNow v2|||servicenow-create-record
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      custom_fields:
+        simple: ${PaloAltoNetworksIoT.RACI.r_snow.custom_fields}
+      fields:
+        simple: ${PaloAltoNetworksIoT.RACI.r_snow.fields}
+      table_name:
+        simple: ${PaloAltoNetworksIoT.RACI.r_snow.table}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: ServiceNow Table Name
+      output:
+        simple: ${PaloAltoNetworksIoT.RACI.r_snow.table}
+    - incidentfield: ServiceNow Record ID
+      output:
+        simple: ${ServiceNow.Record.ID}
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 849b6d99-d818-4697-8eef-f34dcf7068cc
+    type: regular
+    task:
+      id: 849b6d99-d818-4697-8eef-f34dcf7068cc
+      version: -1
+      name: Manual investigation
+      description: Check the device and incident details.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 6009c81d-2e7e-40ed-855b-e2ae2602cfac
+    type: condition
+    task:
+      id: 6009c81d-2e7e-40ed-855b-e2ae2602cfac
+      version: -1
+      name: Is ServiceNow v2 enabled and create ServiceNow ticket?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+      - - operator: isTrue
+          left:
+            value:
+              simple: inputs.CreateServiceNowTicket
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 56eb6d5f-4d68-45c2-81a9-2bbad47d32eb
+    type: condition
+    task:
+      id: 56eb6d5f-4d68-45c2-81a9-2bbad47d32eb
+      version: -1
+      name: Is Palo Alto Networks IoT Enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Palo Alto Networks IoT
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1900,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IoTConfigListName
+  value:
+    simple: IOT_CONFIG
+  required: false
+  description: The list name defined in the XSOAR Lists for the RACI and ServiceNow
+    calculation.
+  playbookInputQuery: null
+- key: CreateServiceNowTicket
+  value:
+    simple: "false"
+  required: false
+  description: Determines if a ServiceNow ticket should be created based on the RACI calculation. Set to True to create an incident.
+  playbookInputQuery: null
+outputs:
+- contextPath: PaloAltoNetworksIoT
+  description: This path will have field "device" for the device details and "raci"
+    if the command "iot-security-get-raci" has output.
+  type: string
+- contextPath: ServiceNow.Record
+  description: The ServiceNow record after creating the ServiceNow ticket.
+  type: string
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

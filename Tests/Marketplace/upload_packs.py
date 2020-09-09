@@ -753,8 +753,9 @@ def main():
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
 
-    check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
-                              storage_bucket)
+    if not option.override_all_packs:
+        check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, remote_previous_commit_hash,
+                                  storage_bucket)
 
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)
