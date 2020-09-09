@@ -714,14 +714,14 @@ class Pack(object):
         subprocess.call(full_command, shell=True)
         os.chdir(current_working_dir)
 
-    def zip_pack(self, extract_destination_path, pack_name, should_encrypt=False, encryption_key=""):
+    def zip_pack(self, extract_destination_path, pack_name, encryption_key=""):
         """ Zips pack folder.
 
         Returns:
             bool: whether the operation succeeded.
             str: full path to created pack zip.
         """
-        zip_pack_path = f"{self._pack_path}.zip" if not should_encrypt else f"{self._pack_path}_not_encrypted.zip"
+        zip_pack_path = f"{self._pack_path}.zip" if not encryption_key else f"{self._pack_path}_not_encrypted.zip"
         task_status = False
 
         try:
@@ -732,7 +732,7 @@ class Pack(object):
                         relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
-            if should_encrypt:
+            if encryption_key:
                 self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
                 zip_pack_path = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             task_status = True
