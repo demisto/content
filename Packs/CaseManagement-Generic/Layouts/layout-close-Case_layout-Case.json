@@ -1,8 +1,8 @@
 {
  "kind": "close",
  "layout": {
-  "id": "Case layout (custom)",
-  "name": "Case layout (custom)",
+  "id": "Case layout",
+  "name": "Case layout",
   "version": -1,
   "kind": "close",
   "typeId": "Case",

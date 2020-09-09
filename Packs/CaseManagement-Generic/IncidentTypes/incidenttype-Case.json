@@ -9,7 +9,7 @@
 	"hours": 0,
 	"hoursR": 0,
 	"id": "Case",
-	"layout": "Case layout (custom)",
+	"layout": "Case layout",
 	"locked": false,
 	"name": "Case",
 	"playbookId": "Case Management - Generic",

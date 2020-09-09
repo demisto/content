@@ -1,12 +1,28 @@
 {
- "kind": "detailsV2",
- "layout": {
-  "id": "Case layout (custom)",
-  "name": "Case layout (custom)",
-  "version": -1,
-  "kind": "detailsV2",
-  "typeId": "Case",
-  "TypeName": "",
+ "close": {
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_closereason",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_closenotes",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   }
+  ]
+ },
+ "detailsV2": {
   "tabs": [
    {
     "id": "summary",
@@ -708,9 +724,256 @@
    }
   ]
  },
- "fromVersion": "4.1.0",
- "toVersion": "5.0.0",
- "typeId": "Case",
+ "edit": {
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_name",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_details",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_type",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_owner",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_severity",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_occurred",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_reminder",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_labels",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_roles",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_attachment",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   }
+  ]
+ },
+ "group": "incident",
+ "id": "Case layout",
+ "fromVersion": "6.0.0",
+ "mobile": {
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_type",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_name",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_details",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_severity",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotstatus",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_owner",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_roles",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_dbotcreated",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_occurred",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotduedate",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotmodified",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbottotaltime",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Timeline Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_labels",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Labels",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "type": "labels"
+   }
+  ]
+ },
+ "name": "Case layout",
+ "quickView": {
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_type",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_name",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_details",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_severity",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotstatus",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_owner",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_roles",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_dbotcreated",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_occurred",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotduedate",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotmodified",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbottotaltime",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Timeline Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_labels",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Labels",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "type": "labels"
+   }
+  ]
+ },
+ "system": false,
  "version": -1,
  "description": ""
 }
