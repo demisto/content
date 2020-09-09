@@ -520,11 +520,12 @@ def rate_limit_to_markdown(results: Dict) -> str:
 def test_module(client, _):
     try:
         client.rate_limit()
-        return 'ok'
-    except DemistoException:
-        raise
-    except Exception as e:
-        raise DemistoException from e
+    except DemistoException as e:
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+    return 'ok'
 
 
 @logger
