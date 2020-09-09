@@ -1374,7 +1374,7 @@ class TestCommandResults:
     def test_indicator_timeline_with_list_of_indicators(self):
         """
        Given:
-           -  a list of indicators
+           -  a list of an indicator
        When
            - creating an IndicatorTimeline object
            - creating a CommandResults objects using the IndicatorTimeline object
@@ -1398,11 +1398,12 @@ class TestCommandResults:
             {'Value': '8.8.8.8', 'Category': 'test', 'Message': 'message'}
         ])
 
-    def test_indicator_timeline_with_list_of_dict_of_indicators(self, mocker):
+    def test_indicator_timeline_running_from_an_integration(self, mocker):
         """
        Given:
-           -  a dict of an indicator
+           -  a list of an indicator
        When
+           - mocking the demisto.params()
            - creating an IndicatorTimeline object
            - creating a CommandResults objects using the IndicatorTimeline object
        Then
