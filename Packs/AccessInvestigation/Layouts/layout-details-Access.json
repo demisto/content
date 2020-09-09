@@ -419,7 +419,8 @@
                 "query": null,
                 "queryType": ""
             }
-        ]
+        ],
+        "typeId": "Access"
     },
     "toVersion": "5.9.9",
     "version": -1

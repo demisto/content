@@ -479,8 +479,8 @@ def fetch_incidents(service):
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "index_earliest")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "index_latest")
+    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
+    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
 
     kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
@@ -669,15 +669,25 @@ def splunk_parse_raw_command():
 
 
 def test_module(service):
-    if demisto.params().get('isFetch'):
+    params = demisto.params()
+    if params.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count': 1, 'earliest_time': time}
-        searchquery_oneshot = demisto.params()['fetchQuery']
+        searchquery_oneshot = params['fetchQuery']
         try:
             service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
         except HTTPError as error:
             return_error(str(error))
+    if params.get('hec_url'):
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        try:
+            requests.get(params.get('hec_url') + '/services/collector/health', headers=headers,
+                         verify=VERIFY_CERTIFICATE)
+        except Exception as e:
+            return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
 
 def replace_keys(data):

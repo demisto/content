@@ -70,13 +70,13 @@ configuration:
   name: unsecure
   required: false
   type: 8
-- defaultvalue: index_earliest
+- defaultvalue: earliest_time
   display: Earliest time to fetch (the name of the Splunk field whose value defines
     the query's earliest time to fetch)
   name: earliest_fetch_time_fieldname
   required: false
   type: 0
-- defaultvalue: index_latest
+- defaultvalue: latest_time
   display: Latest time to fetch (the name of the Splunk field whose value defines
     the query's latest time to fetch)
   name: latest_fetch_time_fieldname
@@ -246,7 +246,7 @@ script:
       description: Comment to add to the notable event.
       isArray: false
       name: comment
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
