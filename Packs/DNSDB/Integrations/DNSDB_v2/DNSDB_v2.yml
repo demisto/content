@@ -53,16 +53,16 @@ script:
       description: Limit the number of returned records
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (UNIX timestamp,
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
         relative if negative)
     - name: time_last_before
-      description: Filter results for entries seen for last time before (UNIX timestamp,
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
         relative if negative)
     - name: time_first_after
-      description: Filter results for entries seen for first time after (UNIX timestamp,
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
         relative if negative)
     - name: time_last_after
-      description: Filter results for entries seen for last time after (UNIX timestamp,
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
         relative if negative)
     - name: aggr
       description: Aggregate identical RRsets (bool)
@@ -120,16 +120,16 @@ script:
       description: Limit the number of returned records
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (UNIX timestamp,
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
         relative if negative)
     - name: time_last_before
-      description: Filter results for entries seen for last time before (UNIX timestamp,
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
         relative if negative)
     - name: time_first_after
-      description: Filter results for entries seen for first time after (UNIX timestamp,
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
         relative if negative)
     - name: time_last_after
-      description: Filter results for entries seen for last time after (UNIX timestamp,
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
         relative if negative)
     - name: aggr
       description: Aggregate identical RRsets (bool)
@@ -168,13 +168,17 @@ script:
       description: Limit the number of returned records
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (seconds)
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
+        relative if negative)
     - name: time_first_after
-      description: Filter results for entries seen for first time after (seconds)
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
+        relative if negative)
     - name: time_last_before
-      description: Filter results for entries seen for last time before (seconds)
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
+        relative if negative)
     - name: time_last_after
-      description: Filter results for entries seen for last time after (seconds)
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
+        relative if negative)
     - name: aggr
       description: Aggregate identical RRsets (bool)
     - name: offset
@@ -230,13 +234,17 @@ script:
       description: Limit the number of returned records
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (seconds)
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
+        relative if negative)
     - name: time_first_after
-      description: Filter results for entries seen for first time after (seconds)
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
+        relative if negative)
     - name: time_last_before
-      description: Filter results for entries seen for last time before (seconds)
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
+        relative if negative)
     - name: time_last_after
-      description: Filter results for entries seen for last time after (seconds)
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
+        relative if negative)
     - name: aggr
       description: Aggregate identical RRsets (bool)
     - name: max_count

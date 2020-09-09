@@ -14,7 +14,7 @@
 
 import inspect
 import locale
-from typing import Iterator, Dict, List, Union
+from typing import Iterator, Dict, List, Union, Any
 import urllib
 import urllib.parse
 
@@ -52,6 +52,10 @@ class QueryError(Exception):
     pass
 
 
+class timeval(int):
+    pass
+
+
 class Client(BaseClient):
     def __init__(self, base_url: str, apikey: str, verify=None, proxy=None):
         BaseClient.__init__(
@@ -79,8 +83,8 @@ class Client(BaseClient):
         return self._http_request('GET', url_suffix=url_suffix, params=params)
 
     def lookup_rrset(self, owner_name: str, rrtype: str = None, bailiwick: str = None, limit: int = None,
-                     time_first_before: int = None, time_first_after: int = None,
-                     time_last_before: int = None, time_last_after: int = None,
+                     time_first_before: timeval = None, time_first_after: timeval = None,
+                     time_last_before: timeval = None, time_last_after: timeval = None,
                      aggr: bool = None, offset: int = None) -> Iterator[Dict]:
         return self._query_rrset("lookup",
                                  owner_name=owner_name,
@@ -95,8 +99,8 @@ class Client(BaseClient):
                                  offset=offset)
 
     def summarize_rrset(self, owner_name: str, rrtype: str = None, bailiwick: str = None, limit: int = None,
-                        time_first_before: int = None, time_first_after: int = None,
-                        time_last_before: int = None, time_last_after: int = None,
+                        time_first_before: timeval = None, time_first_after: timeval = None,
+                        time_last_before: timeval = None, time_last_after: timeval = None,
                         aggr: bool = None, max_count: int = None) -> dict:
         try:
             return next(self._query_rrset("summarize",
@@ -114,8 +118,8 @@ class Client(BaseClient):
             raise QueryError("no data")
 
     def _query_rrset(self, mode: str, owner_name: str, rrtype: str = None, bailiwick: str = None, limit: int = None,
-                     time_first_before: int = None, time_first_after: int = None,
-                     time_last_before: int = None, time_last_after: int = None,
+                     time_first_before: timeval = None, time_first_after: timeval = None,
+                     time_last_before: timeval = None, time_last_after: timeval = None,
                      aggr: bool = None, offset: int = None, max_count: int = None) -> Iterator[Dict]:
         owner_name = quote(to_ascii(owner_name))
         if bailiwick:
@@ -132,8 +136,8 @@ class Client(BaseClient):
                            aggr=aggr, offset=offset, max_count=max_count)
 
     def lookup_rdata_name(self, value: str, rrtype: str = None,
-                          limit: int = None, time_first_before: int = None, time_first_after: int = None,
-                          time_last_before: int = None, time_last_after: int = None,
+                          limit: int = None, time_first_before: timeval = None, time_first_after: timeval = None,
+                          time_last_before: timeval = None, time_last_after: timeval = None,
                           aggr: bool = None, offset: int = None) -> Iterator[Dict]:
         return self._query_rdata_name("lookup",
                                       name=value,
@@ -147,8 +151,8 @@ class Client(BaseClient):
                                       offset=offset)
 
     def summarize_rdata_name(self, value: str, rrtype: str = None,
-                             limit: int = None, time_first_before: int = None, time_first_after: int = None,
-                             time_last_before: int = None, time_last_after: int = None,
+                             limit: int = None, time_first_before: timeval = None, time_first_after: timeval = None,
+                             time_last_before: timeval = None, time_last_after: timeval = None,
                              aggr: bool = None, max_count: int = None) -> dict:
         try:
             return next(self._query_rdata_name("summarize",
@@ -165,8 +169,8 @@ class Client(BaseClient):
             raise QueryError("no data")
 
     def _query_rdata_name(self, mode: str, name: str, rrtype: str = None,
-                          limit: int = None, time_first_before: int = None, time_first_after: int = None,
-                          time_last_before: int = None, time_last_after: int = None,
+                          limit: int = None, time_first_before: timeval = None, time_first_after: timeval = None,
+                          time_last_before: timeval = None, time_last_after: timeval = None,
                           aggr: bool = None, offset: int = None, max_count: int = None) -> Iterator[Dict]:
         rdata_name = quote(to_ascii(name))
         if rrtype:
@@ -178,8 +182,8 @@ class Client(BaseClient):
                            aggr=aggr, offset=offset, max_count=max_count)
 
     def lookup_rdata_ip(self, value: str, limit: int = None,
-                        time_first_before: int = None, time_first_after: int = None,
-                        time_last_before: int = None, time_last_after: int = None,
+                        time_first_before: timeval = None, time_first_after: timeval = None,
+                        time_last_before: timeval = None, time_last_after: timeval = None,
                         aggr: bool = None, offset: int = None) -> Iterator[Dict]:
         return self._query_rdata_ip("lookup",
                                     ip=value,
@@ -192,8 +196,8 @@ class Client(BaseClient):
                                     offset=offset)
 
     def summarize_rdata_ip(self, value: str, limit: int = None,
-                           time_first_before: int = None, time_first_after: int = None,
-                           time_last_before: int = None, time_last_after: int = None,
+                           time_first_before: timeval = None, time_first_after: timeval = None,
+                           time_last_before: timeval = None, time_last_after: timeval = None,
                            aggr: bool = None, max_count: int = None) -> dict:
         try:
             return next(self._query_rdata_ip("summarize",
@@ -209,8 +213,8 @@ class Client(BaseClient):
             raise QueryError("no data")
 
     def _query_rdata_ip(self, mode: str, ip: str,
-                        limit: int = None, time_first_before: int = None, time_first_after: int = None,
-                        time_last_before: int = None, time_last_after: int = None,
+                        limit: int = None, time_first_before: timeval = None, time_first_after: timeval = None,
+                        time_last_before: timeval = None, time_last_after: timeval = None,
                         aggr: bool = None, offset: int = None, max_count: int = None) -> Iterator[Dict]:
         ip = ip.replace('/', ',')
         path = f'{mode}/rdata/ip/{ip}'
@@ -218,8 +222,8 @@ class Client(BaseClient):
                            time_last_before=time_last_before, time_last_after=time_last_after,
                            aggr=aggr, offset=offset, max_count=max_count)
 
-    def _query(self, path: str, limit: int = None, time_first_before: int = None, time_first_after: int = None,
-               time_last_before: int = None, time_last_after: int = None,
+    def _query(self, path: str, limit: int = None, time_first_before: timeval = None, time_first_after: timeval = None,
+               time_last_before: timeval = None, time_last_after: timeval = None,
                aggr: bool = None, offset: int = None, max_count: int = None) -> Iterator[Dict]:
         params = self.base_params()
         params.update(
@@ -251,7 +255,7 @@ def quote(path: str) -> str:
 @logger
 def _run_query(f, args):
     sig = inspect.signature(f)
-    kwargs = {}
+    kwargs = {}  # type: Dict[str, Any]
 
     for name, p in sig.parameters.items():
         if name in args:
@@ -261,6 +265,11 @@ def _run_query(f, args):
                         kwargs[name] = False
                     else:
                         kwargs[name] = True
+                elif p.annotation == timeval:
+                    try:
+                        kwargs[name] = int(args[name])
+                    except ValueError:
+                        kwargs[name] = date_to_timestamp(args[name])
                 else:
                     kwargs[name] = p.annotation(args[name])
             else:
