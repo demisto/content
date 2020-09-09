@@ -386,6 +386,8 @@ def get_RQL_response():
     response = req('POST', 'search/config', payload, None)
     context = {}
     #MD = tableToMarkdown("RQLoutput", response)
+    #TODO add check here that data exists
+
     MD2 = tableToMarkdown("RQLoutput", response["data"]["items"])
     demisto.results({
         'Type': entryTypes['note'],
