@@ -9,16 +9,9 @@ comment: |-
 commonfields:
   id: TimersOnOwnerChange
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: b13342fe-8a14-4569-8518-036bef2bb763
-    toServerVersion: ""
-dockerimage: demisto/python3:3.8.3.9324
+dockerimage: demisto/python3:3.8.5.10845
 enabled: true
 name: TimersOnOwnerChange
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -29,4 +22,4 @@ tags:
 type: python
 fromversion: 5.0.0
 tests:
-  - No test
+- No test

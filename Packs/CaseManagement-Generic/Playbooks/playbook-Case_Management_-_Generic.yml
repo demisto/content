@@ -1,11 +1,7 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: b13342fe-8a14-4569-8518-036bef2bb763
     propagationLabels:
     - all
-    toServerVersion: ""
 description: This playbook executes when no other playbook is associated with an incident.
   It enriches indicators in an incident using one or more integrations.
 id: Case Management - Generic
@@ -77,15 +73,6 @@ tasks:
       sender: Your SOC team
       title: Close Notes
       totalanswers: 0
-    formDisplay:
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      sender: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
-      submittext: ""
     id: "7"
     ignoreworker: false
     message:
