@@ -521,7 +521,7 @@ def test_module(client, _):
     try:
         client.rate_limit()
     except DemistoException as e:
-        if 'Forbidden' in str(e):
+        if 'forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
