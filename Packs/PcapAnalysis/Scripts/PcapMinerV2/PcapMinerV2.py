@@ -184,12 +184,7 @@ class PCAP():
     @logger
     def extract_smtp(self, packet):
         smtp_layer = packet.smtp
-
-        if smtp_layer.get_field('req_parameter') is None:
-            parameters = []
-        else:
-            parameters = smtp_layer.req_parameter.split(':')
-
+        parameters = smtp_layer.req_parameter.split(':')
         smtp_data = {'EntryID': self.entry_id,
                      'ID': packet.tcp.seq}
         if len(parameters) == 2:
