@@ -414,12 +414,6 @@ def remediate_alerts():
     context = []
     response = req('PATCH', 'alert/remediation/'+ demisto.getArg('alert-id'), None, None)
 
-    """
-    human_readable_details = {
-    demisto.results(str(response))
-
-        }
-    """
     demisto.results(str(response))
 
 
