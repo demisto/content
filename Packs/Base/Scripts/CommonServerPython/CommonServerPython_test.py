@@ -1398,7 +1398,7 @@ class TestCommandResults:
             {'Value': '8.8.8.8', 'Category': 'test', 'Message': 'message'}
         ])
 
-    def test_indicator_timeline_with_list_of_dict_of_indicators(self):
+    def test_indicator_timeline_with_list_of_dict_of_indicators(self, mocker):
         """
        Given:
            -  a dict of an indicator
@@ -1409,7 +1409,7 @@ class TestCommandResults:
            - the IndicatorTimeline receives the appropriate category and message
        """
         from CommonServerPython import CommandResults, IndicatorsTimeline
-
+        mocker.patch.object(demisto, 'params', return_value={'insecure': True})
         indicators = ['8.8.8.8']
         timeline = IndicatorsTimeline(indicators=indicators)
 

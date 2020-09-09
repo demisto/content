@@ -2597,6 +2597,13 @@ class IndicatorsTimeline:
         if indicators is None:
             indicators = []
 
+        # check if we are running from an integration or automation
+        try:
+            _ = demisto.params()
+            default_category = 'Integration Update'
+        except AttributeError:
+            default_category = 'Automation Update'
+
         timelines = []
         timeline = {}
         for indicator in indicators:
@@ -2605,7 +2612,7 @@ class IndicatorsTimeline:
             if category:
                 timeline['Category'] = category
             else:
-                timeline['Category'] = 'Integration Update'
+                timeline['Category'] = default_category
 
             if message:
                 timeline['Message'] = message
