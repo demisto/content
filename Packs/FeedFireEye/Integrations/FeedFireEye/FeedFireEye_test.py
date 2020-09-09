@@ -16,6 +16,18 @@ def create_client(public_key: str = 'public_key', private_key: str = 'secret_key
 
 
 def test_get_access_token_with_valid_token_in_context():
+    """
+
+    Given:
+        - Entry context with a valid authentication token
+
+    When:
+        - Getting authentication token
+
+    Then:
+        - Returns the auth token from context
+
+    """
     demisto.setIntegrationContext(
         {
             'auth_token': 'Token',
@@ -28,6 +40,18 @@ def test_get_access_token_with_valid_token_in_context():
 
 
 def test_get_access_token_with_invalid_token_in_context(mocker):
+    """
+
+    Given:
+        - Entry context with an invalid authentication token
+
+    When:
+        - Getting authentication token
+
+    Then:
+        - Returns a new fetched auth token
+
+    """
     mocker.patch.object(Client, 'fetch_new_access_token', return_value='New Access Token')
     demisto.setIntegrationContext(
         {
@@ -42,6 +66,18 @@ def test_get_access_token_with_invalid_token_in_context(mocker):
 
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_parse_access_token_expiration_time():
+    """
+
+    Given:
+        - Authentication token validity period
+
+    When:
+        - Fetching new authentication token
+
+    Then:
+        - Returns the expiration time of the newly fetched token
+
+    """
     for i in range(5):
         random_value = random.randint(0, 1000)
         # 740314800 is the epoch converted time of 1993-06-17 11:00:00
@@ -93,6 +129,19 @@ FETCH_INDICATORS_PACKAGE = [
 
 @pytest.mark.parametrize('url, status_code, json_data, expected_result', FETCH_INDICATORS_PACKAGE)
 def test_fetch_indicators_from_api(mocker, url, status_code, json_data, expected_result):
+    """
+
+    Given:
+        - Response status code
+        - Response data
+
+    When:
+        - Fetching indicators from API
+
+    Then:
+        - Returns the processed tuple of raw indicators, entities and relationships
+
+    """
     with requests_mock.Mocker() as m:
         mocker.patch.object(Client, 'fetch_new_access_token', return_value='New Access Token')
         mocker.patch.object(demisto, 'info')
@@ -101,19 +150,23 @@ def test_fetch_indicators_from_api(mocker, url, status_code, json_data, expected
         m.get(url, status_code=status_code, json=json_data)
         client = create_client()
 
-        fetch_result = client.fetch_all_indicators_from_api(-1)
+        if status_code in [200, 204]:
+            fetch_result = client.fetch_all_indicators_from_api(-1)
 
-        for i in range(3):
-            assert fetch_result[i] == expected_result[i]
+            for i in range(3):
+                assert fetch_result[i] == expected_result[i]
 
-        if status_code == 204:
-            assert demisto.info.call_args[0][0] == \
-                   'FireEye Feed info - API Status Code: 204 No Content Available for this timeframe.'
+            if status_code == 204:
+                assert demisto.info.call_args[0][0] == \
+                       'FireEye Feed info - API Status Code: 204 No Content Available for this timeframe.'
 
-        elif status_code != 200:
-            assert demisto.debug.call_args[0][0] == \
-                   f'FireEye Feed debug - API Status Code: {status_code}' \
-                   ' Error Reason: {}'
+        else:
+            with pytest.raises(SystemExit) as e:
+                # return_error reached
+                client.fetch_all_indicators_from_api(-1)
+
+            if not e:
+                assert False
 
 
 FETCH_REPORTS_PACKAGE = [
@@ -145,6 +198,19 @@ FETCH_REPORTS_PACKAGE = [
 
 @pytest.mark.parametrize('url, status_code, json_data, expected_result', FETCH_REPORTS_PACKAGE)
 def test_fetch_reports_from_api(mocker, url, status_code, json_data, expected_result):
+    """
+
+    Given:
+        - Response status code
+        - Response data
+
+    When:
+        - Fetching reports from API
+
+    Then:
+        - Returns the processed list of raw reports
+
+    """
     with requests_mock.Mocker() as m:
         mocker.patch.object(Client, 'fetch_new_access_token', return_value='New Access Token')
         mocker.patch.object(demisto, 'debug')
@@ -152,14 +218,17 @@ def test_fetch_reports_from_api(mocker, url, status_code, json_data, expected_re
         m.get(url, status_code=status_code, json=json_data)
         client = create_client()
 
-        fetch_result = client.fetch_all_reports_from_api(-1)
+        if status_code == 200:
+            fetch_result = client.fetch_all_reports_from_api(-1)
+            assert fetch_result == expected_result
 
-        assert fetch_result == expected_result
+        else:
+            with pytest.raises(SystemExit) as e:
+                # return_error reached
+                client.fetch_all_reports_from_api(-1)
 
-        if status_code != 200:
-            assert demisto.debug.call_args[0][0] == \
-                   f'FireEye Feed debug - API Status Code: {status_code}' \
-                   ' Error Reason: {}'
+            if not e:
+                assert False
 
 
 PROCESS_INDICATOR_VALUE_PACKAGE = [
@@ -190,6 +259,18 @@ PROCESS_INDICATOR_VALUE_PACKAGE = [
 
 @pytest.mark.parametrize('pattern_value, expected_result', PROCESS_INDICATOR_VALUE_PACKAGE)
 def test_process_indicator_value(pattern_value, expected_result):
+    """
+
+    Given:
+        - Indicator raw value from response
+
+    When:
+        - Processing raw indicators to real indicators
+
+    Then:
+        - Returns extracted value and hashes
+
+    """
     process_result = STIX21Processor.process_indicator_value(pattern_value)
 
     for i in range(2):
