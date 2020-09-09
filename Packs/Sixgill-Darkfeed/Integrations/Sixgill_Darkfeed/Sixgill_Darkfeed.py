@@ -180,7 +180,7 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log, tags: list = []):
             log.error(f"failed converting STIX object to Demisto indicator: {e}, STIX object: {stix2obj}")
             continue
 
-    if all(ioc.get("type") == FeedIndicatorType.File for ioc in indicators):
+    if len(indicators) > 0 and all(ioc.get("type") == FeedIndicatorType.File for ioc in indicators):
         temp_indicator = indicators[0].copy()
 
         if hashes["sha256"] is not None:
@@ -205,7 +205,15 @@ demisto_mapping: Dict[str, Dict[str, Any]] = {
     'darkfeed_010': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
     'darkfeed_011': {'name': FeedIndicatorType.File, 'pipeline': []},
     'darkfeed_012': {'name': FeedIndicatorType.File, 'pipeline': []},
-
+    'darkfeed_013': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_014': {'name': FeedIndicatorType.File, 'pipeline': []},
+    'darkfeed_015': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_018': {'name': FeedIndicatorType.File, 'pipeline': []},
+    'darkfeed_019': {'name': FeedIndicatorType.File, 'pipeline': []},
+    'darkfeed_020': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_021': {'name': FeedIndicatorType.File, 'pipeline': []},
+    'darkfeed_022': {'name': FeedIndicatorType.IP, 'pipeline': []},
+    'darkfeed_023': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
 }
 
 
