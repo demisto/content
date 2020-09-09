@@ -30,20 +30,20 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The name of the package. 
+      description: The name of the package.
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: The package ID. Package ID or package name
-        is required. When both exist, ID is used.
+      description: The package ID. Either Package ID or Package name is required. When both
+        exist, Packate ID is used.
       isArray: false
       name: id
       required: false
       secret: false
     deprecated: false
-    description: Returns a package object based on name or ID. 
+    description: Returns a package object based on name or ID.
     execution: false
     name: tn-get-package
     outputs:
@@ -150,6 +150,13 @@ script:
       name: question-id
       required: true
       secret: false
+    - default: false
+      defaultValue: '95'
+      description: Indicates the threshold at which to return the question results. Default is 95. The threshold is the percentage of mr_tested against the estimated_total.
+      isArray: false
+      name: completion-percentage
+      required: false
+      secret: false
     deprecated: false
     description: Returns the question result based on question ID.
     execution: false
@@ -199,11 +206,12 @@ script:
       description: The unique ID of the sensor object.
       type: Number
     - contextPath: TaniumSensor.IgnoreCaseFlag
-      description: Whether to ignore the case flag of the sensor. Default is 1, which means the case flag is ignored.
+      description: Whether to ignore the case flag of the sensor. Default is 1, which
+        means the case flag is ignored.
       type: Boolean
     - contextPath: TaniumSensor.KeepDuplicatesFlag
-      description: Whether to keep duplicate values in the sensor results. Default is 1 which keeps duplicate values
-        instead of returning each unique value once.
+      description: Whether to keep duplicate values in the sensor results. Default
+        is 1 which keeps duplicate values instead of returning each unique value once.
       type: Boolean
     - contextPath: TaniumSensor.LastModifiedBy
       description: The name of the user who last modified this object.
@@ -245,7 +253,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns detailed information about a sensor object based on name or ID.   
+    description: Returns detailed information about a sensor object based on name
+      or ID.
     execution: false
     name: tn-get-sensor
     outputs:
@@ -271,18 +280,20 @@ script:
       description: The unique ID of the sensor object.
       type: Number
     - contextPath: TaniumSensor.IgnoreCaseFlag
-      description: Ignore the case flag. Default is 1, which means the case flag is ignored.
+      description: Ignore the case flag. Default is 1, which means the case flag is
+        ignored.
       type: Boolean
     - contextPath: TaniumSensor.KeepDuplicatesFlag
-      description: Keep duplicates flag in the sensor results. Default is 1, which preserves duplicate values in sensor results
-        instead of only returning each unique value once.
+      description: Keep duplicates flag in the sensor results. Default is 1, which
+        preserves duplicate values in sensor results instead of only returning each
+        unique value once.
       type: Boolean
     - contextPath: TaniumSensor.LastModifiedBy
       description: The name of the user who last modified this object.
       type: String
     - contextPath: TaniumSensor.MaxAgeSeconds
-      description: The maximum age in seconds of a sensor result before it is invalid. When results
-        are half this value, the sensor is re-evaluated.
+      description: The maximum age in seconds of a sensor result before it is invalid.
+        When results are half this value, the sensor is re-evaluated.
       type: Number
     - contextPath: TaniumSensor.ModUserDomain
       description: The domain of the user who most recently modified this object.
@@ -356,12 +367,12 @@ script:
       description: Whether archiving is enabled for the saved question.
       type: Boolean
     - contextPath: Tanium.SavedQuestion.ArchiveOwner
-      description: The name of the user that owns the archive. Archives can be shared between
-        users with identical management rights groups.
+      description: The name of the user that owns the archive. Archives can be shared
+        between users with identical management rights groups.
       type: String
     - contextPath: Tanium.SavedQuestion.ExpireSeconds
-      description: The duration in seconds before each question expires.
-        Default value is 600.
+      description: The duration in seconds before each question expires. Default value
+        is 600.
       type: Number
     - contextPath: Tanium.SavedQuestion.ID
       description: The unique ID of the question object.
@@ -371,7 +382,8 @@ script:
         value is 120.
       type: Number
     - contextPath: Tanium.SavedQuestion.IssueSecondsNeverFlag
-      description: Whether the question is not reissued automatically. Default is 1 (not reissued).
+      description: Whether the question is not reissued automatically. Default is
+        1 (not reissued).
       type: Boolean
     - contextPath: Tanium.SavedQuestion.KeepSeconds
       description: The number of seconds to save the data results in the archive.
@@ -406,8 +418,7 @@ script:
         this question.
       type: Boolean
     - contextPath: Tanium.SavedQuestion.SortColumn
-      description: The default sort column, if no sort order is
-        specified.
+      description: The default sort column, if no sort order is specified.
       type: Number
     - contextPath: Tanium.SavedQuestion.UserId
       description: The ID of the user who owns this object.
@@ -421,6 +432,13 @@ script:
       isArray: false
       name: question-id
       required: true
+      secret: false
+    - default: false
+      defaultValue: '95'
+      description: Indicates the threashold to returns the question results.
+      isArray: false
+      name: completion-percentage
+      required: false
       secret: false
     deprecated: false
     description: Returns the saved question result based on the saved question ID.
@@ -461,7 +479,8 @@ script:
       description: The most recent time that the client registered with the server.
       type: Date
     - contextPath: Tanium.Client.Status
-      description: 'The status of the client. Can be: "Blocked", "Leader" "Normal", "Slow link".'
+      description: 'The status of the client. Can be: "Blocked", "Leader" "Normal",
+        "Slow link".'
       type: String
   - arguments:
     - default: false
@@ -622,9 +641,9 @@ script:
       description: The number of seconds before the question expires. Default is 600.
       type: Number
     - contextPath: Tanium.Question.ForceComputerIdFlag
-      description: Whether to force the question to be a counting question
-        if only one selection is present. Default is not to force. If the question object is an instance of a
-        saved question, this field is derived from the saved question
+      description: Whether to force the question to be a counting question if only
+        one selection is present. Default is not to force. If the question object
+        is an instance of a saved question, this field is derived from the saved question
       type: Boolean
     - contextPath: Tanium.Question.IsExpired
       description: Whether the question has expired.
@@ -710,8 +729,8 @@ script:
         or null starts immediately.
       type: Date
     - contextPath: Tanium.SavedAction.Status
-      description: 'The status of the saved action. Can be: "0" for
-        Enabled, "1" for Disabled, or "2" for Deleted.'
+      description: 'The status of the saved action. Can be: "0" for Enabled, "1" for
+        Disabled, or "2" for Deleted.'
       type: Number
     - contextPath: Tanium.SavedAction.TargetGroupId
       description: The group of machines to target.
@@ -736,7 +755,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a saved action object based on name or ID. 
+    description: Returns a saved action object based on name or ID.
     execution: false
     name: tn-get-saved-action
     outputs:
@@ -796,8 +815,8 @@ script:
         or null starts immediately.
       type: Date
     - contextPath: Tanium.SavedAction.Status
-      description: 'The status of the saved action. Can be: "0" for
-        Enabled, "1" for Disabled, or "2" for Deleted.'
+      description: 'The status of the saved action. Can be: "0" for Enabled, "1" for
+        Disabled, or "2" for Deleted.'
       type: Number
     - contextPath: Tanium.SavedAction.TargetGroupId
       description: The group of machines to target.
@@ -830,12 +849,12 @@ script:
       description: Whether to enable archiving.
       type: Boolean
     - contextPath: Tanium.SavedQuestion.ArchiveOwner
-      description: The name of the user that owns the archive. Archives can be shared between
-        users with identical management rights groups.
+      description: The name of the user that owns the archive. Archives can be shared
+        between users with identical management rights groups.
       type: String
     - contextPath: Tanium.SavedQuestion.ExpireSeconds
-      description: The duration in seconds before each question expires.
-        Default value is 600.
+      description: The duration in seconds before each question expires. Default value
+        is 600.
       type: Number
     - contextPath: Tanium.SavedQuestion.ID
       description: The unique ID of the saved_question object.
@@ -845,7 +864,8 @@ script:
         value is 120.
       type: Number
     - contextPath: Tanium.SavedQuestion.IssueSecondsNeverFlag
-      description: Whether the question is reissued automatically. If value is 1, the question is not reissued automatically.
+      description: Whether the question is reissued automatically. If value is 1,
+        the question is not reissued automatically.
       type: Boolean
     - contextPath: Tanium.SavedQuestion.KeepSeconds
       description: The number of seconds to save the data results in the archive.
@@ -876,12 +896,11 @@ script:
       description: The ID of the question from which to create the saved question.
       type: Number
     - contextPath: Tanium.SavedQuestion.RowCountFlag
-      description: Whether the row count data is saved when archiving
-        this question.
+      description: Whether the row count data is saved when archiving this question.
       type: Boolean
     - contextPath: Tanium.SavedQuestion.SortColumn
-      description: The column to use as the default sort column, if no sort order is
-        specified.
+      description: The column to use as the default sort column, if no sort order
+        is specified.
       type: Number
     - contextPath: Tanium.SavedQuestion.UserId
       description: The ID of the user who owns this object.
@@ -969,8 +988,8 @@ script:
         or null starts immediately.
       type: Date
     - contextPath: Tanium.SavedAction.Status
-      description: 'The status of the saved action. Can be: "0" for
-        Enabled, "1" for Disabled, or "2" for Deleted.'
+      description: 'The status of the saved action. Can be: "0" for Enabled, "1" for
+        Disabled, or "2" for Deleted.'
       type: Number
     - contextPath: Tanium.SavedAction.TargetGroupId
       description: The group of machines to target.
@@ -1007,9 +1026,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The target group name to deploy the package. Target
-         group and action group ID are required. Target group can passed by name or ID.
-         Note - the target group should be different than "All Computers" or "Default".
+      description: The target group name to deploy the package. Target group and action
+        group ID are required. Target group can passed by name or ID. Note - the target
+        group should be different than "All Computers" or "Default".
       isArray: false
       name: target-group-name
       required: false
@@ -1028,7 +1047,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates an action object based on the package name or the package ID. 
+    description: Creates an action object based on the package name or the package
+      ID.
     execution: false
     name: tn-create-action
     outputs:
@@ -1051,7 +1071,7 @@ script:
       description: The date and time when the action expires.
       type: Date
     - contextPath: Tanium.Action.ExpireSeconds
-      description: The timeout in seconds for the action expiry. 
+      description: The timeout in seconds for the action expiry.
       type: Number
     - contextPath: Tanium.Action.HistorySavedQuestionId
       description: The ID of the saved question that tracks the results of the action.
@@ -1208,7 +1228,7 @@ script:
       description: The date and time when the action expires.
       type: Date
     - contextPath: Tanium.Action.ExpireSeconds
-      description: The timeout in seconds for the action expiry.        
+      description: The timeout in seconds for the action expiry.
       type: Number
     - contextPath: Tanium.Action.HistorySavedQuestionId
       description: The ID of the saved question that tracks the results of the action.
@@ -1403,15 +1423,15 @@ script:
     name: tn-delete-group
   - arguments:
     - default: false
-      description: The package ID. 
+      description: The package ID.
       isArray: false
       name: package-id
       required: false
       secret: false
     - default: false
       description: The package name. Target group is required and can passed by name
-        or ID. When both exist, the ID is used. Note the target group
-        should be different than "All Computers" or "Default".
+        or ID. When both exist, the ID is used. Note the target group should be different
+        than "All Computers" or "Default".
       isArray: false
       name: package-name
       required: false
@@ -1448,7 +1468,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates an action object, based on a package name or package ID.  
+    description: Creates an action object, based on a package name or package ID.
     execution: false
     name: tn-create-action-by-host
     outputs:
@@ -1518,13 +1538,14 @@ script:
     - contextPath: Tanium.Action.UserName
       description: The name of the user who issued this action.
       type: String
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.8.5.10845
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Tanium v2 - Test

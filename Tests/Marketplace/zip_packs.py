@@ -9,7 +9,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, IGNORED_
 
 from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion, str2bool
 
-ARTIFACT_NAME = 'zipped_packs.zip'
+ARTIFACT_NAME = 'content_marketplace_packs.zip'
 MAX_THREADS = 4
 BUILD_GCP_PATH = 'content/builds'
 
@@ -132,6 +132,9 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
                 pack_prefix = os.path.join(gcp_path, branch_name, circle_build, 'content', 'packs', pack.name)
             else:
                 pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
+
+            if not branch_name or not circle_build:
+                pack_prefix = pack_prefix.replace('/builds/content', '')
 
             # Search for the pack in the bucket
             blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))

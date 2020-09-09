@@ -1612,7 +1612,7 @@ script:
       command with no filters.
     execution: true
     name: xdr-endpoint-scan
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false
@@ -1624,3 +1624,5 @@ script:
 tests:
 - Test XDR Playbook
 fromversion: 4.1.0
+defaultclassifier: Cortex XDR - IR
+defaultmapperin: Cortex XDR - IR-mapper

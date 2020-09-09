@@ -18,9 +18,9 @@ configuration:
     if they are part of a MITRE Intrusion Set
 - display: Fetch indicators
   name: feed
-  defaultvalue: ''
   type: 8
   required: false
+  defaultvalue: 'true'
 - display: Indicator Reputation
   name: feedReputation
   options:
@@ -82,6 +82,11 @@ configuration:
   defaultvalue: 'false'
   type: 8
   required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 script:
   script: ''
   type: python

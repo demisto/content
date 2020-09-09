@@ -99,7 +99,8 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- display: Tags
+- additionalinfo: Supports CSV values.
+  display: Tags
   hidden: false
   name: feedTags
   required: false
@@ -121,7 +122,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: json-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.6980
+  dockerimage: demisto/jmespath:1.0.0.8854
   feed: true
   isfetch: false
   longRunning: false

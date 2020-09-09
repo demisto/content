@@ -43,8 +43,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Zimperium is a mobile security platform that generates alerts based on
-  anomalous or unauthorized activities detected on a user's mobile device.
+description: Fetch and investigate mobile security alerts, generated based on anomalous or unauthorized activities detected on a user's mobile device.
 name: Zimperium
 fromversion: 5.0.0
 display: Zimperium
@@ -1060,7 +1059,7 @@ script:
     description: Checks the reputation of an app in Zimperium.
     execution: false
     name: file
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: true
   longRunning: false

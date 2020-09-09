@@ -101,8 +101,8 @@ def test_prepare_fetch_incidents_query():
     firewall_severity = ['Critical', 'High']
     fetch_limit = 10
     expected_response = 'SELECT * FROM `firewall.threat` WHERE ' \
-                        '(TIME(time_generated) Between TIME(TIMESTAMP("2020-02-20T16:49:05")) ' \
-                        'AND TIME(CURRENT_TIMESTAMP)) AND' \
+                        'time_generated Between TIMESTAMP("2020-02-20T16:49:05") ' \
+                        'AND CURRENT_TIMESTAMP AND' \
                         ' (sub_type.value = "attack" OR sub_type.value = "url") AND' \
                         ' (vendor_severity.value = "Critical" OR vendor_severity.value = "High") ' \
                         'ORDER BY time_generated ASC ' \
