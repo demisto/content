@@ -1918,7 +1918,7 @@ def build_error_message(raw_res):
     if raw_res.get('errors'):
         error_data = raw_res.get('errors')[0]
     else:
-        error_data = {"code": '', "message": 'Error: something got wrong, please try again'}
+        error_data = {"code": 'None', "message": 'something got wrong, please try again'}
     error_code = error_data.get('code')
     error_message = error_data.get('message')
     return f'Error: error code: {error_code}, error_message: {error_message}.'

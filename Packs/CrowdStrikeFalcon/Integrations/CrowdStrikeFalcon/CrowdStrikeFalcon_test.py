@@ -2108,3 +2108,21 @@ def test_build_url_filter_for_device_id():
     from CrowdStrikeFalcon import build_url_filter_for_device_id
     res = build_url_filter_for_device_id({"type": "domain", "value": "google.com"})
     assert res == '/indicators/queries/devices/v1?type=domain&value=google.com'
+
+
+def test_validate_response():
+    from CrowdStrikeFalcon import validate_response
+    true_res = validate_response({"resources": "1234"})
+    false_res = validate_response({"error": "404"})
+    assert true_res
+    assert not false_res
+
+
+def test_build_error_message():
+    from CrowdStrikeFalcon import build_error_message
+
+    res_error_data = build_error_message({'meta': 1234})
+    assert res_error_data == 'Error: error code: None, error_message: something got wrong, please try again.'
+
+    res_error_data_with_specific_error = build_error_message({'errors': [{"code": 1234, "message": "hi"}]})
+    assert res_error_data_with_specific_error == 'Error: error code: 1234, error_message: hi.'
