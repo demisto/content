@@ -1914,11 +1914,16 @@ def build_url_filter_for_device_id(args):
     return url_filter
 
 
-def handle_errors(raw_res):
-    errors = raw_res.get('errors')[0] if raw_res.get('errors') else return_error('Error: Error, please try again')
-    error_code = errors.get('code')
-    error_message = errors.get('message')
-    return_error(f'Error: error code: {error_code}, error_message: {error_message}.')
+def build_error_message(raw_res):
+    error_data = raw_res.get('errors')[0] if raw_res.get('errors') \
+        else error_data = {"code": '', "message": 'Error: something got wrong, please try again'}
+    error_code = error_data.get('code')
+    error_message = error_data.get('message')
+    return f'Error: error code: {error_code}, error_message: {error_message}.'
+
+
+def validate_response(raw_res):
+    return 'resources' in raw_res.keys()
 
 
 def get_indicator_device_id():
@@ -1926,10 +1931,11 @@ def get_indicator_device_id():
     url_filter = build_url_filter_for_device_id(args)
     raw_res = http_request('GET', url_filter)
     context_output = ''
-    if 'resources' in raw_res.keys():
+    if validate_response:
         context_output = raw_res.get('resources')
     else:
-        handle_errors(raw_res)
+        error_message = build_error_message(raw_res)
+        return_error(error_message)
     return CommandResults(
         readable_output=context_output,
         outputs_prefix='CrowdStrike.DeviceID',
