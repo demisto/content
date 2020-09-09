@@ -373,12 +373,12 @@ def main(args):
                                                    first_run, xdr_alerts_field, xdr_file_artifacts_field,
                                                    xdr_network_artifacts_field, incident_in_demisto,playbook_to_run,
                                                    verbose)
-    except Exception:
+    except Exception as e:
         if verbose:
             raise
 
         demisto.error(traceback.format_exc())
-        return_error(str(ex), ex)
+        return_error(str(e), e)
     finally:
         # even if error occurred keep trigger sync
         if latest_incident_in_xdr is None:
