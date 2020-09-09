@@ -2428,10 +2428,10 @@ script:
         \ mode by security products where they will simply log that a match occurred\
         \ but will not perform the action. Default value is false."
     - contextPath: MicrosoftATP.Indicators.severity
-      type: Number
+      type: String
       description: An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Values are 0 – 5, where 5 is
-        the most severe and zero is not severe at all.
+        identified by the data within the indicator. Values are Informational,Low, MediumLow, MediumHigh ,High, where High is
+        the most severe and Informational is not severe at all.
     - contextPath: MicrosoftATP.Indicators.targetProduct
       type: String
       description: A string value representing a single security product to which
@@ -2628,10 +2628,10 @@ script:
         \ mode by security products where they will simply log that a match occurred\
         \ but will not perform the action. Default value is false."
     - contextPath: MicrosoftATP.Indicators.severity
-      type: Number
+      type: String
       description: An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Values are 0 – 5, where 5 is
-        the most severe and zero is not severe at all.
+        identified by the data within the indicator. Values are Informational,Low, MediumLow, MediumHigh ,High, where High is
+        the most severe and Informational is not severe at all.
     - contextPath: MicrosoftATP.Indicators.targetProduct
       type: String
       description: A string value representing a single security product to which
@@ -2727,19 +2727,18 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: '3'
+      defaultValue: 'MediumHigh'
       description: An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Acceptable values are 0 – 5 where
-        5 is the most severe and zero is not severe at all. Default is 3.
+        identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where
+        5 is the most severe and zero is not severe at all. Default is MediumHigh.
       isArray: false
       name: severity
       predefined:
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
+      - 'Informational'
+      - 'Low'
+      - 'MediumLow'
+      - 'MediumHigh'
+      - 'High'
       required: false
       secret: false
     - default: false
@@ -2994,8 +2993,8 @@ script:
     - contextPath: MicrosoftATP.Indicators.severity
       type: Number
       description: An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Values are 0 – 5, where 5 is
-        the most severe and zero is not severe at all.
+        identified by the data within the indicator. Values are Informational,Low, MediumLow, MediumHigh ,High, where High is
+        the most severe and Informational is not severe at all.
     - contextPath: MicrosoftATP.Indicators.targetProduct
       type: String
       description: A string value representing a single security product to which
@@ -3091,19 +3090,18 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: '3'
+      defaultValue: 'MediumHigh'
       description: An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Acceptable values are 0 – 5,
-        where 5 is the most severe and zero is not severe at all. Default is 3.
+        identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High,
+        where 5 is the most severe and zero is not severe at all. Default is MediumHigh.
       isArray: false
       name: severity
       predefined:
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
+      - 'Informational'
+      - 'Low'
+      - 'MediumLow'
+      - 'MediumHigh'
+      - 'High'
       required: false
       secret: false
     - default: false
@@ -3398,8 +3396,8 @@ script:
     - contextPath: MicrosoftATP.Indicators.severity
       type: Number
       description: An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Values are 0 – 5, where 5 is
-        the most severe and zero is not severe at all.
+        identified by the data within the indicator. Values are Informational,Low, MediumLow, MediumHigh ,High, where High is
+        the most severe and Informational is not severe at all.
     - contextPath: MicrosoftATP.Indicators.targetProduct
       type: String
       description: A string value representing a single security product to which
@@ -3431,8 +3429,8 @@ script:
       secret: false
     - default: false
       description: An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Acceptable values are 0 – 5,
-        where 5 is the most severe and zero is not severe at all.
+        identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High,
+        where High is the most severe and Informational is not severe at all.
       isArray: false
       name: severity
       required: false
@@ -3618,10 +3616,10 @@ script:
         \ mode by security products where they will simply log that a match occurred\
         \ but will not perform the action. Default value is false."
     - contextPath: MicrosoftATP.Indicators.severity
-      type: Number
+      type: String
       description: An integer representing the severity of the malicious behavior
-        identified by the data within the indicator. Values are 0 – 5, where 5 is
-        the most severe and zero is not severe at all.
+        identified by the data within the indicator. Values are Informational,Low, MediumLow, MediumHigh ,High, where High is
+        the most severe and Informational is not severe at all.
     - contextPath: MicrosoftATP.Indicators.targetProduct
       type: String
       description: A string value representing a single security product to which

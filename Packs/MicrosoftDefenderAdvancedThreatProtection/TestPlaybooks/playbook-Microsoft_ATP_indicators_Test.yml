@@ -74,7 +74,7 @@ tasks:
       file_type:
         simple: zip
       severity:
-        simple: "0"
+        simple: "Informational"
       tags:
         simple: tag1
       threat_type:
@@ -170,7 +170,7 @@ tasks:
       network_source_ipv6: {}
       network_source_port: {}
       severity:
-        simple: "0"
+        simple: "Informational"
       tags:
         simple: tag1
       threat_type:

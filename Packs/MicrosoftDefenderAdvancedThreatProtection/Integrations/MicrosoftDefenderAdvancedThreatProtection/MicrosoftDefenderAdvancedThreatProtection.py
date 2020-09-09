@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Tuple, List
+from typing import Optional, Dict, Tuple, List, Union
 from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
@@ -11,6 +11,114 @@ urllib3.disable_warnings()
 APP_NAME = 'ms-defender-atp'
 
 ''' HELPER FUNCTIONS '''
+
+SEVERITY_TO_NUMBER = {
+    'Informational': 0,
+    'Low': 1,
+    'MediumLow': 2,
+    'MediumHigh': 3,
+    'High': 4
+}
+
+NUMBER_TO_SEVERITY = {
+    0: 'Informational',
+    1: 'Low',
+    2: 'MediumLow',
+    3: 'MediumHigh',
+    4: 'High',
+    5: 'Informational'
+}
+
+
+def file_standard(observable: Dict) -> Common.File:
+    """Gets a file observable and returns a context key
+
+    Args:
+        observable: APT's file observable
+
+    Returns:
+        Context standard
+    """
+    file_obj = Common.File(
+        Common.DBotScore.NONE,
+        name=observable.get('fileName'),
+        size=observable.get('fileSize'),
+        path=observable.get('filePath')
+    )
+    if hash_type := observable.get('fileHashType', '').lower():
+        if hash_type in INDICATOR_TYPE_TO_CONTEXT_KEY:
+            hash_value = observable.get('fileHashValue')
+            if hash_type == 'md5':
+                file_obj.md5 = hash_value
+            elif hash_type == 'sha256':
+                file_obj.sha256 = hash_value
+            elif hash_type == 'sha1':
+                file_obj.sha1 = hash_value
+    return file_obj
+
+
+def network_standard(observable: Dict) -> Optional[Union[Common.Domain, Common.IP, Common.URL]]:
+    """Gets a network observable and returns a context key
+
+    Args:
+        observable: APT's network observable
+
+    Returns:
+        Context standard or None of not supported
+    """
+    if domain_name := observable.get('domainName'):
+        return Common.Domain(domain_name, Common.DBotScore.NONE)
+    elif ip := observable.get('networkIPv4', observable.get('networkIPv6')):
+        return Common.IP(ip, Common.DBotScore(ip, DBotScoreType.IP, 'Microsoft Defender Advanced Threat Protection', 0))
+    elif url := observable.get('url'):
+        return Common.URL(url, Common.DBotScore.NONE)
+    return None
+
+
+def standard_output(observable: Dict) -> Optional[Union[Common.Domain, Common.IP, Common.URL, Common.File]]:
+    """Gets an observable and returns a context standard object.
+
+    Args:
+        observable: File or network observable from API.
+
+    Links:
+        File observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---file  # noqa: E501
+        Network observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---network  # noqa: E501
+
+    Returns:
+        File, IP, URL or Domain object. If observable is not supported, will return None.
+    """
+    file_keys = {
+        'fileHashType', 'fileHashValue', 'fileName', 'filePath', 'fileSize', 'fileType'
+    }
+    # Must be file key
+    if any(key in observable for key in file_keys):
+        return file_standard(observable)
+    # Else it's a network
+    return network_standard(observable)
+
+
+def build_std_output(indicators: Union[Dict, List]) -> Dict:
+    """
+
+    Args:
+        indicators: Network or File observable
+
+    Returns:
+        Dict of standard outputs.
+    """
+    if isinstance(indicators, dict):
+        indicators = [indicators]
+    outputs = dict()
+    for indicator in indicators:
+        output = standard_output(indicator)
+        if output:
+            for key, value in output.to_context().items():
+                if key not in outputs:
+                    outputs[key] = [value]
+                else:
+                    outputs[key].append(value)
+    return outputs
 
 
 def get_future_time(expiration_time: str) -> str:
@@ -1910,11 +2018,15 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
     Returns:
         human_readable, outputs.
     """
-    indicators = client.list_indicators(args.get('indicator_id'))
+    raw_response = client.list_indicators(args.get('indicator_id'))
     limit = int(args.get('limit', 50))
+    raw_response = raw_response[:limit]
+    if raw_response:
+        indicators = list()
+        for item in raw_response:
+            item['severity'] = NUMBER_TO_SEVERITY.get(item['severity'])
+            indicators.append(item)
 
-    indicators = indicators[:limit]
-    if indicators:
         human_readable = tableToMarkdown(
             'Microsoft Defender ATP Indicators:',
             indicators,
@@ -1932,7 +2044,10 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
             ],
             removeNull=True
         )
-        return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicators}, indicators
+        outputs = {'MicrosoftATP.Indicators(val.id == obj.id)': indicators}
+        std_outputs = build_std_output(indicators)
+        outputs.update(std_outputs)
+        return human_readable, outputs, indicators
     else:
         return 'No indicators found', None, None
 
@@ -1973,12 +2088,7 @@ def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) 
             assert 0 <= confidence <= 100, 'The confidence argument must be between 0 and 100'
     except ValueError:
         raise DemistoException('The confidence argument must be an integer.')
-    severity = args.get('severity', 3)
-    try:
-        severity = int(severity)
-        assert 0 <= severity <= 5, 'The severity argument must be between 0 and 5'
-    except ValueError:
-        raise DemistoException('The severity argument must be an integer.')
+    severity = NUMBER_TO_SEVERITY.get(args.get('severity', 'Informational'))
     tags = argToList(args.get('tags'))
     body = assign_params(
         action=action,
@@ -1995,7 +2105,7 @@ def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) 
     return client.create_indicator(body)
 
 
-def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Optional[Dict]]:
+def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """Creates a file indicator
 
     Args:
@@ -2023,7 +2133,9 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Op
         fileType=args.get('file_type')
     )
     assert file_object, 'Must supply at least one file attribute.'
-    indicator = create_indicator_command(client, args, file_object)
+    raw_response = create_indicator_command(client, args, file_object)
+    indicator = raw_response.copy()
+    indicator['severity'] = NUMBER_TO_SEVERITY.get(indicator['severity'])
     human_readable = tableToMarkdown(
         f'Indicator {indicator.get("id")} was successfully created:',
         indicator,
@@ -2041,10 +2153,13 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Op
         ],
         removeNull=True
     )
-    return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
+    outputs = {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
+    std_outputs = build_std_output(indicator)
+    outputs.update(std_outputs)
+    return human_readable, outputs, raw_response
 
 
-def create_network_indicator_command(client, args) -> Tuple[str, Dict]:
+def create_network_indicator_command(client, args) -> Tuple[str, Dict, Dict]:
     """Creates a network indicator
 
     Args:
@@ -2079,7 +2194,9 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict]:
         url=args.get('url')
     )
     assert network_object, 'Must supply at least one network attribute.'
-    indicator = create_indicator_command(client, args, network_object)
+    raw_response = create_indicator_command(client, args, network_object)
+    indicator = raw_response.copy()
+    indicator['severity'] = NUMBER_TO_SEVERITY.get(indicator['severity'])
     human_readable = tableToMarkdown(
         f'Indicator {indicator.get("id")} was successfully created:',
         indicator,
@@ -2097,10 +2214,13 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict]:
         ],
         removeNull=True
     )
-    return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
+    outputs = {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
+    std_outputs = build_std_output(indicator)
+    outputs.update(std_outputs)
+    return human_readable, outputs, raw_response
 
 
-def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, dict]:
+def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict, Dict]:
     """Updates an indicator
 
     Args:
@@ -2111,29 +2231,28 @@ def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, dict]:
         human readable, outputs
     """
     indicator_id = args.get('indicator_id', '')
-    severity = args.get('severity')
-    if severity is not None:
-        try:
-            severity = int(severity)
-            assert 0 <= severity <= 5, 'The severity argument must be between 0 and 5'
-        except ValueError:
-            raise DemistoException('The severity argument must be an integer.')
+    severity = NUMBER_TO_SEVERITY.get(args.get('severity', 'Informational'))
     expiration_time = get_future_time(args.get('expiration_time', ''))
     description = args.get('description')
     if description is not None:
         assert 1 <= len(
             description) <= 100, 'The description argument must contain at least 1 character and not more than 100'
 
-    resp = client.update_indicator(
+    raw_response = client.update_indicator(
         indicator_id=indicator_id, expiration_date_time=expiration_time,
         description=description, severity=severity
     )
+    indicator = raw_response.copy()
+    indicator['severity'] = NUMBER_TO_SEVERITY.get(indicator['severity'])
     human_readable = tableToMarkdown(
         f'Indicator ID: {indicator_id} was updated successfully.',
-        resp,
+        indicator,
         removeNull=True
     )
-    return human_readable, {'MicrosoftATP.Indicators(val.id == obj.id)': resp}
+    outputs = {'MicrosoftATP.Indicators(val.id == obj.id)': indicator}
+    std_outputs = build_std_output(indicator)
+    outputs.update(std_outputs)
+    return human_readable, outputs, raw_response
 
 
 def delete_indicator_command(client: MsClient, args: dict) -> str:
