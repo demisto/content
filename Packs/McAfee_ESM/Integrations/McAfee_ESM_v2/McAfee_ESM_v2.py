@@ -699,8 +699,13 @@ class McAfeeESMClient(BaseClient):
         command = 'sysRemoveWatchlist'
         ids_to_delete = argToList(self.args.get('ids', ''))
         ids_to_delete.extend(list(map(self.__get_watchlist_id, argToList(self.args.get('names')))))
-        data = {"ids": {"watchlistIdList": ids_to_delete}}
-        self.__request(command, data)
+        if self.version.startswith('11.'):
+            data = {"ids": {"watchlistIdList": ids_to_delete}}
+            self.__request(command, data)
+        else:
+            for single_id in ids_to_delete:
+                data = {"id": single_id}
+                self.__request(command, data)
         return 'Watchlists removed', {}, {}
 
     def watchlist_add_entry(self):
@@ -728,9 +733,11 @@ class McAfeeESMClient(BaseClient):
     def __get_watchlist_file_id(self, watchlist_id):
         command = 'sysGetWatchlistDetails'
         result = self.__request(command, data={'id': watchlist_id})
-        if not result.get('recordCount', 0):
+        count_results = result.get('recordCount') or result.get('valueCount')
+        if count_results is None or count_results == 0:
             raise EmptyFile()
-        file_token = result.get('valueFile', {}).get('fileToken')
+        value_file = result.get('valueFile', {})
+        file_token = value_file.get('fileToken', value_file.get('id'))
         watchlist_name = result.get('name')
         return file_token, watchlist_name
 
