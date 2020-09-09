@@ -114,13 +114,12 @@ def download_zip_file_from_gcp(current_feature_content_zip_file_path, zip_destin
     """
 
     file_path = "creds.json"
-    json_content = os.environ.get('GCS_ARTIFACTS_KEY')
-
+    json_content = json.loads(os.environ.get('GCS_ARTIFACTS_KEY'))
     with open(file_path, "w") as file:
-        file.write(json.dumps(json_content))
+        json.dump(json_content, file)
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = file_path
-
     storage_client = storage.Client()
+
     storage_bucket = storage_client.bucket(STORAGE_BUCKET_NAME)
 
     index_blob = storage_bucket.blob(current_feature_content_zip_file_path)
