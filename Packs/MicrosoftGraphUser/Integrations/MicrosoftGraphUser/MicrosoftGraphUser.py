@@ -52,9 +52,16 @@ class MsGraphClient:
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed):
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
+                 redirect_uri, auth_code):
+        tenant_id = tenant_id if self_deployed else ''
+        grant_type = AUTHORIZATION_CODE if self else CLIENT_CREDENTIALS
+        resource = None if self_deployed else ''
+        tenant_id = (demisto.getIntegrationContext().get('current_refresh_token') or tenant_id)
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-                                         base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed)
+                                         base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
+                                         redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,
+                                         resource=resource)
 
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
@@ -159,6 +166,8 @@ def test_function(client, _):
        Performs basic GET request to check if the API is reachable and authentication is successful.
        Returns ok if successful.
        """
+    if demisto.params().get('self_deployed', False) and not demisto.params().get('auth_code'):
+        raise Exception('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.http_request(method='GET', url_suffix='users/')
     return 'ok', None, None
 
@@ -301,6 +310,8 @@ def main():
     enc_key = params.get('enc_key')
     verify = not params.get('insecure', False)
     self_deployed: bool = params.get('self_deployed', False)
+    redirect_uri = params.get('redirect_uri', '')
+    auth_code = params.get('auth_code', '')
     proxy = params.get('proxy', False)
 
     commands = {
@@ -322,7 +333,8 @@ def main():
     try:
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
-                                              self_deployed=self_deployed)
+                                              self_deployed=self_deployed,redirect_uri=redirect_uri,
+                                              auth_code=auth_code)
 
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
