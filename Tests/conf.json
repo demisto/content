@@ -3051,10 +3051,7 @@
         "Init_McAfee_ESM_v2_Test": "issue #26187",
         "MISP V2 Test": "Issue 26905",
         "Logzio - Test": "Issue 26729",
-
-        "_comment": "~~~ DEPRECATED ~~~",
-        "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
-
+        "pyEWS_Test": "Issue 28339"
     },
     "skipped_integrations": {
         
