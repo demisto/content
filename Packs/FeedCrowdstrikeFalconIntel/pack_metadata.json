@@ -11,7 +11,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
-    "useCases": [],
+    "useCases": ["receiving information on adversaries tracked by CrowdStrike, their target nations and industries, and our research on their activities"],
     "keywords": [
         "Crowdstrike",
         "Feed",
