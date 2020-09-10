@@ -669,7 +669,7 @@ def get_cores_command(client, args):
 
 def get_core_command(client, args):
     core_serial = args.get('core_serial')
-    res = client.get_capsule(capsule_serial)
+    res = client.get_capsule(core_serial)
     md = tableToMarkdown(f'SpaceX Core Serial {core_serial}:', res)
     command_results = CommandResults(
         outputs_prefix=f'SpaceX.Cores',
