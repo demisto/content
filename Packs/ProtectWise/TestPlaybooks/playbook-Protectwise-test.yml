@@ -39,7 +39,11 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      sensorId: {}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "10"
+      sensorId: { }
     separatecontext: false
     skipunavailable: false
     task:
@@ -70,6 +74,10 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "10"
       id:
         simple: ${Protectwise.Event.[0].id}
     separatecontext: false
@@ -102,6 +110,10 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "10"
       id:
         simple: ${Protectwise.Observation.[0].id}
       sensorId:
@@ -136,6 +148,10 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "10"
       burstsize: {}
       eventId:
         simple: ${Protectwise.Event.[0].id}
@@ -171,6 +187,10 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "10"
       burstsize: {}
       filename: {}
       id:
@@ -209,6 +229,10 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "10"
       end:
         simple: 2020-03-25T12:00:00
       eventType: {}
@@ -279,6 +303,10 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "10"
       end:
         simple: 2020-03-25T12:00:00
       hasKillChain: {}
