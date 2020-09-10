@@ -7,23 +7,22 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b14976f3-b538-46a9-83ea-3684648f4eeb
+    taskid: abc79bbb-ba13-4ba2-8c2f-c3619add5166
     type: start
     task:
-      id: b14976f3-b538-46a9-83ea-3684648f4eeb
+      id: abc79bbb-ba13-4ba2-8c2f-c3619add5166
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - "15"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 142.5,
           "y": 50
         }
       }
@@ -34,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: b962ac3f-d4c0-4278-8828-0bdf77aacdd9
+    taskid: d8ded3b1-46c4-4d7c-8f84-f1cc32b3bd45
     type: regular
     task:
-      id: b962ac3f-d4c0-4278-8828-0bdf77aacdd9
+      id: d8ded3b1-46c4-4d7c-8f84-f1cc32b3bd45
       version: -1
       name: DNSDB Lookup RRSet/A
       description: Lookup RRset records
@@ -47,10 +46,14 @@ tasks:
       brand: DNSDB_v2
     nexttasks:
       '#none#':
-      - "3"
+      - "12"
     scriptarguments:
       aggr: {}
       bailiwick: {}
+      extend-context:
+        simple: pivotIPs=RData
+      ignore-outputs:
+        simple: "true"
       limit:
         simple: "10"
       offset: {}
@@ -80,14 +83,14 @@ tasks:
             args:
               by:
                 value:
-                  simple: "15552000"
+                  simple: "-15552000"
       time_last_before: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 895
         }
       }
     note: false
@@ -97,10 +100,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 7e6b8848-c7e8-4212-80ec-0386aceefe5e
+    taskid: a8874960-eb06-4c0f-807e-943f6d55b8fb
     type: regular
     task:
-      id: 7e6b8848-c7e8-4212-80ec-0386aceefe5e
+      id: a8874960-eb06-4c0f-807e-943f6d55b8fb
       version: -1
       name: DNSDB Lookup RData/IP
       description: Lookup RData records
@@ -113,6 +116,8 @@ tasks:
       - "5"
     scriptarguments:
       aggr: {}
+      extend-context:
+        simple: relatedHostnames=RRName
       limit: {}
       offset: {}
       rrtype: {}
@@ -138,47 +143,42 @@ tasks:
             args:
               by:
                 value:
-                  simple: "15552000"
+                  simple: "-15552000"
       time_last_before: {}
       type:
         simple: ip
       value:
-        simple: ${DNSDB.Record.RData}
+        simple: ${pivotIPs}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 545
+          "x": 377.5,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    fieldMapping:
-    - incidentfield: Associated Malicious Domains
-      output:
-        simple: ${DNSDB.Record.RRName}
     skipunavailable: false
     quietmode: 0
   "5":
     id: "5"
-    taskid: 264cf4e7-e9e8-422c-8d27-071878ad182a
+    taskid: 50162dbd-26df-4b74-8194-40dcc23f2673
     type: title
     task:
-      id: 264cf4e7-e9e8-422c-8d27-071878ad182a
+      id: 50162dbd-26df-4b74-8194-40dcc23f2673
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 720
+          "x": 132.5,
+          "y": 1420
         }
       }
     note: false
@@ -188,10 +188,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 5520ee84-6445-49ec-8145-bba45a09b2b9
+    taskid: 913052c8-4d38-4518-8775-542e5dcf2ce1
     type: regular
     task:
-      id: 5520ee84-6445-49ec-8145-bba45a09b2b9
+      id: 913052c8-4d38-4518-8775-542e5dcf2ce1
       version: -1
       name: DNSDB Lookup RRSet/AAAA
       description: Lookup RRset records
@@ -201,10 +201,14 @@ tasks:
       brand: DNSDB_v2
     nexttasks:
       '#none#':
-      - "3"
+      - "12"
     scriptarguments:
       aggr: {}
       bailiwick: {}
+      extend-context:
+        simple: pivotIPs=RData
+      ignore-outputs:
+        simple: "true"
       limit:
         simple: "10"
       offset: {}
@@ -234,14 +238,14 @@ tasks:
             args:
               by:
                 value:
-                  simple: "15552000"
+                  simple: "-15552000"
       time_last_before: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 370
+          "y": 895
         }
       }
     note: false
@@ -251,10 +255,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: c2cfde1c-f18c-4eb1-8654-074df5e1b485
+    taskid: bfce7a15-91e0-4e30-8c3e-e1b8722e24b5
     type: regular
     task:
-      id: c2cfde1c-f18c-4eb1-8654-074df5e1b485
+      id: bfce7a15-91e0-4e30-8c3e-e1b8722e24b5
       version: -1
       name: DNSDB Lookup RRSet/CNAME
       description: Lookup RRset records
@@ -268,6 +272,10 @@ tasks:
     scriptarguments:
       aggr: {}
       bailiwick: {}
+      extend-context:
+        simple: relatedHostnames=RData
+      ignore-outputs:
+        simple: "false"
       limit:
         simple: "10"
       offset: {}
@@ -297,14 +305,14 @@ tasks:
             args:
               by:
                 value:
-                  simple: "15552000"
+                  simple: "-15552000"
       time_last_before: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 807.5,
-          "y": 545
+          "y": 1245
         }
       }
     note: false
@@ -314,23 +322,20 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: ee5ce4bf-66cb-4014-8c3e-ebe25caad964
+    taskid: 198a4516-ced4-4139-89b3-736220d55623
     type: condition
     task:
-      id: ee5ce4bf-66cb-4014-8c3e-ebe25caad964
+      id: 198a4516-ced4-4139-89b3-736220d55623
       version: -1
       name: Is DNSDB v2 Enabled
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "5"
       "Yes":
-      - "1"
-      - "7"
-      - "8"
+      - "13"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -362,7 +367,155 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 142.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 02d3670b-5e30-4f96-8ec4-85f073fc1c72
+    type: condition
+    task:
+      id: 02d3670b-5e30-4f96-8ec4-85f073fc1c72
+      version: -1
+      name: Were there results?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${pivotIPs}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 69012fef-a1ea-44d1-8038-6018ad321d04
+    type: condition
+    task:
+      id: 69012fef-a1ea-44d1-8038-6018ad321d04
+      version: -1
+      name: Are there any domains?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "14"
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 6378d44f-2a87-4cd3-8506-5b1e2682cc9f
+    type: regular
+    task:
+      id: 6378d44f-2a87-4cd3-8506-5b1e2682cc9f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "7"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: pivotIPs
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 952a8888-7f62-48b0-80df-fa3e7729f9d7
+    type: regular
+    task:
+      id: 952a8888-7f62-48b0-80df-fa3e7729f9d7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: relatedHostnames
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 142.5,
           "y": 195
         }
       }
@@ -376,7 +529,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 1435,
         "width": 1137.5,
         "x": 50,
         "y": 50
@@ -391,11 +544,10 @@ inputs:
       accessor: Name
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
-- contextPath: DNSDB.Record.RRName
-  description: The owner name of the RRset in DNS presentation format.
+- contextPath: relatedHostnames
+  description: An array of hostnames related to the inputs.
   type: string
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
