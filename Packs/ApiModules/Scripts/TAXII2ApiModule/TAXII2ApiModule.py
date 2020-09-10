@@ -65,6 +65,8 @@ def override_v20_get_objects(self, accept=MEDIA_TYPE_STIX_V20, start=0, per_requ
     """
 
     Overriding the v20.Collection.get_object method, which uses the `Range` header without the '=' sign.
+    Will be in the next release of the client.
+    TODO: Remove this section when the client is updated
 
     """
     self._verify_can_read()
