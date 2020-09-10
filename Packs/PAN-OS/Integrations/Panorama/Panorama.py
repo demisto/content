@@ -5521,7 +5521,7 @@ def prettify_data_filtering_rule(rule: Dict) -> Dict:
     return pretty_rule
 
 
-def prettify_data_filtering_rules(rules: Dict) -> List[Dict]:
+def prettify_data_filtering_rules(rules: Dict) -> List:
     """
 
     Args:
@@ -5531,7 +5531,7 @@ def prettify_data_filtering_rules(rules: Dict) -> List[Dict]:
 
     """
     if not isinstance(rules, list):
-        return prettify_data_filtering_rule(rules)
+        return [prettify_data_filtering_rule(rules)]
     return [prettify_data_filtering_rule(rule) for rule in rules]
 
 
@@ -5585,10 +5585,10 @@ def get_security_profiles_command():
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             spyware_rules = prettify_profiles_rules(rules)
-            content = {
+            content = [{
                 'Name': profiles['@name'],
                 'Rules': spyware_rules
-            }
+            }]
 
         human_readable = tableToMarkdown('Anti Spyware Profiles', content)
         context.update({"Panorama.Spyware(val.Name == obj.Name)": content})
@@ -5606,10 +5606,10 @@ def get_security_profiles_command():
         else:
             rules = profiles.get('decoder', {}).get('entry', [])
             antivirus_rules = prettify_profiles_rules(rules)
-            content = {
+            content = [{
                 'Name': profiles['@name'],
                 'Rules': antivirus_rules
-            }
+            }]
 
         human_readable += tableToMarkdown('Antivirus Profiles', content)
         context.update({"Panorama.Antivirus(val.Name == obj.Name)": content})
@@ -5627,10 +5627,10 @@ def get_security_profiles_command():
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             file_blocking_rules = prettify_profiles_rules(rules)
-            content = {
+            content = [{
                 'Name': profiles['@name'],
                 'Rules': file_blocking_rules
-            }
+            }]
 
         human_readable += tableToMarkdown('File Blocking Profiles', content)
         context.update({"Panorama.FileBlocking(val.Name == obj.Name)": content})
@@ -5648,10 +5648,10 @@ def get_security_profiles_command():
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             vulnerability_rules = prettify_profiles_rules(rules)
-            content = {
+            content = [{
                 'Name': profiles['@name'],
                 'Rules': vulnerability_rules
-            }
+            }]
 
         human_readable += tableToMarkdown('Vulnerability Protection Profiles', content)
         context.update({"Panorama.Vulnerability(val.Name == obj.Name)": content})
@@ -5669,10 +5669,10 @@ def get_security_profiles_command():
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             data_filtering_rules = prettify_data_filtering_rules(rules)
-            content = {
+            content = [{
                 'Name': profiles['@name'],
                 'Rules': data_filtering_rules
-            }
+            }]
 
         human_readable += tableToMarkdown('Data Filtering Profiles', content)
         context.update({"Panorama.DataFiltering(val.Name == obj.Name)": content})
@@ -5688,10 +5688,10 @@ def get_security_profiles_command():
                 })
         else:
             url_filtering_rules = prettify_get_url_filter(profiles)
-            content = {
+            content = [{
                 'Name': profiles['@name'],
                 'Rules': url_filtering_rules
-            }
+            }]
 
         human_readable += tableToMarkdown('URL Filtering Profiles', content)
         context.update({'Panorama.URLFilter(val.Name == obj.Name)': content})
@@ -5709,10 +5709,10 @@ def get_security_profiles_command():
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             wildfire_rules = prettify_wildfire_rules(rules)
-            content = {
+            content = [{
                 'Name': profiles['@name'],
                 'Rules': wildfire_rules
-            }
+            }]
 
         human_readable += tableToMarkdown('WildFire Profiles', content)
         context.update({"Panorama.WildFire(val.Name == obj.Name)": content})
@@ -5804,7 +5804,7 @@ def get_ssl_decryption_rules_command():
                 'Description': item.get('description')
             })
     else:
-        content = {
+        content = [{
             'Name': ssl_decryption_rules.get('@name'),
             'UUID': ssl_decryption_rules.get('@uuid'),
             'Target': ssl_decryption_rules.get('target'),
@@ -5818,7 +5818,7 @@ def get_ssl_decryption_rules_command():
             'Source-user': ssl_decryption_rules.get('source-user', {}).get('member'),
             'Action': ssl_decryption_rules.get('action'),
             'Description': ssl_decryption_rules.get('description')
-        }
+        }]
 
     headers = ['Name', 'UUID', 'Description', 'Target', 'Service', 'Category', 'Type', 'From', 'To', 'Source',
                'Destination', 'Action', 'Source-user']
@@ -5891,7 +5891,7 @@ def prettify_profiles_rules(rules: Dict) -> List:
 
     """
     if not isinstance(rules, list):
-        return prettify_profile_rule(rules)
+        return [prettify_profile_rule(rules)]
     pretty_rules_arr = []
     for rule in rules:
         pretty_rule = prettify_profile_rule(rule)
@@ -6111,7 +6111,7 @@ def prettify_wildfire_rules(rules: Dict) -> List:
 
     """
     if not isinstance(rules, list):
-        return prettify_wildfire_rule(rules)
+        return [prettify_wildfire_rule(rules)]
     pretty_rules_arr = []
     for rule in rules:
         pretty_rule = prettify_wildfire_rule(rule)
