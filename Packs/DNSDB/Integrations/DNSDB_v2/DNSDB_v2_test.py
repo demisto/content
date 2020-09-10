@@ -697,7 +697,7 @@ class TestRDataCommand:
         input = ''
         expected_readable = textwrap.dedent('''\
                     ### Farsight DNSDB Lookup
-                    No results found.
+                    **No entries.**
                                         ''')
         expected_output_prefix = 'DNSDB.Record'
         expected_outputs = []
@@ -716,12 +716,12 @@ class TestRDataCommand:
             ''')
 
         expected_readable = textwrap.dedent('''\
-                    ### Farsight DNSDB Lookup
-                    |RRName|RRType|RData|Count|TimeFirst|TimeLast|
-                    |-|-|-|-|-|-|-|-|
-                    |farsightsecurity.com|NS|ns5.dnsmadeeasy.com.|1078|2013-07-19T16:22:00Z|2016-07-11T16:18:03Z|True|
-                    |farsightsecurity.com|NS|ns5.dnsmadeeasy.com.|706617|2013-07-17T21:26:20Z|2016-07-12T14:48:46Z|False|
-                    ''')
+            ### Farsight DNSDB Lookup
+            |RRName|RRType|RData|Count|TimeFirst|TimeLast|FromZoneFile|
+            |---|---|---|---|---|---|---|
+            | farsightsecurity.com | NS | ns5.dnsmadeeasy.com. | 1078 | 2013-07-19T16:22:00Z | 2016-07-11T16:18:03Z | True |
+            | farsightsecurity.com | NS | ns5.dnsmadeeasy.com. | 706617 | 2013-07-17T21:26:20Z | 2016-07-12T14:48:46Z | False |
+            ''')
 
         expected_output_prefix = 'DNSDB.Record'
         expected_outputs = [
@@ -760,10 +760,10 @@ class TestRDataCommand:
 
         expected_readable = textwrap.dedent('''\
             ### Farsight DNSDB Lookup
-            |RRName|RRType|RData|Count|TimeFirst|TimeLast|
-            |-|-|-|-|-|-|-|-|
-            |www.farsighsecurity.com|A|104.244.13.104|24|2015-06-06T00:33:05Z|2016-07-12T08:28:36Z|False|
-            |farsightsecurity.com|A|104.244.13.104|9429|2015-04-01T14:17:52Z|2016-07-12T14:17:22Z|True|
+            |RRName|RRType|RData|Count|TimeFirst|TimeLast|FromZoneFile|
+            |---|---|---|---|---|---|---|
+            | www.farsighsecurity.com | A | 104.244.13.104 | 24 | 2015-06-06T00:33:05Z | 2016-07-12T08:28:36Z | False |
+            | farsightsecurity.com | A | 104.244.13.104 | 9429 | 2015-04-01T14:17:52Z | 2016-07-12T14:17:22Z | True |
             ''')
 
         expected_prefix = 'DNSDB.Record'
@@ -917,7 +917,7 @@ class TestRRSetCommand:
         input = ''
         expected_readable = textwrap.dedent('''\
                     ### Farsight DNSDB Lookup
-                    No results found.
+                    **No entries.**
                                         ''')
         expected_output_prefix = 'DNSDB.Record'
         expected_outputs = []
@@ -935,12 +935,12 @@ class TestRRSetCommand:
         ''')
 
         expected_readable = textwrap.dedent('''\
-            ### Farsight DNSDB Lookup
-            |RRName|RRType|Bailiwick|RData|Count|TimeFirst|TimeLast|
-            |-|-|-|-|-|-|-|-|-|
-            |www.farsightsecurity.com|A|farsightsecurity.com|66.160.140.81|5059|2013-09-25T20:02:10Z|2015-04-01T09:51:39Z|False|
-            |farsightsecurity.com|A|com|104.244.13.104|17381|2015-04-01T13:07:24Z|2016-07-12T13:14:32Z|True|
-                                ''')
+        ### Farsight DNSDB Lookup
+        |RRName|RRType|Bailiwick|RData|Count|TimeFirst|TimeLast|FromZoneFile|
+        |---|---|---|---|---|---|---|---|
+        | www.farsightsecurity.com | A | farsightsecurity.com | 66.160.140.81 | 5059 | 2013-09-25T20:02:10Z | 2015-04-01T09:51:39Z | False |
+        | farsightsecurity.com | A | com | 104.244.13.104 | 17381 | 2015-04-01T13:07:24Z | 2016-07-12T13:14:32Z | True |
+        ''')  # noqa: E501
 
         expected_output_prefix = 'DNSDB.Record'
         expected_outputs = [

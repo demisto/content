@@ -14,7 +14,7 @@
 
 import inspect
 import locale
-from typing import Iterator, Dict, List, Union, Any
+from typing import Iterator, Dict, List, Tuple, Union, Any, Callable
 import urllib
 import urllib.parse
 
@@ -404,54 +404,41 @@ def build_rate_limits_context(results: Dict) -> Dict:
 @logger
 def lookup_to_markdown(results: List[Dict], want_bailiwick=True) -> str:
     # TODO this should be more specific, include arguments?
-    out = ['### Farsight DNSDB Lookup']
+    out = []
 
-    if not results:
-        out += ['No results found.']
-    else:
-        keys = [
-            ('RRName', 'rrname', format_name_for_context),
-            ('RRType', 'rrtype', str),
-            ('Bailiwick', 'bailiwick', format_name_for_context),
-            ('RData', 'rdata', format_rdata_for_markdown),
-            ('Count', 'count', str),
-            ('TimeFirst', 'time_first'),
-            ('TimeLast', 'time_last'),
-            ('TimeFirst', 'zone_time_first'),
-            ('TimeLast', 'zone_time_last'),
-        ]
+    keys = [
+        ('RRName', 'rrname', format_name_for_context),
+        ('RRType', 'rrtype', str),
+        ('Bailiwick', 'bailiwick', format_name_for_context),
+        ('RData', 'rdata', format_rdata_for_markdown),
+        ('Count', 'count', str),
+    ]  # type: List[Tuple[str, str, Callable]]
 
-        if not want_bailiwick:
-            keys = list(filter(lambda r: r[1] != 'bailiwick', keys))
+    if not want_bailiwick:
+        keys = list(filter(lambda r: r[1] != 'bailiwick', keys))
 
-        out += ['|' + '|'.join(str(k[0]) for k in keys[:-2]) + '|', '|-' * len(keys) + '|']
+    headers = [k[0] for k in keys] + ['TimeFirst', 'TimeLast', 'FromZoneFile']
 
-        for result in results:
-            row = []
-            for ckey, rkey, f in keys[:-4]:
-                if rkey in result:
-                    row += [f(result[rkey])]  # type: ignore[operator]
-                else:
-                    row += [' ']
+    for result in results:
+        row = dict()  # type: Dict[str, Any]
+        for ckey, rkey, f in keys:
+            if rkey in result:
+                row[ckey] = f(result[rkey])
 
-            if 'time_first' in result:
-                row += [parse_unix_time(result['time_first'])]
-            elif 'zone_time_first' in result:
-                row += [parse_unix_time(result['zone_time_first'])]
-            else:
-                row += [' ']
+        if 'time_first' in result:
+            row['TimeFirst'] = parse_unix_time(result['time_first'])
+        elif 'zone_time_first' in result:
+            row['TimeFirst'] = parse_unix_time(result['zone_time_first'])
 
-            if 'time_last' in result:
-                row += [parse_unix_time(result['time_last'])]
-            elif 'zone_time_last' in result:
-                row += [parse_unix_time(result['zone_time_last'])]
-            else:
-                row += [' ']
+        if 'time_last' in result:
+            row['TimeLast'] = parse_unix_time(result['time_last'])
+        elif 'zone_time_last' in result:
+            row['TimeLast'] = parse_unix_time(result['zone_time_last'])
 
-            row += [str("zone_time_first" in result)]
-            out += ['|' + '|'.join(row) + '|']
+        row['FromZoneFile'] = str("zone_time_first" in result)
+        out.append(row)
 
-    return '\n'.join(out) + '\n'
+    return tableToMarkdown('Farsight DNSDB Lookup', out, headers=headers)
 
 
 @logger
