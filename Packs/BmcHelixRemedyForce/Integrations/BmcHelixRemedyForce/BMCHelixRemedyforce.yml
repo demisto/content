@@ -784,7 +784,7 @@ script:
     deprecated: false
     description: Returns category details for incidents and service
       requests. Categories allow users to classify the incident or service request
-      using standard classifications to track for reporting purposes.
+      using standard classifications to track the reporting purposes.
     execution: false
     name: bmc-remedy-category-details-get
     outputs:
