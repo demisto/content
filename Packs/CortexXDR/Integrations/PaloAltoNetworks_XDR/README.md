@@ -58,7 +58,7 @@ You need to collect several pieces of information in order to configure the inte
     * __Server URL (copy URL from XDR - click ? to see more info.)__
     * __API Key ID__
     * __API Key__
-    * __HTTP Timeout__
+    * __HTTP Timeout__ (default is 120 seconds)
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
     * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
