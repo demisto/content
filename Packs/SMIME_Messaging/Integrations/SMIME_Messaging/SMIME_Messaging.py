@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
-from M2Crypto import BIO, SMIME, X509
+from M2Crypto import BIO, SMIME, X509, m2
 from typing import Dict
 from tempfile import NamedTemporaryFile
 
@@ -117,6 +117,7 @@ def verify(client: Client, args: Dict):
     try:
         p7, data = SMIME.smime_load_pkcs7(signed_message['path'])
         v = client.smime.verify(p7, data, flags=SMIME.PKCS7_NOVERIFY)
+        human_readable = f'The signature verified\n\n{v}'
 
     except SMIME.SMIME_Error as e:
 
@@ -127,9 +128,7 @@ def verify(client: Client, args: Dict):
             p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
             v = client.smime.verify(p7, flags=SMIME.PKCS7_NOVERIFY)
             return_results(fileResult('unwrapped-' + signed_message.get('name'), v))
-
-
-    human_readable = f'The signature verified\n\n'
+            human_readable = f'The signature verified\n\n'
 
     return human_readable, {}
 
@@ -152,7 +151,6 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
         p7, data = SMIME.smime_load_pkcs7(encrypt_message['path'])
 
         out = client.smime.decrypt(p7).decode('utf-8')
-
 
     except SMIME.SMIME_Error as e:
 
