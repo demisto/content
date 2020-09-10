@@ -15,6 +15,16 @@ configuration:
   name: blacklist
   required: false
   type: 0
+- additionalinfo: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing
+    an indicator, the update time for all indicators will be changed.
+  defaultvalue: 'False'
+  display: Stateless
+  name: stateless
+  options:
+  - 'True'
+  - 'False'
+  required: false
+  type: 15
 - display: Whitelist names e.g.(wlWhiteListIPv4,wlWhiteListDomain,Unmalicious)
   name: whitelist
   required: false
@@ -55,6 +65,17 @@ script:
       name: comment
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing
+        an indicator, the update time for all indicators will be changed.
+      isArray: false
+      name: stateless
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Add an indicator to a miner.
     execution: false
@@ -77,6 +98,17 @@ script:
       description: The type of the indicator to remove from the miner.
       isArray: false
       name: type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: When set to "True", only updates indicators that are added or removed. When set to "False", when adding
+        or removing an indicator, the update time for all indicators will be changed.
+      isArray: false
+      name: stateless
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     deprecated: false
@@ -482,10 +514,13 @@ script:
     - contextPath: MineMeld.Miner.indicators
       description: Amount of miner's indicators.
       type: string
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - No tests
