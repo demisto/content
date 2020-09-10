@@ -434,7 +434,8 @@ class Client(BaseClient):
                 return_error(f'{INTEGRATION_NAME} reports fetching - '
                              f'API Status Code: {response.status_code} Error Reason: {response.text}')
 
-            raw_reports += [report for report in response.json().get('objects')]
+            raw_reports += [report for report in response.json().get('objects')
+                            if report.get('type') == 'report']
 
             if limit != -1:
                 break
