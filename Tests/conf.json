@@ -725,6 +725,11 @@
             "playbookID": "PAN-OS URL Filtering enrichment - Test"
         },
         {
+            "integrations": "Panorama",
+            "instance_names": "panorama_instance_best_practice",
+            "playbookID": "Panorama Best Practise - Test"
+        },
+        {
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io test"
         },
