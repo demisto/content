@@ -333,7 +333,7 @@ def main():
     try:
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
-                                              self_deployed=self_deployed,redirect_uri=redirect_uri,
+                                              self_deployed=self_deployed, redirect_uri=redirect_uri,
                                               auth_code=auth_code)
 
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
