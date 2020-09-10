@@ -1,4 +1,4 @@
-This script is used to simplify the process of creating the incident in BMC Helix Remedyforce. Script will consider ID over the name of the argument when both are provided. Example: client_id is considered when both client_id and client_user_name are provided.
+This script is used to simplify the process of creating the incident in BMC Helix Remedyforce. The script will consider the ID over the name of the argument when both are provided. Example: client_id is considered when both client_id and client_user_name are provided.
 ## Script Data
 ---
 
@@ -29,35 +29,35 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| client_user_name | User name of the client. Users can get the username using 'bmc\-remedy\-user\-details\-get' command. |
-| client_id | client\_id is the unique id of the client. It helps to select a client for a particular service request. Users can get the client id from the email using 'bmc\-remedy\-user\-details\-get' command. |
-| category | Categories allow users to classify the service request using standard classifications to track the reporting purposes. Users can get the category name using 'bmc\-remedy\-category\-details\-get' command. |
-| category_id | category\_id is the unique id of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes. Users can get the category id from the category name using 'bmc\-remedy\-category\-details\-get' command. |
-| queue | Name of the queue as owner. Users can get the queue name using 'bmc\-remedy\-queue\-details\-get' command. |
-| queue_id | queue\_id is the unique id of the owner. Users can get the queue id from the owner name using 'bmc\-remedy\-queue\-details\-get' command. |
-| staff_user_name | User name of the staff. Users can get the username using 'bmc\-remedy\-user\-details\-get' command. |
-| staff_id | staff\_id is the unique id of the staff to whom the user wants to assign the record. Users can get the staff id from the staff details using 'bmc\-remedy\-user\-details\-get' command. |
-| status | Status is used to display the progress of the service request through its stages of opening to closure. Users can get the status name using 'bmc\-remedy\-status\-details\-get' command. |
-| status_id | status\_id is the unique id of the status that is used to display the progress of the service request through its stages of opening to closure. Users can get the status id from the status name using 'bmc\-remedy\-status\-details\-get' command. |
-| urgency | Urgency is used to determine the priority of the service request. Users can get the urgency name using 'bmc\-remedy\-urgency\-details\-get' command. |
-| urgency_id | urgency\_id is the unique id of the urgency which is used to determine the priority of the service request. Users can get the urgency id from the urgency name using 'bmc\-remedy\-urgency\-details\-get' command. |
-| template | Templates enable users to pre\-populate commonly used fields in a form. Users can get the template name using 'bmc\-remedy\-template\-details\-get' command. |
-| template_id | template\_id is the unique id of the template. Templates enable users to pre\-populate commonly used fields in a form. Users can get the template id from the template name using 'bmc\-remedy\-template\-details\-get' command. |
-| description | This field represents the description of the incident that the user wants to create. |
-| due_date | due\_date is the date and time at which the incident should be completed. Use the yyyy\-MM\-ddTHH:mm:ss.SSS\+/\-HHmm or yyyy\-MM\-ddTHH:mm:ss.SSSZ formats to specify dateTime fields. |
-| opened_date | opened\_date is the date and time at which the incident was created. Use the yyyy\-MM\-ddTHH:mm:ss.SSS\+/\-HHmm or yyyy\-MM\-ddTHH:mm:ss.SSSZ formats to specify dateTime fields. |
-| impact | Impact is used to determine the priority of the service request. Users can get the impact name using 'bmc\-remedy\-impact\-details\-get' command. |
-| impact_id | impact\_id is the unique id of the impact which is used to determine the priority of the service request. Users can get the impact id from the impact name using 'bmc\-remedy\-impact\-details\-get' command. |
-| account | Name of the account. Users can get the account name using 'bmc\-remedy\-account\-details\-get' command. |
-| account_id | account\_id of the specific account. Users can get the account id from the account name using 'bmc\-remedy\-account\-details\-get' command. |
-| broadcast | Broadcast enables users to send messages to the entire organization, selected groups within the organization and to external customers. Users can get the broadcast name using 'bmc\-remedy\-broadcast\-details\-get' command. |
-| broadcast_id | broadcast\_id is the unique id of the broadcast. Broadcast enables users to send messages to the entire organization, selected groups within the organization and to external customers. Users can get the broadcast id from the broadcast name using 'bmc\-remedy\-broadcast\-details\-get' command. |
-| service_offering | Link a service offering of an associated service. Users can get the service\_offering name using 'bmc\-remedy\-service\-offering\-details\-get' command. |
-| service_offering_id | service\_offering\_id is the unique id of the service\_offering. Users can get the service\_offering\_id from the service\_offering name using 'bmc\-remedy\-service\-offering\-details\-get' command. |
-| asset | Name of the asset. Users can get the asset id from the asset name using 'bmc\-remedy\-asset\-details\-get' command. |
-| asset_id | asset\_id of the specific asset. Users can get the asset id from the asset name using 'bmc\-remedy\-asset\-details\-get' command. |
-| outage_start | outage\_start is the date and time when the service outage begins. Use the yyyy\-MM\-ddTHH:mm:ss.SSS\+/\-HHmm or yyyy\-MM\-ddTHH:mm:ss.SSSZ formats to specify dateTime fields. |
-| outage_end | outage\_end is the date and time when the service outage ends. Use the yyyy\-MM\-ddTHH:mm:ss.SSS\+/\-HHmm or yyyy\-MM\-ddTHH:mm:ss.SSSZ formats to specify dateTime fields. |
+| client_user_name | User name of the client. Get the username using the 'bmc\-remedy\-user\-details\-get' command. |
+| client_id | The unique ID of the client. It helps to select a client for a particular service request. Get the client ID from the email using the 'bmc\-remedy\-user\-details\-get' command. |
+| category | Classifies the service request using standard classifications to track the reporting purposes. Get the category name using the 'bmc\-remedy\-category\-details\-get' command. |
+| category_id | The unique ID of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes. Get the category ID using the 'bmc\-remedy\-category\-details\-get' command. |
+| queue | Name of the queue owner. Ghe queue name using the 'bmc\-remedy\-queue\-details\-get' command. |
+| queue_id | The unique ID of the owner. Get the queue ID using the 'bmc\-remedy\-queue\-details\-get' command. |
+| staff_user_name | The user name of the staff. Get the username using the 'bmc\-remedy\-user\-details\-get' command. |
+| staff_id | The unique ID of the staff to whom the user wants to assign the record. Get the staff ID from the staff details using the 'bmc\-remedy\-user\-details\-get' command. |
+| status | Displays the progress of the service request through its stages from opening to closure. Get the status name using the 'bmc\-remedy\-status\-details\-get' command. |
+| status_id | The unique ID of the status that is used to display the progress of the service request through its stages from opening to closure. Get the status ID using the 'bmc\-remedy\-status\-details\-get' command. |
+| urgency | Determines the priority of the service request. Get the urgency name using the 'bmc\-remedy\-urgency\-details\-get' command. |
+| urgency_id | The unique ID of the urgency which is used to determine the priority of the service request. Get the urgency ID using the 'bmc\-remedy\-urgency\-details\-get' command. |
+| template | Enable users to pre\-populate commonly used fields in a form. Get the template name using the 'bmc\-remedy\-template\-details\-get' command. |
+| template_id | The unique ID of the template. Templates enable users to pre\-populate commonly used fields in a form. Get the template ID using the 'bmc\-remedy\-template\-details\-get' command. |
+| description | The description of the incident that the user wants to create. |
+| due_date | The date and time at which the incident should be completed. Use the yyyy\-MM\-ddTHH:mm:ss.SSS\+/\-HHmm or yyyy\-MM\-ddTHH:mm:ss.SSSZ formats to specify dateTime fields. |
+| opened_date | The date and time at which the incident was created. Use the yyyy\-MM\-ddTHH:mm:ss.SSS\+/\-HHmm or yyyy\-MM\-ddTHH:mm:ss.SSSZ formats to specify dateTime fields. |
+| impact | Determines the priority of the service request. Get the impact name using the 'bmc\-remedy\-impact\-details\-get' command. |
+| impact_id | The unique ID of the impact which is used to determine the priority of the service request. Get the impact ID using the 'bmc\-remedy\-impact\-details\-get' command. |
+| account | Name of the account. Get the account name using the 'bmc\-remedy\-account\-details\-get' command. |
+| account_id | The account ID of the specific account. Get the account ID using the 'bmc\-remedy\-account\-details\-get' command. |
+| broadcast | Enables users to send messages to the entire organization, selected groups within the organization and to external customers. Get the broadcast name using 'bmc\-remedy\-broadcast\-details\-get' command. |
+| broadcast_id | The unique ID of the broadcast. Broadcast enables users to send messages to the entire organization, selected groups within the organization and to external customers. Get broadcast ID from the broadcast name using the 'bmc\-remedy\-broadcast\-details\-get' command. |
+| service_offering | Link a service offering of an associated service. Get the service offering name using the 'bmc\-remedy\-service\-offering\-details\-get' command. |
+| service_offering_id | The unique ID of the service offering. Get Users can get the service offering ID using the 'bmc\-remedy\-service\-offering\-details\-get' command. |
+| asset | Name of the asset. Get the asset ID using the 'bmc\-remedy\-asset\-details\-get' command. |
+| asset_id | The asset ID of the specific asset. Get the asset ID using the 'bmc\-remedy\-asset\-details\-get' command. |
+| outage_start | The date and time when the service outage begins. Use the yyyy\-MM\-ddTHH:mm:ss.SSS\+/\-HHmm or yyyy\-MM\-ddTHH:mm:ss.SSSZ formats to specify dateTime fields. |
+| outage_end | The date and time when the service outage ends. Use the yyyy\-MM\-ddTHH:mm:ss.SSS\+/\-HHmm or yyyy\-MM\-ddTHH:mm:ss.SSSZ formats to specify dateTime fields. |
 
 ## Outputs
 ---
