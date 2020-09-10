@@ -610,23 +610,26 @@ def upload_script(name: str, permission_type: str, content: str, entry_id: str) 
         'permission_type': (None, permission_type)
     }
     temp_file = None
-    if content:
-        body['content'] = (None, content)
-    else:  # entry_id was provided
-        file_ = demisto.getFilePath(entry_id)
-        file_name = file_.get('name')  # pylint: disable=E1101
-        temp_file = open(file_.get('path'), 'rb')  # pylint: disable=E1101
-        body['file'] = (file_name, temp_file)
+    try:
+        if content:
+            body['content'] = (None, content)
+        else:  # entry_id was provided
+            file_ = demisto.getFilePath(entry_id)
+            file_name = file_.get('name')  # pylint: disable=E1101
+            temp_file = open(file_.get('path'), 'rb')  # pylint: disable=E1101
+            body['file'] = (file_name, temp_file)
 
-    headers = {
-        'Authorization': HEADERS['Authorization'],
-        'Accept': 'application/json'
-    }
+        headers = {
+            'Authorization': HEADERS['Authorization'],
+            'Accept': 'application/json'
+        }
 
-    response = http_request('POST', endpoint_url, files=body, headers=headers)
-    if temp_file:
-        temp_file.close()
-    return response
+        response = http_request('POST', endpoint_url, files=body, headers=headers)
+
+        return response
+    finally:
+        if temp_file:
+            temp_file.close()
 
 
 def get_script(script_id: list) -> Dict:
@@ -695,23 +698,25 @@ def upload_file(entry_id: str, description: str) -> Tuple:
         :return: Response JSON which contains errors (if exist) and how many resources were affected and the file name
     """
     endpoint_url = '/real-time-response/entities/put-files/v1'
-
-    file_ = demisto.getFilePath(entry_id)
-    file_name = file_.get('name')  # pylint: disable=E1101
-    temp_file = open(file_.get('path'), 'rb')  # pylint: disable=E1101
-    body = {
-        'name': (None, file_name),
-        'description': (None, description),
-        'file': (file_name, temp_file)
-    }
-    headers = {
-        'Authorization': HEADERS['Authorization'],
-        'Accept': 'application/json'
-    }
-    response = http_request('POST', endpoint_url, files=body, headers=headers)
-    if temp_file:
-        temp_file.close()
-    return response, file_name
+    temp_file = None
+    try:
+        file_ = demisto.getFilePath(entry_id)
+        file_name = file_.get('name')  # pylint: disable=E1101
+        temp_file = open(file_.get('path'), 'rb')  # pylint: disable=E1101
+        body = {
+            'name': (None, file_name),
+            'description': (None, description),
+            'file': (file_name, temp_file)
+        }
+        headers = {
+            'Authorization': HEADERS['Authorization'],
+            'Accept': 'application/json'
+        }
+        response = http_request('POST', endpoint_url, files=body, headers=headers)
+        return response, file_name
+    finally:
+        if temp_file:
+            temp_file.close()
 
 
 def delete_file(file_id: str) -> Dict:
