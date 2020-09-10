@@ -9,7 +9,7 @@
 
 **Host:** The host (such as https://127.0.0.1:9000)
 
-**API Key:** Key key you have just copied
+**API Key:** The key you have just copied
 
 - Optionally select whether you would like to create incidents from the incidents in Hive
 - Optionally select whether you would like to use the default `incident type` and `classifiers`
