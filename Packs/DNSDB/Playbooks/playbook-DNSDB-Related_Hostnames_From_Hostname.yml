@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -173,6 +174,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -331,6 +333,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -387,6 +390,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -424,6 +428,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -544,10 +549,11 @@ inputs:
       accessor: Name
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: relatedHostnames
   description: An array of hostnames related to the inputs.
   type: string
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

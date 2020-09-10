@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -106,6 +107,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -196,6 +198,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -252,6 +255,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -335,7 +339,7 @@ inputs:
       accessor: Name
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: resolvedIPs
   description: An array of one or more IP addresses that the input domain names have
@@ -343,3 +347,4 @@ outputs:
   type: string
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

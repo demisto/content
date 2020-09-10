@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -106,6 +107,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -130,6 +132,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "2"
@@ -186,6 +189,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "2"
@@ -268,7 +272,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -276,8 +280,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
@@ -288,10 +292,11 @@ inputs:
       accessor: Address
   required: true
   description: The IP Address to enhance with hostnames from Farsight DNSDB.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: resolvedHostnames
   description: An array of hostnames that have resolved to the input IPs.
   type: string
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0
