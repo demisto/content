@@ -220,8 +220,7 @@ tasks:
       teamDrive:
         simple: 0ANbMMsaWJNw2Uk9PVA,0AOM4L2G2JU4NUk9PVA
       terms: {}
-      timeFrame:
-        simple: 1 day ago
+      timeFrame: {}
     separatecontext: true
     loop:
       iscommand: false
