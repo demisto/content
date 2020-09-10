@@ -819,7 +819,7 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
                                                                  bucket_for_uploading,
                                                                  override_all_packs or pack_was_modified)
     if full_pack_path is not None:
-        bucket_path = 'https://console.cloud.google.com/storage/browser/marketplace-ci-build/'
+        bucket_path = 'https://console.cloud.google.com/storage/browser/marketplace-ci-build-private/'
         bucket_url = bucket_path + full_pack_path
     else:
         bucket_url = 'Pack was not uploaded.'
