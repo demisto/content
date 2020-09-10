@@ -3,7 +3,7 @@ commonfields:
   id: CheckPointFirewall
   version: -1
 configuration:
-- display: Server IP (e.g. example.net or 8.8.8.8)
+- display: Server URL (e.g. example.net or 8.8.8.8)
   name: server
   required: true
   type: 0
