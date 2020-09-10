@@ -55,7 +55,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: pickle
+  defaultValue: json
   description: The output file format.
   isArray: false
   name: outputFormat
@@ -72,7 +72,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: A comma-separated list of fields to hash.
+  description: A comma-separated list of fields to hash. Support wildcards.
   isArray: false
   name: fieldsToHash
   required: false
@@ -81,6 +81,29 @@ args:
   description: A comma-separated list of context keys to keep.
   isArray: false
   name: contextKeys
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Remove incident labels
+  isArray: false
+  name: removeLabels
+  predefined:
+    - 'true'
+    - 'false'
+  required: false
+  secret: false
+- default: false
+  description: A comma-separated list of fields in the object to un-poplulate.
+  isArray: false
+  name: unPopulateFields
+  required: false
+  secret: false
+- default: false
+  description: Random salt to the hash function
+  isArray: false
+  name: addRandomSalt
   required: false
   secret: false
 comment: |-
@@ -106,6 +129,7 @@ tags:
 - ml
 timeout: '0'
 type: python
+dockerimage: demisto/python3:3.8.5.10845
 tests:
 - hashIncidentFields-test
 fromversion: 4.5.0
