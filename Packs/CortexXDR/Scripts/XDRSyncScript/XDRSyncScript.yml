@@ -13,8 +13,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: In case incident in XDR is the latest, incident in Demisto will be
-    updated accordingly and rerun this playbook.
+  description: When an incident is the latest incident in XDR it will be updated in Demisto and the playbook will rerun.
   isArray: false
   name: playbook_to_run
   required: false
