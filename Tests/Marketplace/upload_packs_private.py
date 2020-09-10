@@ -659,6 +659,8 @@ def print_packs_summary(packs_list):
         print_color("Uploaded packs:\n", LOG_COLORS.GREEN)
         successful_packs_table = _build_summary_table(successful_packs)
         print_color(successful_packs_table, LOG_COLORS.GREEN)
+        with open('pack_list.txt', 'w') as f:
+            f.write(successful_packs_table)
     if skipped_packs:
         print_warning(f"Number of skipped packs: {len(skipped_packs)}")
         print_warning("Skipped packs:\n")
@@ -996,8 +998,6 @@ def main():
 
     # summary of packs status
     print_packs_summary(packs_list)
-    with open('pack_list.json', 'w') as f:
-        json.dump(str(packs_list), f)
 
 
 if __name__ == '__main__':
