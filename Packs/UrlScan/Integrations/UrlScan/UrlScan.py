@@ -48,11 +48,16 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
         headers=headers,
         verify=USE_SSL
     )
+
+    if r.headers.get('X-Rate-Limit-Remaining') == '10':
+        return_warning(f'Your rate limit has reached to 10. The rate limit will reset at '
+                       f'{r.headers.get("X-Rate-Limit-Reset")}')
     if r.status_code != 200:
         if r.status_code == 429:
             if retries <= 0:
                 # Error in API call to URLScan.io [429] - Too Many Requests
-                return_error('API rate limit reached. Use the retries and wait arguments when submitting multiple URls')
+                return_error('API rate limit reached [%d] - %s.\nUse the retries and wait arguments when submitting '
+                             'multiple URls' % (r.status_code, r.reason))
             else:
                 time.sleep(wait)
                 return http_request(method, url_suffix, json, wait, retries - 1)
