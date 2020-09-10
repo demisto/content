@@ -662,7 +662,7 @@ def test_build_std_output_domain():
     res = build_std_output([{
         "domainName": domain
     }])
-    assert res['Domain(val.Name && val.Name == obj.Name)'][0]['Name'] == 'serverity5s55.com'
+    assert res['Domain(val.Name && val.Name == obj.Name)'][0]['Name'] == domain
 
 
 def test_build_std_output_ip():

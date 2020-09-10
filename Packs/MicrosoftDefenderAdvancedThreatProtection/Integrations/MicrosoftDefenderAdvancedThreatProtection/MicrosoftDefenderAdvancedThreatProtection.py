@@ -2406,7 +2406,7 @@ def main():
         elif command == 'microsoft-atp-add-remove-machine-tag':
             return_outputs(*add_remove_machine_tag_command(client, args))
 
-        elif command in ('microsoft-atp-list-indicators', 'microsoft-atp-indicator-get-by-id'):
+        elif command in ('microsoft-atp-indicator-list', 'microsoft-atp-indicator-get-by-id'):
             return_outputs(*list_indicators_command(client, args))
         elif command == 'microsoft-atp-indicator-create-file':
             return_outputs(*create_file_indicator_command(client, args))

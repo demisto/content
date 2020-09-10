@@ -2264,7 +2264,7 @@ script:
     description: Lists all indicators by the ID that the system creates when the indicator
       is ingested.
     execution: false
-    name: microsoft-atp-list-indicators
+    name: microsoft-atp-indicator-list
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
       type: String

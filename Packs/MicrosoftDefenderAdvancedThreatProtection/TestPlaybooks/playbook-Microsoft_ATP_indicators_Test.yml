@@ -237,8 +237,8 @@ tasks:
       id: cd97063e-ebd3-4424-8b7a-f990518f4ba4
       version: -1
       name: Get all indicators
-      description: Lists all indicators by ID
-      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-list-indicators
+      description: Lists all indicators
+      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-indicator-list
       type: regular
       iscommand: true
       brand: Microsoft Defender Advanced Threat Protection
@@ -444,8 +444,8 @@ tasks:
       id: 7670edce-a26a-4afe-85d7-f8d94dafd245
       version: -1
       name: List indicators
-      description: Lists all indicators by ID
-      script: '|||microsoft-atp-list-indicators'
+      description: Lists all indicators
+      script: '|||microsoft-atp-indicator-list'
       type: regular
       iscommand: true
       brand: ""
