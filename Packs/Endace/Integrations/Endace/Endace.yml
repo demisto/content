@@ -3,8 +3,10 @@ commonfields:
   id: Endace
   version: -1
 configuration:
-- additionalinfo: FQDN/IP address of EndaceProbe or Endace Investigation Manager
-  display: EndaceProbe URL (e.g. https://endaceprobe.com)
+- additionalinfo: 'FQDN/IP address of EndaceProbe or Endace Investigation Manager.
+    Port is the https port configured on EndaceProbe. Example: https://ep.example.com
+    or https://ep.example.com:3443'
+  display: EndaceProbe URL (e.g. https://<fqdn/ip>[:port])
   name: applianceurl
   required: true
   type: 0
@@ -21,11 +23,17 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Information is available at EndaceProbe -> Management Summary page
+  display: EndaceProbe System Hostname
+  hidden: false
+  name: hostname
+  required: true
+  type: 0
 description: "The EndaceProbe Analytics Platform provides 100% accurate, continuous\
   \ packet capture on network links up to 100Gbps, with unparalleled depth of storage\
   \ and retrieval performance.  Coupled with the Endace InvestigationManager, this\
   \ provides a central search and data-mining capability across a fabric of EndaceProbes\
-  \ deployed in a network. \n                                     \nThis integration\
+  \ deployed in a network.\n                                     \nThis integration\
   \ uses Endace APIs to search, archive and download PCAP file from either a single\
   \ EndaceProbe or many via the InvestigationManager and enables integration of full\
   \ historical packet capture into security automation workflows."
@@ -35,61 +43,95 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Event Start Time in ISO 8601 format as in 2020-04-08T15:46:30
+      description: UTC StartTime in ISO 8601 format as in 2020-04-08T15:46:30
       isArray: false
       name: start
       required: false
       secret: false
     - default: false
-      description: Event End Time in ISO 8601 format  as in 2020-04-08T15:46:30
+      description: UTC EndTime in ISO 8601 format as in 2020-04-08T15:46:30
       isArray: false
       name: end
       required: false
       secret: false
     - default: false
-      description: List of Source IP addresses to search with a maximum of 10 IP addresses
-        per search. For valid search either a Src Host or a Dest Host value is required.
+      description: directionless ip address. For valid search either a IP or Src Host
+        or a Dest Host value is required
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: directionless port.
+      isArray: false
+      name: port
+      required: false
+      secret: false
+    - default: false
+      description: List of comma delimited Source IP addresses to search with a maximum
+        of 10 IP addresses per search. For valid search either a Src Host or a Dest
+        Host value is required.
       isArray: true
       name: src_host_list
       required: false
       secret: false
     - default: false
-      description: List of Destination IP addresses to search with a maximum of 10
-        IP addresses per search. For valid search either a Src Host or a Dest Host
-        value is required.
+      description: List of comma delimited Destination IP addresses to search with
+        a maximum of 10 IP addresses per search. For valid search either a Src Host
+        or a Dest Host value is required.
       isArray: true
       name: dest_host_list
       required: false
       secret: false
     - default: false
-      description: List of Source Port addresses to search with a maximum of 10 Port
-        addresses per search.
+      description: List of comma delimited Source Port addresses to search with a
+        maximum of 10 Port addresses per search.
       isArray: true
       name: src_port_list
       required: false
       secret: false
     - default: false
-      description: List of Destination Port addresses to search with a maximum of
-        10 Port addresses per search.
+      description: List of comma delimited Destination Port addresses to search with
+        a maximum of 10 Port addresses per search.
       isArray: true
       name: dest_port_list
       required: false
       secret: false
     - default: false
-      description: TCP or UDP
+      description: IANA defined IP Protocol Name or Number. For example - either use
+        TCP or tcp or 6 for tcp protocol
       isArray: false
       name: protocol
       required: false
       secret: false
-    - default: false
-      description: Event timeframe to search - in seconds.  Timeframe works as search
-        for last "n" seconds if start and end time is not provided. For example, by
-        specifying 3600 seconds as the timeframe, analyst can schedule a search for
-        last 1 hour. If both start and end time is provided, timeframe value is ignored.
-        If either start or end time is provided along with timeframe, the respective
-        start or end time is calculated accordingly.
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 1hour
+      description: 'Event timeframe to search. Select one of the values from  30seconds,
+        1minute, 5minutes, 10minutes, 30minutes, 1hour, 2hours, 5hours, 10hours, 12hours,
+        1day, 3days, 5days, 1week. Timeframe works as search for last n seconds if
+        start and end time is not provided. For example, by specifying 1h as the timeframe,
+        analyst can schedule a search for last 3600s. If both start and end time is
+        provided, timeframe value is ignored. If either start or end time is provided
+        along with timeframe, the respective start or end time is calculated accordingly.
+        Initial value of timeframe is 1hour. '
       isArray: false
       name: timeframe
+      predefined:
+      - 30seconds
+      - 1minute
+      - 5minutes
+      - 10minutes
+      - 30minutes
+      - 1hour
+      - 2hours
+      - 5hours
+      - 10hours
+      - 12hours
+      - 1day
+      - 3days
+      - 5days
+      - 1week
       required: false
       secret: false
     deprecated: false
@@ -124,9 +166,6 @@ script:
       description: This is the job ID of search query which we polled to get search
         status
       type: String
-    - contextPath: Endace.Search.Response.Status
-      description: 'Task status '
-      type: String
     - contextPath: Endace.Search.Response.JobProgress
       description: 'Progress of this search Job '
       type: String
@@ -137,7 +176,7 @@ script:
       description: Total data matching this search across all Data Sources.
       type: String
     - contextPath: Endace.Search.Response.Status
-      description: Status of Search Response
+      description: Task Status
       type: String
     - contextPath: Endace.Search.Response.Error
       description: 'Search response error '
@@ -161,76 +200,108 @@ script:
       description: 'Error message '
       type: String
     - contextPath: Endace.Search.Delete.Status
-      description: 'delete status, queryNotFound indicates that the search query has
+      description: Delete status, queryNotFound indicates that the search query has
         already expired before this operation, which is expected as EndaceProbe purges
         inactive tasks after api timer expire. Deleted indicates an active search
-        query is now deleted. '
+        query is now deleted.
       type: String
   - arguments:
     - default: false
-      description: Event Start Time in ISO 8601 format  as in 2020-04-08T15:46:30
+      description: UTC Start Time in ISO 8601 format as in 2020-04-08T15:46:30
       isArray: false
       name: start
       required: false
       secret: false
     - default: false
-      description: Event End Time in ISO 8601 format  as in 2020-04-08T15:46:30
+      description: UTC End Time in ISO 8601 format as in 2020-04-08T15:46:30
       isArray: false
       name: end
       required: false
       secret: false
-    - default: false
-      description: 'Event timeframe to search - in seconds.  Timeframe works as search
-        for last "n" seconds if start and end time is not provided. For example, by
-        specifying 3600 seconds as the timeframe, analyst can schedule a search for
-        last 1 hour. If both start and end time is provided, timeframe value is ignored.
-        If either start or end time is provided along with timeframe, the respective
-        start or end time is calculated accordingly.  '
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 1hour
+      description: 'Event timeframe to search. Select one of the values from  30seconds,
+        1minute, 5minutes, 10minutes, 30minutes, 1hour, 2hours, 5hours, 10hours, 12hours,
+        1day, 3days, 5days, 1week. Timeframe works as search for last n seconds if
+        start and end time is not provided. For example, by specifying 1h as the timeframe,
+        analyst can schedule a search for last 3600s. If both start and end time is
+        provided, timeframe value is ignored. If either start or end time is provided
+        along with timeframe, the respective start or end time is calculated accordingly.
+        Initial value of timeframe is 1hour. '
       isArray: false
       name: timeframe
+      predefined:
+      - 30seconds
+      - 1minute
+      - 5minutes
+      - 10minutes
+      - 30minutes
+      - 1hour
+      - 2hours
+      - 5hours
+      - 10hours
+      - 12hours
+      - 1day
+      - 3days
+      - 5days
+      - 1week
       required: false
       secret: false
     - default: false
-      description: List of Source IP addresses to search with a maximum of 10 IP addresses
-        per search. For valid search either a Src Host or a Dest Host value is required.
+      description: directionless ip address
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: directionless port
+      isArray: false
+      name: port
+      required: false
+      secret: false
+    - default: false
+      description: List of comma delimited Source IP addresses to search with a maximum
+        of 10 IP addresses per search. For valid search either a Src Host or a Dest
+        Host value is required.
       isArray: false
       name: src_host_list
       required: false
       secret: false
     - default: false
-      description: List of Destination IP addresses to search with a maximum of 10
-        IP addresses per search. For valid search either a Src Host or a Dest Host
-        value is required.
+      description: List of comma delimited Destination IP addresses to search with
+        a maximum of 10 IP addresses per search. For valid search either a Src Host
+        or a Dest Host value is required.
       isArray: false
       name: dest_host_list
       required: false
       secret: false
     - default: false
-      description: List of Source Port addresses to search with a maximum of 10 Port
-        addresses per search.
+      description: List of comma delimited Source Port addresses to search with a
+        maximum of 10 Port addresses per search.
       isArray: false
       name: src_port_list
       required: false
       secret: false
     - default: false
-      description: List of Destination Port addresses to search with a maximum of
-        10 Port addresses per search.
+      description: List of comma delimited Destination Port addresses to search with
+        a maximum of 10 Port addresses per search.
       isArray: false
       name: dest_port_list
       required: false
       secret: false
     - default: false
-      description: TCP or UDP
+      description: IANA defined IP Protocol Name or Number. For example - either use
+        TCP or tcp or 6 for tcp protocol.
       isArray: false
       name: protocol
       required: false
       secret: false
     - default: false
-      description: 'Name of the archive file. For example, archive_filename could
-        be an event ID. To keep archive filename unique, value of epoch seconds at
-        the time of execution of the command is appended to this filename argument.
-        For example: if the event id is ''123456789'', then archive_filename is 123456789-<epoch
-        time>.'
+      description: Name of the archive file. For example, archive_filename could be
+        an event ID. To keep archive filename unique, value of epoch seconds at the
+        time of execution of the command is appended to this filename argument. For
+        example - if the event id is 123456789, then archive_filename is 123456789-epochtime.
       isArray: false
       name: archive_filename
       required: true
@@ -307,16 +378,17 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Name of the file to download from EndaceProbe
+      description: 'Name of the file (without extension) to download from EndaceProbe.
+        Text, numbers, underscore or dash is supported. '
       isArray: false
       name: filename
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: 'User defined upper size limit on file download (in MegaBytes).
+      description: User defined upper size limit on file download (in MegaBytes).
         A PCAP File with size less than or equal to this limit can be downloaded from
-        EndaceProbe. Default Upper Limit is 50MB. '
+        EndaceProbe. Minimum size is 1 (MB). Default Upper Limit is 50 (MB).
       isArray: false
       name: filesizelimit
       required: true
@@ -338,7 +410,7 @@ script:
         or Archive.
       type: String
     - contextPath: Endace.Download.PCAP.FileURL
-      description: 'URL to PCAP file on EndaceProbe. '
+      description: URL to PCAP file on EndaceProbe.
       type: String
     - contextPath: Endace.Download.PCAP.FileUser
       description: Username of the person who has permission to download this PCAP
@@ -372,7 +444,7 @@ script:
     - contextPath: Endace.ArchivedFile.Delete.Error
       description: Delete Error
       type: String
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.5.10455
   feed: false
   isfetch: false
   longRunning: false

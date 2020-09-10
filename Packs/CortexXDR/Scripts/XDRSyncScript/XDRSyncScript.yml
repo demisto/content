@@ -20,7 +20,7 @@ args:
   secret: false
   deprecated: true
 - default: false
-  defaultValue: xdrassignedusermail
+  defaultValue: xdrassigneduseremail
   description: The assigned_user_mail field name in Demisto.
   isArray: false
   name: assigned_user_mail
@@ -457,6 +457,6 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.7.4.977
+dockerimage: demisto/python3:3.8.5.10455
 tests:
 - No test - there are unit tests instead

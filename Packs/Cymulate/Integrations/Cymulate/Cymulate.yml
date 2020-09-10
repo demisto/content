@@ -96,7 +96,7 @@ script:
     - contextPath: Cymulate.Incident.Attack_ID
       description: The cymulate's Attack ID of the incident
       type: String
-  dockerimage: demisto/python3:3.7.5.3471
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false
@@ -107,5 +107,5 @@ script:
   type: python
 tests:
 - No tests
-defaultClassifier: Cymulate
-defaultMapperIn: Cymulate-mapper
+defaultclassifier: Cymulate
+defaultmapperin: Cymulate-mapper

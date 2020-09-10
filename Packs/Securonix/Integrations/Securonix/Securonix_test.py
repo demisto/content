@@ -1,15 +1,16 @@
+import demistomock as demisto
 import pytest
-from Securonix import reformat_resource_groups_outputs, reformat_outputs, parse_data_arr, Client, list_workflows,\
-    get_default_assignee_for_workflow, list_possible_threat_actions, list_resource_groups, list_users,\
+from Securonix import reformat_resource_groups_outputs, reformat_outputs, parse_data_arr, Client, list_workflows, \
+    get_default_assignee_for_workflow, list_possible_threat_actions, list_resource_groups, list_users, \
     list_incidents, get_incident, create_incident, perform_action_on_incident, list_watchlists, get_watchlist, \
     create_watchlist, check_entity_in_watchlist, add_entity_to_watchlist, get_incident_name, fetch_incidents
-from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAULT_ASSIGNEE,\
-    RESPONSE_POSSIBLE_THREAT_ACTIONS, RESPONSE_LIST_RESOURCE_GROUPS, RESPONSE_LIST_USERS, RESPONSE_LIST_INCIDENT,\
+from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAULT_ASSIGNEE, \
+    RESPONSE_POSSIBLE_THREAT_ACTIONS, RESPONSE_LIST_RESOURCE_GROUPS, RESPONSE_LIST_USERS, RESPONSE_LIST_INCIDENT, \
     RESPONSE_GET_INCIDENT, RESPONSE_CREATE_INCIDENT, RESPONSE_PERFORM_ACTION_ON_INCIDENT, RESPONSE_LIST_WATCHLISTS, \
     RESPONSE_GET_WATCHLIST, RESPONSE_CREATE_WATCHLIST, RESPONSE_ENTITY_IN_WATCHLIST, RESPONSE_ADD_ENTITY_TO_WATCHLIST, \
     RESPONSE_FETCH_INCIDENT_ITEM, RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS, RESPONSE_FETCH_INCIDENTS
-from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE,\
-    EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS, EXPECTED_LIST_USERS, EXPECTED_LIST_INCIDENT,\
+from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE, \
+    EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS, EXPECTED_LIST_USERS, EXPECTED_LIST_INCIDENT, \
     EXPECTED_GET_INCIDENT, EXPECTED_CREATE_INCIDENT, EXPECTED_PERFORM_ACTION_ON_INCIDENT, \
     EXPECTED_LIST_WATCHLISTS, EXPECTED_GET_WATCHLIST, EXPECTED_CREATE_WATCHLIST, EXPECTED_ENTITY_IN_WATCHLIST, \
     EXPECTED_ADD_ENTITY_TO_WATCHLIST
@@ -102,6 +103,29 @@ def test_fetch_incidents_is_already_fetched(mocker):
     incidents = fetch_incidents(client, fetch_time='1 hour', incident_status='open', max_fetch='50',
                                 last_run={'already_fetched': ['100107'], 'time': "2020-06-07T08:32:41.679579Z"})
     assert len(incidents) == 0
+
+
+def test_module(mocker):
+    """
+    Given
+    - Securonix test module
+    When
+    - mock the demisto params.
+    - mock the Client's generate_token
+    - mock the Client's list_workflows_request
+    - mock the Client's list_incidents_request
+    Then
+    - run the test_module command using the Client
+    Validate The response is ok.
+    """
+    from Securonix import test_module as module
+    mocker.patch.object(demisto, 'params', return_value={'isFetch': True})
+    mocker.patch.object(Client, '_generate_token')
+    client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies')
+    mocker.patch.object(client, 'list_workflows_request', return_value=RESPONSE_LIST_WORKFLOWS)
+    mocker.patch.object(client, 'list_incidents_request', return_value=RESPONSE_LIST_INCIDENT)
+    result = module(client)
+    assert result == 'ok'
 
 
 @pytest.mark.parametrize('command, args, response, expected_result', [

@@ -54,6 +54,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 4. cdl-search-by-file-hash
 5. cdl-query-traffic-logs
 6. cdl-query-threat-logs
+7. cdl-query-url-logs
+
 ### 1. cdl-query-logs
 
 Runs a query on the Cortex logging service.
@@ -595,7 +597,8 @@ Searches the Cortex firewall.traffic table. Traffic logs contain entries for the
 | limit | The number of logs to return. Default is 5. | Optional | 
 | dest_ip | A destination IP address or an array of destination IPs addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
 | dest_port | Destination port utilized by the session. Can be port number or an array of destination port numbers to search. For example '443' or '443,445' | Optional | 
-
+| ip | IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
+| port | Port utilized by the session. Enter a port or array of ports to search. | Optional | 
 
 ##### Context Output
 
@@ -639,6 +642,8 @@ Searches the Cortex firewall.traffic table. Traffic logs contain entries for the
 | CDL.Logging.Traffic.URLCategory | String | The URL category. | 
 | CDL.Logging.Traffic.SourcePort | String | Source port utilized by the session. | 
 | CDL.Logging.Traffic.Tunnel | String | Type of tunnel. | 
+| CDL.Logging.Traffic.SourceDeviceHost | String | Hostname of the device from which the session originated. |
+| CDL.Logging.Traffic.DestDeviceHost | String | Hostname of the device session destination.
 
 
 ##### Command Example
@@ -720,6 +725,8 @@ Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS
 | end_time | The query end time. For example, end_time="2018-04-26 00:00:00" | Optional | 
 | time_range | First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year) | Optional | 
 | limit | The number of logs to return. Default is 5. | Optional | 
+| ip | IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
+| port | Port utilized by the session. Enter a port or array of ports to search. | Optional | 
 
 
 ##### Context Output
@@ -769,6 +776,8 @@ Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS
 | CDL.Logging.Threat.Category | String | For the URL subtype, this identifies the URL Category. For the WildFire subtype, this identifies the verdict on the file. It is one of ‘malicious’, ‘phishing’, ‘grayware’, or ‘benign’; | 
 | CDL.Logging.Threat.Sport | String | Source port utilized by the session. | 
 | CDL.Logging.Threat.IsPhishing | Boolean | Detected enterprise credential submission by an end user. | 
+| CDL.Logging.Threat.SourceDeviceHost | String | Hostname of the device from which the session originated. |
+| CDL.Logging.Threat.DestDeviceHost | String | Hostname of the device session destination. |
 | IP.Address | String | IP address. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
@@ -837,6 +846,150 @@ Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS
 |---|---|---|---|---|
 | AE | firewall | 1582390223000000 | taplog | Palo Alto Networks |
 
+### 7. cdl-query-url-logs
+
+---
+***
+Searches the URL table
+
+
+#### Base Command
+
+`cdl-query-url-logs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| source_ip | Original source IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
+| dest_ip | Original destination IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
+| rule_matched | Name of the security policy rule that the network traffic matched. Enter a rule name or array of rule names to search. | Optional | 
+| from_zone | The networking zone from which the traffic originated. Enter zone or array of zones to search. | Optional | 
+| to_zone | Networking zone to which the traffic was sent. Enter zone or array of zones to search. | Optional | 
+| source_port | Source port utilized by the session. Enter a port or array of ports to search. | Optional | 
+| dest_port | Network traffic's destination port. Enter a port or array of ports to search. | Optional | 
+| action | The action that the firewall took for the network traffic. Enter an action or array of actions to search. | Optional | 
+| query | Free input query to search. This is the WHERE part of the query. so an example will be !cdl-query-url-logs query="source_ip.value LIKE '192.168.1.*' AND dest_ip.value = '192.168.1.12'" | Optional | 
+| fields | The fields that are selected in the query. Selection can be "all" (same as *) or listing of specific fields in the table. List of fields can be found after viewing all the outputed fields with all. | Optional | 
+| start_time | The query start time. For example, start_time="2018-04-26 00:00:00" | Optional | 
+| end_time | The query end time. For example, end_time="2018-04-26 00:00:00" | Optional | 
+| time_range | First log time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | Optional | 
+| limit | The number of logs to return. Default is 5. | Optional | 
+| ip | IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
+| port | Port utilized by the session. Enter a port or array of ports to search. | Optional | 
+| url | This argument allows to perform a LIKE search of the specified values on the Url and Uri fields An example value will be paloaltonetworks.com,demisto which will provide results like https://apps.paloaltonetworks.com and https://demisto.com | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CDL.Logging.URL.SessionID | String | Identifies the firewall's internal identifier for a specific network session. | 
+| CDL.Logging.URL.Action | String | Identifies the action that the firewall took for the network traffic. | 
+| CDL.Logging.URL.App | String | Application associated with the network traffic. | 
+| CDL.Logging.URL.PcapID | String | Packet capture \(pcap\) ID. This is used to correlate threat pcap files with extended pcaps taken as a part of the session flow. All threat logs will contain either a pcap\_id of 0 \(no associated pcap\) , or an ID referencing the extended pcap file. | 
+| CDL.Logging.URL.DestinationPort | String | Network traffic's destination port. If this value is 0, then the app is using its standard port. | 
+| CDL.Logging.URL.AppCategory | String | Identifies the high\-level family of the application. | 
+| CDL.Logging.URL.AppSubCategory | String | Identifies the application's subcategory. The subcategoryis related to the application's category, which is identified in category\_of\_app. | 
+| CDL.Logging.URL.SourceLocation | String | Source country or internal region for private addresses. | 
+| CDL.Logging.URL.DestinationLocation | String | Destination country or internal region for private addresses. | 
+| CDL.Logging.URL.ToZone | String | Networking zone to which the traffic was sent. | 
+| CDL.Logging.URL.FromZone | String | The networking zone from which the traffic originated. | 
+| CDL.Logging.URL.Protocol | String | IP protocol associated with the session. | 
+| CDL.Logging.URL.DestinationIP | String | Original destination IP address. | 
+| CDL.Logging.URL.SourceIP | String | Original source IP address. | 
+| CDL.Logging.URL.RuleMatched | String | Unique identifier for the security policy rule that the network traffic matched. | 
+| CDL.Logging.URL.ThreatCategory | String | Threat category of the detected threat. | 
+| CDL.Logging.URL.ThreatName | String | Threat name of the detected threat. | 
+| CDL.Logging.URL.Subtype | String | Identifies the log subtype. | 
+| CDL.Logging.URL.LogTime | String | Time the log was received in Cortex Data Lake. | 
+| CDL.Logging.URL.LogSourceName | String | Name that uniquely identifies the source of the log. | 
+| CDL.Logging.URL.Denied | Boolean | Indicates whether the session was denied due to a URL filtering rule. | 
+| CDL.Logging.URL.Category | String | The URL category. | 
+| CDL.Logging.URL.SourcePort | Number | Source port utilized by the session. | 
+| CDL.Logging.URL.Url | String | The name of the internet domain that was visited in this session. | 
+| CDL.Logging.URL.Uri | String | The URI address | 
+| CDL.Logging.URL.ContentType | String | Content type of the HTTP response data. | 
+| CDL.Logging.URL.HTTPMethod | String | The HTTP Method used
+in the web request | 
+| CDL.Logging.URL.Severity | String | Severity associated with the event. | 
+| CDL.Logging.URL.UserAgent | String | The web browser that the user
+used to access the URL. | 
+| CDL.Logging.URL.RefererProtocol | Number | The protocol used in the HTTP REFERER header field. | 
+| CDL.Logging.URL.RefererPort | Number | The port used in the HTTP REFERER header field. | 
+| CDL.Logging.URL.RefererFQDN | String | The full domain name used in the HTTP REFERER
+header field. | 
+| CDL.Logging.URL.RefererURL | String | The url used in the HTTP REFERER header field. | 
+| CDL.Logging.URL.SrcUser | String | The username that initiated the network traffic. | 
+| CDL.Logging.URL.SrcUserInfo | String | The initiated user info. | 
+| CDL.Logging.URL.DstUser | String | The username to which the network traffic was destined. | 
+| CDL.Logging.URL.DstUserInfo | String | The destination user info. | 
+| CDL.Logging.URL.TechnologyOfApp | String | The networking technology used by the identified application. | 
+| CDL.Logging.URL.SourceDeviceHost | String | Hostname of the device from which the session originated. |
+| CDL.Logging.URL.DestDeviceHost | String | Hostname of the device session destination. |
+
+
+#### Command Example
+```!cdl-query-url-logs action="alert" ip=1.1.1.1 limit="1"```
+
+#### Context Example
+```
+{
+    "CDL": {
+        "Logging": {
+            "URL": [
+                {
+                    "Action": "alert",
+                    "App": "web-browsing",
+                    "AppCategory": "general-internet",
+                    "AppSubcategory": "internet-utility",
+                    "Category": "unknown",
+                    "ContentType": null,
+                    "Denied": false,
+                    "DestinationIP": "1.1.1.1",
+                    "DestinationLocation": "TH",
+                    "DestinationPort": 80,
+                    "DstUser": null,
+                    "DstUserInfo": null,
+                    "FromZone": "TapZone",
+                    "HTTPMethod": "get",
+                    "LogSourceName": "gw",
+                    "LogTime": "2019-11-04T02:00:19",
+                    "PcapID": 0,
+                    "Protocol": "tcp",
+                    "RefererFQDN": null,
+                    "RefererPort": null,
+                    "RefererProtocol": null,
+                    "RefererURL": null,
+                    "RuleMatched": "taplog",
+                    "SessionID": 123456,
+                    "Severity": "Informational",
+                    "SourceIP": "2.2.2.2",
+                    "SourceLocation": "2.0.0.0-10.255.255.255",
+                    "SourcePort": 123,
+                    "SrcUser": null,
+                    "SrcUserInfo": null,
+                    "Subtype": "url",
+                    "TechnologyOfApp": "browser-based",
+                    "ThreatCategory": null,
+                    "ThreatName": null,
+                    "ToZone": "TapZone",
+                    "URI": "eujea0rudykqgbvianr5lqfgrykbufbamkeyizdw1npk96zax5c4h8sbxs1kgqx31nwp5jsfsgif8iorqvjocpnyff8f7ob0ukbz5rsr8swlxtrv9a0hdppm8rkjrh8hopy3dhb0lxlah9myxx70qxwtipjeufremdmg8m3vyxgxu/",
+                    "URL": "kcaxusaqu8wmjfs47qnnxw7wikiwteujea0rudykqgbvianr5lqfgrykbufbamkeyizdw1npk96zax5c4h8sbxs1kgqx31nwp5jsfsgif8iorqvjocpnyff8f7ob0ukbz5rsr8swlxtrv9a0hdppm8rkjrh8hopy3dhb0lxlah9myxx70qxwtipjeufremdmg8m3vyxgxu",
+                    "UserAgent": null
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Logs url table
+>|Action|Application|Destination Address|RuleMatched|Source Address|TimeGenerated|
+>|---|---|---|---|---|---|
+>| alert | web-browsing | 1.1.1.1 | taplog | 2.2.2.2 | 2019-11-04T02:00:04 |
+
+
 ## Additional Information
 
 ---
@@ -845,3 +998,4 @@ against. That is, log types must be fully qualified and the instance ID is a par
 `<instanceID>.firewall.traffic`
 However in this integration the instance ID is added automatically to the query so the name `firewall.traffic` is a valid table name
 * The SQL syntex supported for queries is `csql`
+

@@ -1,8 +1,8 @@
 {
     "name": "Logz.io",
-    "description": "Logz.io Integration ",
+    "description": "Logz.io Package to fetch alerts from logz.io and threat hunting",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.1.0",
     "author": "Logz.io",
     "url": "",
     "email": "support@logz.io",
@@ -16,5 +16,8 @@
     ],
     "created": "2020-04-14T08:25:21Z",
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "githubUser": [
+        "yyyogev"
+    ]
 }

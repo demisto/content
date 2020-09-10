@@ -1,13 +1,12 @@
 id: Brute Force Investigation - Generic - SANS
 version: -1
 name: Brute Force Investigation - Generic - SANS
-fromversion: 5.0.0
 description: "This playbook investigates a \"Brute Force\" incident by gathering user\
-  \ and IP information, and calculating the incident severity based on the gathered information\
-  \ and information received from the user. It then performs remediation.\nThis is done\
-  \ based on the phases for handling an incident as they are described in the SANS\
-  \ Institute \xE2\u20AC\u02DCIncident Handler\xE2\u20AC\u2122s Handbook\xE2\u20AC\
-  \u2122 by Patrick Kral.\n\nhttps://www.sans.org/reading-room/whitepapers/incident/incident-handlers-handbook-33901\n\
+  \ and IP information, and calculating the incident severity based on the gathered\
+  \ information and information received from the user. It then performs remediation.\n\
+  This is done based on the phases for handling an incident as they are described\
+  \ in the SANS Institute â€˜Incident Handlerâ€™s Handbookâ€™ by Patrick Kral.\n\n\
+  https://www.sans.org/reading-room/whitepapers/incident/incident-handlers-handbook-33901\n\
   \nThe playbook handles the following use-cases:\n\n* Brute Force IP Detected - A\
   \ detection of source IPs that are exceeding a high threshold of rejected and/or\
   \ invalid logins. \n* Brute Force Increase Percentage - A detection of large increase\
@@ -18,10 +17,10 @@ description: "This playbook investigates a \"Brute Force\" incident by gathering
   \ - Critical Assets v2\n- Isolate Endpoint - Generic\n- Block Indicators - Generic\
   \ v2\n- SANS - Lessons Learned\n\n***Disclaimer: This playbook does not ensure compliance\
   \ to SANS regulations."
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: e0772674-d7ff-43df-8075-a871655a3f9b
     type: start
     task:
@@ -30,11 +29,11 @@ tasks:
       name: start_task
       type: start
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '61'
+      - "61"
     separatecontext: false
     view: |-
       {
@@ -46,8 +45,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '2':
-    id: '2'
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
     taskid: 74815757-2721-4e81-887d-93f17e71172f
     type: collection
     task:
@@ -60,10 +61,10 @@ tasks:
       clonedfrom: 7a39f05d-23c9-412d-8e36-3dd1ba0dd2f2
       type: collection
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '16'
+      - "16"
     separatecontext: false
     view: |-
       {
@@ -87,20 +88,20 @@ tasks:
           \ user ID. Please confirm or deny that you attempted these logins. "
       methods:
       - email
-      format: ''
-      bcc: null
-      cc: null
+      format: ""
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
       replyOptions:
-      - 'Yes'
-      - 'No'
+      - "Yes"
+      - "No"
     form:
       questions:
-      - id: '0'
-        label: ''
+      - id: "0"
+        label: ""
         labelarg:
           simple: Were the login attempts made by you?
         required: true
@@ -108,15 +109,16 @@ tasks:
         defaultrows: []
         type: singleSelect
         options:
-        - ''
-        - 'Yes'
-        - 'No'
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        - ""
+        - "Yes"
+        - "No"
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-      - id: '1'
-        label: ''
+      - id: "1"
+        label: ""
         labelarg:
           simple: If you confirm the multiple failed logins found from your account
             were made by you, would you like your password to be reset?
@@ -125,39 +127,43 @@ tasks:
         defaultrows: []
         type: singleSelect
         options:
-        - ''
-        - 'Yes'
-        - 'No'
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        - ""
+        - "Yes"
+        - "No"
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
       title: Failed login attempts
       description: 'We have identified several failed login attempts with your user
         ID. Please confirm or deny that you attempted these logins. '
-      sender: ''
+      sender: ""
       expired: false
       totalanswers: 0
-  '6':
-    id: '6'
-    taskid: 8d8d3b11-63bd-437a-8487-f5d1f2b687d2
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a6c6ce8d-c7aa-4252-8cb3-51969ab9a40d
     type: condition
     task:
-      id: 8d8d3b11-63bd-437a-8487-f5d1f2b687d2
+      id: a6c6ce8d-c7aa-4252-8cb3-51969ab9a40d
       version: -1
       name: Should the password be reset?
-      description: Answer `yes` if password should be reset.
+      description: Answer `yes` if password should be reset. Also checks if Active
+        Directory Query v2 is enabled.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '17'
-      'yes':
-      - '7'
+      - "17"
+      "yes":
+      - "7"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -170,7 +176,30 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'yes'
+              simple: "yes"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
     view: |-
       {
         "position": {
@@ -181,8 +210,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '7':
-    id: '7'
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
     taskid: 134b2e1a-1ba3-44e1-8f32-9014dd74e94f
     type: regular
     task:
@@ -194,10 +225,10 @@ tasks:
       clonedfrom: b061d5be-194d-4413-804b-ea47a7f05317
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       base-dn: {}
       username:
@@ -214,8 +245,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '8':
-    id: '8'
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
     taskid: c08d6b8b-6ce7-488c-88f5-63c258371cfe
     type: regular
     task:
@@ -227,10 +260,10 @@ tasks:
       clonedfrom: 5e3d77e5-2172-4f74-87b6-c54e0f70fa62
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '17'
+      - "17"
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
@@ -269,8 +302,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '9':
-    id: '9'
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
     taskid: b19417c3-62f5-49e0-8d6b-a5c87b80f313
     type: regular
     task:
@@ -284,7 +319,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '38'
+      - "38"
     scriptarguments:
       assetid: {}
       closeNotes: {}
@@ -299,28 +334,30 @@ tasks:
       {
         "position": {
           "x": -100,
-          "y": 6405
+          "y": 6935
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '10':
-    id: '10'
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
     taskid: ee16a6ce-05cd-47b8-8c92-acaff9ce9de7
     type: regular
     task:
       id: ee16a6ce-05cd-47b8-8c92-acaff9ce9de7
       version: -1
       name: Set incident severity to low
-      description: Sets the incident severity to low.
+      description: Sets incident severity to low.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     scriptarguments:
       Crowdstrikefamily: {}
       Crowdstrikescore: {}
@@ -665,8 +702,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '12':
-    id: '12'
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
     taskid: 74381d29-880c-4adf-8b61-8047ecc709b0
     type: playbook
     task:
@@ -676,11 +715,11 @@ tasks:
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '59'
+      - "59"
     scriptarguments:
       Username:
         complex:
@@ -688,8 +727,9 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -700,8 +740,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '13':
-    id: '13'
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
     taskid: 60a2e186-8629-4ce6-83db-1c1197974074
     type: title
     task:
@@ -710,12 +752,12 @@ tasks:
       name: Enrich Indicators
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '12'
-      - '14'
+      - "12"
+      - "14"
     separatecontext: false
     view: |-
       {
@@ -727,8 +769,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '14':
-    id: '14'
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
     taskid: e6aba170-90f5-43e8-897a-fe08aacc5914
     type: playbook
     task:
@@ -745,10 +789,10 @@ tasks:
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '59'
+      - "59"
     scriptarguments:
       IP:
         complex:
@@ -771,12 +815,13 @@ tasks:
         complex:
           root: inputs.InternalRange
       ResolveIP:
-        simple: 'True'
+        simple: "True"
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -787,52 +832,56 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '15':
-    id: '15'
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
     taskid: 35bc4f61-5c39-4f25-8268-0bb8d4cff00d
     type: regular
     task:
       id: 35bc4f61-5c39-4f25-8268-0bb8d4cff00d
       version: -1
       name: Manual - Asses the scope of the impact
+      description: ""
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '34'
+      - "34"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 645,
-          "y": 4795
+          "y": 5095
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '16':
-    id: '16'
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
     taskid: bdf41c9f-279a-4b88-8321-9598dcc1cab4
     type: condition
     task:
       id: bdf41c9f-279a-4b88-8321-9598dcc1cab4
       version: -1
       name: User confirmed the account activity?
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '51'
-      'yes':
-      - '53'
+      - "51"
+      "yes":
+      - "53"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -845,7 +894,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'yes'
+              simple: "yes"
     view: |-
       {
         "position": {
@@ -856,8 +905,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '17':
-    id: '17'
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
     taskid: 16f2fdb2-16dc-4ab7-8a1c-7bbce9cad2da
     type: title
     task:
@@ -869,23 +920,25 @@ tasks:
         Can be used in the post-processing flow as well.
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '69'
+      - "69"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -100,
-          "y": 5500
+          "y": 6030
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '18':
-    id: '18'
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
     taskid: 53bfefd7-13b2-45a0-8a5e-0507a8cd6db5
     type: title
     task:
@@ -894,11 +947,11 @@ tasks:
       name: Containment
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '63'
+      - "63"
     separatecontext: false
     view: |-
       {
@@ -910,8 +963,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '19':
-    id: '19'
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
     taskid: 88be23ac-6010-43bd-809c-82f56d83b20f
     type: regular
     task:
@@ -923,10 +978,10 @@ tasks:
       clonedfrom: b061d5be-194d-4413-804b-ea47a7f05317
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '21'
+      - "21"
     scriptarguments:
       base-dn: {}
       username:
@@ -936,8 +991,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 645,
-          "y": 2610
+          "x": 365,
+          "y": 2840
         }
       }
     note: false
@@ -947,8 +1002,10 @@ tasks:
     - incidentfield: Password Expiration Status
       output:
         simple: Password is expired.
-  '21':
-    id: '21'
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
     taskid: 652af55c-a6c7-4538-8c70-0c3e309f77ca
     type: regular
     task:
@@ -959,10 +1016,10 @@ tasks:
       script: '|||ad-disable-account'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '64'
+      - "64"
     scriptarguments:
       base-dn: {}
       username:
@@ -972,8 +1029,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 645,
-          "y": 2790
+          "x": 365,
+          "y": 3020
         }
       }
     note: false
@@ -983,8 +1040,10 @@ tasks:
     - incidentfield: User Disabled Status
       output:
         simple: Used has been disabled.
-  '22':
-    id: '22'
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
     taskid: 079d0d8e-2d57-4a3b-8402-ff07c0d85f47
     type: playbook
     task:
@@ -998,10 +1057,10 @@ tasks:
       playbookName: Isolate Endpoint - Generic
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
+      - "72"
     scriptarguments:
       EndpointId:
         complex:
@@ -1014,7 +1073,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 'yes'
+                  simple: "yes"
       Hostname:
         complex:
           root: Endpoint
@@ -1026,13 +1085,14 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 'yes'
+                  simple: "yes"
           accessor: Hostname
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -1043,8 +1103,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '29':
-    id: '29'
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
     taskid: ae347de2-d9b9-4eb9-88af-ae193b01d828
     type: collection
     task:
@@ -1055,38 +1117,38 @@ tasks:
         systems.
       type: collection
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '31'
+      - "31"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 645,
-          "y": 3330
+          "y": 3630
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Insert IOCs found in the manual investigation.
       methods: []
-      format: ''
-      bcc: null
-      cc: null
+      format: ""
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
     form:
       questions:
-      - id: '0'
-        label: ''
+      - id: "0"
+        label: ""
         labelarg:
           simple: MD5
         required: false
@@ -1094,12 +1156,13 @@ tasks:
         defaultrows: []
         type: shortText
         options: []
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-      - id: '1'
-        label: ''
+      - id: "1"
+        label: ""
         labelarg:
           simple: SHA1
         required: false
@@ -1107,12 +1170,13 @@ tasks:
         defaultrows: []
         type: shortText
         options: []
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-      - id: '2'
-        label: ''
+      - id: "2"
+        label: ""
         labelarg:
           simple: SHA256
         required: false
@@ -1120,12 +1184,13 @@ tasks:
         defaultrows: []
         type: shortText
         options: []
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-      - id: '3'
-        label: ''
+      - id: "3"
+        label: ""
         labelarg:
           simple: IP Addresses
         required: false
@@ -1133,12 +1198,13 @@ tasks:
         defaultrows: []
         type: shortText
         options: []
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-      - id: '4'
-        label: ''
+      - id: "4"
+        label: ""
         labelarg:
           simple: URLs
         required: false
@@ -1146,12 +1212,13 @@ tasks:
         defaultrows: []
         type: shortText
         options: []
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
-      - id: '5'
-        label: ''
+      - id: "5"
+        label: ""
         labelarg:
           simple: Domains
         required: false
@@ -1159,17 +1226,20 @@ tasks:
         defaultrows: []
         type: shortText
         options: []
-        fieldassociated: ''
-        placeholder: ''
-        tooltip: ''
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
         readonly: false
       title: IOCs found in investigation
       description: Insert a comma-separated list of IOCs found in the manual investigation.
-      sender: ''
+      sender: ""
       expired: false
       totalanswers: 0
-  '31':
-    id: '31'
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
     taskid: e14ad9c1-c5aa-4bb1-8047-85e75b8ac8de
     type: title
     task:
@@ -1178,34 +1248,36 @@ tasks:
       name: Eradication
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '66'
+      - "66"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 645,
-          "y": 3520
+          "y": 3820
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '32':
-    id: '32'
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
     taskid: 192cbf41-d000-4661-890d-70190ffc7222
     type: condition
     task:
       id: 192cbf41-d000-4661-890d-70190ffc7222
       version: -1
       name: Were IOCs found in the investigation?
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
       - "33"
@@ -1213,7 +1285,7 @@ tasks:
       - "71"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -1275,14 +1347,16 @@ tasks:
       {
         "position": {
           "x": 645,
-          "y": 3850
+          "y": 4150
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '33':
-    id: '33'
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
     taskid: 9ae73d2f-e22c-45ee-8644-100bc522c3ca
     type: title
     task:
@@ -1291,52 +1365,56 @@ tasks:
       name: Recovery
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '67'
+      - "67"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 645,
-          "y": 4440
+          "y": 4740
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '34':
-    id: '34'
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
     taskid: 7e426703-bd6a-4241-87fe-bc10829c175b
     type: condition
     task:
       id: 7e426703-bd6a-4241-87fe-bc10829c175b
       version: -1
       name: Would you like to perform auto-recovery?
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      'No':
-      - '36'
-      'Yes':
-      - '35'
+      "No":
+      - "36"
+      "Yes":
+      - "73"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 645,
-          "y": 4990
+          "y": 5290
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '35':
-    id: '35'
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
     taskid: 2c5023c5-0834-4e26-8600-f4450be49838
     type: regular
     task:
@@ -1347,10 +1425,10 @@ tasks:
       script: '|||ad-enable-account'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '36'
+      - "36"
     scriptarguments:
       base-dn: {}
       username:
@@ -1360,41 +1438,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 5160
+          "x": 1230,
+          "y": 5660
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '36':
-    id: '36'
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
     taskid: 8ea55c61-861d-425b-89e3-1424bc4640e8
     type: regular
     task:
       id: 8ea55c61-861d-425b-89e3-1424bc4640e8
       version: -1
       name: Manual - unisolate affected systems
+      description: ""
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '17'
+      - "17"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 645,
-          "y": 5330
+          "y": 5860
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '38':
-    id: '38'
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
     taskid: 0ad8584d-38a9-46d1-8dc8-36ebf514ea8c
     type: title
     task:
@@ -1403,21 +1485,23 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -100,
-          "y": 6590
+          "y": 7120
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '41':
-    id: '41'
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
     taskid: 9f215dcb-f1e0-4d6a-829e-2e5cee2ee0bb
     type: title
     task:
@@ -1426,11 +1510,11 @@ tasks:
       name: Remediation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '43'
+      - "43"
     separatecontext: false
     view: |-
       {
@@ -1442,8 +1526,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '42':
-    id: '42'
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
     taskid: 6a85df27-543c-4fc3-882d-c455546080a6
     type: title
     task:
@@ -1452,11 +1538,11 @@ tasks:
       name: Investigation
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '52'
+      - "52"
     separatecontext: false
     view: |-
       {
@@ -1468,26 +1554,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '43':
-    id: '43'
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
     taskid: 447c8b64-6114-44a6-88eb-8606e9014983
     type: condition
     task:
       id: 447c8b64-6114-44a6-88eb-8606e9014983
       version: -1
       name: Auto remediation?
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '44'
-      'yes':
-      - '18'
+      - "44"
+      "yes":
+      - "18"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: greaterThanOrEqual
           left:
@@ -1511,21 +1599,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '44':
-    id: '44'
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
     taskid: c969a2b3-794b-49d4-83d7-1ad653e45695
     type: regular
     task:
       id: c969a2b3-794b-49d4-83d7-1ad653e45695
       version: -1
       name: Manual remediation
+      description: ""
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '33'
+      - "33"
     separatecontext: false
     view: |-
       {
@@ -1537,28 +1627,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '46':
-    id: '46'
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
     taskid: 666eabcf-cf52-4081-8cf3-8d62cb16e9a9
     type: condition
     task:
       id: 666eabcf-cf52-4081-8cf3-8d62cb16e9a9
       version: -1
       name: Was there a successful login?
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '57'
-      'no':
-      - '41'
-      'yes':
-      - '60'
+      - "57"
+      "no":
+      - "41"
+      "yes":
+      - "60"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -1596,22 +1688,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '47':
-    id: '47'
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
     taskid: 8af55a8d-64c9-4ca3-8a7c-61fc6a48991a
     type: regular
     task:
       id: 8af55a8d-64c9-4ca3-8a7c-61fc6a48991a
       version: -1
       name: Set incident severity
-      description: Sets the incident severity.
+      description: Set incident severity.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - '46'
+      - "46"
     scriptarguments:
       Crowdstrikefamily: {}
       Crowdstrikescore: {}
@@ -2076,34 +2170,38 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '50':
-    id: '50'
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
     taskid: 67d108c6-0cf1-4b77-8bdd-97db28bd1340
     type: regular
     task:
       id: 67d108c6-0cf1-4b77-8bdd-97db28bd1340
       version: -1
       name: Manual - close investigation in the source product
+      description: ""
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -100,
-          "y": 6220
+          "y": 6750
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '51':
-    id: '51'
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
     taskid: 31aa999f-3bb9-4a70-8d41-53a25c93eeba
     type: playbook
     task:
@@ -2116,10 +2214,10 @@ tasks:
       playbookName: Calculate Severity - Critical Assets v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '47'
+      - "47"
     scriptarguments:
       Account:
         complex:
@@ -2153,8 +2251,9 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -2165,26 +2264,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '52':
-    id: '52'
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
     taskid: 2a61c44f-8553-44a3-8210-2d55065e5829
     type: condition
     task:
       id: 2a61c44f-8553-44a3-8210-2d55065e5829
       version: -1
       name: Communicate with user?
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '51'
-      'yes':
-      - '2'
+      - "51"
+      "yes":
+      - "2"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: lessThanOrEqual
           left:
@@ -2208,8 +2309,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '53':
-    id: '53'
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
     taskid: 4acb3776-cc42-4bd1-85e0-00216c810e21
     type: title
     task:
@@ -2218,11 +2321,11 @@ tasks:
       name: False Positive
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     separatecontext: false
     view: |-
       {
@@ -2234,22 +2337,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '54':
-    id: '54'
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
     taskid: 3ff1034c-8d81-49af-858a-9bc6f814a705
     type: regular
     task:
       id: 3ff1034c-8d81-49af-858a-9bc6f814a705
       version: -1
       name: Raise incident severity
-      description: commands.local.cmd.set.incident
+      description: Increases the incident severity.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - '41'
+      - "41"
     scriptarguments:
       Crowdstrikefamily: {}
       Crowdstrikescore: {}
@@ -2602,7 +2707,7 @@ tasks:
             args:
               by:
                 value:
-                  simple: '1'
+                  simple: "1"
       severityname: {}
       sha1: {}
       sha256: {}
@@ -2728,26 +2833,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '56':
-    id: '56'
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
     taskid: 0fd8dd83-9924-421f-8235-7381201063a9
     type: condition
     task:
       id: 0fd8dd83-9924-421f-8235-7381201063a9
       version: -1
       name: Was there a successful login?
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '19'
-      'yes':
-      - '22'
+      - "72"
+      "yes":
+      - "22"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: containsString
           left:
@@ -2771,23 +2878,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '57':
-    id: '57'
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
     taskid: 61179f6d-fece-4cc1-82cb-5a2311a4771d
     type: condition
     task:
       id: 61179f6d-fece-4cc1-82cb-5a2311a4771d
       version: -1
       name: Manual - was there a successful login?
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      'no':
-      - '41'
-      'yes':
-      - '60'
+      "no":
+      - "41"
+      "yes":
+      - "60"
     separatecontext: false
     view: |-
       {
@@ -2799,8 +2908,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '58':
-    id: '58'
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
     taskid: 0cdb9cb7-05ec-4376-8748-a7179ff2dbea
     type: playbook
     task:
@@ -2810,11 +2921,11 @@ tasks:
       playbookName: Block Indicators - Generic v2
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '33'
+      - "33"
     scriptarguments:
       AutoCommit:
         complex:
@@ -2851,7 +2962,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: append
@@ -2925,7 +3036,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: append
@@ -2958,7 +3069,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: '3'
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: uniq
@@ -2974,34 +3085,37 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
           "x": 330,
-          "y": 4270
+          "y": 4570
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '59':
-    id: '59'
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
     taskid: 48cdf688-1ef8-4558-8c5e-d72a068e9f2b
     type: regular
     task:
       id: 48cdf688-1ef8-4558-8c5e-d72a068e9f2b
       version: -1
       name: Set Incident
-      description: Sets the incident.
+      description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - '42'
+      - "42"
     scriptarguments:
       Crowdstrikefamily: {}
       Crowdstrikescore: {}
@@ -3479,26 +3593,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '60':
-    id: '60'
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
     taskid: e3815d94-afa6-4c6c-8d32-d1aff297e699
     type: condition
     task:
       id: e3815d94-afa6-4c6c-8d32-d1aff297e699
       version: -1
       name: Can incident severity be raised?
+      description: ""
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '41'
-      'yes':
-      - '54'
+      - "41"
+      "yes":
+      - "54"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEqualString
           left:
@@ -3507,7 +3623,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '4'
+              simple: "4"
     view: |-
       {
         "position": {
@@ -3518,8 +3634,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '61':
-    id: '61'
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
     taskid: c176b3e6-9f16-415a-84fe-3582d080afb2
     type: title
     task:
@@ -3528,11 +3646,11 @@ tasks:
       name: Identification
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '62'
+      - "62"
     separatecontext: false
     view: |-
       {
@@ -3544,8 +3662,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '62':
-    id: '62'
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
     taskid: 4ba51448-709e-43c9-88dc-21b6012b0a72
     type: regular
     task:
@@ -3559,7 +3679,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '13'
+      - "13"
     scriptarguments:
       Crowdstrikefamily: {}
       Crowdstrikescore: {}
@@ -4027,8 +4147,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '63':
-    id: '63'
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
     taskid: fcf8e153-90a9-4f5a-879d-355d3df04eb3
     type: regular
     task:
@@ -4042,7 +4164,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '56'
+      - "56"
     scriptarguments:
       Crowdstrikefamily: {}
       Crowdstrikescore: {}
@@ -4509,8 +4631,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '64':
-    id: '64'
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
     taskid: 8271bae3-120a-4620-8a69-1b5e5bbeea97
     type: regular
     task:
@@ -4523,10 +4647,10 @@ tasks:
       scriptName: GenerateInvestigationSummaryReport
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '65'
+      - "65"
     scriptarguments:
       incidentId: {}
       name: {}
@@ -4536,40 +4660,44 @@ tasks:
       {
         "position": {
           "x": 645,
-          "y": 2970
+          "y": 3270
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '65':
-    id: '65'
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
     taskid: e2fc0319-5d9b-467f-899f-008899c65549
     type: regular
     task:
       id: e2fc0319-5d9b-467f-899f-008899c65549
       version: -1
       name: Manual - system backup
+      description: ""
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '29'
+      - "29"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 645,
-          "y": 3150
+          "y": 3450
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '66':
-    id: '66'
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
     taskid: 0a25ea0d-af5d-4c26-8e55-a3d9cb653f16
     type: regular
     task:
@@ -4583,7 +4711,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '32'
+      - "32"
     scriptarguments:
       Crowdstrikefamily: {}
       Crowdstrikescore: {}
@@ -5044,14 +5172,16 @@ tasks:
       {
         "position": {
           "x": 645,
-          "y": 3670
+          "y": 3970
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '67':
-    id: '67'
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
     taskid: 069d98a1-fbc9-4c05-80a1-e40897784288
     type: regular
     task:
@@ -5065,7 +5195,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '15'
+      - "15"
     scriptarguments:
       Crowdstrikefamily: {}
       Crowdstrikescore: {}
@@ -5526,14 +5656,16 @@ tasks:
       {
         "position": {
           "x": 645,
-          "y": 4610
+          "y": 4910
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '68':
-    id: '68'
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
     taskid: 526f3b03-df26-479f-8690-51c7c35f272b
     type: regular
     task:
@@ -5546,10 +5678,10 @@ tasks:
       scriptName: GenerateInvestigationSummaryReport
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '50'
+      - "50"
     scriptarguments:
       incidentId: {}
       name: {}
@@ -5559,14 +5691,16 @@ tasks:
       {
         "position": {
           "x": -100,
-          "y": 6040
+          "y": 6570
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '69':
-    id: '69'
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
     taskid: 23d6a993-26a0-437c-8e2e-98fd7a98eba3
     type: regular
     task:
@@ -5580,7 +5714,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '70'
+      - "70"
     scriptarguments:
       Crowdstrikefamily: {}
       Crowdstrikescore: {}
@@ -6041,14 +6175,16 @@ tasks:
       {
         "position": {
           "x": -100,
-          "y": 5650
+          "y": 6180
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '70':
-    id: '70'
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
     taskid: 9c5fcc46-a866-4db1-86d5-41ae5e0a3254
     type: playbook
     task:
@@ -6058,11 +6194,11 @@ tasks:
       playbookName: SANS - Lessons Learned
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '68'
+      - "68"
     scriptarguments:
       DataCollection:
         complex:
@@ -6073,18 +6209,21 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
           "x": -100,
-          "y": 5840
+          "y": 6370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "71":
     id: "71"
     taskid: f3465b30-8164-4b22-80d8-395892c92a9c
@@ -6107,31 +6246,148 @@ tasks:
       {
         "position": {
           "x": 330,
-          "y": 4020
+          "y": 4320
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: fa8d3291-be53-4f18-8636-84b807db1564
+    type: condition
+    task:
+      id: fa8d3291-be53-4f18-8636-84b807db1564
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks whether the Active Directory Query v2 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "64"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 645,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: 9f3767c8-2d9c-4136-8d0a-0f2f49b24670
+    type: condition
+    task:
+      id: 9f3767c8-2d9c-4136-8d0a-0f2f49b24670
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks whether the Active Directory Query v2 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 5475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
       "16_51_#default#": 0.44,
       "16_53_yes": 0.47,
       "32_33_#default#": 0.27,
-      "34_35_Yes": 0.62,
       "34_36_No": 0.51,
+      "34_73_Yes": 0.33,
       "46_41_no": 0.33,
       "46_60_yes": 0.53,
       "52_2_yes": 0.59,
       "56_22_yes": 0.59,
       "57_41_no": 0.19,
       "6_17_#default#": 0.1,
-      "71_58_yes": 0.55
+      "71_58_yes": 0.55,
+      "72_19_yes": 0.55,
+      "73_35_yes": 0.76,
+      "73_36_#default#": 0.21
     },
     "paper": {
       "dimensions": {
-        "height": 7840,
+        "height": 8370,
         "width": 2430,
         "x": -420,
         "y": -1185
@@ -6146,6 +6402,7 @@ inputs:
       accessor: username
   required: true
   description: Username of the user who is suspected of the activity.
+  playbookInputQuery:
 - key: src
   value:
     complex:
@@ -6153,6 +6410,7 @@ inputs:
       accessor: src
   required: true
   description: Source endpoint that triggered the incident.
+  playbookInputQuery:
 - key: traps_endpoint_id
   value:
     complex:
@@ -6160,20 +6418,23 @@ inputs:
       accessor: agentid
   required: false
   description: Traps endpoint ID, used for endpoint isolation.
+  playbookInputQuery:
 - key: logins_count_threshold
   value:
-    simple: '10'
+    simple: "10"
   required: false
   description: The threshold for number of logins, from which the investigation and
     remediation will start automatically without waiting for the user's reply. Default
     is 10.
+  playbookInputQuery:
 - key: severity_threshold
   value:
-    simple: '4'
+    simple: "4"
   required: false
   description: "The threshold for the severity value from which an automatic remediation\
     \ takes place. \nSpecify the severity number (default is Critical):\n0 - Unknown\n\
     0.5 - Informational\n1 - Low\n2 - Medium\n3 - High\n4 - Critical"
+  playbookInputQuery:
 - key: internal_range
   value: {}
   required: false
@@ -6182,32 +6443,38 @@ inputs:
     of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
     If a list is not provided, will use default list provided in the IsIPInRanges
     script (the known IPv4 private address ranges).'
+  playbookInputQuery:
 - key: critical_users
   value: {}
   required: false
   description: Critical users, separated by comma.
+  playbookInputQuery:
 - key: critical_endpoints
   value: {}
   required: false
   description: Critical endpoints, separated by comma.
+  playbookInputQuery:
 - key: critical_groups
   value: {}
   required: false
   description: Critical groups, separated by comma.
+  playbookInputQuery:
 - key: CustomBlockRule
   value:
-    simple: 'True'
+    simple: "True"
   required: false
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.
     Specify True to use Custom Block Rules.
+  playbookInputQuery:
 - key: AutoCommit
   value:
-    simple: 'No'
+    simple: "No"
   required: false
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
     Specify the Static Address Group name for IP handling.
+  playbookInputQuery:
 - key: IPListName
   value:
     simple: Demisto Remediation - IP EDL
@@ -6215,41 +6482,49 @@ inputs:
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
     Specify the EDL name for IP handling.
+  playbookInputQuery:
 - key: DAG
   value: {}
   required: false
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
     Specify the Dynamic Address Group tag name for IP handling.
+  playbookInputQuery:
 - key: StaticAddressGroup
   value: {}
   required: false
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
     Specify the Static Address Group name for IP handling.
+  playbookInputQuery:
 - key: URLListName
   value:
     simple: Demisto Remediation - URL EDL
   required: false
   description: URL list from the instance context with which to override the remote
     file.
+  playbookInputQuery:
 - key: CustomURLCategory
   value:
     simple: Demisto Remediation - Malicious URLs
   required: false
   description: Custom URL Category name.
+  playbookInputQuery:
 - key: type
   value: {}
   required: false
   description: Custom URL category type. Insert "URL List"/ "Category Match".
+  playbookInputQuery:
 - key: device-group
   value: {}
   required: false
   description: Device group for the Custom URL Category (Panorama instances).
+  playbookInputQuery:
 - key: categories
   value: {}
   required: false
   description: The list of categories. Relevant from PAN-OS v9.x.
+  playbookInputQuery:
 - key: EDLServerIP
   value: {}
   required: false
@@ -6257,16 +6532,20 @@ inputs:
     This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
     * The IP address of the web server on which the files are stored.
     * The web server IP address is configured in the integration instance.
+  playbookInputQuery:
 - key: DataCollection
   value: {}
   required: false
   description: Use a data collection task to answer lessons learned questions based
     on SANS. Specify 'True' to automatically send the communication task, and 'False'  to
     prevent it.
+  playbookInputQuery:
 - key: Email
   value: {}
   required: false
   description: Email address to which to send the questions.
+  playbookInputQuery:
 outputs: []
+fromversion: 5.0.0
 tests:
 - No test

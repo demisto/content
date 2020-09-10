@@ -19,6 +19,7 @@ EOF
 curl \
 --header "Accept: application/json" \
 --header "Content-Type: application/json" \
+-k \
 --data "${post_data}" \
 --request POST ${trigger_build_url} \
 --user "$_circle_token:"

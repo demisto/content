@@ -7,7 +7,7 @@ fromversion: 5.0.0
 category: Case Management
 description: Use the Jira integration to manage issues and create Demisto incidents from projects.
 configuration:
-- display: ' Jira URL, for example: https://demisto.atlassian.net/ '
+- display: 'Jira URL, for example: https://demisto.atlassian.net/'
   name: url
   defaultvalue: ""
   type: 0
@@ -169,7 +169,7 @@ script:
     - name: projectKey
       description: The project key with which to associate the issue.
     - name: issueTypeName
-      description: ' Select an issue type by name, for example: "Problem". '
+      description: 'Select an issue type by name, for example: "Problem".'
     - name: issueTypeId
       description: Select an issue type by its numeric ID.
     - name: projectName
@@ -177,7 +177,7 @@ script:
     - name: description
       description: A description of the issue.
     - name: labels
-      description: 'A CSV list of labels. '
+      description: 'A CSV list of labels.'
     - name: priority
       description: 'The priority name, for example: "High" or "Medium".'
     - name: dueDate
@@ -216,7 +216,7 @@ script:
       required: true
       description: The comment body.
     - name: visibility
-      description: 'The roles that can view the comment, for example: "Administrators". '
+      description: 'The roles that can view the comment, for example: "Administrators".'
     description: Adds a new comment to an existing Jira issue.
   - name: jira-issue-add-link
     arguments:
@@ -247,15 +247,15 @@ script:
       required: true
       description: The ID of the issue to edit.
     - name: issueJson
-      description: The issue object (in JSON format).
+      description: 'The issue object (in JSON format). e.g, {"fields":{"customfield_10037": "field_value"}}'
     - name: summary
       description: The summary of the issue.
     - name: description
       description: The description of the issue.
     - name: labels
-      description: ' A CSV list of labels. '
+      description: 'A CSV list of labels.'
     - name: priority
-      description: ' A priorty name, for example "High" or "Medium". '
+      description: 'A priority name, for example "High" or "Medium".'
     - name: dueDate
       description: The due date for the issue (in the format 2018-03-11).
     - name: assignee

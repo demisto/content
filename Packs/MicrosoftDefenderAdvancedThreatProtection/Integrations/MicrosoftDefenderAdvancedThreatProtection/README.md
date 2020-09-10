@@ -41,7 +41,7 @@ For more details about the authentication used in this integration, see [Microso
     | **Parameter** | **Description** | **Example** |
     | ---------             | -----------           | -------            |
     | Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
-    | Host URL | The URL to the Microsoft Defender Advanced Threat Protection server, including the scheme. | https://api.securitycenter.windows.com |
+    | Host URL | The URL to the Microsoft Defender Advanced Threat Protection server, including the scheme. | `https://api.securitycenter.windows.com` |
      | ID | The ID used to gain access to the integration. | N/A |
      | Token | A piece of data that servers use to verify for authenticity | eea810f5-a6f6 |
     | Fetch Incidents | Whether to fetch the incidents or not. | N/A |
@@ -1412,8 +1412,8 @@ Machine.CollectForensics
 ```
 
 ##### Human Readable Output
-Success. This link is valid for a very short time and should be used immediately for downloading the package to a local storagehttps:
-//userrequests-us.securitycenter.windows.com:443/safedownload/WDATP_Investigation_Package.zip?token=MIICYwYJKoZIhvcNAQcCoIICV
+Success. This link is valid for a very short time and should be used immediately for downloading the package to a local storage: `https:
+//userrequests-us.securitycenter.windows.com:443/safedownload/WDATP_Investigation_Package.zip?token=MIICYwYJKoZIhvcNAQcCoIICV`
 
 
 ### 18. microsoft-atp-restrict-app-execution

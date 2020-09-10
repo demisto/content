@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 99efad6f-9909-44bf-872a-9c464c05d1bd
+    taskid: d4941a65-8320-417a-8c65-b0269035f291
     type: start
     task:
-      id: 99efad6f-9909-44bf-872a-9c464c05d1bd
+      id: d4941a65-8320-417a-8c65-b0269035f291
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 3ab7fff5-5dfc-4c9d-8a9b-f974a47990ce
+    taskid: 1dd3d513-6f27-4469-8de0-c0f2315f958a
     type: regular
     task:
-      id: 3ab7fff5-5dfc-4c9d-8a9b-f974a47990ce
+      id: 1dd3d513-6f27-4469-8de0-c0f2315f958a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -67,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 29bd076d-a19a-457a-8cfc-6fc3ded40613
+    taskid: 7299ecf8-b764-45e6-89de-656814cb406f
     type: regular
     task:
-      id: 29bd076d-a19a-457a-8cfc-6fc3ded40613
+      id: 7299ecf8-b764-45e6-89de-656814cb406f
       version: -1
       name: ip
       description: Checks the reputation of an IP address
@@ -91,12 +91,13 @@ tasks:
       sampleSize: {}
       threshold: {}
       wait: {}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 360
+          "y": 370
         }
       }
     note: false
@@ -106,10 +107,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 08c52b70-23b4-498e-87b2-0b7eb9ffd5cb
+    taskid: f5737d3a-6140-42b6-865d-012df10ca064
     type: condition
     task:
-      id: 08c52b70-23b4-498e-87b2-0b7eb9ffd5cb
+      id: f5737d3a-6140-42b6-865d-012df10ca064
       version: -1
       name: VerifyAddress
       description: Check whether the values provided in arguments are equal. If either
@@ -143,10 +144,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 96c85f0d-c444-45e1-8703-0b2d1ea6a0ce
+    taskid: 16a8ce89-cdda-45b6-8288-f27404189dee
     type: regular
     task:
-      id: 96c85f0d-c444-45e1-8703-0b2d1ea6a0ce
+      id: 16a8ce89-cdda-45b6-8288-f27404189dee
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -179,10 +180,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 88c6f0de-6062-4868-819d-e00e4ba9d21a
+    taskid: b66feeed-1049-4f0c-8882-19f299bcadb9
     type: regular
     task:
-      id: 88c6f0de-6062-4868-819d-e00e4ba9d21a
+      id: b66feeed-1049-4f0c-8882-19f299bcadb9
       version: -1
       name: url
       description: Checks the reputation of an URL
@@ -198,9 +199,15 @@ tasks:
     scriptarguments:
       fullResponse: {}
       long: {}
+      multiple: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
       threshold: {}
       url:
-        simple: http://assocolours.com/mu/i/LoginVerification.php  # disable-secrets-detection
+        simple: http://assocolours.com/mu/i/LoginVerification.php
+      wait: {}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -216,10 +223,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 39014fc2-1ce4-4a3c-8cc5-9d8b18bc48b4
+    taskid: 0e46783f-5922-4b93-8281-4c3ed9cf6290
     type: condition
     task:
-      id: 39014fc2-1ce4-4a3c-8cc5-9d8b18bc48b4
+      id: 0e46783f-5922-4b93-8281-4c3ed9cf6290
       version: -1
       name: VerifyVendor
       description: Check whether the values provided in arguments are equal. If either
@@ -253,10 +260,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 9b4f93fc-b739-4215-8425-1c364239aa3b
+    taskid: a79ae53c-2ee5-4e5c-8793-383ccaf26167
     type: condition
     task:
-      id: 9b4f93fc-b739-4215-8425-1c364239aa3b
+      id: a79ae53c-2ee5-4e5c-8793-383ccaf26167
       version: -1
       name: VerifyDomainName
       description: Check whether the values provided in arguments are equal. If either
@@ -290,10 +297,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: cdd71682-d25b-48bf-8f1e-3d8b31d386a6
+    taskid: ed6fff0a-5e9d-4768-89f8-d29fc399c247
     type: condition
     task:
-      id: cdd71682-d25b-48bf-8f1e-3d8b31d386a6
+      id: ed6fff0a-5e9d-4768-89f8-d29fc399c247
       version: -1
       name: VerifyTLD
       description: Check whether the values provided in arguments are equal. If either
@@ -327,10 +334,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 0086b1bb-2ba9-40f2-8dd9-9772d744e425
+    taskid: 9acfce4b-3e0c-4444-83fc-79aeb460f2ac
     type: regular
     task:
-      id: 0086b1bb-2ba9-40f2-8dd9-9772d744e425
+      id: 9acfce4b-3e0c-4444-83fc-79aeb460f2ac
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -363,10 +370,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 66817663-c965-4a87-8892-4d400dacc966
+    taskid: 4e3830d4-1e78-42ee-8edb-707b7c5bd73d
     type: regular
     task:
-      id: 66817663-c965-4a87-8892-4d400dacc966
+      id: 4e3830d4-1e78-42ee-8edb-707b7c5bd73d
       version: -1
       name: domain
       description: Checks the reputation of a Domain
@@ -387,6 +394,7 @@ tasks:
       sampleSize: {}
       threshold: {}
       wait: {}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -402,10 +410,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: bbc2f09b-08a0-4d6f-87e8-0dff234d7437
+    taskid: 8ce4cbca-14d9-4c28-87b3-7794106d58d3
     type: condition
     task:
-      id: bbc2f09b-08a0-4d6f-87e8-0dff234d7437
+      id: 8ce4cbca-14d9-4c28-87b3-7794106d58d3
       version: -1
       name: VerifyDomainName
       description: Check whether the values provided in arguments are equal. If either
@@ -439,10 +447,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 128754fe-cc6b-47de-8f6a-b0b7c5f55ede
+    taskid: ceb4d5ee-b677-42d8-8dae-529e9a2d28dc
     type: regular
     task:
-      id: 128754fe-cc6b-47de-8f6a-b0b7c5f55ede
+      id: ceb4d5ee-b677-42d8-8dae-529e9a2d28dc
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -475,10 +483,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: c86ec365-f16b-4030-8025-70bddbec37ca
+    taskid: 0f997585-244e-420b-8a23-f358d2af80ff
     type: regular
     task:
-      id: c86ec365-f16b-4030-8025-70bddbec37ca
+      id: 0f997585-244e-420b-8a23-f358d2af80ff
       version: -1
       name: file
       description: Check the reputation of a file
@@ -499,6 +507,7 @@ tasks:
       retries: {}
       threshold: {}
       wait: {}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -514,10 +523,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 5fe4b017-2ee2-441d-86ea-f5ddd5d2084d
+    taskid: 5f660cf3-6165-44d5-8440-778aadbb13de
     type: condition
     task:
-      id: 5fe4b017-2ee2-441d-86ea-f5ddd5d2084d
+      id: 5f660cf3-6165-44d5-8440-778aadbb13de
       version: -1
       name: VerifyFileName
       description: Check whether the values provided in arguments are equal. If either
@@ -540,7 +549,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 695,
           "y": 2120
         }
       }
@@ -551,10 +560,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: e970de36-f64d-4b55-8def-e49c2d10093b
+    taskid: 8211c9bd-6970-48dc-8af2-9109105d3ba6
     type: title
     task:
-      id: e970de36-f64d-4b55-8def-e49c2d10093b
+      id: 8211c9bd-6970-48dc-8af2-9109105d3ba6
       version: -1
       name: Done
       type: title
@@ -575,10 +584,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: e977a514-751d-4e03-894c-fae51c39c5fb
+    taskid: 7586c858-8a25-4c7f-8ebc-3bacbf77b208
     type: condition
     task:
-      id: e977a514-751d-4e03-894c-fae51c39c5fb
+      id: 7586c858-8a25-4c7f-8ebc-3bacbf77b208
       version: -1
       name: VerifyVendor
       description: Check whether the values provided in arguments are equal. If either
@@ -612,10 +621,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 8b3e3d24-3133-48fd-87aa-993dcd9ebcda
+    taskid: 909be2b0-4056-4559-8b55-dd3de10b0163
     type: condition
     task:
-      id: 8b3e3d24-3133-48fd-87aa-993dcd9ebcda
+      id: 909be2b0-4056-4559-8b55-dd3de10b0163
       version: -1
       name: VerifyDomainTld
       description: Check whether the values provided in arguments are equal. If either
@@ -649,10 +658,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: b333ac23-4730-4b71-87a2-629d3daf8ed0
+    taskid: 86167ca4-00d1-4c0b-821b-2bb1496bb8d5
     type: condition
     task:
-      id: b333ac23-4730-4b71-87a2-629d3daf8ed0
+      id: 86167ca4-00d1-4c0b-821b-2bb1496bb8d5
       version: -1
       name: VerifyFileHash
       description: Check whether the values provided in arguments are equal. If either
@@ -675,7 +684,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 2120
         }
       }

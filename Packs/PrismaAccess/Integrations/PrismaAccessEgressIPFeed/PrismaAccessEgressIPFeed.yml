@@ -115,6 +115,11 @@ configuration:
   name: proxy
   type: 8
   required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 script:
   script: ''
   type: python

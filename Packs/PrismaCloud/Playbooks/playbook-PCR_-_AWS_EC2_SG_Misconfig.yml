@@ -22,13 +22,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "28"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -90
+          "x": 1440,
+          "y": -280
         }
       }
     note: false
@@ -179,8 +179,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": 1500
+          "x": 1450,
+          "y": 1490
         }
       }
     note: false
@@ -704,6 +704,65 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: bf81822b-44d6-4a0d-8798-1308b75a90be
+    type: condition
+    task:
+      id: bf81822b-44d6-4a0d-8798-1308b75a90be
+      version: -1
+      name: Is AWS - EC2 integration enabled?
+      description: Is AWS - EC2 integration enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - EC2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -719,10 +778,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1655,
-        "width": 1610,
+        "height": 1835,
+        "width": 1920,
         "x": -90,
-        "y": -90
+        "y": -280
       }
     }
   }

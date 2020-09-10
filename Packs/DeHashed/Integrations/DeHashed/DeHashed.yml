@@ -21,6 +21,13 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: SUSPICIOUS
+  display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS
+    or MALICIOUS)'
+  hidden: false
+  name: email_dbot_score
+  required: false
+  type: 0
 description: This integration allows you to check if your personal information such
   as your email, username, or password is being compromised.
 display: DeHashed
@@ -30,7 +37,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: If you select the "all fields" option, the search is performed on all fields with the specified value entered in the "value" argument, and you don't have to pass the "operation" argument.
+      description: If you select the "all fields" option, the search is performed
+        on all fields with the specified value entered in the "value" argument, and
+        you don't have to pass the "operation" argument.
       isArray: false
       name: asset_type
       predefined:
@@ -63,20 +72,22 @@ script:
       required: true
       secret: false
     - default: false
-      description: The number of page to return. Each page contains a maximum of 5,000 results.
-        entries.
+      description: The number of page to return. Each page contains a maximum of 5,000
+        results. entries.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: 'Starting result number to display. Default is 0. Dehashed response can include more than 5,000 results.'
+      description: Starting result number to display. Default is 0. Dehashed response
+        can include more than 5,000 results.
       isArray: false
       name: results_from
       required: false
       secret: false
     - default: false
-      description: 'Ending result number to display. Default is 100. Dehashed response can include more than 5,000 results.'
+      description: Ending result number to display. Default is 100. Dehashed response
+        can include more than 5,000 results.
       isArray: false
       name: results_to
       required: false
@@ -120,17 +131,76 @@ script:
       description: Source of the object.
       type: String
     - contextPath: Dehashed.LastQuery.ResultsFrom
-      description: The value of the "results_from" argument that was passed in the last query.
+      description: The value of the "results_from" argument that was passed in the
+        last query.
       type: Number
     - contextPath: Dehashed.LastQuery.ResultsTo
-      description: The value of the "results_to" argument that was passed in the last query.
+      description: The value of the "results_to" argument that was passed in the last
+        query.
       type: Unknown
     - contextPath: Dehashed.LastQuery.TotalResults
       description: The total number of entries returned from the last query.
       type: Number
     - contextPath: Dehashed.LastQuery.DisplayedResults
-      description: The number of entries that were displayed in Cortex XSOAR from the last
-        query.
+      description: The number of entries that were displayed in Cortex XSOAR from
+        the last query.
+      type: Number
+  - arguments:
+    - default: true
+      description: The email address to check.
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks if an email address was compromised.
+    execution: false
+    name: email
+    outputs:
+    - contextPath: DeHashed.Search.Id
+      description: ID of the object.
+      type: String
+    - contextPath: DeHashed.Search.Email
+      description: Email address of the object.
+      type: String
+    - contextPath: DeHashed.Search.Username
+      description: Username of the object.
+      type: String
+    - contextPath: DeHashed.Search.Password
+      description: Password of the object.
+      type: String
+    - contextPath: DeHashed.Search.HashedPassword
+      description: Hashed password of the object.
+      type: String
+    - contextPath: DeHashed.Search.Name
+      description: Name of the object.
+      type: String
+    - contextPath: DeHashed.Search.Vin
+      description: Vehicle identification of the object.
+      type: Number
+    - contextPath: DeHashed.Search.Address
+      description: Address of the object.
+      type: String
+    - contextPath: DeHashed.Search.IpDddress
+      description: IP address of the object.
+      type: Number
+    - contextPath: DeHashed.Search.Phone
+      description: Phone number of the object.
+      type: Number
+    - contextPath: DeHashed.Search.ObtainedFrom
+      description: Source of the object.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
       type: Number
   dockerimage: demisto/python3:3.8.3.9324
   feed: false
@@ -141,6 +211,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
 - No tests
+fromversion: 5.5.0

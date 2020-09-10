@@ -131,10 +131,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Comma-separated list of tags, which will be added to indicators created
-    by this feed.
+- additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   required: false
   type: 0
@@ -206,7 +204,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.9219
+  dockerimage: demisto/taxii2:1.0.0.9904
   feed: true
   isfetch: false
   longRunning: false

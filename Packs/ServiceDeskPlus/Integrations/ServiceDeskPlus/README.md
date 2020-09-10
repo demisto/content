@@ -159,8 +159,7 @@ View the details of requests. If no parameters are given the details of all requ
 
 ### service-desk-plus-request-delete
 ***
-Delete the request with the given id. Multiple ids can be closed by passed a string with all the ids of the requests that should be closed, separated by a comma.
-
+Deletes the request with the specified ID. To delete multiple IDs, pass a comma-separated list (string) of the IDs of the requests.
 
 #### Base Command
 
@@ -744,7 +743,7 @@ There is no context output for this command.
 
 ### service-desk-plus-request-close
 ***
-Close the existing request with the given request id
+Closes the specified request.
 
 
 #### Base Command
@@ -755,7 +754,7 @@ Close the existing request with the given request id
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | closure_comments | The comments that should be added when closing the request | Optional | 
-| closure_code | A dictionary that represents the closure code that should be added to the request. For example, {"name": "success"} | Optional | 
+| closure_code | The closure code to add to the request. Can be "Cancelled", "Failed", "Postponed", "Rejected", "Success" or "Unable to Reproduce" | Optional | 
 | requester_ack_comments | The requester comments that should be added to the request | Optional | 
 | requester_ack_resolution | Boolean. | Optional | 
 | request_id | The id of the request that should be closed | Required | 

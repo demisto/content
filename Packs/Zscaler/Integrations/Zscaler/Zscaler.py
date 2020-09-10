@@ -355,6 +355,7 @@ def url_lookup(args):
             data['urlClassificationsWithSecurityAlert'] = ''
         else:
             data['urlClassificationsWithSecurityAlert'] = ''.join(data['urlClassificationsWithSecurityAlert'])
+            ioc_context['urlClassificationsWithSecurityAlert'] = data['urlClassificationsWithSecurityAlert']
             if data['urlClassificationsWithSecurityAlert'] in suspicious_categories:
                 score = 2
             else:
@@ -452,6 +453,7 @@ def lookup_request(ioc, multiple=True):
         ioc_list = ioc.split(',')
     else:
         ioc_list = [ioc]
+    ioc_list = [url.replace('https://', '').replace('http://', '') for url in ioc_list]
     json_data = json.dumps(ioc_list)
     response = http_request('POST', cmd_url, json_data, DEFAULT_HEADERS)
     return response

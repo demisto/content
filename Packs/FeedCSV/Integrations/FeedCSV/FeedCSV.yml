@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  defaultvalue: true
+  defaultvalue: 'true'
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this

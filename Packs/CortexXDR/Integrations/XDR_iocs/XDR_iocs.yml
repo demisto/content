@@ -37,14 +37,14 @@ configuration:
   - high
   required: true
   type: 15
-- additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR.
+- additionalinfo: Supports CSV values.
   defaultvalue: Cortex XDR
-  display: Indicator tag
+  display: Tags
   hidden: false
-  name: tag
-  required: true
+  name: feedTags
+  required: false
   type: 0
-- additionalinfo: The tag for incomming indicators.
+- additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
   display: Sync Query
   hidden: false

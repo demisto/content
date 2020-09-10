@@ -4,7 +4,7 @@ commonfields:
 name: ThreatConnect v2
 display: ThreatConnect v2
 category: Data Enrichment & Threat Intelligence
-description: Threat intelligence platform.
+description: ThreatConnect's intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
 configuration:
 - display: baseUrl
   name: baseUrl
@@ -41,16 +41,10 @@ configuration:
   defaultvalue: "7"
   type: 0
   required: false
-- display: ProxyIP  (or http://${ip} )
-  name: proxyIp
-  defaultvalue: ""
-  type: 0
+- display: Use system proxy settings
+  name: proxy
   required: false
-- display: ProxyPort
-  name: proxyPort
-  defaultvalue: ""
-  type: 0
-  required: false
+  type: 8
 script:
   script: '-'
   type: python
@@ -2050,7 +2044,55 @@ script:
       required: true
       description: Indicator Value
     description: Get Owner for Indicator
-  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.8854
+  - name: tc-download-report
+    description: The group report to download in PDF format.
+    arguments:
+      - name: group_type
+        required: true
+        auto: PREDEFINED
+        predefined:
+        - adversaries
+        - campaigns
+        - emails
+        - incidents
+        - signatures
+        - threats
+        description: 'The type of the group. Can be: "adversaries", "campaigns", "emails", "incidents", "signatures", or "threats".'
+      - name: group_id
+        required: true
+        description: The ID of the group.
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: The information of the file.
+      type: String
+    - contextPath: File.Type
+      description: The type of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The extension of the file.
+      type: String
+  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.10664
   runonce: false
   subtype: python3
 fromversion: '5.0.0'

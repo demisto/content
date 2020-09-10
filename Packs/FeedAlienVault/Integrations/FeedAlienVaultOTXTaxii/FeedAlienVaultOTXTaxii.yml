@@ -79,7 +79,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Supports a CSV of collections to fetch from. If an inactive or empty
-    collection is supplied, an error will be raised. If not set, it will raise an error
+    collection is supplied, a Timeout error will be raised. If not set, it will raise an error
     listing all the available collections.
   display: Collections to Fetch From
   hidden: false
@@ -113,7 +113,7 @@ script:
     description: Gets the indicators from AlienVault OTX.
     execution: false
     name: alienvaultotx-get-indicators
-  dockerimage: demisto/taxii:1.0.0.9263
+  dockerimage: demisto/taxii:1.0.0.9793
   feed: true
   isfetch: false
   longRunning: false
