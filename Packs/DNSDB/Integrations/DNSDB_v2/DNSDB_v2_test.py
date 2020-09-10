@@ -819,16 +819,9 @@ class TestSummarizeRDataCommand:
 
         expected_readable = textwrap.dedent('''\
                 ### Farsight DNSDB Summarize
-                Count
-                 : 1127
-                NumResults
-                 : 2
-                TimeFirst
-                 : 2019-05-14T18:41:53Z
-                TimeLast
-                 : 2019-06-14T18:35:33Z
-                FromZoneFile
-                 : False
+                |Count|NumResults|TimeFirst|TimeLast|
+                |---|---|---|---|
+                | 1127 | 2 | 2019-05-14T18:41:53Z | 2019-06-14T18:35:33Z |
                 ''')
         expected_output_prefix = 'DNSDB.Summary'
         expected_outputs = {
@@ -852,16 +845,9 @@ class TestSummarizeRDataCommand:
 
         expected_readable = textwrap.dedent('''\
                 ### Farsight DNSDB Summarize
-                Count
-                 : 1127
-                NumResults
-                 : 2
-                TimeFirst
-                 : 2019-05-14T18:41:53Z
-                TimeLast
-                 : 2019-06-14T18:35:33Z
-                FromZoneFile
-                 : False
+                |Count|NumResults|TimeFirst|TimeLast|
+                |---|---|---|---|
+                | 1127 | 2 | 2019-05-14T18:41:53Z | 2019-06-14T18:35:33Z |
                 ''')
 
         expected_output_prefix = 'DNSDB.Summary'
@@ -886,16 +872,9 @@ class TestSummarizeRDataCommand:
 
         expected_readable = textwrap.dedent('''\
                         ### Farsight DNSDB Summarize
-                        Count
-                         : 1127
-                        NumResults
-                         : 2
-                        TimeFirst
-                         : 2019-05-14T18:41:53Z
-                        TimeLast
-                         : 2019-06-14T18:35:33Z
-                        FromZoneFile
-                         : True
+                        |Count|NumResults|ZoneTimeFirst|ZoneTimeLast|
+                        |---|---|---|---|
+                        | 1127 | 2 | 2019-05-14T18:41:53Z | 2019-06-14T18:35:33Z |
                         ''')
 
         expected_output_prefix = 'DNSDB.Summary'
@@ -1019,16 +998,9 @@ class TestSummarizeRRSetCommand:
 
         expected_readable = textwrap.dedent('''\
                 ### Farsight DNSDB Summarize
-                Count
-                 : 1127
-                NumResults
-                 : 2
-                TimeFirst
-                 : 2019-05-14T18:41:53Z
-                TimeLast
-                 : 2019-06-14T18:35:33Z
-                FromZoneFile
-                 : False
+                |Count|NumResults|TimeFirst|TimeLast|
+                |---|---|---|---|
+                | 1127 | 2 | 2019-05-14T18:41:53Z | 2019-06-14T18:35:33Z |
                 ''')
 
         expected_output_prefix = 'DNSDB.Summary'
@@ -1052,16 +1024,9 @@ class TestSummarizeRRSetCommand:
 
         expected_readable = textwrap.dedent('''\
                         ### Farsight DNSDB Summarize
-                        Count
-                         : 1127
-                        NumResults
-                         : 2
-                        TimeFirst
-                         : 2019-05-14T18:41:53Z
-                        TimeLast
-                         : 2019-06-14T18:35:33Z
-                        FromZoneFile
-                         : True
+                        |Count|NumResults|ZoneTimeFirst|ZoneTimeLast|
+                        |---|---|---|---|
+                        | 1127 | 2 | 2019-05-14T18:41:53Z | 2019-06-14T18:35:33Z |
                         ''')
 
         expected_output_prefix = 'DNSDB.Summary'

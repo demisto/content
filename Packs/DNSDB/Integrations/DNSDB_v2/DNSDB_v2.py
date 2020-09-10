@@ -456,23 +456,21 @@ def lookup_to_markdown(results: List[Dict], want_bailiwick=True) -> str:
 
 @logger
 def summarize_to_markdown(summary: Dict) -> str:
-    # TODO this should be more specific, include arguments?
-    out = ['### Farsight DNSDB Summarize']
-
+    headers = []
+    out = dict()  # type: Dict[str, Any]
     for ckey, rkey, f in (
             ('Count', 'count', int),
             ('NumResults', 'num_results', int),
             ('TimeFirst', 'time_first', parse_unix_time),
             ('TimeLast', 'time_last', parse_unix_time),
-            ('TimeFirst', 'zone_time_first', parse_unix_time),
-            ('TimeLast', 'zone_time_last', parse_unix_time),
+            ('ZoneTimeFirst', 'zone_time_first', parse_unix_time),
+            ('ZoneTimeLast', 'zone_time_last', parse_unix_time),
     ):
         if rkey in summary:
-            out += [f'{ckey}', f' : {f(summary[rkey])}']  # type: ignore[operator]
+            headers.append(ckey)
+            out[ckey] = f(summary[rkey])  # type: ignore[operator]
 
-    out += ['FromZoneFile', f' : {"zone_time_first" in summary}']
-
-    return '\n'.join(out) + '\n'
+    return tableToMarkdown('Farsight DNSDB Summarize', out, headers=headers)
 
 
 @logger
