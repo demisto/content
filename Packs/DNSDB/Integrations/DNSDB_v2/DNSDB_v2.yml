@@ -328,4 +328,4 @@ script:
   isfetch: false
 fromversion: 5.0.0
 tests:
-- DNSDB-Test
+- No tests
