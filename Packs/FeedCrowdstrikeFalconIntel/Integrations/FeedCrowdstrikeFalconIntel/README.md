@@ -19,7 +19,7 @@ The CrowdStrike intelligence team tracks the activities of threat actor groups a
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | feedTags | Tags | False |
-| client_secret | The Crowdstrike API client secret | True |
+| client_secret | Crowdstrike API client secret | True |
 | target_industries | Filter by threat actor's target industries. | False |
 | target_countries | Filter by threat actor's target countries. | False |
 | custom_filter | A custom filter by which to filter the indicators. If you pass the custom_filter argument it will override the custom\_filter parameter from the integration instance configuration.| False |
