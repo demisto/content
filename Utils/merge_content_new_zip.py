@@ -8,11 +8,14 @@ import argparse
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-ACCEPT_TYPE = "application/json"
-CONTENT_API_WORKFLOWS_URI = "https://circleci.com/api/v2/insights/gh/demisto/content/workflows/commit"
+ACCEPT_TYPE = 'application/json'
+CONTENT_API_WORKFLOWS_URI = 'https://circleci.com/api/v2/insights/gh/demisto/content/workflows/commit'
 ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN', '')
+FILES_TO_REMOVE = ['content-descriptor.json', 'doc-CommonServer.json', 'doc-howto.json', 'reputations.json',
+                   'tools-o365.zip', 'tools-exchange.zip', 'tools-winpmem.zip']
+MASTER_CONTENT_ZIP_PATH = f'{ARTIFACTS_PATH}/content_new.zip'
 
 
 def http_request(method, url, params=None):
@@ -134,21 +137,19 @@ def download_zip_file_from_gcp(current_feature_content_zip_file_path, zip_destin
     return ''
 
 
-def merge_zip_files(master_branch_content_zip_file_path, feature_branch_content_zip_file_path, files_to_remove):
+def merge_zip_files(feature_branch_content_zip_file_path):
     """Merge content_new zip files and remove the unnecessary files.
 
     Args:
-        master_branch_content_zip_file_path (str): Master content_new.zip file path
         feature_branch_content_zip_file_path: Feature content_new.zip file path
-        files_to_remove (list): The list of the file to remove from the feature branch's content_new.zip
 
     """
 
     unified_zip = z.ZipFile(f'{ARTIFACTS_PATH}/unified_content.zip', 'a')
-    with z.ZipFile(master_branch_content_zip_file_path, 'r') as master_zip:
+    with z.ZipFile(MASTER_CONTENT_ZIP_PATH, 'r') as master_zip:
         feature_zip = z.ZipFile(feature_branch_content_zip_file_path, 'r')
         for name in feature_zip.namelist():
-            if name not in files_to_remove:
+            if name not in FILES_TO_REMOVE:
                 unified_zip.writestr(name, feature_zip.open(name).read())
         for name in master_zip.namelist():
             unified_zip.writestr(name, master_zip.open(name).read())
@@ -192,13 +193,8 @@ def main():
     create_instances_job_num = get_job_num(feature_branch_successful_workflow_id)
     new_feature_content_zip_file_path = get_new_feature_zip_file_path(feature_branch_name, create_instances_job_num)
 
-    files_to_remove = ['content-descriptor.json', 'doc-CommonServer.json', 'doc-howto.json', 'reputations.json',
-                       'tools-o365.zip', 'tools-exchange.zip', 'tools-winpmem.zip']
-
-    master_content_zip_path = f"{ARTIFACTS_PATH}/content_new.zip"
-
     if new_feature_content_zip_file_path:
-        merge_zip_files(master_content_zip_path, new_feature_content_zip_file_path, files_to_remove)
+        merge_zip_files(new_feature_content_zip_file_path)
 
         print('Done merging content_new.zip files')
     else:
