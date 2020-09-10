@@ -2,7 +2,7 @@ id: Enrich Incident With Asset Details - RiskIQ Digital Footprint
 version: -1
 name: Enrich Incident With Asset Details - RiskIQ Digital Footprint
 description: |-
-  Enriches the incident with asset details and the asset with the incident URL on the RiskIQ Digital Footprint platform. This playbook also sends an email containing the owner's information to the primary or secondary contact of the asset and provides the user with an opportunity to update or remove the asset.
+  Enriches the incident with asset details, and enriches the asset with the incident URL on the RiskIQ Digital Footprint platform. This playbook also sends an email containing the owner's information to the primary or secondary contact of the asset and provides the user with an opportunity to update or remove the asset.
   Supported integration:
   - RiskIQ Digital Footprint
 starttaskid: "0"
@@ -800,7 +800,7 @@ tasks:
       id: b2f9c0dd-c85e-469a-887d-658bf9e92464
       version: -1
       name: Provide the email address to send owner information of the asset
-      description: Asks the user through an email as well as in the work plan to provide
+      description: Asks the user to provide
         an email address of the contact of the asset for sending an email containing
         owner information of the asset.
       type: collection
@@ -846,7 +846,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Please provide email address of the contact of the asset ${inputs.asset_name}
+          simple: Please provide an email address of the contact of the asset ${inputs.asset_name}
             of type ${inputs.asset_type}.
         required: false
         gridcolumns: []
@@ -859,7 +859,7 @@ tasks:
           do not want to send an email.
         readonly: false
       title: Email address of the contact of the asset
-      description: No contact was found from the fetched asset details, so provide
+      description: No contact was found from the fetched asset details. Please provide
         an email address to send the owner's information of the asset. Keep this field
         empty if you do not want to send an email.
       sender: Your SOC team
@@ -1498,7 +1498,7 @@ tasks:
       id: f51bc6ed-c475-4700-8748-a4eecb463ef0
       version: -1
       name: Is RiskIQ Skip Manual Tasks field set to yes?
-      description: Determines if the RiskIQ Skip Manual Tasks custom field of the
+      description: Indicates if the RiskIQ Skip Manual Tasks custom field of the
         incident is set to true.
       type: condition
       iscommand: false
@@ -1545,7 +1545,7 @@ tasks:
       id: fbd3e1ce-80fc-4f53-89f8-66011937a914
       version: -1
       name: Is RiskIQ Skip Manual Tasks field set to yes?
-      description: Determines if the RiskIQ Skip Manual Tasks custom field of the
+      description: Indicates if the RiskIQ Skip Manual Tasks custom field of the
         incident is set to true.
       type: condition
       iscommand: false
@@ -2162,8 +2162,7 @@ tasks:
     task:
       id: 25015763-ffed-48ab-82e3-21c702e30a2c
       version: -1
-      name: Is the user willing to send an email and the entered email address is
-        valid?
+      name: Is the user willing to send an email and was a valid email address provided?
       description: Determines if the user wants to send an email and checks if the
         entered email address is valid.
       type: condition
@@ -2714,7 +2713,7 @@ inputs:
             iscontext: true
       accessor: riskiqassettype
   required: true
-  description: 'Type of the asset. Possible values: Domain, Host, IP Address, IP Block,
+  description: 'Type of the asset. Possible values are: Domain, Host, IP Address, IP Block,
     ASN, Page, SSL Cert, Contact. This input supports a single value only.'
   playbookInputQuery:
 - key: asset_name
