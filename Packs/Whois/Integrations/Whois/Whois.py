@@ -8037,7 +8037,7 @@ def parse_dates(dates):
                     hour = 0
                     minute = 0
                     second = 0
-                    print(e.message)  # FIXME: This should have proper logging of some sort...?
+                    demisto.debug(e.message)
         try:
             if year > 0:
                 try:
