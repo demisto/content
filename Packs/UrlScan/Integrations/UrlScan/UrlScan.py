@@ -48,10 +48,10 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
         headers=headers,
         verify=USE_SSL
     )
-
-    if r.headers.get('X-Rate-Limit-Remaining') == '10':
-        return_warning(f'Your rate limit has reached to 10. The rate limit will reset at '
-                       f'{r.headers.get("X-Rate-Limit-Reset")}')
+    rate_limit_remaining = int(r.headers.get('X-Rate-Limit-Remaining'), 99)
+    if rate_limit_remaining < 10:
+        return_warning(f'Your available rate limit remaining is {rate_limit_remaining} and is about to be exhausted. '
+                       f'The rate limit will reset at {r.headers.get("X-Rate-Limit-Reset")}')
     if r.status_code != 200:
         if r.status_code == 429:
             if retries <= 0:
