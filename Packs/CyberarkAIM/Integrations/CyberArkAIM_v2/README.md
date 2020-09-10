@@ -1,5 +1,5 @@
-Query CyberArk Application Identity Manager for accounts and credentials.
-This integration was integrated and tested with version xx of CyberArkAIMV2
+The CyberArk Application Identity Manager (AIM) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk AIM.
+
 ## Configure CyberArkAIM v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -12,8 +12,10 @@ This integration was integrated and tested with version xx of CyberArkAIMV2
 | app_id | AppID as configured in AIM | False |
 | folder | Folder to search in safe | True |
 | safe | Safe to search in | True |
-| credential_names | Credential names \- comma\-seperated list of credentials names in vault | False |
+| credential_names | Credential names \- comma\-seperated list of credentials names in the safe | False |
 | credentials | Username | False |
+| cert_text | Certificate file as text | False |
+| key_text | Key file as text | False |
 | isFetchCredentials | Fetches credentials | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
@@ -40,9 +42,9 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | CyberArkAIM.AccountType | String | The type of the account. | 
 | CyberArkAIM.Address | String | The address of the account. | 
-| CyberArkAIM.CPMStatus | String | The CMP status. | 
-| CyberArkAIM.Domain | String | The domain. | 
-| CyberArkAIM.Name | String | The provided name. | 
+| CyberArkAIM.CPMStatus | String | The CMP status of the account. | 
+| CyberArkAIM.Domain | String | The domain of the account. | 
+| CyberArkAIM.Name | String | The credential name of the account. | 
 
 
 #### Command Example
