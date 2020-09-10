@@ -7,6 +7,30 @@ fromversion: 5.0.0
 category: Case Management
 description: Use the Jira integration to manage issues and create Demisto incidents from projects.
 configuration:
+- display: Ticket Mirroring
+  name: mirror
+  type: 15
+  required: false
+  options:
+  - In
+  - Out
+  - Both
+  - Disabled
+  additionalinfo: Select the direction for teicket mirroring.
+- display: Tag for internal notes
+  name: tag_internal_note
+  defaultvalue: internal_note
+  type: 0
+  required: true
+  additionalinfo: Any war room entries with this tag will be uploaded as internal
+    notes into the Jira ticket.
+- display: Tag for public notes
+  name: tag_public_note
+  defaultvalue: public_note
+  type: 0
+  required: true
+  additionalinfo: Any war room entries with this tag will be uploaded as a public
+    comment into the Jira ticket.
 - display: 'Jira URL, for example: https://demisto.atlassian.net/'
   name: url
   defaultvalue: ""
