@@ -28,7 +28,7 @@ def handle_error(message, is_return_error):
         return_error(message)
     else:
         demisto.results(message)
-        sys.exit(1)
+        sys.exit(0)
 
 
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
