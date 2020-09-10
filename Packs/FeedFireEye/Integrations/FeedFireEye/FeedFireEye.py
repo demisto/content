@@ -504,13 +504,15 @@ def fetch_indicators_command(client: Client, limit: int = -1):
     raw_response = []
 
     for indicator in iterator:
+        fields = indicator['fields']
+        fields.update({
+                'tags': client.tags,
+                'trafficlightprotocol': client.tlp_color
+            })
         indicators.append({
             'value': indicator['value'],
             'type': indicator['type'],
-            'fields': indicator['fields'].update({
-                'tags': client.tags,
-                'trafficlightprotocol': client.tlp_color
-            }),
+            'fields': fields,
             'rawJSON': indicator
         })
 
