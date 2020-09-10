@@ -24,7 +24,7 @@ configuration:
   required: true
   type: 4
 - display: HTTP Timeout
-  additionalinfo: Sets the timeout of the HTTP requests sent to Cortex XDR API.
+  additionalinfo: Sets the timeout of the HTTP requests sent to Cortex XDR API (in seconds).
   defaultvalue: 120
   name: timeout
   required: false
