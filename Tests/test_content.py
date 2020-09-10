@@ -249,7 +249,7 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
-def turn_off_telemetry(server, demisto_api_key):
+def turn_off_telemetry(dem_client):
     """
     Turn off telemetry on the AMI instance
 
@@ -257,8 +257,8 @@ def turn_off_telemetry(server, demisto_api_key):
     :param demisto_api_key: api key to use for connection
     :return: None
     """
-    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
-    body, status_code, _ = demisto_client.generic_request_func(self=client, method='POST',
+
+    body, status_code, _ = dem_client.generic_request_func(self=client, method='POST',
                                                                path='/telemetry?status=notelemetry')
 
     if status_code != 200:
@@ -814,9 +814,11 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
         prints_manager.execute_thread_prints(thread_index)
         return
+    dem_client = demisto_client.configure(base_url=server, username=secret_conf['username'],
+                                          password=secret_conf['userPassword'], verify_ssl=False)
 
     # turn off telemetry
-    turn_off_telemetry(server, demisto_api_key)
+    turn_off_telemetry(dem_client)
 
     proxy = None
     if is_ami:
@@ -830,7 +832,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     skipped_integration = set([])
     playbook_skipped_integration = set([])
 
-    disable_all_integrations(demisto_api_key, server, prints_manager, thread_index=thread_index)
+    disable_all_integrations(dem_client, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
