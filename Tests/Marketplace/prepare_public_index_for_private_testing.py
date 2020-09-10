@@ -35,26 +35,6 @@ def merge_private_index_into_public_index(public_index_folder_path, private_inde
         shutil.copy(path_to_pack_in_private_index, path_to_pack_in_public_index)
 
 
-def edit_index_json_file(path_to_public_index, build_number):
-    """ This function brings the public index file to the bucket format.
-
-    Args:
-        path_to_public_index: a path to the file containing the public index.
-        build_number: the build number to add to the pack metadata.
-    """
-    path_to_index_json = os.path.join(path_to_public_index, 'index.json')
-    with open(path_to_index_json, 'r') as pack_metadata_file:
-        pack_metadata = json.load(pack_metadata_file)
-
-    if 'packs' in pack_metadata:
-        del pack_metadata['packs']
-
-    pack_metadata['revision'] = build_number
-
-    with open(path_to_index_json, 'w') as pack_metadata_file:
-        json.dump(pack_metadata, pack_metadata_file, indent=4)
-
-
 def upload_modified_index(public_index_folder_path, extract_destination_path, public_ci_dummy_index_blob, build_number,
                           private_packs):
     """Upload updated index zip to cloud storage.
@@ -167,7 +147,6 @@ def main():
                                                                                            public_index_folder_path,
                                                                                            changed_pack, True)
 
-    # edit_index_json_file(public_index_folder_path, build_number)
     upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
                           private_packs)
 

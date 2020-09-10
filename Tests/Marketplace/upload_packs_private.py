@@ -290,6 +290,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
 
         if is_private or current_index_generation == index_generation:
+            print_error("uploading index")
             index_blob.upload_from_filename(index_zip_path)
             print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
         else:
@@ -316,7 +317,6 @@ def upload_core_packs_config(storage_bucket, build_number, index_folder_path):
     core_packs_public_urls = []
     found_core_packs = set()
     for pack in os.scandir(index_folder_path):
-        print_error(f'current pack is:{pack.name}')
         if pack.is_dir() and pack.name in GCPConfig.CORE_PACKS_LIST:
             pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
 
@@ -390,7 +390,6 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
     """
     try:
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
-        print_error(f"metadata files are: {metadata_files}")
     except Exception as e:
         print_warning(f'Could not find metadata files in {private_index_path}: {str(e)}')
         return []
@@ -401,36 +400,21 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
     private_packs = []
     for metadata_file_path in metadata_files:
         try:
-            print_error("started try block")
-            print_error(subprocess.check_output(f'ls {metadata_file_path}', shell=True))
-            print_error(subprocess.check_output(f'echo metadata_file_path:{metadata_file_path}', shell=True))
-
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
             path_to_pack_in_artifacts = os.path.join(extract_destination_path, pack_id)
-            print_error(subprocess.check_output(f'ls {extract_destination_path}', shell=True))
-            print_error(
-                subprocess.check_output(f'echo path_to_pack_in_artifacts:{path_to_pack_in_artifacts}', shell=True))
             is_changed_private_pack = is_private_build and pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
-                print_error("entered is_changed_private_pack")
-                print_error(subprocess.check_output(f'ls {path_to_pack_in_artifacts}', shell=True))
-                try:
-                    print_error("trying to get pack_metadata")
-                    with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
-                              "r") as metadata_file:
-                        metadata = json.load(metadata_file)
-                except Exception as e:
-                    print_error("trying to get plain metadata")
-                    with open(os.path.join(extract_destination_path, pack_id, "metadata.json"), "r") as metadata_file:
-                        metadata = json.load(metadata_file)
+                with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
+                          "r") as metadata_file:
+                    metadata = json.load(metadata_file)
             if metadata:
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
-                    'vendorName': metadata.get('vendorName')
+                    'vendorName': metadata.get('vendorName'),
                 })
         except ValueError as e:
             print_error(f'Invalid JSON in the metadata file [{metadata_file_path}]: {str(e)}')
@@ -750,7 +734,6 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
     remove_test_playbooks = upload_config.remove_test_playbooks
     signature_key = upload_config.key_string
     extract_destination_path = upload_config.extract_path
-    should_encrypt_pack = upload_config.encrypt_pack
     override_all_packs = upload_config.override_all_packs
     enc_key = upload_config.encryption_key
     is_private_build = upload_config.is_private
@@ -814,8 +797,7 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
         pack.cleanup()
         return
 
-    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, should_encrypt_pack,
-                                               enc_key)
+    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key)
 
     if not task_status:
         pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
@@ -917,8 +899,6 @@ def option_handler():
                         required=False)
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
-    parser.add_argument('-enc', '--encrypt_pack', type=str2bool,
-                        help='Should encrypt pack or not.', default=False)
     parser.add_argument('-ek', '--encryption_key', type=str,
                         help='The encryption key for the pack, if it should be encrypted.', default='')
     parser.add_argument('-pr', '--is_private', type=str2bool,
@@ -982,8 +962,10 @@ def main():
         private_packs = []
 
     # google cloud bigquery client initialized
-    bq_client = init_bigquery_client(service_account)
-    packs_statistic_df = get_packs_statistics_dataframe(bq_client)
+    packs_statistic_df = None
+    if not is_private_build:
+        bq_client = init_bigquery_client(service_account)
+        packs_statistic_df = get_packs_statistics_dataframe(bq_client)
 
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket)
