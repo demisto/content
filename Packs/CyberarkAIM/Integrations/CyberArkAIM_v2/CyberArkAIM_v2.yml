@@ -23,7 +23,7 @@ configuration:
   name: safe
   required: true
   type: 0
-- display: Credential names - comma-seperated list of credentials names in vault
+- display: A comma-separated list of credential names in the safe
   hidden: false
   name: credential_names
   required: false
@@ -33,20 +33,20 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Add a certificate file as text to connect to the CyberArk AIM server.
+- additionalinfo: Add a certificate file in text format to use to connect to the CyberArk AIM server.
   display: Certificate File as Text
   hidden: false
   name: cert_text
   required: false
   type: 12
-- additionalinfo: Add a key file as text to connect to the CyberArk AIM server.
+- additionalinfo: Add a key file in text format to use to connect to the CyberArk AIM server.
   display: Key File as Text
   hidden: false
   name: key_text
   required: false
   type: 0
 - defaultvalue: 'true'
-  display: Fetches credentials
+  display: Fetch credentials
   name: isFetchCredentials
   required: false
   type: 8
@@ -58,13 +58,13 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Query CyberArk Application Identity Manager for accounts and credentials.
+description: The CyberArk Application Identity Manager (AIM) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk AIM.
 display: CyberArk AIM v2
 name: CyberArkAIM v2
 script:
   commands:
   - deprecated: false
-    description: Lists all credentials available
+    description: Lists all available credentials.
     execution: false
     name: cyberark-aim-list-credentials
     outputs:
@@ -75,13 +75,13 @@ script:
       description: The address of the account.
       type: String
     - contextPath: CyberArkAIM.CPMStatus
-      description: The CMP status.
+      description: The CPM status of the account.
       type: String
     - contextPath: CyberArkAIM.Domain
-      description: The domain.
+      description: The domain of the account.
       type: String
     - contextPath: CyberArkAIM.Name
-      description: The provided name.
+      description: The credential name of the account.
       type: String
   dockerimage: demisto/ntlm:1.0.0.10980
   feed: false
