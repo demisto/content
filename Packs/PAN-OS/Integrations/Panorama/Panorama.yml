@@ -3783,7 +3783,7 @@ script:
   - deprecated: false
     description: Gets information about available PAN-OS licenses and their statuses.
     execution: false
-    name: panorama-get-licences
+    name: panorama-get-licenses
     outputs:
     - contextPath: Panorama.License.Authcode
       description: The authentication code of the license.
@@ -3812,7 +3812,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis".
+      description: The security profile for which to get information. Can be "data-filtering",
+        "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or
+        "wildfire-analysis".
       isArray: false
       name: security_profile
       predefined:
@@ -3962,7 +3964,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.'
+      description: Security profile type. Can be 'data-filtering', 'file-blocking',
+        'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.'
       isArray: false
       name: profile_type
       predefined:
@@ -3989,8 +3992,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory
-        for Panorama instances.
+      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'.
+        Mandatory for Panorama instances.
       isArray: false
       name: pre_post
       predefined:
@@ -3999,14 +4002,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Apply a security profile to specific rules or rules with a specific tag.
+    description: Apply a security profile to specific rules or rules with a specific
+      tag.
     execution: false
     name: panorama-apply-security-profile
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory
-        for Panorama instances.
+      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'.
+        Mandatory for Panorama instances.
       isArray: false
       name: pre_post
       predefined:
@@ -4258,8 +4262,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Enforces wildfire best practices to upload files to the maximum size, forwards all file types,
-      and updates the schedule.
+    description: Enforces wildfire best practices to upload files to the maximum size,
+      forwards all file types, and updates the schedule.
     execution: false
     name: panorama-enforce-wildfire-best-practice
   - arguments:
