@@ -1,9 +1,8 @@
 {
-	"brands": null,
 	"defaultIncidentType": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
+	"fromServerVersion": "6.0.0",
 	"id": "e71f8646-481f-4932-8e07-a17bd99a79d3",
 	"incidentSamples": null,
 	"indicatorSamples": null,
