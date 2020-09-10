@@ -167,8 +167,12 @@ def test_function(client, _):
        Performs basic GET request to check if the API is reachable and authentication is successful.
        Returns ok if successful.
        """
-    if demisto.params().get('self_deployed', False) and not demisto.params().get('auth_code'):
-        raise Exception('You must enter an authorization code in a self-deployed configuration.')
+    if demisto.params().get('self_deployed', False):
+        # cannot use test module due to the lack of ability to set refresh token to integration context
+        # for self deployed app
+        raise Exception("When using a self-deployed configuration, Please use !msgraph-user-test instead")
+        if not demisto.params().get('auth_code'):
+            raise Exception("You must enter an authorization code in a self-deployed configuration.")
     client.ms_client.http_request(method='GET', url_suffix='users/')
     return 'ok', None, None
 
@@ -317,6 +321,7 @@ def main():
 
     commands = {
         'msgraph-user-test': test_function,
+        'test-module': test_function,
         'msgraph-user-unblock': unblock_user_command,
         'msgraph-user-terminate-session': terminate_user_session_command,
         'msgraph-user-update': update_user_command,
@@ -336,12 +341,8 @@ def main():
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
                                               self_deployed=self_deployed, redirect_uri=redirect_uri,
                                               auth_code=auth_code)
-        if demisto.command() == 'test-module':
-            # cannot use test module due to the lack of ability to set refresh token to integration context
-            raise Exception("Please use !msgraph-user-test instead")
-        else:
-            human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
-            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+        human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
+        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as err:
         return_error(str(err))
