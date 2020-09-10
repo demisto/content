@@ -9,6 +9,7 @@
  "locked": false,
  "disabled": false,
  "file": false,
+ "regex": "",
  "updateAfter": 0,
  "mergeContext": false,
  "expiration": 0,
