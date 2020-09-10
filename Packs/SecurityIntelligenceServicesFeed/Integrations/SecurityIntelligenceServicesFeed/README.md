@@ -3,6 +3,7 @@ This integration was integrated and tested with version 1.0 of Security Intellig
 
 The XSOAR instance with **ElasticSearch** is required as this integration would ingest large amount of indicators from SIS to XSOAR.
 
+For that same reason, in case this integration fails to fetch indicators with timeout error, the `feedIntegrationScript.timeout` configuration should be configured with value 45 or more.
 ## Configure Security Intelligence Services Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
