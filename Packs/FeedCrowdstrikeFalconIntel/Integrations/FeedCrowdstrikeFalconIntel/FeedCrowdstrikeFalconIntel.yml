@@ -88,7 +88,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- display: The Crowdstrike API client secret
+- display: Crowdstrike API client secret
   hidden: false
   name: client_secret
   required: true
