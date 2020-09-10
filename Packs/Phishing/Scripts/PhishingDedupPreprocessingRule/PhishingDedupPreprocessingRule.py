@@ -9,7 +9,6 @@ from numpy.linalg import norm
 from email.utils import parseaddr
 import tldextract
 
-
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -170,13 +169,15 @@ def find_duplicate_incidents(new_incident, existing_incidents_df):
 def close_new_incident_and_link_to_existing(new_incident, existing_incident, similarity):
     entries = []
     hr_incident = {}
-    for field in [EMAIL_SUBJECT_FIELD, EMAIL_BODY_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, CREATED_FIELD]:
+    for field in [EMAIL_SUBJECT_FIELD, EMAIL_BODY_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, CREATED_FIELD, 'name', 'id']:
         if field in new_incident:
             hr_incident[field] = new_incident[field]
+    hr = tableToMarkdown('Duplicate Incident Details', hr_incident)
     entries.append({'Contents': "Duplicate incident: " + new_incident['name']})
     entries.append({"Type": entryTypes['note'],
                     "ContentsFormat": "json",
-                    "Contents": hr_incident
+                    "Contents": hr_incident,
+                    "HumanReadable": hr,
                     })
     entries_str = json.dumps(entries)
     demisto.executeCommand("addEntries", {"id": existing_incident["id"], "entries": entries_str})
@@ -185,13 +186,13 @@ def close_new_incident_and_link_to_existing(new_incident, existing_incident, sim
         'incidentId': existing_incident['id']})
     if is_error(res):
         return_error(res)
-    demisto.results('Duplicated incident found: {}, {} with similarity of {:.1f}%.'.format(new_incident['id'],
-                                                                                           existing_incident['id'],
-                                                                                           similarity * 100))
+    demisto.results('Duplicate incident found: {}, {} with similarity of {:.1f}%.'.format(new_incident['id'],
+                                                                                          existing_incident['id'],
+                                                                                          similarity * 100))
 
 
 def create_new_incident():
-    demisto.results('No duplicated incident found')
+    demisto.results('No duplicate incident found')
 
 
 def main():
@@ -221,7 +222,7 @@ def main():
     if duplicate_incident_row is None or similarity < SIMILARITY_THRESHOLD:
         create_new_incident()
     else:
-        return close_new_incident_and_link_to_existing(new_incident, duplicate_incident_row, similarity)
+        return close_new_incident_and_link_to_existing(new_incident_df.iloc[0], duplicate_incident_row, similarity)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
