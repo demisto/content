@@ -56,7 +56,8 @@ class MsGraphClient:
                  redirect_uri, auth_code):
         tenant_id = tenant_id if self_deployed else ''
         grant_type = AUTHORIZATION_CODE if self else CLIENT_CREDENTIALS
-        resource = None if self_deployed else ''
+        # resource = None if self_deployed else ''
+        resource = ''
         tenant_id = (demisto.getIntegrationContext().get('current_refresh_token') or tenant_id)
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
@@ -315,7 +316,7 @@ def main():
     proxy = params.get('proxy', False)
 
     commands = {
-        'test-module': test_function,
+        'msgraph-user-test': test_function,
         'msgraph-user-unblock': unblock_user_command,
         'msgraph-user-terminate-session': terminate_user_session_command,
         'msgraph-user-update': update_user_command,
@@ -335,9 +336,12 @@ def main():
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
                                               self_deployed=self_deployed, redirect_uri=redirect_uri,
                                               auth_code=auth_code)
-
-        human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
-        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+        if demisto.command() == 'test-module':
+            # cannot use test module due to the lack of ability to set refresh token to integration context
+            raise Exception("Please use !msgraph-user-test instead")
+        else:
+            human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
+            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as err:
         return_error(str(err))
