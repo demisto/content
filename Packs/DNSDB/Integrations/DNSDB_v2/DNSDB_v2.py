@@ -481,7 +481,9 @@ def rate_limit_to_markdown(results: Dict) -> str:
     if rate is None:
         return '### Error'
 
-    out = ['### Farsight DNSDB Service Limits']
+    out = dict()  # type: Dict[str, Any]
+
+    headers = []
 
     if rate['limit'] != "unlimited":
         for ckey, rkey, f in (
@@ -495,22 +497,29 @@ def rate_limit_to_markdown(results: Dict) -> str:
                 ('BurstWindow', 'burst_window', parse_rate_limit_int),
         ):
             if rkey in rate:
+                headers.append(ckey)
                 if rkey == 'reset':
                     if rate[rkey] == "n/a":
-                        out += ['NeverResets', ' : True']
+                        NEVER_RESETS = 'NeverResets'
+                        out[NEVER_RESETS] = True
+                        headers.append(NEVER_RESETS)
                     else:
-                        out += [f'{ckey}', f' : {f(rate[rkey])}']
+                        out[f'{ckey}'] = f(rate[rkey])
                 elif rkey == 'offset_max':
                     if rate[rkey] == "n/a":
-                        out += ['OffsetNotAllowed', ' : True']
+                        OFFSET_NOT_ALLOWED = 'OffsetNotAllowed'
+                        out[OFFSET_NOT_ALLOWED] = True
+                        headers.append(OFFSET_NOT_ALLOWED)
                     else:
-                        out += [f'{ckey}', f' : {f(rate[rkey])}']
+                        out[f'{ckey}'] = f(rate[rkey])
                 else:
-                    out += [f'{ckey}', f' : {f(rate[rkey])}']
+                    out[f'{ckey}'] = f(rate[rkey])
     else:
-        out += ['Unlimited', ' : True']
+        UNLIMITED = 'Unlimited'
+        out[UNLIMITED] = True
+        headers.append(UNLIMITED)
 
-    return '\n'.join(out) + '\n'
+    return tableToMarkdown('Farsight DNSDB Service Limits', out, headers=headers)
 
 
 ''' COMMANDS '''

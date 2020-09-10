@@ -1105,8 +1105,9 @@ class TestRateLimitCommand:
             }
         }, textwrap.dedent('''\
         ### Farsight DNSDB Service Limits
-        Unlimited
-         : True
+        |Unlimited|
+        |---|
+        | true |
         '''))
 
     def test_time_based(self, requests_mock):
@@ -1118,12 +1119,9 @@ class TestRateLimitCommand:
             }
         }, textwrap.dedent('''\
         ### Farsight DNSDB Service Limits
-        Limit
-         : 1000
-        Remaining
-         : 999
-        Reset
-         : 2015-06-11T00:00:00Z
+        |Limit|Remaining|Reset|
+        |---|---|---|
+        | 1000 | 999 | 2015-06-11T00:00:00Z |
         '''))
 
     def test_block_based(self, requests_mock):
@@ -1140,22 +1138,9 @@ class TestRateLimitCommand:
             }
         }, textwrap.dedent('''\
         ### Farsight DNSDB Service Limits
-        Limit
-         : 600
-        Remaining
-         : 8
-        NeverResets
-         : True
-        Expires
-         : 2019-04-15T23:28:34Z
-        ResultsMax
-         : 256
-        OffsetMax
-         : 3000000
-        BurstSize
-         : 10
-        BurstWindow
-         : 300
+        |Limit|Remaining|Reset|NeverResets|Expires|ResultsMax|OffsetMax|BurstSize|BurstWindow|
+        |---|---|---|---|---|---|---|---|---|
+        | 600 | 8 |  | true | 2019-04-15T23:28:34Z | 256 | 3000000 | 10 | 300 |
         '''))
 
     @staticmethod
