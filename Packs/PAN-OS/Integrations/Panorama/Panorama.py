@@ -5682,7 +5682,7 @@ def get_security_profiles_command():
         if isinstance(profiles, list):
             for profile in profiles:
                 url_filtering_rules = prettify_get_url_filter(profile)
-                content.update({
+                content.append({
                     'Name': profile['@name'],
                     'Rules': url_filtering_rules
                 })
@@ -5867,10 +5867,10 @@ def prettify_profile_rule(rule: Dict) -> Dict:
         pretty_rule['Max_version'] = rule['@maxver']
     if 'sinkhole' in rule:
         pretty_rule['Sinkhole'] = {}
-    if 'sinkhole' in rule and 'ipv4-address' in rule['sinkhole']:
-        pretty_rule['Sinkhole']['IPV4'] = rule['sinkhole']['ipv4-address']
-    if 'sinkhole' in rule and 'ipv6-address' in rule['sinkhole']:
-        pretty_rule['Sinkhole']['IPV6'] = rule['sinkhole']['ipv6-address']
+        if 'ipv4-address' in rule['sinkhole']:
+            pretty_rule['Sinkhole']['IPV4'] = rule['sinkhole']['ipv4-address']
+        if 'ipv6-address' in rule['sinkhole']:
+            pretty_rule['Sinkhole']['IPV6'] = rule['sinkhole']['ipv6-address']
     if 'host' in rule:
         pretty_rule['Host'] = rule['host']
     if 'cve' in rule and 'member' in rule['cve']:
@@ -5994,7 +5994,7 @@ def get_file_blocking_best_practice_command():
 
 
 @logger
-def get_antivirus_best_practice():
+def get_antivirus_best_practice() -> Dict:
     params = {
         'action': 'get',
         'type': 'config',
@@ -6271,7 +6271,7 @@ def enforce_wildfire_system_config(template: str) -> Dict:
 
 
 @logger
-def enforce_wildfire_schedule(template: str):
+def enforce_wildfire_schedule(template: str) -> Dict:
     params = {
         'action': 'set',
         'type': 'config',

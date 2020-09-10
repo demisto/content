@@ -50,6 +50,18 @@
 </li>
 </ol>
 </li>
+<li>Create a predefined security profiles with the best practices by Palo Alto Networks.</li>
+<li>Get security profiles best practices as defined by Palo Alto Networks.
+<br>For more inforamtion about Palo Alto Networks best practices, visit <a href="https://docs.paloaltonetworks.com/best-practices/9-0/internet-gateway-best-practices/best-practice-internet-gateway-security-policy/create-best-practice-security-profiles">Palo Alto Networks best practices</a>.</li>
+<li>Apply security profiles to specific rule.</li>
+<li>Set default categories to block in the URL filtering profile.</li>
+<li>Enforce WildFire best practice.
+<ol>
+<li>Set file upload to the maximum size.</li>
+<li>WildFire Update Schedule is set to download and install updates every minute.</li>
+<li>All file types are forwarded.</li>
+</ol>
+</li>
 </ul>
 <h2>Known Limitations</h2>
 <ul>
@@ -5794,24 +5806,7 @@ The default categories to block has been set successfully to test
 </p>
 
 <h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-
-  </tbody>
-</table>
+There are no input arguments for this command.
 
 <p>&nbsp;</p>
 <h5>Context Output</h5>
@@ -6066,24 +6061,7 @@ The default categories to block has been set successfully to test
 </p>
 
 <h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-
-  </tbody>
-</table>
+There are no input arguments for this command.
 
 <p>&nbsp;</p>
 <h5>Context Output</h5>
@@ -6226,24 +6204,7 @@ The default categories to block has been set successfully to test
 </p>
 
 <h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-
-  </tbody>
-</table>
+There are no input arguments for this command.
 
 <p>&nbsp;</p>
 <h5>Context Output</h5>
@@ -6387,24 +6348,7 @@ The default categories to block has been set successfully to test
 </p>
 
 <h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-
-  </tbody>
-</table>
+There are no input arguments for this command.
 
 <p>&nbsp;</p>
 <h5>Context Output</h5>
@@ -6728,24 +6672,7 @@ The default categories to block has been set successfully to test
 </p>
 
 <h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-
-  </tbody>
-</table>
+There are no input arguments for this command.
 
 <p>&nbsp;</p>
 <h5>Context Output</h5>
@@ -6994,24 +6921,7 @@ The default categories to block has been set successfully to test
 </p>
 
 <h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-
-  </tbody>
-</table>
+There are no input arguments for this command.
 
 <p>&nbsp;</p>
 <h5>Context Output</h5>

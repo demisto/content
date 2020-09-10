@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -150
+          "y": -700
         }
       }
     note: false
@@ -45,7 +45,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "39"
     scriptarguments:
       all:
         simple: "yes"
@@ -58,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 0
+          "y": -570
         }
       }
     note: false
@@ -586,7 +586,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 170
+          "y": 240
         }
       }
     note: false
@@ -1165,7 +1165,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "38"
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
@@ -1200,7 +1200,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 5680
+          "y": 6710
         }
       }
     note: false
@@ -1232,7 +1232,364 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 360
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 045b3eb2-cde6-4110-8e6a-a18edfa36140
+    type: regular
+    task:
+      id: 045b3eb2-cde6-4110-8e6a-a18edfa36140
+      version: -1
+      name: Verify creation success
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: The profile test-profile was created successfully.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 5caa100f-2493-416c-8ed1-12357f1ad80c
+    type: regular
+    task:
+      id: 5caa100f-2493-416c-8ed1-12357f1ad80c
+      version: -1
+      name: create-wildfire-best-practice
+      description: Create WildFire analysis best practice profile.
+      script: '|||panorama-create-wildfire-best-practice-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      profile_name:
+        simple: test-profile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 5cec98dc-41b4-4cd3-8783-82e266d49962
+    type: regular
+    task:
+      id: 5cec98dc-41b4-4cd3-8783-82e266d49962
+      version: -1
+      name: get-licenses
+      description: Get information about PAN-OS available licenses and their statuses.
+      script: '|||panorama-get-licenses'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 4bf243e1-372a-4a11-8bb5-a7faa4a252e6
+    type: condition
+    task:
+      id: 4bf243e1-372a-4a11-8bb5-a7faa4a252e6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.License.Feature
+            iscontext: true
+          right:
+            value:
+              simple: NFR Support
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.License.Serial
+            iscontext: true
+          right:
+            value:
+              simple: 007DEMISTO1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: e74dd4e5-6511-4c6d-877e-256ff57ef4f8
+    type: regular
+    task:
+      id: e74dd4e5-6511-4c6d-877e-256ff57ef4f8
+      version: -1
+      name: get-ssl-rules
+      description: Show ssl decryption rules under policies -> decryption -> rules
+      script: '|||panorama-get-ssl-decryption-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      pre_post:
+        simple: pre-rulebase
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: dda9b971-542a-4316-8809-af80d04b9118
+    type: condition
+    task:
+      id: dda9b971-542a-4316-8809-af80d04b9118
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.SSLRule.Name
+            iscontext: true
+          right:
+            value:
+              simple: test
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.SSLRule.Action
+            iscontext: true
+          right:
+            value:
+              simple: no-decrypt
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: e16049fe-3d39-4c41-8d14-cd5e36597cdf
+    type: regular
+    task:
+      id: e16049fe-3d39-4c41-8d14-cd5e36597cdf
+      version: -1
+      name: apply-security-profile
+      description: Apply profile to specific rules / rules with specific tag.
+      script: '|||panorama-apply-security-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      pre_post:
+        simple: pre-rulebase
+      profile_name:
+        simple: best-practice
+      profile_type:
+        simple: file-blocking
+      rule_name:
+        simple: Test1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: d5a1667a-a578-416e-81ea-e39aae4756e6
+    type: regular
+    task:
+      id: d5a1667a-a578-416e-81ea-e39aae4756e6
+      version: -1
+      name: Verify apply success
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: The profile best-practice has been applied to the rule Test1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 107b7f1e-efb9-4b16-8779-6adb1f73fea8
+    type: regular
+    task:
+      id: 107b7f1e-efb9-4b16-8779-6adb1f73fea8
+      version: -1
+      name: url-filtering-block-default-categories
+      description: Set default categories to block in the URL filtering profile.
+      script: '|||panorama-url-filtering-block-default-categories'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      profile_name:
+        simple: test-profile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: ff58d16f-7f4b-4b4c-8365-8e4654517d0d
+    type: regular
+    task:
+      id: ff58d16f-7f4b-4b4c-8365-8e4654517d0d
+      version: -1
+      name: Verify block success
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: The default categories to block has been set successfully
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6530
         }
       }
     note: false
@@ -1245,10 +1602,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5895,
+        "height": 7475,
         "width": 380,
         "x": 450,
-        "y": -150
+        "y": -700
       }
     }
   }
