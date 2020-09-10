@@ -320,7 +320,7 @@ Gets a list of the sending profiles created by the authenticated user.
     "Gophish": {
         "AllSendingProfiles": [
             {
-                "from_address": "Phil <emailaddress>",
+                "from_address": "Phil emailaddress",
                 "headers": [],
                 "host": "smtp.gmail.com:465",
                 "id": 1,
@@ -353,7 +353,7 @@ Gets a list of the sending profiles created by the authenticated user.
 >### Results
 >|from_address|headers|host|id|ignore_cert_errors|interface_type|modified_date|name|password|username|
 >|---|---|---|---|---|---|---|---|---|---|
->| Phil <emailaddress> |  | smtp.gmail.com:465 | 1 | true | SMTP | 2020-09-03T08:07:35.811631358Z | Google | password | emailaddress |
+>| Phil emailaddress |  | smtp.gmail.com:465 | 1 | true | SMTP | 2020-09-03T08:07:35.811631358Z | Google | password | emailaddress |
 >| John <john@acme.com> |  | testing.acme.com:25 | 4 | true | SMTP | 2020-09-04T04:58:23.737180623Z | TestingCreation2 | password | john |
 
 
@@ -387,7 +387,7 @@ Returns a sending profile given an ID, returning a 404 error if no sending profi
 {
     "Gophish": {
         "SendingProfile": {
-            "from_address": "Phil <emailaddress>",
+            "from_address": "Phil emailaddress",
             "headers": [],
             "host": "smtp.gmail.com:465",
             "id": 1,
@@ -407,7 +407,7 @@ Returns a sending profile given an ID, returning a 404 error if no sending profi
 >### Results
 >|from_address|headers|host|id|ignore_cert_errors|interface_type|modified_date|name|password|username|
 >|---|---|---|---|---|---|---|---|---|---|
->| Phil <emailaddress> |  | smtp.gmail.com:465 | 1 | true | SMTP | 2020-09-03T08:07:35.811631358Z | Google | password | emailaddress |
+>| Phil emailaddress |  | smtp.gmail.com:465 | 1 | true | SMTP | 2020-09-03T08:07:35.811631358Z | Google | password | emailaddress |
 
 
 ### gophish-create-sending-profile
@@ -1057,7 +1057,7 @@ Returns a list of campaigns.
                 ],
                 "send_by_date": "0001-01-01T00:00:00Z",
                 "smtp": {
-                    "from_address": "Phil <emailaddress>",
+                    "from_address": "Phil emailaddress",
                     "headers": [],
                     "host": "smtp.gmail.com:465",
                     "id": 1,
@@ -1136,7 +1136,7 @@ Returns a list of campaigns.
                 ],
                 "send_by_date": "0001-01-01T00:00:00Z",
                 "smtp": {
-                    "from_address": "Phil <emailaddress>",
+                    "from_address": "Phil emailaddress",
                     "headers": [],
                     "host": "smtp.gmail.com:465",
                     "id": 1,
@@ -1178,7 +1178,7 @@ Returns a list of campaigns.
 >### Results
 >|completed_date|created_date|id|launch_date|name|page|results|send_by_date|smtp|status|template|timeline|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0001-01-01T00:00:00Z | 2020-09-03T08:09:42.08969595Z | 1 | 2020-10-14T08:09:00Z | NewCampaign | id: 1<br/>name: Outlook<br/>html: HTML GOES HERE<br/>capture_credentials: true<br/>capture_passwords: false<br/>redirect_url: https://urlhere<br/>modified_date: 2020-09-03T08:08:18.028831434Z | {'id': '004ElYP', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-09-05T05:13:31Z', 'reported': False, 'modified_date': '2020-09-04T05:13:31.036755648Z', 'email': 'emailaddress', 'first_name': 'Esko', 'last_name': 'Eskola', 'position': 'CEO'},<br/>{'id': 'VnfTc5i', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-09-05T05:13:31Z', 'reported': False, 'modified_date': '2020-09-04T05:13:31.036755648Z', 'email': 'emailaddress', 'first_name': 'Jorma', 'last_name': 'Jormala', 'position': 'CFO'} | 0001-01-01T00:00:00Z | id: 1<br/>interface_type: SMTP<br/>name: Google<br/>host: smtp.gmail.com:465<br/>username: emailaddress<br/>password: password<br/>from_address: Phil <emailaddress><br/>ignore_cert_errors: true<br/>headers: <br/>modified_date: 2020-09-03T08:07:35.811631358Z | Queued | id: 1<br/>name: Credentials<br/>subject: Input your credentials here<br/>text: Here {.URL}<br/>html: <br/>modified_date: 2020-09-03T08:08:43.392043833Z<br/>attachments:  | {'campaign_id': 3, 'email': '', 'time': '2020-09-04T05:13:31.046378362Z', 'message': 'Campaign Created', 'details': ''} | https://192.168.1.1:80 |
+>| 0001-01-01T00:00:00Z | 2020-09-03T08:09:42.08969595Z | 1 | 2020-10-14T08:09:00Z | NewCampaign | id: 1<br/>name: Outlook<br/>html: HTML GOES HERE<br/>capture_credentials: true<br/>capture_passwords: false<br/>redirect_url: https://urlhere<br/>modified_date: 2020-09-03T08:08:18.028831434Z | {'id': '004ElYP', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-09-05T05:13:31Z', 'reported': False, 'modified_date': '2020-09-04T05:13:31.036755648Z', 'email': 'emailaddress', 'first_name': 'Esko', 'last_name': 'Eskola', 'position': 'CEO'},<br/>{'id': 'VnfTc5i', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-09-05T05:13:31Z', 'reported': False, 'modified_date': '2020-09-04T05:13:31.036755648Z', 'email': 'emailaddress', 'first_name': 'Jorma', 'last_name': 'Jormala', 'position': 'CFO'} | 0001-01-01T00:00:00Z | id: 1<br/>interface_type: SMTP<br/>name: Google<br/>host: smtp.gmail.com:465<br/>username: emailaddress<br/>password: password<br/>from_address: Phil emailaddress<br/>ignore_cert_errors: true<br/>headers: <br/>modified_date: 2020-09-03T08:07:35.811631358Z | Queued | id: 1<br/>name: Credentials<br/>subject: Input your credentials here<br/>text: Here {.URL}<br/>html: <br/>modified_date: 2020-09-03T08:08:43.392043833Z<br/>attachments:  | {'campaign_id': 3, 'email': '', 'time': '2020-09-04T05:13:31.046378362Z', 'message': 'Campaign Created', 'details': ''} | https://192.168.1.1:80 |
 
 
 ### gophish-get-campaign-details
@@ -1257,7 +1257,7 @@ Returns a campaign given an ID.
             ],
             "send_by_date": "0001-01-01T00:00:00Z",
             "smtp": {
-                "from_address": "Phil <emailaddress>",
+                "from_address": "Phil emailaddress",
                 "headers": [],
                 "host": "smtp.gmail.com:465",
                 "id": 1,
@@ -1298,7 +1298,7 @@ Returns a campaign given an ID.
 >### Results
 >|completed_date|created_date|id|launch_date|name|page|results|send_by_date|smtp|status|template|timeline|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0001-01-01T00:00:00Z | 2020-09-03T08:09:42.08969595Z | 1 | 2020-10-14T08:09:00Z | NewCampaign | id: 1<br/>name: Outlook<br/>html: HTML GOES HERE<br/>capture_credentials: true<br/>capture_passwords: false<br/>redirect_url: https://urlhere<br/>modified_date: 2020-09-03T08:08:18.028831434Z | {'id': 'T2VJTQS', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-10-14T08:09:00Z', 'reported': False, 'modified_date': '2020-09-03T08:09:42.08969595Z', 'email': 'emailaddress', 'first_name': 'Esko', 'last_name': 'Eskola', 'position': 'CEO'},<br/>{'id': 'E2DXw2D', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-10-14T08:09:00Z', 'reported': False, 'modified_date': '2020-09-03T08:09:42.08969595Z', 'email': 'emailaddress', 'first_name': 'Jorma', 'last_name': 'Jormala', 'position': 'CFO'} | 0001-01-01T00:00:00Z | id: 1<br/>interface_type: SMTP<br/>name: Google<br/>host: smtp.gmail.com:465<br/>username: emailaddress<br/>password: password<br/>from_address: Phil <emailaddress><br/>ignore_cert_errors: true<br/>headers: <br/>modified_date: 2020-09-03T08:07:35.811631358Z | Queued | id: 1<br/>name: Credentials<br/>subject: Input your credentials here<br/>text: Here {.URL}<br/>html: <br/>modified_date: 2020-09-03T08:08:43.392043833Z<br/>attachments:  | {'campaign_id': 1, 'email': '', 'time': '2020-09-03T08:09:42.104751093Z', 'message': 'Campaign Created', 'details': ''} | https://192.168.1.21:80 |
+>| 0001-01-01T00:00:00Z | 2020-09-03T08:09:42.08969595Z | 1 | 2020-10-14T08:09:00Z | NewCampaign | id: 1<br/>name: Outlook<br/>html: HTML GOES HERE<br/>capture_credentials: true<br/>capture_passwords: false<br/>redirect_url: https://urlhere<br/>modified_date: 2020-09-03T08:08:18.028831434Z | {'id': 'T2VJTQS', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-10-14T08:09:00Z', 'reported': False, 'modified_date': '2020-09-03T08:09:42.08969595Z', 'email': 'emailaddress', 'first_name': 'Esko', 'last_name': 'Eskola', 'position': 'CEO'},<br/>{'id': 'E2DXw2D', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-10-14T08:09:00Z', 'reported': False, 'modified_date': '2020-09-03T08:09:42.08969595Z', 'email': 'emailaddress', 'first_name': 'Jorma', 'last_name': 'Jormala', 'position': 'CFO'} | 0001-01-01T00:00:00Z | id: 1<br/>interface_type: SMTP<br/>name: Google<br/>host: smtp.gmail.com:465<br/>username: emailaddress<br/>password: password<br/>from_address: Phil emailaddress<br/>ignore_cert_errors: true<br/>headers: <br/>modified_date: 2020-09-03T08:07:35.811631358Z | Queued | id: 1<br/>name: Credentials<br/>subject: Input your credentials here<br/>text: Here {.URL}<br/>html: <br/>modified_date: 2020-09-03T08:08:43.392043833Z<br/>attachments:  | {'campaign_id': 1, 'email': '', 'time': '2020-09-03T08:09:42.104751093Z', 'message': 'Campaign Created', 'details': ''} | https://192.168.1.21:80 |
 
 
 ### gophish-get-campaign-results
@@ -1641,7 +1641,7 @@ Creates and launches a new campaign.
             ],
             "send_by_date": "0001-01-01T00:00:00Z",
             "smtp": {
-                "from_address": "Phil <emailaddress>",
+                "from_address": "Phil emailaddress",
                 "headers": [],
                 "host": "smtp.gmail.com:465",
                 "id": 1,
@@ -1673,7 +1673,7 @@ Creates and launches a new campaign.
 >### Results
 >|completed_date|created_date|groups|id|launch_date|name|page|results|send_by_date|smtp|status|template|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0001-01-01T00:00:00Z | 2020-09-04T05:20:59.3716417Z | {'id': 1, 'name': 'Users', 'modified_date': '2020-09-03T08:09:17.940720135Z', 'targets': [{'email': 'emailaddress', 'first_name': 'Esko', 'last_name': 'Eskola', 'position': 'CEO'}, {'email': 'emailaddress', 'first_name': 'Jorma', 'last_name': 'Jormala', 'position': 'CFO'}]} | 5 | 2020-09-05T05:20:59Z | TestingCommands | id: 1<br/>name: Outlook<br/>html: HTML GOES HERE<br/>capture_credentials: true<br/>capture_passwords: false<br/>redirect_url: https://urlhere<br/>modified_date: 2020-09-03T08:08:18.028831434Z | {'id': 'UrR1was', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-09-05T05:20:59Z', 'reported': False, 'modified_date': '2020-09-04T05:20:59.3716417Z', 'email': 'emailaddress', 'first_name': 'Esko', 'last_name': 'Eskola', 'position': 'CEO'},<br/>{'id': 'fuM9Io2', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-09-05T05:20:59Z', 'reported': False, 'modified_date': '2020-09-04T05:20:59.3716417Z', 'email': 'emailaddress', 'first_name': 'Jorma', 'last_name': 'Jormala', 'position': 'CFO'} | 0001-01-01T00:00:00Z | id: 1<br/>interface_type: SMTP<br/>name: Google<br/>host: smtp.gmail.com:465<br/>username: emailaddress<br/>password: password<br/>from_address: Phil <emailaddress><br/>ignore_cert_errors: true<br/>headers: <br/>modified_date: 2020-09-03T08:07:35.811631358Z | Queued | id: 1<br/>name: Credentials<br/>subject: Input your credentials here<br/>text: Here {.URL}<br/>html: <br/>modified_date: 2020-09-03T08:08:43.392043833Z<br/>attachments:  | https://192.168.1.1:80 |
+>| 0001-01-01T00:00:00Z | 2020-09-04T05:20:59.3716417Z | {'id': 1, 'name': 'Users', 'modified_date': '2020-09-03T08:09:17.940720135Z', 'targets': [{'email': 'emailaddress', 'first_name': 'Esko', 'last_name': 'Eskola', 'position': 'CEO'}, {'email': 'emailaddress', 'first_name': 'Jorma', 'last_name': 'Jormala', 'position': 'CFO'}]} | 5 | 2020-09-05T05:20:59Z | TestingCommands | id: 1<br/>name: Outlook<br/>html: HTML GOES HERE<br/>capture_credentials: true<br/>capture_passwords: false<br/>redirect_url: https://urlhere<br/>modified_date: 2020-09-03T08:08:18.028831434Z | {'id': 'UrR1was', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-09-05T05:20:59Z', 'reported': False, 'modified_date': '2020-09-04T05:20:59.3716417Z', 'email': 'emailaddress', 'first_name': 'Esko', 'last_name': 'Eskola', 'position': 'CEO'},<br/>{'id': 'fuM9Io2', 'status': 'Scheduled', 'ip': '', 'latitude': 0, 'longitude': 0, 'send_date': '2020-09-05T05:20:59Z', 'reported': False, 'modified_date': '2020-09-04T05:20:59.3716417Z', 'email': 'emailaddress', 'first_name': 'Jorma', 'last_name': 'Jormala', 'position': 'CFO'} | 0001-01-01T00:00:00Z | id: 1<br/>interface_type: SMTP<br/>name: Google<br/>host: smtp.gmail.com:465<br/>username: emailaddress<br/>password: password<br/>from_address: Phil emailaddress<br/>ignore_cert_errors: true<br/>headers: <br/>modified_date: 2020-09-03T08:07:35.811631358Z | Queued | id: 1<br/>name: Credentials<br/>subject: Input your credentials here<br/>text: Here {.URL}<br/>html: <br/>modified_date: 2020-09-03T08:08:43.392043833Z<br/>attachments:  | https://192.168.1.1:80 |
 
 
 ### gophish-get-all-groups
