@@ -397,3 +397,5 @@ outputs:
   description: The owner name of the RRset in DNS presentation format.
   type: string
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
