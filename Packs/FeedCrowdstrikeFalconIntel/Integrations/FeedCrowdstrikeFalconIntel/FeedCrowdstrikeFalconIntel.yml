@@ -8,13 +8,13 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: The Crowdstrike API client_id
+- display: Crowdstrike API client ID
   name: client_id
   required: true
   type: 4
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
-  display: Indicator Reputation
+    reputation.
+  display: Indicator reputation
   name: feedReputation
   options:
   - None
@@ -24,9 +24,9 @@ configuration:
   required: false
   type: 18
   defaultvalue: Bad
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
-  display: Source Reliability
+  display: Source reliability
   name: feedReliability
   options:
   - A - Completely reliable
@@ -53,18 +53,18 @@ configuration:
   required: false
   type: 1
 - additionalinfo: Incremental feeds pull only new or modified indicators that have
-    been sent from the integration. As the determination if the indicator is new or
-    modified happens on the 3rd-party vendor's side, and only indicators that are
-    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+    been sent from the integration. The determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, so only indicators that are
+    new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds
     are labeled new or modified.
   defaultvalue: 'true'
-  display: Incremental Feed
+  display: Incremental feed
   hidden: true
   name: feedIncremental
   required: false
   type: 8
 - defaultvalue: '240'
-  display: Feed Fetch Interval
+  display: Feed fetch interval
   name: feedFetchInterval
   required: false
   type: 19
@@ -88,34 +88,32 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- display: The Crowdstrike api client_secret
+- display: The Crowdstrike API client secret
   hidden: false
   name: client_secret
   required: true
   type: 4
-- additionalinfo: Comma separated list. for example - Aerospace,Academic
-  display: Filter by actor's target industries.
+- additionalinfo: 'A comma-separated list of the threat actor''s target industries. For example: Aerospace,Academic'
+  display: Filter by the threat actor's target industries.
   hidden: false
   name: target_industries
   required: false
   type: 0
-- additionalinfo: List divided by commas. for example - united states,canada
-  display: Filter by actor's target countries.
+- additionalinfo: 'A comma-separated list of the threat actor''s target countries. For example: united states,canada'
+  display: Filter by threat actor's target countries.
   hidden: false
   name: target_countries
   required: false
   type: 0
-- additionalinfo: For more information about custom filters and their structure -
-    https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F
-  display: Filter by custom filter, If the user uses custom_filter other filters will
-    not work
+- additionalinfo: 'For more information about custom filters and their structure, see the (Crowdstrike Falcon documentation)[https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F].'
+  display: 'A custom filter by which to filter the indicators. If you pass the custom_filter argument it will override the custom_filter parameter from the integration instance configuration.'
   hidden: false
   name: custom_filter
   required: false
   type: 0
-description: CrowdStrike intelligence team are tracking the activities of threat actor
-  groups and  advanced persistent threats (APTs) to understand as much as possible
-  about their known aliases, targets, methods, and more.
+description: The CrowdStrike intelligence team tracks the activities of threat actor
+  groups and advanced persistent threats (APTs) to understand as much as possible
+  about their known aliases, targets, methods, and more. This integration retrieves indicators from the Crowdstrike Falcon Intel Feed
 display: Crowdstrike Falcon Intel Feed
 name: Crowdstrike Falcon Intel Feed
 script:
@@ -134,20 +132,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter by actor's target industries, List divided by commas.
+      description: A comma-separated list of the threat actor's target industries by which to filter the indicators.
       isArray: true
       name: target_industries
       required: false
       secret: false
     - default: false
-      description: Filter by actor's target countries, List divided by commas.
+      description: A comma-separated list of the threat actor's target countries by which to filter the indicators.
       isArray: true
       name: target_countries
       required: false
       secret: false
     - default: false
-      description: Filter by custom filter, If the user uses custom_filter other filters
-        will not work
+      description: 'A custom filter by which to filter the indicators. If you pass the custom_filter argument it will override the custom_filter parameter from the integration instance configuration. For more information about custom filters and their structure, see the (Crowdstrike Falcon documentation)[https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F].'
       isArray: false
       name: custom_filter
       required: false
