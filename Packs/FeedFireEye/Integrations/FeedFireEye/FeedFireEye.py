@@ -3,7 +3,7 @@ from typing import Tuple, List, Dict, Any, Optional
 import urllib3
 from requests.auth import HTTPBasicAuth
 
-
+from CommonServerPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -247,7 +247,7 @@ class STIX21Processor:
             'fireeye_risk_rating_justification': raw_data.get('x_fireeye_com_risk_rating_justification'),
             'fireeye_additional_description_sections': raw_data.get('x_fireeye_com_additional_description_sections'),
         }
-        
+
         return report
 
 
@@ -433,11 +433,9 @@ class Client(BaseClient):
             if response.status_code != 200:
                 return_error(f'{INTEGRATION_NAME} reports fetching - '
                              f'API Status Code: {response.status_code} Error Reason: {response.text}')
-            raw_reports += [
-                report for report in response.json().get('objects')
-                if report.get('type') == 'report'
-            ]
-            raise Exception(json.dumps(raw_reports, indent=4))
+
+            raw_reports += [report for report in response.json().get('objects')]
+
             if limit != -1:
                 break
 
@@ -448,17 +446,6 @@ class Client(BaseClient):
                 break
 
         return raw_reports
-
-
-    def get_report(self, _id):
-        query_url = f'https://api.intelligence.fireeye.com/collections/reports/objects?match.id={_id}'
-        headers = {
-            'Accept': 'text/html',
-            'X-App-Name': 'content.xsoar.cortex.paloaltonetworks.v1.0',
-            'Authorization': f'Bearer {self.get_access_token()}'
-        }
-        return requests.get(query_url, headers=headers, verify=False).text
-
 
     def build_iterator(self, limit: int) -> List:
         self.get_access_token()
@@ -517,15 +504,13 @@ def fetch_indicators_command(client: Client, limit: int = -1):
     raw_response = []
 
     for indicator in iterator:
-        fields = indicator['fields']
-        fields.update({
-                'tags': client.tags,
-                'trafficlightprotocol': client.tlp_color
-            })
         indicators.append({
             'value': indicator['value'],
             'type': indicator['type'],
-            'fields': fields,
+            'fields': indicator['fields'].update({
+                'tags': client.tags,
+                'trafficlightprotocol': client.tlp_color
+            }),
             'rawJSON': indicator
         })
 
@@ -533,9 +518,6 @@ def fetch_indicators_command(client: Client, limit: int = -1):
 
     return indicators, raw_response
 
-def get_html_report(client, args):
-    _id = args.get('id')
-    return client.get_report(_id)
 
 def main():
     """
@@ -567,8 +549,6 @@ def main():
 
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
-        elif command == 'fireeye-report-get-html':
-            return_outputs(get_html_report(client, demisto.args()), None)
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
