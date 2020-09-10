@@ -1,7 +1,6 @@
 commonfields:
   id: Gophish
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Gophish
 display: Gophish
 category: Deception
@@ -470,6 +469,6 @@ script:
   dockerimage: demisto/python3:3.8.5.10845
   runonce: false
   subtype: python3
-  fromversion: 5.0.0,
 tests:
-  - no tests - test in NonCircleTests
+- no tests - test in NonCircleTests
+fromversion: 5.0.0
