@@ -15,8 +15,7 @@ Threat intelligence platform.
 | rating | Rating threshold for Malicious Indicators | False |
 | confidence | Confidence threshold for Malicious Indicators | False |
 | freshness | Indicator Reputation Freshness \(in days\) | False |
-| proxyIp | ProxyIP  \(or http://\<ip\>) | False |
-| proxyPort | ProxyPort | False |
+| proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

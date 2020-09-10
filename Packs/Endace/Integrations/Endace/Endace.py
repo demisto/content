@@ -24,6 +24,7 @@ import requests
 import urllib3
 import calendar
 import json
+import re
 
 
 class EndaceVisionAPIAdapter(object):
@@ -75,6 +76,7 @@ class EndaceWebSession(object):
 
     LOGIN_PAGE = "/admin/launch?script=rh&template=login"
     LOGIN_ACTION = "/admin/launch?script=rh&template=login&action=login"
+    LOGOUT_PAGE = "/admin/launch?script=rh&template=logout&action=logout"
 
     def __init__(self, app_url=None, username=None, password=None, cert_verify=False):
         self.app_url = app_url
@@ -88,14 +90,29 @@ class EndaceWebSession(object):
         return self
 
     def __exit__(self, exception_type, exception_value, traceback):
-        if self.requests:
-            self.requests.close()
+        self.close()
         _ = exception_type
         _ = exception_value
         _ = traceback
 
+    def close(self):
+        self.logout()
+        if self.requests:
+            self.requests.close()
+            self.requests = None
+
     def page(self, path="/"):
         return "{}{}".format(self.app_url, path)
+
+    def logout(self):
+        if self.requests:
+            logout = self.requests.get(self.page(self.LOGOUT_PAGE))
+            if logout.status_code == 200:
+                return True
+            else:
+                raise Exception("logout to {} failed".format(self.app_url))
+        else:
+            return False
 
     def _create_login_session(self):
         """
@@ -108,6 +125,7 @@ class EndaceWebSession(object):
             csrf_token = EndaceWebSession.find_csrf_token_login(r.content)
             if csrf_token is None:
                 raise Exception("Could not find CSRF token")
+            # Submit login form
             login_result = sess.post(self.page(self.LOGIN_ACTION),
                                      data={
                                          "_csrf": csrf_token,
@@ -118,7 +136,7 @@ class EndaceWebSession(object):
                                          "f_user_id": str(self.username),
                                          "f_password": str(self.password),
                                          "Login": "Login"},
-                                     headers={"Content-type": "application/x-www-form-urlencoded"}
+                                     headers={'Content-type': 'application/x-www-form-urlencoded'}
                                      )
             if login_result.status_code == 200 and len(sess.cookies) > 0:
                 return sess
@@ -286,10 +304,7 @@ class EndaceVisionData(object):
             filterlist = []
             if filtertype == 0:
                 visionobjecttype = "basicFilterDirectionlessIp"
-                for sip in self.args['src_host_list']:
-                    filterlist.append(sip)
-                for dip in self.args['dest_host_list']:
-                    filterlist.append(dip)
+                filterlist.append(self.args['ip'])
             if filtertype == 1:
                 visionobjecttype = "basicFilterSourceIp"
                 for sip in self.args['src_host_list']:
@@ -310,6 +325,9 @@ class EndaceVisionData(object):
                 visionobjecttype = "basicFilterIpProtocol"
                 filterlist.append(self.args['protocol'])
             if filtertype == 6:
+                visionobjecttype = "basicFilterDirectionlessPort"
+                filterlist.append(self.args['port'])
+            if filtertype == 7:
                 visionobjecttype = "basicFilterVlan"
                 for vlan in self.args.vlan1list:
                     filterlist.append(vlan)
@@ -329,7 +347,7 @@ class EndaceVisionData(object):
 
 
 class EndaceApp(object):
-    delta_time = 50
+    delta_time = 120
     wait_time = 5
 
     def __init__(self, *args):
@@ -339,10 +357,17 @@ class EndaceApp(object):
         self.username = args[1]
         self.password = args[2]
         self.cert_verify = args[3]
+        self.hostname = args[4]
 
     @staticmethod
     def endace_get_input_arguments(args=None):
+        timeframe_converter = {'30seconds': 30, '1minute': 60, '5minutes': 300, '10minutes': 600, '30minutes': 1800,
+                               '1hour': 3600, '2hours': 7200, '5hours': 18000, '10hours': 36000, '12hours': 43200,
+                               '1day': 86400, '3days': 259200, '5days': 432000, '1week': 604800}
+
         function_args = dict()
+
+        #  timestamps
         function_args['start'] = args.get("start")
         if args.get("start"):
             #   converting ISO time to epoch time
@@ -353,34 +378,41 @@ class EndaceApp(object):
             #   converting ISO time to epoch time
             function_args['end'] = date_to_timestamp(args.get("end")) / 1000
 
-        function_args['timeframe'] = args.get("timeframe")
+        function_args['timeframe'] = timeframe_converter.get(args.get("timeframe"))
 
         #   filter params
-        function_args['src_host_list'] = argToList(args.get("src_host_list"))[:10]
+        #   args.get("directionless IP")
+        function_args['ip'] = args.get("ip")
+        #   args.get("directionless PORT")
+        function_args['port'] = args.get("port")
+        #   args.get("src_host_list")
+        function_args['src_host_list'] = list(set(argToList(args.get("src_host_list"))))[:10]
         #   args.get("dest_host_list")
-        function_args['dest_host_list'] = argToList(args.get("dest_host_list"))[:10]
+        function_args['dest_host_list'] = list(set(argToList(args.get("dest_host_list"))))[:10]
         #   args.get("src_port_list")
-        function_args['src_port_list'] = argToList(args.get("src_port_list"))[:10]
+        function_args['src_port_list'] = list(set(argToList(args.get("src_port_list"))))[:10]
         #   args.get("dest_port_list")
-        function_args['dest_port_list'] = argToList(args.get("dest_port_list"))[:10]
-
-        #   adding a limit to number of filter items to be passed to 10 max
-        if (len(function_args['src_host_list']) + len(function_args['dest_host_list'])
-                + len(function_args['src_port_list']) + len(function_args['dest_port_list'])) > 10:
-            raise ValueError("Wrong set of filters - Limit search filters to 10 items")
+        function_args['dest_port_list'] = list(set(argToList(args.get("dest_port_list"))))[:10]
 
         function_args['protocol'] = args.get("protocol")
 
         #   Doing a sanity check on input function arguments
+        #   adding a limit to number of filter items to be passed to 10 max
+        if (len(function_args['src_host_list']) + len(function_args['dest_host_list'])
+                + len(function_args['src_port_list']) + len(function_args['dest_port_list'])) > 10:
+            raise ValueError("Wrong number of filters items - Limit search filters to 10 items")
+
+        if not function_args['ip'] and not function_args['src_host_list'] and not function_args['dest_host_list']:
+            raise ValueError("Wrong or missing value - Src and Dest IP arguments")
 
         if not function_args['start'] and not function_args['end'] and not function_args['timeframe']:
-            raise ValueError("Wrong value of Start time , End time and timeframe arguments")
+            raise ValueError("Wrong arguments - StartTime, EndTime or TimeFrame is invalid ")
         elif (not function_args['start'] or not function_args['end']) and not function_args['timeframe']:
-            raise ValueError("Wrong value of timeframe - since either start time or end time argument is missing")
+            raise ValueError("Wrong arguments - either StartTime or EndTime or Timeframe is invalid ")
 
         if function_args['start'] and function_args['end']:
             if function_args['start'] == function_args['end']:
-                raise ValueError("Wrong value of start time or end time argument - both are same")
+                raise ValueError("Wrong arguments - value of StartTime and EndTime argument - both are same")
 
         #   Logical options for search time:
         #   1) start and stop time is not provided: will work like search Last n seconds, n = timeframe
@@ -388,22 +420,49 @@ class EndaceApp(object):
         #   3) Both start and stop time is provided: Search using start and stop time, ignore timeframe
 
         if not function_args['start'] and not function_args['end']:
-            function_args['end'] = int(calendar.timegm(time.gmtime()))
+            function_args['end'] = int(calendar.timegm(time.gmtime()) - 10)
             function_args['start'] = (int(function_args['end']) - int(function_args['timeframe']))
         elif function_args['start'] and not function_args['end']:
-            function_args['end'] = function_args['start'] + int(args['timeframe'])
-            if function_args['end'] > (calendar.timegm(time.gmtime()) - 60):
-                function_args['end'] = (calendar.timegm(time.gmtime()) - 60)
+            if int(function_args['start']) > (calendar.timegm(time.gmtime()) - 10):
+                raise ValueError(f'Wrong argument - value of StartTime - {args.get("start")} UTC cannot be in future')
+            function_args['end'] = int(function_args['start']) + int(function_args['timeframe'])
+            if int(function_args['end']) > (calendar.timegm(time.gmtime()) - 10):
+                raise ValueError('Wrong argument - value of EndTime - adjust '
+                                 'timeframe argument such that EndTime is not in future')
         elif not function_args['start'] and function_args['end']:
-            function_args['start'] = function_args['end'] - int(args['timeframe'])
-        else:
-            if function_args['end'] < function_args['start']:
-                raise ValueError('Wrong value of end time , end time cannot be before start time')
+            if int(function_args['end']) > (calendar.timegm(time.gmtime()) - 10):
+                raise ValueError(f'Wrong argument - value of EndTime - {args.get("end")} UTC cannot be in future')
+            function_args['start'] = (int(function_args['end']) - int(function_args['timeframe']))
 
-        if not function_args['src_host_list'] and not function_args['dest_host_list']:
-            raise ValueError("Wrong or missing value of Src or Dest IP arguments")
+        #   search time boundary check
+        if function_args['end'] < function_args['start']:
+            raise ValueError('Wrong argument - value of EndTime - cannot be before StartTime')
+        if int(function_args['start']) > (calendar.timegm(time.gmtime()) - 10):
+            raise ValueError(f'Wrong argument - value of StartTime - {args.get("start")} UTC cannot be in future')
+        if int(function_args['end']) > (calendar.timegm(time.gmtime()) - 10):
+            raise ValueError(f'Wrong argument - value of EndTime - {args.get("end")} UTC cannot be in future')
 
         return function_args
+
+    @staticmethod
+    def handle_error_notifications(eperror):
+        error_dict = {"common.notAuthorized": "Authorization issue due to incorrect RBAC roles on EndaceProbe",
+                      "duration.invalidInput": "Fix Invalid search starttime, endtime or timeframe",
+                      "timestamp.invalidInput": "Fix Invalid search starttime, endtime or timeframe",
+                      "query.serviceLayerError": "One of the search parameters have invalid syntax",
+                      "filter.invalidFilterFormat": "One of the search parameters have invalid syntax",
+                      "download.emptyDatasource": "Empty Packet Datasource, this happens when packet data has "
+                                                  "rotated out but metadata is still available due to incorrect "
+                                                  "datastore sizing configuration. Contact support@endace.com for "
+                                                  "any technical assistance on optimal datasource sizing",
+                      "FileNotFound": "File not found on EndaceProbe",
+                      "SearchTimeOut": "Search query has timed out. Improve search by narrowing search filter "
+                                       "items - IP addresses, Port or Timeframe. If problem persists "
+                                       "contact support@endace.com to review EndaceProbe configuration",
+                      }
+
+        raise Exception(error_dict.get(eperror, f"try again. contact support@endace.com and report {eperror} "
+                                                f"if problem persists"))
 
     #  search
     def create_search_task(self, args=None):
@@ -419,6 +478,8 @@ class EndaceApp(object):
         result = {"Task": "CreateSearchTask", "Status": "Started", "Error": "NoError", "JobID": ""}
 
         #   Filter order
+        if input_args_dict['ip']:
+            input_args_dict['filterby'].append(0)
         if input_args_dict['src_host_list']:
             input_args_dict['filterby'].append(1)
         if input_args_dict['dest_host_list']:
@@ -429,11 +490,14 @@ class EndaceApp(object):
             input_args_dict['filterby'].append(4)
         if input_args_dict['protocol']:
             input_args_dict['filterby'].append(5)
+        if input_args_dict['port']:
+            input_args_dict['filterby'].append(6)
 
         with EndaceWebSession(app_url=self.applianceurl, username=self.username, password=self.password,
                               cert_verify=self.cert_verify) as sess:
             api = EndaceVisionAPIAdapter(sess)
-            rd = api.get("files")
+            path = "files"
+            rd = api.get(path)
             if rd.status_code == 200:
                 path = "queries/"
                 evid = EndaceVisionData(input_args_dict)
@@ -442,9 +506,7 @@ class EndaceApp(object):
                     try:
                         response = rp.json()
                     except json.decoder.JSONDecodeError:
-                        result['Status'] = "Failed"
-                        result['Error'] = "ServerError"
-                        return result
+                        raise Exception(f"JsonDecodeError - path {path}")
                     else:
                         meta = response.get("meta", {})
                         payload = response.get("payload")
@@ -459,20 +521,19 @@ class EndaceApp(object):
                                         result['JobID'] = payload
                                     else:
                                         result['Status'] = "Failed"
-                                        result['Error'] = "ServerError"
-                            else:
-                                result['Status'] = "Failed"
-                                result['Error'] = str(meta.get('error_data'))
+                                        result['Error'] = f"ServerError - empty payload data from {path}"
                         else:
                             result['Status'] = "Failed"
-                            result['Error'] = "ServerError"
+                            result['Error'] = f"ServerError - empty meta data from {path}"
                 else:
-                    result['Status'] = rp.status_code
-                    result['Error'] = f"httpError /{path}"
+                    result['Status'] = "Failed"
+                    result['Error'] = f"HTTP {rp.status_code} to /{path}"
             else:
-                result['Status'] = rd.status_code
-                result['Error'] = "httpError /files"
+                result['Status'] = "Failed"
+                result['Error'] = f"HTTP {rd.status_code} to /{path}"
 
+        if result['Status'] == 'Failed':
+            self.handle_error_notifications(result['Error'])
         return result
 
     def get_search_status(self, args=None):
@@ -482,7 +543,7 @@ class EndaceApp(object):
            Returns:
                Dictionary context data in response to the command execution
         """
-        result = {'Task': "GetSearchStatus", "Status": "Complete", "Error": "NoError", "JobProgress": '0',
+        result = {'Task': "GetSearchStatus", "Status": "complete", "Error": "NoError", "JobProgress": '0',
                   "DataSources": [], "TotalBytes": 0, "JobID": args}
 
         matching_data = 0
@@ -494,12 +555,12 @@ class EndaceApp(object):
         with EndaceWebSession(app_url=self.applianceurl, username=self.username, password=self.password,
                               cert_verify=self.cert_verify) as sess:
             api = EndaceVisionAPIAdapter(sess)
-            rd = api.get("files")
+            path = "files"
+            rd = api.get(path)
             if rd.status_code == 200:
                 path = "queries/" + args
                 progress_status = True
                 query_time = calendar.timegm(time.gmtime())
-
                 while progress_status:
                     #  progress loop
                     #  exit when whichever occurrs before, search timeout or search progress = 100% or search returns an
@@ -507,7 +568,7 @@ class EndaceApp(object):
                     current_time = calendar.timegm(time.gmtime())
                     if current_time - query_time > self.delta_time:
                         progress_status = False
-                        result['Status'] = "Failed"
+                        result['Status'] = "InProgress"
                         result['Error'] = "SearchTimeOut"
                     else:
                         rj = api.get(path)
@@ -516,27 +577,25 @@ class EndaceApp(object):
                             try:
                                 response = rj.json()
                             except json.decoder.JSONDecodeError:
-                                progress_status = False
-                                result['Status'] = "Failed"
-                                result['Error'] = "ServerError"
+                                raise Exception(f"JsonDecodeError - path {path}")
                             else:
                                 meta = response.get("meta", {})
-                                payload = response.get("payload")
                                 if meta:
                                     meta_error = meta.get("error")
                                     if meta_error is not None:
                                         if meta_error is not False:
                                             progress_status = False
-                                            result['Status'] = "Failed"
+                                            result['Status'] = "complete"
                                             result['Error'] = str(meta_error)
                                         else:
                                             #  check payload for no error
+                                            payload = response.get("payload")
                                             if payload is not None:
                                                 progress = payload.get("progress")
                                                 if progress is not None:
                                                     result['JobProgress'] = str(progress)
-                                                    #  check if the Search Job has finished. if so, return a data dict back
-                                                    #   to Demisto
+                                                    #  check if the Search Job has finished.
+                                                    #  if so, return a data dict back to Demisto
                                                     #  if No, Wait and loop in to run another status check,
                                                     #   until "self.delta_time" has elapsed
                                                     payload_data = payload.get("data")
@@ -544,7 +603,8 @@ class EndaceApp(object):
                                                         if int(progress) == 100:
                                                             progress_status = False
                                                             for data_map_dict in payload_data:
-                                                                id_to_key_dict[data_map_dict['id']] = data_map_dict['name']
+                                                                id_to_key_dict[data_map_dict['id']] = \
+                                                                    data_map_dict['name']
 
                                                             for top_key in payload["top_keys"]:
                                                                 keys.append(id_to_key_dict[top_key])
@@ -562,24 +622,25 @@ class EndaceApp(object):
                                                             result['Status'] = str(payload['state'])
                                                             result['DataSources'] = keys
                                             else:
+                                                progress_status = False
                                                 result['Status'] = "Failed"
-                                                result['Error'] = "ServerError"
-                                    else:
-                                        result['Status'] = "Failed"
-                                        result['Error'] = str(meta.get('error_data'))
+                                                result['Error'] = f"ServerError - empty payload data from {path}"
                                 else:
+                                    progress_status = False
                                     result['Status'] = "Failed"
-                                    result['Error'] = "ServerError"
+                                    result['Error'] = f"ServerError - empty meta data from {path}"
                         else:
                             progress_status = False
                             result['Status'] = rj.status_code
-                            result['Error'] = f"HTTP GET Request Failed to {path}"
+                            result['Error'] = f"ServerError - HTTP {rj.status_code} to /{path}"
                     #   wait time before next run
                     time.sleep(self.wait_time)
             else:
-                result['Status'] = rd.status_code
-                result['Error'] = "httpError /files"
+                result['Status'] = "Failed"
+                result['Error'] = f"ServerError - HTTP {rd.status_code} to /{path}"
 
+        if result['Status'] != 'complete':
+            self.handle_error_notifications(result['Error'])
         return result
 
     def delete_search_task(self, args=None):
@@ -593,7 +654,8 @@ class EndaceApp(object):
         with EndaceWebSession(app_url=self.applianceurl, username=self.username, password=self.password,
                               cert_verify=self.cert_verify) as sess:
             api = EndaceVisionAPIAdapter(sess)
-            rd = api.get("files")
+            path = "files"
+            rd = api.get(path)
             if rd.status_code == 200:
                 path = "queries/" + args
                 dr = api.delete(path)
@@ -601,28 +663,24 @@ class EndaceApp(object):
                     try:
                         response = dr.json()
                     except json.decoder.JSONDecodeError:
-                        result['Status'] = "Failed"
-                        result['Error'] = "ServerError"
-                        return result
+                        raise Exception(f"JsonDecodeError - path {path}")
                     else:
                         meta = response.get('meta', {})
                         if meta:
                             meta_error = meta.get("error")
                             if meta_error is not None:
                                 if meta_error is not False:
-                                    result['Status'] = "Failed"
+                                    result['Status'] = "complete"
                                     result['Error'] = str(meta_error)
-                            else:
-                                result['Status'] = "Failed"
-                                result['Error'] = str(meta.get('error_data'))
                         else:
                             result['Status'] = "Failed"
-                            result['Error'] = "ServerError"
-
+                            result['Error'] = f"ServerError - empty meta data from {path}"
             else:
-                result['Error'] = rd.status_code
-                result['Status'] = "HTTP DELETE Request Failed while deleting search task"
+                result['Status'] = "Failed"
+                result['Error'] = f"ServerError - HTTP {rd.status_code} to /{path}"
 
+        if result['Status'] == 'Failed':
+            self.handle_error_notifications(result['Error'])
         return result
 
     #  archive
@@ -644,18 +702,19 @@ class EndaceApp(object):
                   "Start": args.get('start'), "End": args.get('end'), "P2Vurl": "",
                   "FileName": args['archive_filename']}
 
-        probe_hostname = self.applianceurl.split(".")[0].split("//")[1]
-        datasource = probe_hostname + ":" + input_args_dict['archive_filename']
+        datasource = self.hostname + ":" + input_args_dict['archive_filename']
 
         start_time_in_ms = str(int(input_args_dict['start']) * 1000)
         end_time_in_ms = str(int(input_args_dict['end']) * 1000)
 
         p2v_url = f'{self.applianceurl}/vision2/pivotintovision/?datasources={datasource}' \
                   f'&title={result["FileName"]}&start={start_time_in_ms}&end={end_time_in_ms}' \
-                  f'&tools=trafficOverTime_by_app%2CtrafficOverTime_by_sip%2CtrafficOverTime_by_dip' \
-                  f'%2Cconversations_by_ipaddress'
+                  f'&tools=trafficOverTime_by_app%2Cconversations_by_ipaddress'
 
         #   Endace Filter order
+        if input_args_dict['ip']:
+            input_args_dict['filterby'].append(0)
+            p2v_url = p2v_url + "&ip=" + input_args_dict['ip']
         if input_args_dict['src_host_list']:
             input_args_dict['filterby'].append(1)
             src_ip = ''
@@ -686,21 +745,23 @@ class EndaceApp(object):
             p2v_url = p2v_url + "&dport=" + port
         if input_args_dict['protocol']:
             input_args_dict['filterby'].append(5)
+        if input_args_dict['port']:
+            input_args_dict['filterby'].append(6)
+            p2v_url = p2v_url + "&port=" + input_args_dict['port']
 
         evid = EndaceVisionData(input_args_dict)
         with EndaceWebSession(app_url=self.applianceurl, username=self.username, password=self.password,
                               cert_verify=self.cert_verify) as sess:
-            api = EndaceVisionAPIAdapter(sess)
-            rd = api.get("datasources")
-
             #  Extract list of rotationfiles datasources and exclude previously archived files
             rotfile_ids = []
+
+            api = EndaceVisionAPIAdapter(sess)
+            path = "datasources"
+            rd = api.get(path)
             try:
                 response = rd.json()
             except json.decoder.JSONDecodeError:
-                result['Status'] = "Failed"
-                result['Error'] = "ServerError"
-                return result
+                raise Exception(f"JsonDecodeError - path {path}")
             else:
                 if rd.status_code == 200:
                     payload = response.get("payload")
@@ -709,15 +770,14 @@ class EndaceApp(object):
                             rotfile_ids.append(rotfile["id"])
 
                     input_args_dict['ids'] = rotfile_ids
+
                     path = "archive/"
                     rp = api.post(path, json=evid.build_archive_data())
                     if rp.status_code == 200:
                         try:
                             response = rp.json()
                         except json.decoder.JSONDecodeError:
-                            result['Status'] = "Failed"
-                            result['Error'] = "ServerError"
-                            return result
+                            raise Exception(f"JsonDecodeError - path {path}")
                         else:
                             meta = response.get("meta", {})
                             payload = response.get("payload")
@@ -733,20 +793,19 @@ class EndaceApp(object):
                                             result['P2Vurl'] = f'[Endace PivotToVision URL]({p2v_url})'
                                         else:
                                             result['Status'] = "Failed"
-                                            result['Error'] = "ServerError"
-                                else:
-                                    result['Status'] = "Failed"
-                                    result['Error'] = "ServerError"
+                                            result['Error'] = f"ServerError - empty payload data from {path}"
                             else:
                                 result['Status'] = "Failed"
-                                result['Error'] = "ServerError"
+                                result['Error'] = f"ServerError - empty meta data from {path}"
                     else:
                         result['Status'] = "Failed"
-                        result['Error'] = "ServerError"
+                        result['Error'] = f"HTTP {rd.status_code} to /{path}"
                 else:
-                    result['Status'] = rd.status_code
-                    result['Error'] = "httpError /archive"
+                    result['Status'] = "Failed"
+                    result['Error'] = f"HTTP {rd.status_code} to /{path}"
 
+        if result['Status'] == 'Failed':
+            self.handle_error_notifications(result['Error'])
         return result
 
     def get_archive_status(self, args=None):
@@ -756,8 +815,8 @@ class EndaceApp(object):
            Returns:
                Dictionary context data in response to the command execution
         """
-        result = {"Task": "GetArchiveStatus", "Error": "NoError", "Status": "ArchiveNotFound",
-                  "FileName": args["archive_filename"], "FileSize": 0}
+        result = {"Task": "GetArchiveStatus", "Error": "NoError", "Status": "InProgress",
+                  "FileName": args['archive_filename'], "FileSize": 0}
 
         with EndaceWebSession(app_url=self.applianceurl, username=self.username, password=self.password,
                               cert_verify=self.cert_verify) as sess:
@@ -772,15 +831,14 @@ class EndaceApp(object):
                 current_time = calendar.timegm(time.gmtime())
                 if current_time - query_time > self.delta_time:
                     progress_status = False
+                    result['Status'] = "InProgress"
 
                 rf = api.get(path)
                 if rf.status_code == 200:
                     try:
                         response = rf.json()
                     except json.decoder.JSONDecodeError:
-                        progress_status = False
-                        result['Status'] = "Failed"
-                        result['Error'] = "ServerError"
+                        raise Exception(f"JsonDecodeError - path {path}")
                     else:
                         meta = response.get("meta", {})
                         payload = response.get("payload")
@@ -789,13 +847,12 @@ class EndaceApp(object):
                             if meta_error is not None:
                                 if meta_error is not False:
                                     progress_status = False
-                                    result['Status'] = "Failed"
+                                    result['Status'] = "InProgress"
                                     result['Error'] = str(meta_error)
                                 else:
                                     #   progress loop
                                     #   exit at timeout or archive finished
                                     #  archive_payload = payload
-
                                     for file in payload:
                                         if args['archive_filename'] == file['name']:
                                             result['FileName'] = file['name']
@@ -807,19 +864,18 @@ class EndaceApp(object):
                                             else:
                                                 result['Status'] = "InProgress"
                                             break
-                            else:
-                                progress_status = False
-                                result['Status'] = "Failed"
-                                result['Error'] = "ServerError"
+
                         else:
                             progress_status = False
                             result['Status'] = "Failed"
-                            result['Error'] = "ServerError"
+                            result['Error'] = f"ServerError - empty meta data from {path}"
                 else:
                     progress_status = False
                     result['Status'] = rf.status_code
-                    result['Error'] = f"HTTP GET Request Failed to {path}"
+                    result['Error'] = f"ServerError - HTTP {rf.status_code} to /{path}"
 
+        if result['Status'] == 'Failed':
+            self.handle_error_notifications(result['Error'])
         return result
 
     def delete_archive_task(self, args=None):
@@ -831,37 +887,34 @@ class EndaceApp(object):
 
         with EndaceWebSession(app_url=self.applianceurl, username=self.username, password=self.password,
                               cert_verify=self.cert_verify) as sess:
-
-            path = "queries/" + args
             api = EndaceVisionAPIAdapter(sess)
-            rd = api.get("files")
+            path = "files"
+            rd = api.get(path)
             if rd.status_code == 200:
+                path = "queries/" + args
                 dr = api.delete(path)
                 if dr.status_code == 200:
                     try:
                         response = dr.json()
                     except json.decoder.JSONDecodeError:
-                        result['Status'] = "Failed"
-                        result['Error'] = "ServerError"
-                        return result
+                        raise Exception(f"JsonDecodeError - path {path}")
                     else:
                         meta = response.get('meta', {})
                         if meta:
                             meta_error = meta.get("error")
                             if meta_error is not None:
                                 if meta_error is not False:
-                                    result['Status'] = "Failed"
+                                    result['Status'] = "complete"
                                     result['Error'] = str(meta_error)
-                            else:
-                                result['Status'] = "Failed"
-                                result['Error'] = str(meta.get('error_data'))
                         else:
                             result['Status'] = "Failed"
-                            result['Error'] = "ServerError"
+                            result['Error'] = f"ServerError - empty meta data from {path}"
             else:
                 result['Error'] = rd.status_code
-                result['Status'] = "HTTP Error {path}"
+                result['Error'] = f"ServerError - HTTP {rd.status_code} to /{path}"
 
+        if result['Status'] == 'Failed':
+            self.handle_error_notifications(result['Error'])
         return result
 
     def delete_archived_file(self, args=None):
@@ -871,22 +924,19 @@ class EndaceApp(object):
            Returns:
                Dictionary context data in response to the command execution
         """
-        result = {"Task": "DeleteArchivedFile", "Error": "NoError", "Status": "NotFound",
+        result = {"Task": "DeleteArchivedFile", "Error": "NoError", "Status": "FileNotFound",
                   "FileName": args['archived_filename']}
 
         with EndaceWebSession(app_url=self.applianceurl, username=self.username, password=self.password,
                               cert_verify=self.cert_verify) as sess:
             api = EndaceVisionAPIAdapter(sess)
             path = "files"
-
             rf = api.get(path)
             if rf.status_code == 200:
                 try:
                     response = rf.json()
                 except json.decoder.JSONDecodeError:
-                    result['Status'] = "Failed"
-                    result['Error'] = "ServerError"
-                    return result
+                    raise Exception(f"JsonDecodeError - path {path}")
                 else:
                     meta = response.get("meta", {})
                     payload = response.get("payload")
@@ -894,7 +944,7 @@ class EndaceApp(object):
                         meta_error = meta["error"]
                         if meta_error is not None:
                             if meta_error is not False:
-                                result['Status'] = "Failed"
+                                result['Status'] = "FileNotFound"
                                 result['Error'] = str(meta_error)
                             else:
                                 #   Delete archived File
@@ -908,25 +958,27 @@ class EndaceApp(object):
                                             try:
                                                 response = df.json()
                                             except json.decoder.JSONDecodeError:
-                                                result['Status'] = "Failed"
-                                                result['Error'] = "ServerError"
-                                                return result
+                                                raise
                                             else:
                                                 meta = response.get("meta", {})
                                                 if df.status_code == 200:
                                                     if meta["error"] is None:
-                                                        result['Status'] = meta['error']
-                                                        result['Error'] = meta["error_data"]
+                                                        result['Status'] = "FileNotFound"
+                                                        result['Error'] = meta["error"]
                                                     else:
                                                         result['Status'] = "FileDeleted"
                                                 else:
-                                                    result['Status'] = "ServerError"
-                        else:
-                            result['Status'] = "Failed"
-                            result['Error'] = "ServerError"
+                                                    result['Error'] = f"ServerError - HTTP {rf.status_code} to /{path}"
+
+                    else:
+                        result['Status'] = "Failed"
+                        result['Error'] = f"ServerError - empty meta data from {path}"
             else:
                 result['Status'] = "Failed"
-                result['Error'] = "ServerError"
+                result['Error'] = f"ServerError - HTTP {rf.status_code} to /{path}"
+
+        if result['Status'] == 'Failed':
+            self.handle_error_notifications(result['Error'])
         return result
 
     #  download
@@ -938,20 +990,17 @@ class EndaceApp(object):
                 Dictionary context data in response to the command execution
         """
         result = {"Task": "DownloadPCAP", "Error": "NoError", "Status": "FileNotFound", "FileName": args['filename'],
-                  "FileSize": 0, "FileType": "", "FileURL": '', "FileUser": ''}
+                  "FileSize": 0, "FileType": "UnKnown", "FileURL": 'UnKnown', "FileUser": 'UnKnown'}
         with EndaceWebSession(app_url=self.applianceurl, username=self.username, password=self.password,
                               cert_verify=self.cert_verify) as sess:
             api = EndaceVisionAPIAdapter(sess)
             path = "files"
-
             rf = api.get(path)
             if rf.status_code == 200:
                 try:
                     response = rf.json()
                 except json.decoder.JSONDecodeError:
-                    result['Status'] = "Failed"
-                    result['Error'] = "ServerError"
-                    return result
+                    raise Exception(f"JsonDecodeError - path {path}")
                 else:
                     meta = response.get("meta", {})
                     payload = response.get("payload")
@@ -959,7 +1008,7 @@ class EndaceApp(object):
                         meta_error = meta["error"]
                         if meta_error is not None:
                             if meta_error is not False:
-                                result['Status'] = "Failed"
+                                result['Status'] = "FileNotFound"
                                 result['Error'] = str(meta_error)
                             else:
                                 #   Download PCAP File
@@ -994,21 +1043,22 @@ class EndaceApp(object):
                                                     result['Status'] = "DownloadFinished"
                                                     result['FileType'] = file['type']
                                                     result['FileUser'] = file['user']
-
                                                 else:
-                                                    result['Status'] = "Failed"
-                                                    result['Error'] = d.status_code
+                                                    result['Status'] = "FileNotFound"
+                                                    result['Error'] = f"ServerError - HTTP {rf.status_code} to /{path}"
                                             else:
                                                 result['Status'] = "FileInUse"
-
                                         else:
                                             result['Status'] = "FileExceedsSizeLimit"
-                        else:
-                            result['Status'] = "Failed"
-                            result['Error'] = "ServerError"
                     else:
                         result['Status'] = "Failed"
-                        result['Error'] = "ServerError"
+                        result['Error'] = f"ServerError - empty meta data from {path}"
+            else:
+                result['Status'] = "Failed"
+                result['Error'] = f"ServerError - HTTP {rf.status_code} to /{path}"
+
+        if result['Status'] == 'Failed':
+            self.handle_error_notifications(result['Error'])
         return result
 
 
@@ -1023,6 +1073,8 @@ def endace_create_search_command(app, args):
         args:
             start time: in ISO 8601 format
             end time: in ISO 8601 format
+            ip: comma separated ips to search for
+            port: comma separated ports to search for
             src ips: comma separated source ips to search for. Src IPs will be OR'd
             dest ips: comma separated destination ips to search for. Destination IPs will be OR'd
             src ports: comma separated source ports to search for. Src Ports will be OR'd
@@ -1049,7 +1101,7 @@ def endace_create_search_command(app, args):
 
         return readable_output, output, raw_response
     else:
-        raise ValueError("Incorrect arguments provided")
+        raise ValueError("No arguments were provided to search by, at least one must be provided")
 
 
 def endace_delete_search_task_command(app, args):
@@ -1074,7 +1126,7 @@ def endace_delete_search_task_command(app, args):
         #   create entry context to return to Demisto
         output = {'Endace.Search.Delete(val.JobID == obj.JobID)': result}
         table_header = ["Task", "JobID", "Status", "Error"]
-        readable_output = tableToMarkdown('EndaceSearch', result, headers=table_header, removeNull=False)
+        readable_output = tableToMarkdown('EndaceResult', result, headers=table_header, removeNull=False)
         raw_response = result
         return readable_output, output, raw_response
     else:
@@ -1099,8 +1151,8 @@ def endace_get_search_status_command(app, args):
 
         #   create entry context to return to Demisto
         output = {'Endace.Search.Response(val.JobID == obj.JobID)': result}
-        table_header = ["Task", "JobID", 'Status', 'Error', 'JobProgress', 'DataSources', 'TotalBytes']
-        readable_output = tableToMarkdown('EndaceSearch', result, headers=table_header, removeNull=False)
+        table_header = ['Task', 'JobID', 'Status', 'Error', 'JobProgress', 'DataSources', 'TotalBytes']
+        readable_output = tableToMarkdown('EndaceResult', result, headers=table_header, removeNull=False)
         raw_response = result
 
         return readable_output, output, raw_response
@@ -1119,6 +1171,8 @@ def endace_create_archive_command(app, args):
         args:
             start time: in ISO 8601 format
             end time: in ISO 8601 format
+            ip: comma separated ips to search for
+            port: comma separated ports to search for
             src ips: comma separated source ips to search for. Src IPs will be OR'd
             dest ips: comma separated destination ips to search for. Destination IPs will be OR'd
             src ports: comma separated source ports to search for. Src Ports will be OR'd
@@ -1134,7 +1188,8 @@ def endace_create_archive_command(app, args):
     if len(args.values()):
         #   archive file name
         if re.fullmatch(r'[\w0-9_-]+', args.get("archive_filename")) is None:
-            raise ValueError("Wrong value of archive_filename")
+            raise ValueError("Wrong format of archive_filename. text, numbers, underscore or dash is supported")
+
         function_args = app.endace_get_input_arguments(args)
         function_args['archive_filename'] = args.get("archive_filename")
 
@@ -1148,7 +1203,8 @@ def endace_create_archive_command(app, args):
         raw_response = result
         return readable_output, output, raw_response
     else:
-        raise ValueError("Incorrect arguments provided")
+        raise ValueError("No arguments were provided to search by, at least one Filter item, "
+                         "either start/end time or timeframe is required ")
 
 
 def endace_delete_archive_task_command(app, args):
@@ -1190,11 +1246,14 @@ def endace_get_archive_status_command(app, args):
              ValueError: If input argument is in wrong format.
     """
     if len(args.values()):
-        function_arg = dict()
+        function_args = dict()
         #   archive file name
-        function_arg['archive_filename'] = args.get("archive_filename")
+        if re.fullmatch(r'[\w0-9_-]+', args.get("archive_filename")) is None:
+            raise ValueError("Wrong format of archive_filename. text, numbers, underscore or dash is supported")
+        function_args['archive_filename'] = args.get("archive_filename")
+
         #  calling app instance
-        result = app.get_archive_status(function_arg)
+        result = app.get_archive_status(function_args)
 
         #   create entry context to return to Demisto
         output = {'Endace.Archive.Response(val.FileName == obj.FileName)': result}
@@ -1203,7 +1262,7 @@ def endace_get_archive_status_command(app, args):
         raw_response = result
         return readable_output, output, raw_response
     else:
-        raise ValueError("Incorrect arguments provided")
+        raise ValueError("Archived FileName must be provided")
 
 
 def endace_delete_archived_file_command(app, args):
@@ -1222,8 +1281,9 @@ def endace_delete_archived_file_command(app, args):
         #   archive file name
         function_arg['archived_filename'] = args.get("archived_filename")
 
+        #   archive file name
         if re.fullmatch(r'[\w0-9_-]+', args.get("archived_filename")) is None:
-            raise ValueError("Wrong value of archive_filename")
+            raise ValueError("Wrong format of archived_filename. text, numbers, underscore or dash is supported")
 
         #   calling archive file delete task function of app instance
         result = app.delete_archived_file(function_arg)
@@ -1235,7 +1295,7 @@ def endace_delete_archived_file_command(app, args):
         raw_response = result
         return readable_output, output, raw_response
     else:
-        raise ValueError("Incorrect arguments provided")
+        raise ValueError("Archived FileName must be provided")
 
 
 #  Download Command
@@ -1257,10 +1317,10 @@ def endace_download_pcap_command(app, args):
         try:
             int(function_args['filesizelimit'])
         except ValueError:
-            raise ValueError("Filesize Limit value is incorrect")
+            raise ValueError("Filesize Limit value is incorrect, must be an integer 1  or greater")
         else:
-            if int(function_args['filesizelimit']) < 0:
-                raise ValueError("Filesize Limit value is incorrect")
+            if int(function_args['filesizelimit']) < 1:
+                raise ValueError("Filesize Limit value is incorrect, must be an integer 1  or greater")
 
             #   calling download PCAP function of app instance
             result = app.download_pcap(function_args)
@@ -1273,13 +1333,13 @@ def endace_download_pcap_command(app, args):
             raw_response = result
             return readable_output, output, raw_response
     else:
-        raise ValueError("Incorrect arguments provided")
+        raise ValueError("FileName must be provided")
 
 
 #  Test Command
 def endace_test_command(appurl, username, password, insecure):
     if re.match(r'https://[\w\-\.]+\.\w+', appurl) is None:
-        raise ValueError('Wrong Appliance URL')
+        raise ValueError('Wrong Appliance URL. Make sure URL is in format of https://<fqdn/ip[:port]>')
     with EndaceWebSession(app_url=appurl, username=username, password=password, cert_verify=insecure):
         return 'ok'
 
@@ -1294,6 +1354,7 @@ def main():
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
     insecure = not demisto.params().get('insecure', False)
+    hostname = demisto.params().get('hostname')
 
     LOG(f'Command being called is {demisto.command()}')
 
@@ -1307,7 +1368,7 @@ def main():
             """
             demisto.results(endace_test_command(applianceurl, username, password, insecure))
         else:
-            app = EndaceApp(applianceurl, username, password, insecure)
+            app = EndaceApp(applianceurl, username, password, insecure, hostname)
             """ Command Modules """
             if command == "endace-create-search":
                 return_outputs(*endace_create_search_command(app, demisto.args()))
@@ -1327,7 +1388,7 @@ def main():
                 return_outputs(*endace_download_pcap_command(app, demisto.args()))
 
     except Exception as err:
-        err_msg = f'Error in Integration [{err}]'
+        err_msg = f'Error in Endace integration: {err}'
         return_error(err_msg, error=err)
 
 

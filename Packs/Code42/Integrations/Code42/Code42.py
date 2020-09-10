@@ -86,7 +86,7 @@ FILE_CONTEXT_FIELD_MAPPER = {
     "osHostName": "Hostname",
 }
 
-CODE42_FILE_TYPE_MAPPER = {
+CODE42_FILE_CATEGORY_MAPPER = {
     "SourceCode": "SOURCE_CODE",
     "Audio": "AUDIO",
     "Executable": "EXECUTABLE",
@@ -538,9 +538,8 @@ def _create_exposure_filter(exposure_arg):
     return ExposureType.is_in(exposure_arg)
 
 
-def _create_category_filter(file_type):
-    category_value = CODE42_FILE_TYPE_MAPPER.get(file_type.get("category"), "UNCATEGORIZED")
-    return FileCategory.eq(category_value)
+def _get_file_category_value(key):
+    return CODE42_FILE_CATEGORY_MAPPER.get(key, "UNCATEGORIZED")
 
 
 class ObservationToSecurityQueryMapper(object):
@@ -641,7 +640,7 @@ class ObservationToSecurityQueryMapper(object):
         observed_file_categories = self._observation_data.get("fileCategories")
         if observed_file_categories:
             categories = [
-                c.get("category").upper()
+                _get_file_category_value(c.get("category"))
                 for c in observed_file_categories
                 if c.get("isSignificant") and c.get("category")
             ]
