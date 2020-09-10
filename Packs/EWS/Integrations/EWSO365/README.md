@@ -75,21 +75,22 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 1.  Get the attachments of an item: ews-get-attachment
 2.  Delete the attachments of an item: ews-delete-attachment
 3.  Get a list of searchable mailboxes: ews-get-searchable-mailboxes
-5.  Move an item to a different folder: ews-move-item
-6.  Delete an item from a mailbox: ews-delete-items
-7.  Search a single mailbox: ews-search-mailbox
-8.  Get the contacts for a mailbox: ews-get-contacts
-9.  Get the out-of-office status for a mailbox: ews-get-out-of-office
-10.  Recover soft-deleted messages: ews-recover-messages
-11.  Create a folder: ews-create-folder
-12.  Mark an item as junk: ews-mark-item-as-junk
-13.  Search for folders: ews-find-folders
-14.  Get items of a folder: ews-get-items-from-folder
-15.  Get items: ews-get-items
-16.  Move an item to a different mailbox: ews-move-item-between-mailboxes
-17.  Get a folder: ews-get-folder
-18.  Expand a distribution list: ews-expand-group
-19.  Mark items as read: ews-mark-items-as-read
+4.  Move an item to a different folder: ews-move-item
+5.  Delete an item from a mailbox: ews-delete-items
+6.  Search a single mailbox: ews-search-mailbox
+7.  Get the contacts for a mailbox: ews-get-contacts
+8.  Get the out-of-office status for a mailbox: ews-get-out-of-office
+9.  Recover soft-deleted messages: ews-recover-messages
+10.  Create a folder: ews-create-folder
+11.  Mark an item as junk: ews-mark-item-as-junk
+12.  Search for folders: ews-find-folders
+13.  Get items of a folder: ews-get-items-from-folder
+14.  Get items: ews-get-items
+15.  Move an item to a different mailbox: ews-move-item-between-mailboxes
+16.  Get a folder: ews-get-folder
+17.  Expand a distribution list: ews-expand-group
+18.  Mark items as read: ews-mark-items-as-read
+19.  Send an email: send-mail
 
 ### 1\. Get the attachments of an item
 
@@ -1331,6 +1332,53 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 }
 
 ```
+
+### 19\. Send an email
+
+* * *
+
+##### Required Permissions
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+##### Base Command
+
+`send-mail`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to | Email addresses for the 'To' field. Supports comma-separated values | Optional | 
+| cc | Email addresses for the 'Cc' field. Supports comma-separated values | Optional | 
+| bcc | Email addresses for the 'Bcc' field. Supports comma-separated values | Optional | 
+| subject | Subject for the email to be sent | Optional | 
+| body | The contents (body) of the email to be sent in plain text | Optional | 
+| htmlBody | The contents (body) of the email to be sent in HTML format | Optional | 
+| attachIDs | A comma-separated list of IDs of war room entries that contains the files that should be attached to the email | Optional | 
+| attachNames | A comma-separated list to rename file-names of corresponding attachments IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3) | Optional | 
+| attachCIDs | A comma-separated list of CIDs to embed attachments inside the email itself | Optional | 
+| transientFile | Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| transientFileContent | Content for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| transientFileCID | CID for attached file if we want it inline. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz") | Optional | 
+| templateParams | Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from | Optional | 
+| additionalHeader | A comma-separated list list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
+| raw_message | Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+
+```
+!send-mail to=demisto@demisto.onmicrosoft.com subject=some_subject body=some_text attachIDs=110@457,116@457 htmlBody="<html><body>Hello <b>World</b></body></html>" additionalHeader="some_header_name=some_header_value" transientFile=some_file.txt transientFileContent="Some file content"
+```
+
+##### Human Readable Output
+
+Mail sent successfully
 
 ## Additional Information
 
