@@ -996,6 +996,8 @@ def main():
 
     # summary of packs status
     print_packs_summary(packs_list)
+    with open('pack_list.json', 'w') as f:
+        json.dump(packs_list, f)
 
 
 if __name__ == '__main__':
