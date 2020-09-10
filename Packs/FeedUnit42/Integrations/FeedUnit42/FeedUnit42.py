@@ -1,7 +1,8 @@
 from typing import List, Dict, Optional
 
+from taxii2client import MEDIA_TYPE_STIX_V20
 from taxii2client.common import TokenAuth
-from taxii2client.v20 import Server, as_pages
+from taxii2client.v20 import Server, as_pages, _filter_kwargs_to_query_params, Collection
 
 from CommonServerPython import *
 
@@ -19,6 +20,36 @@ UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'sha-256': FeedIndicatorType.File,
     'file:hashes': FeedIndicatorType.File,
 }
+
+
+def override_v20_get_objects(self, accept=MEDIA_TYPE_STIX_V20, start=0, per_request=0, **filter_kwargs):
+    """
+    Overriding the v20.Collection.get_object method, which uses the `Range` header without the '=' sign.
+    Will be in the next release of the client.
+    TODO: Remove this section when the client is updated
+    """
+    self._verify_can_read()
+    query_params = _filter_kwargs_to_query_params(filter_kwargs)
+    headers = {"Accept": accept}
+
+    if per_request > 0:
+        headers["Range"] = "items={}-{}".format(start, (start + per_request) - 1)
+
+    try:
+        response = self._conn.get(self.objects_url, headers=headers, params=query_params)
+
+    except requests.HTTPError as e:
+        if per_request > 0:
+            headers["Range"] = "items {}-{}".format(start, (start + per_request) - 1)
+
+            response = self._conn.get(self.objects_url, headers=headers, params=query_params)
+        else:
+            raise requests.HTTPError(e)
+
+    return response
+
+
+Collection.get_objects = override_v20_get_objects
 
 
 class Client(BaseClient):
