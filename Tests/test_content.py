@@ -258,7 +258,7 @@ def turn_off_telemetry(dem_client):
     :return: None
     """
 
-    body, status_code, _ = dem_client.generic_request_func(self=client, method='POST',
+    body, status_code, _ = demisto_client.generic_request_func(self=dem_client, method='POST',
                                                                path='/telemetry?status=notelemetry')
 
     if status_code != 200:
