@@ -65,7 +65,11 @@ script:
       description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
         relative if negative)
     - name: aggr
-      description: Aggregate identical RRsets (bool)
+      description: Aggregate identical RRsets
+      auto: PREDEFINED
+      predefined:
+        - 'True'
+        - 'False'
     - name: offset
       description: How many rows to offset in the results.
     outputs:
@@ -132,7 +136,11 @@ script:
       description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
         relative if negative)
     - name: aggr
-      description: Aggregate identical RRsets (bool)
+      description: Aggregate identical RRsets
+      auto: PREDEFINED
+      predefined:
+        - 'True'
+        - 'False'
     - name: max_count
       description: Stop when the summary count is reached
     outputs:
@@ -182,7 +190,11 @@ script:
       description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
         relative if negative)
     - name: aggr
-      description: Aggregate identical RRsets (bool)
+      description: Aggregate identical RRsets
+      auto: PREDEFINED
+      predefined:
+        - 'True'
+        - 'False'
     - name: offset
       description: How many rows to offset in the results.
     outputs:
@@ -248,7 +260,11 @@ script:
       description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
         relative if negative)
     - name: aggr
-      description: Aggregate identical RRsets (bool)
+      description: Aggregate identical RRsets
+      auto: PREDEFINED
+      predefined:
+        - 'True'
+        - 'False'
     - name: max_count
       description: Stop when the summary count is reached
     outputs:
