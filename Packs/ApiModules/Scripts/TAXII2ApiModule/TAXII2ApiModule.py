@@ -61,38 +61,6 @@ STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
 }
 
 
-def override_v20_get_objects(self, accept=MEDIA_TYPE_STIX_V20, start=0, per_request=0, **filter_kwargs):
-    """
-
-    Overriding the v20.Collection.get_object method, which uses the `Range` header without the '=' sign.
-    Will be in the next release of the client.
-    TODO: Remove this section when the client is updated
-
-    """
-    self._verify_can_read()
-    query_params = v20._filter_kwargs_to_query_params(filter_kwargs)
-    headers = {"Accept": accept}
-
-    if per_request > 0:
-        headers["Range"] = "items={}-{}".format(start, (start + per_request) - 1)
-
-    try:
-        response = self._conn.get(self.objects_url, headers=headers, params=query_params)
-
-    except requests.HTTPError as e:
-        if per_request > 0:
-            headers["Range"] = "items {}-{}".format(start, (start + per_request) - 1)
-
-            response = self._conn.get(self.objects_url, headers=headers, params=query_params)
-        else:
-            raise requests.HTTPError(e)
-
-    return response
-
-
-v20.Collection.get_objects = override_v20_get_objects
-
-
 class Taxii2FeedClient:
     def __init__(
             self,
