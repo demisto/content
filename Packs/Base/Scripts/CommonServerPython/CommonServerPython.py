@@ -2692,7 +2692,7 @@ class CommandResults:
         else:
             human_readable = None  # type: ignore[assignment]
         raw_response = None  # type: ignore[assignment]
-        indicators_timeline = IndicatorsTimeline().indicators_timeline  # type: ignore[assignment]
+        indicators_timeline = self.indicators_timeline.indicators_timeline  # type: ignore[assignment]
 
         if self.indicators:
             for indicator in self.indicators:
