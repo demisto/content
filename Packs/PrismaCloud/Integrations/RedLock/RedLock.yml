@@ -266,10 +266,10 @@ script:
     arguments:
     - name: alert-id
       description: comma separated list of string IDs to be dismissed
-    - name: dismissal-value
+    - name: snooze-value
       required: false
-      description: The amount of time to dismiss for if snoozing. Both value and unit must be specified
-    - name: dismissal-unit
+      description: The amount of time to snooze. Both snooze value and unit must be specified
+    - name: snooze-unit
       required: false
       auto: PREDEFINED
       predefined:
@@ -280,7 +280,7 @@ script:
       - year
       - login
       - epoch
-      description: The time unit for dismissial if snoozing alert.  Both dimissal value and unit must be specified if snoozing.
+      description: The time unit for if snoozing alert.  Both snooze value and unit must be specified if snoozing.
     - name: dismissal-note
       required: true
       description: Reason for dismissal

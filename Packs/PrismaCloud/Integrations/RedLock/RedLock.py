@@ -313,6 +313,20 @@ def dismiss_alerts():
     policies = argToList(demisto.getArg('policy-id'))
     payload = {'alerts': ids, 'policies': policies, 'dismissalNote': demisto.getArg('dismissal-note'), 'filter': {}}
     demisto.args().pop('alert-id', None)
+    snooze_value = demisto.args()['snooze-value'] if 'snooze-value' in demisto.args() else None
+    snooze_unit = demisto.args()['snooze-unit'] if 'snooze-unit' in demisto.args() else None
+
+    msg_notes = ['dismissed', 'Dismissal']
+
+    if snooze_value and snooze_unit:
+        payload['dissmissalTimeRange'] = {
+            'type': 'relative',
+            'value': {
+                'unit': snooze_unit,
+                'amount': int(snooze_value)
+            }
+        }
+        msg_notes = ['snoozed', 'Snooze']
     handle_filters(payload['filter'])
     handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
     if not ids and not policies:
@@ -326,7 +340,7 @@ def dismiss_alerts():
         'ContentsFormat': formats['json'],
         'Contents': response,
         'EntryContext': context,
-        'HumanReadable': '### Alerts dismissed successfully. Dismissal Note: %s.' % demisto.getArg('dismissal-note')
+        'HumanReadable': '### Alerts {} successfully. {} Note: {}.'.format(msg_notes[0], msg_notes[1], demisto.getArg('dismissal-note'))
     })
 
 
