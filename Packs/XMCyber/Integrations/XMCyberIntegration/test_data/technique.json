@@ -1,0 +1,8 @@
+{
+    "technique": "Exploit::DomainCredentials",
+    "criticalAssets": 36,
+    "entities": 31,
+    "displayName": "Domain Credentials",
+    "complexity": 2,
+    "complexityLevel": "low"
+}

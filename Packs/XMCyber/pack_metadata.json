@@ -1,0 +1,24 @@
+{
+    "name": "XM Cyber",
+    "description": "XMCyber continuously finds attack vectors to critical assets. This integration exposes the attack vectors and the techinques found by XMCyber to indicate endpoints, users, files, etc that pose high risk to the organization. In addition, Demisto\u2019s other integrations can feed XMCyber with knowledge about potential breach points and critical assets with which to run dynamic and accurate scenarios.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Matan Mazursky",
+    "url": "",
+    "email": "matan@xmcyber.com",
+    "created": "2020-09-02T19:59:58Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Critical Assets",
+        "Breach and Attack Simulation",
+        "BAS",
+        "Choke Points",
+        "VA",
+        "VM"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
