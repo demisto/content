@@ -1,5 +1,4 @@
 import demistomock as demisto
-import requests
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -9,7 +8,7 @@ import re
 import copy
 import types
 import urllib3
-from taxii2client import v20, v21, MEDIA_TYPE_STIX_V20
+from taxii2client import v20, v21
 from taxii2client.common import TokenAuth, _HTTPConnection
 
 # disable insecure warnings
