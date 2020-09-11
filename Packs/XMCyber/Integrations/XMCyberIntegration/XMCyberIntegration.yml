@@ -5,6 +5,8 @@ name: XMCyber
 display: XM Cyber
 category: Data Enrichment & Threat Intelligence
 description: Simulates attack vectors to critical assets
+tests:
+- No tests
 configuration:
 - display: API Key
   name: apikey
@@ -16,11 +18,15 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
   required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 script:
   commands:
   - name: xmcyber-asset-attack-path-list
@@ -2196,7 +2202,7 @@ script:
     - contextPath: XMCyber.AttackPath.pathComplexity
       description: ''
       type: Number
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: false
   longRunning: false
   longRunningPort: false
