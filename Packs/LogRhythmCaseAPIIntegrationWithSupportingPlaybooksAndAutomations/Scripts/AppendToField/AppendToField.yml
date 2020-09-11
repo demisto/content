@@ -1,0 +1,27 @@
+args:
+- description: Text to append.
+  isArray: true
+  name: append_this
+  required: true
+- description: Field to append to.
+  name: field
+  required: true
+- description: Current contents of the field.
+  name: field_contents
+comment: Appends the given text to the specified field.
+commonfields:
+  id: appendToField
+  version: -1
+dockerimage: demisto/python3:3.8.3.9324
+enabled: true
+name: appendToField
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

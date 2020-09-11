@@ -1,0 +1,299 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: cc275775-5e01-4b1b-8fec-7e2474373ade
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: PROJX-Send Closure to SIEM
+inputs: []
+name: PROJX-Send Closure to SIEM
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0db9f1e6-0ca7-4240-8546-2020358a88dc
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 0db9f1e6-0ca7-4240-8546-2020358a88dc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alarm-id:
+        simple: ${incident.siemid}
+      comments:
+        simple: 'XSOAR Incident ${incident.id} Closed by NTT SOC: ${incident.closeNotes}'
+      status:
+        simple: Closed_FalseAlarm
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Update alarm status
+      id: f8e2f134-6f92-44df-8dbc-1f942693e16e
+      iscommand: true
+      name: Update LR Alarm
+      script: '|||lr-update-alarm-status'
+      type: regular
+      version: -1
+    taskid: f8e2f134-6f92-44df-8dbc-1f942693e16e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      first:
+        simple: ${incident.linkedCount}
+      second:
+        simple: "0"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      id: 90ee3aae-ef73-478d-88a3-d6030ae257c9
+      iscommand: false
+      name: Is LInkedCount > 0?
+      script: IsGreaterThan
+      type: condition
+      version: -1
+    taskid: 90ee3aae-ef73-478d-88a3-d6030ae257c9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 85da1987-3d78-4d0b-841a-5b93c0f76533
+      iscommand: false
+      name: Done.
+      type: title
+      version: -1
+      description: ''
+    taskid: 85da1987-3d78-4d0b-841a-5b93c0f76533
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      close_notes:
+        simple: ${incident.closeNotes}
+      inc_id:
+        simple: ${incident.id}
+      list:
+        simple: ${incident.linkedalarms}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Takes a CSV list of Alarm IDs, closing the corresponding alarms
+        with a note that they are linked to the current SIEM ID.
+      id: 9613b9ac-814f-4347-851a-8a1ca2536a85
+      iscommand: false
+      name: Close Linked Alarms
+      script: 0153579b-2d0f-4f53-8b83-73fbc3e8e716
+      type: regular
+      version: -1
+    taskid: 9613b9ac-814f-4347-851a-8a1ca2536a85
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 895
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      LR-Case-API:
+      - "8"
+      LogRhythm:
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${incident.sourceBrand}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Gets a value and return it. This is to be used in playbook conditional\
+        \ tasks - get a value from incident field, label or context, and act accordingly.\
+        \ \nIf an array is returned. the first value will be the decision making value."
+      id: 9743a8f2-2450-49e7-890b-7641b50928ec
+      iscommand: false
+      name: Alarm or Case?
+      script: checkValue
+      type: condition
+      version: -1
+    taskid: 9743a8f2-2450-49e7-890b-7641b50928ec
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      case_id:
+        simple: ${incident.lrcaseid}
+      status:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Update the status of a case by sending the numerical status code.
+      id: 9e2aac62-6c08-493e-88c9-fdc312aa070e
+      iscommand: true
+      name: Set Case Status to Completed
+      script: '|||lr-update-case-status'
+      type: regular
+      version: -1
+    taskid: 9e2aac62-6c08-493e-88c9-fdc312aa070e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      case_id:
+        simple: ${incident.lrcaseid}
+      comment:
+        simple: ${incident.closeNotes}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the case summary.
+      id: 93f5037d-7036-4449-8b74-bc08c135cdda
+      iscommand: true
+      name: Update case summary with closure note.
+      script: '|||lr-update-case-summary'
+      type: regular
+      version: -1
+    taskid: 93f5037d-7036-4449-8b74-bc08c135cdda
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,0 +1,22 @@
+args:
+- description: Incident ID you want the notes for.
+  name: incident_id
+  required: true
+commonfields:
+  id: GetNotes
+  version: -1
+dockerimage: demisto/python3:3.8.5.10845
+enabled: true
+name: GetNotes
+outputs:
+- contextPath: XSOAR.Investigation.Notes
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

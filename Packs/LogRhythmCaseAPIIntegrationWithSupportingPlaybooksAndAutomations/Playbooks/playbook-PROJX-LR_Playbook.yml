@@ -1,0 +1,197 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: cc275775-5e01-4b1b-8fec-7e2474373ade
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: PROJX-LR Playbook
+inputs: []
+name: PROJX-LR Playbook
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6ba82f76-5a91-4a13-8608-a8040aefd828
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6ba82f76-5a91-4a13-8608-a8040aefd828
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d3f08aad-8817-4f81-8714-75aa2f15dd52
+      iscommand: false
+      name: Done.
+      type: title
+      version: -1
+      description: ''
+    taskid: d3f08aad-8817-4f81-8714-75aa2f15dd52
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 885
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b8346925-3b8c-435e-8a53-e47ccd7fdf76
+      iscommand: false
+      name: df12b64a-bb73-4452-87c4-8908bdf74b53
+      playbookId: df12b64a-bb73-4452-87c4-8908bdf74b53
+      type: playbook
+      version: -1
+      description: ''
+    taskid: b8346925-3b8c-435e-8a53-e47ccd7fdf76
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 535
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9895d488-3865-4b47-8276-9312f80be7c5
+      iscommand: false
+      name: 1451d8f4-8ab7-4251-8c19-02e69926fe81
+      playbookId: 1451d8f4-8ab7-4251-8c19-02e69926fe81
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 9895d488-3865-4b47-8276-9312f80be7c5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 710
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ea216940-a1b4-4f11-84fa-565186fa42eb
+      iscommand: false
+      name: Place automation tasks here.
+      type: title
+      version: -1
+      description: ''
+    taskid: ea216940-a1b4-4f11-84fa-565186fa42eb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 477bef35-51f8-4381-8812-6d5cd4270dc0
+      iscommand: false
+      name: 16dd589f-e91e-4641-8198-499dc6d18f64
+      playbookId: 16dd589f-e91e-4641-8198-499dc6d18f64
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 477bef35-51f8-4381-8812-6d5cd4270dc0
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 215
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 885,
+        "width": 380,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

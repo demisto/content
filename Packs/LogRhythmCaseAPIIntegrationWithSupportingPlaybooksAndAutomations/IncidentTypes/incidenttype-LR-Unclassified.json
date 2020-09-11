@@ -1,0 +1,21 @@
+{
+ "autorun": true,
+ "color": "#8c9eff",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "LR-Unclassified",
+ "locked": false,
+ "name": "LR-Unclassified",
+ "playbookId": "afbaa86b-da5c-4d7a-8511-92ec8a1ebd72",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

@@ -1,0 +1,49 @@
+{
+ "feed": false,
+ "id": "b533c401-5172-43c1-8387-db2ea60c5b1b_custom-mapper",
+ "keyTypeMap": {
+  "C2": "LR-Unclassified",
+  "Lateral": "LR-Unclassified"
+ },
+ "name": "LogRhythm (custom) (mapper)",
+ "transformer": {
+  "complex": {
+   "accessor": "",
+   "filters": [
+
+   ],
+   "root": "AlarmRuleName",
+   "transformers": [
+    {
+     "args": {
+      "delimiter": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": ":"
+       }
+      }
+     },
+     "operator": "splitAndTrim"
+    },
+    {
+     "args": {
+      "index": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "1"
+       }
+      }
+     },
+     "operator": "atIndex"
+    }
+   ]
+  },
+  "simple": ""
+ },
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "description": ""
+}

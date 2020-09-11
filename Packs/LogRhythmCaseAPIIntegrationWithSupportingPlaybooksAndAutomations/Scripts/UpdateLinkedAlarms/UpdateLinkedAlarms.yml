@@ -1,0 +1,26 @@
+args:
+- description: CSV list of Alarm IDs
+  isArray: true
+  name: list
+  required: true
+- description: The Case ID to specify in the alarm notes.
+  name: case_id
+  required: true
+comment: Takes a CSV list of Alarm IDs, closing the corresponding alarms with a note
+  that they are linked to the current SIEM ID.
+commonfields:
+  id: UpdateLinkedAlarms
+  version: -1
+dockerimage: demisto/python3:3.8.3.9324
+enabled: true
+name: UpdateLinkedAlarms
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

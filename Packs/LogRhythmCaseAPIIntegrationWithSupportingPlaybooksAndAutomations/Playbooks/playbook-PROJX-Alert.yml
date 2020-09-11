@@ -1,0 +1,448 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: cc275775-5e01-4b1b-8fec-7e2474373ade
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: PROJX-Alert
+inputs: []
+name: PROJX-Alert
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 59582af8-f01c-4cbe-8a74-4b232dc51956
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 59582af8-f01c-4cbe-8a74-4b232dc51956
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Analyst notified Client.
+      closeReason:
+        simple: A potential security threat was detected by SIEM and validated by
+          NTTS.
+      emailclassification: {}
+      id:
+        complex:
+          accessor: id
+          root: incident
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: ead0fb03-49a3-45a4-8e45-c2f4a9bf14bb
+      iscommand: true
+      name: Close Demisto Incident - Alerted.
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: ead0fb03-49a3-45a4-8e45-c2f4a9bf14bb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e2d9029d-0065-4e1e-8750-a90e79ea08bc
+      iscommand: false
+      name: Done.
+      type: title
+      version: -1
+      description: ''
+    taskid: e2d9029d-0065-4e1e-8750-a90e79ea08bc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+  "8":
+    fieldMapping:
+    - incidentfield: LR Case ID
+      output:
+        simple: ${LogRhythm.Case.id}
+    - incidentfield: LR Case Number
+      output:
+        simple: ${LogRhythm.Case.number}
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      inc_id:
+        complex:
+          root: incident
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: id
+            operator: getField
+      name:
+        simple: ${incident.name}
+      priority:
+        simple: ${incident.severity}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Case in LogRhythm
+      id: 1fef4b0b-fb4d-4f28-8920-194079e24d0e
+      iscommand: true
+      name: Create LR Case
+      script: '|||lr-create-case'
+      type: regular
+      version: -1
+    taskid: 1fef4b0b-fb4d-4f28-8920-194079e24d0e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "17"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      first:
+        simple: ${incident.linkedCount}
+      second:
+        simple: "0"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      id: ab1aacbd-895d-440c-858b-66dd12767cb7
+      iscommand: false
+      name: Is Linked Count > 0?
+      script: IsGreaterThan
+      type: condition
+      version: -1
+    taskid: ab1aacbd-895d-440c-858b-66dd12767cb7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alarms:
+        simple: ${incident.siemid}
+      case_id:
+        simple: ${LogRhythm.Case.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Adds the specified alarms to the specified case.
+      id: fddac906-6a4b-4c58-8d04-c91766bb31e4
+      iscommand: true
+      name: Add Alarm to Case
+      script: '|||lr-add-alarms-to-case'
+      type: regular
+      version: -1
+    taskid: fddac906-6a4b-4c58-8d04-c91766bb31e4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alarms:
+        simple: ${incident.linkedalarms}
+      case_id:
+        simple: ${LogRhythm.Case.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Adds the specified alarms to the specified case.
+      id: 144d45e9-69b3-42c2-8d83-7ee475b6e629
+      iscommand: true
+      name: Add Linked Alarms to Case
+      script: '|||lr-add-alarms-to-case'
+      type: regular
+      version: -1
+    taskid: 144d45e9-69b3-42c2-8d83-7ee475b6e629
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alarm-id:
+        simple: ${incident.siemid}
+      comments:
+        simple: Added to Case ${LogRhythm.Case.number} by NTTS XSOAR.
+      status:
+        simple: Escalated
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Update alarm status
+      id: 6cc54fca-cdc2-47bf-8191-889c389de207
+      iscommand: true
+      name: Escalate the Alarm
+      script: '|||lr-update-alarm-status'
+      type: regular
+      version: -1
+    taskid: 6cc54fca-cdc2-47bf-8191-889c389de207
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      case_id:
+        simple: ${LogRhythm.Case.id}
+      list:
+        simple: ${incident.linkedalarms}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Takes a CSV list of Alarm IDs, closing the corresponding alarms
+        with a note that they are linked to the current SIEM ID.
+      id: fde22e75-31b2-450a-8680-cedf37aed1c5
+      iscommand: false
+      name: Escalated the Linked Alarms
+      script: 19dde990-c9e9-450c-8edc-3a3ee5d8d1c5
+      type: regular
+      version: -1
+    taskid: fde22e75-31b2-450a-8680-cedf37aed1c5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      case_id:
+        simple: ${LogRhythm.Case.number}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a note indicating the LR Case ID.
+      id: ac513752-3acd-4f07-8237-9d5f6a0009fb
+      iscommand: false
+      name: Make note of the human readable case number.
+      script: 12c7a899-8412-41b0-8c14-6cbcd7e1dd0d
+      type: regular
+      version: -1
+    taskid: ac513752-3acd-4f07-8237-9d5f6a0009fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryIDs:
+        simple: ${lastCompletedTaskEntries}
+      isNote:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.entriesNotes.set
+      id: 743f7692-508a-47c8-8e1e-680a05731ccf
+      iscommand: true
+      name: Mark the note.
+      script: Builtin|||markAsNote
+      type: regular
+      version: -1
+    taskid: 743f7692-508a-47c8-8e1e-680a05731ccf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 09976f9f-77c4-48b3-84bf-8cc0c41c8b36
+      iscommand: false
+      name: 9958d667-9319-4def-8c0d-5f77b5eaa846
+      playbookId: 9958d667-9319-4def-8c0d-5f77b5eaa846
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 09976f9f-77c4-48b3-84bf-8cc0c41c8b36
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

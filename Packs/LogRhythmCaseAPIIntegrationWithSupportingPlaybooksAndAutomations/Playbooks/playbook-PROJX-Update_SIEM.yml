@@ -1,0 +1,261 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: cc275775-5e01-4b1b-8fec-7e2474373ade
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: PROJX-Update SIEM
+inputs: []
+name: PROJX-Update SIEM
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eaaf9276-9349-467d-809d-26aacd552e64
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: eaaf9276-9349-467d-809d-26aacd552e64
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      LR-Case-API:
+      - "9"
+      LogRhythm:
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        complex:
+          accessor: sourceBrand
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Gets a value and return it. This is to be used in playbook conditional\
+        \ tasks - get a value from incident field, label or context, and act accordingly.\
+        \ \nIf an array is returned. the first value will be the decision making value."
+      id: f825868b-e927-4c55-85a1-6bf667f36cb2
+      iscommand: false
+      name: checkValue to Determine Platform
+      script: checkValue
+      type: condition
+      version: -1
+    taskid: f825868b-e927-4c55-85a1-6bf667f36cb2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      case_id:
+        simple: ${incident.lrcaseid}
+      comment:
+        simple: 'XSOAR Investigation ID: ${incident.id}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the case summary.
+      id: 75082ac9-72cd-438c-88b0-b6a2be703d53
+      iscommand: true
+      name: Update LR SIEM
+      script: '|||lr-update-case-summary'
+      type: regular
+      version: -1
+    taskid: 75082ac9-72cd-438c-88b0-b6a2be703d53
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incident_id:
+        complex:
+          accessor: id
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 25928492-a2c3-48ec-8005-49a38b9efddf
+      iscommand: false
+      name: GetNotes
+      script: c7cb8f30-97ca-4686-8413-d5fc0e6194ff
+      type: regular
+      version: -1
+    taskid: 25928492-a2c3-48ec-8005-49a38b9efddf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      case_id:
+        simple: ${incident.lrcaseid}
+      note:
+        simple: ${XSOAR.Investigation.Notes}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Adds note evidence to a Case.
+      id: f50f02bd-4ed0-46e3-8ebf-828787c17569
+      iscommand: true
+      name: Add Notes to Case
+      script: '|||lr-add-case-note'
+      type: regular
+      version: -1
+    taskid: f50f02bd-4ed0-46e3-8ebf-828787c17569
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      case_id:
+        simple: ${incident.lrcaseid}
+      comment:
+        simple: 'XSOAR Investigation ID: ${incident.id}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the case summary.
+      id: f047b694-9fec-4a25-8756-b0017b81d157
+      iscommand: true
+      name: Update LR SIEM
+      script: '|||lr-update-case-summary'
+      type: regular
+      version: -1
+    taskid: f047b694-9fec-4a25-8756-b0017b81d157
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      case_id:
+        simple: ${incident.lrcaseid}
+      status:
+        simple: "3"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Update the status of a case by sending the numerical status code.
+      id: 135fbbbc-84aa-498e-8a23-5cf753c6efe6
+      iscommand: true
+      name: Declare an Incident
+      script: '|||lr-update-case-status'
+      type: regular
+      version: -1
+    taskid: 135fbbbc-84aa-498e-8a23-5cf753c6efe6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,0 +1,280 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: cc275775-5e01-4b1b-8fec-7e2474373ade
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: PROJX-Analyst-Validate
+inputs: []
+name: PROJX-Analyst-Validate
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 84218986-3676-4817-8f9e-cf1d189a1be5
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 84218986-3676-4817-8f9e-cf1d189a1be5
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    defaultassigneecomplex:
+      simple: ${incident.owner}
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      "No":
+      - "3"
+      "Yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    sla:
+      days: 0
+      hours: 1
+      weeks: 0
+    task:
+      brand: ""
+      id: f5ea88f9-f3c6-4cd8-88f5-272adebd5208
+      iscommand: false
+      name: Is this activity indicative of a threat?
+      type: condition
+      version: -1
+    taskid: f5ea88f9-f3c6-4cd8-88f5-272adebd5208
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "3":
+    form:
+      description: Provide a concise but detailed note explaining why we closed this
+        investigation.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: closenotes
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Why are we closing this investigation?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Closure Journal
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 36890afe-732c-4995-8919-9ffa1409a8d4
+      iscommand: false
+      name: Gather Closure Reason
+      type: collection
+      version: -1
+    taskid: 36890afe-732c-4995-8919-9ffa1409a8d4
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: ${Closure Journal.Answers.0}
+      closeReason:
+        simple: The activity is not indicative of a threat.
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        complex:
+          accessor: id
+          root: incident
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 5a45442c-7bff-4c89-8d25-828f55c350d4
+      iscommand: true
+      name: Close Demisto Incident - Closed
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 5a45442c-7bff-4c89-8d25-828f55c350d4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5cfb9638-edd5-408f-826e-0a7d580d7fe6
+      iscommand: false
+      name: Done.
+      type: title
+      version: -1
+      description: ''
+    taskid: 5cfb9638-edd5-408f-826e-0a7d580d7fe6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f5534388-2eeb-4be8-88c7-97150a5e5213
+      iscommand: false
+      name: f2db6af8-72a8-49b1-880a-b4812de806e2
+      playbookId: f2db6af8-72a8-49b1-880a-b4812de806e2
+      type: playbook
+      version: -1
+      description: ''
+    taskid: f5534388-2eeb-4be8-88c7-97150a5e5213
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 57d8cdc5-cc4d-44aa-846a-0ada81fb62b7
+      iscommand: false
+      name: 05e0f7a5-81af-4308-8c9c-ba643563b3fe
+      playbookId: 05e0f7a5-81af-4308-8c9c-ba643563b3fe
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 57d8cdc5-cc4d-44aa-846a-0ada81fb62b7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_11_Yes": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

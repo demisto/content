@@ -1,0 +1,14 @@
+{
+    "name": "LogRhythm Case API Integration with Supporting Playbooks and Automations",
+    "description": "Provides enhanced capabilities for dealing with LogRhythm Cases and Alarms. In addition to optionally fetching Cases from a LogRhythm instance, the Integration provides the following commands:\n\nlr-add-alarms-to-case Adds the specified alarms to the specified case.\n\nlr-add-case-note Adds note evidence to a Case.\n\nlr-create-case Creates a Case in LogRhythm\n\nlr-drilldown-on Drills down on an alarm.\n\nlr-update-case-status Update the status of a case by sending the numerical status code.\n\nlr-update-case-summary Updates the case summary.\n\nPack includes supporting Playbooks and Automations, along with a script for linking similar Incidents and passing the underlying alarms back to LR as Case evidence.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Tony Steckman",
+    "url": "",
+    "email": "",
+    "created": "2020-09-11T18:54:20Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

@@ -1,0 +1,115 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: cc275775-5e01-4b1b-8fec-7e2474373ade
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: PROJX-Analyst Act
+inputs: []
+name: PROJX-Analyst Act
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 35a48a67-5585-4cfd-8cea-61801ad208ee
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 35a48a67-5585-4cfd-8cea-61801ad208ee
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "3":
+    defaultassigneecomplex:
+      simple: ${incident.owner}
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    sla:
+      days: 0
+      hours: 1
+      weeks: 0
+    task:
+      brand: ""
+      id: 9f3b7f21-b690-4e68-8a40-7057e4aca774
+      iscommand: false
+      name: Placeholder for Analyst Actons
+      type: regular
+      version: -1
+    taskid: 9f3b7f21-b690-4e68-8a40-7057e4aca774
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 280
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ad6f241d-08f8-41aa-8fa9-62a1ed331b62
+      iscommand: false
+      name: Done.
+      type: title
+      version: -1
+      description: ''
+    taskid: ad6f241d-08f8-41aa-8fa9-62a1ed331b62
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 525,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

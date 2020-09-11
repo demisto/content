@@ -1,0 +1,109 @@
+category: Analytics & SIEM
+commonfields:
+  id: LR-Case-API
+  version: -1
+configuration:
+- display: LR Server URL
+  name: url
+  required: true
+  type: 0
+- display: Your API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: ALL
+  display: status
+  name: status
+  required: false
+  type: 0
+- defaultvalue: 10 minutes
+  display: Ex. 5 minutes, 2 hours, 3 days, etc.
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: dateCreated
+  display: Timestamp field to filter by.
+  name: timestamp_field
+  required: false
+  type: 0
+description: Provides interfaces for dealing with Cases and Alarms, fetches Cases
+  as Incidents.
+display: LR-Case-API
+name: LR-Case-API
+script:
+  commands:
+  - arguments:
+    - description: The XSOAR Incident IP from which the Case will be created.
+      name: inc_id
+      required: true
+    - description: This defines the Case name.
+      name: name
+      required: true
+    - name: priority
+      required: true
+    description: Creates a Case in LogRhythm
+    name: lr-create-case
+    outputs:
+    - contextPath: LogRhythm.Case.id
+      description: The LogRhythm Case ID.
+    - contextPath: LogRhythm.Case.number
+      description: The human readable Case number.
+  - arguments:
+    - description: The LR Case ID.
+      name: case_id
+      required: true
+    - description: Comma separated list of alarms.
+      isArray: true
+      name: alarms
+      required: true
+    description: Adds the specified alarms to the specified case.
+    name: lr-add-alarms-to-case
+  - arguments:
+    - description: The Case to update.
+      name: case_id
+      required: true
+    - description: Comment to add to the Case record.
+      name: comment
+      required: true
+    description: Updates the case summary.
+    name: lr-update-case-summary
+  - arguments:
+    - description: The ID of the Case we are adding a note to.
+      name: case_id
+      required: true
+    - description: The Note we are adding to the Case.
+      name: note
+      required: true
+    description: Adds note evidence to a Case.
+    name: lr-add-case-note
+  - arguments:
+    - description: The alarm ID to drilldown on.
+      name: id
+    description: Drills down on an alarm.
+    name: lr-drilldown-on
+  - arguments:
+    - description: The Case ID for which we will update the status.
+      name: case_id
+      required: true
+    - description: Numerical value of the status we want to change to.
+      name: status
+      required: true
+    description: Update the status of a case by sending the numerical status code.
+    name: lr-update-case-status
+  dockerimage: demisto/python3:3.8.2.6981
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

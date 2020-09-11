@@ -1,0 +1,21 @@
+args:
+- description: The Case ID to make note of.
+  name: case_id
+  required: true
+comment: Creates a note indicating the LR Case ID.
+commonfields:
+  id: MakeNoteOfCaseID
+  version: -1
+dockerimage: demisto/python3:3.8.3.9324
+enabled: true
+name: MakeNoteOfCaseID
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
