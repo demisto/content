@@ -29,7 +29,7 @@ configuration:
   name: redirect_uri
   required: false
   type: 0
-- display: Authorization code (received from the authorization step - see Detailed
+- display: Authorization code (for self-deployed mode - received from the authorization step. see Detailed
     Instructions (?) section)
   name: auth_code
   required: false
@@ -60,7 +60,7 @@ script:
     deprecated: false
     description: |-
       Terminates a user's session from all Office 365 applications, and prevents sign in.
-      Permissions: - User.ReadWrite (Delegated & Application)
+      Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
     execution: false
     name: msgraph-user-terminate-session
   - arguments:
@@ -484,7 +484,7 @@ script:
     deprecated: false
     description: |-
       Changes the user password.
-      Permissions: Directory.AccessAsUser.All(Delegated)
+      Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
     execution: true
     name: msgraph-user-change-password
   - deprecated: false
