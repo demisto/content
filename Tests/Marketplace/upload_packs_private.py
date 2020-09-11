@@ -660,7 +660,7 @@ def print_packs_summary(packs_list):
         successful_packs_table = _build_summary_table(successful_packs)
         print_color(successful_packs_table, LOG_COLORS.GREEN)
         with open('pack_list.txt', 'w') as f:
-            f.write(successful_packs_table)
+            f.write(successful_packs_table.get_string())
     if skipped_packs:
         print_warning(f"Number of skipped packs: {len(skipped_packs)}")
         print_warning("Skipped packs:\n")
