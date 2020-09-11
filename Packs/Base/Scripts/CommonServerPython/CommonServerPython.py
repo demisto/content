@@ -2577,17 +2577,16 @@ class Common(object):
 
 class IndicatorsTimeline:
     """
-    IndicatorsTimeline class - use to return Indicator Timeline object to CommandResults
-    :type indicators: ``list`` or ``dict``
+    IndicatorsTimeline class - use to return Indicator Timeline object to be used in CommandResults
 
+    :type indicators: ``list``
     :param indicators: expects a list of indicators.
+
     :type category: ``str``
-
     :param category: indicator category.
-    :type message: ``str``
 
+    :type message: ``str``
     :param message: indicator message.
-    :return: a list of indicators
 
     :return: None
     :rtype: ``None``
