@@ -3124,13 +3124,18 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
       :return: The parsed date range.
       :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
     """
-    range_split = date_range.split(' ')
+    range_split = date_range.strip().split(' ')
     if len(range_split) != 2:
         return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, '
                      'etc.)')
 
     number = int(range_split[0])
-    if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year', 'years']:
+    if range_split[1].lower() not in ['minute', 'minutes',
+                                      'hour', 'hours',
+                                      'day', 'days',
+                                      'month', 'months',
+                                      'year', 'years',
+                                      ]:
         return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
 
     if not isinstance(timezone, (int, float)):
@@ -3143,7 +3148,7 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         end_time = datetime.now() + timedelta(hours=timezone)
         start_time = datetime.now() + timedelta(hours=timezone)
 
-    unit = range_split[1]
+    unit = range_split[1].lower()
     if 'minute' in unit:
         start_time = end_time - timedelta(minutes=number)
     elif 'hour' in unit:

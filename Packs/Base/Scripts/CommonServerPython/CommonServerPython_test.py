@@ -1691,6 +1691,20 @@ def test_parse_date_range():
     assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
     assert abs(local_start_time - local_end_time).seconds / 60 == 73
 
+    # check with trailing spaces
+    utc_now = datetime.utcnow()
+    utc_start_time, utc_end_time = parse_date_range('2 days   ', utc=True)
+    # testing UTC date time and range of 2 days
+    assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+    assert abs(utc_start_time - utc_end_time).days == 2
+
+    # check case insensitive
+    utc_now = datetime.utcnow()
+    utc_start_time, utc_end_time = parse_date_range('2 Days', utc=True)
+    # testing UTC date time and range of 2 days
+    assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+    assert abs(utc_start_time - utc_end_time).days == 2
+
 
 def test_encode_string_results():
     s = "test"
