@@ -6,14 +6,61 @@ from datetime import datetime
 from distutils.version import LooseVersion
 
 from demisto_sdk.commands.common.tools import find_type
-from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR, FileType
-
+from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR,\
+    FileType, PACKS_PACK_META_FILE_NAME, PACK_METADATA_SUPPORT
 
 INITIAL_FROM_VERSION = "4.5.0"
 SKIPPED_PACKS = [
     'DeprecatedContent',
     'NonSupported'
 ]
+CERTIFIED_PACKS = {
+    'xsoar',
+    'partner',
+}
+
+
+def get_pack_metadata(file_path):
+    """
+    Args:
+        file_path: The Pack metadata file path
+
+    Returns:
+        The file content.
+    """
+    with open(file_path) as pack_metadata:
+        return json.load(pack_metadata)
+
+
+def is_pack_certified(pack_path):
+    """
+        Checks whether the pack is certified or not (Supported by xsoar/partner).
+        Tests are not being collected for uncertified packs.
+    Args:
+        pack_path: The pack path
+
+    Returns:
+        True if the pack is certified, False otherwise.
+
+    """
+    pack_metadata_path = os.path.join(pack_path, PACKS_PACK_META_FILE_NAME)
+    if not os.path.isfile(pack_metadata_path):
+        return False
+    pack_metadata = get_pack_metadata(pack_metadata_path)
+    return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() in CERTIFIED_PACKS
+
+
+def get_integration_tests(file_path):
+    """
+    Args:
+        file_path: The integration yml file path
+
+    Returns:
+        List of all the test playbooks that were set for the given integration.
+    """
+    with open(file_path) as data_file:
+        integration_data = yaml.safe_load(data_file)
+        return integration_data.get('tests', [])
 
 
 def get_integration_data(file_path):
@@ -82,8 +129,11 @@ def run():
             continue
 
         pack_path = os.path.join(PACKS_DIR, pack_name)
+        if not is_pack_certified(pack_path):
+            continue
         pack_integrations = []
         pack_test_playbooks = []
+        integration_test_playbooks = []
 
         integration_dir_path = os.path.join(pack_path, INTEGRATIONS_DIR)
         test_playbook_dir_path = os.path.join(pack_path, TEST_PLAYBOOKS_DIR)
@@ -99,19 +149,22 @@ def run():
                         is_yml_file = integration_file.endswith('.yml')
                         file_path = os.path.join(inner_dir_path, integration_file)
                         if is_yml_file:
+                            integration_test_playbooks.extend(get_integration_tests(file_path))
                             pack_integrations.append(get_integration_data(file_path))
                 else:
                     is_yml_file = file_or_dir.endswith('.yml')
                     file_path = os.path.join(integration_dir_path, file_or_dir)
                     if is_yml_file:
                         pack_integrations.append(get_integration_data(file_path))
+                        integration_test_playbooks.extend(get_integration_tests(file_path))
 
         for file_path in os.listdir(test_playbook_dir_path):
             is_yml_file = file_path.endswith('.yml')
             file_path = os.path.join(test_playbook_dir_path, file_path)
             if is_yml_file and find_type(file_path) == FileType.TEST_PLAYBOOK:
                 test_playbook_id, fromversion = get_playbook_data(file_path)
-                if test_playbook_id not in existing_test_playbooks:
+                is_test_relevant = test_playbook_id in set(integration_test_playbooks)
+                if test_playbook_id not in existing_test_playbooks and is_test_relevant:
                     pack_test_playbooks.append((test_playbook_id, fromversion))
 
         if pack_test_playbooks:
