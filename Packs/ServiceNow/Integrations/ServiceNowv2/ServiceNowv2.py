@@ -671,6 +671,8 @@ class Client(BaseClient):
         """
         body = generate_body(fields, custom_fields)
         query_params = {'sysparm_input_display_value': input_display_value}
+        demisto.info(f'\n\nQuery Params are:\n\n{query_params}')
+        demisto.info(f'\n\nBody:\n\n{body}')
         return self.send_request(f'table/{table_name}', 'POST', params=query_params, body=body)
 
     def delete(self, table_name: str, record_id: str) -> dict:
@@ -938,6 +940,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
 
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
+    demisto.info(f'\n\nResponse from server to create ticket:\n\n{result}')
     ticket = result['result']
 
     hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields_keys)
@@ -2193,5 +2196,5 @@ def main():
             raise
 
 
-if __name__ in ["__builtin__", "builtins"]:
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
