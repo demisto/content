@@ -1650,7 +1650,7 @@ def endpoint_scan_command(client, args):
     )
 
 
-def fetch_incidents(client, first_fetch_time, last_run: dict = None):
+def fetch_incidents(client, first_fetch_time, last_run: dict = None, max_fetch: int = 10):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
 
@@ -1660,7 +1660,7 @@ def fetch_incidents(client, first_fetch_time, last_run: dict = None):
 
     incidents = []
     raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
-                                         limit=50, sort_by_creation_time='asc')
+                                         limit=max_fetch, sort_by_creation_time='asc')
 
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
@@ -1699,6 +1699,11 @@ def main():
     except ValueError as e:
         demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
         timeout = 120
+    try:
+        max_fetch = int(demisto.params().get('max_fetch', 10))
+    except ValueError as e:
+        demisto.debug(f'Failed casting max fetch parameter to int, falling back to 10 - {e}')
+        max_fetch = 10
 
     # nonce, timestamp, auth = create_auth(API_KEY)
     nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
@@ -1728,7 +1733,7 @@ def main():
             demisto.results('ok')
 
         elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(client, first_fetch_time, demisto.getLastRun())
+            next_run, incidents = fetch_incidents(client, first_fetch_time, demisto.getLastRun(), max_fetch)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
