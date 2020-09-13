@@ -22,15 +22,6 @@ def load_test_data(json_path):
         return json.load(f)
 
 
-MOCK_LOGS_LIST = load_test_data('./test_data/logs_list_command_mock.json')
-MOCK_ADD_FILE = load_test_data('./test_data/add_file_command_mock.json')
-MOCK_SERVERS_LIST = load_test_data('./test_data/servers_list_command_mock.json')
-MOCK_AGENTS_LIST = load_test_data('./test_data/agent_list_command_mock.json')
-MOCK_SENSORS_LIST = load_test_data('./test_data/sensors_list_command_mock.json')
-MOCK_HISTORICAL_INVESTIGATION = load_test_data('./test_data/historical_investigation_command_mock.json')
-MOCK_RESULT_LIST = load_test_data('./test_data/result_list_command_mock.json')
-
-
 def test_list_logs_command(requests_mock, mocker):
     """ Unit test
     Given
@@ -42,6 +33,7 @@ def test_list_logs_command(requests_mock, mocker):
     Then
         Validate the content of the CommandResult
     """
+    MOCK_LOGS_LIST = load_test_data('./test_data/logs_list_command_mock.json')
     requests_mock.get(f'{MOCK_URL}/WebApp/api/v1/logs/web_security?output_format=1&page_token=0&since_time=0',
                       json=MOCK_LOGS_LIST)
     args = {
@@ -71,7 +63,9 @@ def test_udso_file_add_command(requests_mock, mocker):
     Then
         Validate the content of the CommandResult
     """
+    MOCK_ADD_FILE = load_test_data('./test_data/add_file_command_mock.json')
     from TrendMicroApex import udso_file_add_command
+
     requests_mock.put(f'{MOCK_URL}/WebApp/api/SuspiciousObjectResource/FileUDSO', json=MOCK_ADD_FILE)
     mocker.patch.object(client, 'create_jwt_token', return_value="fake_token")
 
@@ -99,7 +93,9 @@ def test_servers_list_command(requests_mock, mocker):
     Then
         Validate the content of the CommandResult
     """
+    MOCK_SERVERS_LIST = load_test_data('./test_data/servers_list_command_mock.json')
     from TrendMicroApex import servers_list_command
+
     requests_mock.get(f'{MOCK_URL}/WebApp/API/ServerResource/ProductServers', json=MOCK_SERVERS_LIST)
     mocker.patch.object(client, 'create_jwt_token', return_value="fake_token")
 
@@ -123,7 +119,9 @@ def test_agents_list_command(requests_mock, mocker):
     Then
         Validate the content of the CommandResult
     """
+    MOCK_AGENTS_LIST = load_test_data('./test_data/agent_list_command_mock.json')
     from TrendMicroApex import agents_list_command
+
     requests_mock.get(f'{MOCK_URL}/WebApp/API/AgentResource/ProductAgents', json=MOCK_AGENTS_LIST)
     mocker.patch.object(client, 'create_jwt_token', return_value="fake_token")
 
@@ -147,7 +145,9 @@ def test_endpoint_sensors_list_command(requests_mock, mocker):
     Then
         Validate the content of the CommandResult
     """
+    MOCK_SENSORS_LIST = load_test_data('./test_data/sensors_list_command_mock.json')
     from TrendMicroApex import endpoint_sensors_list_command
+
     requests_mock.put(f'{MOCK_URL}/WebApp/OSCE_iES/OsceIes/ApiEntry', json=MOCK_SENSORS_LIST)
     mocker.patch.object(client, 'create_jwt_token', return_value="fake_token")
 
@@ -190,7 +190,9 @@ def test_create_historical_investigation(requests_mock, mocker):
     Then
         Validate the content of the CommandResult
     """
+    MOCK_HISTORICAL_INVESTIGATION = load_test_data('./test_data/historical_investigation_command_mock.json')
     from TrendMicroApex import create_historical_investigation
+
     requests_mock.post(f'{MOCK_URL}/WebApp/OSCE_iES/OsceIes/ApiEntry', json=MOCK_HISTORICAL_INVESTIGATION)
     mocker.patch.object(client, 'create_jwt_token', return_value="fake_token")
     args = {
@@ -217,7 +219,9 @@ def test_investigation_result_list_command(requests_mock, mocker):
     Then
         Validate the content of the CommandResult
     """
+    MOCK_RESULT_LIST = load_test_data('./test_data/result_list_command_mock.json')
     from TrendMicroApex import investigation_result_list_command
+
     requests_mock.put(f'{MOCK_URL}/WebApp/OSCE_iES/OsceIes/ApiEntry', json=MOCK_RESULT_LIST)
     mocker.patch.object(client, 'create_jwt_token', return_value="fake_token")
     args = {
