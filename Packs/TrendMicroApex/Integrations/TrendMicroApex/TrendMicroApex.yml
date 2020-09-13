@@ -474,14 +474,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The entry id of the file to upload.
+      description: The entry ID of the file to upload.
       isArray: false
       name: entry_id
       required: true
       secret: false
     deprecated: false
     description: Adds the uploaded file information to the User-Defined Suspicious
-      Objects list. If the file is already exist, it will be updated with the new
+      Objects list. If the file already exists, it will be updated with the new
       arguments.
     execution: false
     name: trendmicro-apex-udso-file-add
@@ -534,10 +534,10 @@ script:
       description: The IP address list on the server.
       type: String
     - contextPath: TrendMicroApex.Server.host_name
-      description: The host name of the server.
+      description: The hostname of the server.
       type: String
     - contextPath: TrendMicroApex.Server.capabilities
-      description: Lists the API actions that can be performed on the server.
+      description: The API actions that can be performed on the server.
       type: String
   - arguments:
     - default: false
@@ -594,7 +594,7 @@ script:
       description: The Active Directory domain that the agent belongs to (if applicable).
       type: String
     - contextPath: TrendMicroApex.Agent.folder_path
-      description: The folder path of the agent in the machine
+      description: The folder path of the agent in the machine.
       type: String
     - contextPath: TrendMicroApex.Agent.ip_address_list
       description: The IP address list on the server.
@@ -614,7 +614,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Number of records to retrieve.
+      description: The number of records to retrieve. Default is 50.
       isArray: false
       name: limit
       predefined:
@@ -623,7 +623,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Page where to start retrieving records.
+      description: The page from which to start retrieving records. Default is 0.
       isArray: false
       name: offset
       required: false
@@ -636,7 +636,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filter the agents by endpoint type. Can be 'Desktop' or 'Server'.
+      description: Filter the agents by endpoint type. Can be "Desktop" or "Server".
       isArray: false
       name: filter_by_endpoint_type
       predefined:
@@ -653,7 +653,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filter the agents by operating system
+      description: Filter the agents by operating system.
       isArray: false
       name: filter_by_operating_system
       predefined:
@@ -685,10 +685,10 @@ script:
       description: The GUID of the agent.
       type: String
     - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.serverGuid
-      description: The GUID of the server which manages the agent.
+      description: The GUID of the server that manages the agent.
       type: String
     - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineName
-      description: The Host name of the endpoint.
+      description: The hostname of the endpoint.
       type: String
     - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.isImportant
       description: Whether the agent is tagged as important.
@@ -703,10 +703,10 @@ script:
       description: The GUID of the endpoint.
       type: String
     - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineType
-      description: The Type of endpoint.
+      description: The endpoint type.
       type: String
     - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineLabels
-      description: The machine labels
+      description: The machine labels.
       type: Number
     - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.machineOS
       description: The operating system of the endpoint.
@@ -715,10 +715,10 @@ script:
       description: The isolation status of the agent.
       type: String
     - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.isEnable
-      description: Whether the agent is enabled or not
+      description: Whether the agent is enabled.
       type: Boolean
     - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.userName
-      description: The user name of the agent
+      description: The user name of the agent.
       type: String
     - contextPath: TrendMicroApex.EndpointSensorSecurityAgent.userGuid
       description: The GUID of the user.
@@ -728,105 +728,101 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Filter by file name - partial match
+      description: Filter by file name (partial string match).
       isArray: false
       name: file_name_contains
       required: false
       secret: false
     - default: false
-      description: Filter by file name - Exact match. Can be a comma separated list.
+      description: Filter by file name (exact match). Supports comma-separated values.
       isArray: false
       name: file_name_is
       required: false
       secret: false
     - default: false
-      description: Filter by file path - Exact match. Can be a comma separated list.
+      description: Filter by file path (exact match). Supports comma separated values.
       isArray: false
       name: file_path_is
       required: false
       secret: false
     - default: false
-      description: Filter by account - partial match. Can be a comma separated list.
+      description: Filter by account (partial string match). Supports comma separated values.
       isArray: false
       name: account_contains
       required: false
       secret: false
     - default: false
-      description: Filter by account - Exact match. Can be a comma separated list.
+      description: Filter by account (exact match). Supports comma separated values.
       isArray: false
       name: account_is
       required: false
       secret: false
     - default: false
-      description: Filter by command line - partial match. Can be a comma separated
-        list.
+      description: Filter by command line (partial string match). Supports comma separated values.
       isArray: false
       name: command_line_contains
       required: false
       secret: false
     - default: false
-      description: Filter by command line - Exact match. Can be a comma separated
+      description: Filter by command line (exact match). Supports comma separated values.
         list.
       isArray: false
       name: command_line_is
       required: false
       secret: false
     - default: false
-      description: Filter by registry key - partial match. Can be a comma separated
-        list.
+      description: Filter by registry key (partial string match). Supports comma separated values.
       isArray: false
       name: registry_key_contains
       required: false
       secret: false
     - default: false
-      description: Filter by registry key - Exact match. Can be a comma separated
+      description: Filter by registry key (exact match). Supports comma separated values.
         list.
       isArray: false
       name: registry_key_is
       required: false
       secret: false
     - default: false
-      description: Filter by registry name - partial match. Can be a comma separated
-        list.
+      description: Filter by registry name (partial string match). Supports comma separated values.
       isArray: false
       name: registry_name_contains
       required: false
       secret: false
     - default: false
-      description: Filter by registry name - Exact match. Can be a comma separated
+      description: Filter by registry name (exact match). Supports comma separated values.
         list.
       isArray: false
       name: registry_name_is
       required: false
       secret: false
     - default: false
-      description: Filter by registry data - partial match. Can be a comma separated
-        list.
+      description: Filter by registry data (partial string match). Supports comma separated values.
       isArray: false
       name: registry_data_contains
       required: false
       secret: false
     - default: false
-      description: Filter by registry data - Exact match. Can be a comma separated
+      description: Filter by registry data (exact match). Supports comma separated values.
         list.
       isArray: false
       name: registry_data_is
       required: false
       secret: false
     - default: false
-      description: Filter by host name - partial match. Can be a comma separated list.
+      description: Filter by host name (partial string match). Supports comma separated values.
       isArray: false
       name: host_name_contains
       required: false
       secret: false
     - default: false
-      description: Filter by host name - Exact match. Can be a comma separated list.
+      description: Filter by host name - (exact match). Supports comma separated values.
       isArray: false
       name: host_name_is
       required: false
       secret: false
     - default: false
-      description: Filter by file path - partial match
+      description: Filter by file path (partial string match). Supports comma separated values.
       isArray: false
       name: file_path_contains
       required: false
@@ -835,7 +831,7 @@ script:
       default: false
       description: Operator used in the investigation. 'AND' - return endpoints that
         match all the criteria specified. 'OR' - return endpoints that match one of
-        the criteria specified
+        the specified criteria.
       isArray: false
       name: operator
       predefined:
@@ -850,7 +846,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The source of criteria which used to store the record in BIF. The
+      description: The source of criteria used to store the record in BIF. The
         default value is 0 (UNKNOWN).
       isArray: false
       name: criteria_source
@@ -858,8 +854,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Scope of search results. For example, if the value is Three months,
-        perform assessment on data within the last 90 days only.
+      description: Scope of the search results. For example, if the value is Three months,
+        perform assessment on data within the last 90 days only. Can be "Default", "All", "One month", "Three months", "Six months", or "Twelve months".
       isArray: false
       name: search_period
       predefined:
@@ -874,12 +870,12 @@ script:
     deprecated: false
     description: Creates a new historical investigation on all Security Agents with
       Endpoint Sensor enabled using the specified criteria, search operator, and match
-      condition
+      condition.
     execution: false
     name: trendmicro-apex-historical-investigation-create
     outputs:
     - contextPath: TrendMicroApex.HistoricalInvestigation.taskId
-      description: Task ID received from the investigation creation request
+      description: Task ID received from the investigation creation request.
       type: String
     - contextPath: TrendMicroApex.HistoricalInvestigation.lastContentId
       description: ID used to retrieve the next set of results.
@@ -888,7 +884,7 @@ script:
       description: Whether the source has more results.
       type: Boolean
     - contextPath: TrendMicroApex.HistoricalInvestigation.serverName
-      description: The Name of the server.
+      description: The name of the server.
       type: String
     - contextPath: TrendMicroApex.HistoricalInvestigation.serverGuid
       description: The GUID of the server.
@@ -896,14 +892,14 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Number of records to retrieve.
+      description: The number of records to retrieve. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Page where to start retrieving records.
+      description: The page from which to start retrieving records. Default is 0.
       isArray: false
       name: offset
       required: false
@@ -915,20 +911,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter the results by task name - partial match.
+      description: Filter the results by task name (partial string match).
       isArray: false
       name: filter_by_task_name
       required: false
       secret: false
     - default: false
-      description: Filter the results by creator name - partial match.
+      description: Filter the results by creator name (partial string match).
       isArray: false
       name: filter_by_creator_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filter the results by scan method type.
+      description: Filter the results by the scan method type. Can be "Search Windows registry", "Memory scan using YARA", or "Disk scan using OpenIOC".
       isArray: false
       name: filter_by_scan_type
       predefined:
@@ -938,15 +934,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter the results by criteria name - partial match.
+      description: Filter the results by criteria name (partial string match).
       isArray: false
       name: filter_by_criteria_name
       required: false
       secret: false
     - default: false
-      description: 'The method used for the investigation. Can be comma separated
-        list. Possible values are: Windows registry,YARA rule file,IOC rule file,Disk
-        IOC rule file'
+      description: 'The method used for the investigation. Supports comma-separated values. Possible values are: "Windows registry", "YARA rule file", "IOC rule file", and "Disk
+        IOC rule file".'
       isArray: true
       name: scan_type
       required: true
@@ -963,7 +958,7 @@ script:
       description: The GUID of the investigation.
       type: String
     - contextPath: TrendMicroApex.InvestigationResult.status
-      description: Status of the investigation
+      description: Status of the investigation.
       type: Number
     - contextPath: TrendMicroApex.InvestigationResult.statusForUI
       description: Status of the investigation shown in the web console.
