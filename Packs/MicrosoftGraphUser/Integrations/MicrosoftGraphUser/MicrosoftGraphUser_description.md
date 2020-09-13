@@ -1,5 +1,5 @@
-To allow us access to Microsoft Graph User, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-user).
-After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields.
+Full documentation for this integration is available at our [reference docs](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-user).
+
 ## Authorize Cortex XSOAR for Microsoft Graph User
 
 You need to grant Cortex XSOAR authorization to access Microsoft Graph User.
