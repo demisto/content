@@ -158,13 +158,7 @@ references:
     run:
       name: Create Content Artifacts
       when: always
-      command: |
-        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
-        # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
-        cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
-        unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
-        zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
-        rm -r test_content_dir
+      command: demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
 
   restore_cache: &restore_cache
     restore_cache:
@@ -177,6 +171,11 @@ references:
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ]
           then
             echo "Skipping - not running in demisto-sdk nightly"
+            exit 0
+        fi
+        if [ -n "${CONTRIB_BRANCH}" ]
+          then
+            echo "Skipping - not running in contribution instance"
             exit 0
         fi
         echo "$INSTANCE_ROLE"
@@ -259,6 +258,7 @@ references:
       when: always
       command: |
         demisto-sdk create-id-set -o ./Tests/id_set.json
+        cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
   build_content_descriptor: &build_content_descriptor
     run:
