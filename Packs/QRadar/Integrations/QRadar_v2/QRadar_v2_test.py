@@ -220,7 +220,6 @@ def test_try_create_search_with_retry__sad(mocker):
     offense = RAW_RESPONSES["fetch-incidents"]
     max_retries = 0
     exception_raised = False
-    
     mocker.patch.object(client, "search", side_effect=[ConnectionError, RAW_RESPONSES["qradar-searches"]])
 
     try:
