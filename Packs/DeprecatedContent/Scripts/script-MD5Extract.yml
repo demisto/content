@@ -20,7 +20,7 @@ subtype: python2
 tags:
 - hash
 - infra
-comment: Extract md5s from the given text and place them both as output and in the
+comment: Deprecated. Extract md5s from the given text and place them both as output and in the
   context of a playbook
 system: true
 deprecated: true

@@ -144,7 +144,7 @@ script: |-
 type: javascript
 tags:
 - tanium
-comment: TaniumAskQuestionComplex - same as the AskQuestion command with additional
+comment: Deprecated. TaniumAskQuestionComplex - same as the AskQuestion command with additional
   filtering prepared by the script (an XML subsection added to the request).
 system: true
 args:
