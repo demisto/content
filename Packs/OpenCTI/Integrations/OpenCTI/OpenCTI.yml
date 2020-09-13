@@ -102,29 +102,32 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
+  required: false
   type: 8
-  required: false
-- display: ''
-  name: feedExpirationPolicy
-  type: 17
-  required: false
+- name: feedExpirationPolicy
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-- display: ''
-  name: feedExpirationInterval
-  type: 1
   required: false
+  type: 17
+- name: feedExpirationInterval
+  required: false
+  type: 1
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  type: 8
   required: false
+  type: 8
+- display: max_indicator_to_fetch
+  hidden: false
+  name: max_indicator_to_fetch
+  required: false
+  type: 0
+description: The opencti
 display: OpenCTI
 name: OpenCTI
-description: The opencti
 script:
   commands:
   - arguments:

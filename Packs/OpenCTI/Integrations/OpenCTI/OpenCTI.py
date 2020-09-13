@@ -7,15 +7,15 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 from dateutil.parser import parse
 from pycti import OpenCTIApiClient
-from stix2 import TLP_GREEN
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+# Disable info logging from the api
 import logging
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 
 MAX_INDICATOR_TO_FETCH = demisto.params().get('max_indicator_to_fetch', 500)
-DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
 
 XSOHR_TYPES = {
     'user-account': "Account",
@@ -30,14 +30,6 @@ XSOHR_TYPES = {
     'registry-key-value': "Registry Key",
     'url': "URL"
 }
-
-
-def build_indicator_type(type_list):
-    if 'all' in type_list:
-        return ['user-account', 'domain', 'email-address', 'file-md5', 'file-sha1', 'file-sha256', 'hostname',
-                'ipv4-addr', 'ipv6-addr', 'registry-key-value', 'url']
-    else:
-        return type_list
 
 
 def get_indicators(client, indicator_type, last_run_id, limit):
@@ -80,7 +72,10 @@ def fetch_indicators_command(client, indicator_type):
     Returns:
 
     """
-    indicator_type = build_indicator_type(indicator_type)
+    if 'all' in indicator_type:
+        indicator_type = ['user-account', 'domain', 'email-address', 'file-md5', 'file-sha1', 'file-sha256', 'hostname',
+                          'ipv4-addr', 'ipv6-addr', 'registry-key-value', 'url']
+
     last_run_id = demisto.getIntegrationContext().get('last_run_id')
 
     new_last_run, indicators_list = get_indicators(client, indicator_type, last_run_id, MAX_INDICATOR_TO_FETCH)
@@ -92,26 +87,33 @@ def fetch_indicators_command(client, indicator_type):
 
 
 def get_indicators_command(client, args: dict) -> CommandResults:
-    """ Gets indicator to context
+    """ Gets indicator from opencti to context
 
     Args:
         client: opencti Client object
         args: demisto.args()
 
     Returns:
-        readable_output, context, raw_response
+        readable_output, raw_response
     """
-    indicator_type = build_indicator_type(args.get("indicator_types"))
+    indicator_type = args.get("indicator_types")
+    if 'all' in indicator_type:
+        indicator_type = ['user-account', 'domain', 'email-address', 'file-md5', 'file-sha1', 'file-sha256', 'hostname',
+                          'ipv4-addr', 'ipv6-addr', 'registry-key-value', 'url']
     last_run_id = args.get('last_id')
     limit = int(args.get('limit', MAX_INDICATOR_TO_FETCH))
     last_run_id, indicators_list = get_indicators(client, indicator_type, last_run_id, limit)
-    readable_output = tableToMarkdown('Indicators from OpenCTI', indicators_list, headers=["type", "value"])
+    if indicators_list:
+        readable_output = tableToMarkdown('Indicators from OpenCTI', indicators_list, headers=["type", "value"])
 
-    return CommandResults(
-        readable_output=readable_output,
-        raw_response=indicators_list
-    )
-
+        return CommandResults(
+            readable_output=readable_output,
+            raw_response=indicators_list
+        )
+    else:
+        return CommandResults(
+            readable_output='No indicators'
+        )
 
 def create_last_iocs_query(from_date, to_date):
     return f'modified:>={from_date} and modified:<{to_date})'
@@ -123,9 +125,11 @@ def main():
 
     api_key = params.get('apikey')
     base_url = params.get('base_url')
+    if base_url.endswith('/'):
+        base_url = base_url[:-1]
     indicator_types = params.get('indicator_types')
     try:
-        client = OpenCTIApiClient(base_url, api_key, ssl_verify=True)
+        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'))
         command = demisto.command()
         demisto.info("Command being called is {}".format(command))
         # Switch case
