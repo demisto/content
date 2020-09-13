@@ -2084,7 +2084,7 @@ def resolve_approval_request(id, resolution, requestor_email=None, res_comments=
 def fetch_incidents():
     """
         Fetches incident using the events API
-        :return: Fetched events in incident format.
+        :return: Fetched events in incident format
     """
     last_run = demisto.getLastRun()
     # Get the last fetch time, if exists
