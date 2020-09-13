@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+         {
+            "integrations": "SecurityIntelligenceServicesFeed",
+            "playbookID": "SecurityIntelligenceServicesFeed - Test",
+            "fromversion": "5.5.0"
+        },
         {
             "integrations": [
                 "Mail Listener v2",
@@ -2942,6 +2947,7 @@
         {
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
+            "fromversion": "5.0.0",
             "timeout": 500
         },
         {

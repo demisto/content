@@ -44,7 +44,7 @@ subtype: python2
 tags:
 - ews
 - exchange
-comment: Delete Mails with ID's under the context key "ExchangeItemIDs"
+comment: Deprecated. Delete Mails with ID's under the context key "ExchangeItemIDs"
 system: true
 scripttarget: 0
 args: []
