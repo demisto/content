@@ -165,7 +165,9 @@ def test_function(client, _):
        Performs basic GET request to check if the API is reachable and authentication is successful.
        Returns ok if successful.
        """
+    response = 'ok'
     if demisto.params().get('self_deployed', False):
+        response = '```✅ Success!```'
         if demisto.command() == 'test-module':
             # cannot use test module due to the lack of ability to set refresh token to integration context
             # for self deployed app
@@ -173,8 +175,9 @@ def test_function(client, _):
                             "Please enable the integration and use !msgraph-user-test in order to test it")
         if not demisto.params().get('auth_code'):
             raise Exception("You must enter an authorization code in a self-deployed configuration.")
+
     client.ms_client.http_request(method='GET', url_suffix='users/')
-    return '```✅ Success!```', None, None
+    return response, None, None
 
 
 def terminate_user_session_command(client: MsGraphClient, args: Dict):

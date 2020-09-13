@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import requests
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Optional
 
 # authorization types
 OPROXY_AUTH_TYPE = 'oproxy'
@@ -30,7 +30,7 @@ class MicrosoftClient(BaseClient):
                  scope: str = 'https://graph.microsoft.com/.default',
                  grant_type: str = CLIENT_CREDENTIALS,
                  redirect_uri: str = 'https://localhost/myapp',
-                 resource: str = '',
+                 resource: Optional[str] = '',
                  multi_resource: bool = False,
                  resources: List[str] = None,
                  verify: bool = True,
