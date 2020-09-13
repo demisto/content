@@ -262,6 +262,18 @@ script:
       name: content
       required: true
       secret: false
+    - default: false
+      description: 'Description of the object (maximum length: 256 characters).'
+      isArray: false
+      name: notes
+      required: false
+      secret: false
+    - default: false
+      description: The scan action to perform on the suspicious object.
+      isArray: false
+      name: scan_action
+      required: false
+      secret: false
     deprecated: false
     description: Delete suspicious file SHA-1, IP address, domain, or URL objects
       from the User-Defined Suspicious Object list.

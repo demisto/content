@@ -687,7 +687,8 @@ def udso_add_command(client: Client, args):
     add_type = args.get('type')
     content = args.get('content')
     scan_action = args.get('scan_action')
-    response = client.udso_add(add_type=add_type, content=content, scan_action=scan_action)
+    notes = args.get('notes')
+    response = client.udso_add(add_type=add_type, content=content, scan_action=scan_action, notes=notes)
 
     readable_output = f'### UDSO "{content}" of type "{add_type}" was added successfully with scan action ' \
                       f'"{scan_action}"'
