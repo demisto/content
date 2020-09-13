@@ -162,7 +162,7 @@ class STIX21Processor:
             'tags': tags,
             'stixid': raw_data.get('id'),
             'trafficlightprotocol': tlp_color,
-            'stixdescription': raw_data.get('description'),
+            'stixdescription': raw_data.get('description', ''),
             'stixismalwarefamily': raw_data.get('is_family'),
             'stixmalwaretypes': raw_data.get('malware_types')
         }
@@ -193,7 +193,7 @@ class STIX21Processor:
             'stixid': raw_data.get('id'),
             'trafficlightprotocol': tlp_color,
             'stixaliases': raw_data.get('aliases'),
-            'stixdescription': raw_data.get('description'),
+            'stixdescription': raw_data.get('description', ''),
             'stixsophistication': raw_data.get('sophistication'),
             'stixprimarymotivation': raw_data.get('primary_motivation'),
             'stixsecondarymotivations': raw_data.get('secondary_motivations'),
@@ -228,7 +228,7 @@ class STIX21Processor:
             'stixid': raw_data.get('id'),
             'trafficlightprotocol': tlp_color,
             'published': raw_data.get('published'),
-            'stixdescription': raw_data.get('description'),
+            'stixdescription': raw_data.get('description', ''),
         }
         report['rawJSON'] = {
             'fireeye_id': raw_data.get('id'),
@@ -530,7 +530,7 @@ def main():
     public_key = demisto.params().get('credentials').get('identifier')
     private_key = demisto.params().get('credentials').get('password')
 
-    feedTags = argToList(demisto.params().get('feedTags'), '')
+    feedTags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
 
     polling_arg = demisto.params().get('polling_timeout', '')
