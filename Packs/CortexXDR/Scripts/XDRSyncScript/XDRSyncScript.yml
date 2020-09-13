@@ -13,12 +13,11 @@ args:
   required: true
   secret: false
 - default: false
-  description: DEPRECATED
+  description: When an incident is the latest incident in XDR it will be updated in Demisto and the playbook will rerun.
   isArray: false
   name: playbook_to_run
   required: false
   secret: false
-  deprecated: true
 - default: false
   defaultValue: xdrassigneduseremail
   description: The assigned_user_mail field name in Demisto.
@@ -457,6 +456,6 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.8.5.10455
+dockerimage: demisto/python3:3.8.5.10845
 tests:
 - No test - there are unit tests instead
