@@ -29,6 +29,16 @@ configuration:
   name: timeout
   required: false
   type: 0
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -37,11 +47,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
-  required: false
-  type: 0
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
