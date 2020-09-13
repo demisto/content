@@ -45,7 +45,8 @@ def file_standard(observable: Dict) -> Common.File:
         size=observable.get('fileSize'),
         path=observable.get('filePath')
     )
-    if hash_type := observable.get('fileHashType', '').lower():
+    hash_type = observable.get('fileHashType', '').lower()
+    if hash_type:
         if hash_type in INDICATOR_TYPE_TO_CONTEXT_KEY:
             hash_value = observable.get('fileHashValue')
             if hash_type == 'md5':
@@ -66,11 +67,14 @@ def network_standard(observable: Dict) -> Optional[Union[Common.Domain, Common.I
     Returns:
         Context standard or None of not supported
     """
-    if domain_name := observable.get('domainName'):
+    domain_name = observable.get('domainName')
+    url = observable.get('url')
+    ip = observable.get('networkIPv4', observable.get('networkIPv6'))
+    if domain_name:
         return Common.Domain(domain_name, Common.DBotScore.NONE)
-    elif ip := observable.get('networkIPv4', observable.get('networkIPv6')):
+    elif ip:
         return Common.IP(ip, Common.DBotScore(ip, DBotScoreType.IP, 'Microsoft Defender Advanced Threat Protection', 0))
-    elif url := observable.get('url'):
+    elif url:
         return Common.URL(url, Common.DBotScore.NONE)
     return None
 
