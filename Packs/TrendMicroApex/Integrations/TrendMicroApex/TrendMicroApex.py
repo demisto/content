@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -661,11 +660,14 @@ def udso_list_command(client: Client, args):
     list_data = response.get('Data')
     readable_output = tableToMarkdown("Apex UDSO List", list_data)
 
+    context = {
+        'TrendMicroApex.UDSO(val.content == obj.content)': list_data,
+        'TrendMicroApex.USDO(val.content == obj.content)': list_data,  # for bc reasons
+    }
+
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='TrendMicroApex.UDSO',
-        outputs_key_field='content',
-        outputs=list_data,
+        outputs=context,
         raw_response=response
     )
 
@@ -687,8 +689,10 @@ def udso_add_command(client: Client, args):
     add_type = args.get('type')
     content = args.get('content')
     scan_action = args.get('scan_action')
-    notes = args.get('notes')
-    response = client.udso_add(add_type=add_type, content=content, scan_action=scan_action, notes=notes)
+    notes = args.get('notes', "")
+    expiration = args.get('expiration', "")
+    response = client.udso_add(add_type=add_type, content=content, scan_action=scan_action, notes=notes,
+                               expiration=expiration)
 
     readable_output = f'### UDSO "{content}" of type "{add_type}" was added successfully with scan action ' \
                       f'"{scan_action}"'
@@ -766,7 +770,8 @@ def list_logs_command(client: Client, args):
             parsed_logs_list = client.parse_cef_logs_to_dict_logs(response)[:limit]
 
     log_type = args.get('log_type')
-    headers = ['EventName', 'EventID', 'CreationTime', 'LogVersion', 'ApplianceVersion', 'ApplianceProduct', 'ApplianceVendor']
+    headers = ['EventName', 'EventID', 'CreationTime', 'LogVersion', 'ApplianceVersion', 'ApplianceProduct',
+               'ApplianceVendor']
     readable_output = tableToMarkdown(f'Trend Micro Apex - {log_type} Logs', parsed_logs_list, headers=headers,
                                       removeNull=True)
 
