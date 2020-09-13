@@ -16,7 +16,8 @@ STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN', '')
 FILES_TO_REMOVE = ['content-descriptor.json', 'doc-CommonServer.json', 'doc-howto.json', 'reputations.json',
                    'tools-o365.zip', 'tools-exchange.zip', 'tools-winpmem.zip']
-MASTER_CONTENT_ZIP_PATH = f'{ARTIFACTS_PATH}/content_new.zip'
+CONTENT_ZIP_PATH = f'{ARTIFACTS_PATH}/content_new.zip'
+ORIGINAL_CONTENT_ZIP_PATH = f'{ARTIFACTS_PATH}/original_content_new.zip'
 
 
 def http_request(method, url, params=None):
@@ -145,9 +146,9 @@ def merge_zip_files(feature_branch_content_zip_file_path):
         feature_branch_content_zip_file_path: Feature content_new.zip file path
 
     """
-
-    unified_zip = z.ZipFile(f'{ARTIFACTS_PATH}/unified_content.zip', 'a')
-    with z.ZipFile(MASTER_CONTENT_ZIP_PATH, 'r') as master_zip:
+    os.rename(CONTENT_ZIP_PATH, ORIGINAL_CONTENT_ZIP_PATH)
+    unified_zip = z.ZipFile(CONTENT_ZIP_PATH, 'a')
+    with z.ZipFile(ORIGINAL_CONTENT_ZIP_PATH, 'r') as master_zip:
         feature_zip = z.ZipFile(feature_branch_content_zip_file_path, 'r')
         for name in feature_zip.namelist():
             if name not in FILES_TO_REMOVE:
