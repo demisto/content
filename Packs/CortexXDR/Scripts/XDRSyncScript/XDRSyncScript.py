@@ -217,8 +217,8 @@ def get_latest_incident_from_xdr(incident_id):
 
 
 def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run, first_run, xdr_alerts_field,
-                      xdr_file_artifacts_field, xdr_network_artifacts_field, incident_in_demisto, verbose=True):
-
+                      xdr_file_artifacts_field, xdr_network_artifacts_field, incident_in_demisto, playbook_to_run,
+                      verbose=True):
     latest_incident_in_xdr_result, latest_incident_in_xdr, latest_incident_in_xdr_markdown = \
         get_latest_incident_from_xdr(incident_id)
 
@@ -296,8 +296,12 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
                 "Incident in XDR was modified, updating incident in Demisto accordingly.\n\n{}".format(demisto_update_args),
                 None)
 
-        # rerun the playbook the current playbook
-        demisto.executeCommand("setPlaybook", {})
+        if playbook_to_run:
+            demisto.executeCommand("setPlaybook", {"name": playbook_to_run})
+        else:
+            # rerun the playbook the current playbook
+            demisto.executeCommand("setPlaybook", {})
+
         return latest_incident_in_xdr
 
     if first_run:
@@ -339,6 +343,7 @@ def main(args):
     xdr_file_artifacts_field = args.get('xdr_file_artifacts')
     xdr_network_artifacts_field = args.get('xdr_network_artifacts')
     verbose = args.get('verbose') == 'true'
+    playbook_to_run = args.get('playbook_to_run')
 
     # get current running incident
     incident_in_demisto = demisto.incidents()[0]
@@ -366,13 +371,14 @@ def main(args):
     try:
         latest_incident_in_xdr = xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run,
                                                    first_run, xdr_alerts_field, xdr_file_artifacts_field,
-                                                   xdr_network_artifacts_field, incident_in_demisto, verbose)
-    except Exception as ex:
+                                                   xdr_network_artifacts_field, incident_in_demisto, playbook_to_run,
+                                                   verbose)
+    except Exception as e:
         if verbose:
             raise
 
         demisto.error(traceback.format_exc())
-        return_error(str(ex), ex)
+        return_error(str(e), e)
     finally:
         # even if error occurred keep trigger sync
         if latest_incident_in_xdr is None:
