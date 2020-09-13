@@ -39,7 +39,7 @@ type: python
 subtype: python2
 tags:
 - protectwise
-comment: Retrieve details for a specific event from ProtectWise
+comment: Deprecated. Retrieve details for a specific event from ProtectWise
 system: true
 args:
 - name: id

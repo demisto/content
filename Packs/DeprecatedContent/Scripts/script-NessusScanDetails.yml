@@ -27,7 +27,7 @@ type: python
 subtype: python2
 tags:
 - nessus
-comment: Show information about the specified scan.
+comment: Deprecated. Show information about the specified scan.
 system: true
 args:
 - name: scanId
