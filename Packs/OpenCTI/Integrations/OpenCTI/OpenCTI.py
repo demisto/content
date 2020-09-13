@@ -1,5 +1,3 @@
-import json
-import traceback
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import dateparser
@@ -12,61 +10,64 @@ from pycti import OpenCTIApiClient
 from stix2 import TLP_GREEN
 # Disable insecure warnings
 urllib3.disable_warnings()
+import logging
+logger = logging.getLogger()
+logger.setLevel(logging.ERROR)
 
-
+MAX_INDICATOR_TO_FETCH = demisto.params().get('max_indicator_to_fetch', 500)
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
 
-OPENCTI_TYPES = {
-    'Account': "Account",
-    'CVE': "CVE",
-    'Domain': "Domain",
-    'DomainGlob': "DomainGlob",
-    'Email': "Email-Address",
-    'File': "File",
-    'FQDN': "Domain",
-    'MD5': "File MD5",
-    'SHA1': "File SHA-1",
-    'SHA256': "File SHA-256",
-    'Host': "Host",
-    'IP': "IPv4-Addr",
-    'CIDR': "CIDR",
-    'IPv6': "IPv6-Addr",
-    'IPv6CIDR': "IPv6CIDR",
-    'Registry': "Registry Key",
-    'SSDeep': "ssdeep",
-    'URL': "URL"
-}
-
 XSOHR_TYPES = {
-    'Account': "Account",
-    'CVE': "CVE",
+    'user-account': "Account",
     'domain': "Domain",
-    'DomainGlob': "DomainGlob",
     'email-address': "Email",
-    'File': "File",
-    'FQDN': "Domain",
-    'MD5': "File MD5",
-    'SHA1': "File SHA-1",
-    'SHA256': "File SHA-256",
-    'Host': "Host",
+    'file-md5': "File MD5",
+    'file-sha1': "File SHA-1",
+    'file-sha256': "File SHA-256",
+    'hostname': "Host",
     'ipv4-addr': "IP",
-    'CIDR': "CIDR",
-    'IPv6': "IPv6",
-    'IPv6CIDR': "IPv6CIDR",
-    'Registry': "Registry Key",
-    'SSDeep': "ssdeep",
-    'URL': "URL"
+    'ipv6-addr': "IPv6",
+    'registry-key-value': "Registry Key",
+    'url': "URL"
 }
 
 
 def build_indicator_type(type_list):
     if 'all' in type_list:
-        return ['ipv4-addr', 'domain', 'url', 'email-address']
+        return ['user-account', 'domain', 'email-address', 'file-md5', 'file-sha1', 'file-sha256', 'hostname',
+                'ipv4-addr', 'ipv6-addr', 'registry-key-value', 'url']
     else:
-        return_list = []
-        for i in type_list:
-            return_list.append(OPENCTI_TYPES.get(i))
-        return return_list
+        return type_list
+
+
+def get_indicators(client, indicator_type, last_run_id, limit):
+    """ Retrieving indicators from the API
+
+    Args:
+        client: Client object
+        indicator_type: one of ['ip', 'domain', 'all']
+        last_run_id:
+        limit:
+
+    Returns:
+
+    """
+    observables = client.stix_observable.list(types=indicator_type, first=limit, after=last_run_id, withPagination=True)
+    new_last_run = observables.get('pagination').get('endCursor')
+    indicators = [
+        {
+            "value": item['observable_value'],
+            "type": XSOHR_TYPES.get(item['entity_type']),
+            "rawJSON": item,
+            "fields": {
+                "tags": [tag.get('value') for tag in item.get('tags')],
+                "description": item.get('description'),
+                "Creation Date": item.get('created_at'),
+                "Modified": item.get('updated_at')
+            }
+        }for item in observables.get('entities')
+    ]
+    return new_last_run, indicators
 
 
 def fetch_indicators_command(client, indicator_type):
@@ -80,55 +81,14 @@ def fetch_indicators_command(client, indicator_type):
 
     """
     indicator_type = build_indicator_type(indicator_type)
+    last_run_id = demisto.getIntegrationContext().get('last_run_id')
 
-    observables = client.stix_observable.list(filters=[{'key': 'entity_type', 'values': indicator_type}])
+    new_last_run, indicators_list = get_indicators(client, indicator_type, last_run_id, MAX_INDICATOR_TO_FETCH)
 
-    return [
-        {
-            "value": item['observable_value'],
-            "type": XSOHR_TYPES.get(item['entity_type']),
-            "rawJSON": item,
-            "score": parse_to_xsohr_score(item.get('markingDefinitions')),
-            "fields": {
-                "tags": parse_to_xsohr_tags(item.get('tags')),
-                "description": item.get('description')
-            }
-        }for item in observables
-    ]
+    if new_last_run:
+        demisto.setIntegrationContext({'last_run_id': new_last_run})
 
-
-def parse_to_xsohr_tags(tags):
-    return [tag.get('value') for tag in tags]
-
-
-def parse_to_xsohr_score(marking_definition=None):
-    if not marking_definition:
-        return 0
-    else:
-        return marking_definition[0].get('level')-1
-
-
-def parse_to_opencti_score(client, score):
-    if not score:
-        return None
-    else:
-        opencti_scores = {
-            0: 'TLP:WHITE',
-            1: 'TLP:GREEN',
-            2: 'TLP:AMBER',
-            3: 'TLP:RED',
-        }
-        return client.marking_definition.read(filters=[{"key": "definition", "values": [opencti_scores[score]]}])['id']
-
-
-def parse_to_opencti_tags(client, tags):
-    if not tags:
-        return None
-    else:
-        tags_list = []
-        for tag in tags:
-            tags_list.append(client.tag.create(tag_type='xsoar', value=tag, color='#FFFFFF').get('id'))
-    return tags_list
+    return indicators_list
 
 
 def get_indicators_command(client, args: dict) -> CommandResults:
@@ -141,67 +101,20 @@ def get_indicators_command(client, args: dict) -> CommandResults:
     Returns:
         readable_output, context, raw_response
     """
-    indicator_type = build_indicator_type(args.get("indicator_type"))
-
-    observables = client.stix_observable.list(filters=[{'key': 'entity_type', 'values': indicator_type}])
-
-    indicators_list = [{
-        "value": item['observable_value'],
-        "type": XSOHR_TYPES.get(item['entity_type']),
-        "rawJSON": item,
-        "score": parse_to_xsohr_score(item.get('markingDefinitions')),
-        "fields": {
-            "tags": parse_to_xsohr_tags(item.get('tags'))
-        }
-
-    }for item in observables]
+    indicator_type = build_indicator_type(args.get("indicator_types"))
+    last_run_id = args.get('last_id')
+    limit = int(args.get('limit', MAX_INDICATOR_TO_FETCH))
+    last_run_id, indicators_list = get_indicators(client, indicator_type, last_run_id, limit)
     readable_output = tableToMarkdown('Indicators from OpenCTI', indicators_list, headers=["type", "value"])
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='OpenCTI.Indicators',
-        outputs_key_field='value',
-        outputs=indicators_list
+        raw_response=indicators_list
     )
 
 
 def create_last_iocs_query(from_date, to_date):
     return f'modified:>={from_date} and modified:<{to_date})'
-
-
-def update_indicators(client, indicator):
-    type = OPENCTI_TYPES.get(indicator.get("indicator_type", None))
-    observable_value = indicator.get("value", None)
-    description = indicator.get("description", None)
-    marking_definitions = parse_to_opencti_score(client, indicator.get('score'))
-    tags = parse_to_opencti_tags(client, indicator.get("tags", None))
-
-    object_result = client.stix_observable.read(
-        filters=[{"key": "observable_value", "values": [observable_value]}])
-
-    if object_result is None:
-        client.stix_observable.create_raw(
-            type=type,
-            observable_value=observable_value,
-            description=description,
-            markingDefinitions=marking_definitions,
-            tags=tags)
-    else:
-        if description is not None:
-            client.stix_observable.update_field(id=object_result["id"], key="description", value=description)
-
-
-def update_indicators_command(client, args: dict) -> str:
-    from_date = args['from_date']
-    current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
-    query = create_last_iocs_query(from_date=from_date, to_date=current_run)
-
-    indicators = demisto.searchIndicators(query=query, page=0, size=0)
-
-    for indicator in indicators.get('iocs', []):
-        update_indicators(client, indicator)
-    demisto.results(indicators)
-    return 'Indicators updated successfully'
 
 
 def main():
@@ -211,10 +124,8 @@ def main():
     api_key = params.get('apikey')
     base_url = params.get('base_url')
     indicator_types = params.get('indicator_types')
-
     try:
         client = OpenCTIApiClient(base_url, api_key, ssl_verify=True)
-
         command = demisto.command()
         demisto.info("Command being called is {}".format(command))
         # Switch case
@@ -227,8 +138,6 @@ def main():
             return_outputs('ok')
         elif command == "opencti-get-indicators":
             return_results(get_indicators_command(client, args))
-        elif command == "opencti-update-indicators":
-            return_outputs(update_indicators_command(client, args))
 
     except Exception as e:
         return_error(
