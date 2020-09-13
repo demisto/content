@@ -657,7 +657,7 @@ def udso_list_command(client: Client, args):
     content_filter = args.get('content_filter', '')
 
     response = client.udso_list(list_type, content_filter)
-    list_data = response.get('Data')
+    list_data = response.get('Data', [])
     readable_output = tableToMarkdown("Apex UDSO List", list_data)
 
     context = {
@@ -807,8 +807,7 @@ def servers_list_command(client: Client, args):
     for item in response.get('result_content'):  # parse comma separated str to list
         item['ip_address_list'] = item.get('ip_address_list', '').split(',')
 
-    context = {}
-    human_readable_table = {}
+    context = human_readable_table = []
     if response:
         if response.get('result_content'):
             context = human_readable_table = response.get('result_content')
@@ -833,8 +832,7 @@ def agents_list_command(client: Client, args):
     for item in response.get('result_content'):  # parse comma separated str to list
         item['ip_address_list'] = item.get('ip_address_list', '').split(',')
 
-    context = {}
-    human_readable_table = {}
+    context = human_readable_table = []
     if response:
         if response.get('result_content'):
             context = human_readable_table = response.get('result_content')
@@ -902,7 +900,7 @@ def create_historical_investigation(client: Client, args):
 def investigation_result_list_command(client: Client, args):
     client.suffix = '/WebApp/OSCE_iES/OsceIes/ApiEntry'
     response = client.investigation_result_list(**assign_params(**args))
-    context = response
+    context = {}
     if response:
         content_list = response.get('Data', {}).get('Data', {}).get('content', [])
         if content_list:

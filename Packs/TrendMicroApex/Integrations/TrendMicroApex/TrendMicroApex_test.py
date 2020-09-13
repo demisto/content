@@ -160,7 +160,7 @@ def test_endpoint_sensors_list_command(requests_mock, mocker):
             "machineName": "TRENDMICROAPEX-",
             "isImportant": False,
             "isOnline": False,
-            "ip": "10.128.0.11",
+            "ip": "8.8.8.8",
             "machineGuid": "3C8DFD21-6175-4AE6-8D51-6DB3186732B2",
             "machineType": "Server",
             "machineLabels": None,
