@@ -183,6 +183,23 @@ class DBotScoreType(object):
             DBotScoreType.CVE
         )
 
+    @classmethod
+    def get_dbot_score_type(cls, _type):
+        # type: (str) -> DBotScoreType
+
+        if _type == 'ip':
+            return DBotScoreType.IP
+        elif _type == 'domain':
+            return DBotScoreType.DOMAIN
+        elif _type == 'file' or _type == 'hash':
+            return DBotScoreType.FILE
+        elif _type == 'url':
+            return DBotScoreType.URL
+        elif _type == 'cve':
+            return DBotScoreType.CVE
+        else:
+            return ''
+
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
@@ -2003,6 +2020,9 @@ class Common(object):
         :type positive_engines: ``int``
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
 
+        :type extra_context_fields: ``dict``
+        :param extra_context_fields: A dict of extra data to enter to ip context entry
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
 
@@ -2012,7 +2032,8 @@ class Common(object):
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
         def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
-                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None):
+                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
+                     extra_context_fields=None):
             self.ip = ip
             self.asn = asn
             self.hostname = hostname
@@ -2022,6 +2043,7 @@ class Common(object):
             self.geo_description = geo_description
             self.detection_engines = detection_engines
             self.positive_engines = positive_engines
+            self.extra_context_fields = extra_context_fields
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2062,6 +2084,10 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.extra_context_fields and isinstance(self.extra_context_fields, dict):
+                for key, value in self.extra_context_fields.items():
+                    ip_context[key] = value
 
             ret_value = {
                 Common.IP.CONTEXT_PATH: ip_context
@@ -2166,6 +2192,9 @@ class Common(object):
         :type tags: ``str``
         :param tags: Tags of the file.
 
+        :type extra_context_fields: ``dict``
+        :param extra_context_fields: A dict of extra data to enter to file context entry.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
 
@@ -2179,7 +2208,8 @@ class Common(object):
 
         def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
                      sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
-                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None):
+                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None,
+                     extra_context_fields=None):
 
             self.name = name
             self.entry_id = entry_id
@@ -2199,6 +2229,7 @@ class Common(object):
             self.signature = signature
             self.actor = actor
             self.tags = tags
+            self.extra_context_fields = extra_context_fields
 
             self.dbot_score = dbot_score
 
@@ -2244,6 +2275,10 @@ class Common(object):
             if self.tags:
                 file_context['Tags'] = self.tags
 
+            if self.extra_context_fields and isinstance(self.extra_context_fields, dict):
+                for key, value in self.extra_context_fields.items():
+                    file_context[key] = value
+
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 file_context['Malicious'] = {
                     'Vendor': self.dbot_score.integration_name,
@@ -2277,7 +2312,7 @@ class Common(object):
         """
         CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
-        def __init__(self, id, cvss, published, modified, description):
+        def __init__(self, id, cvss, published, modified, description, extra_context_fields=None):
             # type (str, str, str, str, str) -> None
 
             self.id = id
@@ -2291,6 +2326,7 @@ class Common(object):
                 integration_name=None,
                 score=Common.DBotScore.NONE
             )
+            self.extra_context_fields = extra_context_fields
 
         def to_context(self):
             cve_context = {
@@ -2308,6 +2344,10 @@ class Common(object):
 
             if self.description:
                 cve_context['Description'] = self.description
+
+            if self.extra_context_fields and isinstance(self.extra_context_fieldsm, dict):
+                for key, value in self.extra_context_fields.items():
+                    cve_context[key] = value
 
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
@@ -2333,6 +2373,9 @@ class Common(object):
         :type category: ``str``
         :param category: The category associated with the indicator.
 
+        :type extra_context_fields: ``dict``
+        :param extra_context_fields: A dict of extra data to enter to URL context entry.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
 
@@ -2341,11 +2384,13 @@ class Common(object):
         """
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None):
+        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
+                     extra_context_fields=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
             self.category = category
+            self.extra_context_fields = extra_context_fields
 
             self.dbot_score = dbot_score
 
@@ -2369,6 +2414,10 @@ class Common(object):
                     'Description': self.dbot_score.malicious_description
                 }
 
+            if self.extra_context_fields and isinstance(self.extra_context_fields, dict):
+                for key, value in self.extra_context_fields.items():
+                    url_context[key] = value
+
             ret_value = {
                 Common.URL.CONTEXT_PATH: url_context
             }
@@ -2389,7 +2438,8 @@ class Common(object):
                      domain_status=None, name_servers=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None):
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None,
+                     extra_context_fields=None):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2416,6 +2466,8 @@ class Common(object):
 
             self.domain_status = domain_status
             self.name_servers = name_servers
+
+            self.extra_context_fields = extra_context_fields
 
             self.dbot_score = dbot_score
 
@@ -2495,6 +2547,10 @@ class Common(object):
             if whois_context:
                 domain_context['WHOIS'] = whois_context
 
+            if self.extra_context_fields and isinstance(self.extra_context_fields, dict):
+                for key, value in self.extra_context_fields.items():
+                    domain_context[key] = value
+
             ret_value = {
                 Common.Domain.CONTEXT_PATH: domain_context
             }
@@ -2512,7 +2568,7 @@ class Common(object):
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None):
+                     memory=None, processors=None, processor=None, extra_context_fields=None):
             self.id = id
             self.hostname = hostname
             self.ip_address = ip_address
@@ -2526,6 +2582,7 @@ class Common(object):
             self.memory = memory
             self.processors = processors
             self.processor = processor
+            self.extra_context_fields = extra_context_fields
 
         def to_context(self):
             endpoint_context = {
@@ -2567,6 +2624,10 @@ class Common(object):
 
             if self.processor:
                 endpoint_context['Processor'] = self.processor
+
+            if self.extra_context_fields and isinstance(self.extra_context_fields, dict):
+                for key, value in self.extra_context_fields.items():
+                    endpoint_context[key] = value
 
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context

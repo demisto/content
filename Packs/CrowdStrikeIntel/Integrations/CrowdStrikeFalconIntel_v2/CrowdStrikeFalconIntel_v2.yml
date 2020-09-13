@@ -1,0 +1,809 @@
+commonfields:
+  id: CrowdStrike Falcon Intel v2
+  version: -1
+name: CrowdStrike Falcon Intel v2
+display: CrowdStrike Falcon Intel v2
+category: Data Enrichment & Threat Intelligence
+description: Threat intelligence service by CrowdStrike focused on delivering a technical
+  feed to help organizations better defend themselves against adversary activity.
+configuration:
+- display: Client ID
+  name: credentials
+  required: true
+  type: 9
+- display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to
+    consider the indicator malicious.(low, medium, high)
+  name: threshold
+  defaultvalue: high
+  type: 0
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+script:
+  dockerimage: demisto/python3:3.8.5.10845
+  type: python
+  subtype: python3
+  script: '-'
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  commands:
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: The file hash (MD5/SHA1/SHA256) to check.
+      isArray: true
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: FalconIntel.Indicator.ID
+      description: The indicator ID.
+      type: String
+    - contextPath: FalconIntel.Indicator.Type
+      description: The indicator type.
+      type: String
+    - contextPath: FalconIntel.Indicator.Value
+      description: The indicator value.
+      type: String
+    - contextPath: FalconIntel.Indicator.LastUpdate
+      description: The last time the indicator was updated.
+      type: Date
+    - contextPath: FalconIntel.Indicator.PublishDate
+      description: The time the indicator was published.
+      type: Date
+    - contextPath: FalconIntel.Indicator.MaliciousConfidence
+      description: The confidence level by which an indicator is considered to be malicious
+      type: String
+    - contextPath: FalconIntel.Indicator.Reports
+      description: The report ID that the indicator is associated with
+      type: String
+    - contextPath: FalconIntel.Indicator.Actors
+      description: Actors that the indicator is associated
+      type: String
+    - contextPath: FalconIntel.Indicator.MalwareFamilies
+      description: A list of malware families that an indicator has been associated. An indicator may be associated with more than one malware family.
+      type: String
+    - contextPath: FalconIntel.Indicator.KillChains
+      description: The point in the kill chain at which an indicator is associated
+      type: String
+    - contextPath: FalconIntel.Indicator.DomainTypes
+      description: The domain type of domain indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.IPAddressTypes
+      description: The address type of ip_address indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.Relations.Indicator
+      description: Related Indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.Type
+      description: The indicator type
+      type: String
+    - contextPath: FalconIntel.Indicator.Labels
+      description: Additional labels
+      type: String
+    description: Check file reputation.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to be checked.
+      isArray: true
+    outputs:
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: FalconIntel.Indicator.ID
+      description: The indicator ID.
+      type: String
+    - contextPath: FalconIntel.Indicator.Type
+      description: The indicator type.
+      type: String
+    - contextPath: FalconIntel.Indicator.Value
+      description: The indicator value.
+      type: String
+    - contextPath: FalconIntel.Indicator.LastUpdate
+      description: The last time the indicator was updated.
+      type: Date
+    - contextPath: FalconIntel.Indicator.PublishDate
+      description: The time the indicator was published.
+      type: Date
+    - contextPath: FalconIntel.Indicator.MaliciousConfidence
+      description: The confidence level by which an indicator is considered to be malicious
+      type: String
+    - contextPath: FalconIntel.Indicator.Reports
+      description: The report ID that the indicator is associated with
+      type: String
+    - contextPath: FalconIntel.Indicator.Actors
+      description: Actors that the indicator is associated
+      type: String
+    - contextPath: FalconIntel.Indicator.MalwareFamilies
+      description: A list of malware families that an indicator has been associated. An indicator may be associated with more than one malware family.
+      type: String
+    - contextPath: FalconIntel.Indicator.KillChains
+      description: The point in the kill chain at which an indicator is associated
+      type: String
+    - contextPath: FalconIntel.Indicator.DomainTypes
+      description: The domain type of domain indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.IPAddressTypes
+      description: The address type of ip_address indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.Relations.Indicator
+      description: Related Indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.Type
+      description: The indicator type
+      type: String
+    - contextPath: FalconIntel.Indicator.Labels
+      description: Additional labels
+      type: String
+    description: Check the given URL reputation.
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: The domain to be checked.
+      isArray: true
+    outputs:
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: FalconIntel.Indicator.ID
+      description: The indicator ID.
+      type: String
+    - contextPath: FalconIntel.Indicator.Type
+      description: The indicator type.
+      type: String
+    - contextPath: FalconIntel.Indicator.Value
+      description: The indicator value.
+      type: String
+    - contextPath: FalconIntel.Indicator.LastUpdate
+      description: The last time the indicator was updated.
+      type: Date
+    - contextPath: FalconIntel.Indicator.PublishDate
+      description: The time the indicator was published.
+      type: Date
+    - contextPath: FalconIntel.Indicator.MaliciousConfidence
+      description: The confidence level by which an indicator is considered to be malicious
+      type: String
+    - contextPath: FalconIntel.Indicator.Reports
+      description: The report ID that the indicator is associated with
+      type: String
+    - contextPath: FalconIntel.Indicator.Actors
+      description: Actors that the indicator is associated
+      type: String
+    - contextPath: FalconIntel.Indicator.MalwareFamilies
+      description: A list of malware families that an indicator has been associated. An indicator may be associated with more than one malware family.
+      type: String
+    - contextPath: FalconIntel.Indicator.KillChains
+      description: The point in the kill chain at which an indicator is associated
+      type: String
+    - contextPath: FalconIntel.Indicator.DomainTypes
+      description: The domain type of domain indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.IPAddressTypes
+      description: The address type of ip_address indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.Relations.Indicator
+      description: Related Indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.Type
+      description: The indicator type
+      type: String
+    - contextPath: FalconIntel.Indicator.Labels
+      description: Additional labels
+      type: String
+    description: Check the given URL reputation.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: The IP to check.
+      isArray: true
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: FalconIntel.Indicator.ID
+      description: The indicator ID.
+      type: String
+    - contextPath: FalconIntel.Indicator.Type
+      description: The indicator type.
+      type: String
+    - contextPath: FalconIntel.Indicator.Value
+      description: The indicator value.
+      type: String
+    - contextPath: FalconIntel.Indicator.LastUpdate
+      description: The last time the indicator was updated.
+      type: Date
+    - contextPath: FalconIntel.Indicator.PublishDate
+      description: The time the indicator was published.
+      type: Date
+    - contextPath: FalconIntel.Indicator.MaliciousConfidence
+      description: The confidence level by which an indicator is considered to be malicious
+      type: String
+    - contextPath: FalconIntel.Indicator.Reports
+      description: The report ID that the indicator is associated with
+      type: String
+    - contextPath: FalconIntel.Indicator.Actors
+      description: Actors that the indicator is associated
+      type: String
+    - contextPath: FalconIntel.Indicator.MalwareFamilies
+      description: A list of malware families that an indicator has been associated. An indicator may be associated with more than one malware family.
+      type: String
+    - contextPath: FalconIntel.Indicator.KillChains
+      description: The point in the kill chain at which an indicator is associated
+      type: String
+    - contextPath: FalconIntel.Indicator.DomainTypes
+      description: The domain type of domain indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.IPAddressTypes
+      description: The address type of ip_address indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.Relations.Indicator
+      description: Related Indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.Type
+      description: The indicator type
+      type: String
+    - contextPath: FalconIntel.Indicator.Labels
+      description: Additional labels
+      type: String
+    description: Check IP reputation.
+  - name: cs-actors
+    arguments:
+    - name: query
+      description: Search based on a query written in FQL (Falcon Query Language).
+    - name: q
+      description: Search across all fields in an Actor object.
+    - name: name
+      description: Search based on actor name.
+    - name: description
+      description: Search based on description.
+    - name: created_date
+      description: 'Search range from created date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
+       and time period (for example, 24 hours).'
+    - name: max_last_modified_date
+      description: 'Search range to modified date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
+                     and time period (for example, 24 hours).'
+    - name: min_last_activity_date
+      description: 'Search range from activity date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
+                     and time period (for example, 24 hours).'
+    - name: max_last_activity_date
+      description: 'Search range to activity date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
+                     and time period (for example, 24 hours).'
+    - name: origins
+      description: Search by origins separated by ",".
+      isArray: true
+    - name: target_countries
+      description: Search by target countries separated by ",".
+      isArray: true
+    - name: target_industries
+      description: Search by target industries separated by ",".
+      isArray: true
+    - name: motivations
+      description: Search by motivations separated by ",".
+      isArray: true
+    - name: offset
+      description: Which page of the results to retrieve. It is 0 based.
+    - name: limit
+      description: The maximum number of actors to retrieve. The default is 10.
+      default: true
+      defaultValue: '10'
+    - name: sort
+      description: Sort by field and direction.
+      auto: PREDEFINED
+      predefined:
+      - name|asc
+      - name|desc
+      - target_countries|asc
+      - target_countries|desc
+      - target_industries|asc
+      - target_industries|desc
+      - type|asc
+      - type|desc
+      - created_date|asc
+      - created_date|desc
+      - last_activity_date|asc
+      - last_activity_date|desc
+      - last_modified_date|asc
+      - last_modified_date|desc
+    - name: slug
+      description: 'Search by ''slug'' or short descriptive name. Ex: "anchor-panda"'
+    outputs:
+    - contextPath: FalconIntel.Actor.ImageURL
+      description: The URL of the actor image
+      type: String
+    - contextPath: FalconIntel.Actor.Name
+      description: The actor name.
+      type: String
+    - contextPath: FalconIntel.Actor.ID
+      description: The actor ID.
+      type: String
+    - contextPath: FalconIntel.Actor.URL
+      description: The url of the actor
+      type: String
+    - contextPath: FalconIntel.Actor.Slug
+      description: Slug name ofactor
+      type: String
+    - contextPath: FalconIntel.Actor.ShortDescription
+      description: The actor short description.
+      type: String
+    - contextPath: FalconIntel.Actor.FirstActivityDate
+      description: The actor first activity date.
+      type: Date
+    - contextPath: FalconIntel.Actor.LastActivityDate
+      description: The actor last activity date.
+      type: Date
+    - contextPath: FalconIntel.Actor.Active
+      description: The actor active status.
+      type: Boolean
+    - contextPath: FalconIntel.Actor.KnowsAs
+      description: Nicknames the actor is known as.
+      type: String
+    - contextPath: FalconIntel.Actor.TargetIndustries
+      description: A list of targeted industries associated with this actor
+      type: String
+    - contextPath: FalconIntel.Actor.TargetCountries
+      description: A list of targeted countries associated with this actor
+      type: String
+    - contextPath: FalconIntel.Actor.Origins
+      description: "The actor's country of origin. Ex: Afghanistan"
+      type: String
+    - contextPath: FalconIntel.Actor.Motivations
+      description: "The actor's motivations. Ex: Criminal"
+      type: String
+    - contextPath: FalconIntel.Actor.Capability
+      description: "The actor's capability. Ex: Average"
+      type: String
+    - contextPath: FalconIntel.Actor.Group
+      description: "The actor's group. Ex: panda gang"
+      type: String
+    - contextPath: FalconIntel.Actor.Region
+      description: "The actor's region. Ex: Eastern Europe"
+      type: String
+    - contextPath: FalconIntel.Actor.KillChains
+      description: Kill chain fields.
+      type: String
+    description: Search known actors based on the given parameters.
+  - name: cs-indicators
+    arguments:
+    - name: query
+      description: Search based on a query written in FQL (Falcon Query Language).
+    - name: type
+      required: false
+      description: The indicator type.
+      auto: PREDEFINED
+      predefined:
+      - binary_string
+      - compile_time
+      - device_name
+      - domain
+      - email_address
+      - email_subject
+      - event_name
+      - file_mapping
+      - file_name
+      - file_path
+      - hash_ion
+      - hash_md5
+      - hash_sha1
+      - hash_sha256
+      - ip_address
+      - ip_address_block
+      - mutex_name
+      - password
+      - persona_name
+      - phone_number
+      - port
+      - registry
+      - semaphore_name
+      - service_name
+      - url
+      - user_agent
+      - username
+      - x509_seria
+      - x509_subject
+    - name: malicious_confidence
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      - unverified
+      description: Indicates a confidence level by which an indicator is considered
+        to be malicious.
+    - name: offset
+      description: Used to paginate the response. You can then use limit to set the
+        number of results for the next page.
+    - name: last_updated
+      description: 'The date the indicator was last updated.Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
+                     and time period (for example, 24 hours).'
+    - name: indicator
+      required: false
+      description: The value for the given indicator type.
+    - name: sort
+      description: Sort by field and direction.
+      auto: PREDEFINED
+      predefined:
+      - id|asc
+      - id|desc
+      - indicator|asc
+      - indicator|desc
+      - type|asc
+      - type|desc
+      - published_date|asc
+      - published_date|desc
+      - last_updated|asc
+      - last_updated|desc
+    - name: id
+      description: The indicator's ID, in the following format <type>_<indicator>.
+      required: false
+      isArray: false
+    - default: true
+      defaultValue: '10'
+      description: The maximum number of indicators to retrieve. The default is 10.
+      isArray: false
+      name: limit
+      required: false
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: File.Reports
+      description: For malicious files, the associated reports describing the hash
+      type: String
+    - contextPath: File.Actors
+      description: For malicious files, the associated actors
+      type: String
+    - contextPath: File.MalwareFamilies
+      description: For malicious files, the associated malware family
+      type: String
+    - contextPath: File.KillChains
+      description: For malicious files, the associated kill chain
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: URL.Reports
+      description: For malicious URL, the associated reports describing the URL
+      type: String
+    - contextPath: URL.Actors
+      description: For malicious URL, the associated actors
+      type: String
+    - contextPath: URL.MalwareFamilies
+      description: For malicious URL, the associated malware family
+      type: String
+    - contextPath: URL.KillChains
+      description: For malicious URL, the associated kill chain
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: Domain.Reports
+      description: For malicious domain, the associated reports describing the domain
+      type: String
+    - contextPath: Domain.Actors
+      description: For malicious domain, the associated actors
+      type: String
+    - contextPath: Domain.MalwareFamilies
+      description: For malicious domain, the associated malware family
+      type: String
+    - contextPath: Domain.KillChains
+      description: For malicious domain, the associated kill chain
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.Reports
+      description: For malicious IP, the associated reports describing the IP
+      type: String
+    - contextPath: IP.Actors
+      description: For malicious IP, the associated actors
+      type: String
+    - contextPath: IP.MalwareFamilies
+      description: For malicious IP, the associated malware family
+      type: String
+    - contextPath: IP.KillChains
+      description: For malicious IP, the associated kill chain
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+    - contextPath: FalconIntel.Indicator.ID
+      description: The indicator ID.
+      type: String
+    - contextPath: FalconIntel.Indicator.Type
+      description: The indicator type.
+      type: String
+    - contextPath: FalconIntel.Indicator.Value
+      description: The indicator value.
+      type: String
+    - contextPath: FalconIntel.Indicator.LastUpdate
+      description: The last time the indicator was updated.
+      type: Date
+    - contextPath: FalconIntel.Indicator.PublishDate
+      description: The time the indicator was published.
+      type: Date
+    - contextPath: FalconIntel.Indicator.MaliciousConfidence
+      description: The confidence level by which an indicator is considered to be malicious
+      type: String
+    - contextPath: FalconIntel.Indicator.Reports
+      description: The report ID that the indicator is associated with
+      type: String
+    - contextPath: FalconIntel.Indicator.Actors
+      description: Actors that the indicator is associated
+      type: String
+    - contextPath: FalconIntel.Indicator.MalwareFamilies
+      description: A list of malware families that an indicator has been associated. An indicator may be associated with more than one malware family.
+      type: String
+    - contextPath: FalconIntel.Indicator.KillChains
+      description: The point in the kill chain at which an indicator is associated
+      type: String
+    - contextPath: FalconIntel.Indicator.DomainTypes
+      description: The domain type of domain indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.IPAddressTypes
+      description: The address type of ip_address indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.Relations.Indicator
+      description: Related Indicators
+      type: String
+    - contextPath: FalconIntel.Indicator.Type
+      description: The indicator type
+      type: String
+    - contextPath: FalconIntel.Indicator.Labels
+      description: Additional labels
+      type: String
+    description: Search known indicators based on the given parameters.
+  - name: cs-reports
+    arguments:
+    - name: query
+      description: Search based on a query written in FQL (Falcon Query Language).
+    - name: q
+      description: Search across all fields in an Report object.
+    - name: name
+      description: Search for keywords across report names (i.e. the report’s title).
+    - name: actors
+      description: Search for a report related to a particular actors. Actors should
+        be comma separated. - For example - actor1,actor2,...
+      isArray: true
+    - name: target_countries
+      description: Search reports by targeted country/countries
+      isArray: true
+    - name: target_industries
+      description: Search reports by targeted industry/industries
+      isArray: true
+    - name: motivations
+      description: Search by motivation
+      isArray: true
+    - name: slug
+      description: Search by report 'slug' or short descriptive name
+    - name: description
+      description: Search the body of the report
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - intelligence report
+      - alert
+      - periodic report
+      - tipper
+      description: The type of object to search for.
+    - name: sub_type
+      auto: PREDEFINED
+      predefined:
+      - weekly
+      - monthly
+      - quarterly
+      - annual
+      description: The sub-type to search for.
+    - name: tags
+      description: Tags associated with a report (managed internally by CS).
+    - name: created_date
+      description: 'Constrain results to those created on a certain date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
+                     and time period (for example, 24 hours).'
+    - name: max_last_modified_date
+      description: 'Constrain results to those modified on or before a certain date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
+                     and time period (for example, 24 hours).'
+    - name: offset
+      description: Used to paginate the response. You can then use limit to set the
+        number of results for the next page.
+    - name: limit
+      description: The maximum number of reports to retrieve. The default is 10.
+      default: true
+      defaultValue: '10'
+    - name: sort
+      description: Sort by field and direction.
+      auto: PREDEFINED
+      predefined:
+      - id|asc
+      - id|desc
+      - name|asc
+      - name|desc
+      - type|asc
+      - type|desc
+      - target_countries|asc
+      - target_countries|desc
+      - target_industries|asc
+      - target_industries|desc
+      - created_date|asc
+      - created_date|desc
+      - last_modified_date|asc
+      - last_modified_date|desc
+    outputs:
+    - contextPath: FalconIntel.Report.ID
+      description: The report ID.
+      type: String
+    - contextPath: FalconIntel.Report.URL
+      description: The report URL.
+      type: String
+    - contextPath: FalconIntel.Report.Name
+      description: The report name.
+      type: String
+    - contextPath: FalconIntel.Report.Type
+      description: The report type.
+      type: String
+    - contextPath: FalconIntel.Report.SubType
+      description: The report sub type.
+      type: String
+    - contextPath: FalconIntel.Report.Slug
+      description: Slug name of the report
+      type: String
+    - contextPath: FalconIntel.Report.CreatedDate
+      description: The date the report was created.
+      type: Date
+    - contextPath: FalconIntel.Report.LastModifiedSate
+      description: The date the report was last modified.
+      type: Date
+    - contextPath: FalconIntel.Report.ShortDescription
+      description: The report short description.
+      type: String
+    - contextPath: FalconIntel.Report.TargetIndustries
+      description: "Targeted industries included in the report. Ex: aerospace"
+      type: String
+    - contextPath: FalconIntel.Report.TargetCountries
+      description: "Targeted countries included in the report. Ex: afghanistan"
+      type: String
+    - contextPath: FalconIntel.Report.Motivations
+      description: "Motivations included in the report. Ex: criminal"
+      type: String
+    - contextPath: FalconIntel.Report.Tags
+      description: "The report's tags. Ex: intel_feed"
+      type: String
+    description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
+      publications.
+  runonce: false
+tests:
+- CrowdStrike Falcon Intel v2 - Test
+fromversion: 5.0.0
