@@ -3,6 +3,17 @@ commonfields:
   id: Cortex XDR - IR
   version: -1
 configuration:
+- defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -23,6 +34,12 @@ configuration:
   name: apikey
   required: true
   type: 4
+- display: HTTP Timeout
+  additionalinfo: Sets the timeout of the HTTP requests sent to Cortex XDR API (in seconds).
+  defaultvalue: 120
+  name: timeout
+  required: false
+  type: 0
 - defaultvalue: 'true'
   display: Fetch incident alerts and artifacts
   hidden: false
@@ -34,18 +51,7 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: None
-  display: Incident Mirroring Direction
-  hidden: false
-  name: mirror_direction
-  options:
-  - None
-  - Incoming
-  - Outgoing
-  - Incoming And Outgoing
-  required: false
-  type: 15
-- additionalinfo: If selected, for every incident fetched from Cortex XDR to XOSAR
+- additionalinfo: From XSOAR version 6.0.0. If selected, for every incident fetched from Cortex XDR to XOSAR
     - the incident owners will be synced. Note this only applies in a single direction
     and only if the users exist in both Cortex XSOAR and Cortex XDR.
   display: Sync Incident Owners
@@ -61,6 +67,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response

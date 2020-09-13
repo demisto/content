@@ -76,7 +76,7 @@ def convert_datetime_to_epoch(the_time=0):
         if isinstance(the_time, datetime):
             return int(the_time.strftime('%s'))
     except Exception as err:
-        print(err)
+        demisto.debug(err)
         return 0
 
 
@@ -111,6 +111,11 @@ def clear_trailing_whitespace(res):
 
 
 class Client(BaseClient):
+
+    def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
+        self.timeout = timeout
+        super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
+
     def test_module(self, first_fetch_time):
         """
             Performs basic get request to get item samples
@@ -207,7 +212,8 @@ class Client(BaseClient):
         res = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incidents/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
         incidents = res.get('reply').get('incidents', [])
 
@@ -229,7 +235,8 @@ class Client(BaseClient):
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incident_extra_data/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
 
         incident = reply.get('reply')
@@ -268,7 +275,8 @@ class Client(BaseClient):
         self._http_request(
             method='POST',
             url_suffix='/incidents/update_incident/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
 
     def get_endpoints(self,
@@ -303,7 +311,8 @@ class Client(BaseClient):
             reply = self._http_request(
                 method='POST',
                 url_suffix='/endpoints/get_endpoints/',
-                json_data={}
+                json_data={},
+                timeout=self.timeout
             )
             endpoints = reply.get('reply')[search_from:search_to]
             for endpoint in endpoints:
@@ -418,7 +427,8 @@ class Client(BaseClient):
             reply = self._http_request(
                 method='POST',
                 url_suffix='/endpoints/get_endpoint/',
-                json_data={'request_data': request_data}
+                json_data={'request_data': request_data},
+                timeout=self.timeout
             )
 
             endpoints = reply.get('reply').get('endpoints', [])
@@ -432,7 +442,8 @@ class Client(BaseClient):
                 'request_data': {
                     'endpoint_id': endpoint_id
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
     def unisolate_endpoint(self, endpoint_id):
@@ -443,7 +454,8 @@ class Client(BaseClient):
                 'request_data': {
                     'endpoint_id': endpoint_id
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
     def insert_alerts(self, alerts):
@@ -454,7 +466,8 @@ class Client(BaseClient):
                 'request_data': {
                     'alerts': alerts
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
     def insert_cef_alerts(self, alerts):
@@ -465,7 +478,8 @@ class Client(BaseClient):
                 'request_data': {
                     'alerts': alerts
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
     def get_distribution_url(self, distribution_id, package_type):
@@ -477,7 +491,8 @@ class Client(BaseClient):
                     'distribution_id': distribution_id,
                     'package_type': package_type
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
         return reply.get('reply').get('distribution_url')
@@ -490,7 +505,8 @@ class Client(BaseClient):
                 'request_data': {
                     'distribution_id': distribution_id
                 }
-            }
+            },
+            timeout=self.timeout
         )
 
         return reply.get('reply').get('status')
@@ -499,7 +515,8 @@ class Client(BaseClient):
         reply = self._http_request(
             method='POST',
             url_suffix='/distributions/get_versions/',
-            json_data={}
+            json_data={},
+            timeout=self.timeout
         )
 
         return reply.get('reply')
@@ -532,7 +549,8 @@ class Client(BaseClient):
             url_suffix='/distributions/create/',
             json_data={
                 'request_data': request_data
-            }
+            },
+            timeout=self.timeout
         )
 
         return reply.get('reply').get('distribution_id')
@@ -597,7 +615,8 @@ class Client(BaseClient):
         reply = self._http_request(
             method='POST',
             url_suffix='/audits/management_logs/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
 
         return reply.get('reply').get('data', [])
@@ -667,7 +686,8 @@ class Client(BaseClient):
         reply = self._http_request(
             method='POST',
             url_suffix='/audits/agents_reports/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
 
         return reply.get('reply').get('data', [])
@@ -683,6 +703,7 @@ class Client(BaseClient):
             url_suffix='/hash_exceptions/blacklist/',
             json_data={'request_data': request_data},
             ok_codes=(200, 201),
+            timeout=self.timeout
         )
         return reply.get('reply')
 
@@ -697,6 +718,7 @@ class Client(BaseClient):
             url_suffix='/hash_exceptions/whitelist/',
             json_data={'request_data': request_data},
             ok_codes=(201, 200),
+            timeout=self.timeout
         )
         return reply.get('reply')
 
@@ -721,7 +743,8 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/endpoints/quarantine/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201)
+            ok_codes=(200, 201),
+            timeout=self.timeout
         )
 
         return reply.get('reply')
@@ -736,6 +759,7 @@ class Client(BaseClient):
             url_suffix='/endpoints/restore/',
             json_data={'request_data': request_data},
             ok_codes=(200, 201),
+            timeout=self.timeout
         )
         return reply.get('reply')
 
@@ -840,7 +864,8 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/endpoints/scan/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201)
+            ok_codes=(200, 201),
+            timeout=self.timeout
         )
         return reply.get('reply')
 
@@ -854,7 +879,8 @@ class Client(BaseClient):
         reply = self._http_request(
             method='POST',
             url_suffix='/quarantine/status/',
-            json_data={'request_data': request_data}
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
 
         reply_content = reply.get('reply')
@@ -1960,6 +1986,11 @@ def main():
     base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
+    try:
+        timeout = int(demisto.params().get('timeout', 120))
+    except ValueError as e:
+        demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
+        timeout = 120
 
     # nonce, timestamp, auth = create_auth(API_KEY)
     nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
@@ -1979,7 +2010,8 @@ def main():
         base_url=base_url,
         proxy=proxy,
         verify=verify_cert,
-        headers=headers
+        headers=headers,
+        timeout=timeout
     )
 
     try:
