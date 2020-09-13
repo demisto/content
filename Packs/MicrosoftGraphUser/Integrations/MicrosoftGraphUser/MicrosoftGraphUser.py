@@ -55,8 +55,7 @@ class MsGraphClient:
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  redirect_uri, auth_code):
         grant_type = AUTHORIZATION_CODE if self_deployed else CLIENT_CREDENTIALS
-        # resource = None if self_deployed else ''
-        resource = ''
+        resource = None if self_deployed else ''
         tenant_id = demisto.getIntegrationContext().get('current_refresh_token') or tenant_id
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
@@ -175,7 +174,7 @@ def test_function(client, _):
         if not demisto.params().get('auth_code'):
             raise Exception("You must enter an authorization code in a self-deployed configuration.")
     client.ms_client.http_request(method='GET', url_suffix='users/')
-    return 'ok', None, None
+    return '```✅ Success!```', None, None
 
 
 def terminate_user_session_command(client: MsGraphClient, args: Dict):
