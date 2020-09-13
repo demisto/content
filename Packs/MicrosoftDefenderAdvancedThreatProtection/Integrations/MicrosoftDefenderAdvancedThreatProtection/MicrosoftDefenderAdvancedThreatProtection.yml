@@ -2454,6 +2454,39 @@ script:
     - contextPath: MicrosoftATP.Indicators.vendorInformation
       type: String
       description: Information about the vendor.
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
   - arguments:
     - default: true
       description: The ID of the indicator to get.
@@ -2654,6 +2687,39 @@ script:
     - contextPath: MicrosoftATP.Indicators.vendorInformation
       type: String
       description: Information about the vendor.
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -3017,6 +3083,30 @@ script:
     - contextPath: MicrosoftATP.Indicators.vendorInformation
       type: String
       description: Information about the vendor.
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -3420,6 +3510,18 @@ script:
     - contextPath: MicrosoftATP.Indicators.vendorInformation
       type: String
       description: Information about the vendor.
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
   - arguments:
     - default: false
       description: The ID of the indicator to update.
@@ -3642,6 +3744,39 @@ script:
     - contextPath: MicrosoftATP.Indicators.vendorInformation
       type: String
       description: Information about the vendor.
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -3653,7 +3788,7 @@ script:
     description: Deletes the specified indicator.
     execution: false
     name: microsoft-atp-indicator-delete
-  dockerimage: demisto/crypto:1.0.0.10743
+  dockerimage: demisto/crypto:1.0.0.11287
   feed: false
   isfetch: true
   longRunning: false
