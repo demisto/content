@@ -17,6 +17,24 @@ from requests.exceptions import HTTPError
 # disable insecure warnings
 urllib3.disable_warnings()
 
+""" ADVANCED GLOBAL PARAMETERS """
+EVENTS_INTERVAL_SECS = 15           # interval between events polling
+EVENTS_FAILURE_LIMIT = 3            # amount of consecutive failures events fetch will tolerate
+FETCH_SLEEP = 60                    # sleep between fetches
+BATCH_SIZE = 100                    # batch size used for offense ip enrichment
+OFF_ENRCH_LIMIT = BATCH_SIZE * 10   # max amount of IPs to enrich per offense
+LOCK_WAIT_TIME = 0.5                # time to wait for lock.acquire
+MAX_WORKERS = 8                     # max concurrent workers used for events enriching
+
+ADVANCED_PARAMETER_NAMES = [
+    "EVENTS_INTERVAL_SECS",
+    "EVENTS_FAILURE_LIMIT",
+    "FETCH_SLEEP",
+    "BATCH_SIZE",
+    "OFF_ENRCH_LIMIT",
+    "MAX_WORKERS",
+]
+
 """ GLOBAL VARS """
 SYNC_CONTEXT = True
 RESET_KEY = "reset"
@@ -25,22 +43,8 @@ API_USERNAME = "_api_token_key"
 TERMINATING_SEARCH_STATUSES = {"CANCELED", "ERROR", "COMPLETED"}
 EVENT_TIME_FIELDS = ["starttime"]
 ASSET_TIME_FIELDS = ['created', 'last_reported', 'first_seen_scanner', 'last_seen_scanner']
+EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
-""" ADVANCED GLOBAL PARAMETERS """
-EVENTS_INTERVAL_SECS = 15
-EVENTS_FAILURE_LIMIT = 3
-FETCH_SLEEP = 60
-BATCH_SIZE = 100
-BATCH_LIMIT = BATCH_SIZE * 10
-LOCK_WAIT_TIME = 0.5
-
-ADVANCED_PARAMETER_NAMES = [
-    "EVENTS_INTERVAL_SECS",
-    "EVENTS_FAILURE_LIMIT",
-    "FETCH_SLEEP",
-    "BATCH_SIZE",
-    "BATCH_LIMIT",
-]
 
 """ Header names transformation maps """
 # Format: {'OldName': 'NewName'}
@@ -514,7 +518,7 @@ class QRadarClient:
         """
         batch_size = BATCH_SIZE
         for b in batch(
-            list(src_adrs.values())[:BATCH_LIMIT], batch_size=int(batch_size)
+            list(src_adrs.values())[:OFF_ENRCH_LIMIT], batch_size=int(batch_size)
         ):
             src_ids_str = ",".join(map(str, b))
             source_url = (
@@ -532,7 +536,7 @@ class QRadarClient:
         """
         batch_size = BATCH_SIZE
         for b in batch(
-            list(dst_adrs.values())[:BATCH_LIMIT], batch_size=int(batch_size)
+            list(dst_adrs.values())[:OFF_ENRCH_LIMIT], batch_size=int(batch_size)
         ):
             dst_ids_str = ",".join(map(str, b))
             destination_url = f"{self._server}/api/siem/local_destination_addresses?filter=id in ({dst_ids_str})"
@@ -673,7 +677,26 @@ def dict_values_to_comma_separated_string(dic):
 
 
 def test_module(client: QRadarClient):
-    return client.test_connection()
+    test_res = client.test_connection()
+
+    params = demisto.params()
+    is_long_running = params.get('longRunning')
+    if is_long_running:
+        # check fetch incidents can fetch and search events
+        raw_offenses = client.get_offenses(_range="0-0")
+        fetch_mode = params.get("fetch_mode")
+        if raw_offenses and fetch_mode != FetchMode.no_events:
+            events_columns = params.get("events_columns")
+            events_limit = params.get("events_limit")
+            offense = raw_offenses[0]
+            offense_start_time = offense["start_time"]
+            query_expression = (
+                f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense["id"]}) '
+                f"limit {events_limit} START '{offense_start_time}'"
+            )
+            events_query = {"headers": "", "query_expression": query_expression}
+            try_create_search_with_retry(client, events_query, offense)
+    return test_res
 
 
 def enrich_offense_with_events(
@@ -690,8 +713,7 @@ def enrich_offense_with_events(
         )
     except Exception as e:
         print_debug_msg(
-            f"Failed events fetch for offense {offense['id']}: {str(e)}.",
-            client.lock,
+            f"Failed events fetch for offense {offense['id']}: {str(e)}.", client.lock,
         )
     return offense
 
@@ -717,12 +739,14 @@ def perform_offense_events_enrichment(
         f"{additional_where} limit {events_limit} START '{offense_start_time}'"
     )
     events_query = {"headers": "", "query_expression": query_expression}
-    print_debug_msg(
-        f'Starting events fetch for offense {offense["id"]}.', client.lock
-    )
+    print_debug_msg(f'Starting events fetch for offense {offense["id"]}.', client.lock)
     try:
-        query_status, search_id = try_create_search_with_retry(client, events_query, offense)
-        offense["events"] = try_poll_offense_events_with_retry(client, offense["id"], query_status, search_id)
+        query_status, search_id = try_create_search_with_retry(
+            client, events_query, offense
+        )
+        offense["events"] = try_poll_offense_events_with_retry(
+            client, offense["id"], query_status, search_id
+        )
     except Exception as e:
         print_debug_msg(
             f'Failed fetching event for offense {offense["id"]}: {str(e)}.',
@@ -741,8 +765,8 @@ def try_poll_offense_events_with_retry(
     """
     if not max_retries:
         max_retries = EVENTS_FAILURE_LIMIT
-    i = 1
     failures = 0
+    start_time = time.time()
     while not (query_status in TERMINATING_SEARCH_STATUSES or failures >= max_retries):
         try:
             if is_reset_triggered(client.lock):
@@ -768,14 +792,17 @@ def try_poll_offense_events_with_retry(
                 return events
             else:
                 # prepare next run
-                i = i % 60 + EVENTS_INTERVAL_SECS
-                if i >= 60:  # print status debug every fetch sleep (or after)
+                elapsed = time.time() - start_time
+                if elapsed >= FETCH_SLEEP:  # print status debug every fetch sleep (or after)
                     print_debug_msg(
                         f"Still fetching offense {offense_id} events, search_id: {search_id}.",
                         client.lock,
                     )
+                    start_time = time.time()
                 time.sleep(EVENTS_INTERVAL_SECS)
-        except Exception:
+        except Exception as e:
+            print_debug_msg(f"Error while fetching offense {offense_id} events, search_id: {search_id}. "
+                            f"Error details: {str(e)}")
             failures += 1
     return []
 
@@ -787,6 +814,7 @@ def try_create_search_with_retry(client, events_query, offense, max_retries=None
     search_created_successfully = False
     query_status = ""
     search_id = ""
+    err = ""
     while not search_created_successfully and failures <= max_retries:
         try:
             raw_search = client.search(events_query)
@@ -798,10 +826,11 @@ def try_create_search_with_retry(client, events_query, offense, max_retries=None
             search_id = search_res_events.get("ID")
             query_status = search_res_events.get("Status")
             search_created_successfully = True
-        except Exception:
+        except Exception as e:
+            err = str(e)
             failures += 1
     if failures >= EVENTS_FAILURE_LIMIT:
-        raise DemistoException(f"Unable to create search for offense: {offense['id']}.")
+        raise DemistoException(f"Unable to create search for offense: {offense['id']}. Error: {err}")
     return query_status, search_id
 
 
@@ -821,7 +850,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
             user_offense_id = int(user_query.split("id>")[1].split(" ")[0])
             if user_offense_id > offense_id:
                 offense_id = user_offense_id
-    except Exception:
+    except ValueError:
         pass
 
     # fetch offenses
@@ -895,7 +924,8 @@ def is_reset_triggered(lock, handle_reset=False):
 def fetch_incidents_long_running_events(
     client: QRadarClient,
     user_query,
-    full_enrich,
+    ip_enrich,
+    asset_enrich,
     fetch_mode,
     events_columns,
     events_limit,
@@ -913,19 +943,18 @@ def fetch_incidents_long_running_events(
         offense_id = max(offense_id, offense["id"])
     enriched_offenses = []
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        for offense in raw_offenses:
-            futures.append(
-                executor.submit(
-                    enrich_offense_with_events,
-                    client=client,
-                    offense=offense,
-                    fetch_mode=fetch_mode,
-                    events_columns=events_columns,
-                    events_limit=events_limit,
-                )
+    futures = []
+    for offense in raw_offenses:
+        futures.append(
+            EXECUTOR.submit(
+                enrich_offense_with_events,
+                client=client,
+                offense=offense,
+                fetch_mode=fetch_mode,
+                events_columns=events_columns,
+                events_limit=events_limit,
             )
+        )
         for future in concurrent.futures.as_completed(futures):
             enriched_offenses.append(future.result())
 
@@ -933,11 +962,11 @@ def fetch_incidents_long_running_events(
         return
 
     enriched_offenses.sort(key=lambda offense: offense.get("id", 0))
-    if full_enrich:
+    if ip_enrich or asset_enrich:
         print_debug_msg("Enriching offenses")
-        enrich_offense_result(client, enriched_offenses, full_enrich)
+        enrich_offense_result(client, enriched_offenses, ip_enrich, asset_enrich)
         print_debug_msg("Enriched offenses successfully.")
-    new_incidents_samples = try_create_incidents(enriched_offenses)
+    new_incidents_samples = create_incidents(enriched_offenses)
     incidents_batch_for_sample = (
         new_incidents_samples if new_incidents_samples else last_run.get("samples", [])
     )
@@ -946,7 +975,7 @@ def fetch_incidents_long_running_events(
     set_integration_context(context, sync=SYNC_CONTEXT)
 
 
-def try_create_incidents(enriched_offenses):
+def create_incidents(enriched_offenses):
     if not enriched_offenses:
         return []
 
@@ -959,7 +988,7 @@ def try_create_incidents(enriched_offenses):
 
 
 def fetch_incidents_long_running_no_events(
-    client: QRadarClient, user_query, full_enrich
+    client: QRadarClient, user_query, ip_enrich, asset_enrich
 ):
     last_run = get_integration_context(SYNC_CONTEXT)
     offense_id = last_run["id"] if last_run and "id" in last_run else 0
@@ -967,15 +996,17 @@ def fetch_incidents_long_running_no_events(
     raw_offenses = fetch_raw_offenses(client, offense_id, user_query)
     if len(raw_offenses) == 0:
         return
+    if isinstance(raw_offenses, list):
+        raw_offenses.reverse()
 
     for offense in raw_offenses:
         offense_id = max(offense_id, offense["id"])
 
-    if full_enrich:
+    if ip_enrich or asset_enrich:
         print_debug_msg("Enriching offenses")
-        enrich_offense_result(client, raw_offenses, full_enrich)
+        enrich_offense_result(client, raw_offenses, ip_enrich, asset_enrich)
         print_debug_msg("Enriched offenses successfully.")
-    incidents_batch = try_create_incidents(raw_offenses)
+    incidents_batch = create_incidents(raw_offenses)
 
     # handle reset signal
     if is_reset_triggered(client.lock, handle_reset=True):
@@ -1009,7 +1040,9 @@ def create_incident_from_offense(offense):
     }
 
 
-def get_offenses_command(client: QRadarClient, range=None, filter=None, fields=None, headers=None):
+def get_offenses_command(
+    client: QRadarClient, range=None, filter=None, fields=None, headers=None
+):
     raw_offenses = client.get_offenses(range, filter, fields)
     offenses = deepcopy(raw_offenses)
     enrich_offense_result(client, offenses)
@@ -1035,9 +1068,11 @@ def get_offenses_command(client: QRadarClient, range=None, filter=None, fields=N
     )
 
 
-def enrich_offense_result(client: QRadarClient, response, full_enrich=False):
+def enrich_offense_result(
+    client: QRadarClient, response, ip_enrich=False, asset_enrich=False
+):
     """
-    Enriches the values of a given offense result (full_enrich enriches destination and source ips)
+    Enriches the values of a given offense result (ip_enrich enriches destination and source ips)
     :return:
     """
     if isinstance(response, list):
@@ -1051,17 +1086,16 @@ def enrich_offense_result(client: QRadarClient, response, full_enrich=False):
             )
     else:
         enrich_single_offense_result(client, response)
-    if full_enrich:
-        enrich_offense_res_with_source_and_destination_address(client, response)
+    if ip_enrich or asset_enrich:
+        enrich_offense_res_with_source_and_destination_address(
+            client, response, ip_enrich, asset_enrich
+        )
 
     return response
 
 
 def enrich_single_offense_result(
-    client: QRadarClient,
-    offense,
-    type_dict=None,
-    closing_reason_dict=None,
+    client: QRadarClient, offense, type_dict=None, closing_reason_dict=None,
 ):
     """
     Convert epoch to iso and closing_reason_id to closing reason name
@@ -1078,7 +1112,7 @@ def enrich_single_offense_result(
 
 
 def enrich_offense_res_with_source_and_destination_address(
-    client: QRadarClient, response
+    client: QRadarClient, response, ip_enrich=True, asset_enrich=True
 ):
     """
     Enriches offense result dictionary with source and destination addresses
@@ -1090,24 +1124,24 @@ def enrich_offense_res_with_source_and_destination_address(
             client.enrich_source_addresses_dict(src_adrs)
         if dst_adrs:
             client.enrich_destination_addresses_dict(dst_adrs)
-        if isinstance(response, list):
+        if isinstance(response, list) and (ip_enrich or asset_enrich):
             for offense in response:
                 asset_ip_ids = enrich_single_offense_res_with_source_and_destination_address(
-                    offense, src_adrs, dst_adrs
+                    offense, src_adrs, dst_adrs, not ip_enrich
                 )
-                for b in batch(list(asset_ip_ids), batch_size=100):
-                    query = ""
-                    for val in b:
-                        query = (f"{query} or " if query else "") + f'interfaces contains ip_addresses contains  value="{val}"'
-                    if query:
-                        assets = client.get_assets(_filter=query)
-                        if assets:
-                            transform_asset_time_fields_recursive(assets)
-                            offense['assets'] = assets
-        else:
-            enrich_single_offense_res_with_source_and_destination_address(
-                response, src_adrs, dst_adrs
-            )
+                if asset_enrich:
+                    for b in batch(list(asset_ip_ids), batch_size=100):
+                        query = ""
+                        for val in b:
+                            query = (
+                                (f"{query} or " if query else "")
+                                + f'interfaces contains ip_addresses contains value="{val}"'
+                            )
+                        if query:
+                            assets = client.get_assets(_filter=query)
+                            if assets:
+                                transform_asset_time_fields_recursive(assets)
+                                offense["assets"] = assets
     # The function is meant to be safe, so it shouldn't raise any error
     finally:
         return response
@@ -1162,26 +1196,28 @@ def populate_src_and_dst_dicts_with_single_offense(offense, src_ids, dst_ids):
 
 
 def enrich_single_offense_res_with_source_and_destination_address(
-    offense, src_adrs, dst_adrs
+    offense, src_adrs, dst_adrs, skip_enrichment=False
 ):
     """
     helper function: For a single offense replaces the source and destination ids with the actual addresses
     """
-    asset_ip_ids = set()
+    asset_ips = set()
     if isinstance(offense.get("source_address_ids"), list):
         for i in range(len(offense["source_address_ids"])):
-            offense["source_address_ids"][i] = src_adrs[
-                offense["source_address_ids"][i]
-            ]
-            asset_ip_ids.add(offense["source_address_ids"][i])
+            if not skip_enrichment:
+                offense["source_address_ids"][i] = src_adrs[
+                    offense["source_address_ids"][i]
+                ]
+            asset_ips.add(src_adrs[offense["source_address_ids"][i]])
     if isinstance(offense.get("local_destination_address_ids"), list):
         for i in range(len(offense["local_destination_address_ids"])):
-            offense["local_destination_address_ids"][i] = dst_adrs[
-                offense["local_destination_address_ids"][i]
-            ]
-            asset_ip_ids.add(offense["local_destination_address_ids"][i])
+            if not skip_enrichment:
+                offense["local_destination_address_ids"][i] = dst_adrs[
+                    offense["local_destination_address_ids"][i]
+                ]
+            asset_ips.add(dst_adrs[offense["local_destination_address_ids"][i]])
 
-    return asset_ip_ids
+    return asset_ips
 
 
 def enrich_offense_times(offense):
@@ -1203,7 +1239,7 @@ def get_offense_by_id_command(
 ):
     raw_offense = client.get_offense_by_id(offense_id, filter, fields)
     offense = deepcopy(raw_offense)
-    enrich_offense_result(client, offense, full_enrich=True)
+    enrich_offense_result(client, offense, ip_enrich=True)
     offense = filter_dict_non_intersection_key_to_value(
         replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP
     )
@@ -1226,7 +1262,7 @@ def update_offense_command(
     follow_up=None,
     status=None,
     fields=None,
-    headers=None
+    headers=None,
 ):
     args = assign_params(
         closing_reason_name=closing_reason_name,
@@ -1248,7 +1284,7 @@ def update_offense_command(
         )
     raw_offense = client.update_offense(offense_id, args)
     offense = deepcopy(raw_offense)
-    enrich_offense_result(client, offense, full_enrich=True)
+    enrich_offense_result(client, offense, ip_enrich=True)
     offense = filter_dict_non_intersection_key_to_value(
         replace_keys(offense, SINGLE_OFFENSE_NAMES_MAP), SINGLE_OFFENSE_NAMES_MAP
     )
@@ -1292,7 +1328,9 @@ def get_search_command(client: QRadarClient, search_id=None, headers=None):
     )
 
 
-def get_search_results_command(client: QRadarClient, search_id=None, range=None, headers=None, output_path=None):
+def get_search_results_command(
+    client: QRadarClient, search_id=None, range=None, headers=None, output_path=None
+):
     raw_search_results = client.get_search_results(search_id, range)
     result_key = list(raw_search_results.keys())[0]
     title = "QRadar Search Results from {}".format(str(result_key))
@@ -1303,23 +1341,17 @@ def get_search_results_command(client: QRadarClient, search_id=None, range=None,
     )
     context_obj = raw_search_results[result_key]
     return get_entry_for_object(
-        title,
-        context_obj,
-        raw_search_results,
-        headers,
-        context_key,
+        title, context_obj, raw_search_results, headers, context_key,
     )
 
 
-def get_assets_command(client: QRadarClient, range=None, filter=None, fields=None, headers=None):
+def get_assets_command(
+    client: QRadarClient, range=None, filter=None, fields=None, headers=None
+):
     raw_assets = client.get_assets(range, filter, fields)
     assets_result, human_readable_res = create_assets_result(deepcopy(raw_assets))
     return get_entry_for_assets(
-        "QRadar Assets",
-        assets_result,
-        raw_assets,
-        human_readable_res,
-        headers,
+        "QRadar Assets", assets_result, raw_assets, human_readable_res, headers,
     )
 
 
@@ -1330,11 +1362,7 @@ def get_asset_by_id_command(client: QRadarClient, asset_id=None, headers=None):
         deepcopy(raw_asset), full_values=True
     )
     return get_entry_for_assets(
-        "QRadar Asset",
-        asset_result,
-        raw_asset,
-        human_readable_res,
-        headers,
+        "QRadar Asset", asset_result, raw_asset, human_readable_res, headers,
     )
 
 
@@ -1503,7 +1531,9 @@ def get_closing_reasons_command(
     )
 
 
-def get_note_command(client: QRadarClient, offense_id=None, note_id=None, fields=None, headers=None):
+def get_note_command(
+    client: QRadarClient, offense_id=None, note_id=None, fields=None, headers=None
+):
     raw_note = client.get_note(offense_id, note_id, fields)
     note_names_map = {
         "id": "ID",
@@ -1538,9 +1568,7 @@ def create_note_command(
     }
     note = replace_keys(raw_note, note_names_map)
     note["CreateTime"] = epoch_to_iso(note["CreateTime"])
-    return get_entry_for_object(
-        "QRadar Note", note, raw_note, headers, "QRadar.Note"
-    )
+    return get_entry_for_object("QRadar Note", note, raw_note, headers, "QRadar.Note")
 
 
 def get_reference_by_name_command(client: QRadarClient, ref_name=None, date_value=None):
@@ -1820,7 +1848,8 @@ def get_indicators_list(indicator_query, limit, page):
 def fetch_loop_with_events(
     client: QRadarClient,
     user_query,
-    full_enrich,
+    ip_enrich,
+    asset_enrich,
     fetch_mode,
     events_columns,
     events_limit,
@@ -1830,24 +1859,33 @@ def fetch_loop_with_events(
 
         print_debug_msg("Starting fetch loop with events.")
         fetch_incidents_long_running_events(
-            client, user_query, full_enrich, fetch_mode, events_columns, events_limit
+            client,
+            user_query,
+            ip_enrich,
+            asset_enrich,
+            fetch_mode,
+            events_columns,
+            events_limit,
         )
         time.sleep(FETCH_SLEEP)
 
 
-def fetch_loop_no_events(client: QRadarClient, user_query, full_enrich):
+def fetch_loop_no_events(client: QRadarClient, user_query, ip_enrich, asset_enrich):
     while True:
         is_reset_triggered(client.lock, handle_reset=True)
 
         print_debug_msg("Starting fetch loop with no events.")
-        fetch_incidents_long_running_no_events(client, user_query, full_enrich)
+        fetch_incidents_long_running_no_events(
+            client, user_query, ip_enrich, asset_enrich
+        )
         time.sleep(FETCH_SLEEP)
 
 
 def long_running_main(
     client: QRadarClient,
     user_query,
-    full_enrich,
+    ip_enrich,
+    asset_enrich,
     fetch_mode,
     events_columns,
     events_limit,
@@ -1855,10 +1893,16 @@ def long_running_main(
     print_debug_msg(f'Starting fetch with "{fetch_mode}".')
     if fetch_mode in (FetchMode.all_events, FetchMode.correlations_only):
         fetch_loop_with_events(
-            client, user_query, full_enrich, fetch_mode, events_columns, events_limit
+            client,
+            user_query,
+            ip_enrich,
+            asset_enrich,
+            fetch_mode,
+            events_columns,
+            events_limit,
         )
     elif fetch_mode == FetchMode.no_events:
-        fetch_loop_no_events(client, user_query, full_enrich)
+        fetch_loop_no_events(client, user_query, ip_enrich, asset_enrich)
 
 
 def reset_fetch_incidents():
@@ -1878,9 +1922,13 @@ def main():
         for adv_p in adv_params.split(","):
             adv_p_kv = adv_p.split("=")
             if len(adv_p_kv) != 2:
-                return_error(f"Could not read advanced parameter: {adv_p} - please make sure you entered it correctly.")
+                return_error(
+                    f"Could not read advanced parameter: {adv_p} - please make sure you entered it correctly."
+                )
             if adv_p_kv[0] not in ADVANCED_PARAMETER_NAMES:
-                return_error(f"The parameter: {adv_p_kv[0]} is not a valid advanced parameter. Please remove it")
+                return_error(
+                    f"The parameter: {adv_p_kv[0]} is not a valid advanced parameter. Please remove it"
+                )
             else:
                 globals_[adv_p_kv[0]] = try_parse_integer(adv_p_kv[1])
 
@@ -1899,7 +1947,8 @@ def main():
 
     fetch_mode = params.get("fetch_mode")
     user_query = params.get("query")
-    full_enrich = params.get("full_enrich")
+    ip_enrich = params.get("ip_enrich")
+    asset_enrich = params.get("asset_enrich")
     events_columns = params.get("events_columns")
     events_limit = int(params.get("events_limit") or 20)
 
@@ -1939,7 +1988,8 @@ def main():
             long_running_main(
                 client,
                 user_query,
-                full_enrich,
+                ip_enrich,
+                asset_enrich,
                 fetch_mode,
                 events_columns,
                 events_limit,

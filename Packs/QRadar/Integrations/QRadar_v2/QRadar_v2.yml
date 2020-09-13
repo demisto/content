@@ -37,11 +37,19 @@ configuration:
   required: false
   type: 13
 - defaultvalue: 'true'
-  display: Full Incident Enrichment
+  display: Incident IP Enrichment
   hidden: false
-  name: full_enrich
+  name: ip_enrich
   required: false
   type: 8
+  additionalinfo: "Offense IP values are returned from the API as ID values. Enable this feature to convert them to IP values."
+- defaultvalue: 'true'
+  display: Incident Asset Enrichment
+  hidden: false
+  name: asset_enrich
+  required: false
+  type: 8
+  additionalinfo: "Enable this to fetch assets that correlate to the fetched offenses."
 - display: Long running instance
   name: longRunning
   required: false
@@ -50,7 +58,8 @@ configuration:
   display: Event columns to return from the events query
   name: events_columns
   required: false
-  type: 0
+  additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_aql_intro.html"
+  type: 12
 - defaultvalue: Fetch With All Events
   display: Fetch mode
   hidden: false
