@@ -50,19 +50,6 @@ def is_pack_certified(pack_path):
     return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() in CERTIFIED_PACKS
 
 
-def get_integration_tests(file_path):
-    """
-    Args:
-        file_path: The integration yml file path
-
-    Returns:
-        List of all the test playbooks that were set for the given integration.
-    """
-    with open(file_path) as data_file:
-        integration_data = yaml.safe_load(data_file)
-        return integration_data.get('tests', [])
-
-
 def get_integration_data(file_path):
     with open(file_path) as data_file:
         yaml_file = yaml.safe_load(data_file)
@@ -133,7 +120,6 @@ def run():
             continue
         pack_integrations = []
         pack_test_playbooks = []
-        integration_test_playbooks = []
 
         integration_dir_path = os.path.join(pack_path, INTEGRATIONS_DIR)
         test_playbook_dir_path = os.path.join(pack_path, TEST_PLAYBOOKS_DIR)
@@ -149,22 +135,19 @@ def run():
                         is_yml_file = integration_file.endswith('.yml')
                         file_path = os.path.join(inner_dir_path, integration_file)
                         if is_yml_file:
-                            integration_test_playbooks.extend(get_integration_tests(file_path))
                             pack_integrations.append(get_integration_data(file_path))
                 else:
                     is_yml_file = file_or_dir.endswith('.yml')
                     file_path = os.path.join(integration_dir_path, file_or_dir)
                     if is_yml_file:
                         pack_integrations.append(get_integration_data(file_path))
-                        integration_test_playbooks.extend(get_integration_tests(file_path))
 
         for file_path in os.listdir(test_playbook_dir_path):
             is_yml_file = file_path.endswith('.yml')
             file_path = os.path.join(test_playbook_dir_path, file_path)
             if is_yml_file and find_type(file_path) == FileType.TEST_PLAYBOOK:
                 test_playbook_id, fromversion = get_playbook_data(file_path)
-                is_test_relevant = test_playbook_id in set(integration_test_playbooks)
-                if test_playbook_id not in existing_test_playbooks and is_test_relevant:
+                if test_playbook_id not in existing_test_playbooks:
                     pack_test_playbooks.append((test_playbook_id, fromversion))
 
         if pack_test_playbooks:
