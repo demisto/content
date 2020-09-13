@@ -191,7 +191,7 @@ tasks:
       '#none#':
       - "7"
     note: false
-    quietmode: 0pu
+    quietmode: 0
     scriptarguments:
       filename:
         simple: ${inputs.Filename}
