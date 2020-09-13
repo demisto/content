@@ -87,7 +87,9 @@ class Client(BaseClient):
         api_url = oproxy_response.get('url')
         refresh_token = oproxy_response.get(REFRESH_TOKEN_CONST)
         instance_id = oproxy_response.get(INSTANCE_ID_CONST)
-        expires_in = int(oproxy_response.get(EXPIRES_IN, MINUTES_60))
+        # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
+        # an empty string to an int.
+        expires_in = int(oproxy_response.get(EXPIRES_IN, MINUTES_60) or 0)
         if not access_token or not api_url or not instance_id:
             raise DemistoException(f'Missing attribute in response: access_token, instance_id or api are missing.\n'
                                    f'Oproxy response: {oproxy_response}')

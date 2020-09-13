@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 import urllib2
 import json
 import base64
@@ -21,6 +20,7 @@ SERVER_URL = demisto.params()['url']
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 USE_PROXY = demisto.params()['proxy']
+STATELESS = demisto.params().get('stateless', "True") == "True"
 WHITELISTS = []  # type: list
 BLACKLISTS = []  # type: list
 WHITELISTS = argToList(demisto.params().get('whitelist'))
@@ -142,12 +142,35 @@ def get_miner_list(MineMeldClient, miner, type_=False):
     return miner_list
 
 
-def add_indicator_to_miner(MineMeldClient, miner, indicators, type_, comment=''):
+def behave_statefully(stateless):
+    # Start with the "stateless" argument in the Command
+    if stateless is None:
+        # Rely on default STATELESS parameter setting
+        if (STATELESS is not None) and (STATELESS is True):
+            return False
+        return True
+    # Rely on override
+    if stateless is False:
+        return True
+    return False
+
+
+def transpose_indicator_expiration(indicator_blob):
+    if '_expiration_ts' in indicator_blob:
+        indicator_blob['ttl'] = indicator_blob['_expiration_ts']
+        del indicator_blob['_expiration_ts']
+    return indicator_blob
+
+
+def add_indicator_to_miner(MineMeldClient, miner, indicators, type_, stateless=None, comment=''):
     miner_list = get_miner_list(MineMeldClient, miner)
-    updated_miner_list = {
-        e['indicator']: json.dumps(e, sort_keys=True) for e in miner_list
-    }
     request_params = {}  # type: dict
+    updated_miner_list = {}  # type: dict
+
+    if behave_statefully(stateless):
+        updated_miner_list = {
+            e['indicator']: json.dumps(transpose_indicator_expiration(e), sort_keys=True) for e in miner_list
+        }
 
     if not isinstance(indicators, list):
         indicators = indicators.split(',')
@@ -173,12 +196,14 @@ def add_indicator_to_miner(MineMeldClient, miner, indicators, type_, comment='')
     MineMeldClient.upload(miner, '[{}]'.format(','.join(updated_miner_list.values())))
 
 
-def remove_indicator_from_miner(MineMeldClient, miner, indicators):
+def remove_indicator_from_miner(MineMeldClient, miner, indicators, stateless=None):
     miner_list = get_miner_list(MineMeldClient, miner)
-    updated_miner_list = {
-        e['indicator']: json.dumps(e, sort_keys=True) for e in miner_list
-    }
     request_params = {}  # type: dict
+    updated_miner_list = {}  # type: dict
+
+    existing_miner_list = {
+        e['indicator']: json.dumps(transpose_indicator_expiration(e), sort_keys=True) for e in miner_list
+    }
 
     if not isinstance(indicators, list):
         indicators = indicators.split(',')
@@ -190,17 +215,20 @@ def remove_indicator_from_miner(MineMeldClient, miner, indicators):
         if not contain_all_indicators:
             return_error('Did not find all indicators on miner {}'.format(miner))
 
+        if behave_statefully(stateless):
+            updated_miner_list = existing_miner_list
+
         for indicator in indicators:
             request_params = {
                 'indicator': indicator,
-                'type': json.loads(updated_miner_list[indicator])['type'],
+                'type': json.loads(existing_miner_list[indicator])['type'],
                 'ttl': -1
             }
             updated_miner_list[indicator] = json.dumps(request_params)
     else:
         # remove indicator from miner, if nothing was removed, indicator not on miner
         for indicator in indicators:
-            indicator_from_list = updated_miner_list.pop(indicator, None)
+            indicator_from_list = existing_miner_list.pop(indicator, None)
             if not indicator_from_list:
                 return_error('Did not find indicator {} on miner {}'.format(indicator, miner))
 
@@ -683,6 +711,12 @@ def retrieve_miner_indicators():
 
 def update_miner():
     miner = demisto.args()['miner']
+    if 'stateless' not in demisto.args():
+        stateless = None
+    elif demisto.args()['stateless'] == "False":
+        stateless = False
+    else:
+        stateless = True
     indicators = argToList(demisto.args()['indicator'])
     if len(indicators) < 1:
         return_error('Insert at least 1 indicator')
@@ -694,9 +728,9 @@ def update_miner():
             return_error("Don't use space in indicator")
 
     if demisto.command() == 'minemeld-add-to-miner':
-        add_indicator_to_miner(MineMeldClient, miner, indicators, type_, comment)
+        add_indicator_to_miner(MineMeldClient, miner, indicators, type_, stateless, comment)
     elif demisto.command() == 'minemeld-remove-from-miner':
-        remove_indicator_from_miner(MineMeldClient, miner, indicators)
+        remove_indicator_from_miner(MineMeldClient, miner, indicators, stateless)
 
     demisto.results('Performed action successfully')
 
