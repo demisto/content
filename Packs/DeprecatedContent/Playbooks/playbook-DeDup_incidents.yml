@@ -3,8 +3,9 @@ version: -1
 name: DeDup incidents
 fromversion: "3.5.0"
 description: |
-  DEPRECATED. Check for duplicate incidents for the current incident, and close it if any duplicate has found.
+  Deprecated. Check for duplicate incidents for the current incident, and close it if any duplicate has found.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
