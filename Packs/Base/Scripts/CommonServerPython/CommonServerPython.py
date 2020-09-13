@@ -3129,14 +3129,19 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         return_error('date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, '
                      'etc.)')
 
-    number = int(range_split[0])
-    if range_split[1].lower() not in ['minute', 'minutes',
-                                      'hour', 'hours',
-                                      'day', 'days',
-                                      'month', 'months',
-                                      'year', 'years',
-                                      ]:
-        return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years')
+    try:
+        number = int(range_split[0])
+    except ValueError:
+        return_error('The time value is invalid. Must be an integer.')
+
+    unit = range_split[1].lower()
+    if unit not in ['minute', 'minutes',
+                    'hour', 'hours',
+                    'day', 'days',
+                    'month', 'months',
+                    'year', 'years',
+                    ]:
+        return_error('The unit of date_range is invalid. Must be minutes, hours, days, months or years.')
 
     if not isinstance(timezone, (int, float)):
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
@@ -3148,7 +3153,6 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         end_time = datetime.now() + timedelta(hours=timezone)
         start_time = datetime.now() + timedelta(hours=timezone)
 
-    unit = range_split[1].lower()
     if 'minute' in unit:
         start_time = end_time - timedelta(minutes=number)
     elif 'hour' in unit:
