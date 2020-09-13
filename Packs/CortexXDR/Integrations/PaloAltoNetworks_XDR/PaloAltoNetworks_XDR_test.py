@@ -823,7 +823,7 @@ def test_get_remote_data_command_should_update(requests_mock):
     """
     from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
         'id': 1,
@@ -861,7 +861,7 @@ def test_get_remote_data_command_should_not_update(requests_mock):
     """
     from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
         'id': 1,
@@ -900,7 +900,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock):
     """
     from PaloAltoNetworks_XDR import get_remote_data_command, Client, sort_all_list_incident_fields
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
         'id': 1,
@@ -958,7 +958,7 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     mocker.patch.object(demisto, 'params', return_value={"sync_owners": True})
     mocker.patch.object(demisto, 'findUser', return_value={"email": "moo@demisto.com", 'username': 'username'})
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
         'id': 1,
