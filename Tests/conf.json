@@ -725,6 +725,11 @@
             "playbookID": "PAN-OS URL Filtering enrichment - Test"
         },
         {
+            "integrations": "Panorama",
+            "instance_names": "panorama_instance_best_practice",
+            "playbookID": "Panorama Best Practise - Test"
+        },
+        {
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io test"
         },
@@ -2521,6 +2526,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "EWSO365",
+            "playbookID": "EWS_O365_send_mail_test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "QRadar",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 600,
@@ -3045,10 +3055,7 @@
         "Init_McAfee_ESM_v2_Test": "issue #26187",
         "MISP V2 Test": "Issue 26905",
         "Logzio - Test": "Issue 26729",
-
-        "_comment": "~~~ DEPRECATED ~~~",
-        "Endpoint Enrichment - Generic v2 - Test": "DEPRECATED"
-
+        "pyEWS_Test": "Issue 28339"
     },
     "skipped_integrations": {
         
@@ -3075,7 +3082,6 @@
         "Moloch": "No instance",
         "Twilio": "No instance",
         "Zendesk": "No instance",
-        "google-vault": "Issue 25798",
         "GuardiCore": "No instance",
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
