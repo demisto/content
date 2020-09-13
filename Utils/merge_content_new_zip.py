@@ -4,6 +4,7 @@ import os
 import json
 from google.cloud import storage
 import argparse
+import shutil
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -174,7 +175,7 @@ def get_new_feature_zip_file_path(feature_branch_name, job_num):
 
 
 def remove_directory(dir_path):
-    os.rmdir(dir_path)
+    shutil.rmtree(dir_path, ignore_errors=True)
 
 
 def option_handler():
