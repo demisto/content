@@ -1,6 +1,5 @@
 TruSTAR is an Intelligence Management Platform that helps you operationalize data across tools and teams, helping you prioritize investigations and accelerate incident response.
-
-This integration was integrated and tested with version 0.3.29 of TruSTAR SDK
+This integration was integrated and tested with version 0.3.31 of TruSTAR v2
 ## Configure TruSTAR v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -33,7 +32,12 @@ Searches for all indicators that contain the given search term.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_term | The term to search for (e.g. covid-19) | Optional | 
-| enclave_ids | Comma-separated list of enclave ids; only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. | Optional | 
+| enclave_ids | Comma-separated list of enclave ids; (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
+| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
+| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
+| indicator_types | comma-separated indicator types to filter by. e.g. "URL, IP" | Optional | 
+| tags | Name (or list of names) of tag(s) to filter indicators by. (i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). Only indicators containing ALL of these tags will be returned. | Optional | 
+| excluded_tags | Indicators containing ANY of these tags will be excluded from the results. Can be a single tag or a list of tags. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional | 
 | limit | Limit of results to return. Max value possible is 1000. | Optional | 
 
 
@@ -424,6 +428,8 @@ Searches for all indicators that contain the given search term.
 >| URL | https://api.intel471.com/v1/download/malwareintel/26113fb83b96dbea7ada873cc84c2a5b66e1bc6761f7011b14e11f1567d4e430.zip |
 >| MD5 | 4f4af35ed47d965bcd1012f2da2d75cd |
 >| SHA1 | da3111fb65f02659d52900412c8968a342fd19ae |
+
+
 
 
 ### trustar-get-enclaves
@@ -1003,6 +1009,7 @@ Returns the list of all enclaves that the user has access to, as well as whether
 >| false | 379be0e7-86df-4403-900e-d5e59b9022ae | Intel 471 Adversary List  | true | CLOSED | false |
 
 
+
 ### trustar-related-indicators
 ***
 Finds all reports that contain any of the given indicators and returns correlated indicators from those reports.
@@ -1016,7 +1023,7 @@ Finds all reports that contain any of the given indicators and returns correlate
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicators | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required | 
-| enclave_ids | Comma-separated list of enclave IDs; only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. | Optional | 
+| enclave_ids | Comma-separated list of enclave IDs; (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
 | limit | Limit of results to return. Max value possible is 1000. | Optional | 
 
 
@@ -1040,6 +1047,7 @@ Finds all reports that contain any of the given indicators and returns correlate
 | DBotScore.Type | string | The type of the indicator | 
 | DBotScore.Vendor | string | Vendor used to calculate the score | 
 | DBotScore.Score | number | The actual score | 
+
 
 
 #### Command Example
@@ -1419,7 +1427,6 @@ Finds all reports that contain any of the given indicators and returns correlate
 >| IP | 196.37.251.244 |
 >| CVE | CVE-2017-0147 |
 
-
 ### trustar-trending-indicators
 ***
 Find indicators that are trending in the community.
@@ -1457,6 +1464,7 @@ Find indicators that are trending in the community.
 | DBotScore.Type | string | The type of the indicator | 
 | DBotScore.Vendor | string | Vendor used to calculate the score | 
 | DBotScore.Score | number | The actual score | 
+
 
 
 #### Command Example
@@ -1552,7 +1560,7 @@ Provide metadata associated with a list of indicators, including value, indicato
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicators | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required | 
-| enclave_ids | a list of enclave IDs to restrict to. By default, uses all of the user’s enclaves. | Optional | 
+| enclave_ids | CSV of enclave IDs to restrict to. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). By default, uses all of the user’s enclaves. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
 
 
 #### Context Output
@@ -1638,7 +1646,7 @@ Provides structured summaries about indicators, which are derived from intellige
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | values | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required | 
-| enclave_ids | The enclaves to search for indicator summaries in. These should be enclaves containing data from sources on the TruSTAR Marketplace. | Optional | 
+| enclave_ids | CSV of enclaves to search for indicator summaries in. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). These should be enclaves containing data from sources on the TruSTAR Marketplace. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
 | limit | Limit of results to return. Max value possible is 1000. | Optional | 
 
 
@@ -1673,10 +1681,12 @@ Provides structured summaries about indicators, which are derived from intellige
 | DBotScore.Score | number | The actual score | 
 
 
+
 #### Command Example
 ```!trustar-indicator-summaries values=LOCKY,23.121.54.102```
 
 #### Human Readable Output
+
 
 ### trustar-get-whitelisted-indicators
 ***
@@ -1713,6 +1723,7 @@ Gets a list of indicators that the user’s company has whitelisted.
 | DBotScore.Type | string | The type of the indicator | 
 | DBotScore.Vendor | string | Vendor used to calculate the score | 
 | DBotScore.Score | number | The actual score | 
+
 
 
 #### Command Example
@@ -1993,6 +2004,7 @@ Gets a list of indicators that the user’s company has whitelisted.
 >| IP | 109.120.214.195 |
 
 
+
 ### trustar-get-reports
 ***
 Returns incident reports matching the specified filters. All parameters are optional: if nothing is specified, the latest 25 reports accessible by the user will be returned (matching the view the user would have by logging into Station).
@@ -2005,12 +2017,12 @@ Returns incident reports matching the specified filters. All parameters are opti
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from_time | Start of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
-| to_time | End of time window (format is YY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00). Based on updated time, and not created time. Default is current time. | Optional | 
+| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
+| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
 | distribution_type | Whether to search for reports in the community, or only in enclaves | Optional | 
-| enclave_ids | Comma separated list of enclave ids to search for reports in. Even if distributionType is COMMUNITY, these enclaves will still be searched as well. Default is All enclaves the user has READ access to. | Optional | 
-| tags | a list of names of tags to filter by; only reports containing ALL of these tags will be returned | Optional | 
-| excluded_tags | reports containing ANY of these tags will be excluded from the results. | Optional | 
+| enclave_ids | Comma separated list of enclave ids to search for reports in. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Even if distributionType is COMMUNITY, these enclaves will still be searched as well. Default is All enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
+| tags | a list of names of tags to filter by; only reports containing ALL of these tags will be returned. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional | 
+| excluded_tags | reports containing ANY of these tags will be excluded from the results. Can be a single tag or a list of tags. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional | 
 
 
 #### Context Output
@@ -2020,6 +2032,7 @@ Returns incident reports matching the specified filters. All parameters are opti
 | TruSTAR.Report.title | string | Title of the report | 
 | TruSTAR.Report.reportBody | string | Body of the report | 
 | TruSTAR.Report.id | string | ID of the report | 
+
 
 
 #### Command Example
@@ -2033,6 +2046,7 @@ Returns incident reports matching the specified filters. All parameters are opti
 #### Human Readable Output
 
 >No reports were found.
+
 
 ### trustar-get-indicators-for-report
 ***
@@ -2070,6 +2084,7 @@ Return a list of indicators extracted from a report.
 | DBotScore.Type | string | The type of the indicator | 
 | DBotScore.Vendor | string | Vendor used to calculate the score | 
 | DBotScore.Score | number | The actual score | 
+
 
 
 #### Command Example
@@ -2198,6 +2213,7 @@ There is no context output for this command.
 
 >20ce2d7f-4a25-4bed-a74e-ec99bf0b46db has been moved to enclave id: 71001c42-2d05-4491-bf35-ee7c678b92da
 
+
 ### trustar-copy-report
 ***
 Copies a report from one enclave to another.
@@ -2230,6 +2246,8 @@ There is no context output for this command.
 
 >6e00a714-379a-4db8-ac0c-812a629c8288 has been copied to enclave id: c879f089-ffbd-4a2f-8144-d3e8bdbd6981 with id: 9cc749a5-21b2-418d-8fa7-5e28fcf671ba
 
+
+
 ### trustar-submit-report
 ***
 Submit a new incident report, and receive the ID it has been assigned in TruSTAR’s system.
@@ -2244,10 +2262,11 @@ Submit a new incident report, and receive the ID it has been assigned in TruSTAR
 | --- | --- | --- |
 | title | Title of the report | Required | 
 | report_body | Text content of report | Required | 
-| enclave_ids | CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. | Optional | 
+| enclave_ids | CSV of TruSTAR-generated enclave ids. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
 | distribution_type | Distribution type of the report | Optional | 
 | external_url | URL for the external report that this originated from, if one exists. Limit 500 alphanumeric characters. Must be unique across all reports for a given company. | Optional | 
 | time_began | ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00. Default is current time. | Optional | 
+| redact | YES OR NO. If redact is YES, all terms from user's company redaction library in TruSTAR will be applied before submitting. If NO, submits the report with body and title as written by the user. | Optional | 
 
 
 #### Context Output
@@ -2303,6 +2322,7 @@ Deletes a report as specified by given id (id can be TruSTAR report id or extern
 
 There is no context output for this command.
 
+
 #### Command Example
 ```!trustar-delete-report report_id=20ce2d7f-4a25-4bed-a74e-ec99bf0b46db```
 
@@ -2314,6 +2334,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Report 20ce2d7f-4a25-4bed-a74e-ec99bf0b46db was successfully deleted
+
 
 ### trustar-correlated-reports
 ***
@@ -2328,7 +2349,7 @@ Returns a list of all reports that contain any of the provided indicator values.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicators | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required | 
-| enclave-ids | Comma-separated list of enclave ids; only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. | Optional | 
+| enclave-ids | Comma-separated list of enclave ids; (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
 | limit | Limit of results to return. Max value possible is 1000. | Optional | 
 | distribution_type | Distribution type of the report | Optional | 
 
@@ -2348,6 +2369,8 @@ There is no context output for this command.
 #### Human Readable Output
 
 >No reports were found.
+
+
 
 ### trustar-report-details
 ***
@@ -2372,6 +2395,7 @@ Finds a report by its ID and returns the report details.
 | TruSTAR.Report.title | string | Title of the report | 
 | TruSTAR.Report.reportBody | string | Body of the report | 
 | TruSTAR.Report.id | string | ID of the report | 
+
 
 
 #### Command Example
@@ -2413,7 +2437,7 @@ Update the report with the specified ID. Either the internal TruSTAR report ID o
 | report_id | TruSTAR report id or external tracking id. | Required | 
 | title | Title of the report | Optional | 
 | report-body | Text content of report | Optional | 
-| enclave_ids | CSV of TruSTAR-generated enclave ids. Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. | Optional | 
+| enclave_ids | CSV of TruSTAR-generated enclave ids. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
 | external_url | URL for the external report that this originated from, if one exists. Limit 500 alphanumeric characters. Must be unique across all reports for a given company. | Optional | 
 | distribution_type | Distribution type of the report | Optional | 
 | time_began | ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00. Default is current time. | Optional | 
@@ -2426,6 +2450,7 @@ Update the report with the specified ID. Either the internal TruSTAR report ID o
 | TruSTAR.Report.title | string | Title of the report | 
 | TruSTAR.Report.reportBody | string | Body of the report | 
 | TruSTAR.Report.id | string | ID of the report | 
+
 
 
 #### Command Example
@@ -2465,7 +2490,12 @@ Searches for all reports that contain the given search term.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_term | The term to search for (e.g. covid-19) If empty, no search term will be applied. Otherwise, must be at least 3 characters. | Optional | 
-| enclave_ids | Comma-separated list of enclave ids; only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves) | Optional | 
+| enclave_ids | Comma-separated list of enclave ids (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
+| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
+| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
+| tags | Name (or list of names) of tag(s) to filter indicators by. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). Only indicators containing ALL of these tags will be returned. | Optional | 
+| excluded_tags | Indicators containing ANY of these tags will be excluded from the results. Can be a single tag or a list of tags. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional | 
+| limit | Limit of results to return. Max value possible is 1000. | Optional | 
 
 
 #### Context Output
@@ -2672,6 +2702,7 @@ Delete an indicator from the user’s company whitelist.
 
 There is no context output for this command.
 
+
 #### Command Example
 ```!trustar-remove-from-whitelist indicator=8.8.8.8 indicator_type=IP```
 
@@ -2683,6 +2714,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >8.8.8.8 removed from the whitelist successfully
+
 
 ### trustar-get-phishing-submissions
 ***
@@ -2696,10 +2728,11 @@ Fetches all phishing submissions that fit the given criteria
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| priority_event_score | List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. | Optional | 
-| from_time | Start of time window (defaults to 24 hours ago) (YYYY-MM-DD HH:MM:SS) | Optional | 
-| to_time | End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS) | Optional | 
+| priority_event_score | List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. -1,0,2) | Optional | 
+| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
+| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
 | status | A list of triage statuses for submissions (UNRESOLVED,CONFIRMED,IGNORED); only email submissions marked with at least one of these statuses will be returned | Optional | 
+| limit | Limit of results to return. Max value possible is 1000. | Optional | 
 
 
 #### Context Output
@@ -2727,6 +2760,8 @@ Fetches all phishing submissions that fit the given criteria
 #### Human Readable Output
 
 >No phishing submissions were found.
+
+
 
 ### trustar-set-triage-status
 ***
@@ -2760,6 +2795,7 @@ There is no context output for this command.
 
 >Submission ID 6e00a714-379a-4db8-ac0c-812a629c8288 is ['CONFIRMED']
 
+
 ### trustar-get-phishing-indicators
 ***
 Get phishing indicators that match the given criteria.
@@ -2772,11 +2808,12 @@ Get phishing indicators that match the given criteria.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| normalized_indicator_score | List of Intel scores to restrict the query. Possible values are -1, 0, 1, 2, 3. | Optional | 
-| priority_event_score | List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. | Optional | 
-| from_time | Start of time window (defaults to 24 hours ago) (YYYY-MM-DD HH:MM:SS) | Optional | 
-| to_time | End of time window (defaults to current time) (YYYY-MM-DD HH:MM:SS) | Optional | 
+| normalized_indicator_score | List of Intel scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. 0,2,3), | Optional | 
+| priority_event_score | List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. 0,2,3), | Optional | 
+| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
+| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
 | status | A list of triage statuses for submissions; only email submissions marked with at least one of these statuses will be returned. Options are 'UNRESOLVED', 'CONFIRMED', 'IGNORED' | Optional | 
+| limit | Limit of results to return. Max value possible is 1000. | Optional | 
 
 
 #### Context Output
