@@ -8,7 +8,11 @@ description: "This playbook is triggered by fetching a Palo Alto Networks Cortex
   the severity, it lets the analyst decide whether to continue to the remediation
   stage or close the investigation as a false positive. \nAfter the remediation, if
   there are no new alerts, the playbook stops the alert sync and closes the XDR incident
-  and investigation."
+  and investigation. For performing the bidirectional sync, the playbook uses the incoming and
+  outgoing mirroring feature added in XSOAR version 6.0.0. After the
+  `Calculate Severity - Generic v2` sub-playbook’s run Cortex XSOAR will be treated as the single
+  source of truth for the severity field, and it will sync only from Cortex XSOAR to XDR, so manual
+  changes for the severity field in XDR will not update in the XSOAR incident."
 starttaskid: "0"
 tasks:
   "0":
