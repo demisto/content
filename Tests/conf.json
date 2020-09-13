@@ -2947,6 +2947,7 @@
         {
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
+            "fromversion": "5.0.0",
             "timeout": 500
         },
         {

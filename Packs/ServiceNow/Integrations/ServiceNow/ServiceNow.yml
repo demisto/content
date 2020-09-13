@@ -65,8 +65,8 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-description: Deprecated - We recommend using ServiceNow v2 instead.
-display: ServiceNow - Deprecated
+description: Deprecated. We recommend using ServiceNow v2 instead.
+display: ServiceNow (Deprecated)
 deprecated: true
 name: ServiceNow
 script:
@@ -109,7 +109,7 @@ script:
       - 'false'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieve ticket information by specific ticket ID
     execution: false
     name: servicenow-get-ticket
@@ -806,7 +806,7 @@ script:
       name: caller
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Create new ServiceNow ticket
     execution: false
     name: servicenow-create-ticket
@@ -2248,7 +2248,7 @@ script:
       name: caller
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Update specific ticket
     execution: false
     name: servicenow-update-ticket
@@ -3156,7 +3156,7 @@ script:
       - sc_task
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Delete a ticket from ServiceNow
     execution: false
     name: servicenow-delete-ticket
@@ -3201,7 +3201,7 @@ script:
       name: text
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Add a link to specific ticket
     execution: false
     name: servicenow-add-link
@@ -3286,7 +3286,7 @@ script:
       - 'false'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Add comment to specific ticket by providing ticket id
     execution: false
     name: servicenow-add-comment
@@ -3361,7 +3361,7 @@ script:
       name: offset
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieve ticket info with a query
     execution: false
     name: servicenow-query-tickets
@@ -3547,7 +3547,7 @@ script:
       name: file_name
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Upload a file to a specific ticket
     execution: false
     name: servicenow-upload-file
@@ -3672,7 +3672,7 @@ script:
       name: table_name
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Retrieve record information by specific record ID
     execution: false
     name: servicenow-get-record
@@ -3729,7 +3729,7 @@ script:
       name: offset
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Query a specified table in ServiceNow
     execution: false
     name: servicenow-query-table
@@ -3771,7 +3771,7 @@ script:
       name: custom_fields
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Create a new record in a specified ServiceNow table
     execution: false
     name: servicenow-create-record
@@ -3820,7 +3820,7 @@ script:
       name: custom_fields
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Update a record in a specified ServiceNow table
     execution: false
     name: servicenow-update-record
@@ -3855,7 +3855,7 @@ script:
       name: id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Delete a record in a specified ServiceNow table
     execution: false
     name: servicenow-delete-record
@@ -3866,7 +3866,7 @@ script:
       name: table_name
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: List API fields for a specified ServiceNow table
     execution: false
     name: servicenow-list-table-fields
@@ -3914,7 +3914,7 @@ script:
       name: offset
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Query the cmdb_ci_computer table in ServiceNow
     execution: false
     name: servicenow-query-computers
@@ -3986,7 +3986,7 @@ script:
       name: offset
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Query the sys_user_group table in ServiceNow
     execution: false
     name: servicenow-query-groups
@@ -4040,7 +4040,7 @@ script:
       name: offset
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Query the sys_user table in ServiceNow
     execution: false
     name: servicenow-query-users
@@ -4083,7 +4083,7 @@ script:
       name: offset
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Get table names by a label to use in commands
     execution: false
     name: servicenow-get-table-name
@@ -4118,7 +4118,7 @@ script:
       name: offset
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Get notes from the specified ServiceNow ticket - Read permissions
       are required for the sys_journal_field table.
     execution: false
