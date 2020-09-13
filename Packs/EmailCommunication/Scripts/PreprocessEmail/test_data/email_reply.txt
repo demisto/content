@@ -1,0 +1,10 @@
+'''
+    From: *test@gmail.com*
+    To: *["test1@gmail.com"]*
+    CC: *test2@gmail.com*
+
+
+    ----
+
+    test
+    '''

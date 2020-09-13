@@ -138,7 +138,7 @@ class MsGraphClient:
 
     def list_users(self, properties, page_url):
         if page_url:
-            response = self.ms_client.http_request(method='GET', full_url=page_url)
+            response = self.ms_client.http_request(method='GET', url_suffix='users', full_url=page_url)
         else:
             response = self.ms_client.http_request(method='GET', url_suffix='users', params={'$select': properties})
         next_page_url = response.get('@odata.nextLink')

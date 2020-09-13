@@ -16,7 +16,7 @@ def test_get_incident_list(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
         'incident_id_list': '1 day'
@@ -37,7 +37,7 @@ def test_fetch_incidents(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     next_run, incidents = fetch_incidents(client, '3 month', {})
@@ -60,7 +60,7 @@ def test_get_incident_extra_data(requests_mock):
                        json=get_incident_extra_data_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
         'incident_id': '1'
@@ -88,7 +88,7 @@ def test_update_incident(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/update_incident/', json=update_incident_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
         'incident_id': '1',
@@ -107,7 +107,7 @@ def test_get_endpoints(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
         'hostname': 'foo',
@@ -127,7 +127,7 @@ def test_get_all_endpoints_using_limit(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoints/', json=get_endpoints_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
         'limit': 1,
@@ -148,7 +148,7 @@ def test_insert_parsed_alert(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/insert_parsed_alerts/', json=insert_alerts_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
         "product": "VPN & Firewall-1",
@@ -186,7 +186,7 @@ def test_isolate_endpoint(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/isolate', json=isolate_endpoint_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     args = {
@@ -218,7 +218,7 @@ def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/isolate', json=isolate_endpoint_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     args = {
@@ -246,7 +246,7 @@ def test_unisolate_endpoint(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/unisolate', json=unisolate_endpoint_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     args = {
@@ -277,7 +277,7 @@ def test_unisolate_endpoint_pending_isolation(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/unisolate', json=unisolate_endpoint_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     args = {
@@ -295,7 +295,7 @@ def test_get_distribution_url(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/distributions/get_dist_url/', json=get_distribution_url_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     args = {
@@ -322,7 +322,7 @@ def test_get_audit_management_logs(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/audits/management_logs/', json=get_audit_management_logs_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     args = {
@@ -344,7 +344,7 @@ def test_get_audit_agent_reports(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/audits/agents_reports/', json=get_audit_agent_reports_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     args = {
@@ -365,7 +365,7 @@ def test_insert_cef_alerts(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/insert_cef_alerts/', json=insert_cef_alerts_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     args = {
@@ -399,7 +399,7 @@ def test_get_distribution_status(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/distributions/get_status/', json=get_distribution_status_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     args = {
@@ -425,7 +425,7 @@ def test_get_distribution_versions(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/distributions/get_versions/', json=get_distribution_versions_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     readable_output, outputs, _ = get_distribution_versions_command(client)
@@ -452,7 +452,7 @@ def test_create_distribution(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/distributions/create/', json=create_distribution_response)
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
 
     args = {
@@ -495,7 +495,7 @@ def test_blacklist_files_command_with_more_than_one_file(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blacklist/', json=test_data['api_response'])
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
     markdown, context, raw = blacklist_files_command(client, test_data['multi_command_args'])
@@ -521,7 +521,7 @@ def test_blacklist_files_command_with_single_file(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blacklist/', json=test_data['api_response'])
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
     markdown, context, raw = blacklist_files_command(client, test_data['single_command_args'])
@@ -547,7 +547,7 @@ def test_blacklist_files_command_with_no_comment_file(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/blacklist/', json=test_data['api_response'])
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
     markdown, context, raw = blacklist_files_command(client, test_data['no_comment_command_args'])
@@ -572,7 +572,7 @@ def test_whitelist_files_command_with_more_than_one_file(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
     markdown, context, raw = whitelist_files_command(client, test_data['multi_command_args'])
@@ -598,7 +598,7 @@ def test_whitelist_files_command_with_single_file(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
     markdown, context, raw = whitelist_files_command(client, test_data['single_command_args'])
@@ -624,7 +624,7 @@ def test_whitelist_files_command_with_no_comment_file(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
     markdown, context, raw = whitelist_files_command(client, test_data['no_comment_command_args'])
@@ -648,7 +648,7 @@ def test_quarantine_files_command(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/quarantine/', json=test_data['api_response'])
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
     markdown, context, raw = quarantine_files_command(client, test_data['command_args'])
@@ -674,7 +674,7 @@ def test_get_quarantine_status_command(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/quarantine/status/', json=test_data['api_response'])
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
     markdown, context, raw = get_quarantine_status_command(client, test_data['command_args'])
@@ -697,7 +697,7 @@ def test_restore_file_command(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/restore/', json={"reply": {"action_id": 123}})
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
     markdown, context, raw = restore_file_command(client, {"file_hash": "123"})
@@ -721,7 +721,7 @@ def test_endpoint_scan_command(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
     markdown, context, raw = endpoint_scan_command(client, test_data['command_args'])
@@ -743,7 +743,7 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
     client = Client(
-        base_url=f'{XDR_URL}/public_api/v1'
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     client._headers = {}
     markdown, context, raw = endpoint_scan_command(client, {})

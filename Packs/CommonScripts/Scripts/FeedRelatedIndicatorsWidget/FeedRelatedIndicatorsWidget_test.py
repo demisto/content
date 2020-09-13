@@ -69,6 +69,6 @@ def test_feed_related_indicator(mocker):
                                      '<br><br> |\n| MITRE ATT&CK |  | ' \
                                      '[https://securelist.com/lazarus-under-the-hood/77908/]' \
                                      '(https://securelist.com/lazarus-under-the-hood/77908/)<br><br> |\n| ' \
-                                     'MITRE ATT&CK | [T1496](https://test-address:8443/indicator/4467) | ' \
+                                     'MITRE ATT&CK | [T1496](https://test-address:8443/#/indicator/4467) | ' \
                                      '[https://attack.mitre.org/techniques/T1496]' \
                                      '(https://attack.mitre.org/techniques/T1496)<br><br> |\n'

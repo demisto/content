@@ -717,20 +717,6 @@ script:
       name: customer
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The event on which subscription intended (if subscribing). Can
-        be add/delete/makeAdmin/undelete/update
-      isArray: false
-      name: event
-      predefined:
-      - add
-      - delete
-      - makeAdmin
-      - undelete
-      - update
-      required: false
-      secret: false
     - default: false
       description: Maximum number of results to return. Default is 100. Maximum is
         500. Can be 1 to 500, inclusive.
@@ -1836,7 +1822,7 @@ script:
     - contextPath: Gmail.Role.Privilege.Name
       description: The name of the privilege.
       type: String
-  dockerimage: demisto/google-api:1.0.0.10663
+  dockerimage: demisto/google-api:1.0.0.10873
   isfetch: true
   longRunning: false
   longRunningPort: false

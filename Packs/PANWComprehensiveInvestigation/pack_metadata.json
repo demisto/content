@@ -2,7 +2,7 @@
     "name": "PANW Comprehensive Investigation",
     "description": "Are you a Palo Alto Networks customer? We have just the content pack to help you orchestrate incident response across Palo Alto Networks products.",
     "support": "xsoar",
-    "currentVersion": "1.3.0",
+    "currentVersion": "1.3.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -60,6 +60,10 @@
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"
+        },
+        "CortexDataLake": {
+            "mandatory": false,
+            "display_name": "Cortex Data Lake"
         },
         "Active_Directory_Query": {
             "mandatory": false,

@@ -79,10 +79,10 @@ tasks:
       version: -1
       name: Send mail with that subject
       description: Send an email
-      script: '|||send-mail'
+      script: 'Mail Sender (New)|||send-mail'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "Mail Sender (New)"
     nexttasks:
       '#none#':
       - "3"
