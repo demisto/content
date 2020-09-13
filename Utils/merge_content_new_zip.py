@@ -170,7 +170,11 @@ def get_new_feature_zip_file_path(feature_branch_name, job_num):
     zip_destination_path = f'{ARTIFACTS_PATH}feature_content_new_zip'
     new_feature_content_zip_file_path = download_zip_file_from_gcp(current_feature_content_zip_file_path,
                                                                    zip_destination_path)
-    return new_feature_content_zip_file_path
+    return new_feature_content_zip_file_path, zip_destination_path
+
+
+def remove_directory(dir_path):
+    os.rmdir(dir_path)
 
 
 def option_handler():
@@ -191,10 +195,12 @@ def main():
         print("Couldn't find successful workflow for this branch")
 
     create_instances_job_num = get_job_num(feature_branch_successful_workflow_id)
-    new_feature_content_zip_file_path = get_new_feature_zip_file_path(feature_branch_name, create_instances_job_num)
+    new_feature_content_zip_file_path, zip_destination_path = \
+        get_new_feature_zip_file_path(feature_branch_name, create_instances_job_num)
 
     if new_feature_content_zip_file_path:
         merge_zip_files(new_feature_content_zip_file_path)
+        remove_directory(zip_destination_path)
 
         print('Done merging content_new.zip files')
     else:
