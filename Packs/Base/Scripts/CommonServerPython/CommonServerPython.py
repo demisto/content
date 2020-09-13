@@ -2575,6 +2575,52 @@ class Common(object):
             return ret_value
 
 
+class IndicatorsTimeline:
+    """
+    IndicatorsTimeline class - use to return Indicator Timeline object to be used in CommandResults
+
+    :type indicators: ``list``
+    :param indicators: expects a list of indicators.
+
+    :type category: ``str``
+    :param category: indicator category.
+
+    :type message: ``str``
+    :param message: indicator message.
+
+    :return: None
+    :rtype: ``None``
+    """
+    def __init__(self, indicators=None, category=None, message=None):
+        # type: (list, str, str) -> None
+        if indicators is None:
+            indicators = []
+
+        # check if we are running from an integration or automation
+        try:
+            _ = demisto.params()
+            default_category = 'Integration Update'
+        except AttributeError:
+            default_category = 'Automation Update'
+
+        timelines = []
+        timeline = {}
+        for indicator in indicators:
+            timeline['Value'] = indicator
+
+            if category:
+                timeline['Category'] = category
+            else:
+                timeline['Category'] = default_category
+
+            if message:
+                timeline['Message'] = message
+
+            timelines.append(timeline)
+
+        self.indicators_timeline = timelines
+
+
 class CommandResults:
     """
     CommandResults class - use to return results to warroom
@@ -2602,13 +2648,16 @@ class CommandResults:
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
         raw response from the 3rd party service (originally Contents)
 
+    :type indicators_timeline: ``IndicatorsTimeline``
+    :param indicators_timeline: must be an IndicatorsTimeline. used by the server to populate an indicator's timeline.
+
     :return: None
     :rtype: ``None``
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None):
-        # type: (str, object, object, list, str, object) -> None
+                 raw_response=None, indicators_timeline=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline) -> None
         if raw_response is None:
             raw_response = outputs
 
@@ -2633,6 +2682,7 @@ class CommandResults:
 
         self.raw_response = raw_response
         self.readable_output = readable_output
+        self.indicators_timeline = indicators_timeline
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -2641,6 +2691,7 @@ class CommandResults:
         else:
             human_readable = None  # type: ignore[assignment]
         raw_response = None  # type: ignore[assignment]
+        indicators_timeline = []  # type: ignore[assignment]
 
         if self.indicators:
             for indicator in self.indicators:
@@ -2654,6 +2705,9 @@ class CommandResults:
 
         if self.raw_response:
             raw_response = self.raw_response
+
+        if self.indicators_timeline:
+            indicators_timeline = self.indicators_timeline.indicators_timeline
 
         if self.outputs is not None:
             if not self.readable_output:
@@ -2680,7 +2734,8 @@ class CommandResults:
             'ContentsFormat': content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
-            'EntryContext': outputs
+            'EntryContext': outputs,
+            'IndicatorTimeline': indicators_timeline,
         }
 
         return return_entry

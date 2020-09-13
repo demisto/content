@@ -173,6 +173,11 @@ references:
             echo "Skipping - not running in demisto-sdk nightly"
             exit 0
         fi
+        if [ -n "${CONTRIB_BRANCH}" ]
+          then
+            echo "Skipping - not running in contribution instance"
+            exit 0
+        fi
         echo "$INSTANCE_ROLE"
         export TEMP=$(cat ./Tests/filter_envs.json | jq '."$INSTANCE_ROLE"')
         if [[ "$TEMP" == "false" ]];

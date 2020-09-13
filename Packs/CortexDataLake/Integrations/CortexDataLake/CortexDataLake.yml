@@ -1211,7 +1211,7 @@ script:
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
         (same as *) or or a comma separated list of specific fields. List of fields can
-        be found after viewing all the outputted fields with "all". 
+        be found after viewing all the outputted fields with "all".
       isArray: true
       name: fields
       predefined:
@@ -1966,7 +1966,7 @@ script:
     - contextPath: CDL.Logging.URL.DestDeviceHost
       description: Hostname of the device session destination.
       type: String
-  dockerimage: demisto/python_pancloud_v2:1.0.0.10370
+  dockerimage: demisto/python_pancloud_v2:1.0.0.10828
   feed: false
   isfetch: true
   longRunning: false
