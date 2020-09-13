@@ -1495,7 +1495,7 @@ def get_domain_name(client: QRadarClient, domain_id=None):
             .get("Domain name")
         )
     except Exception as e:
-        print_debug_msg(f"Failed to get domain name for {domain_id}. Error: {str(e)}")
+        print_debug_msg(f"Failed to get domain name for {domain_id}. Error: {str(e)}", client.lock)
         return None
 
 
