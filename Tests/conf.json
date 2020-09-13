@@ -725,6 +725,11 @@
             "playbookID": "PAN-OS URL Filtering enrichment - Test"
         },
         {
+            "integrations": "Panorama",
+            "instance_names": "panorama_instance_best_practice",
+            "playbookID": "Panorama Best Practise - Test"
+        },
+        {
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io test"
         },
@@ -3078,7 +3083,6 @@
         "Moloch": "No instance",
         "Twilio": "No instance",
         "Zendesk": "No instance",
-        "google-vault": "Issue 25798",
         "GuardiCore": "No instance",
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
