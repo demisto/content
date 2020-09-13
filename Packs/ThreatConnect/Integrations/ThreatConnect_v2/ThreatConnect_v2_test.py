@@ -268,7 +268,7 @@ data_test_create_context_debotscore = [
         {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 3, "confidence": 60}, 3, 2
     ),
     (
-        {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 1, "confidence": 100}, 0, 1
+        {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 1, "confidence": 100}, 0, 0
     )
 ]
 

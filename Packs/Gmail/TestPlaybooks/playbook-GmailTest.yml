@@ -1025,7 +1025,7 @@ tasks:
       - "32"
     scriptarguments:
       user-id:
-        simple: ${Account.ID}
+        simple: user_to_delete@demistodev.com
       visible-globally:
         simple: "False"
     separatecontext: false
