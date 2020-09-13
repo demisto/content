@@ -39,7 +39,7 @@ tags:
 - firewall
 - checkpoint
 - panorama
-comment: Blocks IP in configured firewall
+comment: Deprecated. Blocks IP in configured firewall
 enabled: true
 deprecated: true
 args:
