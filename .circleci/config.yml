@@ -159,13 +159,8 @@ references:
       name: Create Content Artifacts
       when: always
       command: |
-        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
-        # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
-        cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
-        unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
-        zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
-        rm -r test_content_dir
-
+        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
+        python3 Utils/merge_content_new_zip.py -f "4.5.0"
 
   restore_cache: &restore_cache
     restore_cache:
