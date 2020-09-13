@@ -121,7 +121,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 30. microsoft-atp-get-user-alerts
 31. microsoft-atp-get-user-machines
 32. microsoft-atp-add-remove-machine-tag
-33. microsoft-atp-list-indicators
+33. microsoft-atp-indicator-list
 34. microsoft-atp-indicator-get-by-id
 35. microsoft-atp-network-indicator-create
 36. microsoft-atp-file-indicator-create
@@ -2639,14 +2639,14 @@ Machine.ReadWrite.All
 |---|---|---|---|---|---|---|---|
 | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 81.166.99.236 | Active | Medium | Medium | test add tag, testing123 |
 
-### microsoft-atp-list-indicators
+### microsoft-atp-indicator-list
 ***
 Lists all indicators by the ID that the system creates when the indicator is ingested.
 
 
 #### Base Command
 
-`microsoft-atp-list-indicators`
+`microsoft-atp-indicator-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2717,7 +2717,7 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 
 
 #### Command Example
-```!microsoft-atp-list-indicators```
+```!microsoft-atp-indicator-list```
 
 #### Context Example
 ```
@@ -3261,10 +3261,6 @@ There is no context output for this command.
 #### Command Example
 ```!microsoft-atp-indicator-delete indicator_id=18```
 
-#### Context Example
-```
-There is no context output for this command.
-```
 
 #### Human Readable Output
 
