@@ -42,6 +42,7 @@ class TestUtils(object):
         commands = [
             "fake-command"
         ]
+
         if with_commands:
             commands = with_commands
 
@@ -124,6 +125,11 @@ class TestUtils(object):
                             ))
 
     @staticmethod
+    def mock_get_test_list_and_content_packs_to_install(mocker):
+        return mocker.patch('Tests.scripts.collect_tests_and_content_packs.get_test_list_and_content_packs_to_install',
+                            return_value='Detonate URL - Generic Test')
+
+    @staticmethod
     def mock_run_command(mocker, on_command, return_value):
         def on_run_command(*args):
             command = args[0]
@@ -183,7 +189,7 @@ class TestChangedPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks"}
+        assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks", "FakePack"}
 
 
 class TestChangedTestPlaybook:
@@ -224,7 +230,7 @@ class TestChangedTestPlaybook:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Demisto PreGA') is True
         assert filter_envs.get('Demisto Marketplace') is True
-        assert filter_envs.get('Demisto two before GA') is True
+        assert filter_envs.get('Demisto 6.0') is True
         assert filter_envs.get('Demisto one before GA') is True
         assert filter_envs.get('Demisto GA') is True
 
@@ -259,9 +265,9 @@ class TestChangedTestPlaybook:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Demisto PreGA') is True
         assert filter_envs.get('Demisto Marketplace') is True
-        assert filter_envs.get('Demisto two before GA') is False
+        assert filter_envs.get('Demisto 6.0') is True
         assert filter_envs.get('Demisto one before GA') is False
-        assert filter_envs.get('Demisto GA') is True
+        assert filter_envs.get('Demisto GA') is False
 
     def test_changed_unrunnable_test__playbook_fromvesion_2(self, mocker):
         # future_playbook_1 is fromversion 99.99.99 in conf file
@@ -344,7 +350,7 @@ class TestChangedIntegrationAndPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
-        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty'}
+        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty', 'FakePack'}
 
 
 class TestChangedScript:
@@ -882,3 +888,36 @@ def test_collect_content_packs_to_install(mocker):
         ])
 
         collect_tests_and_content_packs._FAILED = False
+
+
+def test_collect_test_playbooks():
+    """
+    Given
+    - Modified playbook list
+
+    When
+    - Collecting content packs to install - running `get_test_list_and_content_packs_to_install()`.
+    Then
+    - Finds all tests playbooks of the modified playbooks and returns the former pack names
+    """
+
+    test_conf = TestConf(MOCK_CONF)
+    content_packs = test_conf.get_packs_of_collected_tests(['fake_playbook_in_fake_pack',
+                                                            'TestCommonPython'], MOCK_ID_SET)
+    assert 'FakePack' in content_packs
+
+
+def test_collect_test_playbooks_no_results():
+    """
+    Given
+    - Modified playbook list with no test playbooks
+
+    When
+    - Collecting content packs to install - running `get_test_list_and_content_packs_to_install()`.
+    Then
+    - returns an empty set
+    """
+
+    test_conf = TestConf(MOCK_CONF)
+    content_packs = test_conf.get_packs_of_collected_tests(['TestCommonPython'], MOCK_ID_SET)
+    assert set() == content_packs

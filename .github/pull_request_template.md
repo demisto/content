@@ -1,5 +1,8 @@
 <!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA -->
 
+## XSOAR [Partner](https://xsoar.pan.dev/docs/partners/become-a-tech-partner)?
+- [ ] The title must be in the following format: **[YOUR_PARTNER_ID] short description**.
+
 ## Status
 - [x] In Progress
 - [ ] Ready
@@ -27,7 +30,4 @@ Paste here any images that will help the reviewer
 ## Must have
 - [ ] Tests
 - [ ] Documentation 
-
-## Demisto Partner?
-- [ ] The title must be in the following format: **[YOUR_PARTNER_ID] short description**
 

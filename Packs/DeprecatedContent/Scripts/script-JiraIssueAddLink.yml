@@ -21,7 +21,7 @@ type: python
 subtype: python2
 tags:
 - jira
-comment: Creates (or updates) issue link
+comment: Deprecated. Creates (or updates) issue link
 system: true
 args:
 - description: If a globalId is provided and a remote issue link exists with that

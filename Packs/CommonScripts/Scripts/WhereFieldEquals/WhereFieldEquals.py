@@ -22,14 +22,12 @@ def where_field_equals(args):
                 found_matches.append(dict_item)
     if len(found_matches) == 1:
         return found_matches[0]
-
     return json.dumps(found_matches, separators=(',', ':'), ensure_ascii=False)
 
 
 def main():
     args = demisto.args()
-    hr_string = where_field_equals(args)
-    return_outputs(readable_output=hr_string)
+    demisto.results(where_field_equals(args))
 
 
 # python2 uses __builtin__ python3 uses builtins
