@@ -82,7 +82,7 @@ tasks:
         simple: 1.1.1.1
       watchlist_id: {}
       watchlist_name:
-        simple: ${McAfeeESM.Watchlists.name}
+        simple: ${McAfeeESM.Watchlist.name}
     separatecontext: false
     view: |-
       {
@@ -116,7 +116,7 @@ tasks:
       values:
         simple: 2.2.2.2,3.3.3.3
       watchlist_id:
-        simple: ${McAfeeESM.Watchlists.id}
+        simple: ${McAfeeESM.Watchlist.id}
       watchlist_name: {}
     separatecontext: false
     view: |-
@@ -138,9 +138,9 @@ tasks:
     task:
       id: cdf32ef7-8c02-4c7d-8327-615e08500830
       version: -1
-      name: esm-watchlist-data-list
-      description: Get watchlist entrys.
-      script: esm-watchlist-data-list
+      name: esm-watchlist-list-entries
+      description: Get watchlist entries.
+      script: esm-watchlist-list-entries
       type: regular
       iscommand: true
       brand: ""
@@ -191,19 +191,9 @@ tasks:
           left:
             value:
               complex:
-                root: McAfeeESM
+                root: McAfeeESM.Watchlist
+                accessor: data
                 transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: McAfeeESM.Watchlists.name
-                      iscontext: true
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: data
                 - operator: atIndex
                   args:
                     index:
@@ -217,19 +207,9 @@ tasks:
           left:
             value:
               complex:
-                root: McAfeeESM
+                root: McAfeeESM.Watchlist
+                accessor: data
                 transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: McAfeeESM.Watchlists.name
-                      iscontext: true
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: data
                 - operator: atIndex
                   args:
                     index:
@@ -243,19 +223,9 @@ tasks:
           left:
             value:
               complex:
-                root: McAfeeESM
+                root: McAfeeESM.Watchlist
+                accessor: data
                 transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: McAfeeESM.Watchlists.name
-                      iscontext: true
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: data
                 - operator: atIndex
                   args:
                     index:
@@ -368,7 +338,7 @@ tasks:
         simple: 1.1.1.1
       watchlist_id: {}
       watchlist_name:
-        simple: ${McAfeeESM.Watchlists.name}
+        simple: ${McAfeeESM.Watchlist.name}
     separatecontext: false
     view: |-
       {
@@ -402,7 +372,7 @@ tasks:
       all: {}
       index: {}
       key:
-        simple: McAfeeESM.${McAfeeESM.Watchlists.name}.data
+        simple: McAfeeESM.Watchlist.[1]
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -425,9 +395,9 @@ tasks:
     task:
       id: 4709d5ef-e803-4b18-82c0-f8ff2e44141c
       version: -1
-      name: esm-watchlist-data-list
-      description: Get watchlist entrys.
-      script: esm-watchlist-data-list
+      name: esm-watchlist-list-entries
+      description: Get watchlist entries.
+      script: esm-watchlist-list-entries
       type: regular
       iscommand: true
       brand: ""
@@ -438,7 +408,7 @@ tasks:
       limit: {}
       offset: {}
       watchlist_id:
-        simple: ${McAfeeESM.Watchlists.id}
+        simple: ${McAfeeESM.Watchlist.id}
       watchlist_name: {}
     separatecontext: false
     view: |-
@@ -477,19 +447,9 @@ tasks:
           left:
             value:
               complex:
-                root: McAfeeESM
+                root: McAfeeESM.Watchlist
+                accessor: data
                 transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: McAfeeESM.Watchlists.name
-                      iscontext: true
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: data
                 - operator: atIndex
                   args:
                     index:
@@ -503,19 +463,9 @@ tasks:
           left:
             value:
               complex:
-                root: McAfeeESM
+                root: McAfeeESM.Watchlist
+                accessor: data
                 transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: McAfeeESM.Watchlists.name
-                      iscontext: true
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: data
                 - operator: atIndex
                   args:
                     index:
@@ -557,7 +507,7 @@ tasks:
       values:
         simple: 2.2.2.2,3.3.3.3
       watchlist_id:
-        simple: ${McAfeeESM.Watchlists.id}
+        simple: ${McAfeeESM.Watchlist.id}
       watchlist_name: {}
     separatecontext: false
     view: |-
@@ -592,7 +542,7 @@ tasks:
       all: {}
       index: {}
       key:
-        simple: McAfeeESM.test_watchlist.data
+        simple: McAfeeESM.Watchlist.[1]
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -631,7 +581,7 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: ${McAfeeESM.${McAfeeESM.Watchlists.name}.data}
+              simple: McAfeeESM.Watchlist.data
             iscontext: true
     view: |-
       {
@@ -676,9 +626,9 @@ tasks:
     task:
       id: 791a924d-04e2-4f7f-8f6c-3ef3b5126f5d
       version: -1
-      name: esm-watchlist-data-list
-      description: Get watchlist entrys.
-      script: esm-watchlist-data-list
+      name: esm-watchlist-list-entries
+      description: Get watchlist entries.
+      script: esm-watchlist-list-entries
       type: regular
       iscommand: true
       brand: ""
@@ -690,7 +640,7 @@ tasks:
       offset: {}
       watchlist_id: {}
       watchlist_name:
-        simple: ${McAfeeESM.Watchlists.name}
+        simple: ${McAfeeESM.Watchlist.name}
     separatecontext: false
     view: |-
       {
@@ -726,7 +676,7 @@ tasks:
         simple: watchlist_name
       stringify: {}
       value:
-        simple: ${McAfeeESM.Watchlists.name}
+        simple: ${McAfeeESM.Watchlist.name}
     separatecontext: false
     view: |-
       {
@@ -794,7 +744,7 @@ tasks:
       all: {}
       index: {}
       key:
-        simple: McAfeeESM.Watchlists
+        simple: McAfeeESM.Watchlist
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -833,7 +783,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: McAfeeESM.Watchlists.name
+              simple: McAfeeESM.Watchlist.name
             iscontext: true
           right:
             value:
@@ -904,7 +854,7 @@ tasks:
       all: {}
       index: {}
       key:
-        simple: McAfeeESM.Watchlists
+        simple: McAfeeESM.Watchlist
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
@@ -977,7 +927,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: McAfeeESM.Watchlists.name
+              simple: McAfeeESM.Watchlist.name
             iscontext: true
           right:
             value:
