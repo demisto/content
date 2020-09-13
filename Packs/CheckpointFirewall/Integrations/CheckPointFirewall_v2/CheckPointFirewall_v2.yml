@@ -945,10 +945,17 @@ script:
       name: identifier
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Prevent
       description: the action to set.
       isArray: false
       name: action
+      predefined:
+      - Inactive
+      - Ask
+      - Prevent
+      - Detect
       required: false
       secret: false
     - default: false
@@ -1130,18 +1137,29 @@ script:
       name: name
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: Drop
       description: 'Action settings. valid values are: Accept, Drop, Apply Layer,
         Ask and Info. default value is Drop.'
       isArray: false
       name: action
+      predefined:
+      - Accept
+      - Drop
+      - Apply Layer
+      - Ask
+      - Info
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: 'Communities or Directional. Valid values: Any, All_GwToGw.'
       isArray: false
       name: vpn
+      predefined:
+      - Any
+      - All_GwToGw
       required: false
       secret: false
     - default: false
@@ -1223,11 +1241,11 @@ script:
       isArray: false
       name: action
       predefined:
-      - '"Accept"'
-      - '"Drop"'
-      - '"Apply Layer"'
-      - '"Ask"'
-      - '"Info"'
+      - Accept
+      - Drop
+      - Apply Layer
+      - Ask
+      - Info
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1250,7 +1268,7 @@ script:
       secret: false
     - default: false
       description: New position in the rulebase. Value can be int to set specific
-        position, ot str- 'top' or 'bottom'
+        position, or str- 'top' or 'bottom'
       isArray: false
       name: new_position
       required: false
@@ -1505,11 +1523,15 @@ script:
       name: new_name
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'True'
       description: States whether the URL is defined as a Regular Expression or not.
       isArray: false
       name: urls_defined_as_regular_expression
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -1636,11 +1658,15 @@ script:
       name: targets
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'True'
       description: Set to be true in order to install the Access Control policy.
       isArray: false
       name: access
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -2018,7 +2044,7 @@ script:
       name: ip_only
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -2053,7 +2079,7 @@ script:
     - contextPath: CheckPoint.Object.ipv4
       description: IP-v4 address of a spesific object
       type: String
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: false
   longRunning: false
@@ -2063,5 +2089,3 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
