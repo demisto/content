@@ -13,6 +13,7 @@ class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
 
+
 # authorization types
 OPROXY_AUTH_TYPE = 'oproxy'
 SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
@@ -311,7 +312,8 @@ class MicrosoftClient(BaseClient):
 
         return access_token, expires_in, ''
 
-    def _get_self_deployed_token_auth_code(self, refresh_token: str = '', resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+    def _get_self_deployed_token_auth_code(
+            self, refresh_token: str = '', resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
         TODO: SCOPE@!##@!@#!@#
