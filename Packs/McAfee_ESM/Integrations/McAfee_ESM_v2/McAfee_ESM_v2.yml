@@ -751,7 +751,7 @@ script:
       secret: false
       description: include write only watchlists.
       name: write_only
-      defaultValue: true
+      defaultValue: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -762,19 +762,19 @@ script:
       secret: false
       description: include indexed only watchlists.
       name: indexed_only
-      defaultValue: true
+      defaultValue: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     outputs:
-    - contextPath: McAfeeESM.Watchlists.name
+    - contextPath: McAfeeESM.Watchlist.name
       description: The watchlist name
       type: string
-    - contextPath: McAfeeESM.Watchlists.id
+    - contextPath: McAfeeESM.Watchlist.id
       description: The watchlist id
       type: number
-    - contextPath: McAfeeESM.Watchlists.type
+    - contextPath: McAfeeESM.Watchlist.type
       description: The watchlist type
       type: string
   - name: esm-create-watchlist
@@ -811,13 +811,13 @@ script:
       - Filename
       - File_Hash
     outputs:
-    - contextPath: McAfeeESM.Watchlists.name
+    - contextPath: McAfeeESM.Watchlist.name
       description: The watchlist name
       type: string
-    - contextPath: McAfeeESM.Watchlists.id
+    - contextPath: McAfeeESM.Watchlist.id
       description: The watchlist id
       type: number
-    - contextPath: McAfeeESM.Watchlists.type
+    - contextPath: McAfeeESM.Watchlist.type
       description: The watchlist type
       type: string
   - name: esm-delete-watchlist
@@ -859,7 +859,7 @@ script:
       isArray: true
       required: true
       secret: false
-      description: The values you want to add to watchlist.
+      description: The values you want to add to watchlist.  (CSV format)
   - name: esm-watchlist-delete-entry
     deprecated: false
     execution: false
@@ -882,11 +882,11 @@ script:
       isArray: true
       required: true
       secret: false
-      description: The values you want to remove from watchlist.
-  - name: esm-watchlist-data-list
+      description: The values you want to remove from watchlist.  (CSV format)
+  - name: esm-watchlist-list-entries
     deprecated: false
     execution: false
-    description: Get watchlist entrys.
+    description: Get watchlist entries.
     arguments:
     - name: watchlist_name
       default: false
@@ -915,8 +915,11 @@ script:
       defaultValue: 0
       description: values offset.
     outputs:
-    - contextPath: McAfeeESM.<Watchlist name>.data
-      description: The watchlist name
+    - contextPath: McAfeeESM.Watchlist.data
+      description: The watchlist data.
+      type: Unknown
+    - contextPath: McAfeeESM.Watchlist.name
+      description: The watchlist data.
       type: string
   dockerimage: demisto/python3:3.8.5.10845
   feed: false

@@ -650,27 +650,27 @@ class McAfeeESMClient(BaseClient):
         all_cases = create_incident(all_cases, alarms=False)
         return all_cases, current_run
 
-    def __get_watchlists(self, hidden=True, dynamic=True, write_only=True, indexed_only=True):
+    def __get_watchlists(self, args):
         command = 'sysGetWatchlists'
-        args = {
-            'hidden': hidden,
-            'dynamic': dynamic,
-            'writeOnly': write_only,
-            'indexedOnly': indexed_only
+        params = {
+            'hidden': args.get('hidden', True),
+            'dynamic': args.get('dynamic', True),
+            'writeOnly': args.get('write_only', False),
+            'indexedOnly': args.get('indexed_only', False),
         }
-        return self.__request(command, params=args)
+        return self.__request(command, params=params)
 
     def __get_watchlist_id(self, watchlist_name):
         try:
-            return list(filter(lambda x: x.get('name') == watchlist_name, self.__get_watchlists()))[0].get('id')
+            return list(filter(lambda x: x.get('name') == watchlist_name, self.__get_watchlists(dict())))[0].get('id')
         except IndexError:
             raise DemistoException(f'Can not find the watchlist {watchlist_name}')
 
     def get_watchlists_names_and_ids(self):
         raw_watch_lists = self.__get_watchlists(self.args)
         watch_lists = list(map(format_watchlist_params, raw_watch_lists))
-        human_readable = tableToMarkdown('McAfee ESM Watchlists', t=watch_lists)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Watchlists': watch_lists}, raw_watch_lists
+        human_readable = tableToMarkdown('McAfee ESM Watchlist', t=watch_lists)
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Watchlist': watch_lists}, raw_watch_lists
 
     def add_watchlist(self):
         command = 'sysAddWatchlist'
@@ -690,10 +690,10 @@ class McAfeeESMClient(BaseClient):
         context_entry = {
             'name': watchlist_name,
             'id': watchlist_id.get('value'),
-            'type': watchlist_type
+            'type': watchlist_type,
         }
         human_readable = f'Watchlist {watchlist_name} created.'
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Watchlists': context_entry}, watchlist_id
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Watchlist': context_entry}, watchlist_id
 
     def delete_watchlist(self):
         command = 'sysRemoveWatchlist'
@@ -734,7 +734,7 @@ class McAfeeESMClient(BaseClient):
         command = 'sysGetWatchlistDetails'
         result = self.__request(command, data={'id': watchlist_id})
         count_results = result.get('recordCount') or result.get('valueCount')
-        if count_results is None or count_results == 0:
+        if not count_results:
             raise EmptyFile()
         value_file = result.get('valueFile', {})
         file_token = value_file.get('fileToken', value_file.get('id'))
@@ -748,8 +748,7 @@ class McAfeeESMClient(BaseClient):
         try:
             file_token, watchlist_name = self.__get_watchlist_file_id(watchlist_id)
         except EmptyFile:
-            return_warning('the watchlist is empty.')
-            return '', {}, {}
+            return 'the watchlist is empty.', {}, {}
 
         else:
             max_values = int(self.args.get('limit', 50))
@@ -759,13 +758,20 @@ class McAfeeESMClient(BaseClient):
                 if i < offset:
                     continue
                 file_data.append(line)
-                if not len(file_data) < max_values:
+                if len(file_data) >= max_values:
                     break
             human_readable = tableToMarkdown(f'results from {watchlist_name} watchlist',
                                              t={'data': file_data})
-            return human_readable, {f'{CONTEXT_INTEGRATION_NAME}{watchlist_name}.data': file_data}, file_data
+            context_entry = {f'{CONTEXT_INTEGRATION_NAME}Watchlist': {'data': file_data, 'name': watchlist_name}}
+            return human_readable, context_entry, file_data
 
-    def watchlist_values(self, file_token, buff_size=50):
+    def watchlist_values(self, file_token, buff_size=400):
+        """
+
+        :param file_token: the token file (McAfee API call needed for the file creation)
+        :param buff_size: the size of the bytes in every API call.
+        :return: generate values (string)
+        """
         command = 'sysGetWatchlistValues'
         data = {'file': {'id': file_token}}
         end = ''
@@ -1013,7 +1019,7 @@ def format_watchlist_params(raw_watchlist_params):
     return {
         'id': raw_watchlist_params.get('id'),
         'name': raw_watchlist_params.get('name'),
-        'type': raw_watchlist_params.get('type', {}).get('name')
+        'type': dict_safe_get(raw_watchlist_params, ['type', 'name'])
     }
 
 
@@ -1047,7 +1053,7 @@ def main():
         'esm-delete-watchlist': client.delete_watchlist,
         'esm-watchlist-add-entry': client.watchlist_add_entry,
         'esm-watchlist-delete-entry': client.watchlist_delete_entry,
-        'esm-watchlist-data-list': client.watchlist_data_list,
+        'esm-watchlist-list-entries': client.watchlist_data_list,
     }
     try:
         if command == 'fetch-incidents':

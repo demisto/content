@@ -20,6 +20,6 @@
 !esm-create-watchlist name=test_watchlist type=IPAddress
 !esm-get-watchlists
 !esm-watchlist-add-entry watchlist_name=test_watchlist values=1.1.1.1,2.2.2.2
-!esm-watchlist-data-list watchlist_name=test_watchlist
+!esm-watchlist-list-entries watchlist_name=test_watchlist
 !esm-watchlist-delete-entry watchlist_name=test_watchlist values=1.1.1.1,2.2.2.2
 !esm-delete-watchlist names=test_watchlist

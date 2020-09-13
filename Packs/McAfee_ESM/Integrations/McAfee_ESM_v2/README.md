@@ -1229,9 +1229,9 @@ Create a new watchlist.
   
 | **Path** | **Type** | **Description** |  
 | --- | --- | --- |  
-| McAfeeESM.Watchlists.name | string | The watchlist name |
-| McAfeeESM.Watchlists.id | number | The watchlist id |
-| McAfeeESM.Watchlists.type | string | The watchlist type |   
+| McAfeeESM.Watchlist.name | string | The watchlist name |
+| McAfeeESM.Watchlist.id | number | The watchlist id |
+| McAfeeESM.Watchlist.type | string | The watchlist type |   
   
 #### Command Example  
 ```!esm-create-watchlist name=test_watchlist type=IPAddress```  
@@ -1240,7 +1240,7 @@ Create a new watchlist.
 ```  
 {
 	"McAfeeESM": {
-		"Watchlists": {
+		"Watchlist": {
 			"id": 54,
 			"name": "test_watchlist",
 			"type": "IPAddress"
@@ -1293,7 +1293,7 @@ Create a new watchlist entry.
 | --- | --- | --- |  
 | watchlist_name | The watchlist name. | Optional |
 | watchlist_id | The watchlist id. | Optional |
-| values | The values you want to add to watchlist. | Required |   
+| values | The values you want to add to watchlist. (CSV format) | Required |   
   
 #### Context Output  
   
@@ -1318,7 +1318,9 @@ Delete watchlist entry.
   
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
-| watchlist_name | The watchlist name. | Optional | | watchlist_id | The watchlist id. | Optional | | values | The values you want to remove from watchlist. | Required |   
+| watchlist_name | The watchlist name. | Optional |
+| watchlist_id | The watchlist id. | Optional |
+| values | The values you want to remove from watchlist.  (CSV format) | Required |   
   
 #### Context Output  
   
@@ -1332,14 +1334,14 @@ There is no context output for this command.
   
 >Watchlist successfully updated.  
   
-### esm-watchlist-data-list  
+### esm-watchlist-list-entries  
 ***  
-Get watchlist entrys.  
+Get watchlist entries.  
   
   
 #### Base Command  
   
-`esm-watchlist-data-list`  
+`esm-watchlist-list-entries`  
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |  
@@ -1353,20 +1355,22 @@ Get watchlist entrys.
   
 | **Path** | **Type** | **Description** |  
 | --- | --- | --- |  
-| McAfeeESM.\[Watchlist name].data | string | The watchlist name |   
+| McAfeeESM.Watchlist.data | Unknown | The watchlist data | 
+| McAfeeESM.Watchlist.name | string | The watchlist name |   
   
 #### Command Example  
-```!esm-watchlist-data-list watchlist_name=test_watchlist```  
+```!esm-watchlist-list-entries watchlist_name=test_watchlist```  
   
 #### Context Example  
 ```  
 {  
 	"McAfeeESM": {
-		"test_watchlist": {
+		"Watchlist": {
 			"data": [
 				"1.1.1.1",
 				"2.2.2.2"
-			]
+			],
+            "name": "test_watchlist"
 		}
 	}
 }  
