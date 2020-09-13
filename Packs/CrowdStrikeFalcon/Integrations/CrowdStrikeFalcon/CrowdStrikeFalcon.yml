@@ -778,7 +778,8 @@ script:
       required: true
       description: The ID of the host to extend the session
     description: Refresh a session timeout on a single host.
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage45: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
   longRunningPort: false
