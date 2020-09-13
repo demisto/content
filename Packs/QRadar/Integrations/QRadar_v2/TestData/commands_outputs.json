@@ -91,7 +91,7 @@
     }
   },
   "qradar-get-note": {
-    "QRadar.Note(val.ID === \"None\")": [
+    "QRadar.Note(val.ID === \"1232\")": [
       {
         "Text": "XSOAR has the best documentation!",
         "CreateTime": "2020-09-02T06:39:24.601000Z",

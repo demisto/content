@@ -101,6 +101,57 @@
     "local_destination_count": 1,
     "status": "OPEN"
   },
+  "fetch-incidents": {
+    "username_count": 0,
+    "description": "Outbound port scan\n",
+    "rules": [
+      {
+        "id": 100452,
+        "type": "CRE_RULE"
+      }
+    ],
+    "event_count": 5,
+    "flow_count": 0,
+    "assigned_to": null,
+    "security_category_count": 2,
+    "follow_up": false,
+    "source_address_ids": [
+      254
+    ],
+    "source_count": 1,
+    "inactive": true,
+    "protected": false,
+    "closing_user": null,
+    "destination_networks": [
+      "Net-10-172-192.Net_10_0_0_0"
+    ],
+    "source_network": "other",
+    "category_count": 2,
+    "close_time": null,
+    "remote_destination_count": 0,
+    "start_time": 1595428843870,
+    "magnitude": 2,
+    "last_updated_time": 1595429139082,
+    "credibility": 3,
+    "id": 450,
+    "categories": [
+      "Firewall Session Closed",
+      "Host Port Scan"
+    ],
+    "severity": 5,
+    "policy_category_count": 0,
+    "closing_reason_id": null,
+    "device_count": 2,
+    "offense_type": 0,
+    "relevance": 0,
+    "domain_id": 0,
+    "offense_source": "8.8.8.8",
+    "local_destination_address_ids": [
+      4
+    ],
+    "local_destination_count": 1,
+    "status": "OPEN"
+  },
   "qradar-get-assets": [
     {
       "interfaces": [

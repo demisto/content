@@ -715,7 +715,7 @@ def enrich_offense_with_events(
         print_debug_msg(
             f"Failed events fetch for offense {offense['id']}: {str(e)}.", client.lock,
         )
-    return offense
+        return offense
 
 
 def perform_offense_events_enrichment(
@@ -808,7 +808,7 @@ def try_poll_offense_events_with_retry(
 
 
 def try_create_search_with_retry(client, events_query, offense, max_retries=None):
-    if not max_retries:
+    if max_retries is None:
         max_retries = EVENTS_FAILURE_LIMIT
     failures = 0
     search_created_successfully = False
@@ -829,7 +829,7 @@ def try_create_search_with_retry(client, events_query, offense, max_retries=None
         except Exception as e:
             err = str(e)
             failures += 1
-    if failures >= EVENTS_FAILURE_LIMIT:
+    if failures >= max_retries:
         raise DemistoException(f"Unable to create search for offense: {offense['id']}. Error: {err}")
     return query_status, search_id
 
@@ -1006,12 +1006,12 @@ def fetch_incidents_long_running_no_events(
         print_debug_msg("Enriching offenses")
         enrich_offense_result(client, raw_offenses, ip_enrich, asset_enrich)
         print_debug_msg("Enriched offenses successfully.")
-    incidents_batch = create_incidents(raw_offenses)
 
     # handle reset signal
     if is_reset_triggered(client.lock, handle_reset=True):
         return
 
+    incidents_batch = create_incidents(raw_offenses)
     demisto.createIncidents(incidents_batch)
     incidents_batch_for_sample = (
         incidents_batch if incidents_batch else last_run.get("samples", [])
