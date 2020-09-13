@@ -39,6 +39,7 @@ configuration:
   type: 16
 - display: Maximum alerts to fetch
   hidden: false
+  defaultvalue: '50'
   name: max_fetch
   required: false
   type: 0
