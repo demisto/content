@@ -145,7 +145,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
                 print(f'Downloading pack from GCP: {pack.name}')
                 executor_submit(executor, download_path, blob)
                 shutil.copy(download_path,
-                            f'/home/runner/work/content-private/content-private/content/artifacts/packs/{pack.name}.zip')
+                            f'/home/runner/work/content-private/content-private/content/artifacts/{pack.name}.zip')
             else:
                 print_warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
 
@@ -217,11 +217,11 @@ def main():
 
     zipped_packs = []
     success = True
-    try:
-        zipped_packs = download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
-    except Exception as e:
-        print_error(f'Failed downloading packs: {e}')
-        success = False
+    # try:
+    zipped_packs = download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
+    # except Exception as e:
+    #     print_error(f'Failed downloading packs: {e}')
+    #     success = False
 
     if remove_test_playbooks:
         try:
