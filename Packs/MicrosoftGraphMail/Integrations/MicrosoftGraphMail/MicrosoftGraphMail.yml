@@ -1018,7 +1018,7 @@ script:
     description: Sends a draft email using Microsoft Graph.
     execution: false
     name: msgraph-mail-send-draft
-  dockerimage: demisto/crypto:1.0.0.10743
+  dockerimage: demisto/crypto:1.0.0.11287
   feed: false
   isfetch: true
   longRunning: false

@@ -728,7 +728,7 @@ script:
       description: Flag for network user only - set to true if related user is only
         network user.
       type: boolean
-  dockerimage: demisto/crypto:1.0.0.10743
+  dockerimage: demisto/crypto:1.0.0.11287
   isfetch: true
   runonce: false
   script: '-'

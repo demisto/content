@@ -419,7 +419,7 @@ script:
       For each subscription there is only one responsible location.
     execution: false
     name: azure-sc-list-location
-  dockerimage: demisto/crypto:1.0.0.10743
+  dockerimage: demisto/crypto:1.0.0.11287
   isfetch: false
   longRunning: false
   longRunningPort: false
