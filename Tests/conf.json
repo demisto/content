@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+         {
+            "integrations": "SecurityIntelligenceServicesFeed",
+            "playbookID": "SecurityIntelligenceServicesFeed - Test",
+            "fromversion": "5.5.0"
+        },
         {
             "integrations": [
                 "Mail Listener v2",
@@ -723,6 +728,11 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "PAN-OS URL Filtering enrichment - Test"
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "panorama_instance_best_practice",
+            "playbookID": "Panorama Best Practise - Test"
         },
         {
             "integrations": "Tenable.io",
@@ -2937,6 +2947,7 @@
         {
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
+            "fromversion": "5.0.0",
             "timeout": 500
         },
         {
@@ -3036,7 +3047,6 @@
         "Google Chronicle Backstory List IOCs - Test": "Issue 26461",
         "hashIncidentFields-test": "Issue 26850",
         "Mail Sender (New) Test": "Issue 25602",
-        "CirclIntegrationTest": "Issue 25600",
         "Luminate-TestPlaybook": "Issue 27016",
         "AutoFocus V2 test": "Issue 26464",
         "test-Expanse": "Issue 27279",
@@ -3078,7 +3088,6 @@
         "Moloch": "No instance",
         "Twilio": "No instance",
         "Zendesk": "No instance",
-        "google-vault": "Issue 25798",
         "GuardiCore": "No instance",
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",

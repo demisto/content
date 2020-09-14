@@ -1019,8 +1019,9 @@ script:
     description: List of incident summaries
     execution: false
     name: cs-falcon-list-incident-summaries
-  dockerimage: demisto/python3:3.8.5.10845
   feed: false
+  dockerimage45: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
   longRunningPort: false

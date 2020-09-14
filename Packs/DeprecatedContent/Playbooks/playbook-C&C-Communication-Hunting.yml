@@ -6,6 +6,7 @@ description: Deprecated. A playbook to use the latest Threat Intelligence to hun
 system: true
 fromversion: 2.5.0
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
