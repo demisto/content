@@ -6,58 +6,28 @@ contentitemexportablefields:
     propagationLabels:
     - all
     toServerVersion: ""
+id: da8b7575-8018-4793-8303-2fe3ea72496f
+version: 40
+vcShouldKeepItemLegacyProdMachine: false
+name: Field Polling Generic
 description: This playbook will poll a field for whether a value exists and whether
   it contains a specific value.
-id: da8b7575-8018-4793-8303-2fe3ea72496f
-inputs:
-- description: The field to poll for a value. Ensure that you use the lower case version
-    of the field. For example; the Details field should be details
-  key: field
-  playbookInputQuery: null
-  required: true
-  value: {}
-- description: The regex to check the field for. By default this is .+ which matches
-    anything other than None.
-  key: value
-  playbookInputQuery: null
-  required: true
-  value:
-    simple: .+
-- description: How often to check (in minutes)
-  key: frequency
-  playbookInputQuery: null
-  required: true
-  value:
-    simple: "1"
-- description: When to timeout (in minutes)
-  key: timeout
-  playbookInputQuery: null
-  required: true
-  value:
-    simple: "10"
-name: Field Polling
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: d66a3885-27e3-439d-8855-b5522c6dde35
+    type: start
+    task:
+      id: d66a3885-27e3-439d-8855-b5522c6dde35
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: d66a3885-27e3-439d-8855-b5522c6dde35
-      iscommand: false
-      name: ""
-      version: -1
-    taskid: d66a3885-27e3-439d-8855-b5522c6dde35
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -65,40 +35,19 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    nexttasks:
-      '#none#':
-      - "8"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      AdditionalPollingCommandArgNames:
-        simple: regex
-      AdditionalPollingCommandArgValues:
-        simple: ${inputs.value}
-      Ids:
-        simple: ${inputs.field}
-      Interval:
-        simple: ${inputs.frequency}
-      PollingCommandArgName:
-        simple: field
-      PollingCommandName:
-        simple: pollingField
-      Timeout:
-        simple: ${inputs.timeout}
-      dt:
-        simple: PollingCheckField(val.field=='${inputs.field}' && val.exists==false).field
-    separatecontext: true
-    skipunavailable: false
+    taskid: bfc39c52-2ee9-4ad5-8528-1a18e6f6896f
+    type: playbook
     task:
-      brand: ""
+      id: bfc39c52-2ee9-4ad5-8528-1a18e6f6896f
+      version: -1
+      name: Poll Field
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -107,15 +56,40 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: e285c518-5c22-471a-83a7-9e6a756396eb
-      iscommand: false
-      name: Poll Field
-      playbookId: GenericPolling
+      playbookName: GenericPolling
       type: playbook
-      version: -1
-    taskid: e285c518-5c22-471a-83a7-9e6a756396eb
-    timertriggers: []
-    type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: regex
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.value
+      Ids:
+        complex:
+          root: inputs.field
+      Interval:
+        complex:
+          root: inputs.frequency
+      PollingCommandArgName:
+        simple: field
+      PollingCommandName:
+        simple: pollingField
+      Timeout:
+        complex:
+          root: inputs.timeout
+      dt:
+        simple: PollingCheckField(val.field=='${inputs.field}' && val.exists==false).field
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -123,23 +97,23 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: f86bcb49-d18e-43d1-8c28-278d0e2e7a2d
-      iscommand: false
-      name: Complete
-      type: title
-      version: -1
-    taskid: f86bcb49-d18e-43d1-8c28-278d0e2e7a2d
-    timertriggers: []
+    taskid: 4652f620-ec05-47da-800c-76426f68efab
     type: title
+    task:
+      id: 4652f620-ec05-47da-800c-76426f68efab
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -147,7 +121,11 @@ tasks:
           "y": 370
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -160,6 +138,32 @@ view: |-
       }
     }
   }
-fromversion: 5.0.0
+inputs:
+- key: field
+  value: {}
+  required: true
+  description: The field to poll for a value. Ensure that you use the lower case version
+    of the field. For example; the Details field should be details
+  playbookInputQuery: null
+- key: value
+  value:
+    simple: .+
+  required: true
+  description: The regex to check the field for. By default this is .+ which matches
+    anything other than None.
+  playbookInputQuery: null
+- key: frequency
+  value:
+    simple: "1"
+  required: true
+  description: How often to check (in minutes)
+  playbookInputQuery: null
+- key: timeout
+  value:
+    simple: "10"
+  required: true
+  description: When to timeout (in minutes)
+  playbookInputQuery: null
+outputs: []
 tests:
-  - No test
+  - playbook-fieldpolling-test
