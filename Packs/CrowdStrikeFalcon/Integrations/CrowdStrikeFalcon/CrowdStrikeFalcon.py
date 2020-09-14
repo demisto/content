@@ -609,21 +609,27 @@ def upload_script(name: str, permission_type: str, content: str, entry_id: str) 
         'name': (None, name),
         'permission_type': (None, permission_type)
     }
+    temp_file = None
+    try:
+        if content:
+            body['content'] = (None, content)
+        else:  # entry_id was provided
+            file_ = demisto.getFilePath(entry_id)
+            file_name = file_.get('name')  # pylint: disable=E1101
+            temp_file = open(file_.get('path'), 'rb')  # pylint: disable=E1101
+            body['file'] = (file_name, temp_file)
 
-    if content:
-        body['content'] = (None, content)
-    else:  # entry_id was provided
-        file_ = demisto.getFilePath(entry_id)
-        file_name = file_.get('name')
-        body['file'] = (file_name, open(file_.get('path'), 'rb'))
+        headers = {
+            'Authorization': HEADERS['Authorization'],
+            'Accept': 'application/json'
+        }
 
-    headers = {
-        'Authorization': HEADERS['Authorization'],
-        'Accept': 'application/json'
-    }
+        response = http_request('POST', endpoint_url, files=body, headers=headers)
 
-    response = http_request('POST', endpoint_url, files=body, headers=headers)
-    return response
+        return response
+    finally:
+        if temp_file:
+            temp_file.close()
 
 
 def get_script(script_id: list) -> Dict:
@@ -692,20 +698,25 @@ def upload_file(entry_id: str, description: str) -> Tuple:
         :return: Response JSON which contains errors (if exist) and how many resources were affected and the file name
     """
     endpoint_url = '/real-time-response/entities/put-files/v1'
-
-    file_ = demisto.getFilePath(entry_id)
-    file_name = file_.get('name')
-    body = {
-        'name': (None, file_name),
-        'description': (None, description),
-        'file': (file_name, open(file_.get('path'), 'rb'))
-    }
-    headers = {
-        'Authorization': HEADERS['Authorization'],
-        'Accept': 'application/json'
-    }
-    response = http_request('POST', endpoint_url, files=body, headers=headers)
-    return response, file_name
+    temp_file = None
+    try:
+        file_ = demisto.getFilePath(entry_id)
+        file_name = file_.get('name')  # pylint: disable=E1101
+        temp_file = open(file_.get('path'), 'rb')  # pylint: disable=E1101
+        body = {
+            'name': (None, file_name),
+            'description': (None, description),
+            'file': (file_name, temp_file)
+        }
+        headers = {
+            'Authorization': HEADERS['Authorization'],
+            'Accept': 'application/json'
+        }
+        response = http_request('POST', endpoint_url, files=body, headers=headers)
+        return response, file_name
+    finally:
+        if temp_file:
+            temp_file.close()
 
 
 def delete_file(file_id: str) -> Dict:
@@ -821,7 +832,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     return response
 
 
-def get_fetch_detections(last_created_timestamp=None, filter_arg=None):
+def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0):
     """ Sends detection request, based on the created_timestamp field. Used for fetch-incidents
     Args:
         last_created_timestamp: last created timestamp of the results will be greater than this value.
@@ -831,7 +842,9 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None):
     """
     endpoint_url = '/detects/queries/detects/v1'
     params = {
-        'sort': 'first_behavior.asc'
+        'sort': 'first_behavior.asc',
+        'offset': offset,
+        'limit': INCIDENTS_PER_FETCH
     }
     if filter_arg:
         params['filter'] = filter_arg
@@ -1113,42 +1126,27 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     # Get the last fetch time, if exists
     last_fetch = last_run.get('first_behavior_time')
+    offset = last_run.get('offset', 0)
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+    prev_fetch = last_fetch
 
     last_fetch_timestamp = int(parse(last_fetch).timestamp() * 1000)
-
-    last_detection_id = str(last_run.get('last_detection_id'))
 
     fetch_query = demisto.params().get('fetch_query')
 
     if fetch_query:
         fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch, query=fetch_query)
-        detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
+        detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, offset=offset), 'resources')
 
     else:
-        detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch), 'resources')
+        detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch, offset=offset),
+                                     'resources')
     incidents = []  # type:List
 
     if detections_ids:
-
-        # make sure we do not fetch the same detection again.
-        if last_detection_id == detections_ids[0]:
-            first_index_to_fetch = 1
-
-            # if this is the only detection - dont fetch.
-            if len(detections_ids) == 1:
-                return incidents
-
-        # if the first detection in this pull is different than the last detection fetched we bring it as well
-        else:
-            first_index_to_fetch = 0
-
-        # Limit the results to INCIDENTS_PER_FETCH`z
-        last_index_to_fetch = INCIDENTS_PER_FETCH + first_index_to_fetch
-        detections_ids = detections_ids[first_index_to_fetch:last_index_to_fetch]
         raw_res = get_detections_entities(detections_ids)
 
         if "resources" in raw_res:
@@ -1167,12 +1165,13 @@ def fetch_incidents():
                 if incident_date_timestamp > last_fetch_timestamp:
                     last_fetch = incident_date
                     last_fetch_timestamp = incident_date_timestamp
-                    last_detection_id = json.loads(incident['rawJSON']).get('detection_id')
 
                 incidents.append(incident)
 
-        demisto.setLastRun({'first_behavior_time': last_fetch, 'last_detection_id': last_detection_id})
-
+        if len(incidents) == INCIDENTS_PER_FETCH:
+            demisto.setLastRun({'first_behavior_time': prev_fetch, 'offset': offset + INCIDENTS_PER_FETCH})
+        else:
+            demisto.setLastRun({'first_behavior_time': last_fetch})
     return incidents
 
 

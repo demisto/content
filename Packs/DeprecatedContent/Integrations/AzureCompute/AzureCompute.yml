@@ -26,8 +26,8 @@ configuration:
   name: unsecure
   required: false
   type: 8
-description: Create and Manage Azure Virtual Machines
-display: Azure Compute
+description: Deprecated. Create and Manage Azure Virtual Machines
+display: Azure Compute (Deprecated)
 name: Azure Compute
 script:
   commands:

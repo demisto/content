@@ -23,7 +23,7 @@ script: |-
 type: javascript
 tags:
 - ingestion
-comment: Classify an incident from mail.
+comment: Deprecated. Classify an incident from mail.
 system: true
 deprecated: true
 args:
