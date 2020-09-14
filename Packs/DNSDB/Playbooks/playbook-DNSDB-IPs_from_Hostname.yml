@@ -269,7 +269,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: Domain.Name
+              simple: inputs.Domain
             iscontext: true
     view: |-
       {
