@@ -47,7 +47,7 @@ tags:
 - server
 - threat-intel
 - wildfire
-comment: Deprecated, use "WildFire - Detonate File" playbook instead
+comment: Deprecated. use "WildFire - Detonate File" playbook instead
 system: true
 args:
 - name: fileNames

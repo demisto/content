@@ -78,7 +78,7 @@ subtype: python2
 tags:
 - Vectra
 - Classifier
-comment: Classifying Vectra incidents
+comment: Deprecated. Classifying Vectra incidents
 system: true
 scripttarget: 0
 dependson:
