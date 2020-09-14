@@ -588,6 +588,7 @@ def extract_features_from_all_incidents(incidents_df):
     exceptions_log = []
     exception_indices = set()
     timeout_indices = set()
+    preprocessed_indices = set()
     durations = []
     for index, row in incidents_df.iterrows():
         signal.alarm(5)
@@ -598,6 +599,7 @@ def extract_features_from_all_incidents(incidents_df):
             for k, v in X_i.items():
                 X[k].append(v)
             durations.append(end - start)
+            preprocessed_indices.add(index)
         except TimeoutException:
             timeout_indices.add(index)
         except ShortTextException:
@@ -609,8 +611,7 @@ def extract_features_from_all_incidents(incidents_df):
                 break
         finally:
             signal.alarm(0)
-    n_fetched_incidents = len(incidents_df) - len(exception_indices) - len(timeout_indices)
-    return X, n_fetched_incidents, exceptions_log, exception_indices, timeout_indices, durations
+    return X, preprocessed_indices, Counter(exceptions_log).most_common(), exception_indices, timeout_indices, durations
 
 
 def extract_data_from_incidents(incidents, input_label_field=None):
@@ -637,13 +638,13 @@ def extract_data_from_incidents(incidents, input_label_field=None):
                   'rank': '#{}'.format(i + 1),
                   'values': incidents_df[label].tolist()})
     load_external_resources()
-    X, n_fetched_incidents, exceptions_log, exception_indices, timeout_indices, durations\
+    X, preprocessed_indices, exceptions_log, exception_indices, timeout_indices, durations\
         = extract_features_from_all_incidents(incidents_df)
     indices_to_drop = exception_indices.union(timeout_indices)
     for label_dict in y:
         label_dict['values'] = [l for i, l in enumerate(label_dict['values']) if i not in indices_to_drop]
     return {'X': X,
-            'n_fetched_incidents': n_fetched_incidents,
+            'n_fetched_incidents': len(preprocessed_indices),
             'y': y,
             'log':
                 {'exceptions': exceptions_log,
