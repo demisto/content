@@ -164,7 +164,7 @@ script: |
 type: javascript
 tags:
 - Utility
-comment: Deprecated - We recommend using extractIndicators command instead.
+comment: Deprecated. We recommend using extractIndicators command instead.
   Extract Domains from the given text and place them both as output and in
   the context of a playbook. If given an object, will convert to JSON.
 enabled: true

@@ -28,7 +28,7 @@ type: javascript
 tags:
 - exchange
 - email
-comment: This script is deprecated. Please use the Exchange 2016 Compliance Search integration instead.
+comment: Deprecated. This script is deprecated. Please use the Exchange 2016 Compliance Search integration instead.
 deprecated: true
 system: true
 args:
