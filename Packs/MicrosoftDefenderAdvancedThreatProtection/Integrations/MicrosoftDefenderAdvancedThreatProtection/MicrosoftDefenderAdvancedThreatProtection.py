@@ -28,6 +28,7 @@ class MsClient:
      Microsoft  Client enables authorized access to Microsoft Defender Advanced Threat Protection (ATP)
     """
 
+    @logger
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch):
         self.ms_client = MicrosoftClient(
@@ -38,6 +39,7 @@ class MsClient:
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
 
+    @logger
     def isolate_machine(self, machine_id, comment, isolation_type):
         """Isolates a machine from accessing external network.
 
@@ -58,9 +60,10 @@ class MsClient:
             "Comment": comment,
             "IsolationType": isolation_type
         }
-        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, retries=3)
         return response
 
+    @logger
     def unisolate_machine(self, machine_id, comment):
         """Undo isolation of a machine.
 
@@ -79,8 +82,9 @@ class MsClient:
         json_data = {
             'Comment': comment
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, retries=3)
 
+    @logger
     def get_machines(self, filter_req):
         """Retrieves a collection of Machines that have communicated with Microsoft Defender ATP cloud on the last 30 days.
 
@@ -89,8 +93,9 @@ class MsClient:
         """
         cmd_url = '/machines'
         params = {'$filter': filter_req} if filter_req else None
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params, retries=3)
 
+    @logger
     def get_file_related_machines(self, file):
         """Retrieves a collection of Machines related to a given file hash.
 
@@ -101,8 +106,9 @@ class MsClient:
             dict. Related machines
         """
         cmd_url = f'/files/{file}/machines'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_machine_details(self, machine_id):
         """Retrieves specific Machine by its machine ID.
 
@@ -113,8 +119,9 @@ class MsClient:
             dict. Machine's info
         """
         cmd_url = f'/machines/{machine_id}'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def run_antivirus_scan(self, machine_id, comment, scan_type):
         """Initiate Windows Defender Antivirus scan on a machine.
 
@@ -135,8 +142,9 @@ class MsClient:
             'Comment': comment,
             'ScanType': scan_type
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, retries=3)
 
+    @logger
     def list_alerts(self, filter_req=None):
         """Retrieves a collection of Alerts.
 
@@ -145,8 +153,9 @@ class MsClient:
         """
         cmd_url = '/alerts'
         params = {'$filter': filter_req} if filter_req else None
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params, retries=3)
 
+    @logger
     def update_alert(self, alert_id, json_data):
         """Updates properties of existing Alert.
 
@@ -154,8 +163,9 @@ class MsClient:
             dict. Alerts info
         """
         cmd_url = f'/alerts/{alert_id}'
-        return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data, retries=3)
 
+    @logger
     def get_advanced_hunting(self, query):
         """Retrieves results according to query.
 
@@ -169,8 +179,9 @@ class MsClient:
         json_data = {
             'Query': query
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, retries=3)
 
+    @logger
     def create_alert(self, machine_id, severity, title, description, event_time, report_id, rec_action, category):
         """Creates new Alert on top of Event.
 
@@ -198,8 +209,9 @@ class MsClient:
             'recommendedAction': rec_action,
             'category': category
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, retries=3)
 
+    @logger
     def get_alert_related_domains(self, alert_id):
         """Retrieves all domains related to a specific alert.
 
@@ -210,8 +222,9 @@ class MsClient:
             dict. Related domains
         """
         cmd_url = f'/alerts/{alert_id}/domains'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_alert_related_files(self, alert_id):
         """Retrieves all files related to a specific alert.
 
@@ -222,8 +235,9 @@ class MsClient:
             dict. Related files
         """
         cmd_url = f'/alerts/{alert_id}/files'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_alert_related_ips(self, alert_id):
         """Retrieves all IPs related to a specific alert.
 
@@ -234,8 +248,9 @@ class MsClient:
             dict. Related IPs
         """
         cmd_url = f'/alerts/{alert_id}/ips'
-        return self.ms_client.http_request(method='GET', urk_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', urk_suffix=cmd_url, retries=3)
 
+    @logger
     def get_alert_related_user(self, alert_id):
         """Retrieves the User related to a specific alert.
 
@@ -246,8 +261,9 @@ class MsClient:
             dict. Related user
         """
         cmd_url = f'/alerts/{alert_id}/user'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_machine_action_by_id(self, action_id):
         """Retrieves specific Machine Action by its ID.
 
@@ -262,8 +278,9 @@ class MsClient:
             dict. Machine Action entity
         """
         cmd_url = f'/machineactions/{action_id}'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_machine_actions(self, filter_req):
         """Retrieves all Machine Actions.
 
@@ -276,8 +293,9 @@ class MsClient:
         """
         cmd_url = '/machineactions'
         params = {'$filter': filter_req} if filter_req else None
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params, retries=3)
 
+    @logger
     def get_investigation_package(self, machine_id, comment):
         """Collect investigation package from a machine.
 
@@ -294,6 +312,7 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
+    @logger
     def get_investigation_package_sas_uri(self, action_id):
         """Get a URI that allows downloading of an Investigation package.
 
@@ -304,8 +323,9 @@ class MsClient:
             dict. An object that holds the link for the package
         """
         cmd_url = f'/machineactions/{action_id}/getPackageUri'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def restrict_app_execution(self, machine_id, comment):
         """Restrict execution of all applications on the machine except a predefined set.
 
@@ -324,8 +344,9 @@ class MsClient:
         json_data = {
             'Comment': comment
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, retries=3)
 
+    @logger
     def remove_app_restriction(self, machine_id, comment):
         """Enable execution of any application on the machine.
 
@@ -344,8 +365,9 @@ class MsClient:
         json_data = {
             'Comment': comment
         }
-        return self.ms_client.http_request('POST', cmd_url, json_data=json_data)
+        return self.ms_client.http_request('POST', cmd_url, json_data=json_data, retries=3)
 
+    @logger
     def stop_and_quarantine_file(self, machine_id, file_sha1, comment):
         """Stop execution of a file on a machine and delete it.
 
@@ -366,8 +388,9 @@ class MsClient:
             'Comment': comment,
             'Sha1': file_sha1
         }
-        return self.ms_client.http_request('POST', cmd_url, json_data=json_data)
+        return self.ms_client.http_request('POST', cmd_url, json_data=json_data, retries=3)
 
+    @logger
     def get_investigation_by_id(self, investigation_id):
         """Get the investigation ID and return the investigation details.
 
@@ -378,8 +401,9 @@ class MsClient:
             dict. Investigations entity
         """
         cmd_url = f'/investigations/{investigation_id}'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_alert_by_id(self, alert_id):
         """Get the alert ID and return the alert details.
 
@@ -390,8 +414,9 @@ class MsClient:
             dict. Alert's entity
         """
         cmd_url = f'/alerts/{alert_id}'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_investigation_list(self, ):
         """Retrieves a collection of Investigations.
 
@@ -399,8 +424,9 @@ class MsClient:
             dict. A collection of Investigations entities.
         """
         cmd_url = '/investigations'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def start_investigation(self, machine_id, comment):
         """Start automated investigation on a machine.
 
@@ -415,8 +441,9 @@ class MsClient:
         json_data = {
             'Comment': comment,
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, retries=3)
 
+    @logger
     def get_domain_statistics(self, domain):
         """Retrieves the statistics on the given domain.
 
@@ -427,8 +454,9 @@ class MsClient:
             dict. Domain's statistics
         """
         cmd_url = f'/domains/{domain}/stats'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_file_statistics(self, file_sha1):
         """Retrieves the statistics on the given file.
 
@@ -439,8 +467,9 @@ class MsClient:
             dict. File's statistics
         """
         cmd_url = f'/files/{file_sha1}/stats'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_ip_statistics(self, ip):
         """Retrieves the statistics on the given IP.
 
@@ -451,8 +480,9 @@ class MsClient:
             dict. IP's statistics
         """
         cmd_url = f'/ips/{ip}/stats'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_domain_alerts(self, domain):
         """Retrieves a collection of Alerts related to a given domain address.
 
@@ -463,8 +493,9 @@ class MsClient:
             dict. Alerts entities
         """
         cmd_url = f'/domains/{domain}/alerts'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_file_alerts(self, file_sha1):
         """Retrieves a collection of Alerts related to a given file hash.
 
@@ -475,8 +506,9 @@ class MsClient:
             dict. Alerts entities
         """
         cmd_url = f'/files/{file_sha1}/alerts'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_ip_alerts(self, ip):
         """Retrieves a collection of Alerts related to a given IP.
 
@@ -487,8 +519,9 @@ class MsClient:
             dict. Alerts entities
         """
         cmd_url = f'/ips/{ip}/alerts'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_user_alerts(self, username):
         """Retrieves a collection of Alerts related to a given  user ID.
 
@@ -499,8 +532,9 @@ class MsClient:
             dict. Alerts entities
         """
         cmd_url = f'/users/{username}/alerts'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_domain_machines(self, domain):
         """Retrieves a collection of Machines that have communicated to or from a given domain address.
 
@@ -511,8 +545,9 @@ class MsClient:
             dict. Machines entities
         """
         cmd_url = f'/domains/{domain}/machines'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def get_user_machines(self, username):
         """Retrieves a collection of machines related to a given user ID.
 
@@ -523,8 +558,9 @@ class MsClient:
             dict. Machines entities
         """
         cmd_url = f'/users/{username}/machines'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
+    @logger
     def add_remove_machine_tag(self, machine_id, action, tag):
         """Retrieves a collection of machines related to a given user ID.
 
@@ -541,8 +577,9 @@ class MsClient:
             "Value": tag,
             "Action": action
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=new_tags)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=new_tags, retries=3)
 
+    @logger
     def get_file_data(self, file_hash):
         """Retrieves a File by identifier SHA1.
 
@@ -553,12 +590,13 @@ class MsClient:
             dict. File entities
         """
         cmd_url = f'/files/{file_hash}'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, retries=3)
 
 
 ''' Commands '''
 
 
+@logger
 def get_alert_related_user_command(client: MsClient, args: dict):
     """Retrieves the User related to a specific alert.
 
@@ -581,6 +619,7 @@ def get_alert_related_user_command(client: MsClient, args: dict):
     return hr, ec, response
 
 
+@logger
 def get_user_data(user_response):
     """Get the user raw response and returns the user info in context and human readable format
 
@@ -604,6 +643,7 @@ def get_user_data(user_response):
     return user_data
 
 
+@logger
 def isolate_machine_command(client: MsClient, args: dict):
     """Isolates a machine from accessing external network.
 
@@ -626,6 +666,7 @@ def isolate_machine_command(client: MsClient, args: dict):
     return human_readable, entry_context, machine_action_response
 
 
+@logger
 def unisolate_machine_command(client: MsClient, args: dict):
     """Undo isolation of a machine.
 
@@ -647,6 +688,7 @@ def unisolate_machine_command(client: MsClient, args: dict):
     return human_readable, entry_context, machine_action_response
 
 
+@logger
 def get_machines_command(client: MsClient, args: dict):
     """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
 
@@ -680,6 +722,7 @@ def get_machines_command(client: MsClient, args: dict):
     return human_readable, entry_context, machines_response
 
 
+@logger
 def get_machines_list(machines_response):
     """Get a raw response of machines list
 
@@ -696,6 +739,7 @@ def get_machines_list(machines_response):
     return machines_list
 
 
+@logger
 def reformat_filter(fields_to_filter_by):
     """Get a dictionary with all of the fields to filter
 
@@ -710,6 +754,7 @@ def reformat_filter(fields_to_filter_by):
     return filter_req
 
 
+@logger
 def get_file_related_machines_command(client: MsClient, args: dict):
     """Retrieves a collection of Machines related to a given file hash.
 
@@ -734,6 +779,7 @@ def get_file_related_machines_command(client: MsClient, args: dict):
     return human_readable, entry_context, machines_response
 
 
+@logger
 def get_machine_details_command(client: MsClient, args: dict):
     """Retrieves specific Machine by its machine ID or computer name.
 
@@ -754,6 +800,7 @@ def get_machine_details_command(client: MsClient, args: dict):
     return human_readable, entry_context, machine_response
 
 
+@logger
 def run_antivirus_scan_command(client: MsClient, args: dict):
     """Initiate Windows Defender Antivirus scan on a machine.
 
@@ -776,6 +823,7 @@ def run_antivirus_scan_command(client: MsClient, args: dict):
     return human_readable, entry_context, machine_action_response
 
 
+@logger
 def list_alerts_command(client: MsClient, args: dict):
     """Initiate Windows Defender Antivirus scan on a machine.
 
@@ -801,6 +849,7 @@ def list_alerts_command(client: MsClient, args: dict):
     return human_readable, entry_context, alerts_response
 
 
+@logger
 def get_alerts_list(alerts_response):
     """Get a raw response of alerts list
 
@@ -817,6 +866,7 @@ def get_alerts_list(alerts_response):
     return alerts_list
 
 
+@logger
 def update_alert_command(client: MsClient, args: dict):
     """Updates properties of existing Alert.
 
@@ -842,6 +892,7 @@ def update_alert_command(client: MsClient, args: dict):
     return human_readable, entry_context, alert_response
 
 
+@logger
 def check_given_args_update_alert(args_list):
     """Gets an arguments list and returns an error if all of them are empty
     """
@@ -849,6 +900,7 @@ def check_given_args_update_alert(args_list):
         raise Exception('No arguments were given to update the alert')
 
 
+@logger
 def add_args_to_json_and_context(alert_id, assigned_to, status, classification, determination, comment):
     """Gets arguments and returns the json and context with the arguments inside
     """
@@ -874,6 +926,7 @@ def add_args_to_json_and_context(alert_id, assigned_to, status, classification, 
     return json_data, context
 
 
+@logger
 def get_advanced_hunting_command(client: MsClient, args: dict):
     """Get results of advanced hunting according to user query.
 
@@ -895,6 +948,7 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def create_alert_command(client: MsClient, args: dict):
     """Creates new Alert on top of Event.
 
@@ -922,6 +976,7 @@ def create_alert_command(client: MsClient, args: dict):
     return human_readable, entry_context, alert_response
 
 
+@logger
 def get_alert_related_files_command(client: MsClient, args: dict):
     """Retrieves all files related to a specific alert.
 
@@ -955,6 +1010,7 @@ def get_alert_related_files_command(client: MsClient, args: dict):
     return human_readable, entry_context, response_files_list
 
 
+@logger
 def check_limit_and_offset_values(limit, offset):
     """Gets the limit and offset values and return an error if the values are invalid
     """
@@ -972,6 +1028,7 @@ def check_limit_and_offset_values(limit, offset):
         return limit_int, offset_int
 
 
+@logger
 def get_file_data(file_response):
     """Get file raw response and returns the file's info for context and human readable.
 
@@ -1000,6 +1057,7 @@ def get_file_data(file_response):
     return file_data
 
 
+@logger
 def get_alert_related_ips_command(client: MsClient, args: dict):
     """Retrieves all IPs related to a specific alert.
 
@@ -1032,6 +1090,7 @@ def get_alert_related_ips_command(client: MsClient, args: dict):
     return human_readable, entry_context, response_ips_list
 
 
+@logger
 def get_alert_related_domains_command(client: MsClient, args: dict):
     """Retrieves all domains related to a specific alert.
 
@@ -1060,6 +1119,7 @@ def get_alert_related_domains_command(client: MsClient, args: dict):
     return human_readable, entry_context, response_domains_list
 
 
+@logger
 def get_machine_action_by_id_command(client: MsClient, args: dict):
     """Returns machine's actions, if machine ID is None, return all actions.
 
@@ -1110,6 +1170,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def get_machine_action_data(machine_action_response):
     """Get machine raw response and returns the machine action info in context and human readable format.
 
@@ -1141,6 +1202,7 @@ def get_machine_action_data(machine_action_response):
     return action_data
 
 
+@logger
 def get_machine_investigation_package_command(client: MsClient, args: dict):
     """Collect investigation package from a machine.
 
@@ -1160,6 +1222,7 @@ def get_machine_investigation_package_command(client: MsClient, args: dict):
     return human_readable, entry_context, machine_action_response
 
 
+@logger
 def get_investigation_package_sas_uri_command(client: MsClient, args: dict):
     """Returns a URI that allows downloading an Investigation package.
 
@@ -1177,6 +1240,7 @@ def get_investigation_package_sas_uri_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def restrict_app_execution_command(client: MsClient, args: dict):
     """Restrict execution of all applications on the machine except a predefined set.
 
@@ -1197,6 +1261,7 @@ def restrict_app_execution_command(client: MsClient, args: dict):
     return human_readable, entry_context, machine_action_response
 
 
+@logger
 def remove_app_restriction_command(client: MsClient, args: dict):
     """Enable execution of any application on the machine.
 
@@ -1217,6 +1282,7 @@ def remove_app_restriction_command(client: MsClient, args: dict):
     return human_readable, entry_context, machine_action_response
 
 
+@logger
 def stop_and_quarantine_file_command(client: MsClient, args: dict):
     """Stop execution of a file on a machine and delete it.
 
@@ -1237,6 +1303,7 @@ def stop_and_quarantine_file_command(client: MsClient, args: dict):
     return human_readable, entry_context, machine_action_response
 
 
+@logger
 def get_investigations_by_id_command(client: MsClient, args: dict):
     """Returns the investigation info, if investigation ID is None, return all investigations.
 
@@ -1271,6 +1338,7 @@ def get_investigations_by_id_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def get_investigation_data(investigation_response):
     """Get investigation raw response and returns the investigation info for context and human readable.
 
@@ -1293,6 +1361,7 @@ def get_investigation_data(investigation_response):
     return investigation_data
 
 
+@logger
 def start_investigation_command(client: MsClient, args: dict):
     """Start automated investigation on a machine.
 
@@ -1314,6 +1383,7 @@ def start_investigation_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def get_domain_statistics_command(client: MsClient, args: dict):
     """Retrieves the statistics on the given domain.
 
@@ -1335,6 +1405,7 @@ def get_domain_statistics_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def get_domain_statistics_context(domain_stat_response):
     """Gets the domain statistics response and returns it in context format.
 
@@ -1350,6 +1421,7 @@ def get_domain_statistics_context(domain_stat_response):
     return domain_statistics
 
 
+@logger
 def get_domain_alerts_command(client: MsClient, args: dict):
     """Retrieves a collection of Alerts related to a given domain address.
 
@@ -1373,6 +1445,7 @@ def get_domain_alerts_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def get_alert_data(alert_response):
     """Get alert raw response and returns the alert info in context and human readable format.
 
@@ -1415,6 +1488,7 @@ def get_alert_data(alert_response):
     return alert_data
 
 
+@logger
 def get_domain_machine_command(client: MsClient, args: dict):
     """Retrieves a collection of Machines that have communicated to or from a given domain address.
 
@@ -1439,6 +1513,7 @@ def get_domain_machine_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def get_machine_data(machine):
     """Get machine raw response and returns the machine's info in context and human readable format.
 
@@ -1469,6 +1544,7 @@ def get_machine_data(machine):
     return machine_data
 
 
+@logger
 def get_file_statistics_command(client: MsClient, args: dict):
     """Retrieves the statistics on the given file.
 
@@ -1489,6 +1565,7 @@ def get_file_statistics_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def get_file_statistics_context(file_stat_response):
     """Gets the file statistics response and returns it in context format.
 
@@ -1507,6 +1584,7 @@ def get_file_statistics_context(file_stat_response):
     return file_stat
 
 
+@logger
 def get_file_alerts_command(client: MsClient, args: dict):
     """Retrieves a collection of Alerts related to a given file hash.
 
@@ -1529,6 +1607,7 @@ def get_file_alerts_command(client: MsClient, args: dict):
     return hr, ec, response
 
 
+@logger
 def get_ip_statistics_command(client: MsClient, args: dict):
     """Retrieves the statistics on the given IP.
 
@@ -1549,6 +1628,7 @@ def get_ip_statistics_command(client: MsClient, args: dict):
     return hr, ec, response
 
 
+@logger
 def get_ip_statistics_context(ip_statistics_response):
     """Gets the IP statistics response and returns it in context format.
 
@@ -1563,6 +1643,7 @@ def get_ip_statistics_context(ip_statistics_response):
     return ip_statistics
 
 
+@logger
 def get_ip_alerts_command(client: MsClient, args: dict):
     """Retrieves a collection of Alerts related to a given IP.
 
@@ -1585,6 +1666,7 @@ def get_ip_alerts_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def get_user_alerts_command(client: MsClient, args: dict):
     """Retrieves a collection of Alerts related to a given user ID.
 
@@ -1608,6 +1690,7 @@ def get_user_alerts_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def get_user_machine_command(client: MsClient, args: dict):
     """Retrieves a collection of machines related to a given user ID.
 
@@ -1631,6 +1714,7 @@ def get_user_machine_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def add_remove_machine_tag_command(client: MsClient, args: dict):
     """Adds or remove tag to a specific Machine.
 
@@ -1652,6 +1736,7 @@ def add_remove_machine_tag_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+@logger
 def fetch_incidents(client: MsClient, last_run):
     last_alert_fetched_time = get_last_alert_fetched_time(last_run, client.alert_time_to_fetch)
     existing_ids = last_run.get('existing_ids', [])
@@ -1670,6 +1755,7 @@ def fetch_incidents(client: MsClient, last_run):
     demisto.incidents(incidents)
 
 
+@logger
 def create_filter_alerts_creation_time(last_alert_fetched_time):
     """Create filter with the last alert fetched time to send in the request.
 
@@ -1687,6 +1773,7 @@ def create_filter_alerts_creation_time(last_alert_fetched_time):
     return filter_alerts_creation_time
 
 
+@logger
 def all_alerts_to_incidents(alerts, latest_creation_time, existing_ids, alert_status_to_fetch,
                             alert_severities_to_fetch):
     """Gets the alerts list and convert it to incidents.
@@ -1722,6 +1809,7 @@ def all_alerts_to_incidents(alerts, latest_creation_time, existing_ids, alert_st
     return incidents, new_ids, latest_creation_time
 
 
+@logger
 def aware_timestamp_to_naive_timestamp(aware_timestamp):
     """Gets aware timestamp and reformatting it to naive timestamp
 
@@ -1740,6 +1828,7 @@ def aware_timestamp_to_naive_timestamp(aware_timestamp):
     return datetime.strptime(iso_aware, '%Y-%m-%dT%H:%M:%S')
 
 
+@logger
 def should_fetch_alert(alert, existing_ids, alert_status_to_fetch, alert_severities_to_fetch):
     """ Check the alert to see if it's data stands by the conditions.
 
@@ -1759,6 +1848,7 @@ def should_fetch_alert(alert, existing_ids, alert_status_to_fetch, alert_severit
             and alert_severity in str(alert_severities_to_fetch) and alert['id'] not in existing_ids)
 
 
+@logger
 def get_last_alert_fetched_time(last_run, alert_time_to_fetch):
     """Gets fetch last run and returns the last alert fetch time.
 
@@ -1775,6 +1865,7 @@ def get_last_alert_fetched_time(last_run, alert_time_to_fetch):
     return last_alert_fetched_time
 
 
+@logger
 def test_module(client: MsClient):
     try:
         client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
@@ -1918,3 +2009,4 @@ from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+    LOG.print_log()
