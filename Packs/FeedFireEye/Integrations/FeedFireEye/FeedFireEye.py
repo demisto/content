@@ -20,18 +20,13 @@ class STIX21Processor:
         relationships (Dict): Dict of `id: STIX 2.1 relationship object`.
         entities (Dict): Dict of `id: STIX 2.1 entity object`.
         reports (List): List of STIX 2.1 reports objects.
-        tags (list): tags to assign fetched indicators
-        tlp_color (str): Traffic Light Protocol color
     """
 
-    def __init__(self, raw_indicators: List, relationships: Dict, entities: Dict, reports: List,
-                 tags: list = [], tlp_color: Optional[str] = None):
+    def __init__(self, raw_indicators: List, relationships: Dict, entities: Dict, reports: List):
         self.raw_indicators = raw_indicators
         self.relationships = relationships
         self.entities = entities
         self.reports = reports
-        self.tags = tags
-        self.tlp_color = tlp_color
 
         self.type_to_processor = {
             'report': self.process_report,
@@ -103,10 +98,6 @@ class STIX21Processor:
             indicator['type'] = auto_detect_indicator_type(value)
             if indicator['type']:
                 indicator['value'] = value
-                indicator['fields'] = {
-                    'tags': self.tags,
-                    'trafficlightprotocol': self.tlp_color
-                }
                 indicator['rawJSON'] = {
                     'fireeye_id': raw_data.get('id'),
                     'fireeye_labels': raw_data.get('labels'),
@@ -136,7 +127,7 @@ class STIX21Processor:
 
         for entity_type, value in self.entities.items():
             if value.get('type') in self.type_to_processor:
-                processed_entity = self.type_to_processor[value.get('type')](value, self.tags, self.tlp_color)
+                processed_entity = self.type_to_processor[value.get('type')](value)
                 if processed_entity:
                     processed_entities.append(processed_entity)
 
@@ -146,22 +137,20 @@ class STIX21Processor:
         processed_reports = list()  # type: List
 
         for raw_data in self.reports:
-            processed_report = self.process_report(raw_data, self.tags, self.tlp_color)
+            processed_report = self.process_report(raw_data)
             if processed_report:
                 processed_reports.append(processed_report)
 
         return processed_reports
 
     @staticmethod
-    def process_malware(raw_data, tags: list = [], tlp_color: Optional[str] = None) -> Dict:
+    def process_malware(raw_data) -> Dict:
         entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Malware'
         entity['value'] = raw_data.get('name')
         entity['fields'] = {
-            'tags': tags,
             'stixid': raw_data.get('id'),
-            'trafficlightprotocol': tlp_color,
             'stixdescription': raw_data.get('description', ''),
             'stixismalwarefamily': raw_data.get('is_family'),
             'stixmalwaretypes': raw_data.get('malware_types')
@@ -183,15 +172,13 @@ class STIX21Processor:
         return entity
 
     @staticmethod
-    def process_threat_actor(raw_data, tags: list = [], tlp_color: Optional[str] = None) -> Dict:
+    def process_threat_actor(raw_data) -> Dict:
         entity = dict()  # type: Dict[str, Any]
 
         entity['type'] = 'STIX Threat Actor'
         entity['value'] = raw_data.get('name')
         entity['fields'] = {
-            'tags': tags,
             'stixid': raw_data.get('id'),
-            'trafficlightprotocol': tlp_color,
             'stixaliases': raw_data.get('aliases'),
             'stixdescription': raw_data.get('description', ''),
             'stixsophistication': raw_data.get('sophistication'),
@@ -218,15 +205,13 @@ class STIX21Processor:
         return entity
 
     @staticmethod
-    def process_report(raw_data, tags: list = [], tlp_color: Optional[str] = None) -> Dict:
+    def process_report(raw_data) -> Dict:
         report = dict()  # type: Dict[str, Any]
 
         report['type'] = 'STIX Report'
         report['value'] = raw_data.get('name')
         report['fields'] = {
-            'tags': tags,
             'stixid': raw_data.get('id'),
-            'trafficlightprotocol': tlp_color,
             'published': raw_data.get('published'),
             'stixdescription': raw_data.get('description', ''),
         }
@@ -454,8 +439,7 @@ class Client(BaseClient):
         raw_indicators, relationships, stix_entities = self.fetch_all_indicators_from_api(limit)
         raw_reports = self.fetch_all_reports_from_api(limit)
 
-        stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports,
-                                         self.tags, self.tlp_color)
+        stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports)
 
         indicators = stix_processor.process_indicators()
         stix_indicators = stix_processor.process_stix_entities()
@@ -489,6 +473,30 @@ def get_indicators_command(client: Client):
     return human_readable, {}, indicators
 
 
+def add_fields_if_exists(client: Client, fields_dict: Dict = {}):
+    """Adds field mapping if they hold actual values
+
+    Args:
+        fields_dict: The fields entry of the indicator
+        client (Client): Client object configured according to instance arguments.
+
+
+    Returns:
+        Dict. Updated field mapping
+    """
+    if client.tags:
+        fields_dict.update({
+            'tags': client.tags
+        })
+
+    if client.tlp_color:
+        fields_dict.update({
+            'trafficlightprotocol': client.tlp_color
+        })
+
+    return fields_dict
+
+
 def fetch_indicators_command(client: Client, limit: int = -1):
     """Fetches indicators from the feed to the indicators tab.
     Args:
@@ -505,11 +513,8 @@ def fetch_indicators_command(client: Client, limit: int = -1):
     raw_response = []
 
     for indicator in iterator:
-        fields = indicator['fields']
-        fields.update({
-            'tags': client.tags,
-            'trafficlightprotocol': client.tlp_color
-        })
+        fields = add_fields_if_exists(client, indicator.get('fields', {}))
+
         indicators.append({
             'value': indicator['value'],
             'type': indicator['type'],
