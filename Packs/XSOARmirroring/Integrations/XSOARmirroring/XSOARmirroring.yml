@@ -69,7 +69,17 @@ configuration:
   name: tags
   type: 0
   required: false
-  additionalinfo: Only entries with these tags are retrieved from the XSOAR server. If no tags are listed, no entries are retrieved. 
+  additionalinfo: Only entries with these tags are retrieved from the XSOAR server. If no tags are listed, no entries are retrieved.
+- defaultvalue: Incoming And Outgoing
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
 script:
   script: ''
   type: python

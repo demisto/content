@@ -17,7 +17,7 @@
 			"internalMapping": {
 				"dbotMirrorDirection": {
 					"complex": null,
-					"simple": ".='Both'"
+					"simple": "mirror_direction"
 				},
 				"dbotMirrorId": {
 					"complex": null,
@@ -25,7 +25,7 @@
 				},
 				"dbotMirrorInstance": {
 					"complex": null,
-					"simple": ".='XSOAR Mirroring_instance_1'"
+					"simple": "mirror_instance"
 				},
 				"dbotMirrorTags": {
 					"complex": null,
