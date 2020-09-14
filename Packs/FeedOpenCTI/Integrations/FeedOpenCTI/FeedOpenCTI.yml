@@ -1,0 +1,200 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: OpenCTI Feed
+  version: -1
+configuration:
+- display: API Key
+  hidden: false
+  name: apikey
+  required: true
+  type: 4
+- display: Base URL
+  hidden: false
+  name: base_url
+  required: true
+  type: 0
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: suddenDeath
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '60'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- defaultvalue: all
+  display: Indicator Type
+  name: indicator_types
+  options:
+  - all
+  - user-account
+  - domain
+  - email-address
+  - file-md5
+  - file-sha1
+  - file-sha256
+  - hostname
+  - ipv4-addr
+  - ipv6-addr
+  - registry-key-value
+  - url
+  required: true
+  type: 16
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: max_indicator_to_fetch
+  hidden: false
+  name: max_indicator_to_fetch
+  required: false
+  type: 0
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+- display: ''
+  name: feedExpirationPolicy
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ''
+  name: feedExpirationInterval
+  type: 1
+  required: false
+description: Ingest indicator feeds from OpenCTI.
+display: OpenCTI Feed
+name: OpenCTI Feed
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return to the output. The default
+        value is "50".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      description: The indicator types to fetch.
+      isArray: false
+      name: indicator_types
+      predefined:
+      - all
+      - user-account
+      - domain
+      - email-address
+      - file-md5
+      - file-sha1
+      - file-sha256
+      - hostname
+      - ipv4-addr
+      - ipv6-addr
+      - registry-key-value
+      - url
+      required: false
+      secret: false
+    - default: false
+      description: The last id from the previous call to use pagination
+      isArray: false
+      name: last_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from the feed.
+    execution: false
+    name: opencti-get-indicators
+  dockerimage: demisto/opencti:1.0.0.10651
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.5.0
