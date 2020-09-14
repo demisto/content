@@ -124,8 +124,6 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
         zipped_packs: A list of the downloaded packs paths and their corresponding pack names.
     """
     zipped_packs = []
-    os.mkdir('/home/runner/work/content-private/content-private/content/temp-dir/')
-    destination_path = '/home/runner/work/content-private/content-private/content/temp-dir/'
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
         for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
             if pack.name in IGNORED_FILES:
@@ -210,6 +208,8 @@ def main():
     branch_name = option.branch_name
     gcp_path = option.gcp_path
     remove_test_playbooks = option.remove_test_playbooks
+    os.mkdir('/home/runner/work/content-private/content-private/content/temp-dir/')
+    zip_path = '/home/runner/work/content-private/content-private/content/temp-dir/'
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
