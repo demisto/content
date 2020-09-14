@@ -11,7 +11,7 @@
 <li>Manage Slack channels (create, edit, invite, kick, close).</li>
 </ul><h2>Detailed Description</h2>
 <ul>
-<li>To allow us access to Slack, the Cortex XSOAR app has to be added to the relevant workspace. Do so by clicking on the following [link](https://oproxy.demisto.ninja/slack).</li>
+<li>To allow us access to Slack, the Cortex XSOAR app has to be added to the relevant workspace. Do so by clicking on the following <a href="https://oproxy.demisto.ninja/slack">link</a>.</li>
 <li> After adding the Cortex XSOAR app, you will get an Access Token and Bot Token, which should be inserted in the integration instance configuration's corresponding fields.</li>
 </ul>
 <h2>Configure SlackV2 on Cortex XSOAR</h2>

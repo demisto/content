@@ -143,6 +143,7 @@ script:
                 md += "#### Found matches for URL " + args.url + "\n";
                 md += arrToMd(res.matches);
             } else {
+                ec.DBotScore = {Indicator: args.url, Type: 'url', Vendor: 'GoogleSafeBrowsing', Score: 0};
                 md += "#### No matches for URL " + args.url + "\n";
             }
 

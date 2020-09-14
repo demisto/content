@@ -485,9 +485,6 @@ def __delete_integration_instance_if_determined_by_name(client, instance_name, p
 # return instance name if succeed, None otherwise
 def __create_integration_instance(client, integration_name, integration_instance_name,
                                   integration_params, is_byoi, prints_manager, validate_test=True, thread_index=0):
-    start_message = 'Configuring instance for {} (instance name: {}, ' \
-                    'validate "Test": {})'.format(integration_name, integration_instance_name, validate_test)
-    prints_manager.add_print_job(start_message, print, thread_index)
 
     # get configuration config (used for later rest api
     configuration = __get_integration_config(client, integration_name, prints_manager,
@@ -504,6 +501,10 @@ def __create_integration_instance(client, integration_name, integration_instance
         __delete_integration_instance_if_determined_by_name(client, instance_name, prints_manager, thread_index)
     else:
         instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
+
+    start_message = 'Configuring instance for {} (instance name: {}, ' \
+                    'validate "Test": {})'.format(integration_name, instance_name, validate_test)
+    prints_manager.add_print_job(start_message, print, thread_index)
 
     # define module instance
     module_instance = {

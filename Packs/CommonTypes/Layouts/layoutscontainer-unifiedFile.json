@@ -1,5 +1,5 @@
 {
-    "id": "unifiedFileRep",
+    "id": "unifiedFileRep1",
     "group": "indicator",
     "name": "File Indicator",
     "description": "",
@@ -88,7 +88,8 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -102,7 +103,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "main-2cb1bd00-a2ef-11e9-a74b-a79deb2f5d2a",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-2cb1bd00-a2ef-11e9-a74b-a79deb2f5d2a",
                         "isVisible": true,
                         "items": [
                             {
@@ -164,7 +165,8 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -177,12 +179,13 @@
                     {
                         "description": "By Virus Total",
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 5,
                         "hideName": false,
-                        "i": "main-2914c250-a2fe-11e9-b76d-69524aca75e8",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-2914c250-a2fe-11e9-b76d-69524aca75e8",
                         "isVisible": true,
                         "items": null,
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -194,13 +197,13 @@
                         "type": "dynamicIndicator",
                         "w": 1,
                         "x": 2,
-                        "y": 10
+                        "y": 9
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "main-269d4060-a303-11e9-b76d-69524aca75e8",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-269d4060-a303-11e9-b76d-69524aca75e8",
                         "isVisible": true,
                         "items": [
                             {
@@ -231,7 +234,7 @@
                                 "fieldId": "md5",
                                 "height": 22,
                                 "id": "bda5d390-a2e6-11e9-a74b-a79deb2f5d2a",
-                                "index": 3,
+                                "index": 2,
                                 "listId": "269d4060-a303-11e9-b76d-69524aca75e8",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -241,12 +244,13 @@
                                 "fieldId": "ssdeep",
                                 "height": 22,
                                 "id": "bb2c6f20-a2e6-11e9-a74b-a79deb2f5d2a",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -296,14 +300,15 @@
                             }
                         ],
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 3,
                         "hideName": false,
-                        "i": "main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
                         "isVisible": true,
                         "items": null,
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 2,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 2,
                         "moved": false,
                         "name": "Related Incidents",
                         "readOnly": true,
@@ -311,13 +316,14 @@
                         "type": "relatedIncidents",
                         "w": 2,
                         "x": 0,
-                        "y": 9
+                        "y": 11
                     },
                     {
                         "h": 3,
-                        "i": "main-7f557450-3d56-11ea-9dff-c57e8949d2f9",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-7f557450-3d56-11ea-9dff-c57e8949d2f9",
                         "items": null,
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -331,9 +337,10 @@
                     {
                         "h": 1,
                         "hideName": true,
-                        "i": "main-8f8aedf0-3d56-11ea-9dff-c57e8949d2f9",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-8f8aedf0-3d56-11ea-9dff-c57e8949d2f9",
                         "items": null,
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -346,9 +353,10 @@
                     },
                     {
                         "h": 2,
-                        "i": "main-968b1300-3d56-11ea-9dff-c57e8949d2f9",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-968b1300-3d56-11ea-9dff-c57e8949d2f9",
                         "items": null,
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -362,9 +370,10 @@
                     {
                         "h": 1,
                         "hideName": true,
-                        "i": "main-981b9e10-3d56-11ea-9dff-c57e8949d2f9",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-981b9e10-3d56-11ea-9dff-c57e8949d2f9",
                         "items": null,
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -376,10 +385,11 @@
                         "y": 0
                     },
                     {
-                        "h": 4,
-                        "i": "main-174e7bd0-3d57-11ea-9dff-c57e8949d2f9",
+                        "h": 5,
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-174e7bd0-3d57-11ea-9dff-c57e8949d2f9",
                         "items": null,
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -388,7 +398,7 @@
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "columns": [
@@ -419,9 +429,10 @@
                         "description": "",
                         "h": 2,
                         "hideName": false,
-                        "i": "main-2282fbc0-3d57-11ea-9dff-c57e8949d2f9",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-2282fbc0-3d57-11ea-9dff-c57e8949d2f9",
                         "items": null,
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -438,7 +449,7 @@
                         "h": 1,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "main-816e35d0-9f38-11ea-943e-df1687bcb1dc",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-816e35d0-9f38-11ea-943e-df1687bcb1dc",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -452,7 +463,8 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -467,7 +479,7 @@
                         "h": 2,
                         "hideItemTitleOnlyOne": false,
                         "hideName": false,
-                        "i": "main-329c6710-a640-11ea-9a93-611e57d9f959",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-329c6710-a640-11ea-9a93-611e57d9f959",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -528,7 +540,8 @@
                                 "startCol": 1
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -542,7 +555,7 @@
                         "displayType": "ROW",
                         "h": 1,
                         "hideName": false,
-                        "i": "main-fafa73b0-a9af-11ea-a4b1-a5bbd1788c5a",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-fafa73b0-a9af-11ea-a4b1-a5bbd1788c5a",
                         "items": [
                             {
                                 "args": {},
@@ -569,7 +582,8 @@
                                 "startCol": 1
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -583,7 +597,7 @@
                         "displayType": "CARD",
                         "h": 1,
                         "hideName": false,
-                        "i": "main-3c1e3d40-b54f-11ea-a576-bbabacd1620b",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-3c1e3d40-b54f-11ea-a576-bbabacd1620b",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -608,7 +622,8 @@
                                 "startCol": 1
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -623,7 +638,7 @@
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "main-4e7d6f30-bba6-11ea-8dae-afbdd73dbf37",
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-unifiedFileRep-main-main-4e7d6f30-bba6-11ea-8dae-afbdd73dbf37",
                         "items": [
                             {
                                 "endCol": 2,
@@ -635,7 +650,8 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -646,31 +662,23 @@
                         "y": 5
                     },
                     {
-                        "displayType": "ROW",
                         "h": 2,
-                        "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "main-312c5870-d0d6-11ea-937a-6f8841d9fed1",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "feedrelatedindicators",
-                                "height": 22,
-                                "id": "3ea745f0-d0d6-11ea-937a-6f8841d9fed1",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
+                        "i": "main-unifiedFileRep-main-main-unifiedFileRep-main-main-3479b9d0-db0a-11ea-b4ce-1f8309bfc6cd",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 2,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 2,
                         "moved": false,
                         "name": "Feed Related Indicators",
+                        "query": "FeedRelatedIndicatorsWidget",
+                        "queryType": "script",
                         "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
+                        "type": "dynamicIndicator",
+                        "w": 2,
+                        "x": 0,
+                        "y": 9
                     }
                 ],
                 "type": "custom"

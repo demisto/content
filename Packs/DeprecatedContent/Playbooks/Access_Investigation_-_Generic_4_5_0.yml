@@ -3,8 +3,8 @@ version: -1
 name: Access Investigation - Generic
 fromversion: 3.6.0
 toversion: 4.4.9
-description: |-
-  This playbook investigates an access incident by gathering user and IP information.
+hidden: true
+description: Deprecated. This playbook investigates an access incident by gathering user and IP information.
 
   The playbook then interacts with the user that triggered the incident to confirm whether or not they initiated the access action.
 starttaskid: "0"

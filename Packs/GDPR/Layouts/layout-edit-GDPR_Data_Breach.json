@@ -204,7 +204,8 @@
                 "query": null,
                 "queryType": ""
             }
-        ]
+        ],
+        "typeId": "GDPR Data Breach"
     },
     "toVersion": "5.9.9",
     "version": -1
