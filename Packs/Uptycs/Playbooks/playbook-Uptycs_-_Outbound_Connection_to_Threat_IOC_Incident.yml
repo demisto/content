@@ -723,3 +723,5 @@ outputs:
   description: time that the process was removed
   type: date
 sourceplaybookid: Uptycs - Outbound Connection to Threat IOC Incident
+tests:
+  - No tests
