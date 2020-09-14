@@ -68,7 +68,8 @@ mock_objects = {"objects": [{"srcip": "8.8.8.8", "itype": "mal_ip", "confidence"
                             {"srcip": "1.1.1.1", "itype": "apt_ip"}]}
 
 expected_import_json = {'objects': [{'srcip': '8.8.8.8', 'itype': 'mal_ip', 'confidence': 50},
-                                    {'srcip': '1.1.1.1', 'itype': 'apt_ip'}]}
+                                    {'srcip': '1.1.1.1', 'itype': 'apt_ip'}],
+                        'meta': {'classification': 'private', 'confidence': 30, 'allow_unresolved': False}}
 
 
 def test_ioc_approval_500_error(mocker):
@@ -103,7 +104,8 @@ def test_import_ioc_without_approval(mocker):
     with open(file_obj['path'], 'w') as f:
         json.dump(mock_objects, f)
     http_mock = mocker.patch('Anomali_ThreatStream_v2.http_request', side_effect=http_request_without_approval_mock)
-    mocker.patch.object(demisto, 'args', return_value={'file_id': 1, 'classification': 'private', 'allow_unresolved': 'yes', 'confidence': 30})
+    mocker.patch.object(demisto, 'args', return_value={'file_id': 1, 'classification': 'private',
+                                                       'allow_unresolved': 'no', 'confidence': 30})
     mocker.patch.object(demisto, 'command', return_value='threatstream-import-indicator-without-approval')
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'getFilePath', return_value=file_obj)

@@ -652,8 +652,7 @@ def import_ioc_without_approval(file_id, classification, confidence=None, allow_
         raise DemistoException(F"Entry {file_id} does not contain a valid json file.")
     except Exception:
         raise DemistoException(F"Entry {file_id} does not contain a file.")
-    meta = ioc_to_import.get('meta', {})
-    meta.update(assign_params(
+    ioc_to_import.update({'meta': assign_params(
         classification=classification,
         confidence=confidence,
         allow_unresolved=allow_unresolved,
@@ -662,11 +661,11 @@ def import_ioc_without_approval(file_id, classification, confidence=None, allow_
         severity=severity,
         tags=tags,
         trustedcircles=trustedcircles
-    ))
+    )})
 
     params = build_params()
     res = http_request("PATCH", "v1/intelligence/", params=params, json=ioc_to_import, text_response=True)
-    return_outputs(F"The data was imported successfully.", {}, res)
+    return_outputs("The data was imported successfully.", {}, res)
 
 
 def get_model_list(model, limit="50"):
