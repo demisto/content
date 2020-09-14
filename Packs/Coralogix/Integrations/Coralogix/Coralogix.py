@@ -1,3 +1,8 @@
+# TODO: Elaborate the integration description
+# TODO: Add additional info (tooltip) to parameters
+# TODO: Add description to the integration in /home/yuvalk/Projects/__INTEGRATIONS__/integration-coralogix-demisto/Packs/Coralogix/Integrations/Coralogix/Coralogix_description.md
+# TODO: Revert changes in HelloWorld
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -132,7 +137,7 @@ def coralogix_search_command(cgx_private_key, cgx_endpoint_url, query, exclude_c
                     {
                         "range": {
                             "coralogix.timestamp": {
-                                "gte": since_timestamp,
+                                "gt": since_timestamp,
                                 "lt": "now"
                             }
                         }
@@ -162,6 +167,14 @@ def coralogix_search_command(cgx_private_key, cgx_endpoint_url, query, exclude_c
     if results_as_table:
         if 'hits' in results_raw and 'hits' in results_raw['hits']:
             formatted_data = elastic_output_as_table(raw_elastic_json_obj=results_raw, filter_out_columns=exclude_columns)
+            return CommandResults(
+                raw_response=results_raw,
+                # TODO: Add list of columns that should be displayed in the war room ['taskId', 'serverName', 'serverGuid']
+                readable_output=tableToMarkdown('Coralogix Search Results', formatted_data['human_readable_table'], "ColumnsWhitelist", removeNull=True),
+                output_key_field=LOG_UNIQUE_IDENTIFIER_FIELD_NAME,
+                outputs_prefix='Coralogix.SearchResults',
+                outputs=results_raw['hits']['hits']
+            )
             return {
                 'ContentsFormat': formats['json'],
                 'Type': entryTypes['note'],
@@ -210,7 +223,9 @@ def coralogix_tag_command(private_key, coralogix_url, application_name, subsyste
     response = requests.post(coralogix_url, params=query_string_params)
     try:
         return json.loads(response.text)
+        # TODO: Return CommandResults with "Tag successfully added" in Human readable with the json.loads(response.text) in the context (see search)
     except json.JSONDecodeError:
+        # TODO: Raise ValueError
         return response.text
 
 def test_module(cgx_private_key, cgx_endpoint_url):
@@ -278,6 +293,8 @@ def fetch_incidents(cgx_private_key, cgx_endpoint_url, incidents_base_query, app
         Returns the incidents found in Coralogix
     """
 
+    # TODO: Add support for max_fetch (in integration parameters) by limiting ES query
+    # TODO: Add support for default first fetch (in integration parameters) by setting this value
     last_run_timestamp = -1
     if "last_run_timestamp" in demisto.getLastRun():
         last_run_timestamp = demisto.getLastRun().get('last_run_timestamp', -1)
@@ -393,6 +410,7 @@ def main():
                 tag_timestamp=tag_timestamp,
                 tag_icon_url=tag_icon_url
             ))
+            # TODO: Change to coralogix-search (and so on)
         elif demisto.command() == 'coralogix_search':
             if "query" in demisto.args():
                 query = demisto.args()["query"].strip()
@@ -419,7 +437,7 @@ def main():
             else:
                 search_severity = ""
 
-            demisto.results(coralogix_search_command(
+            return_results(coralogix_search_command(
                 cgx_private_key=private_key,
                 cgx_endpoint_url=search_api_url,
                 query=query,
@@ -429,6 +447,7 @@ def main():
                 subsystem_name=search_subsystem_name,
                 severity=search_severity
             ))
+            demisto.results()
         else:
             demisto.error("Unknown command")
 

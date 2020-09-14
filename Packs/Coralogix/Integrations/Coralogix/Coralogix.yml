@@ -11,7 +11,7 @@ configuration:
 - display: Private Key
   name: privatekey
   required: true
-  type: 0
+  type: 4
 - defaultvalue: Demisto
   display: Application Name (for tags)
   hidden: false
@@ -40,12 +40,13 @@ configuration:
   name: incidents_application_name
   required: false
   type: 0
-- display: Incidents Severity
+- additionalinfo: Narrow the Coralogix search to a certain severity level
+  display: Incidents Severity
   hidden: false
   name: incidents_severity
   required: false
   type: 0
-- display: incidents Name Field
+- display: Incidents Name Field
   hidden: false
   name: incident_description_field
   required: false
