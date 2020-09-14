@@ -23,7 +23,7 @@
   "attachmentsInSoapMessages": false,
   "followSchemaLinks": true,
   "useXmlResponsePage": false,
-  "kind": "tm:asm:policies:xml-profiles:xml-profilestate",
+  "_kind": "tm:asm:policies:xml-profiles:xml-profilestate",
   "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/xml-profiles/xml-profile-md5?ver=15.1.0",
   "isDefault": false,
   "id": "xml-profile-md5",

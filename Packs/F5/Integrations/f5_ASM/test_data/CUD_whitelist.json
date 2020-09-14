@@ -6,7 +6,7 @@
   "ignoreIpReputation": "false",
   "ipAddress": "12.12.12.12",
   "ipMask": "255.255.255.255",
-  "kind": "tm:asm:policies:whitelist-ips:whitelist-ipstate",
+  "_kind": "tm:asm:policies:whitelist-ips:whitelist-ipstate",
   "lastUpdateMicros": 1598958087000000,
   "neverLearnRequests": "false",
   "neverLogRequests": "false",

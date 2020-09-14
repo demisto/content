@@ -56,7 +56,7 @@
   "policyAntivirusReference": {
     "link": "https://localhost/mgmt/tm/asm/policies/0000/antivirus?ver=15.1.0"
   },
-  "kind": "tm:asm:policies:policystate",
+  "_kind": "tm:asm:policies:policystate",
   "policyBuilderCookieReference": {
     "link": "https://localhost/mgmt/tm/asm/policies/0000/policy-builder-cookie?ver=15.1.0"
   },

@@ -1196,7 +1196,7 @@
       "policyAntivirusReference": {
         "link": "https://localhost/mgmt/tm/asm/policies/md5-4321/antivirus?ver=15.1.0"
       },
-      "kind": "tm:asm:policies:policystate",
+      "_kind": "tm:asm:policies:policystate",
       "virtualServers": [
         
       ],

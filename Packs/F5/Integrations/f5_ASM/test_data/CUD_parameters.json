@@ -13,7 +13,7 @@
   "isCookie": "true",
   "isHeader": "false",
   "isReferenced": "false",
-  "kind": "tm:asm:policies:parameters:parameterstate",
+  "_kind": "tm:asm:policies:parameters:parameterstate",
   "lastUpdateMicros": 1597158139000000,
   "level": "global",
   "mandatory": "false",

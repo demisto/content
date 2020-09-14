@@ -5,7 +5,7 @@
   "status": "NEW",
   "lastUpdateMicros": 1599565838000000.0,
   "includeVulnerabilityAssessmentConfigurationAndData": true,
-  "kind": "tm:asm:tasks:export-policy:export-policy-taskstate",
+  "_kind": "tm:asm:tasks:export-policy:export-policy-taskstate",
   "selfLink": "https://localhost/mgmt/tm/asm/tasks/export-policy/0000?ver=15.1.0",
   "format": "xml",
   "filename": "exported_file.xml",

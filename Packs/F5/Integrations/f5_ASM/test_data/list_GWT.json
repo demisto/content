@@ -1,5 +1,5 @@
 {
-  "kind": "tm:asm:policies:gwt-profiles:gwt-profilecollectionstate",
+  "_kind": "tm:asm:policies:gwt-profiles:gwt-profilecollectionstate",
   "selfLink": "https://gwt-profiles",
   "totalItems": 1,
   "items": [
@@ -14,7 +14,7 @@
       "lastUpdateMicros": 1596661129000000.0,
       "description": "Default GWT Profile",
       "isReferenced": false,
-      "kind": "tm:asm:policies:gwt-profiles:gwt-profilestate",
+      "_kind": "tm:asm:policies:gwt-profiles:gwt-profilestate",
       "selfLink": "https://gwt-profiles",
       "attackSignaturesCheck": true,
       "isDefault": true,

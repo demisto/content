@@ -1,10 +1,10 @@
 {
-  "kind": "tm:asm:policies:methods:methodcollectionstate",
+  "_kind": "tm:asm:policies:methods:methodcollectionstate",
   "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/methods?ver=15.1.0",
   "totalItems": 6,
   "items": [
     {
-      "kind": "tm:asm:policies:methods:methodstate",
+      "_kind": "tm:asm:policies:methods:methodstate",
       "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/methods/md5-posty?ver=15.1.0",
       "name": "posty",
       "id": "md5-posty",
@@ -12,7 +12,7 @@
       "actAsMethod": "POST"
     },
     {
-      "kind": "tm:asm:policies:methods:methodstate",
+      "_kind": "tm:asm:policies:methods:methodstate",
       "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/methods/md5-getty?ver=15.1.0",
       "name": "getty",
       "id": "md5-getty",
@@ -20,7 +20,7 @@
       "actAsMethod": "GET"
     },
     {
-      "kind": "tm:asm:policies:methods:methodstate",
+      "_kind": "tm:asm:policies:methods:methodstate",
       "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/methods/7777?ver=15.1.0",
       "name": "getty",
       "id": "7777",
@@ -28,7 +28,7 @@
       "actAsMethod": "GET"
     },
     {
-      "kind": "tm:asm:policies:methods:methodstate",
+      "_kind": "tm:asm:policies:methods:methodstate",
       "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/methods/8888?ver=15.1.0",
       "name": "HEAD",
       "id": "8888",
@@ -36,7 +36,7 @@
       "actAsMethod": "GET"
     },
     {
-      "kind": "tm:asm:policies:methods:methodstate",
+      "_kind": "tm:asm:policies:methods:methodstate",
       "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/methods/md5-POST?ver=15.1.0",
       "name": "POST",
       "id": "md5-POST",
@@ -44,7 +44,7 @@
       "actAsMethod": "POST"
     },
     {
-      "kind": "tm:asm:policies:methods:methodstate",
+      "_kind": "tm:asm:policies:methods:methodstate",
       "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/methods/9999?ver=15.1.0",
       "name": "GET",
       "id": "9999",

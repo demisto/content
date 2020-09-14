@@ -1,6 +1,6 @@
 {
-    "kind": "tm:asm:policies:policycollectionstate",
-    "selfLink": "https://localhost/mgmt/tm/asm/policies?kind=&selfLink=&ver=15.1.0",
+    "_kind": "tm:asm:policies:policycollectionstate",
+    "selfLink": "https://localhost/mgmt/tm/asm/policies?_kind=&selfLink=&ver=15.1.0",
     "totalItems": 2,
     "items": [
         {
@@ -62,7 +62,7 @@
             "policyAntivirusReference": {
                 "link": "https://localhost/mgmt/tm/asm/policies/1234/antivirus"
             },
-            "kind": "tm:asm:policies:policystate",
+            "_kind": "tm:asm:policies:policystate",
             "virtualServers": [
 
             ],
@@ -350,7 +350,7 @@
             "policyAntivirusReference": {
                 "link": "https://localhost/mgmt/tm/asm/policies/9876/antivirus"
             },
-            "kind": "tm:asm:policies:policystate",
+            "_kind": "tm:asm:policies:policystate",
             "virtualServers": [
 
             ],

@@ -9,7 +9,7 @@
   "id": "json-profile-md5",
   "isDefault": "false",
   "isReferenced": "false",
-  "kind": "tm:asm:policies:gwt-profiles:gwt-profilestate",
+  "_kind": "tm:asm:policies:gwt-profiles:gwt-profilestate",
   "lastUpdateMicros": 1596553383000000,
   "metacharElementCheck": "false",
   "name": "json-profile",

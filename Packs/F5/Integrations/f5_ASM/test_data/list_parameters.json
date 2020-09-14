@@ -15,7 +15,7 @@
       "isCookie": "true",
       "isHeader": "false",
       "isReferenced": "false",
-      "kind": "tm:asm:policies:parameters:parameterstate",
+      "_kind": "tm:asm:policies:parameters:parameterstate",
       "lastUpdateMicros": 1597158139000000,
       "level": "global",
       "mandatory": "false",
@@ -48,7 +48,7 @@
       "isCookie": "true",
       "isHeader": "false",
       "isReferenced": "false",
-      "kind": "tm:asm:policies:parameters:parameterstate",
+      "_kind": "tm:asm:policies:parameters:parameterstate",
       "lastUpdateMicros": 1597158139000000,
       "level": "global",
       "mandatory": "false",
@@ -67,7 +67,7 @@
       "valueType": "user-input"
     }
   ],
-  "kind": "tm:asm:policies:parameters:parametercollectionstate",
+  "_kind": "tm:asm:policies:parameters:parametercollectionstate",
   "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/parameters?ver=15.1.0",
   "totalItems": 2
 }

@@ -1,5 +1,5 @@
 {
-  "kind": "tm:asm:policies:server-technologies:server-technologystate",
+  "_kind": "tm:asm:policies:server-technologies:server-technologystate",
   "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/server-technologies/server-technology-md5?ver=15.1.0",
   "id": "server-technology-md5",
   "lastUpdateMicros": 1600078718000000.0,

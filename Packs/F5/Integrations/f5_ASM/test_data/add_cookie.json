@@ -2,7 +2,7 @@
   "isBase64": false,
   "createdBy": "GUI",
   "accessibleOnlyThroughTheHttpProtocol": false,
-  "kind": "tm:asm:policies:cookies:cookiestate",
+  "_kind": "tm:asm:policies:cookies:cookiestate",
   "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/cookies/cookie-md5?ver=15.1.0",
   "securedOverHttpsConnection": false,
   "id": "cookie-md5",

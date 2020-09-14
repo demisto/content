@@ -96,7 +96,7 @@
     "link": "https://localhost/mgmt/tm/asm/policies/0000/policy-builder-header?ver=15.1.0"
   },
   "creatorName": "admin",
-  "kind": "tm:asm:policies:policystate",
+  "_kind": "tm:asm:policies:policystate",
   "ipIntelligenceReference": {
     "link": "https://localhost/mgmt/tm/asm/policies/0000/ip-intelligence?ver=15.1.0"
   },

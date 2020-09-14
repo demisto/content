@@ -7,7 +7,7 @@
   "html5CrossOriginRequestsEnforcement": {
     "enforcementMode": "disabled"
   },
-  "kind": "tm:asm:policies:urls:urlstate",
+  "_kind": "tm:asm:policies:urls:urlstate",
   "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/urls/url-md5?ver=15.1.0",
   "inClassification": false,
   "methodsOverrideOnUrlCheck": false,

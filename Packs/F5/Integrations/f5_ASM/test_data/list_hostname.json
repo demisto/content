@@ -13,7 +13,7 @@
       "lastUpdateMicros": 1598962937000000.0
     },
     {
-      "kind": "tm:asm:policies:host-names:host-namestate",
+      "_kind": "tm:asm:policies:host-names:host-namestate",
       "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/host-names/hostname-md5-2?ver=15.1.0",
       "createdBy": "GUI",
       "name": "qmasters.co.il",
