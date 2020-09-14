@@ -44,7 +44,7 @@ def test_f5_export_policy_command(mocker):
     from f5_ASM import f5_export_policy_command
     mocked_client = mocker.Mock()
     mocked_client.export_policy.return_value = util_load_json('test_data/export_policy.json')
-    result = f5_export_policy_command(mocked_client, 'exported_file.xml', 'https://New_Policy.com',  False).outputs
+    result = f5_export_policy_command(mocked_client, 'exported_file.xml', 'https://New_Policy.com', False).outputs
     assert result.get('status') == 'NEW'
     assert result.get('id') == '0000'
 
@@ -81,8 +81,6 @@ def test_f5_list_policy_methods_command(mocker):
 
 
 def test_f5_add_policy_methods_command(mocker):
-
-
     from f5_ASM import f5_add_policy_method_command
     mocked_client = mocker.Mock()
     mocked_client.add_policy_method.return_value = util_load_json('test_data/add_methods.json')
@@ -385,7 +383,6 @@ def test_f5_update_policy_json_profile_command(mocker):
     mocked_client.update_policy_json_profile.return_value = util_load_json('test_data/CUD_json_profile.json')
     result = f5_update_policy_json_profile_command(mocked_client, '0000', 'param-1', '100', '100', '100',
                                                    '100').outputs
-    print(result)
     assert result.get('name') == 'json-profile'
     assert result.get('id') == 'json-profile-md5'
 
@@ -409,7 +406,6 @@ def test_f5_list_policy_xml_profiles_command(mocker):
 
     mocked_client.list_policy_xml_profiles.return_value = util_load_json('test_data/list_xml_profile.json')
     result = f5_list_policy_xml_profiles_command(mocked_client, '0000').outputs
-    print(result)
     assert result[0].get('name') == 'Default'
     assert result[0].get('id') == 'xml-profile-md5'
 
@@ -428,7 +424,6 @@ def test_f5_update_policy_xml_profile_command(mocker):
     mocked_client = mocker.Mock()
     mocked_client.update_policy_xml_profile.return_value = util_load_json('test_data/CUD_xml_profile.json')
     result = f5_update_policy_xml_profile_command(mocked_client, '0000', 'param-1', '100').outputs
-    print(result)
     assert result.get('name') == 'new_xml_profile'
     assert result.get('id') == 'xml-profile-md5'
 

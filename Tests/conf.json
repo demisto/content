@@ -2851,15 +2851,8 @@
             "playbookID": "Endace-Test",
             "fromversion": "5.0.0"
         },
-        {
-<<<<<<< HEAD
-            "integrations": "F5 WAF",
-            "playbookID": "playbook-F5_ASM-Testk",
-            "timeout": 600,
-            "fromversion": "5.0.0",
-            "nightly": true
-=======
-            "integrations": "Deep Instinct",
+		{
+			"integrations": "Deep Instinct",
             "playbookID": "Deep_Instinct-Test",
             "fromversion": "5.0.0"
         },
@@ -2985,8 +2978,14 @@
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
->>>>>>> upstream/master
-        }
+        },
+		{
+            "integrations": "F5 WAF",
+            "playbookID": "playbook-F5_ASM-Testk",
+            "timeout": 600,
+            "fromversion": "5.0.0",
+            "nightly": true
+		}
     ],
     "skipped_tests": {
         "PCAP File Carving Test": "Merged with PCAP Analysis Test",
