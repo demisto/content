@@ -2,7 +2,7 @@ from typing import Any, Callable, Dict, List, Tuple
 
 import urllib3
 
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
@@ -30,8 +30,10 @@ class Client(BaseClient):
         Returns:
             A list of objects, containing the indicators.
         """
-        result = []
+
         res = self._http_request('GET', url_suffix='', full_url=self._base_url, resp_type='text')
+
+        result = []
 
         try:
             indicators = res.split('\n')
@@ -44,17 +46,6 @@ class Client(BaseClient):
                         'FeedURL': self._base_url
                     })
 
-        except requests.exceptions.SSLError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your not secure parameter.\n\n{err}')
-        except requests.ConnectionError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your Server URL parameter.\n\n{err}')
-        except requests.exceptions.HTTPError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
         except ValueError as err:
             demisto.debug(str(err))
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
@@ -69,6 +60,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     Returns:
         Outputs.
     """
+
     client.build_iterator()
     return 'ok', {}, {}
 
@@ -88,7 +80,7 @@ def fetch_indicators(client: Client, feed_tags: List = [], limit: int = -1) -> L
         iterator = iterator[:limit]
     for item in iterator:
         value = item.get('value')
-        type_ = item.get('type', FeedIndicatorType.Domain)
+        type_ = item.get('type', FeedIndicatorType.IP)
         raw_data = {
             'value': value,
             'type': type_,
@@ -179,8 +171,9 @@ def main():
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
-    except Exception as err:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration. [{err}]'
+    except Exception:
+        err_msg = (f'Error in {INTEGRATION_NAME} Integration.\n\n'
+                   'Verify that the server URL parameter is correct and that you have access to the server from your host.\n')
         return_error(err_msg)
 
 

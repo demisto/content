@@ -2,7 +2,7 @@ commonfields:
   id: Talos Feed
   version: -1
 name: Talos Feed
-display: Talos Feed
+display: Talos Feed (Community Contribution)
 category: Data Enrichment & Threat Intelligence
 description: Use the Talos Feed integration to get indicators from the feed.
 configuration:
@@ -11,6 +11,11 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: Talos Endpoint URL
+  name: url
+  defaultvalue: https://talosintelligence.com/documents/ip-blacklist
+  type: 0
+  required: true
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: Bad
@@ -56,11 +61,6 @@ configuration:
   defaultvalue: "30"
   type: 19
   required: false
-- display: Talos Endpoint URL
-  name: url
-  defaultvalue: https://talosintelligence.com/documents/ip-blacklist
-  type: 0
-  required: true
 - display: Tags
   name: feedTags
   type: 0
@@ -80,6 +80,16 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
+  type: 8
+  required: false
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
   type: 8
   required: false
 script:
