@@ -148,8 +148,8 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
                 print("Dest path is: "+str(destination_path))
                 print(f'Showing LS of current dir: {subprocess.check_output("ls")}')
                 print(f'Showing PWD of current dir: {subprocess.check_output("pwd")}')
-                print(f'CD to dest_dir dir: {subprocess.check_output(f"cd {destination_path}")}')
-                print(f'Showing LS of dest_dir dir: {subprocess.check_output("ls")}')
+                # print(f'CD to dest_dir dir: {subprocess.check_output(f"cd {destination_path}")}')
+                # print(f'Showing LS of dest_dir dir: {subprocess.check_output("ls")}')
                 shutil.copy(download_path,
                             f'/home/runner/work/content-private/content-private/content/artifacts/{pack.name}.zip')
             else:
@@ -208,8 +208,8 @@ def main():
     branch_name = option.branch_name
     gcp_path = option.gcp_path
     remove_test_playbooks = option.remove_test_playbooks
-    os.mkdir('/home/runner/work/content-private/content-private/content/temp-dir/')
-    zip_path = '/home/runner/work/content-private/content-private/content/temp-dir/'
+    os.mkdir('/home/runner/work/content-private/content-private/content/temp-dir')
+    zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
