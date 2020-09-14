@@ -518,7 +518,7 @@ Retrieves a list of Security Agents.
 >### Trend Micro Apex Agents List
 >|Capabilities|Entity Id|Folder Path|Host Name|Ip Address List|Isolation Status|Mac Address List|Managing Server Id|Product|
 >|---|---|---|---|---|---|---|---|---|
->| cmd_restore_isolated_agent,<br/>cmd_isolate_agent,<br/>cmd_relocate_agent,<br/>cmd_uninstall_agent | b59e624c-2cf0-4180-83d7-e08abbf9ad54 | Workgroup | TRENDMICROAPEX- | 10.128.0.11 | normal | 42-01-0A-80-00-0B | B220EB61-6240-44B4-9B94-4AC3F22E6A62 | SLF_PRODUCT_OFFICESCAN_CE |
+>| cmd_restore_isolated_agent,<br/>cmd_isolate_agent,<br/>cmd_relocate_agent,<br/>cmd_uninstall_agent | b59e624c-2cf0-4180-83d7-e08abbf9ad54 | Workgroup | TRENDMICROAPEX- | 8.8.8.8 | normal | 42-01-0A-80-00-0B | B220EB61-6240-44B4-9B94-4AC3F22E6A62 | SLF_PRODUCT_OFFICESCAN_CE |
 
 
 ### trendmicro-apex-endpoint-sensors-list
@@ -571,7 +571,7 @@ Retrieves a list of Security Agents with the Endpoint Sensor feature enabled.
     "TrendMicroApex": {
         "EndpointSensorSecurityAgent": {
             "agentGuid": "b59e624c-2cf0-4180-83d7-e08abbf9ad54",
-            "ip": "10.128.0.11",
+            "ip": "8.8.8.8",
             "isEnable": true,
             "isImportant": false,
             "isOnline": true,
