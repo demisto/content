@@ -1,0 +1,18 @@
+commonfields:
+  id: ShowMITREID
+  version: -1
+name: ShowMITREID
+comment: Shows Mitre ID
+script: '-'
+type: python
+tags:
+- dynamic-indicator-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.5.10845
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No test

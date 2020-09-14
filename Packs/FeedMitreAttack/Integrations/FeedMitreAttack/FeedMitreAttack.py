@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 from typing import List, Dict, Set, Optional
 import json
@@ -23,7 +22,6 @@ mitre_field_mapping = {
     "mitredetection": {"name": "x_mitre_detection", "type": "str"},
     "mitreextendedaliases": {"name": "x_mitre_aliases", "type": "list"},
     "mitreexternalreferences": {"name": "external_references", "type": "dict"},
-    "mitreid": {"name": "id", "type": "str"},
     "mitreimpacttype": {"name": "x_mitre_impact_type", "type": "list"},
     "mitrekillchainphases": {"name": "kill_chain_phases", "type": "dict"},
     "mitrelabels": {"name": "labels", "type": "list"},
@@ -32,7 +30,9 @@ mitre_field_mapping = {
     "mitreplatforms": {"name": "x_mitre_platforms", "type": "dict"},
     "mitresystemrequirements": {"name": "x_mitre_system_requirements", "type": "list"},
     "mitreversion": {"name": "x_mitre_version", "type": "str"},
-    "mitretype": {"name": "type", "type": "str"}
+    "mitretype": {"name": "type", "type": "str"},
+    "mitrecreated": {"name": "created", "type": "str"},
+    "mitremodified": {"name": "modified", "type": "str"}
 }
 
 # Disable insecure warnings
@@ -250,6 +250,7 @@ class Client:
         # rawjson to the fields in the indicator
         for indicator in indicators:
             indicator['fields'] = dict()
+            indicator['fields']['mitreid'] = indicator['value']
             for field, value in mitre_field_mapping.items():
                 try:
                     # Try and map the field
