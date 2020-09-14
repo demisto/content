@@ -26,7 +26,8 @@
         "RED",
         "AMBER",
         "GREEN",
-        "WHITE"
+        "WHITE",
+        ""
     ],
     "validationRegex": "",
     "useAsKpi": false,
