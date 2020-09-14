@@ -733,6 +733,7 @@ class McAfeeESMClient(BaseClient):
     def __get_watchlist_file_id(self, watchlist_id):
         command = 'sysGetWatchlistDetails'
         result = self.__request(command, data={'id': watchlist_id})
+        # count_results = result['recordCount'] (v 11) or result['valueCount'] (v 10)
         count_results = result.get('recordCount') or result.get('valueCount')
         if not count_results:
             raise EmptyFile()

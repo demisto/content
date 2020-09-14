@@ -919,7 +919,7 @@ script:
       description: The watchlist data.
       type: Unknown
     - contextPath: McAfeeESM.Watchlist.name
-      description: The watchlist data.
+      description: The watchlist name.
       type: string
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
