@@ -1,0 +1,17 @@
+{
+ "name": "BMCHelixRemedyforce - Classifier",
+ "defaultIncidentType": "Bmc Remedyforce Service Request",
+ "type": "classification",
+ "id": "BMCHelixRemedyforce",
+ "description": "Classifies BMC Helix Remedy force incidents.",
+ "keyTypeMap": {
+  "Service Request": "Bmc Remedyforce Service Request",
+  "Incident": "Bmc Remedyforce Incident"
+ },
+ "transformer": {
+  "complex": null,
+  "simple": "BMCServiceDesk__Type__c"
+ },
+ "version": -1,
+ "fromVersion": "6.0.0"
+}
