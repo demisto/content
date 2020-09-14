@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: OpenCTI
+  id: FeedOpenCTI
   version: -1
 configuration:
 - display: API Key
@@ -125,8 +125,8 @@ configuration:
   name: max_indicator_to_fetch
   required: false
   type: 0
-description: The opencti
-display: OpenCTI
+description: Ingest indicator feeds from OpenCTI.
+display: OpenCTI Feed
 name: OpenCTI
 script:
   commands:

@@ -78,3 +78,14 @@ RESPONSE_DATA = {
         'globalCount': 198
     }
 }
+
+RESPONSE_DATA_WITHOUT_INDICATORS = {
+    'entities': [],
+    'pagination': {
+        'startCursor': '',
+        'endCursor': '',
+        'hasNextPage': False,
+        'hasPreviousPage': False,
+        'globalCount': 0
+    }
+}
