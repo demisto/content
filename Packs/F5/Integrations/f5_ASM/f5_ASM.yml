@@ -100,7 +100,7 @@ script:
       secret: false
     - default: false
       description: If the policy is a security policy, optionally specify the parent
-        path
+        path.
       isArray: false
       name: parent
       required: false
@@ -190,11 +190,15 @@ script:
       name: policy_reference_link
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'true'
       description: Indicates whether to export only custom settings.
       isArray: false
       name: minimal
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -259,7 +263,7 @@ script:
       isArray: false
       name: policy_md5
       required: true
-      secret: true
+      secret: false
     deprecated: false
     description: Lists the file types that are allowed or disallowed in the security
       policy.
@@ -303,11 +307,15 @@ script:
       name: new_method_name
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: GET
       description: Functionality of the new method. default is GET.
       isArray: false
       name: act_as_method
+      predefined:
+      - GET
+      - ' POST'
       required: false
       secret: false
     deprecated: false
@@ -343,10 +351,14 @@ script:
       name: method_name
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Functionality of the new method.
       isArray: false
       name: act_as_method
+      predefined:
+      - GET
+      - POST
       required: true
       secret: false
     deprecated: false
@@ -422,26 +434,38 @@ script:
       name: query_string_length
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'true'
       description: indicates if the user wishes check the length of data in post method.
         default is True.
       isArray: false
       name: check_post_data_length
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'true'
       description: Indicates if the user wishes to check the response.
       isArray: false
       name: response_check
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'true'
       description: Indicates if the user wishes to check the request length.
       isArray: false
       name: check_request_length
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -451,11 +475,15 @@ script:
       name: post_data_length
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Indicates if the user wishes the new file type to be at staging.
       isArray: false
       name: perform_staging
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -525,20 +553,31 @@ script:
         default is True.
       isArray: false
       name: check_post_data_length
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'true'
       description: Indicates if the user wishes to check the response.
       isArray: false
       name: response_check
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'true'
       description: Indicates if the user wishes to check the request length.
       isArray: false
       name: check_request_length
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -548,11 +587,15 @@ script:
       name: post_data_length
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Indicates if the user wishes the new file type to be at staging.
       isArray: false
       name: perform_staging
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -1060,11 +1103,15 @@ script:
       name: new_cookie_name
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Indicates if the user wishes the new file type to be at staging.
       isArray: false
       name: perform_staging
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -1378,6 +1425,9 @@ script:
       description: Indicates if the user wishes the new file type to be at staging.
       isArray: false
       name: perform_staging
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -3343,7 +3393,7 @@ script:
     - contextPath: f5.Policy.md5
       description: MD5 hash of the policy
       type: String
-  dockerimage: demisto/python3:3.8.5.10455
+  dockerimage: demisto/python3:3.8.3.8715
   feed: false
   isfetch: false
   longRunning: false
