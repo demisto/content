@@ -598,7 +598,8 @@ def login(server_ip: str, username: str, password: str, verify_certificate: bool
     if response:
         token = response.get('token')
         if token:
-            return token.get('token')
+            response = token.get('token')
+    return response
 
 
 def f5_get_policy_md5_command(client: Client, policy_name: str) -> CommandResults:

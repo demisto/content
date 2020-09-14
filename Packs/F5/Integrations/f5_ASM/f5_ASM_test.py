@@ -1,177 +1,8 @@
 import json
 import io
 
-
-MOCK_BLOCKING_SETTINGS_LIST_RESPONSE = {
-    "kind": "tm:asm:policies:blocking-settings:evasions:evasioncollectionstate",
-    "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/blocking-settings/evasions",
-    "totalItems": 8,
-    "items": [
-        {
-            "lastUpdateMicros": 1595950127000000.0,
-            "description": "Bad unescape",
-            "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/blocking-settings/evasions"
-                        "/9--k-GSum4jUNSf0sU91Dw",
-            "kind": "tm:asm:policies:blocking-settings:evasions:evasionstate",
-            "evasionReference": {
-                "link": "https://localhost/mgmt/tm/asm/sub-violations/evasions/9--k-GSum4jUNSf0sU91Dw"
-            },
-            "id": "9--k-GSum4jUNSf0sU91Dw",
-            "learn": True,
-            "enabled": True
-        },
-        {
-            "lastUpdateMicros": 1596018724000000.0,
-            "description": "Apache whitespace",
-            "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/blocking-settings"
-                        "/evasions/Ahu8fuILcRNNU-ICBr1v6w",
-            "kind": "tm:asm:policies:blocking-settings:evasions:evasionstate",
-            "evasionReference": {
-                "link": "https://localhost/mgmt/tm/asm/sub-violations/evasions/Ahu8fuILcRNNU-ICBr1v6w"
-            },
-            "id": "Ahu8fuILcRNNU-ICBr1v6w",
-            "learn": False,
-            "enabled": False
-        },
-        {
-            "lastUpdateMicros": 1595937781000000.0,
-            "description": "Bare byte decoding",
-            "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/blocking-settings"
-                        "/evasions/EKfN2XD-E1z097tVwOO1nw",
-            "kind": "tm:asm:policies:blocking-settings:evasions:evasionstate",
-            "evasionReference": {
-                "link": "https://localhost/mgmt/tm/asm/sub-violations/evasions/EKfN2XD-E1z097tVwOO1nw"
-            },
-            "id": "EKfN2XD-E1z097tVwOO1nw",
-            "learn": False,
-            "enabled": False
-        },
-        {
-            "lastUpdateMicros": 1595858790000000.0,
-            "description": "IIS Unicode codepoints",
-            "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/blocking-settings"
-                        "/evasions/dtxhHW66r8ZswIeccbXbXA",
-            "kind": "tm:asm:policies:blocking-settings:evasions:evasionstate",
-            "evasionReference": {
-                "link": "https://localhost/mgmt/tm/asm/sub-violations/evasions/dtxhHW66r8ZswIeccbXbXA"
-            },
-            "id": "dtxhHW66r8ZswIeccbXbXA",
-            "learn": True,
-            "enabled": False
-        },
-        {
-            "lastUpdateMicros": 1595930400000000.0,
-            "description": "IIS backslashes",
-            "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/blocking-settings"
-                        "/evasions/6l0vHEYIIy4H06o9mY5RNQ",
-            "kind": "tm:asm:policies:blocking-settings:evasions:evasionstate",
-            "evasionReference": {
-                "link": "https://localhost/mgmt/tm/asm/sub-violations/evasions/6l0vHEYIIy4H06o9mY5RNQ"
-            },
-            "id": "6l0vHEYIIy4H06o9mY5RNQ",
-            "learn": True,
-            "enabled": False
-        },
-        {
-            "lastUpdateMicros": 1595858790000000.0,
-            "description": "%u decoding",
-            "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/blocking-settings"
-                        "/evasions/Y2TT8PSVtqudz407XG4LAQ",
-            "kind": "tm:asm:policies:blocking-settings:evasions:evasionstate",
-            "evasionReference": {
-                "link": "https://localhost/mgmt/tm/asm/sub-violations/evasions/Y2TT8PSVtqudz407XG4LAQ"
-            },
-            "id": "Y2TT8PSVtqudz407XG4LAQ",
-            "learn": True,
-            "enabled": False
-        },
-        {
-            "maxDecodingPasses": 3,
-            "lastUpdateMicros": 1595858790000000.0,
-            "description": "Multiple decoding",
-            "kind": "tm:asm:policies:blocking-settings:evasions:evasionstate",
-            "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/blocking-settings"
-                        "/evasions/x02XsB6uJX5Eqp1brel7rw",
-            "evasionReference": {
-                "link": "https://localhost/mgmt/tm/asm/sub-violations/evasions/x02XsB6uJX5Eqp1brel7rw"
-            },
-            "id": "x02XsB6uJX5Eqp1brel7rw",
-            "learn": True,
-            "enabled": False
-        },
-        {
-            "lastUpdateMicros": 1595858790000000.0,
-            "description": "Directory traversals",
-            "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/blocking-settings"
-                        "/evasions/qH_2eaLz5x2RgaZ7dUISLA",
-            "kind": "tm:asm:policies:blocking-settings:evasions:evasionstate",
-            "evasionReference": {
-                "link": "https://localhost/mgmt/tm/asm/sub-violations/evasions/qH_2eaLz5x2RgaZ7dUISLA"
-            },
-            "id": "qH_2eaLz5x2RgaZ7dUISLA",
-            "learn": True,
-            "enabled": False
-        }
-    ]
-}
-
-MOCK_BLOCKING_SETTINGS_SINGLE_RESPONSE = {
-    "lastUpdateMicros": 1596044721000000.0,
-    "description": "Bad unescape",
-    "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/blocking-settings/evasions"
-                "/9--k-GSum4jUNSf0sU91Dw",
-    "kind": "tm:asm:policies:blocking-settings:evasions:evasionstate",
-    "evasionReference": {
-        "link": "https://localhost/mgmt/tm/asm/sub-violations/evasions/9--k-GSum4jUNSf0sU91Dw"
-    },
-    "id": "9--k-GSum4jUNSf0sU91Dw",
-    "learn": False,
-    "enabled": True
-}
-
-MOCK_SIGNATURES_RESPONSE = {
-    "items": [
-        {
-            "alarm": "true",
-            "block": "true",
-            "enabled": "true",
-            "id": "pSaNIPgTyJvfTHq6r1BaHQ",
-            "isPriorRuleEnforced": "false",
-            "kind": "tm:asm:policies:signatures:signaturestate",
-            "lastUpdateMicros": 1595858790000000,
-            "learn": "true",
-            "performStaging": "true",
-            "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/signatures/pSaNIPgTyJvfTHq6r1BaHQ?ver=15.1.0",
-            "signatureReference": {
-                "link": "https://localhost/mgmt/tm/asm/signatures/iS9ERXgqFfWegzXzZnyQsg?ver=15.1.0",
-                "name": "SVG img tag: xlink/href (URI)",
-                "signatureId": 200101581
-            }
-        },
-        {
-            "alarm": "true",
-            "block": "true",
-            "enabled": "true",
-            "id": "etuSzgYC1xOKp4koSTGtHA",
-            "isPriorRuleEnforced": "false",
-            "kind": "tm:asm:policies:signatures:signaturestate",
-            "lastUpdateMicros": 1595858790000000,
-            "learn": "true",
-            "performStaging": "true",
-            "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/signatures/etuSzgYC1xOKp4koSTGtHA?ver=15.1.0",
-            "signatureReference": {
-                "link": "https://localhost/mgmt/tm/asm/signatures/HDSI0JZSPGWrcUNH5H0kzQ?ver=15.1.0",
-                "name": "SVG img tag: xlink/href (Header)",
-                "signatureId": 200101580
-            }
-        }],
-    "kind": "tm:asm:policies:signatures:signaturecollectionstate",
-    "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/signatures?ver=15.1.0",
-    "totalItems": 2
-}
-
 MOCK_EMPTY_RESPONSE = {"kind": "tm:asm:policies:host-names:host-namecollectionstate",
-                       "selfLink": "https://localhost/mgmt/tm/asm/policies/eTzNEnVBWVG87KIljElZIw/host-names",
+                       "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/host-names",
                        "totalItems": 0,
                        "items": []
                        }
@@ -264,7 +95,8 @@ def test_f5_add_policy_methods_command(mocker):
 def test_f5_update_policy_methods_command(mocker):
     from f5_ASM import f5_update_policy_method_command
     mocked_client = mocker.Mock()
-    mocked_client.update_policy_method.return_value = util_load_json('test_data/update_methods.json')
+    mocked_client.update_policy_method.return_value =\
+        util_load_json('test_data/update_methods.json')
     result = f5_update_policy_method_command(mocked_client, '0000', 'posty', 'GET').outputs
     assert result.get('name') == 'posty'
     assert result.get('id') == 'md5-1234'
@@ -274,7 +106,8 @@ def test_f5_update_policy_methods_command(mocker):
 def test_f5_delete_policy_methods_command(mocker):
     from f5_ASM import f5_delete_policy_method_command
     mocked_client = mocker.Mock()
-    mocked_client.delete_policy_method.return_value = util_load_json('test_data/delete_methods.json')
+    mocked_client.delete_policy_method.return_value =\
+        util_load_json('test_data/delete_methods.json')
     result = f5_delete_policy_method_command(mocked_client, '0000', 'posty').outputs
     assert result.get('name') == 'posty'
     assert result.get('id') == 'md5-1234'
@@ -292,8 +125,10 @@ def test_f5_list_policy_file_types_command(mocker):
 def test_f5_add_policy_file_types_command(mocker):
     from f5_ASM import f5_add_policy_file_type_command
     mocked_client = mocker.Mock()
-    mocked_client.add_policy_file_type.return_value = util_load_json('test_data/add_file_type.json')
-    result = f5_add_policy_file_type_command(mocked_client, '0000', 'cs', 100, True, True, True, 100, True).outputs
+    mocked_client.add_policy_file_type.return_value =\
+        util_load_json('test_data/add_file_type.json')
+    result = f5_add_policy_file_type_command(mocked_client, '0000', 'cs', 100, True, True,
+                                             True, 100, True).outputs
     assert result.get('name') == 'cs'
     assert result.get('id') == 'md5-1234'
 
@@ -302,7 +137,8 @@ def test_f5_update_policy_file_types_command(mocker):
     from f5_ASM import f5_update_policy_file_type_command
     mocked_client = mocker.Mock()
     mocked_client.update_policy_file_type.return_value = util_load_json('test_data/update_file_type.json')
-    result = f5_update_policy_file_type_command(mocked_client, '0000', 'cs', 100, True, True, True, 100, True).outputs
+    result = f5_update_policy_file_type_command(mocked_client, '0000', 'cs', 100, True, True,
+                                                True, 100, True).outputs
     assert result.get('name') == 'cs'
     assert result.get('id') == 'md5-1234'
 
@@ -439,7 +275,7 @@ def test_f5_list_policy_gwt_profiles_command(mocker):
     assert 'No entries' in result
 
     # adding fields to BASIC_FIELDS after previus test emptied this list.
-    BASIC_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']
+    BASIC_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']  # noqa: F841
 
     mocked_client.list_policy_gwt_profiles.return_value = util_load_json('test_data/list_GWT.json')
     result = f5_list_policy_gwt_profiles_command(mocked_client, 'unimportant').outputs
@@ -537,7 +373,8 @@ def test_f5_add_policy_json_profile_command(mocker):
     from f5_ASM import f5_add_policy_json_profile_command
     mocked_client = mocker.Mock()
     mocked_client.add_policy_json_profile.return_value = util_load_json('test_data/CUD_json_profile.json')
-    result = f5_add_policy_json_profile_command(mocked_client, '0000', 'param-1', '100', '100', '100', '100').outputs
+    result = f5_add_policy_json_profile_command(mocked_client, '0000', 'param-1', '100', '100', '100',
+                                                '100').outputs
     assert result.get('name') == 'json-profile'
     assert result.get('id') == 'json-profile-md5'
 
@@ -546,7 +383,8 @@ def test_f5_update_policy_json_profile_command(mocker):
     from f5_ASM import f5_update_policy_json_profile_command
     mocked_client = mocker.Mock()
     mocked_client.update_policy_json_profile.return_value = util_load_json('test_data/CUD_json_profile.json')
-    result = f5_update_policy_json_profile_command(mocked_client, '0000', 'param-1', '100', '100', '100', '100').outputs
+    result = f5_update_policy_json_profile_command(mocked_client, '0000', 'param-1', '100', '100', '100',
+                                                   '100').outputs
     print(result)
     assert result.get('name') == 'json-profile'
     assert result.get('id') == 'json-profile-md5'
@@ -615,12 +453,11 @@ def test_f5_list_policy_signatures_command(mocker):
 
 def test_f5_list_policy_server_technologies_command(mocker):
     from f5_ASM import f5_list_policy_server_technologies_command
-
     # adding fields to BASIC_FIELDS after previus test emptied this list.
-    BASIC_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']
-
+    BASIC_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']  # noqa: F841
     mocked_client = mocker.Mock()
-    mocked_client.list_policy_server_technologies.return_value = util_load_json('test_data/list_server_technologies.json')
+    mocked_client.list_policy_server_technologies.return_value =\
+        util_load_json('test_data/list_server_technologies.json')
     result = f5_list_policy_server_technologies_command(mocked_client, '0000').outputs
     assert result[0].get('id') == 'server-technology-md5-1'
     assert result[1].get('id') == 'server-technology-md5-2'
@@ -629,7 +466,8 @@ def test_f5_list_policy_server_technologies_command(mocker):
 def test_f5_add_policy_server_technologies_command(mocker):
     from f5_ASM import f5_add_policy_server_technology_command
     mocked_client = mocker.Mock()
-    mocked_client.add_policy_server_technology.return_value = util_load_json('test_data/add_delete_server_technology.json')
+    mocked_client.add_policy_server_technology.return_value =\
+        util_load_json('test_data/add_delete_server_technology.json')
     result = f5_add_policy_server_technology_command(mocked_client, '0000', 'ASP').outputs
     assert result.get('id') == 'server-technology-md5'
 
@@ -644,10 +482,8 @@ def test_f5_delete_policy_server_technologies_command(mocker):
 
 def test_f5_list_policy_whitelist_ips_command(mocker):
     from f5_ASM import f5_list_policy_whitelist_ips_command
-
     # adding fields to BASIC_FIELDS after previus test emptied this list.
-    BASIC_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']
-
+    BASIC_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']  # noqa: F841
     mocked_client = mocker.Mock()
     mocked_client.list_policy_whitelist_ips.return_value = util_load_json('test_data/list_whitelist.json')
     result = f5_list_policy_whitelist_ips_command(mocked_client, '0000').outputs
@@ -677,4 +513,3 @@ def test_f5_delete_policy_whitelist_ip_command(mocker):
     mocked_client.delete_policy_whitelist_ip.return_value = util_load_json('test_data/CUD_whitelist.json')
     result = f5_delete_policy_whitelist_ip_command(mocked_client, '0000', '8.8.8.8').outputs
     assert result.get('id') == 'whitelist-md5'
-
