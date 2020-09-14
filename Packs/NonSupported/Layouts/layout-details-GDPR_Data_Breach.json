@@ -414,7 +414,8 @@
                 "query": null,
                 "queryType": ""
             }
-        ]
+        ],
+        "typeId": "GDPR Data Breach"
     },
     "version": -1
 }

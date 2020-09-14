@@ -119,8 +119,9 @@
 				"readOnly": true,
 				"type": "labels"
 			}
-		]
-	},
+		],
+	    "typeId": "Phishing"
+    },
     "toVersion": "5.9.9",
     "version": -1,
     "fromVersion": "4.1.0"

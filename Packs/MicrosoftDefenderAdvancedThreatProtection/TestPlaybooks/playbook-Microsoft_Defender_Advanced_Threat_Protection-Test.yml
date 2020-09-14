@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 50
         }
       }
@@ -43,7 +43,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "25"
     scriptarguments:
       category: {}
       retry-count:
@@ -55,7 +55,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 895
         }
       }
@@ -66,10 +66,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: fa22cc3b-bf02-43b7-81a4-1de527946c9c
+    taskid: e54988c1-9fbc-416c-81a9-a2cd471e1396
     type: condition
     task:
-      id: fa22cc3b-bf02-43b7-81a4-1de527946c9c
+      id: e54988c1-9fbc-416c-81a9-a2cd471e1396
       version: -1
       name: Assert an alert was fetched
       type: condition
@@ -98,8 +98,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1070
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -138,8 +138,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 535
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -163,7 +163,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
@@ -201,7 +201,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 720
         }
       }
@@ -272,8 +272,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1595
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -309,8 +309,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1945
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -320,10 +320,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: ccae8b0a-0e40-458e-899f-a3bd744d568b
+    taskid: 6cd4667e-c4b0-40a0-8311-31ce26fb7e1b
     type: regular
     task:
-      id: ccae8b0a-0e40-458e-899f-a3bd744d568b
+      id: 6cd4667e-c4b0-40a0-8311-31ce26fb7e1b
       version: -1
       name: Advance query
       script: '|||microsoft-atp-advanced-hunting'
@@ -342,8 +342,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1245
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -379,8 +379,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1420
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -405,6 +405,8 @@ tasks:
       '#none#':
       - "5"
       - "29"
+      - "26"
+      - "28"
     scriptarguments:
       file:
         simple: 36c5d12033b2eaf251bae61c00690ffb17fddc87
@@ -416,7 +418,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 370
         }
       }
@@ -427,10 +429,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 0c1543a2-33ce-4832-8d93-8924753f5d13
+    taskid: bd37e98b-5207-4545-832b-d60faf350a79
     type: regular
     task:
-      id: 0c1543a2-33ce-4832-8d93-8924753f5d13
+      id: bd37e98b-5207-4545-832b-d60faf350a79
       version: -1
       name: Get alert related files
       description: Retrieves the files associated to a specific alert.
@@ -440,11 +442,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
-      - "28"
+      - "3"
     scriptarguments:
       id:
-        simple: da637178102407855446_82583843
+        complex:
+          root: MicrosoftATP.Alert
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
       limit:
         simple: "10"
       offset: {}
@@ -454,8 +463,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1245
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -465,10 +474,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 2b30de93-ceb8-4c2b-8734-0ed21e60a30f
+    taskid: 9fe4eaa2-d2c9-4f35-8417-f3118481efcd
     type: regular
     task:
-      id: 2b30de93-ceb8-4c2b-8734-0ed21e60a30f
+      id: 9fe4eaa2-d2c9-4f35-8417-f3118481efcd
       version: -1
       name: Get file related alerts
       description: Retrieves a collection of alerts related to a given file hash.
@@ -481,7 +490,9 @@ tasks:
       - "36"
     scriptarguments:
       file_hash:
-        simple: ${MicrosoftATP.AlertFile.Files.Sha1}
+        complex:
+          root: MicrosoftATP.FileMachine
+          accessor: File
       retry-count:
         simple: "3"
       sha1:
@@ -498,8 +509,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 910,
+          "y": 1770
         }
       }
     note: false
@@ -522,7 +533,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
       - "24"
     scriptarguments:
       all:
@@ -535,7 +545,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 195
         }
       }
@@ -546,10 +556,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: fbea907c-40f0-4326-8e64-aebc01ce4bb9
+    taskid: db30a4fc-cc43-47b7-82e8-6740fcd6f964
     type: regular
     task:
-      id: fbea907c-40f0-4326-8e64-aebc01ce4bb9
+      id: db30a4fc-cc43-47b7-82e8-6740fcd6f964
       version: -1
       name: Get file statistics
       description: Retrieves the statistics for the given file.
@@ -562,7 +572,9 @@ tasks:
       - "42"
     scriptarguments:
       file_hash:
-        simple: ${MicrosoftATP.AlertFile.Files.Sha1}
+        complex:
+          root: MicrosoftATP.FileMachine
+          accessor: File
       retry-count:
         simple: "3"
       sha1:
@@ -580,7 +592,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -627,7 +639,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 1585
+          "y": 1770
         }
       }
     note: false
@@ -661,7 +673,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -695,7 +707,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
@@ -728,8 +740,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1605
+          "x": 910,
+          "y": 1945
         }
       }
     note: false
@@ -762,8 +774,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 910,
+          "y": 2120
         }
       }
     note: false
@@ -801,7 +813,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -839,7 +851,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
@@ -875,7 +887,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -923,8 +935,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1770
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -932,12 +944,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 2310,
         "width": 1670,
         "x": 50,
         "y": 50

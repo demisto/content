@@ -1,4 +1,5 @@
 import datetime
+from pathlib import Path
 
 import pytest
 from unittest.mock import patch
@@ -9,13 +10,13 @@ demisto_params = {
     "user": "user",
 }
 with patch("demistomock.params", lambda: demisto_params):
-    from CofenseTriagev2.CofenseTriagev2 import TriageInstance  # noqa: 401 - this is used in other test files
+    from CofenseTriagev2 import TriageInstance  # noqa: 401 - this is used in other test files
 
 
 @pytest.fixture
 def fixture_from_file():
     def _fixture_from_file(fname):
-        with open(f"test/fixtures/{fname}", "r") as file:
+        with (Path(__file__).parent / 'test' / 'fixtures' / fname).open() as file:
             return file.read()
     return _fixture_from_file
 
