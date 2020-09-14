@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from tempfile import mkdtemp
 from requests.exceptions import MissingSchema, ConnectionError
 
 # Disable insecure warnings
@@ -638,23 +637,21 @@ def import_ioc_without_approval(file_id, classification, confidence=None, allow_
         Imports indicators data to ThreatStream.
         file_id of uploaded file to war room or URL. Other fields are
     """
-    ioc_to_import = {}
     if allow_unresolved:
         allow_unresolved = allow_unresolved == 'yes'
     if tags:
         tags = argToList(tags)
     if trustedcircles:
         trustedcircles = argToList(trustedcircles)
-    if file_id:
-        try:
-            # entry id of uploaded file to war room
-            file_info = demisto.getFilePath(file_id)
-            with open(file_info['path'], 'rb') as uploaded_file:
-                ioc_to_import = json.load(uploaded_file)
-        except json.JSONDecodeError:
-            raise DemistoException(F"Entry {file_id} does not contain a valid json file.")
-        except Exception:
-            raise DemistoException(F"Entry {file_id} does not contain a file.")
+    try:
+        # entry id of uploaded file to war room
+        file_info = demisto.getFilePath(file_id)
+        with open(file_info['path'], 'rb') as uploaded_file:
+            ioc_to_import = json.load(uploaded_file)
+    except json.JSONDecodeError:
+        raise DemistoException(F"Entry {file_id} does not contain a valid json file.")
+    except Exception:
+        raise DemistoException(F"Entry {file_id} does not contain a file.")
     meta = ioc_to_import.get('meta', {})
     meta.update(assign_params(
         classification=classification,

@@ -15,7 +15,7 @@ def http_request_with_approval_mock(req_type, suffix, params, data=None, files=N
     }
 
 
-def http_request_without_approval_mock(req_type, suffix, params, data=None, files=None):
+def http_request_without_approval_mock(req_type, suffix, params, data=None, files=None, json=None, text_response=None):
     return {
         'success': True,
         'import_session_id': 1,
@@ -67,6 +67,9 @@ expected_output_500 = {
 mock_objects = {"objects": [{"srcip": "8.8.8.8", "itype": "mal_ip", "confidence": 50},
                             {"srcip": "1.1.1.1", "itype": "apt_ip"}]}
 
+expected_import_json = {'objects': [{'srcip': '8.8.8.8', 'itype': 'mal_ip', 'confidence': 50},
+                                    {'srcip': '1.1.1.1', 'itype': 'apt_ip'}]}
+
 
 def test_ioc_approval_500_error(mocker):
     mocker.patch('Anomali_ThreatStream_v2.http_request', side_effect=http_request_with_approval_mock)
@@ -99,8 +102,8 @@ def test_import_ioc_without_approval(mocker):
     }
     with open(file_obj['path'], 'w') as f:
         json.dump(mock_objects, f)
-    mocker.patch('Anomali_ThreatStream_v2.http_request', side_effect=http_request_without_approval_mock)
-    mocker.patch.object(demisto, 'args', return_value={'file_id': 1, 'allow_unresolved': 'yes', 'confidence': 30})
+    http_mock = mocker.patch('Anomali_ThreatStream_v2.http_request', side_effect=http_request_without_approval_mock)
+    mocker.patch.object(demisto, 'args', return_value={'file_id': 1, 'classification': 'private', 'allow_unresolved': 'yes', 'confidence': 30})
     mocker.patch.object(demisto, 'command', return_value='threatstream-import-indicator-without-approval')
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'getFilePath', return_value=file_obj)
@@ -108,5 +111,5 @@ def test_import_ioc_without_approval(mocker):
     main()
     results = demisto.results.call_args[0]
 
-    assert results[0]['Contents']['files']
-    assert 1 == results[0]['Contents']['import_session_id']
+    assert results[0]['Contents']
+    assert expected_import_json == http_mock.call_args[1]['json']
