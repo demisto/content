@@ -89,6 +89,11 @@ def timeout_handler(signum, frame):  # Custom signal handler
 # Change the behavior of SIGALRM
 signal.signal(signal.SIGALRM, timeout_handler)
 
+
+class ShortTextException(Exception):
+    pass
+
+
 '''
 Define heuristics for finding label field
 '''
@@ -536,7 +541,7 @@ def extract_features_from_incident(row):
     email_body, email_subject = email_body.strip().lower(), email_subject.strip().lower()
     text = email_subject + ' ' + email_body
     if len(text) < MIN_TEXT_LENGTH:
-        raise ValueError('Text length is shorter than allowed minimum of: {}'.format(MIN_TEXT_LENGTH))
+        raise ShortTextException('Text length is shorter than allowed minimum of: {}'.format(MIN_TEXT_LENGTH))
     email_body_word_tokenized = word_tokenize(email_body)
     email_subject_word_tokenized = word_tokenize(email_subject)
     text_ngrams = transform_text_to_ngrams_counter(email_body_word_tokenized, email_subject_word_tokenized)
@@ -592,6 +597,8 @@ def extract_features_from_all_incidents(incidents_df):
             durations.append(end - start)
         except TimeoutException:
             timeout_indices.add(index)
+        except ShortTextException:
+            exceptions_log.append(traceback.format_exc())
         except Exception:
             exception_indices.add(index)
             exceptions_log.append(traceback.format_exc())
