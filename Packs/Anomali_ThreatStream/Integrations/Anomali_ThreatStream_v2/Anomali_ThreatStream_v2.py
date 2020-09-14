@@ -655,7 +655,7 @@ def import_ioc_without_approval(import_type, import_value, confidence="50", clas
         'md5_mapping': md5_mapping,
         'threat_type': threat_type,
         'severity': severity,
-        'tags': tags
+        'tags': tags,
     }
 
     if import_type == 'file-id':
@@ -668,11 +668,10 @@ def import_ioc_without_approval(import_type, import_value, confidence="50", clas
         uploaded_file = open(file_info['path'], 'rb')
         files = {'file': (file_info['name'], uploaded_file)}
         params = build_params()
+    elif import_value == 'url':
+        params = build_params(url=import_value)
     else:
-        if import_value == 'url':
-            params = build_params(url=import_value)
-        else:
-            params = build_params(datatext=import_value)
+        params = build_params(datatext=import_value)
 
     # in case import_type is not file-id, http_requests will receive None as files
     res = http_request("PATCH", "v1/intelligence", params=params, data=data, files=files)
