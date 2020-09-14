@@ -42,7 +42,7 @@ configuration:
   name: ip_enrich
   required: false
   type: 8
-  additionalinfo: "Offensive IP values are returned from the API as ID values. Enable this feature to convert them to IP values."
+  additionalinfo: "IP values related to the offense are returned from the API as ID values. Enable this parameter the IDs to IP values."
 - defaultvalue: 'true'
   display: Incident Asset Enrichment
   hidden: false
@@ -55,7 +55,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: "QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, username"
-  display: Event columns to return from the events query
+  display: Event fields to return from the events query.
   name: events_columns
   required: false
   additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_aql_intro.html"
@@ -81,7 +81,8 @@ configuration:
   name: adv_params
   required: false
   type: 12
-description: Fetch offenses, and related events and assets as incidents, and search QRadar.
+description: 'Fetch offenses from QRadar using Cortex XSOAR. You can fetch the offenses with their related events and assets by creating a comma-separated list of event fields. 
+            **Note**: To enable bringing the related assets, you must enable the Long Running Instance.'
 display: IBM QRadar v2
 name: QRadar_v2
 script:
