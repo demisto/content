@@ -1130,13 +1130,11 @@ def enrich_offense_res_with_source_and_destination_address(
                     offense, src_adrs, dst_adrs, not ip_enrich
                 )
                 if asset_enrich:
-                    for b in batch(list(asset_ip_ids), batch_size=100):
+                    for b in batch(list(asset_ip_ids), batch_size=BATCH_SIZE):
                         query = ""
                         for val in b:
-                            query = (
-                                (f"{query} or " if query else "")
-                                + f'interfaces contains ip_addresses contains value="{val}"'
-                            )
+                            query = (f"{query} or " if query else "") + 'interfaces contains ip_addresses ' \
+                                                                        f'contains value="{val}"'
                         if query:
                             assets = client.get_assets(_filter=query)
                             if assets:
@@ -1349,7 +1347,7 @@ def get_assets_command(
     client: QRadarClient, range=None, filter=None, fields=None, headers=None
 ):
     raw_assets = client.get_assets(range, filter, fields)
-    assets_result, human_readable_res = create_assets_result(deepcopy(raw_assets))
+    assets_result, human_readable_res = create_assets_result(client, deepcopy(raw_assets))
     return get_entry_for_assets(
         "QRadar Assets", assets_result, raw_assets, human_readable_res, headers,
     )
@@ -1359,7 +1357,7 @@ def get_asset_by_id_command(client: QRadarClient, asset_id=None, headers=None):
     _filter = f"id={asset_id}"
     raw_asset = client.get_assets(_filter=_filter)
     asset_result, human_readable_res = create_assets_result(
-        deepcopy(raw_asset), full_values=True
+        client, deepcopy(raw_asset), full_values=True
     )
     return get_entry_for_assets(
         "QRadar Asset", asset_result, raw_asset, human_readable_res, headers,
@@ -1393,7 +1391,7 @@ def get_entry_for_assets(title, obj, contents, human_readable_obj, headers=None)
     }
 
 
-def create_assets_result(assets, full_values=False):
+def create_assets_result(client, assets, full_values=False):
     trans_assets = {}
     human_readable_trans_assets = {}
     endpoint_dict = create_empty_endpoint_dict(full_values)
@@ -1404,7 +1402,7 @@ def create_assets_result(assets, full_values=False):
             asset_key += '(val.ID === "{0}")'.format(asset["id"])
             human_readable_key += "(ID:{0})".format(asset["id"])
         populated_asset = create_single_asset_result_and_enrich_endpoint_dict(
-            asset, endpoint_dict, full_values
+            client, asset, endpoint_dict, full_values
         )
         trans_assets[asset_key] = populated_asset
         human_readable_trans_assets[human_readable_key] = transform_single_asset_to_hr(
@@ -1430,7 +1428,7 @@ def transform_single_asset_to_hr(asset):
 
 
 def create_single_asset_result_and_enrich_endpoint_dict(
-    asset, endpoint_dict, full_values
+    client, asset, endpoint_dict, full_values
 ):
     asset_dict = {"ID": asset.get("id")}
     for interface in asset.get("interfaces", []):
@@ -1440,7 +1438,7 @@ def create_single_asset_result_and_enrich_endpoint_dict(
             endpoint_dict.get("IPAddress").append(ip_address.get("value"))
     if full_values:
         if "domain_id" in asset:
-            domain_name = get_domain_name(asset.get("domain_id"))
+            domain_name = get_domain_name(client, asset.get("domain_id"))
             if domain_name:
                 endpoint_dict.get("Domain").append(domain_name)
     # Adding values found in properties of the asset

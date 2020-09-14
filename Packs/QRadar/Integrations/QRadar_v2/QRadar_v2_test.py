@@ -10,6 +10,7 @@ from QRadar_v2 import (
     get_search_command,
     get_search_results_command,
     get_assets_command,
+    get_asset_by_id_command,
     get_closing_reasons_command,
     create_note_command,
     get_note_command,
@@ -31,6 +32,7 @@ command_tests = [
     ("qradar-get-search", get_search_command, {"search_id": "6212b614-074e-41c1-8fcf-1492834576b8"},),
     ("qradar-get-search-results", get_search_results_command, {"search_id": "6212b614-074e-41c1-8fcf-1492834576b8"},),
     ("qradar-get-assets", get_assets_command, {"range": "0-1"}),
+    ("qradar-get-asset-by-id", get_asset_by_id_command, {"asset_id": "1928"}),
     ("qradar-get-closing-reasons", get_closing_reasons_command, {}),
     (
         "qradar-create-note",
@@ -66,6 +68,7 @@ def test_commands(command, command_func, args, mocker):
     """
     client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
     mocker.patch.object(client, "send_request", return_value=RAW_RESPONSES[command])
+    mocker.patch.object(demisto, "debug")
     res = command_func(client, **args)
     assert COMMAND_OUTPUTS[command] == res.get("EntryContext")
 
