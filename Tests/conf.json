@@ -1515,6 +1515,11 @@
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
             "instance_names": "microsoft_defender_atp_prod"
         },
