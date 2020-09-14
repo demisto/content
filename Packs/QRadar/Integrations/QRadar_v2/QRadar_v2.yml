@@ -412,7 +412,7 @@ script:
     - default: false
       description: 'The id of a closing reason. You must provide a valid closing_reason_name
         when you close an offense. The default closing_reasons are: (1) False-Positive,
-        Tuned (2) Non-Issues (3) Policy Violation'.
+        Tuned (2) Non-Issues (3) Policy Violation.'
       isArray: false
       name: closing_reason_id
       required: false
@@ -420,7 +420,7 @@ script:
     - default: false
       description: 'The name of a closing reason. You must provide a valid closing_reason_name
         when you close an offense. The default closing_reasons are: (1) False-Positive,
-        Tuned (2) Non-Issues (3) Policy Violation'.
+        Tuned (2) Non-Issues (3) Policy Violation.'
       isArray: false
       name: closing_reason_name
       required: false
@@ -700,7 +700,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Range of results to return. e.g.: 0-20'.
+      description: 'Range of results to return. e.g.: 0-20.'
       isArray: false
       name: range
       required: false
@@ -902,7 +902,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The time to live interval, for example: "1 month" or "5 minutes"'.
+      description: 'The time to live interval, for example: "1 month" or "5 minutes".'
       isArray: false
       name: time_to_live
       required: false
@@ -996,7 +996,7 @@ script:
       description: Number of elements.
       type: number
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'.
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
       type: string
   - arguments:
     - default: false
