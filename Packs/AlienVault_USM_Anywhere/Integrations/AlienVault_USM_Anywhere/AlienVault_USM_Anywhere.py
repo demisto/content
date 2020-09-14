@@ -178,7 +178,8 @@ def parse_alarms(alarms_data):
             'Destination': {
                 'IPAddress': alarm.get('alarm_destination_names') or alarm.get('destination_name'),
             },
-            'Event': events
+            'Event': events,
+            'Status': alarm.get('status')
         })
 
     return alarms

@@ -193,6 +193,9 @@ script:
     - contextPath: AlienVault.Alarm.RuleAttackTechnique
       description: The rule attack technique.
       type: String
+    - contextPath: AlienVault.Alarm.Status
+      description: The alarm status.
+      type: String
   - arguments:
     - default: true
       description: The alarm ID. Can be obtained by running the `alienvault-search-alarms`
@@ -259,6 +262,9 @@ script:
       type: Unknown
     - contextPath: AlienVault.Alarm.RuleAttackTechnique
       description: The rule attack technique.
+      type: String
+    - contextPath: AlienVault.Alarm.Status
+      description: The alarm status.
       type: String
   - arguments:
     - default: false
