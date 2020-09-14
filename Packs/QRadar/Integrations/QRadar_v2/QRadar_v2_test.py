@@ -32,7 +32,6 @@ command_tests = [
     ("qradar-get-search", get_search_command, {"search_id": "6212b614-074e-41c1-8fcf-1492834576b8"},),
     ("qradar-get-search-results", get_search_results_command, {"search_id": "6212b614-074e-41c1-8fcf-1492834576b8"},),
     ("qradar-get-assets", get_assets_command, {"range": "0-1"}),
-    ("qradar-get-asset-by-id", get_asset_by_id_command, {"asset_id": "1928"}),
     ("qradar-get-closing-reasons", get_closing_reasons_command, {}),
     (
         "qradar-create-note",
