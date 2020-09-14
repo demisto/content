@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FeedOpenCTI
+  id: OpenCTI Feed
   version: -1
 configuration:
 - display: API Key
@@ -80,7 +80,7 @@ configuration:
   - file-sha1
   - file-sha256
   - hostname
-  - ' ipv4-addr'
+  - ipv4-addr
   - ipv6-addr
   - registry-key-value
   - url
@@ -125,9 +125,27 @@ configuration:
   name: max_indicator_to_fetch
   required: false
   type: 0
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+- display: ''
+  name: feedExpirationPolicy
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ''
+  name: feedExpirationInterval
+  type: 1
+  required: false
 description: Ingest indicator feeds from OpenCTI.
 display: OpenCTI Feed
-name: OpenCTI
+name: OpenCTI Feed
 script:
   commands:
   - arguments:
@@ -154,9 +172,7 @@ script:
       - file-sha1
       - file-sha256
       - hostname
-      - |2-
-
-        ipv4-addr
+      - ipv4-addr
       - ipv6-addr
       - registry-key-value
       - url

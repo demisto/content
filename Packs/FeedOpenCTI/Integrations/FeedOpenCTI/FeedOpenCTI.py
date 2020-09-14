@@ -1,11 +1,8 @@
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
-import dateparser
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
-from dateutil.parser import parse
 from pycti import OpenCTIApiClient
 # Disable insecure warnings
 urllib3.disable_warnings()
