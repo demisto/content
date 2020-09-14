@@ -291,7 +291,7 @@ inputs:
       root: IP
       accessor: Address
   required: true
-  description: The IP Address to enhance with hostnames from Farsight DNSDB.
+  description: The IP Address to enhance with domain names from Farsight DNSDB.
   playbookInputQuery:
 outputs:
 - contextPath: resolvedHostnames
