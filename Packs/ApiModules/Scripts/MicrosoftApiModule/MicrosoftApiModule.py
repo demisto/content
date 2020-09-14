@@ -325,8 +325,7 @@ class MicrosoftClient(BaseClient):
 
         access_token = response_json.get('access_token', '')
         expires_in = int(response_json.get('expires_in', 3595))
-        if self.multi_resource:
-            refresh_token = response_json.get('refresh_token', '')
+        refresh_token = response_json.get('refresh_token', '')
 
         return access_token, expires_in, refresh_token
 
