@@ -232,6 +232,112 @@ script:
     name: fortimanager-address-create
   - arguments:
     - default: false
+      description: The ADOM on which to update the address. Leave empty to use the
+        instance ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The address name.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of address.
+      isArray: false
+      name: type
+      predefined:
+      - ipmask
+      - iprange
+      - fqdn
+      - wildcard
+      - geography
+      - wildcard-fqdn
+      - dynamic
+      required: true
+      secret: false
+    - default: false
+      description: Policy group name.
+      isArray: false
+      name: policy_group
+      required: false
+      secret: false
+    - default: false
+      description: A comment to add to the address
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: Network interface associated with address.
+      isArray: false
+      name: associated_interface
+      required: false
+      secret: false
+    - default: false
+      description: Fully Qualified Domain Name address.
+      isArray: false
+      name: fqdn
+      required: false
+      secret: false
+    - default: false
+      description: First IP address (inclusive) in the range for the address.
+      isArray: false
+      name: start_ip
+      required: false
+      secret: false
+    - default: false
+      description: Final IP address (inclusive) in the range for the address.
+      isArray: false
+      name: end_ip
+      required: false
+      secret: false
+    - default: false
+      description: IP address and subnet mask of address.
+      isArray: false
+      name: subnet
+      required: false
+      secret: false
+    - default: false
+      description: The subnet name
+      isArray: false
+      name: subnet_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The address SDN
+      isArray: false
+      name: sdn
+      predefined:
+      - aci
+      - aws
+      - nsx
+      - nuage
+      - azure
+      required: false
+      secret: false
+    - default: false
+      description: IP address and wildcard netmask.
+      isArray: false
+      name: wildcard
+      required: false
+      secret: false
+    - default: false
+      description: Fully Qualified Domain Name with wildcard characters.
+      isArray: false
+      name: wildcard_fqdn
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new IPv4 address to the
+    execution: false
+    name: fortimanager-address-update
+  - arguments:
+    - default: false
       description: The ADOM on which to create the address group. Leave empty to use
         the instance ADOM.
       isArray: false
@@ -261,6 +367,37 @@ script:
     description: Create a new Address Group
     execution: false
     name: fortimanager-address-group-create
+  - arguments:
+    - default: false
+      description: The ADOM on which to update the address group. Leave empty to use
+        the instance ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: Address group name.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: A CSV list of the Address or Address Groups objects contained within
+        the group.
+      isArray: false
+      name: member
+      required: false
+      secret: false
+    - default: false
+      description: A comment about the address group
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new Address Group
+    execution: false
+    name: fortimanager-address-group-update
   - arguments:
     - default: false
       description: The ADOM on which to create the service group. Leave empty to use
@@ -301,6 +438,46 @@ script:
     description: Create a new Service Group
     execution: false
     name: fortimanager-service-group-create
+  - arguments:
+    - default: false
+      description: The ADOM on which to update the service group. Leave empty to use
+        the instance ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: A comment.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: The created service group name.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enable/disable web proxy service group.
+      isArray: false
+      name: proxy
+      predefined:
+      - enable
+      - disable
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of Service objects to be contained within the group.
+      isArray: false
+      name: member
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new Service Group
+    execution: false
+    name: fortimanager-service-group-update
   - arguments:
     - default: false
       description: The ADOM on which to create the service group. Leave empty to use
@@ -405,6 +582,108 @@ script:
     name: fortimanager-firewall-policy-package-create
   - arguments:
     - default: false
+      description: The ADOM on which to update the service group. Leave empty to use
+        the instance ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The name of the new Policy Package.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type og package
+      isArray: false
+      name: type
+      predefined:
+      - pkg
+      - folder
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: disable
+      description: Wheter to use central NAT
+      isArray: false
+      name: central_nat
+      predefined:
+      - enable
+      - disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: disable
+      description: Whether to enable consolidate firewall mode
+      isArray: false
+      name: consolidated_firewall_mode
+      predefined:
+      - enable
+      - disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: disable
+      description: Wheter to enable firewall policy implicit log
+      isArray: false
+      name: fwpolicy_implicit_log
+      predefined:
+      - enable
+      - disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: disable
+      description: Wheter to enable firewall policy 6 implicit log
+      isArray: false
+      name: fwpolicy6_implicit_log
+      predefined:
+      - enable
+      - disable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: proxy
+      description: Wheter to enable inspection mode.
+      isArray: false
+      name: inspection_mode
+      predefined:
+      - proxy
+      - flow
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: profile-based
+      description: Wheter to enable NGFW mode
+      isArray: false
+      name: ngfw_mode
+      predefined:
+      - profile-based
+      - policy-based
+      required: false
+      secret: false
+    - default: false
+      description: Wheter to enable SSL SSH profile
+      isArray: false
+      name: ssl_ssh_profile
+      predefined:
+      - ''
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new firewall policy package.
+    execution: false
+    name: fortimanager-firewall-policy-package-update
+  - arguments:
+    - default: false
       description: The ADOM on which to create the service group. Leave empty to use
         the instance ADOM.
       isArray: false
@@ -501,10 +780,124 @@ script:
       name: additional_params
       required: false
       secret: false
+    - default: false
+      description: The name of the policy to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
     deprecated: false
     description: Create a firewall policy.
     execution: false
     name: fortimanager-firewall-policy-create
+  - arguments:
+    - default: false
+      description: The ADOM on which to update the service group. Leave empty to use
+        the instance ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The package from which to create the policy.
+      isArray: false
+      name: package
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The policy action
+      isArray: false
+      name: action
+      predefined:
+      - deny
+      - accept
+      - ipsec
+      - ssl-vpn
+      required: false
+      secret: false
+    - default: false
+      description: A comment
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    - default: false
+      description: 'Destination address name. Note: dstaddr6 or dstaddr must be set.'
+      isArray: false
+      name: dstaddr
+      required: false
+      secret: false
+    - default: false
+      description: 'IPv6 destination address (web proxy only). Note: dstaddr6 or dstaddr
+        must be set.'
+      isArray: false
+      name: dstaddr6
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: disable
+      description: Enable/disable negated destination address match.
+      isArray: false
+      name: dstaddr_negate
+      predefined:
+      - disable
+      - enable
+      required: false
+      secret: false
+    - default: false
+      description: Destination interface name.
+      isArray: false
+      name: dstintf
+      required: false
+      secret: false
+    - default: false
+      description: 'Source address name. Note: srcaddr or srcaddr6 must be set.'
+      isArray: false
+      name: srcaddr
+      required: false
+      secret: false
+    - default: false
+      description: 'IPv6 source address (web proxy only). Note: srcaddr or srcaddr6
+        must be set.'
+      isArray: false
+      name: srcaddr6
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: disable
+      description: Enable/disable negated source address match.
+      isArray: false
+      name: srcaddr_negate
+      predefined:
+      - disable
+      - enable
+      required: false
+      secret: false
+    - default: false
+      description: Source interface name.
+      isArray: false
+      name: srcintf
+      required: false
+      secret: false
+    - default: false
+      description: 'A CSV list of additional params and their values. exmaple: Field1=Value1,Field2=Value2'
+      isArray: false
+      name: additional_params
+      required: false
+      secret: false
+    - default: false
+      description: The name of the policy to update
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a firewall policy.
+    execution: false
+    name: fortimanager-firewall-policy-update
   - arguments:
     - default: false
       description: The ADOM from which to delete the address. Leave empty to use the
@@ -559,6 +952,480 @@ script:
     description: Delete a service group
     execution: false
     name: fortimanager-service-group-delete
+  - arguments:
+    - default: false
+      description: The ADOM from which to delete the policy package. Leave empty to
+        use the default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The policy package path to delete.
+      isArray: false
+      name: pkg_path
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a firewall policy package.
+    execution: false
+    name: fortimanager-firewall-policy-package-delete
+  - arguments:
+    - default: false
+      description: The ADOM from which to delete the policy. Leave empty to use the
+        default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The policy package from which we want to delete the policy.
+      isArray: false
+      name: package
+      required: true
+      secret: false
+    - default: false
+      description: The policy we want to delete
+      isArray: false
+      name: policy
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a firewall policy.
+    execution: false
+    name: fortimanager-firewall-policy-delete
+  - arguments:
+    - default: false
+      description: The ADOM from which to fetch the custom servicse. Leave empty to
+        use the instance ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    deprecated: false
+    description: List the custom services.
+    execution: false
+    name: fortimanager-custom-service-list
+  - arguments:
+    - default: false
+      description: The ADOM from which to fetch the custom servicse. Leave empty to
+        use the instance ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The name of the new custom service
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Application category ID.
+      isArray: false
+      name: app_category
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: disable
+      description: Application service type.
+      isArray: false
+      name: app_service_type
+      predefined:
+      - app-id
+      - disable
+      - app-category
+      required: false
+      secret: false
+    - default: false
+      description: The application ID.
+      isArray: false
+      name: application
+      required: false
+      secret: false
+    - default: false
+      description: The service category
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Configure the type of ICMP error message verification.
+      isArray: false
+      name: check_reset_range
+      predefined:
+      - disable
+      - default
+      - strict
+      required: false
+      secret: false
+    - default: false
+      description: A comment.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: Fully qualified domain name.
+      isArray: false
+      name: fqdn
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Helper name.
+      isArray: false
+      name: helper
+      predefined:
+      - disable
+      - auto
+      - ftp
+      - tftp
+      - ras
+      - h323
+      - tns
+      - mms
+      - sip
+      - pptp
+      - rtsp
+      - dns-udp
+      - dns-tcp
+      - pmap
+      - rsh
+      - dcerpc
+      - mgcp
+      - gtp-c
+      - gtp-u
+      - gtp-b
+      required: false
+      secret: false
+    - default: false
+      description: ICMP code.
+      isArray: false
+      name: icmpcode
+      required: false
+      secret: false
+    - default: false
+      description: ICMP type.
+      isArray: false
+      name: icmptype
+      required: false
+      secret: false
+    - default: false
+      description: Start and end of the IP range associated with service.
+      isArray: false
+      name: iprange
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Protocol type based on IANA numbers.
+      isArray: false
+      name: protocol
+      predefined:
+      - ICMP
+      - IP
+      - TCP/UDP/SCTP
+      - ICMP6
+      - HTTP
+      - FTP
+      - CONNECT
+      - SOCKS
+      - ALL
+      - SOCKS-TCP
+      - SOCKS-UDP
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enable/disable web proxy service.
+      isArray: false
+      name: proxy
+      predefined:
+      - enable
+      - disable
+      required: false
+      secret: false
+    - default: false
+      description: Multiple SCTP port ranges.
+      isArray: false
+      name: 'sctp_portrange '
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Session TTL in the range of 300 - 604800.
+      isArray: false
+      name: session_ttl
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Wait time to close a TCP session waiting for an unanswered FIN
+        packet (1 - 86400 sec).
+      isArray: false
+      name: tcp_halfclose_timer
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Wait time to close a TCP session waiting for an unanswered open
+        session packet (1 - 86400 sec).
+      isArray: false
+      name: tcp_halfopen_timer
+      required: false
+      secret: false
+    - default: false
+      description: Multiple TCP port ranges.
+      isArray: false
+      name: tcp_portrange
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec).
+      isArray: false
+      name: tcp_timewait_timer
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: UDP half close timeout (0 - 86400 sec).
+      isArray: false
+      name: "udp_idle_timer\t"
+      required: false
+      secret: false
+    - default: false
+      description: Multiple UDP port ranges.
+      isArray: false
+      name: "udp_portrange\t"
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new custom service.
+    execution: false
+    name: fortimanager-custom-service-create
+  - arguments:
+    - default: false
+      description: The ADOM in which to update the custom servicse. Leave empty to
+        use the instance ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The name of the new custom service
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Application category ID.
+      isArray: false
+      name: app_category
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: disable
+      description: Application service type.
+      isArray: false
+      name: app_service_type
+      predefined:
+      - app-id
+      - disable
+      - app-category
+      required: false
+      secret: false
+    - default: false
+      description: The application ID.
+      isArray: false
+      name: application
+      required: false
+      secret: false
+    - default: false
+      description: The service category
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Configure the type of ICMP error message verification.
+      isArray: false
+      name: check_reset_range
+      predefined:
+      - disable
+      - default
+      - strict
+      required: false
+      secret: false
+    - default: false
+      description: A comment.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: Fully qualified domain name.
+      isArray: false
+      name: fqdn
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Helper name.
+      isArray: false
+      name: helper
+      predefined:
+      - disable
+      - auto
+      - ftp
+      - tftp
+      - ras
+      - h323
+      - tns
+      - mms
+      - sip
+      - pptp
+      - rtsp
+      - dns-udp
+      - dns-tcp
+      - pmap
+      - rsh
+      - dcerpc
+      - mgcp
+      - gtp-c
+      - gtp-u
+      - gtp-b
+      required: false
+      secret: false
+    - default: false
+      description: ICMP code.
+      isArray: false
+      name: icmpcode
+      required: false
+      secret: false
+    - default: false
+      description: ICMP type.
+      isArray: false
+      name: icmptype
+      required: false
+      secret: false
+    - default: false
+      description: Start and end of the IP range associated with service.
+      isArray: false
+      name: iprange
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Protocol type based on IANA numbers.
+      isArray: false
+      name: protocol
+      predefined:
+      - ICMP
+      - IP
+      - TCP/UDP/SCTP
+      - ICMP6
+      - HTTP
+      - FTP
+      - CONNECT
+      - SOCKS
+      - ALL
+      - SOCKS-TCP
+      - SOCKS-UDP
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enable/disable web proxy service.
+      isArray: false
+      name: proxy
+      predefined:
+      - enable
+      - disable
+      required: false
+      secret: false
+    - default: false
+      description: Multiple SCTP port ranges.
+      isArray: false
+      name: 'sctp_portrange '
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Session TTL in the range of 300 - 604800.
+      isArray: false
+      name: session_ttl
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Wait time to close a TCP session waiting for an unanswered FIN
+        packet (1 - 86400 sec).
+      isArray: false
+      name: tcp_halfclose_timer
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Wait time to close a TCP session waiting for an unanswered open
+        session packet (1 - 86400 sec).
+      isArray: false
+      name: tcp_halfopen_timer
+      required: false
+      secret: false
+    - default: false
+      description: Multiple TCP port ranges.
+      isArray: false
+      name: tcp_portrange
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Set the length of the TCP TIME-WAIT state in seconds (1 - 300 sec).
+      isArray: false
+      name: tcp_timewait_timer
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: UDP half close timeout (0 - 86400 sec).
+      isArray: false
+      name: "udp_idle_timer\t"
+      required: false
+      secret: false
+    - default: false
+      description: Multiple UDP port ranges.
+      isArray: false
+      name: "udp_portrange\t"
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a custom service.
+    execution: false
+    name: fortimanager-custom-service-update
+  - arguments:
+    - default: false
+      description: The ADOM from which to delete the custom service. Leave empty to
+        use the default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The custome service to delete.
+      isArray: false
+      name: custom
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a custom service.
+    execution: false
+    name: fortimanager-custom-service-delete
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
