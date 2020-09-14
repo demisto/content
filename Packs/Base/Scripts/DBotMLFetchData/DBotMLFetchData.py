@@ -640,9 +640,8 @@ def extract_data_from_incidents(incidents, input_label_field=None):
     load_external_resources()
     X, preprocessed_indices, exceptions_log, exception_indices, timeout_indices, durations\
         = extract_features_from_all_incidents(incidents_df)
-    indices_to_drop = exception_indices.union(timeout_indices)
-    for label_dict in y:
-        label_dict['values'] = [l for i, l in enumerate(label_dict['values']) if i not in indices_to_drop]
+    for i, label_dict in enumerate(y):
+        y[i]['values'] = [label_dict['values'][incident_index] for incident_index in preprocessed_indices]
     return {'X': X,
             'n_fetched_incidents': len(preprocessed_indices),
             'y': y,
