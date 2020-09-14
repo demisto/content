@@ -1,6 +1,5 @@
 import pytest
 import os
-import json
 import demistomock as demisto
 from CommonServerPython import outputPaths, entryTypes
 
@@ -16,7 +15,8 @@ def get_access_token(requests_mock, mocker):
         return_value={
             'url': SERVER_URL,
             'proxy': True,
-            'incidents_per_fetch': 2
+            'incidents_per_fetch': 2,
+            'fetch_incidents_or_detections': ['Detections', 'Incidents']
         }
     )
     requests_mock.post(
@@ -28,55 +28,51 @@ def get_access_token(requests_mock, mocker):
     )
 
 
-response_incident = {
-   "incident_id": "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd",
-   "cid": "24ab288b109b411aba970e570d1ddf58",
-   "host_ids": [
-    "afb5d1512a00480f53e9ad91dc3e4b55"
-   ],
-   "hosts": [
-    {
-     "device_id": "afb5d1512a00480f53e9ad91dc3e4b55",
-     "cid": "24ab288b109b411aba970e570d1ddf58",
-     "agent_load_flags": "0",
-     "agent_local_time": "2020-05-06T23:36:34.594Z",
-     "agent_version": "5.28.10902.0",
-     "bios_manufacturer": "Apple Inc.",
-     "bios_version": "1037.100.359.0.0 (iBridge: 17.16.14263.0.0,0)",
-     "config_id_base": "65994753",
-     "config_id_build": "10902",
-     "config_id_platform": "4",
-     "external_ip": "1.1.1.1",
-     "hostname": "SFO-M-Y81WHJ",
-     "first_seen": "2019-05-10T17:20:39Z",
-     "last_seen": "2020-05-17T16:59:42Z",
-     "local_ip": "1.1.1.1",
-     "mac_address": "86-89-ad-65-d0-30",
-     "major_version": "18",
-     "minor_version": "7",
-     "os_version": "Mojave (10.14)",
-     "platform_id": "1",
-     "platform_name": "Mac",
-     "product_type_desc": "Workstation",
-     "status": "normal",
-     "system_manufacturer": "Apple Inc.",
-     "system_product_name": "MacBookPro15,1",
-     "modified_timestamp": "2020-05-17T16:59:56Z"
-    }
-   ],
-   "created": "2020-05-17T17:30:38Z",
-   "start": "2020-05-17T17:30:38Z",
-   "end": "2020-05-17T17:30:38Z",
-   "state": "closed",
-   "status": 20,
-   "name": "Incident on SFO-M-Y81WHJ at 2020-05-17T17:30:38Z",
-   "description": "Objectives in this incident: Keep Access. Techniques: External Remote Services. "
-                  "Involved hosts and end users: SFO-M-Y81WHJ.",
-   "tags": [
-    "Objective/Keep Access"
-   ],
-   "fine_score": 38
-}
+response_incident = {"incident_id": "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd",
+                     "cid": "24ab288b109b411aba970e570d1ddf58",
+                     "host_ids": [
+                         "afb5d1512a00480f53e9ad91dc3e4b55"
+                     ],
+                     "hosts": [
+                         {"device_id": "afb5d1512a00480f53e9ad91dc3e4b55",
+                          "cid": "24ab288b109b411aba970e570d1ddf58",
+                          "agent_load_flags": "0",
+                          "agent_local_time": "2020-05-06T23:36:34.594Z",
+                          "agent_version": "5.28.10902.0",
+                          "bios_manufacturer": "Apple Inc.",
+                          "bios_version": "1037.100.359.0.0 (iBridge: 17.16.14263.0.0,0)",
+                          "config_id_base": "65994753",
+                          "config_id_build": "10902",
+                          "config_id_platform": "4",
+                          "external_ip": "1.1.1.1",
+                          "hostname": "SFO-M-Y81WHJ",
+                          "first_seen": "2019-05-10T17:20:39Z",
+                          "last_seen": "2020-05-17T16:59:42Z",
+                          "local_ip": "1.1.1.1",
+                          "mac_address": "86-89-ad-65-d0-30",
+                          "major_version": "18",
+                          "minor_version": "7",
+                          "os_version": "Mojave (10.14)",
+                          "platform_id": "1",
+                          "platform_name": "Mac",
+                          "product_type_desc": "Workstation",
+                          "status": "normal",
+                          "system_manufacturer": "Apple Inc.",
+                          "system_product_name": "MacBookPro15,1",
+                          "modified_timestamp": "2020-05-17T16:59:56Z"}
+                     ],
+                     "created": "2020-05-17T17:30:38Z",
+                     "start": "2020-05-17T17:30:38Z",
+                     "end": "2020-05-17T17:30:38Z",
+                     "state": "closed",
+                     "status": 20,
+                     "name": "Incident on SFO-M-Y81WHJ at 2020-05-17T17:30:38Z",
+                     "description": "Objectives in this incident: Keep Access. Techniques: External Remote Services. "
+                                    "Involved hosts and end users: SFO-M-Y81WHJ.",
+                     "tags": [
+                         "Objective/Keep Access"
+                     ],
+                     "fine_score": 38}
 
 
 incident_context = {'name': 'Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd',
@@ -2186,6 +2182,8 @@ class TestFetch:
                                                {'detection_id': 'ldt:2',
                                                 'created_timestamp': '2020-09-04T09:20:11Z',
                                                 'max_severity_displayname': 'Low'}]})
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1', json={})
 
     def test_old_fetch_to_new_fetch(self, set_up_mocks, mocker):
         """
@@ -2199,11 +2197,11 @@ class TestFetch:
 
         """
         from CrowdStrikeFalcon import fetch_incidents
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_time': '2020-09-04T09:16:10Z',
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
                                                                  'last_detection_id': 1234})
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_time': '2020-09-04T09:16:10Z',
-                                                          'offset': 2}
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:10Z',
+                                                          'detection_offset': 2}
 
     def test_new_fetch_with_offset(self, set_up_mocks, mocker):
         """
@@ -2216,12 +2214,12 @@ class TestFetch:
             The `first_behavior_time` doesn't change and an `offset` of 2 is added.
         """
 
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_time': '2020-09-04T09:16:10Z'})
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z'})
         from CrowdStrikeFalcon import fetch_incidents
 
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_time': '2020-09-04T09:16:10Z',
-                                                          'offset': 2}
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:10Z',
+                                                          'detection_offset': 2}
 
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
         """
@@ -2233,8 +2231,8 @@ class TestFetch:
         Then:
             The `first_behavior_time` changes and no `offset` is added.
         """
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_time': '2020-09-04T09:16:10Z',
-                                                                 'offset': 2})
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time':
+                                                                 '2020-09-04T09:16:10Z', 'detection_offset': 2})
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
@@ -2242,4 +2240,51 @@ class TestFetch:
                                                 'max_severity_displayname': 'Low'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_time': '2020-09-04T09:16:11Z'}
+        assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:11Z'}
+
+
+class TestIncidentFetch:
+    """ Test the logic of the fetch
+
+    """
+    @pytest.fixture()
+    def set_up_mocks(self, requests_mock, mocker):
+        """ Sets up the mocks for the fetch.
+        """
+        mocker.patch.object(demisto, 'setLastRun')
+        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
+                           json={})
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
+                           json={'resources': [{'incident_id': 'ldt:1',
+                                                'hosts': [{'modified_timestamp': '2020-09-04T09:16:11Z'}]},
+                                               {'incident_id': 'ldt:2',
+                                                'hosts': [{'modified_timestamp': '2020-09-04T09:20:11Z'}]}]})
+
+    def test_old_fetch_to_new_fetch(self, set_up_mocks, mocker):
+        from CrowdStrikeFalcon import fetch_incidents
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z',
+                                                                 'last_incident_id': 1234})
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[1][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
+                                                          'incident_offset': 2}
+
+    def test_new_fetch_with_offset(self, set_up_mocks, mocker):
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z'})
+        from CrowdStrikeFalcon import fetch_incidents
+
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[1][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:10Z',
+                                                          'incident_offset': 2}
+
+    def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z',
+                                                                 'incident_offset': 2})
+        # Override post to have 1 results so FETCH_LIMIT won't be reached
+        requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
+                           json={'resources': [{'incident_id': 'ldt:1',
+                                                'hosts': [{'modified_timestamp': '2020-09-04T09:16:11Z'}]}]})
+        from CrowdStrikeFalcon import fetch_incidents
+        fetch_incidents()
+        assert demisto.setLastRun.mock_calls[1][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:11Z'}

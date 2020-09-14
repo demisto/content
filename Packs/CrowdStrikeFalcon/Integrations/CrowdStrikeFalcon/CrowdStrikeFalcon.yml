@@ -1008,6 +1008,256 @@ script:
     description: List of detection summaries
     execution: false
     name: cs-falcon-list-detection-summaries
+    outputs:
+    - contextPath: CrowdStrike.Detections.cid
+      description: The organization's customer ID (CID).
+      type: String
+    - contextPath: CrowdStrike.Detections.created_timestamp
+      description: The time when the detection occurred.
+      type: Date
+    - contextPath: CrowdStrike.Detections.detection_id
+      description: The ID of the detection.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.device_id
+      description: The evice ID as seen by CrowdStrike.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.cid
+      description: The CrowdStrike Customer ID (CID) to which the device belongs.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.agent_load_flags
+      description: The CrowdStrike agent configuration notes.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.agent_local_time
+      description: The local time of the sensor.
+      type: Date
+    - contextPath: CrowdStrike.Detections.device.agent_version
+      description: The version of the sensor that the device is running.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.bios_manufacturer
+      description: The BIOS manufacturer.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.bios_version
+      description: The device's BIOS version.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.config_id_base
+      description: The CrowdStrike agent configuration notes.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.config_id_build
+      description: The version of the sensor that the device is running.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.config_id_platform
+      description: The CrowdStrike agent configuration notes.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.external_ip
+      description: The device's external IP.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.hostname
+      description: The device host name.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.first_seen
+      description: The datetime value representing the time at which the host was first seen by CrowdStrike.
+      type: Date
+    - contextPath: CrowdStrike.Detections.device.last_seen
+      description: The datetime value representing the time at which the host was last seen by CrowdStrike.
+      type: Date
+    - contextPath: CrowdStrike.Detections.device.local_ip
+      description: The device's local IP address.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.mac_address
+      description: The device's MAC address.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.major_version
+      description: The major version of the OS.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.minor_version
+      description: The minor version of the OS.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.os_version
+      description: The device's operating system.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.platform_id
+      description: The CrowdStrike agent configuration notes.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.platform_name
+      description: The device platform name.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.product_type_desc
+      description: The value indicating the product type. E.g. 1 = Workstation, 2 = Domain Controller, 3 = Server.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.status
+      description: The containment status of the machine. Values include normal, containment_pending, contained, and lift_containment_pending.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.system_manufacturer
+      description: The system manufacturer for the device.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.system_product_name
+      description: The system product name.
+      type: String
+    - contextPath: CrowdStrike.Detections.device.modified_timestamp
+      description: The datetime value representing the time at which the host was last modified.
+      type: Date
+    - contextPath: CrowdStrike.Detections.behaviors.device_id
+      description: The Device ID of the device associated with the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.timestamp
+      description: The time when the behavior detection occurred.
+      type: Date
+    - contextPath: CrowdStrike.Detections.behaviors.behavior_id
+      description: The behavior ID.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.filename
+      description: The file name of the triggering process.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.alleged_filetype
+      description: The ile extension of behaviors filemame value.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.cmdline
+      description: The Command Line of the triggering process.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.scenario
+      description: The name of the scenario to which the behavior belongs.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.objective
+      description: The name of the objective associated to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.tactic
+      description: The name of the tactic associated to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.technique
+      description: The name of the technique associated to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.severity
+      description: Severity rating for the behavior. Value can be any integer between 1-100.
+      type: Number
+    - contextPath: CrowdStrike.Detections.behaviors.confidence
+      description: True positive confidence rating for the behavior. Value can be any integer between 1-100.
+      type: Number
+    - contextPath: CrowdStrike.Detections.behaviors.ioc_type
+      description: The type of the triggering IOC. Values include hash_sha256, hash_md5,domain,filename,registry_key,command_line, and behavior.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.ioc_value
+      description: The IOC value.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.ioc_source
+      description: Source that triggered an IOC detection. Values include library_load, primary_module, file_read, and file_write.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.ioc_description
+      description: The IOC description.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.user_name
+      description: The user's name.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.user_id
+      description: User's Security Identifier (SID) in Windows.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.control_graph_id
+      description: Behavior hit key for the Threat Graph API.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.triggering_process_graph_id
+      description: The ID of the process that triggered the behavior detection.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.sha256
+      description: SHA256 of the triggering process.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.md5
+      description: MD5 of the triggering process.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_sha256
+      description: The SHA256 hash of the parent process.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_md5
+      description: The MD5 hash of the parent process.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_cmdline
+      description: The command line of the parent process.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_process_graph_id
+      description: The process graph ID of the parent process.
+      type: String
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition
+      description: The pattern associated to the action taken on the behavior.
+      type: Number
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.indicator
+      description: Is  this detaction behavior like an indicator.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.detect
+      description: Is this behavior detect.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.inddet_mask
+      description: Is this behavior inddet mask.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.sensor_only
+      description: Is this detection sensor only.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.rooting
+      description: Is this behavior rooting.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.kill_process
+      description: Is this detection kill the process.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.kill_subprocess
+      description: Is this detection kill the subprocess.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.quarantine_machine
+      description: Is this detection was on a quarantine machine.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.quarantine_file
+      description: Is this detection was on a quarantine file.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.policy_disabled
+      description: Is the policy disabled.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.kill_parent
+      description: Is this detection kill the parent process.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.operation_blocked
+      description: Is the operation blocked.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.process_blocked
+      description: Is the process blocked.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition_details.registry_operation_blocked
+      description: Is the registry operation blocked.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.email_sent
+      description: Is an email sent about this detection.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.first_behavior
+      description: The timestamp of the first behavior.
+      type: Date
+    - contextPath: CrowdStrike.Detections.last_behavior
+      description: The timestamp of the last behavior.
+      type: Date
+    - contextPath: CrowdStrike.Detections.max_confidence
+      description: The highest confidence value of all behaviors. Value can be any integer between 1-100.
+      type: Number
+    - contextPath: CrowdStrike.Detections.max_severity
+      description: The highest severity value of all behaviors. Value can be any integer between 1-100.
+      type: Number
+    - contextPath: CrowdStrike.Detections.max_severity_displayname
+      description: The name used in the UI to determine the severity of the detection. Values include Critical, High, Medium, and Low.
+      type: String
+    - contextPath: CrowdStrike.Detections.show_in_ui
+      description: Is the detection show in UI.
+      type: Boolean
+    - contextPath: CrowdStrike.Detections.status
+      description: The status of detection.
+      type: String
+    - contextPath: CrowdStrike.Detections.assigned_to_uid
+      description: The UID of the user the detection is assigned to.
+      type: String
+    - contextPath: CrowdStrike.Detections.assigned_to_name
+      description: The human-readable name of the user to whom the detection is currently assigned.
+      type: String
+    - contextPath: CrowdStrike.Detections.hostinfo.domain
+      description: The ActiveDirectory domain.
+      type: String
+    - contextPath: CrowdStrike.Detections.seconds_to_triaged
+      description: Time that it took to move a detection from new to in_progress.
+      type: Number
+    - contextPath: CrowdStrike.Detections.seconds_to_resolved
+      description: Time that it took to move a detection from newand one of the resolved states (true_positive, false_positive, and ignored).
+      type: Number
   - arguments:
     - default: false
       description: Query to filter with
@@ -1019,9 +1269,124 @@ script:
     description: List of incident summaries
     execution: false
     name: cs-falcon-list-incident-summaries
-  feed: false
-  dockerimage45: demisto/python3:3.8.3.9324
+    outputs:
+    - contextPath: CrowdStrike.Incidents.incident_id
+      description: The id of the incident.
+      type: String
+    - contextPath: CrowdStrike.Incidents.cid
+      description: The organization's customer ID (CID).
+      type: String
+    - contextPath: CrowdStrike.Incidents.host_ids
+      description: The device ID(s) of all the host(s) on which the incident occurred.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.device_id
+      description: Device ID as seen by CrowdStrike.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.cid
+      description: The organization's customer ID (CID).
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.agent_load_flags
+      description: The CrowdStrike agent configuration notes.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.agent_local_time
+      description: Local time of the sensor.
+      type: Date
+    - contextPath: CrowdStrike.Incidents.hosts.agent_version
+      description: Version of the sensor that the device is running.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.bios_manufacturer
+      description: BIOS manufacturer.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.bios_version
+      description: Device's BIOS version.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.config_id_base
+      description: CrowdStrike agent configuration notes.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.config_id_build
+      description: Version of the sensor that the device is running.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.config_id_platform
+      description: CrowdStrike agent configuration notes.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.external_ip
+      description: Hosts's external IP.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.hostname
+      description: The hosts's name.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.first_seen
+      description: Datetime value representing the time at which the host was first seen by CrowdStrike.
+      type: Date
+    - contextPath: CrowdStrike.Incidents.hosts.last_seen
+      description: Datetime value representing the time at which the host was last seen by CrowdStrike.
+      type: Date
+    - contextPath: CrowdStrike.Incidents.hosts.local_ip
+      description: The device's local IP address.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.mac_address
+      description: The device's MAC address.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.major_version
+      description: Major version of the OS.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.minor_version
+      description: Minor version of the OS.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.os_version
+      description: Hosts's operating system.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.platform_id
+      description: CrowdStrike agent configuration notes.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.platform_name
+      description: Host platform name.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.product_type_desc
+      description: Value indicating the product type. E.g. 1 = Workstation, 2 = Domain Controller, 3 = Server.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.status
+      description: The incident status as number - 20 - New, 25 - Reopened, 30 - In Progress, 40 - Closed.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.system_manufacturer
+      description: System manufacturer for the device.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.system_product_name
+      description: System product name.
+      type: String
+    - contextPath: CrowdStrike.Incidents.hosts.modified_timestamp
+      description: The most recent time a user has updated the incident.
+      type: Date
+    - contextPath: CrowdStrike.Incidents.created
+      description: The time that the incident created.
+      type: Date
+    - contextPath: CrowdStrike.Incidents.start
+      description: The recorded time of the earliest incident.
+      type: Date
+    - contextPath: CrowdStrike.Incidents.end
+      description: The recorded time of the latest incident.
+      type: Date
+    - contextPath: CrowdStrike.Incidents.state
+      description: The state of the incident.
+      type: String
+    - contextPath: CrowdStrike.Incidents.status
+      description: The status of the incident.
+      type: Number
+    - contextPath: CrowdStrike.Incidents.name
+      description: The name of the incident.
+      type: String
+    - contextPath: CrowdStrike.Incidents.description
+      description: The description of the incident.
+      type: String
+    - contextPath: CrowdStrike.Incidents.tags
+      description: The tags of the incident.
+      type: String
+    - contextPath: CrowdStrike.Incidents.fine_score
+      description: The incident score.
+      type: Number
+
   dockerimage: demisto/python3:3.8.5.10845
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false

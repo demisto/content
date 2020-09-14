@@ -894,10 +894,12 @@ def get_detections_entities(detections_ids):
     return detections_ids
 
 
-def get_incidents_ids(last_created_timestamp=None, filter_arg=None):
+def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0):
     get_incidents_endpoint = '/incidents/queries/incidents/v1'
     params = {
-        'sort': 'modified_timestamp.asc'
+        'sort': 'modified_timestamp.asc',
+        'offset': offset,
+        'limit': INCIDENTS_PER_FETCH
     }
     if filter_arg:
         params['filter'] = filter_arg
@@ -1166,11 +1168,8 @@ def timestamp_length_equalization(timestamp1, timestamp2):
 
 def get_last_fetch_time_and_last_event_id(incident_type):
     last_run = demisto.getLastRun()
-    if incident_type == 'detection':
-        last_fetch_time = last_run.get('first_behavior_time')
-    else:
-        last_fetch_time = last_run.get(f'first_behavior_incident_time')
-    offset = last_run.get('offset', 0)
+    last_fetch_time = last_run.get(f'first_behavior_{incident_type}_time')
+    offset = last_run.get(f'{incident_type}_offset', 0)
     if not last_fetch_time:
         last_fetch_time, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
     prev_fetch = last_fetch_time
@@ -1187,7 +1186,7 @@ def fetch_incidents():
 
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections', '')
 
-    if 'detections' in fetch_incidents_or_detections or not fetch_incidents_or_detections:
+    if 'Detections' in fetch_incidents_or_detections or not fetch_incidents_or_detections:
         incident_type = 'detection'
         last_fetch_time, offset, prev_fetch, last_fetch_timestamp = \
             get_last_fetch_time_and_last_event_id(incident_type)
@@ -1224,11 +1223,12 @@ def fetch_incidents():
                     incidents.append(incident)
 
             if len(incidents) == INCIDENTS_PER_FETCH:
-                demisto.setLastRun({'first_behavior_time': prev_fetch, 'offset': offset + INCIDENTS_PER_FETCH})
+                demisto.setLastRun({'first_behavior_detection_time': prev_fetch,
+                                    'detection_offset': offset + INCIDENTS_PER_FETCH})
             else:
-                demisto.setLastRun({'first_behavior_time': last_fetch_time})
+                demisto.setLastRun({'first_behavior_detection_time': last_fetch_time})
 
-    if 'incidents' in fetch_incidents_or_detections:
+    if 'Incidents' in fetch_incidents_or_detections:
         incident_type = 'incident'
 
         last_fetch_time, offset, prev_fetch, last_fetch_timestamp = \
@@ -1238,16 +1238,17 @@ def fetch_incidents():
 
         if fetch_query:
             fetch_query = "modified_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
-            incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query), 'resources')
+            incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query, offset=offset), 'resources')
 
         else:
-            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=last_fetch_time), 'resources')
+            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=last_fetch_time, offset=offset),
+                                        'resources')
 
         if incidents_ids:
             raw_res = get_incidents_entities(incidents_ids)
             if "resources" in raw_res:
                 raw_res['type'] = "incidents"
-                for incident in raw_res.get("resources"):
+                for incident in demisto.get(raw_res, "resources"):
                     incident_to_context = incident_to_incident_context(incident)
                     incident_date = incident_to_context['occurred']
 
@@ -1266,10 +1267,10 @@ def fetch_incidents():
                     incidents.append(incident_to_context)
 
             if len(incidents) == INCIDENTS_PER_FETCH:
-                demisto.setLastRun(
-                    {'first_behavior_incident_time': prev_fetch, 'offset': offset + INCIDENTS_PER_FETCH})
+                demisto.setLastRun({'first_behavior_incident_time': prev_fetch,
+                                    'incident_offset': offset + INCIDENTS_PER_FETCH})
             else:
-                demisto.setLastRun({'first_behavior_detection_time': last_fetch_time})
+                demisto.setLastRun({'first_behavior_incident_time': last_fetch_time})
         return incidents
 
 
@@ -2025,9 +2026,7 @@ def list_detection_summaries_command():
         detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
     else:
         detections_ids = demisto.get(get_fetch_detections(), 'resources')
-    detections_response_data = {}
-    if detections_ids:
-        detections_response_data = get_detections_entities(detections_ids)
+    detections_response_data = get_detections_entities(detections_ids)
     detections = [resource for resource in detections_response_data.get('resources')]
     detections_human_readable = detections_to_human_readable(detections)
 
@@ -2059,9 +2058,7 @@ def list_incident_summaries_command():
         incidents_ids = get_incidents_ids(filter_arg=fetch_query)
     else:
         incidents_ids = get_incidents_ids()
-    incidents_response_data = {}
-    if incidents_ids:
-        incidents_response_data = get_incidents_entities(incidents_ids)
+    incidents_response_data = get_incidents_entities(incidents_ids)
     incidents = [resource for resource in incidents_response_data.get('resources')]
     incidents_human_readable = detections_to_human_readable(incidents)
     return CommandResults(
