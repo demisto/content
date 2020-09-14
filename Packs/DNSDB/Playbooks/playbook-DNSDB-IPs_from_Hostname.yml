@@ -338,7 +338,7 @@ inputs:
       root: Domain
       accessor: Name
   required: false
-  description: ""
+  description: "The domain name to enhance with IP addresses from Farsight DNSDB."
   playbookInputQuery:
 outputs:
 - contextPath: resolvedIPs
