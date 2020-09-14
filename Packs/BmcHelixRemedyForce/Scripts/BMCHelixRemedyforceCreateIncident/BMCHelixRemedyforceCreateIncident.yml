@@ -1,200 +1,200 @@
 args:
 - default: false
-  description: User name of the client. Users can get the username using 'bmc-remedy-user-details-get' command.
+  description: User name of the client. Get the username using the'bmc-remedy-user-details-get' command.
   isArray: false
   name: client_user_name
   required: false
   secret: false
 - default: false
-  description: client_id is the unique id of the client. It helps to select a client for a particular service request.
-    Users can get the client id from the email using 'bmc-remedy-user-details-get' command.
+  description: The unique ID of the client. It helps to select a client for a particular service request.
+    Gget the client ID from the email using the 'bmc-remedy-user-details-get' command.
   isArray: false
   name: client_id
   required: false
   secret: false
 - default: false
-  description: Categories allow users to classify the service request using standard classifications to track the reporting purposes.
-    Users can get the category name using 'bmc-remedy-category-details-get' command.
+  description: Classifies the service request using standard classifications to track the reporting purposes.
+    Get the category name using the 'bmc-remedy-category-details-get' command.
   isArray: false
   name: category
   required: false
   secret: false
 - default: false
-  description: category_id is the unique id of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes.
-    Users can get the category id from the category name using 'bmc-remedy-category-details-get' command.
+  description: The unique ID of the category. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes.
+    Get the category ID using 'bmc-remedy-category-details-get' command.
   isArray: false
   name: category_id
   required: false
   secret: false
 - default: false
-  description: Name of the queue as owner. 
-    Users can get the queue name using 'bmc-remedy-queue-details-get' command.
+  description: Name of the queue owner. 
+    Get the queue name using the 'bmc-remedy-queue-details-get' command.
   isArray: false
   name: queue
   required: false
   secret: false
 - default: false
-  description: queue_id is the unique id of the owner.
-    Users can get the queue id from the owner name using 'bmc-remedy-queue-details-get' command.
+  description: The unique ID of the queue owner.
+    Get the queue ID using 'bmc-remedy-queue-details-get' command.
   isArray: false
   name: queue_id
   required: false
   secret: false
 - default: false
-  description: User name of the staff. Users can get the username using 'bmc-remedy-user-details-get' command.
+  description: User name of the staff. Get the user name using the 'bmc-remedy-user-details-get' command.
   isArray: false
   name: staff_user_name
   required: false
   secret: false
 - default: false
-  description: staff_id is the unique id of the staff to whom the user wants to assign the record.
-    Users can get the staff id from the staff details using 'bmc-remedy-user-details-get' command.
+  description: The unique ID of the staff to whom the user wants to assign the record.
+    Get the staff ID from the staff details using the 'bmc-remedy-user-details-get' command.
   isArray: false
   name: staff_id
   required: false
   secret: false
 - default: false
-  description: Status is used to display the progress of the service request through its stages of opening to closure.
-    Users can get the status name using 'bmc-remedy-status-details-get' command.
+  description: Displays the progress of the service request through its stages from opening to closure.
+    Get the status name using the 'bmc-remedy-status-details-get' command.
   isArray: false
   name: status
   required: false
   secret: false
 - default: false
-  description: status_id is the unique id of the status that is used to display the progress of the service request through its stages of opening to closure.
-    Users can get the status id from the status name using 'bmc-remedy-status-details-get' command.
+  description: The unique ID of the status that is used to display the progress of the service request through its stages from opening to closure.
+    Get the status ID using the 'bmc-remedy-status-details-get' command.
   isArray: false
   name: status_id
   required: false
   secret: false
 - default: false
-  description: Urgency is used to determine the priority of the service request.
-    Users can get the urgency name using 'bmc-remedy-urgency-details-get' command.
+  description: Determines the priority of the service request.
+    Get the urgency name using the 'bmc-remedy-urgency-details-get' command.
   isArray: false
   name: urgency
   required: false
   secret: false
 - default: false
-  description: urgency_id is the unique id of the urgency which is used to determine the priority of the service request.
-    Users can get the urgency id from the urgency name using 'bmc-remedy-urgency-details-get' command.
+  description: The unique ID of the urgency which is used to determine the priority of the service request.
+    Get the urgency ID using the'bmc-remedy-urgency-details-get' command.
   isArray: false
   name: urgency_id
   required: false
   secret: false
 - default: false
-  description: Templates enable users to pre-populate commonly used fields in a form. Users can get the template name using 'bmc-remedy-template-details-get' command.
+  description: Templates enable users to pre-populate commonly used fields in a form. Get the template name using the 'bmc-remedy-template-details-get' command.
   isArray: false
   name: template
   required: false
   secret: false
 - default: false
-  description: template_id is the unique id of the template. Templates enable users to pre-populate commonly used fields in a form.
-    Users can get the template id from the template name using 'bmc-remedy-template-details-get' command.
+  description: The unique ID of the template. Templates enable users to pre-populate commonly used fields in a form.
+    Get the template ID from the template name using the 'bmc-remedy-template-details-get' command.
   isArray: false
   name: template_id
   required: false
   secret: false
 - default: false
-  description: This field represents the description of the incident that the user wants to create.
+  description: The description of the incident that the user wants to create.
   isArray: false
   name: description
   required: false
   secret: false
 - default: false
-  description: due_date is the date and time at which the incident should be completed. Use the yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ formats to specify dateTime fields.
+  description: The date and time at which the incident should be completed. Use the yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ formats to specify dateTime fields.
   isArray: false
   name: due_date
   required: false
   secret: false
 - default: false
-  description: opened_date is the date and time at which the incident was created. Use the yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ formats to specify dateTime fields.
+  description: The date and time at which the incident was created. Use the yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ formats to specify dateTime fields.
   isArray: false
   name: opened_date
   required: false
   secret: false
 - default: false
   description: Impact is used to determine the priority of the service request.
-    Users can get the impact name using 'bmc-remedy-impact-details-get' command.
+    Get the impact name using the 'bmc-remedy-impact-details-get' command.
   isArray: false
   name: impact
   required: false
   secret: false
 - default: false
-  description: impact_id is the unique id of the impact which is used to determine the priority of the service request.
-    Users can get the impact id from the impact name using 'bmc-remedy-impact-details-get' command.
+  description: The unique id of the impact which is used to determine the priority of the service request.
+    Get the impact id from the impact name using the 'bmc-remedy-impact-details-get' command.
   isArray: false
   name: impact_id
   required: false
   secret: false
 - default: false
-  description: Name of the account. Users can get the account name using 'bmc-remedy-account-details-get' command.
+  description: Name of the account. Get the account name using the 'bmc-remedy-account-details-get' command.
   isArray: false
   name: account
   required: false
   secret: false
 - default: false
-  description: account_id of the specific account. Users can get the account id from the account name using
+  description: The account ID of the specific account. Get the account ID from the account name using the
     'bmc-remedy-account-details-get' command.
   isArray: false
   name: account_id
   required: false
   secret: false
 - default: false
-  description: Broadcast enables users to send messages to the entire organization, selected groups within the organization and to external customers.
-    Users can get the broadcast name using 'bmc-remedy-broadcast-details-get' command.
+  description: Enables users to send messages to the entire organization, selected groups within the organization and to external customers.
+    Get the broadcast name using the 'bmc-remedy-broadcast-details-get' command.
   isArray: false
   name: broadcast
   required: false
   secret: false
 - default: false
-  description: broadcast_id is the unique id of the broadcast. Broadcast enables users to send messages to the entire organization, selected groups within the organization and to external customers.
-    Users can get the broadcast id from the broadcast name using 'bmc-remedy-broadcast-details-get' command.
+  description: The unique ID of the broadcast. Broadcast enables users to send messages to the entire organization, selected groups within the organization and to external customers.
+    Get the broadcast ID from the broadcast name using the 'bmc-remedy-broadcast-details-get' command.
   isArray: false
   name: broadcast_id
   required: false
   secret: false
 - default: false
-  description: Link a service offering of an associated service. Users can get the service_offering name using 'bmc-remedy-service-offering-details-get' command.
+  description: Link a service offering of an associated service. Get the service_offering name using the 'bmc-remedy-service-offering-details-get' command.
   isArray: false
   name: service_offering
   required: false
   secret: false
 - default: false
-  description: service_offering_id is the unique id of the service_offering.
-    Users can get the service_offering_id from the service_offering name using 'bmc-remedy-service-offering-details-get' command.
+  description: The unique ID of the service_offering.
+    Get the service offering ID using the 'bmc-remedy-service-offering-details-get' command.
   isArray: false
   name: service_offering_id
   required: false
   secret: false
 - default: false
-  description: Name of the asset. Users can get the asset id from the asset name using 'bmc-remedy-asset-details-get' command.
+  description: Name of the asset. Get the asset name using the 'bmc-remedy-asset-details-get' command.
   isArray: false
   name: asset
   required: false
   secret: false
 - default: false
-  description: asset_id of the specific asset. Users can get the asset id from the asset name using
+  description: The asset ID of the specific asset. Get the asset ID using the
     'bmc-remedy-asset-details-get' command.
   isArray: false
   name: asset_id
   required: false
   secret: false
 - default: false
-  description: outage_start is the date and time when the service outage begins.
+  description: The date and time when the service outage begins.
     Use the yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ formats to specify dateTime fields.
   isArray: false
   name: outage_start
   required: false
   secret: false
 - default: false
-  description: outage_end is the date and time when the service outage ends.
+  description: The date and time when the service outage ends.
     Use the yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ formats to specify dateTime fields.
   isArray: false
   name: outage_end
   required: false
   secret: false
 comment: 'This script is used to simplify the process of creating the incident in BMC
-  Helix Remedyforce. Script will consider ID over the name of the argument when both are provided. Example: client_id is considered when both client_id and client_user_name are provided.'
+  Helix Remedyforce. The Script will consider the ID over the name of the argument when both are provided. Example: client_id is considered when both client_id and client_user_name are provided.'
 commonfields:
   id: BMCHelixRemedyforceCreateIncident
   version: -1
