@@ -10,7 +10,6 @@ from QRadar_v2 import (
     get_search_command,
     get_search_results_command,
     get_assets_command,
-    get_asset_by_id_command,
     get_closing_reasons_command,
     create_note_command,
     get_note_command,
