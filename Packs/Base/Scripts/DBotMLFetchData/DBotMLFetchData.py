@@ -618,8 +618,8 @@ def extract_data_from_incidents(incidents, input_label_field=None):
     incidents_df = pd.DataFrame(incidents)
     if 'created' in incidents_df:
         incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))   # type: ignore
-        incidents_df.sort_values(by='created', inplace=True, ascending=False)
-        incidents_df_for_finding_labels_fields_candidates = incidents_df.head(500)
+        incidents_df_for_finding_labels_fields_candidates = incidents_df.sort_values(by='created', ascending=False)\
+            .head(500)
     else:
         incidents_df_for_finding_labels_fields_candidates = incidents_df
     if input_label_field is None:
@@ -631,7 +631,7 @@ def extract_data_from_incidents(incidents, input_label_field=None):
         label_fields = [input_label_field]
     for label in label_fields:
         incidents_df[label].replace('', float('nan'), regex=True, inplace=True)
-    incidents_df.dropna(how='all', subset=label_fields, inplace=True)
+    incidents_df = incidents_df.dropna(how='all', subset=label_fields).reset_index()
     y = []
     for i, label in enumerate(label_fields):
         y.append({'field_name': label,
