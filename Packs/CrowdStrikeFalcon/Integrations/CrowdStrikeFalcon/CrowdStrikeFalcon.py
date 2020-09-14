@@ -1932,7 +1932,7 @@ def get_indicator_device_id():
     url_filter = build_url_filter_for_device_id(args)
     raw_res = http_request('GET', url_filter)
     context_output = ''
-    if validate_response:
+    if validate_response(raw_res):
         context_output = raw_res.get('resources')
     else:
         error_message = build_error_message(raw_res)
