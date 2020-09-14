@@ -1,5 +1,5 @@
 ### Using API Token authentication
-In order to use the integration with an API token you'll first need to change the `Username / API Key (see '?')` field to `_api_token_key`. Following this step, you can now enter the API Token into the `Password` field - this value will be used as an API key.
+To use the integration with an API token, you first need to change the `Username / API Key (see '?')` field to `_api_token_key`. Following this step, you can now enter the API Token into the `Password` field - this value will be used as an API key.
 
 ### Fetch incidents:
 To start fetching incidents, enable the parameter `Long running instance` - this will start a long running process that'll fetch incidents periodically.
