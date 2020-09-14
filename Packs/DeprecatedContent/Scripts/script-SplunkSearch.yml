@@ -24,7 +24,7 @@ type: javascript
 tags:
 - enhancement
 - splunk
-comment: Run a query through Splunk and format the results as a table
+comment: Deprecated. Run a query through Splunk and format the results as a table
 system: true
 args:
 - name: query
