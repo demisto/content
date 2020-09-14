@@ -567,6 +567,8 @@ def extract_features_from_incident(row):
         'url_features': url_feautres,
         'attachments_features': attachments_features,
         'created': str(row['created']) if 'created' in row else None,
+        'id': str(row['id']) if 'id' in row else None,
+
     }
 
 
@@ -581,6 +583,7 @@ def extract_features_from_all_incidents(incidents_df):
         'url_features': [],
         'attachments_features': [],
         'created': [],
+        'id': []
     }   # type: ignore
     exceptions_log = []
     exception_indices = set()
