@@ -3,6 +3,7 @@ import json
 import os
 from concurrent.futures import ThreadPoolExecutor
 import shutil
+import subprocess
 import sys
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client, IGNORED_FILES, PACKS_FULL_PATH
@@ -144,6 +145,11 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
                 zipped_packs.append({pack.name: download_path})
                 print(f'Downloading pack from GCP: {pack.name}')
                 executor_submit(executor, download_path, blob)
+                print("Dest path is: "+str(destination_path))
+                print(f'Showing LS of current dir: {subprocess.check_output("ls")}')
+                print(f'Showing PWD of current dir: {subprocess.check_output("pwd")}')
+                print(f'CD to dest_dir dir: {subprocess.check_output(f"cd {destination_path}")}')
+                print(f'Showing LS of dest_dir dir: {subprocess.check_output("ls")}')
                 shutil.copy(download_path,
                             f'/home/runner/work/content-private/content-private/content/artifacts/{pack.name}.zip')
             else:
