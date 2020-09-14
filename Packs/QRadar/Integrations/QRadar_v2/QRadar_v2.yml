@@ -42,7 +42,7 @@ configuration:
   name: ip_enrich
   required: false
   type: 8
-  additionalinfo: "Offense IP values are returned from the API as ID values. Enable this feature to convert them to IP values."
+  additionalinfo: "Offensive IP values are returned from the API as ID values. Enable this feature to convert them to IP values."
 - defaultvalue: 'true'
   display: Incident Asset Enrichment
   hidden: false
@@ -75,20 +75,20 @@ configuration:
   name: events_limit
   required: false
   type: 0
-- additionalinfo: Comma separated configuration for advanced parameters values.
+- additionalinfo: Comma-separated configuration for advanced parameters values.
     e.g. EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   display: Advanced Parameters
   name: adv_params
   required: false
   type: 12
-description: Fetch offenses and related events and assets as incidents and search QRadar.
+description: Fetch offenses, and related events and assets as incidents, and search QRadar.
 display: IBM QRadar v2
 name: QRadar_v2
 script:
   commands:
   - arguments:
     - default: false
-      description: 'Query to filter offenses. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+      description: 'Query by which to filter offenses. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       isArray: false
       name: filter
       required: false
@@ -96,9 +96,9 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html'
+        response. Fields that are not explicitly named, are excluded. Specify subfields in brackets
+        and multiple fields in the same object separated by commas. The filter
+        uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html'
       isArray: false
       name: fields
       required: false
@@ -111,13 +111,13 @@ script:
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+        will show all table headers).
       isArray: false
       name: headers
       required: false
       secret: false
     deprecated: false
-    description: Gets offenses from QRadar
+    description: Gets offenses from QRadar.
     execution: false
     name: qradar-offenses
     outputs:
@@ -135,12 +135,12 @@ script:
       type: Unknown
     - contextPath: QRadar.Offense.DestinationAddress
       description: The local destination addresses that are associated with the offense.
-        If your offense has a remote destination, you will need to use QRadarFullSearch
+        If your offense has a remote destination, you will need to use the QRadarFullSearch
         playbook with the following query - SELECT destinationip FROM events WHERE
-        inOffense(<offenseID>) GROUP BY destinationip
+        inOffense(<offenseID>) GROUP BY destinationip.
       type: Unknown
     - contextPath: QRadar.Offense.RemoteDestinationCount
-      description: The remote destination that are associated with the offesne. If
+      description: The remote destinations that are associated with the offesne. If
         this value is greater than 0 that means your offense has a remote destination,
         you will need to use QRadarFullSearch playbook with the following query -
         SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
@@ -177,47 +177,47 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html'
+        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
+        and multiple fields in the same object separated by commas. The filter
+        uses QRadar''s field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html'
       isArray: false
       name: fields
       required: false
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+        will show all table headers).
       isArray: false
       name: headers
       required: false
       secret: false
     deprecated: false
-    description: Gets offense with matching offense ID from qradar
+    description: Gets offense with matching offense ID from qradar.
     execution: false
     name: qradar-offense-by-id
     outputs:
     - contextPath: QRadar.Offense.Credibility
-      description: The credibility of the offense
+      description: The credibility of the offense.
       type: number
     - contextPath: QRadar.Offense.Relevance
-      description: The relevance of the offense
+      description: The relevance of the offense.
       type: number
     - contextPath: QRadar.Offense.Severity
-      description: The severity of the offense
+      description: The severity of the offense.
       type: number
     - contextPath: QRadar.Offense.SourceAddress
       description: The source addresses that are associated with the offense.
       type: Unknown
     - contextPath: QRadar.Offense.DestinationAddress
       description: The local destination addresses that are associated with the offense.
-        If your offense has a remote destination, you will need to use QRadarFullSearch
+        If your offense has a remote destination, you will need to use the QRadarFullSearch
         playbook with the following query - SELECT destinationip FROM events WHERE
         inOffense(<offenseID>) GROUP BY destinationip
       type: Unknown
     - contextPath: QRadar.Offense.RemoteDestinationCount
       description: The remote destination that are associated with the offesne. If
-        this value is greater than 0 that means your offense has a remote destination,
-        you will need to use QRadarFullSearch playbook with the following query -
+        this value is greater than 0, it means that your offense has a remote destination,
+        you will need to use the QRadarFullSearch playbook with the following query -
         SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
       type: Unknown
     - contextPath: QRadar.Offense.AssignedTo
@@ -230,7 +230,7 @@ script:
       description: The ID of the offense.
       type: int
     - contextPath: QRadar.Offense.DestinationHostname
-      description: Destintion hostname
+      description: Destintion hostname.
       type: Unknown
     - contextPath: QRadar.Offense.Description
       description: The description of the offense.
@@ -248,7 +248,7 @@ script:
       description: The magnitude of the offense.
       type: number
     - contextPath: QRadar.Offense.ClosingUser
-      description: The user that closed the offense
+      description: The user that closed the offense.
       type: string
     - contextPath: QRadar.Offense.ClosingReason
       description: The offense closing reason.
@@ -269,22 +269,22 @@ script:
       description: Offense followup.
       type: boolean
     - contextPath: QRadar.Offense.OffenseType
-      description: A number that represents the offense type
+      description: A number that represents the offense type.
       type: string
     - contextPath: QRadar.Offense.Protected
-      description: Is the offense protected
+      description: Is the offense protected.
       type: boolean
   - arguments:
     - default: true
       description: The query expressions in AQL (for more information about Ariel
-        Query Language please review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")
+        Query Language, review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")
       isArray: false
       name: query_expression
       required: true
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+        will show all table headers).
       isArray: false
       name: headers
       required: false
@@ -297,46 +297,46 @@ script:
     name: qradar-searches
     outputs:
     - contextPath: QRadar.Search.ID
-      description: Search ID
+      description: Search ID.
       type: number
     - contextPath: QRadar.Search.Status
       description: The status of the search.
       type: string
   - arguments:
     - default: true
-      description: The search id
+      description: The search id.
       isArray: false
       name: search_id
       required: true
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+        will show all table headers).
       isArray: false
       name: headers
       required: false
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+        will show all table headers).
       isArray: false
       name: headers
       required: false
       secret: false
     deprecated: false
-    description: Gets a specific search id and status
+    description: Gets a specific search id and status.
     execution: false
     name: qradar-get-search
     outputs:
     - contextPath: QRadar.Search.ID
-      description: Search ID
+      description: Search ID.
       type: number
     - contextPath: QRadar.Search.Status
       description: The status of the search.
       type: string
   - arguments:
     - default: true
-      description: The search id
+      description: The search id.
       isArray: false
       name: search_id
       required: true
@@ -349,7 +349,7 @@ script:
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+        will show all table headers).
       isArray: false
       name: headers
       required: false
@@ -363,23 +363,23 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets search results
+    description: Gets search results.
     execution: false
     name: qradar-get-search-results
     outputs:
     - contextPath: QRadar.Search.Result
-      description: The result of the search
+      description: The result of the search.
       type: Unknown
   - arguments:
     - default: true
-      description: The ID of the offense to update
+      description: The ID of the offense to update.
       isArray: false
       name: offense_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set to true to protect the offense
+      description: Set to true to protect the offense.
       isArray: false
       name: protected
       predefined:
@@ -389,7 +389,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set to true to set the follow up flag on the offense
+      description: Set to true to set the follow up flag on the offense.
       isArray: false
       name: follow_up
       predefined:
@@ -399,7 +399,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The new status for the offense
+      description: The new status for the offense.
       isArray: false
       name: status
       predefined:
@@ -410,22 +410,22 @@ script:
       secret: false
     - default: false
       description: 'The id of a closing reason. You must provide a valid closing_reason_name
-        when you close an offense. The default  closing_reasons are: (1) False-Positive,
-        Tuned (2) Non-Issues (3) Policy Violation'
+        when you close an offense. The default closing_reasons are: (1) False-Positive,
+        Tuned (2) Non-Issues (3) Policy Violation'.
       isArray: false
       name: closing_reason_id
       required: false
       secret: false
     - default: false
       description: 'The name of a closing reason. You must provide a valid closing_reason_name
-        when you close an offense. The default  closing_reasons are: (1) False-Positive,
-        Tuned (2) Non-Issues (3) Policy Violation'
+        when you close an offense. The default closing_reasons are: (1) False-Positive,
+        Tuned (2) Non-Issues (3) Policy Violation'.
       isArray: false
       name: closing_reason_name
       required: false
       secret: false
     - default: false
-      description: A user to assign the offense to
+      description: A user to assign the offense to.
       isArray: false
       name: assigned_to
       required: false
@@ -433,25 +433,25 @@ script:
     - default: false
       description: Use this parameter to specify which fields you would like to get
         back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object are separated by commas.
+        in brackets and multiple fields in the same object  separated by commas.
         Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html
       isArray: false
       name: fields
       required: false
       secret: false
     deprecated: false
-    description: Update an offense
+    description: Update an offense.
     execution: false
     name: qradar-update-offense
     outputs:
     - contextPath: QRadar.Offense.Credibility
-      description: The credibility of the offense
+      description: The credibility of the offense.
       type: number
     - contextPath: QRadar.Offense.Relevance
-      description: The relevance of the offense
+      description: The relevance of the offense.
       type: number
     - contextPath: QRadar.Offense.Severity
-      description: The severity of the offense
+      description: The severity of the offense.
       type: number
     - contextPath: QRadar.Offense.SourceAddress
       description: The source addresses that are associated with the offense.
@@ -469,7 +469,7 @@ script:
       description: The ID of the offense.
       type: int
     - contextPath: QRadar.Offense.DestinationHostname
-      description: Destintion hostname
+      description: Destintion hostname.
       type: Unknown
     - contextPath: QRadar.Offense.Description
       description: The description of the offense.
@@ -487,7 +487,7 @@ script:
       description: The magnitude of the offense.
       type: number
     - contextPath: QRadar.Offense.ClosingUser
-      description: The user that closed the offense
+      description: The user that closed the offense.
       type: string
     - contextPath: QRadar.Offense.ClosingReason
       description: The offense closing reason.
@@ -508,10 +508,10 @@ script:
       description: Offense followup.
       type: boolean
     - contextPath: QRadar.Offense.OffenseType
-      description: A number that represents the offense type
+      description: A number that represents the offense type.
       type: string
     - contextPath: QRadar.Offense.Protected
-      description: Is the offense protected
+      description: Is the offense protected.
       type: boolean
   - arguments:
     - default: false
@@ -524,8 +524,8 @@ script:
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
         response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html'
+        and multiple fields in the same object separated by commas. The filter
+        uses QRadar''s field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html'
       isArray: false
       name: fields
       required: false
@@ -538,42 +538,42 @@ script:
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+        will show all table headers).
       isArray: false
       name: headers
       required: false
       secret: false
     deprecated: false
-    description: List all assets found in the model
+    description: List all assets found in the model.
     execution: false
     name: qradar-get-assets
     outputs:
     - contextPath: QRadar.Assets.ID
-      description: The ID of the asset
+      description: The ID of the asset.
       type: number
     - contextPath: Endpoint.IPAddress
-      description: IP address of the asset
+      description: IP address of the asset.
       type: Unknown
     - contextPath: QRadar.Assets.Name.Value
-      description: Name of the asset
+      description: Name of the asset.
       type: string
     - contextPath: Endpoint.OS
-      description: Asset OS
+      description: Asset OS.
       type: number
     - contextPath: QRadar.Assets.AggregatedCVSSScore.Value
-      description: CVSSScore
+      description: CVSSScore.
       type: number
     - contextPath: QRadar.Assets.AggregatedCVSSScore.LastUser
-      description: Last user who updated the Aggregated CVSS Score
+      description: Last user who updated the Aggregated CVSS Score.
       type: string
     - contextPath: QRadar.Assets.Weight.Value
-      description: Asset weight
+      description: Asset weight.
       type: number
     - contextPath: QRadar.Assets.Weight.LastUser
-      description: Last user who updated the weight
+      description: Last user who updated the weight.
       type: string
     - contextPath: QRadar.Assets.Name.LastUser
-      description: Last user who updated the name
+      description: Last user who updated the name.
       type: string
   - arguments:
     - default: true
@@ -583,7 +583,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves the asset by id
+    description: Retrieves the asset by id.
     execution: false
     name: qradar-get-asset-by-id
     outputs:
@@ -594,37 +594,37 @@ script:
       description: Asset MAC address.
       type: Unknown
     - contextPath: Endpoint.IPAddress
-      description: It's in ip_addresses - value
+      description: IP address of the endpoint.
       type: Unknown
     - contextPath: QRadar.Assets.ComplianceNotes.Value
-      description: Compliance notes
+      description: Compliance notes.
       type: string
     - contextPath: QRadar.Assets.CompliancePlan.Value
-      description: Compliance plan
+      description: Compliance plan.
       type: string
     - contextPath: QRadar.Assets.CollateralDamagePotential.Value
-      description: Collateral damage potential
+      description: Collateral damage potential.
       type: Unknown
     - contextPath: QRadar.Assets.AggregatedCVSSScore.Value
-      description: CVSSScore
+      description: CVSSScore.
       type: number
     - contextPath: QRadar.Assets.Name.Value
-      description: Name of the asset
+      description: Name of the asset.
       type: string
     - contextPath: QRadar.Assets.GroupName
-      description: Name of the asset's group
+      description: Name of the asset's group.
       type: string
     - contextPath: Endpoint.Domain
-      description: DNS name
+      description: DNS name.
       type: Unknown
     - contextPath: Endpoint.OS
-      description: Asset OS
+      description: Asset OS.
       type: Unknown
     - contextPath: QRadar.Assets.Weight.Value
-      description: Asset weight
+      description: Asset weight.
       type: number
     - contextPath: QRadar.Assets.Vulnerabilities.Value
-      description: Vulnerabilities
+      description: Vulnerabilities.
       type: Unknown
     - contextPath: QRadar.Assets.Location
       description: Location.
@@ -633,37 +633,37 @@ script:
       description: The asset description.
       type: string
     - contextPath: QRadar.Assets.SwitchID
-      description: Switch ID
+      description: Switch ID.
       type: number
     - contextPath: QRadar.Assets.SwitchPort
       description: Switch port.
       type: number
     - contextPath: QRadar.Assets.Name.LastUser
-      description: Last user who updated the name
+      description: Last user who updated the name.
       type: string
     - contextPath: QRadar.Assets.AggregatedCVSSScore.LastUser
-      description: Last user who updated the Aggregated CVSS Score
+      description: Last user who updated the Aggregated CVSS Score.
       type: string
     - contextPath: QRadar.Assets.Weight.LastUser
-      description: Last user who updated the weight
+      description: Last user who updated the weight.
       type: string
     - contextPath: QRadar.Assets.ComplianceNotes.LastUser
-      description: Last user who updated the compliance notes
+      description: Last user who updated the compliance notes.
       type: string
     - contextPath: QRadar.Assets.CompliancePlan.LastUser
-      description: Last user who updated the compliance plan
+      description: Last user who updated the compliance plan.
       type: string
     - contextPath: QRadar.Assets.CollateralDamagePotential.LastUser
-      description: Last user who updated the collateral damage potential
+      description: Last user who updated the collateral damage potential.
       type: string
     - contextPath: QRadar.Assets.Vulnerabilities.LastUser
-      description: Last user who updated the vulnerabilities
+      description: Last user who updated the vulnerabilities.
       type: string
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: If true, reserved closing reasons are included in the response
+      description: If true, reserved closing reasons are included in the response.
       isArray: false
       name: include_reserved
       predefined:
@@ -674,7 +674,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: If true, deleted closing reasons are included in the response
+      description: If true, deleted closing reasons are included in the response.
       isArray: false
       name: include_deleted
       predefined:
@@ -683,7 +683,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Query to filter results. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+      description: 'Query to filter results. For refernce, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       isArray: false
       name: filter
       required: false
@@ -691,39 +691,39 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html'
+        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
+        and multiple fields in the same object separated by commas. The filter
+        uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html'
       isArray: false
       name: fields
       required: false
       secret: false
     - default: false
-      description: 'Range of results to return. e.g.: 0-20'
+      description: 'Range of results to return. e.g.: 0-20'.
       isArray: false
       name: range
       required: false
       secret: false
     deprecated: false
-    description: Get closing reasons
+    description: Get closing reasons.
     execution: false
     name: qradar-get-closing-reasons
     outputs:
     - contextPath: QRadar.Offense.ClosingReasons.ID
-      description: Closing reason ID
+      description: Closing reason ID.
       type: number
     - contextPath: QRadar.Offense.ClosingReasons.Name
-      description: Closing reason name
+      description: Closing reason name.
       type: string
   - arguments:
     - default: true
-      description: The offense ID to add the note to
+      description: The offense ID to add the note to.
       isArray: false
       name: offense_id
       required: true
       secret: false
     - default: false
-      description: The note text
+      description: The note text.
       isArray: false
       name: note_text
       required: true
@@ -731,46 +731,46 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html'
+        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
+        and multiple fields in the same object separated by commas. The filter
+        uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html'
       isArray: false
       name: fields
       required: false
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+        will show all table headers).
       isArray: false
       name: headers
       required: false
       secret: false
     deprecated: false
-    description: Create a note on an offense
+    description: Create a note on an offense.
     execution: false
     name: qradar-create-note
     outputs:
     - contextPath: QRadar.Note.ID
-      description: Note ID
+      description: Note ID.
       type: number
     - contextPath: QRadar.Note.Text
-      description: Note text
+      description: Note text.
       type: string
     - contextPath: QRadar.Note.CreateTime
-      description: The creation time of the note
+      description: The creation time of the note.
       type: date
     - contextPath: QRadar.Note.CreatedBy
-      description: The user who created the note
+      description: The user who created the note.
       type: string
   - arguments:
     - default: true
-      description: The offense ID to retrieve the note from
+      description: The offense ID to retrieve the note from.
       isArray: false
       name: offense_id
       required: true
       secret: false
     - default: false
-      description: The note ID
+      description: The note ID.
       isArray: false
       name: note_id
       required: false
@@ -778,36 +778,36 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
+        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
+        and multiple fields in the same object separated by commas. The filter
+        uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
       isArray: false
       name: fields
       required: false
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+        will show all table headers).
       isArray: false
       name: headers
       required: false
       secret: false
     deprecated: false
-    description: Retrieve a note for an offense
+    description: Retrieve a note for an offense.
     execution: false
     name: qradar-get-note
     outputs:
     - contextPath: QRadar.Note.ID
-      description: Note ID
+      description: Note ID.
       type: number
     - contextPath: QRadar.Note.Text
-      description: Note text
+      description: Note text.
       type: string
     - contextPath: QRadar.Note.CreateTime
-      description: The creation time of the note
+      description: The creation time of the note.
       type: date
     - contextPath: QRadar.Note.CreatedBy
-      description: The user who created the note
+      description: The user who created the note.
       type: string
   - arguments:
     - default: true
@@ -818,7 +818,7 @@ script:
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,
-        will show all table headers)
+        will show all table headers).
       isArray: false
       name: headers
       required: false
@@ -837,7 +837,7 @@ script:
       secret: false
     deprecated: false
     description: Information about the reference set that had data added or updated.
-      This returns information set but not the contained data. This feature is supported
+      This returns the information set, but not the contained data. This feature is supported
       from version 8.1 and upward.
     execution: false
     name: qradar-get-reference-by-name
@@ -858,14 +858,14 @@ script:
       description: Reference time to live.
       type: string
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      description: 'Reference timeout type. Valid values are: UNKNOWN, FIRST_SEEN, LAST_SEEN'
       type: string
     - contextPath: QRadar.Reference.Data
-      description: Reference set items
+      description: Reference set items.
       type: Unknown
   - arguments:
     - default: false
-      description: Reference name to be created
+      description: Reference name to be created.
       isArray: false
       name: ref_name
       required: true
@@ -901,14 +901,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The time to live interval, for example: "1 month" or "5 minutes"'
+      description: 'The time to live interval, for example: "1 month" or "5 minutes"'.
       isArray: false
       name: time_to_live
       required: false
       secret: false
     deprecated: false
     description: Creates a new reference set. If the provided name is already in use,
-      this command will fail
+      this command will fail.
     execution: false
     name: qradar-create-reference-set
     outputs:
@@ -968,7 +968,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'If set to True will convert ''value'' argument from date in format:
+      description: 'If set to True, will convert ''value'' argument from date in format:
         ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
       isArray: false
       name: date_value
@@ -995,7 +995,7 @@ script:
       description: Number of elements.
       type: number
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'.
       type: string
   - arguments:
     - default: false
@@ -1022,7 +1022,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: 'If set to True will convert ''value'' argument from date in format:
+      description: 'If set to True, will convert ''value'' argument from date in format:
         ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
       isArray: false
       name: date_value
@@ -1100,7 +1100,7 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
+        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
         and multiple fields in the same object are separated by commas. The filter
         uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
       isArray: false
@@ -1108,19 +1108,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Number of results in return
+      description: Number of results in return.
       isArray: false
       name: range
       required: false
       secret: false
     - default: false
-      description: Query to filter offenses
+      description: Query to filter offenses.
       isArray: false
       name: filter
       required: false
       secret: false
     deprecated: false
-    description: Retrieve all Domains
+    description: Retrieve all Domains.
     execution: false
     name: qradar-get-domains
     outputs:
@@ -1165,7 +1165,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: ID of the domain
+      description: ID of the domain.
       isArray: false
       name: id
       required: true
@@ -1173,7 +1173,7 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not named are excluded. Specify subfields in brackets
+        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
         and multiple fields in the same object are separated by commas. The filter
         uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
       isArray: false
@@ -1181,7 +1181,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves Domain information By ID
+    description: Retrieves Domain information By ID.
     execution: false
     name: qradar-get-domain-by-id
     outputs:
@@ -1285,7 +1285,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page from which to get the indicators
+      description: The page from which to get the indicators.
       isArray: false
       name: page
       required: false
