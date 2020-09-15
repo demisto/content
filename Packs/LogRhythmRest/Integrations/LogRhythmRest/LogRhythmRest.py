@@ -24,7 +24,7 @@ CLUSTER_ID = demisto.params().get('cluster-id')
 # Headers to be sent in requests
 HEADERS = {
     'Authorization': 'Bearer ' + TOKEN,
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
 }
 
 HOSTS_HEADERS = ["ID", "Name", "EntityId", "EntityName", "OS", "Status", "Location", "RiskLevel", "ThreatLevel",
