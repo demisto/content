@@ -831,7 +831,15 @@ class Pack(object):
             # print(f'Showing LS of dest_dir dir: {subprocess.check_output("ls")}')
 
             print(f"Copying from {zip_pack_path} to /home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip")
-            shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip')
+            try:
+                print("trying with absolute path")
+                print("Path exists? - " + str(os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/packs')))
+                shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip')
+            except:
+                print("trying with relative path")
+                print("Path exists? - " + str(os.path.exists('/artifacts/packs')))
+                shutil.copy(zip_pack_path,
+                            f'/artifacts/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
