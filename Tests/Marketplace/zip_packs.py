@@ -148,7 +148,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
                 executor_submit(executor, download_path, blob)
                 sleep(3)
                 shutil.copy(download_path,
-                            f'/home/runner/work/content-private/content-private/content/artifacts/{pack.name}.zip')
+                            f'/home/runner/work/content-private/content-private/content/artifacts/packs/{pack.name}.zip')
             else:
                 print_warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
 
@@ -206,7 +206,9 @@ def main():
     gcp_path = option.gcp_path
     remove_test_playbooks = option.remove_test_playbooks
     os.mkdir('/home/runner/work/content-private/content-private/content/temp-dir')
+    os.mkdir('/home/runner/work/content-private/content-private/content/artifacts/packs')
     zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
+    artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
