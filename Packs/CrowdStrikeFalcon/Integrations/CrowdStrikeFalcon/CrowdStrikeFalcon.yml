@@ -804,7 +804,7 @@ script:
     execution: false
     outputs:
     - contextPath: CrowdStrike.DeviceID
-      description: Returns a list of device IDs on which an indicator ran.
+      description: Device IDs on which an indicator ran.
       type: string
     name: cs-device-ran-on
   dockerimage45: demisto/python3:3.8.3.9324
