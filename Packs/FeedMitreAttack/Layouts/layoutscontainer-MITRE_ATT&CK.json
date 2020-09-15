@@ -1,7 +1,7 @@
 {
- "id": "MITRE ATT\u0026CK",
+ "id": "MITRE ATT&CK",
  "group": "indicator",
- "name": "MITRE ATT\u0026CK Indicator",
+ "name": "MITRE ATT&CK Indicator",
  "version": -1,
  "fromVersion": "6.0.0",
  "indicatorsDetails": {
@@ -151,7 +151,7 @@
        {
         "args": {
          "field": {
-          "simple": "Tags"
+          "simple": "tags"
          }
         },
         "endCol": 1,
@@ -167,7 +167,7 @@
        {
         "args": {
          "field": {
-          "simple": "Tags"
+          "simple": "tags"
          }
         },
         "dropEffect": "move",
