@@ -44,7 +44,7 @@ type: javascript
 tags:
 - panorama
 - firewall
-comment: Set panorama configuration
+comment: Deprecated. Set panorama configuration
 system: true
 deprecated: true
 args:

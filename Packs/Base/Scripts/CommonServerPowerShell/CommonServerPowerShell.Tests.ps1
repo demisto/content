@@ -5,7 +5,7 @@ BeforeAll {
 
 Describe 'Check-DemistoServerRequest' {
     It 'Check that a call to demisto DemistoServerRequest mock works. Should always return an empty response' {
-        global:DemistoServerRequest @{} | Should -BeNullOrEmpty         
+        global:DemistoServerRequest @{} | Should -BeNullOrEmpty
         $demisto.GetAllSupportedCommands() | Should -BeNullOrEmpty
     }
 }
@@ -28,7 +28,7 @@ Describe 'Check-UtilityFunctions' {
         $r.Length | Should -Be 4
         $r = argToList "a"
         $r.GetType().IsArray | Should -BeTrue
-        $r[0] | Should -Be "a"        
+        $r[0] | Should -Be "a"
         $r.Length | Should -Be 1
     }
 
@@ -70,8 +70,8 @@ Describe 'Check-UtilityFunctions' {
         BeforeAll {
             Mock DemistoServerLog {}
         }
-        
-        It "ReturnError complex" {    
+
+        It "ReturnError complex" {
             # simulate an error
             Test-JSON "{badjson}" -ErrorAction SilentlyContinue -ErrorVariable err
             $msg = "this is a complex error"
@@ -81,6 +81,76 @@ Describe 'Check-UtilityFunctions' {
             # ReturnError call demisto.Error() make sure it was called
             Assert-MockCalled -CommandName DemistoServerLog -Times 2 -ParameterFilter {$level -eq "error"}
             Assert-MockCalled -CommandName DemistoServerLog -Times 1 -ParameterFilter {$msg.Contains("Cannot parse the JSON")}
+        }
+    }
+    Context "TableToMarkdown" {
+        BeforeAll {
+            $HashTableWithTwoEntries = @(
+            [ordered]@{
+                Index = '0'
+                Name = 'First element'
+            },
+            [ordered]@{
+                Index = '1'
+                Name = 'Second element'
+            }
+            )
+            $HashTableWithOneEntry = @(
+            [ordered]@{
+                Index = '0'
+                Name = 'First element'
+            })
+            $OneElementObject = @()
+            ForEach ($object in $HashTableWithOneEntry)
+            {
+                $OneElementObject += New-Object PSObject -Property $object
+            }
+            $TwoElementObject = @()
+            ForEach ($object in $HashTableWithTwoEntries)
+            {
+                $TwoElementObject += New-Object PSObject -Property $object
+            }
+            $hashTable = [ordered]@{"key1" = "value1";"key2" = "value2"}
+        }
+        It "Empty list without a name" {
+            TableToMarkdown @() | Should -Be "**No entries.**`n"
+        }
+        It "A list with one element and no name" {
+            TableToMarkdown $OneElementObject | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n"
+        }
+        It "A list with two elements and no name" {
+            TableToMarkdown $TwoElementObject | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n| 1 | Second element`n"
+        }
+        It "Empty list with a name" {
+            TableToMarkdown @() "Test Name" | Should -Be "### Test Name`n**No entries.**`n"
+        }
+        It "A list with two elements and a name" {
+            TableToMarkdown $TwoElementObject "Test Name" | Should -Be "### Test Name`n| Index | Name`n| --- | ---`n| 0 | First element`n| 1 | Second element`n"
+        }
+        It "A list with one elements and a name" {
+            TableToMarkdown $OneElementObject "Test Name" | Should -Be "### Test Name`n| Index | Name`n| --- | ---`n| 0 | First element`n"
+        }
+        It "Check alias to ConvertTo-Markdown" {
+            ConvertTo-Markdown @() "Test Name" | Should -Be "### Test Name`n**No entries.**`n"
+        }
+        It "Check with nested objects" {
+            $TwoElementObject += New-Object PSObject -Property ([ordered]@{Index = "2"; Name = $HashTableWithOneEntry})
+            TableToMarkdown $TwoElementObject "Test Name" | Should -Be "### Test Name`n| Index | Name`n| --- | ---`n| 0 | First element`n| 1 | Second element`n| 2 | \{`"Index`":`"0`",`"Name`":`"First element`"\}`n"
+        }
+        It "check with a single hashtable" {
+            $hashTable | TableToMarkdown | Should -Be "| key1 | key2`n| --- | ---`n| value1 | value2`n"
+        }
+        It "Check with a single PSObject" {
+            New-Object PSObject -Property $hashTable | TableToMarkdown | Should -Be "| key1 | key2`n| --- | ---`n| value1 | value2`n"
+        }
+        It "Check with a list of hashtables"{
+             $HashTableWithOneEntry | TableToMarkdown | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n"
+        }
+        
+    }
+    Context "Test stringEscapeMD" {
+        It "Escaping special chars"{
+            '\ ` * _ { } [ ] ( ) # + - | ! `n `r `r`n' | stringEscapeMD | Should -Be '\\ \` \* \_ \{ \} \[ \] \( \) \# \+ \- \| \! \`n \`r \`r\`n'
         }
     }
 }
