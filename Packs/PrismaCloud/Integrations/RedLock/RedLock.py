@@ -70,6 +70,8 @@ def req(method, path, data, param_data):
                     # Handle case for no remediation details
                     if status['i18nKey'] == 'remediation_unavailable':
                         return False
+                    if status['i18nKey'] == 'alert_no_longer_in_expected_state':
+                        return False
             except Exception:
                 pass
         raise Exception('Error in API call to RedLock service [%d] - %s' % (response.status_code, text))
@@ -319,7 +321,7 @@ def dismiss_alerts():
     msg_notes = ['dismissed', 'Dismissal']
 
     if snooze_value and snooze_unit:
-        payload['dissmissalTimeRange'] = {
+        payload['dismissalTimeRange'] = {
             'type': 'relative',
             'value': {
                 'unit': snooze_unit,
@@ -332,16 +334,19 @@ def dismiss_alerts():
     if not ids and not policies:
         return_error('You must specify either alert-id or policy-id for dismissing alerts')
     response = req('POST', 'alert/dismiss', payload, None)
-    context = {}
-    if ids:
-        context['Redlock.DismissedAlert.ID'] = ids
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': response,
-        'EntryContext': context,
-        'HumanReadable': '### Alerts {} successfully. {} Note: {}.'.format(msg_notes[0], msg_notes[1], demisto.getArg('dismissal-note'))
-    })
+    if response is False:
+        demisto.results("Alert not in expected state.")
+    else:
+        context = {}
+        if ids:
+            context['Redlock.DismissedAlert.ID'] = ids
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': response,
+            'EntryContext': context,
+            'HumanReadable': '### Alerts {} successfully. {} Note: {}.'.format(msg_notes[0], msg_notes[1], demisto.getArg('dismissal-note'))
+        })
 
 
 def reopen_alerts():
@@ -383,20 +388,18 @@ def translate_severity(alert):
         return 1
     return 0
 
-def get_RQL_response():
+def get_rql_response():
 
     """"
     Retrieve any RQL
     """
-    RQL = demisto.getArg('rql').encode("utf-8")
+    rql = demisto.getArg('rql').encode("utf-8")
 
-    payload = {"query":RQL, "filter": {}}
+    payload = {"query":rql, "filter": {}}
 
     handle_filters(payload['filter'])
     handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
 
-    if not RQL:
-        return_error('You must specify an RQL to retrieve the response')
     response = req('POST', 'search/config', payload, None)
     #MD = tableToMarkdown("RQLoutput", response)
     #TODO add check here that data exists
@@ -424,8 +427,10 @@ def remediate_alerts():
         return_error('You must specify the alert-id to retrieve with CLI remediation')
 
     response = req('PATCH', 'alert/remediation/'+ demisto.getArg('alert-id'), None, None)
-
-    demisto.results(str(response))
+    if response is False:
+        demisto.results("Alert remediation not available. Check alert status")
+    else:
+        demisto.results("Alert remediated successfully")
 
 
 def get_remediation_details():
@@ -436,9 +441,6 @@ def get_remediation_details():
     payload = {'alerts': alert_ids, 'filter': {}}
     handle_filters(payload['filter'])
     handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
-
-    if not alert_ids:
-        return_error('You must specify the alert-id to retrieve with CLI remediation')
 
     md_data = []
     context = []
@@ -526,8 +528,8 @@ try:
         reopen_alerts()
     elif demisto.command() == 'redlock-get-remediation-details':
         get_remediation_details()
-    elif demisto.command() == 'redlock-get-RQL-response':
-        get_RQL_response()
+    elif demisto.command() == 'redlock-get-rql-response':
+        get_rql_response()
     elif demisto.command() == 'redlock-remediate-alerts':
         remediate_alerts()
     elif demisto.command() == 'fetch-incidents':

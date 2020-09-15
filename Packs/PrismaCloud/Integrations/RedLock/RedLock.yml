@@ -54,7 +54,7 @@ script:
   type: python
   subtype: python2
   commands:
-  - name: redlock-get-RQL-response
+  - name: redlock-get-rql-response
     description: Run RQL query on Prisma Cloud
     arguments:
     - name: rql  
@@ -68,7 +68,7 @@ script:
     - name: alert-id
       required: true
       default: false
-      isArray: false
+      isArray: true
       description: The alert id to remediate
   - name: redlock-search-alerts
     arguments:
