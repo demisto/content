@@ -577,7 +577,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             'request_timeout': 50,
             'credentials': {},
             'url': 'some_base_url',
-            'firstFetchTimestamp': '10 hours'
+            'first_fetch': '10 hours'
         }
 
         from BMCHelixRemedyforce import main
@@ -743,7 +743,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         params = {
             'category': 'category',
             'impact': 'impact',
-            'max_incidents': '10',
+            'max_fetch': '10',
             'type': 'Incident'
         }
         fields = 'BMCServiceDesk__Category_ID__c=\'category\' and BMCServiceDesk__Impact_Id__c=\'impact\' and '
@@ -804,7 +804,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         params = {
             'category': 'category',
             'impact': 'impact',
-            'max_incidents': 10,
+            'max_fetch': 10,
             'type': 'Incident'
         }
 
@@ -861,7 +861,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             'credentials': {},
             'url': 'some_base_url',
             'type': 'Incident',
-            'firstFetchTimestamp': '10 hours'
+            'first_fetch': '10 hours'
         }
         args[7].return_value = {}
         args[6].return_value = []
@@ -1519,7 +1519,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         from BMCHelixRemedyforce import validate_params_for_fetch_incidents
         params = {
             'isFetch': True,
-            'max_incidents': '10',
+            'max_fetch': '10',
         }
         # type validation
         with pytest.raises(ValueError):
