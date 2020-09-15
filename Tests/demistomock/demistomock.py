@@ -741,18 +741,14 @@ def incidents(incidents=None):
         )
 
 
-def incident(incident=None):
-    """In a script, retrieves the current incident
-    In an integration, used to return an incident to the server
-
-    Args:
-      incident (dict): In integration only, dict representing an incident objects (Default value = None)
+def incident():
+    """Retrieves the current incident
 
     Returns:
       dict: dict representing an incident object
 
     """
-    return incidents(incident)[0]
+    return incidents()[0]
 
 
 def setContext(contextPath, value):
