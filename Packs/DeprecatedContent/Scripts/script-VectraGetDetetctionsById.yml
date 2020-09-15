@@ -20,7 +20,7 @@ type: python
 subtype: python2
 tags:
 - Vectra
-comment: Get detections by host id
+comment: Deprecated. Get detections by host id
 system: true
 args:
 - description: The id of the required detection

@@ -44,7 +44,7 @@ type: python
 subtype: python2
 tags:
 - protectwise
-comment: Query for ProtectWise observations. Supports a comma-separated list of sensor
+comment: Deprecated. Query for ProtectWise observations. Supports a comma-separated list of sensor
   IDs - will query each sensor with the given parameters.
 system: true
 args:
