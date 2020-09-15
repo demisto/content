@@ -54,6 +54,8 @@ def upload_premium_pack_to_private_testing_bucket(premium_pack, private_testing_
 
 
 def main():
+    os.mkdir('/home/runner/work/content-private/content-private/content/artifacts/packs')
+    os.mkdir('/home/runner/work/content-private/content-private/content/temp-dir')
     upload_config = option_handler()
     path_to_artifacts = upload_config.artifacts_path
     extract_destination_path = upload_config.extract_path

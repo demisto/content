@@ -825,7 +825,7 @@ class Pack(object):
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
 
-            shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content-private/content/artifacts/{self._pack_name}.zip')
+            shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content-private/content/temp-dir/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)

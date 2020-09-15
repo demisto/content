@@ -205,8 +205,6 @@ def main():
     branch_name = option.branch_name
     gcp_path = option.gcp_path
     remove_test_playbooks = option.remove_test_playbooks
-    os.mkdir('/home/runner/work/content-private/content-private/content/temp-dir')
-    os.mkdir('/home/runner/work/content-private/content-private/content/artifacts/packs')
     zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
     artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
 
