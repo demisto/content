@@ -26,13 +26,12 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 1. Search for ServiceNow v2.
 1. Click **Add instance** to create and configure a new integration instance.
 1. To ensure that mirroring works:
-    1. Select the **Fetches incidents** radio button.
-    1. Under **Classifier**, select ServiceNow Classifier.
-    1. Under **Incident type**, select ServiceNowTicket.
-    1. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
-    1. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
-    1. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select the
-**Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** checkboxes, respectively.
+   1. Select the **Fetches incidents** radio button.
+   1. Under **Classifier**, select ServiceNow Classifier.
+   1. Under **Incident type**, select ServiceNowTicket.
+   1. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
+   1. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
+   1. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select the **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** checkboxes, respectively.
 
 ![image](https://raw.githubusercontent.com/demisto/content/8038ce7e02dfd47b75adc9bedf1f7e9747dd77d5/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
 
