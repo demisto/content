@@ -57,8 +57,12 @@ def main():
     packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
     temp_dir = '/home/runner/work/content-private/content-private/content/temp-dir'
     if not os.path.exists(packs_dir):
+        print("Could not locate packs dir.")
+        print(str(os.getcwd()))
         os.mkdir(packs_dir)
     if not os.path.exists(temp_dir):
+        print("Could not locate temp dir.")
+        print(str(os.getcwd()))
         os.mkdir(temp_dir)
     upload_config = option_handler()
     path_to_artifacts = upload_config.artifacts_path

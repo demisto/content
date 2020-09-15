@@ -147,6 +147,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
                 print(f'Downloading pack from GCP: {pack.name}')
                 executor_submit(executor, download_path, blob)
                 sleep(1)
+                print(f"Copying pack from {download_path} to /home/runner/work/content-private/content-private/content/artifacts/packs/{pack.name}.zip")
                 shutil.copy(download_path,
                             f'/home/runner/work/content-private/content-private/content/artifacts/packs/{pack.name}.zip')
             else:
@@ -208,8 +209,10 @@ def main():
     packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
     zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
     if not os.path.exists(packs_dir):
+        print("Packs dir not found. Creating.")
         os.mkdir(packs_dir)
     if not os.path.exists(zip_path):
+        print("Temp dir not found. Creating.")
         os.mkdir(zip_path)
     artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
 
