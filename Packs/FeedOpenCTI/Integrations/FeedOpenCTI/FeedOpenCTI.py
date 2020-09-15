@@ -27,7 +27,7 @@ XSOHR_TYPES = {
 }
 
 
-def get_indicators(client, indicator_type: [str], last_run_id: Optional[bool] = None, limit: Optional[int] = None)\
+def get_indicators(client, indicator_type: [str], limit: int, last_run_id: Optional[bool] = None)\
         -> Tuple[str, list]:
     """ Retrieving indicators from the API
 
@@ -61,20 +61,20 @@ def get_indicators(client, indicator_type: [str], last_run_id: Optional[bool] = 
     return new_last_run, indicators
 
 
-def fetch_indicators_command(client, indicator_type: list, max_fetch: int = None) -> list:
+def fetch_indicators_command(client, indicator_type: list, max_fetch: int) -> list:
     """ fetch indicators from the OpenCTI
 
     Args:
         client: OpenCTI Client object
         indicator_type(list): List of indicators types to get.
-        max_fetch: int max indicators to fetch
+        max_fetch: (int) max indicators to fetch
 
     Returns:
         list of indicators(list)
     """
     last_run_id = demisto.getIntegrationContext().get('last_run_id')
 
-    new_last_run, indicators_list = get_indicators(client, indicator_type, last_run_id, max_fetch)
+    new_last_run, indicators_list = get_indicators(client, indicator_type, max_fetch, last_run_id)
 
     if new_last_run:
         demisto.setIntegrationContext({'last_run_id': new_last_run})
@@ -96,7 +96,7 @@ def get_indicators_command(client, args: dict) -> CommandResults:
 
     last_run_id = args.get('last_id')
     limit = int(args.get('limit', 500))
-    last_run_id, indicators_list = get_indicators(client, indicator_type, last_run_id, limit)
+    last_run_id, indicators_list = get_indicators(client, indicator_type, limit, last_run_id)
     if indicators_list:
         readable_output = tableToMarkdown('Indicators from OpenCTI', indicators_list, headers=["type", "value"])
         return CommandResults(
@@ -116,7 +116,11 @@ def main():
     if base_url.endswith('/'):
         base_url = base_url[:-1]
     indicator_types = params.get('indicator_types')
-    max_fetch = demisto.params().get('max_indicator_to_fetch', 500)
+    max_fetch = params.get('max_indicator_to_fetch')
+    if max_fetch:
+        max_fetch = int(max_fetch)
+    else:
+        max_fetch = 500
 
     try:
         client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'))
