@@ -3,13 +3,14 @@ version: -1
 name: Extract Indicators From File - Generic
 fromversion: 4.1.0
 description: |-
-  Extracts indicators from a file.
+  Deprecated. Extracts indicators from a file.
   Supported file types:
   - PDF
   - TXT
   - HTM, HTML
   - DOC, DOCX
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
