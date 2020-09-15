@@ -165,9 +165,10 @@ def test_function(client, _):
        Performs basic GET request to check if the API is reachable and authentication is successful.
        Returns ok if successful.
        """
-    response = 'ok'
+    response = '```✅ Success!```'
+    # response = 'ok'
     if demisto.params().get('self_deployed', False):
-        response = '```✅ Success!```'
+        # response = '```✅ Success!```'
         if demisto.command() == 'test-module':
             # cannot use test module due to the lack of ability to set refresh token to integration context
             # for self deployed app
