@@ -66,6 +66,18 @@ script:
         serverUrl = serverUrl.substring(0, serverUrl.length - 1);
     }
 
+    // return the value in boolean of the arg.
+    function argToBool(arg){
+        switch (typeof(arg)){
+            case 'string':
+                return arg.toLowerCase() === 'true';
+            case 'boolean':
+                return arg;
+            default:
+                return false;
+        }
+    }
+
     function entryError(errorCode, text) {
         var error = 'Falcon Sandbox returned an error (' + errorCode + ') - ' + text;
         return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: error};
@@ -95,7 +107,7 @@ script:
         };
     }
 
-    function sendRequest(method, endpoint, body) {
+    function sendRequest(method, endpoint, body, dontThrowError) {
         var requestUrl = serverUrl + endpoint;
         var res = http(
             requestUrl,
@@ -107,9 +119,12 @@ script:
             insecure,
             proxy
         );
-
-        if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res, null, 2) + '.';
+        if  (res.StatusCode < 200 || res.StatusCode >= 300) {
+                if (dontThrowError){
+                    return res;
+                } else {
+                    throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res, null, 2) + '.';
+                }
         }
         var responseBody;
         try {
@@ -118,6 +133,10 @@ script:
             responseBody = res.Bytes;
         }
         return responseBody;
+    }
+
+    function sendRequest(method, endpoint, body){
+        return sendRequest(method, endpoint, body, false)
     }
 
     function scan(hash) {
@@ -606,11 +625,19 @@ script:
         throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
     }
 
-    function submitUrlCmd(url, environmentID) {
+    function submitUrlCmd(url, environmentID, dontThrowErrorOnUnsupportedFileType) {
         if (version === 'v1') {
             throw 'This command is supported only in API v2.'
         }
-        var response = submitUrl(url, environmentID);
+        var response = submitUrl(url, environmentID, !dontThrowErrorOnUnsupportedFileType);
+        // Unsupported URL, do not throw exception but an entry.
+        if (typeof(response) == 'string'){
+            return {
+                Type: entryTypes.note,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: response,
+            };
+        }
         var context = {
             'File(val.hash && val.hash === obj.hash)': {
                 'SHA256': response['sha256'],
@@ -625,11 +652,23 @@ script:
         return createTableEntry(title, response, response, context);
     }
 
-    function submitUrl(url, environmentID) {
+    function submitUrl(url, environmentID, throwErrorOnUnsupportedFileType) {
         var cmdUrl = '/api/v2/submit/url-for-analysis';
         var body = 'url=' + encodeURIComponent(url) + '&environment_id=' + environmentID;
+        var unsupportedErrorMessage = 'The provided URL resolves to a file. Please use endpoint that allows analyze files from URL';
         HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
-        return sendRequest('POST', cmdUrl, body);
+        res = sendRequest('POST', cmdUrl, body, throwErrorOnUnsupportedFileType);
+        var errorString = 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res, null, 2) + '.';
+        if (res.StatusCode == 400){
+            // throw any error
+            if (throwErrorOnUnsupportedFileType){
+                throw errorString;
+            // throw only if not unsupportedErrorMessage
+            } else if (res.message !== unsupportedErrorMessage){
+                return res.message;
+            }
+        }
+        return res;
     }
 
     function getScreenshotsCmd(file, environmentID, jobID) {
@@ -790,7 +829,7 @@ script:
         case 'crowdstrike-detonate-file':
             return detonateFile(args.entryId, args.delay, args.timeout);
         case 'crowdstrike-submit-url':
-            return submitUrlCmd(args.url, args.environmentID);
+            return submitUrlCmd(args.url, args.environmentID, argToBool(args.dontThrowErrorOnUnsupportedFileType));
         case 'crowdstrike-get-screenshots':
             return getScreenshotsCmd(args.file, args.environmentID, args.JobID);
         case 'file':
@@ -1304,6 +1343,13 @@ script:
       required: true
       description: Environment ID to submit URL to
       defaultValue: "100"
+    - name: dontThrowErrorOnUnsupportedFileType
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Not throwing error on unsupported file type.
+      defaultValue: "false"
     outputs:
     - contextPath: File.SHA256
       description: File SHA256
