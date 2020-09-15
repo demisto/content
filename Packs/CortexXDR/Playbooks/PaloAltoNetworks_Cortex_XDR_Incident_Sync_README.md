@@ -1,4 +1,5 @@
 Compares incidents in Palo Alto Networks Cortex XDR and Demisto, and updates the incidents appropriately. When an incident is updated in Demisto, the XDRSyncScript will update the incident in XDR. When an incident is updated in XDR, the XDRSyncScript will update the incident fields in Demisto and rerun the current playbook.
+Please refrain from using this playbook when enabling the incident mirroring feature added in XSOAR versio 6.0.0.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

@@ -1,11 +1,12 @@
 id: Cortex XDR Incident Sync
 version: -1
 name: Cortex XDR Incident Sync
-fromversion: 6.0.0
+fromversion: 5.0.0
 description: Compares incidents in Palo Alto Networks Cortex XDR and Demisto, and
   updates the incidents appropriately. When an incident is updated in Demisto, the XDRSyncScript
   will update the incident in XDR. When an incident is updated in XDR, the XDRSyncScript
   will update the incident fields in Demisto and rerun the current playbook.
+  Please refrain from using this playbook when enabling the incident mirroring feature added in XSOAR versio 6.0.0.
 starttaskid: "0"
 tasks:
   "0":
@@ -230,6 +231,5 @@ view: |-
   }
 inputs: []
 outputs: []
-hidden: true
 tests:
   - No test
