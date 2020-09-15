@@ -1184,9 +1184,9 @@ def fetch_incidents():
     """
     incidents = []  # type:List
 
-    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections', '')
+    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
 
-    if 'Detections' in fetch_incidents_or_detections or not fetch_incidents_or_detections:
+    if 'Detections' in fetch_incidents_or_detections:
         incident_type = 'detection'
         last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(incident_type)
 

@@ -47,8 +47,8 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Choose what to fetch - incidents or detections or both
-  defaultvalue: detections
-  display: Choose what to fetch
+  defaultvalue: Detections
+  display: Fetch types
   hidden: false
   name: fetch_incidents_or_detections
   options:
@@ -1055,10 +1055,12 @@ script:
       description: The device host name.
       type: String
     - contextPath: CrowdStrike.Detections.device.first_seen
-      description: The datetime value representing the time at which the host was first seen by CrowdStrike.
+      description: The datetime value representing the time at which the host was
+        first seen by CrowdStrike.
       type: Date
     - contextPath: CrowdStrike.Detections.device.last_seen
-      description: The datetime value representing the time at which the host was last seen by CrowdStrike.
+      description: The datetime value representing the time at which the host was
+        last seen by CrowdStrike.
       type: Date
     - contextPath: CrowdStrike.Detections.device.local_ip
       description: The device's local IP address.
@@ -1082,10 +1084,12 @@ script:
       description: The device platform name.
       type: String
     - contextPath: CrowdStrike.Detections.device.product_type_desc
-      description: The value indicating the product type. E.g. 1 = Workstation, 2 = Domain Controller, 3 = Server.
+      description: The value indicating the product type. E.g. 1 = Workstation, 2
+        = Domain Controller, 3 = Server.
       type: String
     - contextPath: CrowdStrike.Detections.device.status
-      description: The containment status of the machine. Values include normal, containment_pending, contained, and lift_containment_pending.
+      description: The containment status of the machine. Values include normal, containment_pending,
+        contained, and lift_containment_pending.
       type: String
     - contextPath: CrowdStrike.Detections.device.system_manufacturer
       description: The system manufacturer for the device.
@@ -1094,7 +1098,8 @@ script:
       description: The system product name.
       type: String
     - contextPath: CrowdStrike.Detections.device.modified_timestamp
-      description: The datetime value representing the time at which the host was last modified.
+      description: The datetime value representing the time at which the host was
+        last modified.
       type: Date
     - contextPath: CrowdStrike.Detections.behaviors.device_id
       description: The Device ID of the device associated with the behavior.
@@ -1127,19 +1132,23 @@ script:
       description: The name of the technique associated to the behavior.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.severity
-      description: Severity rating for the behavior. Value can be any integer between 1-100.
+      description: Severity rating for the behavior. Value can be any integer between
+        1-100.
       type: Number
     - contextPath: CrowdStrike.Detections.behaviors.confidence
-      description: True positive confidence rating for the behavior. Value can be any integer between 1-100.
+      description: True positive confidence rating for the behavior. Value can be
+        any integer between 1-100.
       type: Number
     - contextPath: CrowdStrike.Detections.behaviors.ioc_type
-      description: The type of the triggering IOC. Values include hash_sha256, hash_md5,domain,filename,registry_key,command_line, and behavior.
+      description: The type of the triggering IOC. Values include hash_sha256, hash_md5,domain,filename,registry_key,command_line,
+        and behavior.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_value
       description: The IOC value.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_source
-      description: Source that triggered an IOC detection. Values include library_load, primary_module, file_read, and file_write.
+      description: Source that triggered an IOC detection. Values include library_load,
+        primary_module, file_read, and file_write.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_description
       description: The IOC description.
@@ -1229,13 +1238,16 @@ script:
       description: The timestamp of the last behavior.
       type: Date
     - contextPath: CrowdStrike.Detections.max_confidence
-      description: The highest confidence value of all behaviors. Value can be any integer between 1-100.
+      description: The highest confidence value of all behaviors. Value can be any
+        integer between 1-100.
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity
-      description: The highest severity value of all behaviors. Value can be any integer between 1-100.
+      description: The highest severity value of all behaviors. Value can be any integer
+        between 1-100.
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity_displayname
-      description: The name used in the UI to determine the severity of the detection. Values include Critical, High, Medium, and Low.
+      description: The name used in the UI to determine the severity of the detection.
+        Values include Critical, High, Medium, and Low.
       type: String
     - contextPath: CrowdStrike.Detections.show_in_ui
       description: Is the detection show in UI.
@@ -1247,7 +1259,8 @@ script:
       description: The UID of the user the detection is assigned to.
       type: String
     - contextPath: CrowdStrike.Detections.assigned_to_name
-      description: The human-readable name of the user to whom the detection is currently assigned.
+      description: The human-readable name of the user to whom the detection is currently
+        assigned.
       type: String
     - contextPath: CrowdStrike.Detections.hostinfo.domain
       description: The ActiveDirectory domain.
@@ -1256,7 +1269,8 @@ script:
       description: Time that it took to move a detection from new to in_progress.
       type: Number
     - contextPath: CrowdStrike.Detections.seconds_to_resolved
-      description: Time that it took to move a detection from newand one of the resolved states (true_positive, false_positive, and ignored).
+      description: Time that it took to move a detection from newand one of the resolved
+        states (true_positive, false_positive, and ignored).
       type: Number
   - arguments:
     - default: false
@@ -1316,10 +1330,12 @@ script:
       description: The hosts's name.
       type: String
     - contextPath: CrowdStrike.Incidents.hosts.first_seen
-      description: Datetime value representing the time at which the host was first seen by CrowdStrike.
+      description: Datetime value representing the time at which the host was first
+        seen by CrowdStrike.
       type: Date
     - contextPath: CrowdStrike.Incidents.hosts.last_seen
-      description: Datetime value representing the time at which the host was last seen by CrowdStrike.
+      description: Datetime value representing the time at which the host was last
+        seen by CrowdStrike.
       type: Date
     - contextPath: CrowdStrike.Incidents.hosts.local_ip
       description: The device's local IP address.
@@ -1343,10 +1359,12 @@ script:
       description: Host platform name.
       type: String
     - contextPath: CrowdStrike.Incidents.hosts.product_type_desc
-      description: Value indicating the product type. E.g. 1 = Workstation, 2 = Domain Controller, 3 = Server.
+      description: Value indicating the product type. E.g. 1 = Workstation, 2 = Domain
+        Controller, 3 = Server.
       type: String
     - contextPath: CrowdStrike.Incidents.hosts.status
-      description: The incident status as number - 20 - New, 25 - Reopened, 30 - In Progress, 40 - Closed.
+      description: The incident status as number - 20 - New, 25 - Reopened, 30 - In
+        Progress, 40 - Closed.
       type: String
     - contextPath: CrowdStrike.Incidents.hosts.system_manufacturer
       description: System manufacturer for the device.
@@ -1384,7 +1402,6 @@ script:
     - contextPath: CrowdStrike.Incidents.fine_score
       description: The incident score.
       type: Number
-
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
