@@ -616,6 +616,7 @@ def test_module():
     if token and threshold_is_integer and 0 <= int(threshold) <= 10:
         demisto.results('ok')
 
+
 def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
     entry_context = []
     for i in indicators:
@@ -634,6 +635,7 @@ def aggregate_search_results(indicators, default_indicator_type, generic_context
                 aggregated[key] = [value]
 
     return aggregated
+
 
 def search_by_name_command():
     args = demisto.args()
