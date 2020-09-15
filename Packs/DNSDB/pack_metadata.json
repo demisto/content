@@ -16,8 +16,8 @@
         "dnsdb"
     ],
     "githubUser": [
-	    "farsightsec",
-	    "dnsdb"
+        "farsightsec",
+        "dnsdb"
     ],
     "created": "2020-04-14T00:00:00Z",
     "updated": "2020-07-20T00:00:00Z",
@@ -25,5 +25,13 @@
     "deprecated": false,
     "useCases": [],
     "keywords": [],
-    "dependencies": {}
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts"
+    ]
 }
