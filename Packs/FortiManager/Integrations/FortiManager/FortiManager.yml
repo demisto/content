@@ -54,6 +54,24 @@ script:
       name: adom
       required: false
       secret: false
+    - default: false
+      description: From which index to start the list.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which index to get the list.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: The name of a specific address to fetch.
+      isArray: false
+      name: address
+      required: false
+      secret: false
     deprecated: false
     description: List ADOM firewall IPv4 addresses
     execution: false
@@ -64,6 +82,24 @@ script:
         use the instance ADOM.
       isArray: false
       name: adom
+      required: false
+      secret: false
+    - default: false
+      description: From which index to start the list.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which index to get the list.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: Name for a specific address group to fetch.
+      isArray: false
+      name: address_group
       required: false
       secret: false
     deprecated: false
@@ -78,6 +114,24 @@ script:
       name: adom
       required: false
       secret: false
+    - default: false
+      description: From which index to start the list.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which index to get the list.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: Name of a specific category to fetch
+      isArray: false
+      name: service_category
+      required: false
+      secret: false
     deprecated: false
     description: List ADOM service categories
     execution: false
@@ -90,6 +144,24 @@ script:
       name: adom
       required: false
       secret: false
+    - default: false
+      description: From which index to start the list.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which index to get the list.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: Name of a specific service group to fetch.
+      isArray: false
+      name: service_group
+      required: false
+      secret: false
     deprecated: false
     description: List ADOM service groups
     execution: false
@@ -100,6 +172,24 @@ script:
         empty to use the instance ADOM.
       isArray: false
       name: adom
+      required: false
+      secret: false
+    - default: false
+      description: From which index to start the list.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which index to get the list.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: Name of a specific policy package to fetch.
+      isArray: false
+      name: policy_package
       required: false
       secret: false
     deprecated: false
@@ -118,6 +208,18 @@ script:
         instance ADOM.
       isArray: false
       name: adom
+      required: false
+      secret: false
+    - default: false
+      description: From which index to start the list.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which index to get the list.
+      isArray: false
+      name: to
       required: false
       secret: false
     deprecated: false
@@ -985,7 +1087,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The policy we want to delete
+      description: The policy we want to delete.
       isArray: false
       name: policy
       required: true
@@ -1000,6 +1102,24 @@ script:
         use the instance ADOM.
       isArray: false
       name: adom
+      required: false
+      secret: false
+    - default: false
+      description: From which index to start the list.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which index to get the list.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: Name of a specific custom service to fetch.
+      isArray: false
+      name: custom_service
       required: false
       secret: false
     deprecated: false
@@ -1151,7 +1271,7 @@ script:
     - default: false
       description: Multiple SCTP port ranges.
       isArray: false
-      name: 'sctp_portrange '
+      name: sctp_portrange
       required: false
       secret: false
     - default: false
@@ -1194,13 +1314,13 @@ script:
       defaultValue: '0'
       description: UDP half close timeout (0 - 86400 sec).
       isArray: false
-      name: "udp_idle_timer\t"
+      name: udp_idle_timer
       required: false
       secret: false
     - default: false
       description: Multiple UDP port ranges.
       isArray: false
-      name: "udp_portrange\t"
+      name: udp_portrange
       required: false
       secret: false
     deprecated: false
@@ -1352,7 +1472,7 @@ script:
     - default: false
       description: Multiple SCTP port ranges.
       isArray: false
-      name: 'sctp_portrange '
+      name: sctp_portrange
       required: false
       secret: false
     - default: false
@@ -1395,13 +1515,13 @@ script:
       defaultValue: '0'
       description: UDP half close timeout (0 - 86400 sec).
       isArray: false
-      name: "udp_idle_timer\t"
+      name: udp_idle_timer
       required: false
       secret: false
     - default: false
       description: Multiple UDP port ranges.
       isArray: false
-      name: "udp_portrange\t"
+      name: udp_portrange
       required: false
       secret: false
     deprecated: false
@@ -1426,6 +1546,71 @@ script:
     description: Delete a custom service.
     execution: false
     name: fortimanager-custom-service-delete
+  - arguments:
+    - default: false
+      description: The ADOM from which to move the policy. Leave empty to use the
+        default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The policy package from which we want to move the policy.
+      isArray: false
+      name: package
+      required: true
+      secret: false
+    - default: false
+      description: The policy we want to move.
+      isArray: false
+      name: policy
+      required: true
+      secret: false
+    - default: false
+      description: The target policy by which we want to move the policy.
+      isArray: false
+      name: target
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: before
+      description: Wheter to move the policy before or after the target policy.
+      isArray: false
+      name: option
+      predefined:
+      - before
+      - after
+      required: true
+      secret: false
+    deprecated: false
+    description: Move a policy in the package
+    execution: false
+    name: fortimanager-firewall-policy-move
+  - arguments:
+    - default: false
+      description: The ADOM from which to list dynamic interfaces. Leave empty to
+        use the default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: From which index to start the list.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which index to get the list.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    deprecated: false
+    description: List dynamic interfaces
+    execution: false
+    name: fortimanager-dynamic-interface-list
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true

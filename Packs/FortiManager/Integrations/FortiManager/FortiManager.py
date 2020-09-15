@@ -83,6 +83,30 @@ def setup_request_data(args, excluded_args):
     return {key.replace('_', '-'): args.get(key) for key in args if key not in excluded_args}
 
 
+def get_specific_entity(entity_name):
+    if entity_name:
+        return f"/{entity_name}"
+    else:
+        return ""
+
+
+def get_range_for_list_command(args):
+    first_index = args.get('from')
+    last_index = args.get('to')
+    list_range = []
+
+    if first_index:
+        list_range.append(first_index)
+
+    if last_index:
+        list_range.append(list_range)
+
+    if list_range:
+        return {"range": [list_range]}
+    else:
+        return None
+
+
 def list_adom_devices_command(client):
     devices_data = client.fortimanager_http_request("get", f"/dvmdb/adom/{client.adom}/device")
 
@@ -111,7 +135,9 @@ def list_adom_devices_groups_command(client):
 
 def list_firewall_addresses_command(client, args):
     firewall_addresses = client.fortimanager_http_request("get", f"/pm/config/{get_global_or_adom(client, args)}"
-                                                                 f"/obj/firewall/address")
+                                                                 f"/obj/firewall/address"
+                                                                 f"{get_specific_entity(args.get('address'))}",
+                                                          data=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.Address',
@@ -124,9 +150,11 @@ def list_firewall_addresses_command(client, args):
 
 
 def list_firewall_address_groups_command(client, args):
+    address_group = get_specific_entity(args.get('address_group'))
     firewall_address_groups = client.fortimanager_http_request("get", f"/pm/config/"
                                                                       f"{get_global_or_adom(client, args)}"
-                                                                      f"/obj/firewall/addrgrp")
+                                                                      f"/obj/firewall/addrgrp{address_group}",
+                                                               data=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.AddressGroup',
@@ -141,7 +169,9 @@ def list_firewall_address_groups_command(client, args):
 def list_service_categories_command(client, args):
     service_categories = client.fortimanager_http_request("get", f"/pm/config/"
                                                                  f"{get_global_or_adom(client, args)}/"
-                                                                 f"obj/firewall/service/category")
+                                                                 f"obj/firewall/service/category"
+                                                                 f"{get_specific_entity(args.get('service_category'))}",
+                                                          data=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.ServiceCategory',
@@ -156,7 +186,9 @@ def list_service_categories_command(client, args):
 def list_service_groups_command(client, args):
     service_groups = client.fortimanager_http_request("get", f"/pm/config/"
                                                              f"{get_global_or_adom(client, args)}"
-                                                             f"/obj/firewall/service/group")
+                                                             f"/obj/firewall/service/group"
+                                                             f"{get_specific_entity(args.get('service_group'))}",
+                                                      data=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.ServiceGroup',
@@ -171,7 +203,9 @@ def list_service_groups_command(client, args):
 def list_custom_service_command(client, args):
     custom_services = client.fortimanager_http_request("get", f"/pm/config/"
                                                               f"{get_global_or_adom(client, args)}"
-                                                              f"/obj/firewall/service/custom")
+                                                              f"/obj/firewall/service/custom"
+                                                              f"{get_specific_entity(args.get('custom_service'))}",
+                                                       data=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.CustomServices',
@@ -184,7 +218,9 @@ def list_custom_service_command(client, args):
 
 
 def list_policy_packages_command(client, args):
-    policy_packages = client.fortimanager_http_request("get", f"pm/pkg/{get_global_or_adom(client, args)}")
+    policy_packages = client.fortimanager_http_request("get", f"pm/pkg/{get_global_or_adom(client, args)}"
+                                                              f"{get_specific_entity(args.get('policy_package'))}",
+                                                       data=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.PolicyPackage',
@@ -199,7 +235,8 @@ def list_policy_packages_command(client, args):
 def list_policies_command(client, args):
     policies = client.fortimanager_http_request("get", f"/pm/config/"
                                                        f"{get_global_or_adom(client, args)}"
-                                                       f"/pkg/{args.get('package')}/firewall/policy")
+                                                       f"/pkg/{args.get('package')}/firewall/policy",
+                                                data=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.PolicyPackage.Policy',
@@ -382,6 +419,30 @@ def delete_custom_service_command(client, args):
     return f"Deleted Custom Service {args.get('custom')}"
 
 
+def move_policy_command(client, args):
+    client.fortimanager_http_request("move", f"/pm/config/{get_global_or_adom(client, args)}"
+                                             f"/pkg/{args.get('package')}/firewall/policy/{args.get('policy')}",
+                                     data=setup_request_data(args, ['adom', 'package', 'policy']))
+
+    return f"Created policy with ID {args.get('policy')}"
+
+
+def list_dynamic_interface_command(client, args):
+    dynamic_interfaces = client.fortimanager_http_request("get", f"/pm/config/"
+                                                                 f"{get_global_or_adom(client, args)}"
+                                                                 f"/obj/dynamic/interface",
+                                                          data=get_range_for_list_command(args))
+
+    return CommandResults(
+        outputs_prefix='FortiManager.DynamicInterface',
+        outputs_key_field='name',
+        outputs=dynamic_interfaces,
+        readable_output=tableToMarkdown(f"ADOM {client.adom} Dynamic Interfaces",
+                                        dynamic_interfaces, removeNull=True, headerTransform=string_to_table_header),
+        raw_response=dynamic_interfaces,
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -393,26 +454,10 @@ def main() -> None:
     """
 
     creds = demisto.params().get('creds')
-
-    # get the service API url
     base_url = demisto.params().get('url')
-
     adom = demisto.params().get('adom')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
-
-    # INTEGRATION DEVELOPER TIP
-    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
-    # etc. to print information in the XSOAR server log. You can set the log
-    # level on the server configuration
-    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -509,6 +554,12 @@ def main() -> None:
 
         elif demisto.command() == 'fortimanager-custom-service-delete':
             return_results(delete_custom_service_command(client, demisto.args()))
+
+        elif demisto.command() == 'fortimanager-firewall-policy-move':
+            return_results(move_policy_command(client, demisto.args()))
+
+        elif demisto.command() == 'fortimanager-dynamic-interface-list':
+            return_results(list_dynamic_interface_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception:
