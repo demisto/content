@@ -11,7 +11,7 @@ USER=$(echo $1 | cut -d ":" -f 1)
 BRANCH=$(echo $1 | cut -d ":" -f 2)
 
 if [[ $2 == "true" ]]; then
-    git checkout demisto-master
+    git checkout master
     git pull
 fi
 
