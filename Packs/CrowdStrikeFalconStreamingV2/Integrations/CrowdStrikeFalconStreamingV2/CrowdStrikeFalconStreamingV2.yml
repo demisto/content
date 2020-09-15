@@ -19,6 +19,14 @@ configuration:
   name: client_secret
   required: true
   type: 4
+- additionalinfo: Allows running multiple clients (stream consumers) simultaneously,
+    as each integration instance needs a unique application ID.
+  defaultvalue: Demisto
+  display: Application ID
+  hidden: false
+  name: app_id
+  required: false
+  type: 0
 - defaultvalue: true
   display: Long running instance
   name: longRunning

@@ -25,7 +25,7 @@ args:
 - name: value
   description: Optional value to compare to context. If not provided will check only
     existence.
-comment: Check if a context key is set. Can also optionally provide a value argument to compare against context data for this key.
+comment: Deprecated. Check if a context key is set. Can also optionally provide a value argument to compare against context data for this key.
 scripttarget: 0
 dependson: {}
 timeout: 0s
