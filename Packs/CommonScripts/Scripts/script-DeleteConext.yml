@@ -138,4 +138,3 @@ args:
 scripttarget: 0
 runonce: false
 sensitive: true
-runas: DBotRole
