@@ -205,7 +205,12 @@ def main():
     branch_name = option.branch_name
     gcp_path = option.gcp_path
     remove_test_playbooks = option.remove_test_playbooks
+    packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
     zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
+    if not os.path.exists(packs_dir):
+        os.mkdir(packs_dir)
+    if not os.path.exists(zip_path):
+        os.mkdir(zip_path)
     artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
 
     # google cloud storage client initialized

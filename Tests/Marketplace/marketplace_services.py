@@ -825,6 +825,10 @@ class Pack(object):
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
 
+            temp_dir = '/home/runner/work/content-private/content-private/content/temp-dir'
+            if not os.path.exists(temp_dir):
+                os.mkdir(temp_dir)
+
             shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content-private/content/temp-dir/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
