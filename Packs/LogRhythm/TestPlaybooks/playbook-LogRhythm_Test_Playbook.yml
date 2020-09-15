@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: c7214378-cb07-49ed-866f-8ba5bc54d3b8
+    taskid: ee87721d-2353-4386-86d1-a0fb3d90bc00
     type: regular
     task:
-      id: c7214378-cb07-49ed-866f-8ba5bc54d3b8
+      id: ee87721d-2353-4386-86d1-a0fb3d90bc00
       version: -1
       name: Get alarm by id
       description: Retrieve alarms in a given time period, optionally filtered by
@@ -48,7 +48,7 @@ tasks:
       - "10"
     scriptarguments:
       alarm-id:
-        simple: "80"
+        simple: ${inputs.alarm_id}
     separatecontext: false
     view: |-
       {
@@ -99,10 +99,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: e94a4102-17a4-48a2-84c8-842059d34603
+    taskid: 3959b198-d124-46e1-8301-9b23893622b1
     type: regular
     task:
-      id: e94a4102-17a4-48a2-84c8-842059d34603
+      id: 3959b198-d124-46e1-8301-9b23893622b1
       version: -1
       name: Add alarm comment
       script: '|||lr-add-alarm-comments'
@@ -114,7 +114,7 @@ tasks:
       - "11"
     scriptarguments:
       alarm-id:
-        simple: "80"
+        simple: ${inputs.alarm_id}
       comments:
         simple: test
     separatecontext: false
@@ -132,10 +132,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: a9f0df32-b329-4df7-8338-72cb83f9ebf2
+    taskid: 209a88e5-d289-411e-89c1-7995015f3568
     type: regular
     task:
-      id: a9f0df32-b329-4df7-8338-72cb83f9ebf2
+      id: 209a88e5-d289-411e-89c1-7995015f3568
       version: -1
       name: Get alarm events
       script: '|||lr-get-alarm-events-by-id'
@@ -147,7 +147,7 @@ tasks:
       - "21"
     scriptarguments:
       alarm-id:
-        simple: "80"
+        simple: ${inputs.alarm_id}
       include-raw-log: {}
     separatecontext: false
     view: |-
@@ -164,10 +164,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 11df755b-9b2f-45c0-8591-e720657d0ca3
+    taskid: 7df19295-cf3a-4af1-8af7-f165cc9e9ff2
     type: regular
     task:
-      id: 11df755b-9b2f-45c0-8591-e720657d0ca3
+      id: 7df19295-cf3a-4af1-8af7-f165cc9e9ff2
       version: -1
       name: Get alarms
       script: '|||lr-get-alarms'
@@ -187,6 +187,7 @@ tasks:
         simple: "2020-05-01"
       status:
         simple: New
+      time_frame: {}
     separatecontext: false
     view: |-
       {
@@ -202,10 +203,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: a239e60e-b91e-46b0-8885-f623d7bf9f71
+    taskid: d74710c4-7871-487c-85d9-34516a889557
     type: regular
     task:
-      id: a239e60e-b91e-46b0-8885-f623d7bf9f71
+      id: d74710c4-7871-487c-85d9-34516a889557
       version: -1
       name: Update status - New
       script: '|||lr-update-alarm-status'
@@ -217,7 +218,7 @@ tasks:
       - "15"
     scriptarguments:
       alarm-id:
-        simple: "80"
+        simple: ${inputs.alarm_id}
       comments: {}
       status:
         simple: New
@@ -236,10 +237,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 266dad16-5a7b-4ffc-81d1-eef9588bfe5e
+    taskid: 56e25cdc-8f06-4be7-8ae6-cccaa920e747
     type: regular
     task:
-      id: 266dad16-5a7b-4ffc-81d1-eef9588bfe5e
+      id: 56e25cdc-8f06-4be7-8ae6-cccaa920e747
       version: -1
       name: Update status - Closed
       script: '|||lr-update-alarm-status'
@@ -251,7 +252,7 @@ tasks:
       - "16"
     scriptarguments:
       alarm-id:
-        simple: "80"
+        simple: ${inputs.alarm_id}
       comments: {}
       status:
         simple: Closed
@@ -294,10 +295,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 2d874251-6683-4f59-843b-331c799ca4b2
+    taskid: 6037d2b4-7840-4896-83d7-b0ce6b9374be
     type: condition
     task:
-      id: 2d874251-6683-4f59-843b-331c799ca4b2
+      id: 6037d2b4-7840-4896-83d7-b0ce6b9374be
       version: -1
       name: Verify output
       type: condition
@@ -322,7 +323,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "80"
+              simple: inputs.alarm_id
+            iscontext: true
     view: |-
       {
         "position": {
@@ -337,10 +339,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 501ce61c-7e0d-4184-8f11-abf409ef8f70
+    taskid: b5c9c9a4-c1be-472e-83b3-405b82103a61
     type: condition
     task:
-      id: 501ce61c-7e0d-4184-8f11-abf409ef8f70
+      id: b5c9c9a4-c1be-472e-83b3-405b82103a61
       version: -1
       name: Verify output
       type: condition
@@ -375,10 +377,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: c18676b4-157c-4b88-87ba-58b9dc3e3652
+    taskid: 72545323-f31b-4f78-8dec-2e2cdd4625f6
     type: condition
     task:
-      id: c18676b4-157c-4b88-87ba-58b9dc3e3652
+      id: 72545323-f31b-4f78-8dec-2e2cdd4625f6
       version: -1
       name: Verify output
       type: condition
@@ -415,10 +417,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 17779803-154b-4d04-8d6b-9550c95df300
+    taskid: 958dcec9-644f-4841-83e5-0a3e87ebc54c
     type: condition
     task:
-      id: 17779803-154b-4d04-8d6b-9550c95df300
+      id: 958dcec9-644f-4841-83e5-0a3e87ebc54c
       version: -1
       name: Verify output
       type: condition
@@ -438,7 +440,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "80"
+              simple: inputs.alarm_id
+            iscontext: true
     view: |-
       {
         "position": {
@@ -453,10 +456,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 2d1e3046-51b9-41b1-8000-62e042987150
+    taskid: 1205e77d-135a-44c6-84a9-6e0747ee213d
     type: condition
     task:
-      id: 2d1e3046-51b9-41b1-8000-62e042987150
+      id: 1205e77d-135a-44c6-84a9-6e0747ee213d
       version: -1
       name: Verify output
       type: condition
@@ -491,10 +494,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: b5a03470-cabd-4231-84fd-bb7480a583e7
+    taskid: ebf8537f-1e63-43c0-8c68-4d7e63653fa7
     type: condition
     task:
-      id: b5a03470-cabd-4231-84fd-bb7480a583e7
+      id: ebf8537f-1e63-43c0-8c68-4d7e63653fa7
       version: -1
       name: Verify output
       type: condition
@@ -529,10 +532,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: f6c48200-432c-42de-85b1-5a0c87752a68
+    taskid: 03d0ea6d-2667-4f5a-81c8-7eaa13d5d5d3
     type: regular
     task:
-      id: f6c48200-432c-42de-85b1-5a0c87752a68
+      id: 03d0ea6d-2667-4f5a-81c8-7eaa13d5d5d3
       version: -1
       name: Execute query
       description: Executes a query for logs that match query parameters.
@@ -570,10 +573,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 991521fa-ab03-4246-8760-c47dfd9143ef
+    taskid: b3bb6635-b892-40eb-8b71-d9a722ca906b
     type: regular
     task:
-      id: 991521fa-ab03-4246-8760-c47dfd9143ef
+      id: b3bb6635-b892-40eb-8b71-d9a722ca906b
       version: -1
       name: Get hosts by entity
       description: Retrieve a list of hosts for a given entity, or an empty list if
@@ -603,10 +606,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: e0dd171f-c2d6-43fe-8cd5-2da2961d0b78
+    taskid: 0a1a2073-66e2-4e70-80cd-1b6c409bc85f
     type: condition
     task:
-      id: e0dd171f-c2d6-43fe-8cd5-2da2961d0b78
+      id: 0a1a2073-66e2-4e70-80cd-1b6c409bc85f
       version: -1
       name: Verify output
       type: condition
@@ -641,10 +644,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 7fce483d-d846-4df2-8bd3-57a75d4b5e3f
+    taskid: 8e48f833-0491-46f5-8955-2af28a1da866
     type: condition
     task:
-      id: 7fce483d-d846-4df2-8bd3-57a75d4b5e3f
+      id: 8e48f833-0491-46f5-8955-2af28a1da866
       version: -1
       name: Are there alarm events ?
       type: condition
@@ -676,6 +679,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -688,5 +692,11 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: alarm_id
+  value:
+    simple: "1150"
+  required: false
+  description: ""
+  playbookInputQuery: null
 outputs: []

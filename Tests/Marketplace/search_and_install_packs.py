@@ -166,7 +166,7 @@ def search_pack(client, prints_manager, pack_display_name, thread_index, lock):
         lock.release()
 
 
-def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=9999999):
+def install_packs(client, host, prints_manager, thread_index, packs_to_install, request_timeout=999999):
     """ Make a packs installation request.
 
     Args:
@@ -271,26 +271,25 @@ def install_all_content_packs(client, host, prints_manager, thread_index=0):
     install_packs(client, host, prints_manager, thread_index, all_packs)
 
 
-# todo: remove if not used
-def upload_zipped_packs(client, host, prints_manager):
+def upload_zipped_packs(client, host, prints_manager, thread_index, pack_path):
     """ Install packs from zip file.
 
         Args:
             client (demisto_client): The configured client to use.
             host (str): The server URL.
             prints_manager (ParallelPrintsManager): Print manager object.
+            thread_index (int): the index (for prints_manager).
+            pack_path (str): path to pack zip.
         """
     header_params = {
         'Content-Type': 'multipart/form-data'
     }
-
-    packs_zip_path = 'artifacts/zipped_packs.zip'
-    file_path = os.path.abspath(packs_zip_path)
+    file_path = os.path.abspath(pack_path)
     files = {'file': file_path}
 
-    message = 'Making "POST" request to server {} - to install all packs from file {}'.format(host, packs_zip_path)
-    prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
-    prints_manager.execute_thread_prints(0)
+    message = 'Making "POST" request to server {} - to install all packs from file {}'.format(host, pack_path)
+    prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN)
+    prints_manager.execute_thread_prints(thread_index)
 
     # make the pack installation request
     try:
@@ -299,9 +298,9 @@ def upload_zipped_packs(client, host, prints_manager):
                                                                    header_params=header_params, files=files)
 
         if 200 <= status_code < 300:
-            message = 'All packs from {} were successfully installed!\n'.format(packs_zip_path)
-            prints_manager.add_print_job(message, print_color, 0, LOG_COLORS.GREEN)
-            prints_manager.execute_thread_prints(0)
+            message = 'All packs from {} were successfully installed!\n'.format(pack_path)
+            prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN)
+            prints_manager.execute_thread_prints(thread_index)
         else:
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')

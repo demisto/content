@@ -1,0 +1,33 @@
+[
+  {
+    "alias": "GCP",
+    "cidr": "XXX.XXX.XXX.X/24",
+    "city": null,
+    "country": null,
+    "cronExpression": "",
+    "dnsName": "",
+    "externalIp": 0,
+    "firstSeen": "2020-07-13T09:46:43.376984Z",
+    "floor": "",
+    "gatewayIp": -1062671102,
+    "gatewayMacAddress": "00:50:56:F9:90:54",
+    "hidden": false,
+    "ip": 0,
+    "ipSubnetMask": 0,
+    "lastRun": "1970-01-01T00:00:00Z",
+    "lastSeen": "2020-07-13T10:51:31.367767Z",
+    "latitude": null,
+    "longitude": null,
+    "managedCount": 1,
+    "name": "",
+    "networkId": 5866697,
+    "nextRun": "1970-01-01T00:00:00Z",
+    "onPrem": false,
+    "room": "",
+    "scheduleStatus": 3,
+    "state": null,
+    "street": null,
+    "type": 0,
+    "unmanagedCount": 0
+  }
+]

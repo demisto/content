@@ -140,7 +140,7 @@ configuration:
   - wsmprovhost.exe Rare Child Process
   required: false
   type: 16
-description: Deprecated - We recommend using the Cortex Data Lake integration instead.
+description: Deprecated. We recommend using the Cortex Data Lake integration instead.
   This framework manages all PA's cloud managed products
 display: Palo Alto Networks Cortex (Deprecated)
 name: Palo Alto Networks Cortex
@@ -192,7 +192,7 @@ script:
       name: rangeValue
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Runs a query on the Cortex logging service.
     execution: false
     name: cortex-query-logs
@@ -291,7 +291,7 @@ script:
       name: rangeValue
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Runs a query on the Cortex logging service, according to preset queries.
     execution: false
     name: cortex-get-critical-threat-logs
@@ -420,7 +420,7 @@ script:
       name: rangeValue
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Runs a query on the Cortex logging service, according to preset queries.
     execution: false
     name: cortex-get-social-applications
@@ -541,7 +541,7 @@ script:
       name: SHA256
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Runs a query on the Cortex logging service, according to preset queries.
     execution: false
     name: cortex-search-by-file-hash
@@ -721,7 +721,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Searches the Cortex panw.traffic table, which is the traffic
       logs table for PAN-OS and Panorama.
     execution: false
@@ -971,7 +971,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Searches the Cortex panw.threat table, which is the threat
       logs table for PAN-OS/Panorama.
     execution: false
@@ -1239,7 +1239,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Searches the Cortex tms.threat table, which is the threat
       logs table for the Traps endpoint protection and response.
     execution: false
@@ -1589,7 +1589,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Searches the Cortex tms.analytics table, which is the
       endpoint logs table for Traps Analytics.
     execution: false

@@ -9,6 +9,9 @@ from datetime import timezone
 import functools
 import json
 
+from urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
 TERSE_FIELDS = [
     'id',
     'cluster_id',
@@ -425,7 +428,7 @@ def get_reporter_command(triage_instance) -> None:
 
 
 def get_attachment_command(triage_instance) -> None:
-    attachment_id = demisto.getArg('attachment_id')  # type: str
+    attachment_id = str(demisto.getArg('attachment_id'))  # type: str
     file_name = demisto.getArg('file_name') or attachment_id  # type: str
 
     res = triage_instance.request(f'attachment/{attachment_id}', raw_response=True)
