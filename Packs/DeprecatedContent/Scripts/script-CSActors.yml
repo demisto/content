@@ -47,7 +47,7 @@ tags:
 - server
 - threat-intel
 - crowdstrike
-comment: Query CrowdStrike actors based on given parameters. For fields like countries
+comment: Deprecated. Query CrowdStrike actors based on given parameters. For fields like countries
   and industries, multiple values can be passed separated by ','.
 system: true
 deprecated: true
