@@ -5,8 +5,8 @@ args:
 - description: The regex pattern to check the field for (optional).
   name: regex
 comment: This script will check that a field exists (and contains data) and optionally
-  check the value of the field for a match against an input value. This script can
-  be used with the "GenericPolling" playbook to poll for field population or that
+  check the value of the field for a match against an input value. If a regex was not supplied, the script will checl that the field is not empty.
+  This script can be used with the "GenericPolling" playbook to poll for field population or that
   a field contains a specific value.
 commonfields:
   id: pollingField

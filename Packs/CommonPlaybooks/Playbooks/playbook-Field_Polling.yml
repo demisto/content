@@ -6,10 +6,11 @@ contentitemexportablefields:
     propagationLabels:
     - all
     toServerVersion: ""
-id: Field Polling Generic
-version: 40
+fromversion: 5.0.0
+id: Field Polling - Generic
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Field Polling Generic
+name: Field Polling - Generic
 description: This playbook will poll a field for whether a value exists and whether
   it contains a specific value.
 starttaskid: "0"

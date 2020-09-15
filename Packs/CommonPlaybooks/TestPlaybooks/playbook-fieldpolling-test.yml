@@ -96,7 +96,7 @@ tasks:
       name: Wait for "details"
       description: This playbook will poll a field for whether a value exists and
         whether it contains a specific value.
-      playbookName: Field Polling
+      playbookName: Field Polling - Generic
       type: playbook
       iscommand: false
       brand: ""
@@ -140,7 +140,7 @@ tasks:
       name: Wait for name to change
       description: This playbook will poll a field for whether a value exists and
         whether it contains a specific value.
-      playbookName: Field Polling
+      playbookName: Field Polling - Generic
       type: playbook
       iscommand: false
       brand: ""

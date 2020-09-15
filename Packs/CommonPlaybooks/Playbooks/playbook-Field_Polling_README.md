@@ -4,13 +4,13 @@ This playbook will poll a field for whether a value exists and whether it contai
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Poll Field
+* Generic Polling
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* PollingField 
 
 ### Commands
 This playbook does not use any commands.
