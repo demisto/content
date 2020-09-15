@@ -273,7 +273,7 @@ def test_f5_list_policy_gwt_profiles_command(mocker):
     assert 'No entries' in result
 
     # adding fields to BASIC_FIELDS after previus test emptied this list.
-    BASIC_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']  # noqa: F841
+    LIST_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']  # noqa: F841
 
     mocked_client.list_policy_gwt_profiles.return_value = util_load_json('test_data/list_GWT.json')
     result = f5_list_policy_gwt_profiles_command(mocked_client, 'unimportant').outputs
@@ -449,7 +449,7 @@ def test_f5_list_policy_signatures_command(mocker):
 def test_f5_list_policy_server_technologies_command(mocker):
     from f5_ASM import f5_list_policy_server_technologies_command
     # adding fields to BASIC_FIELDS after previus test emptied this list.
-    BASIC_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']  # noqa: F841
+    LIST_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']  # noqa: F841
     mocked_client = mocker.Mock()
     mocked_client.list_policy_server_technologies.return_value =\
         util_load_json('test_data/list_server_technologies.json')
@@ -478,7 +478,7 @@ def test_f5_delete_policy_server_technologies_command(mocker):
 def test_f5_list_policy_whitelist_ips_command(mocker):
     from f5_ASM import f5_list_policy_whitelist_ips_command
     # adding fields to BASIC_FIELDS after previus test emptied this list.
-    BASIC_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']  # noqa: F841
+    LIST_FIELDS = ['name', 'id', 'selfLink', 'lastUpdateMicros', 'type', 'protocol', 'method']  # noqa: F841
     mocked_client = mocker.Mock()
     mocked_client.list_policy_whitelist_ips.return_value = util_load_json('test_data/list_whitelist.json')
     result = f5_list_policy_whitelist_ips_command(mocked_client, '0000').outputs

@@ -1,5 +1,5 @@
 import requests
-from typing import Optional
+from typing import Optional, List
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -8,26 +8,26 @@ requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 LIST_FIELDS = ['name', 'id', 'type', 'protocol', 'method', 'actAsMethod', 'serverTechnologyName',
-                'selfLink', 'checkRequestLength', 'enforcementType',
-                'ipAddress', 'ipMask', 'blockRequests', 'ignoreAnomalies', 'neverLogRequests',
-                'neverLearnRequests', 'trustedByPolicyBuilder', 'includeSubdomains',
-                'description', 'mandatoryBody', 'clickjackingProtection', 'attackSignaturesCheck',
-                'metacharElementCheck', 'hasValidationFiles', 'followSchemaLinks', 'isBase64',
-                'enableWSS', 'dataType', 'valueType', 'mandatory', 'isCookie', 'isHeader',
-                'performStaging', 'active', 'allowed', 'isAllowed', 'createdBy', 'lastUpdateMicros']
+               'selfLink', 'checkRequestLength', 'enforcementType',
+               'ipAddress', 'ipMask', 'blockRequests', 'ignoreAnomalies', 'neverLogRequests',
+               'neverLearnRequests', 'trustedByPolicyBuilder', 'includeSubdomains',
+               'description', 'mandatoryBody', 'clickjackingProtection', 'attackSignaturesCheck',
+               'metacharElementCheck', 'hasValidationFiles', 'followSchemaLinks', 'isBase64',
+               'enableWSS', 'dataType', 'valueType', 'mandatory', 'isCookie', 'isHeader',
+               'performStaging', 'active', 'allowed', 'isAllowed', 'createdBy', 'lastUpdateMicros']
 
-BASIC_OBJECT_FIELDS = ['name', 'id', 'type', 'protocol', 'method', 'actAsMethod',
-                       'serverTechnologyName', 'selfLink',
-                       'queryStringLength', 'checkRequestLength', 'responseCheck', 'urlLength',
-                       'checkUrlLength', 'postDataLength', 'enforcementType', 'isBase64',
-                       'description', 'includeSubdomains', 'clickjackingProtection',
-                       'ipAddress', 'ipMask', 'blockRequests', 'ignoreAnomalies',
-                       'neverLogRequests', 'neverLearnRequests', 'trustedByPolicyBuilder',
-                       'dataType', 'attackSignaturesCheck', 'metacharElementCheck',
-                       'hasValidationFiles', 'followSchemaLinks', 'isBase64',
-                       'enableWSS', 'valueType', 'mandatory', 'isCookie', 'isHeader',
-                       'includeSubdomains', 'createdBy', 'performStaging', 'allowed', 'isAllowed',
-                       'createdBy', 'lastUpdateMicros']
+OBJECT_FIELDS = ['name', 'id', 'type', 'protocol', 'method', 'actAsMethod',
+                 'serverTechnologyName', 'selfLink',
+                 'queryStringLength', 'checkRequestLength', 'responseCheck', 'urlLength',
+                 'checkUrlLength', 'postDataLength', 'enforcementType', 'isBase64',
+                 'description', 'includeSubdomains', 'clickjackingProtection',
+                 'ipAddress', 'ipMask', 'blockRequests', 'ignoreAnomalies',
+                 'neverLogRequests', 'neverLearnRequests', 'trustedByPolicyBuilder',
+                 'dataType', 'attackSignaturesCheck', 'metacharElementCheck',
+                 'hasValidationFiles', 'followSchemaLinks', 'isBase64',
+                 'enableWSS', 'valueType', 'mandatory', 'isCookie', 'isHeader',
+                 'includeSubdomains', 'createdBy', 'performStaging', 'allowed', 'isAllowed',
+                 'createdBy', 'lastUpdateMicros']
 
 
 class Client(BaseClient):
@@ -93,8 +93,8 @@ class Client(BaseClient):
         return response.get('selfLink')
 
     def list_policy_blocking_settings(self, policy_md5: str, endpoint: str):
-        return self._http_request(method='GET', headers=self.headers,
-                                  url_suffix=f'asm/policies/{policy_md5}/blocking-settings/{endpoint}')
+        url_suffix = f'asm/policies/{policy_md5}/blocking-settings/{endpoint}'
+        return self._http_request(method='GET', url_suffix=url_suffix, headers=self.headers)
 
     def update_policy_blocking_setting(self, policy_md5: str, endpoint: str,
                                        description: str, enabled: Optional[bool],
@@ -830,7 +830,7 @@ def f5_add_policy_method_command(client: Client, policy_md5: str, new_method_nam
         act_as_method(str): functionality of the new method. default is GET.
     """
     result = client.add_policy_method(policy_md5, new_method_name, act_as_method)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
 
     readable_output = tableToMarkdown('f5 data for adding policy methods:', outputs, headers,
                                       removeNull=True)
@@ -856,7 +856,7 @@ def f5_update_policy_method_command(client: Client, policy_md5: str, method_name
         act_as_method(str): functionality of the new method.
     """
     result = client.update_policy_method(policy_md5, method_name, act_as_method)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
 
     readable_output = tableToMarkdown('f5 data for updating policy methods:', outputs, headers,
                                       removeNull=True)
@@ -881,7 +881,7 @@ def f5_delete_policy_method_command(client: Client, policy_md5: str,
         method_name (str): Display name of the method.
     """
     result = client.delete_policy_method(policy_md5, method_name)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for deleting policy methods:', outputs, headers,
                                       removeNull=True)
     command_results = CommandResults(
@@ -940,7 +940,7 @@ def f5_add_policy_file_type_command(client: Client, policy_md5: str, new_file_ty
     result = client.add_policy_file_type(policy_md5, new_file_type, query_string_length,
                                          check_post_data_length, response_check,
                                          check_request_length, post_data_length, perform_staging)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for adding policy file types:', outputs, headers,
                                       removeNull=True)
     command_results = CommandResults(
@@ -977,7 +977,7 @@ def f5_update_policy_file_type_command(client: Client, policy_md5: str, file_typ
                                             check_post_data_length, response_check,
                                             check_request_length, post_data_length,
                                             perform_staging)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for updating policy methods:', outputs, headers,
                                       removeNull=True)
     command_results = CommandResults(
@@ -1002,7 +1002,7 @@ def f5_delete_policy_file_type_command(client: Client, policy_md5: str,
     """
     result = client.delete_policy_file_type(policy_md5, file_type_name)
 
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for deleting policy file type:', outputs, headers,
                                       removeNull=True)
     command_results = CommandResults(
@@ -1056,7 +1056,7 @@ def f5_add_policy_cookie_command(client: Client, policy_md5: str, new_cookie_nam
     """
     result = client.add_policy_cookie(policy_md5, new_cookie_name, perform_staging, parameter_type,
                                       enforcement_type, attack_signatures_check)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown(f'f5 data for adding policy cookie: {new_cookie_name}',
                                       outputs, headers, removeNull=True)
     command_results = CommandResults(
@@ -1088,7 +1088,7 @@ def f5_update_policy_cookie_command(client: Client, policy_md5: str, cookie_name
     """
     result = client.update_policy_cookie(policy_md5, cookie_name, perform_staging, parameter_type,
                                          enforcement_type, attack_signatures_check)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown(f'f5 data for updating cookie: {cookie_name}',
                                       outputs, headers, removeNull=True)
     command_results = CommandResults(
@@ -1112,7 +1112,7 @@ def f5_delete_policy_cookie_command(client: Client, policy_md5: str,
         cookie_name (str): The new cookie name to add.
     """
     result = client.delete_policy_cookie(policy_md5, cookie_name)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for deleting cookie:', outputs, headers,
                                       removeNull=True)
     command_results = CommandResults(
@@ -1160,7 +1160,7 @@ def f5_add_policy_hostname_command(client: Client, policy_md5: str, name: str,
         include_subdomains (bool): Indicates whether or not to include subdomains.
     """
     result = client.add_policy_hostname(policy_md5, name, include_subdomains)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for adding policy hostname:', outputs, headers,
                                       removeNull=True)
     command_results = CommandResults(
@@ -1185,7 +1185,7 @@ def f5_update_policy_hostname_command(client: Client, policy_md5: str, name: str
         include_subdomains (bool): Indicates whether or not to include subdomains.
     """
     result = client.update_policy_hostname(policy_md5, name, include_subdomains)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for updating hostname:', outputs, headers,
                                       removeNull=True)
     command_results = CommandResults(
@@ -1209,7 +1209,7 @@ def f5_delete_policy_hostname_command(client: Client, policy_md5: str,
         name (str): Host name to delete.
     """
     result = client.delete_policy_hostname(policy_md5, name)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for deleting hostname:', outputs, headers,
                                       removeNull=True)
     command_results = CommandResults(
@@ -1266,7 +1266,7 @@ def f5_add_policy_url_command(client: Client, policy_md5: str, name: str, protoc
     """
     result = client.add_policy_url(policy_md5, name, protocol, url_type, is_allowed, description,
                                    perform_staging, clickjacking_protection, method)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for adding policy url:', outputs, headers,
                                       removeNull=True)
     command_results = CommandResults(
@@ -1301,7 +1301,7 @@ def f5_update_policy_url_command(client: Client, policy_md5: str, name: str, per
 
     result = client.update_policy_url(policy_md5, name, perform_staging, description,
                                       mandatory_body, url_isreferrer)
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for updating url:', outputs, headers,
                                       removeNull=True)
     command_results = CommandResults(
@@ -1331,7 +1331,7 @@ def f5_delete_policy_url_command(client: Client, policy_md5: str,
 
     result = client.delete_policy_url(policy_md5, name)
 
-    outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
+    outputs, headers = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for deleting url:', outputs, headers,
                                       removeNull=True)
     command_results = CommandResults(
@@ -1391,9 +1391,9 @@ def f5_add_policy_whitelist_ip_command(client: Client, policy_md5: str, ip_addre
     result = client.add_policy_whitelist_ip(policy_md5, ip_address, ip_mask, trusted_by_builder,
                                             ignore_brute_detection, description, block_requests,
                                             ignore_learning, never_log, ignore_intelligence)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for listing whitelist IP:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.WhitelistIP',
         outputs_key_field='id',
@@ -1428,9 +1428,9 @@ def f5_update_policy_whitelist_ip_command(client: Client, policy_md5: str, ip_ad
                                                ignore_brute_detection, description, block_requests,
                                                ignore_learning, never_log, ignore_intelligence)
 
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for listing whitelist IP:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.WhitelistIP',
         outputs_key_field='id',
@@ -1452,9 +1452,9 @@ def f5_delete_policy_whitelist_ip_command(client, policy_md5: str,
         ip_address(str): IP address.
     """
     result = client.delete_policy_whitelist_ip(policy_md5, ip_address)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for listing whitelist IP:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.WhitelistIP',
         outputs_key_field='id',
@@ -1534,9 +1534,9 @@ def f5_add_policy_parameter_command(client, policy_md5: str, name: str, param_ty
     result = client.add_policy_parameter(policy_md5, name, param_type, value_type, param_location,
                                          perform_staging, mandatory, allow_empty, allow_repeated,
                                          sensitive)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for adding parameter:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.Parameter',
         outputs_key_field='id',
@@ -1570,9 +1570,9 @@ def f5_update_policy_parameter_command(client, policy_md5: str, name: str,
     result = client.update_policy_parameter(policy_md5, name, value_type, param_location,
                                             perform_staging, mandatory, allow_empty, allow_repeated,
                                             sensitive)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for updating parameter:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.Parameter',
         outputs_key_field='id',
@@ -1593,9 +1593,9 @@ def f5_delete_policy_parameter_command(client, policy_md5: str, name: str) -> Co
         name (str): Name of parameter.
     """
     result = client.delete_policy_parameter(policy_md5, name)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for deleting parameter:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.Parameter',
         outputs_key_field='id',
@@ -1652,9 +1652,9 @@ def f5_add_policy_gwt_profile_command(client, policy_md5: str, name: str,
     result = client.add_policy_gwt_profile(policy_md5, name, maximum_value_len, maximum_total_len,
                                            description, tolerate_parsing_warnings,
                                            check_signatures, check_metachars)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for adding GWT profile:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.GWTProfile',
         outputs_key_field='id',
@@ -1689,9 +1689,9 @@ def f5_update_policy_gwt_profile_command(client, policy_md5: str, name: str,
                                               maximum_total_len,
                                               description, tolerate_parsing_warnings,
                                               check_signatures, check_metachars)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for updating GWT profile:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.GWTProfile',
         outputs_key_field='id',
@@ -1712,9 +1712,9 @@ def f5_delete_policy_gwt_profile_command(client, policy_md5: str, name: str) -> 
         name (str): Name of the profile to remove.
     """
     result = client.delete_policy_gwt_profile(policy_md5, name)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for deleting GWT profile:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.GWTProfile',
         outputs_key_field='id',
@@ -1775,9 +1775,9 @@ def f5_add_policy_json_profile_command(client, policy_md5: str, name: str, maxim
                                             max_structure_depth, max_array_len, description,
                                             tolerate_parsing_warnings, parse_parameters,
                                             check_signatures, check_metachars)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for adding JSON profile:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.JSONProfile',
         outputs_key_field='id',
@@ -1818,9 +1818,9 @@ def f5_update_policy_json_profile_command(client, policy_md5: str, name: str,
                                                max_array_len, tolerate_parsing_warnings,
                                                parse_parameters, check_signatures,
                                                check_metachars)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for updating JSON profile:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.JSONProfile',
         outputs_key_field='id',
@@ -1841,9 +1841,9 @@ def f5_delete_policy_json_profile_command(client, policy_md5: str, name: str) ->
         name (str): Name of the profile to delete.
     """
     result = client.delete_policy_json_profile(policy_md5, name)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for deleting JSON profile:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.JSONProfile',
         outputs_key_field='id',
@@ -1909,9 +1909,9 @@ def f5_add_policy_xml_profile_command(client, policy_md5: str, name: str, descri
                                            enable_wss, inspect_soap, follow_links,
                                            use_xml_response, allow_cdata, allow_dtds,
                                            allow_external_ref, allow_processing_instructions)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for adding XML profile:', printable_result,
-                                      BASIC_OBJECT_FIELDS, removeNull=True)
+                                      OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.XMLProfile',
         outputs_key_field='id',
@@ -1956,9 +1956,9 @@ def f5_update_policy_xml_profile_command(client, policy_md5: str, name: str,
                                               use_xml_response,
                                               allow_cdata, allow_dtds, allow_external_ref,
                                               allow_processing_instructions)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for updating XML profile:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.XMLProfile',
         outputs_key_field='id',
@@ -1979,9 +1979,9 @@ def f5_delete_policy_xml_profile_command(client, policy_md5: str, name: str) -> 
         name (str): Name of the profile.
     """
     result = client.delete_policy_xml_profile(policy_md5, name)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for deleting XML profile:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.XMLProfile',
         outputs_key_field='id',
@@ -2025,9 +2025,9 @@ def f5_add_policy_server_technology_command(client, policy_md5: str, name: str) 
         name (str): Name of the server technology.
     """
     result = client.add_policy_server_technology(policy_md5, name)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for adding server technology:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.ServerTechnology',
         outputs_key_field='id',
@@ -2049,9 +2049,9 @@ def f5_delete_policy_server_technology_command(client, policy_md5: str, name: st
         name (str): Name of the server technology.
     """
     result = client.delete_policy_server_technology(policy_md5, name)
-    printable_result, _ = build_output(BASIC_OBJECT_FIELDS, result)
+    printable_result, _ = build_output(OBJECT_FIELDS, result)
     readable_output = tableToMarkdown('f5 data for listing server technology:',
-                                      printable_result, BASIC_OBJECT_FIELDS, removeNull=True)
+                                      printable_result, OBJECT_FIELDS, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.ServerTechnology',
         outputs_key_field='uid',
@@ -2179,7 +2179,7 @@ def format_date(date):
     return time.strftime(DATE_FORMAT, time.localtime(date))
 
 
-def build_output(headers: list, result: dict):
+def build_output(headers: List[str], result: dict):
     """helper function. Builds the printable results."""
     printable_result = {}
     new_headers = headers
@@ -2208,7 +2208,7 @@ def build_list_output(printable_result: list, result: dict):
     headers = LIST_FIELDS
 
     for element in result:
-        current_printable_result, _ = build_output(headers, element)
+        current_printable_result, headers = build_output(headers, element)
         printable_result.append(current_printable_result)
 
     return printable_result, headers
@@ -2216,13 +2216,14 @@ def build_list_output(printable_result: list, result: dict):
 
 def build_command_result(result: dict, table_name: str):
     """Build readable_output and printable_result for list commands."""
-    printable_result = []
+    printable_result: List[dict] = []
     readable_output = ''
 
-    result = result.get('items')
+    result = result.get('items')  # type: ignore
     if result:
         printable_result, headers = build_list_output(printable_result, result)
         readable_output = tableToMarkdown(table_name, printable_result, headers, removeNull=True)
+
     return readable_output, printable_result
 
 
