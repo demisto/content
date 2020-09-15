@@ -165,7 +165,7 @@ def test_f5_add_policy_cookie_command(mocker):
     from f5_ASM import f5_add_policy_cookie_command
     mocked_client = mocker.Mock()
     mocked_client.add_policy_cookie.return_value = util_load_json('test_data/add_cookie.json')
-    result = f5_add_policy_cookie_command(mocked_client, '0000', 'new_cookie', True).outputs
+    result = f5_add_policy_cookie_command(mocked_client, '0000', 'new_cookie', True, 'wildcard', 'allow', True).outputs
     assert result.get('name') == 'new_cookie'
     assert result.get('id') == 'cookie-md5'
 
@@ -174,7 +174,7 @@ def test_f5_update_policy_cookie_command(mocker):
     from f5_ASM import f5_update_policy_cookie_command
     mocked_client = mocker.Mock()
     mocked_client.update_policy_cookie.return_value = util_load_json('test_data/update_cookie.json')
-    result = f5_update_policy_cookie_command(mocked_client, '0000', 'new_cookie', True).outputs
+    result = f5_update_policy_cookie_command(mocked_client, '0000', 'new_cookie', True, 'wildcard', 'allow', True).outputs
     assert result.get('name') == 'new_cookie'
     assert result.get('id') == 'cookie-md5'
 

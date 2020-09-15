@@ -7,7 +7,7 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-BASIC_FIELDS = ['name', 'id', 'type', 'protocol', 'method', 'actAsMethod', 'serverTechnologyName',
+LIST_FIELDS = ['name', 'id', 'type', 'protocol', 'method', 'actAsMethod', 'serverTechnologyName',
                 'selfLink', 'checkRequestLength', 'enforcementType',
                 'ipAddress', 'ipMask', 'blockRequests', 'ignoreAnomalies', 'neverLogRequests',
                 'neverLearnRequests', 'trustedByPolicyBuilder', 'includeSubdomains',
@@ -219,15 +219,27 @@ class Client(BaseClient):
                                   url_suffix=f'asm/policies/{policy_md5}/cookies')
 
     def add_policy_cookie(self, policy_md5: str, new_cookie_name: str,
-                          perform_staging: bool):
-        body = {'name': new_cookie_name, 'performStaging': perform_staging}
+                          perform_staging: bool, parameter_type: str, enforcement_type: str,
+                          attack_signatures_check: bool):
+        body = {'name': new_cookie_name,
+                'performStaging': perform_staging,
+                'type': parameter_type,
+                'enforcementType': enforcement_type,
+                'attackSignaturesCheck': attack_signatures_check
+                }
         return self._http_request(method='POST', headers=self.headers, json_data=body,
                                   url_suffix=f'asm/policies/{policy_md5}/cookies')
 
     def update_policy_cookie(self, policy_md5: str, cookie_name: str,
-                             perform_staging: bool):
+                             perform_staging: bool, parameter_type: str, enforcement_type: str,
+                             attack_signatures_check: bool):
         file_type_id = self.get_id(policy_md5, cookie_name, 'cookies')
-        body = {'name': cookie_name, 'performStaging': perform_staging}
+        body = {'name': cookie_name,
+                'performStaging': perform_staging,
+                'type': parameter_type,
+                'enforcementType': enforcement_type,
+                'attackSignaturesCheck': attack_signatures_check
+                }
         return self._http_request(method='PATCH', headers=self.headers, json_data=body,
                                   url_suffix=f'asm/policies/{policy_md5}/cookies/{file_type_id}')
 
@@ -792,20 +804,12 @@ def f5_list_policy_methods_command(client: Client, policy_md5: str) -> CommandRe
         policy_md5 (str): MD5 hash of the policy.
     """
     result = client.list_policy_methods(policy_md5)
-    printable_result = []
-    readable_output = ''
 
-    result = result.get('items')
-    if result:
-        for element in result:
-            current_printable_result = {}
-            for endpoint in BASIC_FIELDS:
-                current_printable_result[endpoint] = element.get(endpoint)
-            printable_result.append(current_printable_result)
-        readable_output = tableToMarkdown('f5 data for listing policy methods:', printable_result,
-                                          BASIC_FIELDS, removeNull=True)
+    table_name = 'f5 data for listing policy methods:'
+    readable_output, printable_result = build_command_result(result, table_name)
+
     command_results = CommandResults(
-        outputs_prefix='f5.ListPolicies',
+        outputs_prefix='f5.PolicyMethods',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=printable_result,
@@ -899,15 +903,10 @@ def f5_list_policy_file_types_command(client: Client, policy_md5: str) -> Comman
         policy_md5 (str): MD5 hash of the policy.
     """
     result = client.list_policy_file_types(policy_md5)
-    headers = []
-    printable_result = []
-    result = result.get('items')
-    if result:
-        for item in result:
-            current_object_data, headers = build_output(BASIC_FIELDS, item)
-            printable_result.append(current_object_data)
-    readable_output = tableToMarkdown('f5 data for listing policy file types:',
-                                      printable_result, headers, removeNull=True)
+
+    table_name = 'f5 data for listing policy file types:'
+    readable_output, printable_result = build_command_result(result, table_name)
+
     command_results = CommandResults(
         outputs_prefix='f5.FileType',
         outputs_key_field='id',
@@ -1025,19 +1024,9 @@ def f5_list_policy_cookies_command(client: Client, policy_md5: str) -> CommandRe
         policy_md5 (str): MD5 hash of the policy.
     """
     result = client.list_policy_cookies(policy_md5)
-    printable_result = []
-    readable_output = ''
 
-    result = result.get('items')
-    if result:
-        for element in result:
-            current_printable_result = {}
-            for endpoint in BASIC_FIELDS:
-                current_printable_result[endpoint] = element.get(endpoint)
-            printable_result.append(current_printable_result)
-
-        readable_output = tableToMarkdown('f5 data for listing policy cookies:', printable_result,
-                                          BASIC_FIELDS, removeNull=True)
+    table_name = 'f5 data for listing policy cookies:'
+    readable_output, printable_result = build_command_result(result, table_name)
 
     command_results = CommandResults(
         outputs_prefix='f5.Cookies',
@@ -1050,7 +1039,8 @@ def f5_list_policy_cookies_command(client: Client, policy_md5: str) -> CommandRe
 
 
 def f5_add_policy_cookie_command(client: Client, policy_md5: str, new_cookie_name: str,
-                                 perform_staging: bool) -> CommandResults:
+                                 perform_staging: bool, parameter_type: str, enforcement_type: str,
+                                 attack_signatures_check: bool) -> CommandResults:
     """
     Add new cookie to a specific policy
 
@@ -1059,11 +1049,16 @@ def f5_add_policy_cookie_command(client: Client, policy_md5: str, new_cookie_nam
         policy_md5 (str): MD5 hash of the policy.
         new_cookie_name (str): The new cookie name to add.
         perform_staging (bool): Indicates if the user wishes the new file type to be at staging.
+        parameter_type (str): Type of the new parameter.
+        enforcement_type (str): Enforcement type.
+        attack_signatures_check (bool): Should attack signatures be checked. If enforcement type
+         is set to 'enforce', this field will not get any value.
     """
-    result = client.add_policy_cookie(policy_md5, new_cookie_name, perform_staging)
+    result = client.add_policy_cookie(policy_md5, new_cookie_name, perform_staging, parameter_type,
+                                      enforcement_type, attack_signatures_check)
     outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
-    readable_output = tableToMarkdown('f5 data for adding policy cookie:', outputs, headers,
-                                      removeNull=True)
+    readable_output = tableToMarkdown(f'f5 data for adding policy cookie: {new_cookie_name}',
+                                      outputs, headers, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.Cookies',
         outputs_key_field='id',
@@ -1075,7 +1070,9 @@ def f5_add_policy_cookie_command(client: Client, policy_md5: str, new_cookie_nam
 
 
 def f5_update_policy_cookie_command(client: Client, policy_md5: str, cookie_name: str,
-                                    perform_staging: bool) -> CommandResults:
+                                    perform_staging: bool, parameter_type: str,
+                                    enforcement_type: str,
+                                    attack_signatures_check: bool) -> CommandResults:
     """
     Update a given cookie of a specific policy
 
@@ -1084,11 +1081,16 @@ def f5_update_policy_cookie_command(client: Client, policy_md5: str, cookie_name
         policy_md5 (str): MD5 hash of the policy.
         cookie_name (str): The new cookie name to add.
         perform_staging (bool): Indicates if the user wishes the new file type to be at staging.
+        parameter_type (str): Type of the new parameter.
+        enforcement_type (str): Enforcement type.
+        attack_signatures_check (bool): Should attack signatures be checked. If enforcement type
+         is set to 'enforce', this field will not get any value.
     """
-    result = client.update_policy_cookie(policy_md5, cookie_name, perform_staging)
+    result = client.update_policy_cookie(policy_md5, cookie_name, perform_staging, parameter_type,
+                                         enforcement_type, attack_signatures_check)
     outputs, headers = build_output(BASIC_OBJECT_FIELDS, result)
-    readable_output = tableToMarkdown('f5 data for updating cookie:', outputs, headers,
-                                      removeNull=True)
+    readable_output = tableToMarkdown(f'f5 data for updating cookie: {cookie_name}',
+                                      outputs, headers, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='f5.Cookies',
         outputs_key_field='id',
@@ -1132,19 +1134,9 @@ def f5_list_policy_hostnames_command(client: Client, policy_md5: str) -> Command
         policy_md5 (str): MD5 hash of the policy.
     """
     result = client.list_policy_hostnames(policy_md5)
-    printable_result = []
-    readable_output = ''
 
-    result = result.get('items')
-    if result:
-        for element in result:
-            current_printable_result = {}
-            for endpoint in BASIC_FIELDS:
-                current_printable_result[endpoint] = element.get(endpoint)
-            printable_result.append(current_printable_result)
-
-        readable_output = tableToMarkdown('f5 data for listing policy hostname:', printable_result,
-                                          BASIC_FIELDS, removeNull=True)
+    table_name = 'f5 data for listing policy hostname:'
+    readable_output, printable_result = build_command_result(result, table_name)
 
     command_results = CommandResults(
         outputs_prefix='f5.Hostname',
@@ -1239,19 +1231,9 @@ def f5_list_policy_urls_command(client: Client, policy_md5: str) -> CommandResul
         policy_md5 (str): MD5 hash of the policy.
     """
     result = client.list_policy_urls(policy_md5)
-    printable_result = []
-    readable_output = ''
 
-    result = result.get('items')
-    if result:
-        for element in result:
-            current_printable_result = {}
-            for endpoint in BASIC_FIELDS:
-                current_printable_result[endpoint] = element.get(endpoint)
-            printable_result.append(current_printable_result)
-
-        readable_output = tableToMarkdown('f5 data for listing policy url:', printable_result,
-                                          BASIC_FIELDS, removeNull=True)
+    table_name = 'f5 data for listing policy url:'
+    readable_output, printable_result = build_command_result(result, table_name)
 
     command_results = CommandResults(
         outputs_prefix='f5.Url',
@@ -1370,17 +1352,11 @@ def f5_list_policy_whitelist_ips_command(client: Client, policy_md5: str) -> Com
         client (Client): f5 client.
         policy_md5 (str): MD5 hash of the policy.
     """
-
     result = client.list_policy_whitelist_ips(policy_md5)
-    items = result.get('items')
-    printable_result = []
-    headers = []
-    if items:
-        for item in items:
-            current_object_data, headers = build_output(BASIC_FIELDS, item)
-            printable_result.append(current_object_data)
-    readable_output = tableToMarkdown('f5 data for all whitelist IPs:',
-                                      printable_result, headers, removeNull=True)
+
+    table_name = 'f5 list of all whitelist IPs:'
+    readable_output, printable_result = build_command_result(result, table_name)
+
     command_results = CommandResults(
         outputs_prefix='f5.WhitelistIP',
         outputs_key_field='id',
@@ -1498,16 +1474,10 @@ def f5_list_policy_signatures_command(client, policy_md5: str) -> CommandResults
         policy_md5 (str): MD5 hash of the policy.
     """
     result = client.list_policy_signatures(policy_md5)
-    result = result.get('items')
-    printable_result = []
-    headers = []
 
-    if result:
-        for item in result:
-            current_object_data, headers = build_output(BASIC_FIELDS, item)
-            printable_result.append(current_object_data)
-    readable_output = tableToMarkdown('f5 data for all signatures:',
-                                      printable_result, headers, removeNull=True)
+    table_name = 'f5 list of all signatures:'
+    readable_output, printable_result = build_command_result(result, table_name)
+
     command_results = CommandResults(
         outputs_prefix='f5.Signatures',
         outputs_key_field='id',
@@ -1520,22 +1490,17 @@ def f5_list_policy_signatures_command(client, policy_md5: str) -> CommandResults
 
 def f5_list_policy_parameters_command(client, policy_md5: str) -> CommandResults:
     """
-    List all parameters for a certain policy.
+    List all parameters for a given policy.
+
     Args:
         client (Client): f5 client.
         policy_md5 (str): MD5 hash of the policy.
     """
     result = client.list_policy_parameters(policy_md5)
-    result = result.get('items')
-    printable_result = []
-    headers = []
 
-    if result:
-        for item in result:
-            current_object_data, headers = build_output(BASIC_FIELDS, item)
-            printable_result.append(current_object_data)
-    readable_output = tableToMarkdown('f5 data for all parameters:',
-                                      printable_result, headers, removeNull=True)
+    table_name = 'f5 list of all parameters:'
+    readable_output, printable_result = build_command_result(result, table_name)
+
     command_results = CommandResults(
         outputs_prefix='f5.Parameter',
         outputs_key_field='id',
@@ -1650,16 +1615,9 @@ def f5_list_policy_gwt_profiles_command(client, policy_md5: str) -> CommandResul
         policy_md5 (str): MD5 hash of the policy.
     """
     result = client.list_policy_gwt_profiles(policy_md5)
-    items = result.get('items')
-    printable_result = []
-    headers = []
 
-    if items:
-        for item in items:
-            current_object_data, headers = build_output(BASIC_FIELDS, item)
-            printable_result.append(current_object_data)
-    readable_output = tableToMarkdown('f5 data for all GWT Profiles:',
-                                      printable_result, headers, removeNull=True)
+    table_name = 'f5 list of all GWT Profiles:'
+    readable_output, printable_result = build_command_result(result, table_name)
 
     command_results = CommandResults(
         outputs_prefix='f5.GWTProfile',
@@ -1776,16 +1734,10 @@ def f5_list_policy_json_profiles_command(client, policy_md5: str) -> CommandResu
         policy_md5 (str): MD5 hash of the policy.
     """
     result = client.list_policy_json_profiles(policy_md5)
-    items = result.get('items')
-    printable_result = []
-    headers = []
 
-    if items:
-        for item in items:
-            current_object_data, headers = build_output(BASIC_FIELDS, item)
-            printable_result.append(current_object_data)
-    readable_output = tableToMarkdown('f5 data for all JSON Profiles:',
-                                      printable_result, headers, removeNull=True)
+    table_name = 'f5 list of all JSON Profiles:'
+    readable_output, printable_result = build_command_result(result, table_name)
+
     command_results = CommandResults(
         outputs_prefix='f5.JSONProfile',
         outputs_key_field='id',
@@ -1911,15 +1863,10 @@ def f5_list_policy_xml_profiles_command(client, policy_md5: str) -> CommandResul
         policy_md5 (str): MD5 hash of the policy.
     """
     result = client.list_policy_xml_profiles(policy_md5)
-    items = result.get('items')
-    printable_result = []
-    headers = []
-    if items:
-        for item in items:
-            current_object_data, headers = build_output(BASIC_FIELDS, item)
-            printable_result.append(current_object_data)
-    readable_output = tableToMarkdown('f5 data for all XML Profiles:',
-                                      printable_result, headers, removeNull=True)
+
+    table_name = 'f5 list of all XML Profiles:'
+    readable_output, printable_result = build_command_result(result, table_name)
+
     command_results = CommandResults(
         outputs_prefix='f5.XMLProfile',
         outputs_key_field='id',
@@ -2055,15 +2002,9 @@ def f5_list_policy_server_technologies_command(client, policy_md5: str) -> Comma
 
     """
     result = client.list_policy_server_technologies(policy_md5)
-    items = result.get('items')
-    printable_result = []
-    headers = []
-    if items:
-        for item in items:
-            current_object_data, headers = build_output(BASIC_FIELDS, item)
-            printable_result.append(current_object_data)
-    readable_output = tableToMarkdown('f5 data for all server technologies:',
-                                      printable_result, headers, removeNull=True)
+
+    table_name = 'f5 list of all server technologies:'
+    readable_output, printable_result = build_command_result(result, table_name)
     command_results = CommandResults(
         outputs_prefix='f5.ServerTechnology',
         outputs_key_field='id',
@@ -2263,6 +2204,28 @@ def build_output(headers: list, result: dict):
     return printable_result, new_headers
 
 
+def build_list_output(printable_result: list, result: dict):
+    headers = LIST_FIELDS
+
+    for element in result:
+        current_printable_result, _ = build_output(headers, element)
+        printable_result.append(current_printable_result)
+
+    return printable_result, headers
+
+
+def build_command_result(result: dict, table_name: str):
+    """Build readable_output and printable_result for list commands."""
+    printable_result = []
+    readable_output = ''
+
+    result = result.get('items')
+    if result:
+        printable_result, headers = build_list_output(printable_result, result)
+        readable_output = tableToMarkdown(table_name, printable_result, headers, removeNull=True)
+    return readable_output, printable_result
+
+
 def main():
     """ PARSE AND VALIDATE INTEGRATION PARAMS """
     params = demisto.params()
@@ -2368,6 +2331,7 @@ def main():
 
         elif command == 'f5-asm-policy-urls-delete':
             return_results(f5_delete_policy_url_command(client, **demisto.args()))
+
         elif command == 'f5-asm-policy-whitelist-ips-list':
             return_results(f5_list_policy_whitelist_ips_command(client, **demisto.args()))
 

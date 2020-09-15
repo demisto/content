@@ -1114,6 +1114,40 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: explicit
+      description: Type of the new parameter.
+      isArray: false
+      name: parameter_type
+      predefined:
+      - explicit
+      - wildcard
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: allow
+      description: Enforcement type
+      isArray: false
+      name: enforcement_type
+      predefined:
+      - allow
+      - enforce
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: 'Should attack signatures be checked. If enforcement type is set
+        to ''enforce'', this field will not get any value.  '
+      isArray: false
+      name: attack_signatures_check
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Add new cookie to a specific policy
     execution: false
@@ -1425,6 +1459,40 @@ script:
       description: Indicates if the user wishes the new file type to be at staging.
       isArray: false
       name: perform_staging
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: wildcard
+      description: Type of the new parameter.
+      isArray: false
+      name: parameter_type
+      predefined:
+      - wildcard
+      - explicit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: allow
+      description: Enforcement type.
+      isArray: false
+      name: enforcement_type
+      predefined:
+      - allow
+      - enforce
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Should attack signatures be checked. If enforcement type is set
+        to 'enforce', this field will not get any value.
+      isArray: false
+      name: attack_signatures_check
       predefined:
       - 'true'
       - 'false'
@@ -3393,7 +3461,7 @@ script:
     - contextPath: f5.Policy.md5
       description: MD5 hash of the policy
       type: String
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.3.8715
   feed: false
   isfetch: false
   longRunning: false
@@ -3402,6 +3470,3 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
