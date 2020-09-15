@@ -506,14 +506,18 @@ def __create_integration_instance(client, integration_name, integration_instance
                     'validate "Test": {})'.format(integration_name, instance_name, validate_test)
     prints_manager.add_print_job(start_message, print, thread_index)
 
+    # allow enabling/disabling and choosing an xsoar engine by UUID
+    engine = integration_params.get('engine', '')
+    enabled = integration_params.get('enabled', 'true')
+
     # define module instance
     module_instance = {
         'brand': configuration['name'],
         'category': configuration['category'],
         'configuration': configuration,
         'data': [],
-        'enabled': "true",
-        'engine': '',
+        'enabled': str(enabled),
+        'engine': engine,
         'id': '',
         'isIntegrationScript': is_byoi,
         'name': instance_name,
@@ -532,10 +536,10 @@ def __create_integration_instance(client, integration_name, integration_instance
             if key == 'credentials':
                 credentials = integration_params[key]
                 param_value = {
-                    'credential': '',
-                    'identifier': credentials['identifier'],
-                    'password': credentials['password'],
-                    'passwordChanged': False
+                    'credential': credentials.get('credential', ''),    # allow stored credentials
+                    'identifier': credentials.get('identifier', ''),    # or username/password
+                    'password': credentials.get('password', ''),
+                    'passwordChanged': credentials.get('passwordChanged', False)
                 }
             else:
                 param_value = integration_params[key]
