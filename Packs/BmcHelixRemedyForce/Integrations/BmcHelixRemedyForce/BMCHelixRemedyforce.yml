@@ -55,7 +55,7 @@ configuration:
     fetch.
   defaultvalue: '10'
   display: Max Incidents
-  name: max_incidents
+  name: max_fetch
   required: false
   type: 0
 - additionalinfo: Fetch notes of the BMC Remedyforce Service Request or BMC Remedyforce Incident.
@@ -98,7 +98,7 @@ configuration:
   type: 8
 - display: First Fetch Timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
-  name: firstFetchTimestamp
+  name: first_fetch
   defaultvalue: 10 minutes
   type: 0
   required: false
