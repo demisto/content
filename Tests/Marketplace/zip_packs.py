@@ -146,7 +146,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
                 zipped_packs.append({pack.name: download_path})
                 print(f'Downloading pack from GCP: {pack.name}')
                 executor_submit(executor, download_path, blob)
-                sleep(3)
+                sleep(1)
                 shutil.copy(download_path,
                             f'/home/runner/work/content-private/content-private/content/artifacts/packs/{pack.name}.zip')
             else:
