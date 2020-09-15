@@ -616,6 +616,25 @@ def test_module():
     if token and threshold_is_integer and 0 <= int(threshold) <= 10:
         demisto.results('ok')
 
+def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
+    entry_context = []
+    for i in indicators:
+        entry_context.append(set_indicator_entry_context(
+            indicator_type=i.get('Type') or default_indicator_type,
+            indicator=i,
+            generic_context=generic_context or {'Data': i.get('Value')}
+        ))
+
+    aggregated: Dict = {}
+    for entry in entry_context:
+        for key, value in entry.items():
+            if key in aggregated:
+                aggregated[key].append(value)
+            else:
+                aggregated[key] = [value]
+
+    return aggregated
+
 def search_by_name_command():
     args = demisto.args()
     name = args.get('name')
@@ -1082,8 +1101,8 @@ def download_file_command():
 
 def get_all_objs_command(obj_type):
     args = demisto.args()
-    page = int(args.get('page')) or '0'
-    limit = int(args.get('limit')) or '50'
+    page = int(args.get('page')) or 0
+    limit = int(args.get('limit')) or 50
     if limit > 200:
         limit = 200
 
