@@ -68,7 +68,7 @@ type: python
 subtype: python2
 tags:
 - QRadar
-comment: Full search through QRadar advance query languages
+comment: Deprecated. Full search through QRadar advance query languages
 system: true
 deprecated: true
 args:

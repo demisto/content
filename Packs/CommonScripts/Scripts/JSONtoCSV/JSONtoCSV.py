@@ -52,7 +52,7 @@ def json_to_csv(data):
     try:
         keys = list(data[0].iterkeys())
     except KeyError:
-        print("The given JSON is not an iterable list.")
+        demisto.debug("The given JSON is not an iterable list.")
         sys.exit(0)
 
     cw.writerow(keys)

@@ -50,7 +50,7 @@ script: |
       }
       var message;
       if (errorsStr) {
-          message = "Context cleared with the folloing errors:" + errorsStr;
+          message = "Context cleared with the following errors:" + errorsStr;
       } else {
           message = "Context cleared";
       }
@@ -127,7 +127,7 @@ args:
   - "yes"
   - "no"
   - "auto"
-  description: Specify "yes" if the context key is inside of a sub-playbook. 
+  description: Specify "yes" if the context key is inside of a sub-playbook.
     Use **auto** to delete either from the sub-playbook context (if the playbook is called as a sub-playbook) or
     from the global context (if the playbook is the top playbook).
 - name: keysToKeep
@@ -138,3 +138,4 @@ args:
 scripttarget: 0
 runonce: false
 sensitive: true
+runas: DBotRole
