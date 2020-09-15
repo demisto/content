@@ -401,16 +401,14 @@ def get_rql_response():
     handle_time_filter(payload['filter'], {'type': 'to_now', 'value': 'epoch'})
 
     response = req('POST', 'search/config', payload, None)
-    #MD = tableToMarkdown("RQLoutput", response)
-    #TODO add check here that data exists
 
-    MD2 = tableToMarkdown("RQLoutput", response["data"]["items"])
+    md = tableToMarkdown("RQLoutput", response["data"]["items"])
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': response,
         'EntryContext': {'Redlock':response},
-        'HumanReadable': MD2
+        'HumanReadable': md
     })
 
 
