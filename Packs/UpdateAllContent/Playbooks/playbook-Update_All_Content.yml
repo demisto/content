@@ -1,0 +1,120 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c27354df-8438-4fb3-89eb-71e6af97bd0f
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: Update All Content
+inputs: []
+name: Update All Content
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4998ed9d-149e-4cbe-8964-214869146d8d
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 4998ed9d-149e-4cbe-8964-214869146d8d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ca7c2d6a-baa5-44dc-8f08-4d5b7293ae1f
+      iscommand: false
+      name: UpdateAllContent
+      script: ed3317c1-34b6-4123-82e5-ea3244fcd747
+      type: regular
+      version: -1
+    taskid: ca7c2d6a-baa5-44dc-8f08-4d5b7293ae1f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 60c50b19-c81a-4741-8d44-8ac181983419
+      iscommand: true
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 60c50b19-c81a-4741-8d44-8ac181983419
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 435,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
