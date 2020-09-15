@@ -2819,6 +2819,10 @@
             "playbookID": "MongoDB - Test"
         },
         {
+            "integrations": "DNSDB_v2",
+            "playbookID": "DNSDB-Test"
+        },
+        {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout": 60000,
             "fromversion": "4.5.0"
