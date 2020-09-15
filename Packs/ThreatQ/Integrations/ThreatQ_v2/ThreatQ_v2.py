@@ -616,114 +616,10 @@ def test_module():
     if token and threshold_is_integer and 0 <= int(threshold) <= 10:
         demisto.results('ok')
 
-
-def get_indicator_type_id(indicator_name: str) -> str:
-    indicator_types_res = tq_request(
-        method='GET',
-        url_suffix='/indicator/types',
-        retrieve_entire_response=True
-    )
-    try:
-        indicator_types = indicator_types_res.json().get('data')
-    except ValueError:
-        raise ValueError(f'Could not parse data from ThreatQ [Status code: {indicator_types_res.status_code}]'
-                         f'\n[Error Message: {indicator_types_res.text}]')
-
-    for indicator in indicator_types:
-        if indicator.get('name', '').lower() == indicator_name.lower():
-            return indicator.get('id')
-
-    raise ValueError('Could not find indicator')
-
-
-def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
-    entry_context = []
-    for i in indicators:
-        entry_context.append(set_indicator_entry_context(
-            indicator_type=i.get('Type') or default_indicator_type,
-            indicator=i,
-            generic_context=generic_context or {'Data': i.get('Value')}
-        ))
-
-    aggregated: Dict = {}
-    for entry in entry_context:
-        for key, value in entry.items():
-            if key in aggregated:
-                aggregated[key].append(value)
-            else:
-                aggregated[key] = [value]
-
-    return aggregated
-
-
-def get_search_body(query, indicator_type):
-    search_body = {
-        "indicators": [
-            [
-                {
-                    'field': 'indicator_type',
-                    'operator': 'is',
-                    'value': indicator_type if indicator_type.isdigit() else get_indicator_type_id(indicator_type)
-                },
-                {
-                    'field': 'indicator_value',
-                    'operator': 'like',
-                    'value': str(query)
-                }
-            ]
-        ]
-    }
-    return search_body
-
-
-def advance_search_command():
-    args = demisto.args()
-    limit = args.get('limit', 10)
-    query = args.get('query')
-    indicator_type = args.get('indicator_type')
-
-    search_body = get_search_body(query, indicator_type)
-    if limit and isinstance(limit, str) and not limit.isdigit():
-        return_error('limit argument must be an integer.')
-
-    res = tq_request(
-        method='POST',
-        url_suffix=f'/search/advanced?limit={limit}',
-        params=search_body,
-        retrieve_entire_response=True
-    )
-    try:
-        search_results = res.json().get('data')
-    except ValueError:
-        raise ValueError(f'Could not parse data from ThreatQ [Status code: {res.status_code}]'
-                         f'\n[Error Message: {res.text}]')
-
-    if not isinstance(search_results, list):
-        search_results = [search_results]
-
-    indicators: List[Dict] = []
-    for obj in search_results:
-        # Search for detailed information about the indicator
-        url_suffix = f"/indicators/{obj.get('id')}?with=attributes,sources,score,type"
-        search_results = res = tq_request('GET', url_suffix)
-        indicators.append(indicator_data_to_demisto_format(res.get('data')))
-
-    indicators = indicators or [{'Value': query, 'TQScore': -1}]
-    entry_context = aggregate_search_results(indicators=indicators, default_indicator_type=indicator_type)
-
-    readable = build_readable(
-        readable_title=f'Search results for "{query}":',
-        obj_type='indicator',
-        data=indicators
-    )
-
-    return_outputs(readable, entry_context, search_results)
-
-
 def search_by_name_command():
     args = demisto.args()
     name = args.get('name')
-    limit = args.get('limit')
+    limit = args.get('limit') or '10'
 
     if limit and isinstance(limit, str) and not limit.isdigit():
         return_error('limit argument must be an integer.')
@@ -1127,7 +1023,7 @@ def upload_file_command():
     args = demisto.args()
     entry_id = args.get('entry_id')
     title = args.get('title')
-    malware_safety_lock = args.get('malware_safety_lock')
+    malware_safety_lock = args.get('malware_safety_lock') or 'off'
     file_category = args.get('file_category')
 
     file_info = demisto.getFilePath(entry_id)
@@ -1186,8 +1082,8 @@ def download_file_command():
 
 def get_all_objs_command(obj_type):
     args = demisto.args()
-    page = int(args.get('page'))
-    limit = int(args.get('limit'))
+    page = int(args.get('page')) or '0'
+    limit = int(args.get('limit')) or '50'
     if limit > 200:
         limit = 200
 
@@ -1288,8 +1184,6 @@ try:
     handle_proxy()
     if command == 'test-module':
         test_module()
-    elif command == 'threatq-advanced-search':
-        advance_search_command()
     elif command == 'threatq-search-by-name':
         search_by_name_command()
     elif command == 'threatq-search-by-id':
