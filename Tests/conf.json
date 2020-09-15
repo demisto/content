@@ -3199,7 +3199,6 @@
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
-        "urlscan.io": "Issue 21831",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
