@@ -40,6 +40,7 @@
 <li><a href="#h_07be9617-2153-4596-9461-1a64cfa82c41" target="_self">Get the reputation of an email address: threatstream-email-reputation</a></li>
 <li><a href="#h_f39323ba-05fe-48a7-9fa8-43c1a536f4fc" target="_self">Get enrichment data for a domain or IP address: threatstream-get-passive-dns</a></li>
 <li><a href="#h_3e5b000a-a5eb-4b6e-bddc-ba2edde7c7af" target="_self">Import indicators: threatstream-import-indicator-with-approval</a></li>
+<li><a href="#h_45678af3-3684-4c48-bddc-18f3c34f7022" target="_self">Import indicators without approval: threatstream-import-indicator-without-approval</a></li>
 <li><a href="#h_873f28ef-3a19-4c48-8305-bd156bcfb9ce" target="_self">Get a list of threat models: threatstream-get-model-list</a></li>
 <li><a href="#h_7bfb43d7-8e55-44c5-9b2b-d290eee42e51" target="_self">Get a description of a threat model: threatstream-get-model-description</a></li>
 <li><a href="#h_b000ad9b-2be2-4a00-b4b8-c55400058188" target="_self">Get a list of indicators for a threat model: threatstream-get-indicators-by-model</a></li>
@@ -1210,7 +1211,67 @@
 </pre>
 <h5>Human Readable Output</h5>
 <p>The data was imported successfully. The ID of imported job is: 894514</p>
-<h3 id="h_873f28ef-3a19-4c48-8305-bd156bcfb9ce">8. Get a list of threat models</h3>
+<h3 id="h_3e5b000a-a5eb-4b6e-bddc-ba2edde7c7af">8. Import indicators without approval</h3>
+<hr>
+<p>Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the Approve Intel user permission to import without approval using the API.</p>
+<h5>Base Command</h5>
+<p><code>threatstream-import-indicator-without-approval</code></p>
+<h5>Input</h5>
+<table style="width: 748px;">
+<thead>
+<tr>
+<th style="width: 130px;"><strong>Argument Name</strong></th>
+<th style="width: 539px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 130px;">confidence</td>
+<td style="width: 539px;">The level of certainty that an observable is of the reported indicator type. Default is 50.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 130px;">classification</td>
+<td style="width: 539px;">Denotes whether the indicator data is public or private to the organization. Default is "private".</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 130px;">source_confidence_weight</td>
+<td style="width: 539px;">To use your specified confidence entirely, set source_confidence_weight to 100.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 130px;">severity</td>
+<td style="width: 539px;">Gauges the potential impact of the indicator type the observable is thought to be associated with. Default is "low".</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 130px;">expiration_ts</td>
+<td style="width: 539px;">Time stamp of when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 130px;">tags</td>
+<td style="width: 539px;">Comma-separated list of tags. e.g. tag1,tag2.</td>
+<td style="width: 71px;">Optional</td>
+</tr><tr>
+<td style="width: 130px;">file_id</td>
+<td style="width: 539px;">Entry id of uploaded file to war room containing a json with "objects" array and "meta" maps.</td>
+<td style="width: 71px;">Required</td>
+</tr><tr>
+<td style="width: 130px;">trustedcircles</td>
+<td style="width: 539px;">ID of the trusted circle with which this threat data should be shared. If you want to import the threat data to multiple trusted circles, enter a list of comma-separated IDs.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Command Example</h5>
+<pre>threatstream-import-indicator-with-approval import_type="file-id" import_value=5403@6cf3881e-1cfd-48b5-8fc3-0b9fcfb791f0</pre>
+<h5>Human Readable Output</h5>
+<p>The data was imported successfully.</p>
+<h3 id="h_873f28ef-3a19-4c48-8305-bd156bcfb9ce">10. Get a list of threat models</h3>
 <hr>
 <p>Returns a list of threat models.</p>
 <h5>Base Command</h5>
@@ -1483,7 +1544,7 @@
     }
 }
 </pre>
-<h3 id="h_b000ad9b-2be2-4a00-b4b8-c55400058188">10. Get a list of indicators for a threat model</h3>
+<h3 id="h_b000ad9b-2be2-4a00-b4b8-c55400058188">11. Get a list of indicators for a threat model</h3>
 <hr>
 <p>Returns a list of indicators associated with the specified model and ID of the model. </p>
 <h5>Base Command</h5>
@@ -2240,7 +2301,7 @@
 </tbody>
 </table>
 <p> </p>
-<h3 id="h_6a77675f-f6aa-4aeb-9abf-4dd78318b177">11. Submit a file or URL for detonation</h3>
+<h3 id="h_6a77675f-f6aa-4aeb-9abf-4dd78318b177">12. Submit a file or URL for detonation</h3>
 <hr>
 <p>Submits a file or URL to the ThreatStream-hosted Sandbox for detonation. </p>
 <h5>Base Command</h5>

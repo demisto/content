@@ -653,7 +653,7 @@ script:
         - very-high
       secret: false
     - default: false
-      description: Comma-separated list of tags. e.g. tag1,tag2
+      description: Comma-separated list of tags. e.g. tag1,tag2.
       isArray: false
       name: tags
       required: false
@@ -668,9 +668,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: private
       description: Denotes whether the indicator data is public or private to the
-        organization. Default is "private".
+        organization.
       isArray: false
       name: classification
       predefined:
@@ -690,7 +689,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Entry id of uploaded file to war room containing a json with "objects" array and "meta" map object.
+      description: Entry id of uploaded file to war room containing a json with "objects" array and "meta" maps.
       isArray: false
       name: file_id
       required: true
