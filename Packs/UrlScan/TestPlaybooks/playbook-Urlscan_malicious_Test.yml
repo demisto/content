@@ -403,7 +403,7 @@ tasks:
       threshold: {}
       timeout: {}
       url:
-        simple: https://www.paloaltonetworks.com
+        simple: https://www.ynet.com
       wait:
         simple: "21"
     separatecontext: false
@@ -444,7 +444,7 @@ tasks:
       threshold: {}
       timeout: {}
       url:
-        simple: http://malware.wicar.org/data/js_crypto_miner.html
+        simple: steel-apparatus-278809.el.r.appspot.com
       wait:
         simple: "10"
     separatecontext: false
