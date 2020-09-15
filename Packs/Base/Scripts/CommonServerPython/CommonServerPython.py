@@ -961,6 +961,10 @@ def aws_table_to_markdown(response, table_header):
     return human_readable
 
 
+def stringUnEscape(st):
+    return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -1598,10 +1602,6 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
 
     return st
-
-
-def stringUnEscape(st):
-    return st.replace('\\r','\r').replace('\\n','\n').replace('\\t','\t')
 
 
 def raiseTable(root, key):
