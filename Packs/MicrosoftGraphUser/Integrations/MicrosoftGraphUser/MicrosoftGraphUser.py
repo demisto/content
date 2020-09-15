@@ -172,8 +172,8 @@ def test_function(client, _):
             # cannot use test module due to the lack of ability to set refresh token to integration context
             # for self deployed app
             raise Exception("When using a self-deployed configuration, "
-                            "Please enable the integration and use !msgraph-user-test in order to test it")
-        if not demisto.params().get('auth_code'):
+                            "Please enable the integration and run the !msgraph-user-test command in order to test it")
+        if not demisto.params().get('auth_code') or not demisto.params().get('redirect_uri'):
             raise Exception("You must enter an authorization code in a self-deployed configuration.")
 
     client.ms_client.http_request(method='GET', url_suffix='users/')
