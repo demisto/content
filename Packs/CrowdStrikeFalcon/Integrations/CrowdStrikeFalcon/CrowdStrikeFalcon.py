@@ -1166,7 +1166,7 @@ def timestamp_length_equalization(timestamp1, timestamp2):
 ''' COMMANDS FUNCTIONS '''
 
 
-def get_last_fetch_time_and_last_event_id(incident_type):
+def get_fetch_times_and_offset(incident_type):
     last_run = demisto.getLastRun()
     last_fetch_time = last_run.get(f'first_behavior_{incident_type}_time')
     offset = last_run.get(f'{incident_type}_offset', 0)
@@ -1188,8 +1188,7 @@ def fetch_incidents():
 
     if 'Detections' in fetch_incidents_or_detections or not fetch_incidents_or_detections:
         incident_type = 'detection'
-        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = \
-            get_last_fetch_time_and_last_event_id(incident_type)
+        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(incident_type)
 
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
@@ -1231,8 +1230,7 @@ def fetch_incidents():
     if 'Incidents' in fetch_incidents_or_detections:
         incident_type = 'incident'
 
-        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = \
-            get_last_fetch_time_and_last_event_id(incident_type)
+        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(incident_type)
 
         fetch_query = demisto.params().get('fetch_query')
 
