@@ -1001,6 +1001,7 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
+            res = stringUnEscape(res)
         except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
@@ -1597,6 +1598,10 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
 
     return st
+
+
+def stringUnEscape(st):
+    return st.replace('\\r','\r').replace('\\n','\n').replace('\\t','\t')
 
 
 def raiseTable(root, key):
