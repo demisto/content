@@ -825,6 +825,11 @@ class Pack(object):
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
 
+            print(f'Showing LS of current dir: {subprocess.check_output("ls")}')
+            print(f'Showing PWD of current dir: {subprocess.check_output("pwd")}')
+            # print(f'CD to dest_dir dir: {subprocess.check_output(f"cd {destination_path}")}')
+            # print(f'Showing LS of dest_dir dir: {subprocess.check_output("ls")}')
+
             print(f"Copying from {zip_pack_path} to /home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip")
             shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip')
 
