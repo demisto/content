@@ -962,6 +962,15 @@ def aws_table_to_markdown(response, table_header):
 
 
 def stringUnEscape(st):
+    """
+       Unescape newline chars in the given string.
+
+       :type st: ``str``
+       :param st: The string to be modified (required).
+
+       :return: A modified string.
+       :rtype: ``str``
+    """
     return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
 
 
