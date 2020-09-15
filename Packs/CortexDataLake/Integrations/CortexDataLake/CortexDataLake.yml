@@ -767,8 +767,8 @@ script:
       default: false
       defaultValue: all
       description: 'The fields selected in the query. Selection can be "all" (same
-        as *) or a comma separated list of specific fields. List of fields can
-        be found after viewing all the outputted fields with "all" '
+        as *) or a comma separated list of specific fields. List of fields can be
+        found after viewing all the outputted fields with "all" '
       isArray: false
       name: fields
       predefined:
@@ -1210,8 +1210,8 @@ script:
       default: false
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or or a comma separated list of specific fields. List of fields can
-        be found after viewing all the outputted fields with "all".
+        (same as *) or or a comma separated list of specific fields. List of fields
+        can be found after viewing all the outputted fields with "all".
       isArray: true
       name: fields
       predefined:
@@ -1966,7 +1966,7 @@ script:
     - contextPath: CDL.Logging.URL.DestDeviceHost
       description: Hostname of the device session destination.
       type: String
-  dockerimage: demisto/python_pancloud_v2:1.0.0.10828
+  dockerimage: demisto/python_pancloud_v2:1.0.0.11342
   feed: false
   isfetch: true
   longRunning: false
@@ -1975,6 +1975,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  dockerimage45: demisto/python_pancloud_v2:1.0.0.10828
 tests:
 - Cortex Data Lake Test
 fromversion: 4.5.0
