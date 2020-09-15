@@ -11,7 +11,7 @@ comment: This script will check that a field exists (and contains data) and opti
 commonfields:
   id: pollingField
   version: -1
-dockerimage: demisto/python3:3.8.3.8715
+dockerimage: demisto/python3:3.8.5.10845
 enabled: true
 name: pollingField
 outputs:

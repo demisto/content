@@ -6,7 +6,7 @@ contentitemexportablefields:
     propagationLabels:
     - all
     toServerVersion: ""
-id: da8b7575-8018-4793-8303-2fe3ea72496f
+id: Field Polling Generic
 version: 40
 vcShouldKeepItemLegacyProdMachine: false
 name: Field Polling Generic
@@ -166,4 +166,4 @@ inputs:
   playbookInputQuery: null
 outputs: []
 tests:
-  - playbook-fieldpolling-test
+  - Field polling test
