@@ -3,31 +3,6 @@ commonfields:
   id: QRadar_v2
   version: -1
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
-  name: server
-  required: true
-  type: 0
-- display: Username / API Key (see '?')
-  name: credentials
-  required: false
-  type: 9
-- display: Query to fetch offenses
-  name: query
-  required: false
-  type: 0
-- defaultvalue: '20'
-  display: Number of offenses to pull per API call (max 50)
-  name: offenses_per_fetch
-  required: false
-  type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -36,6 +11,36 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- display: Username / API Key (see '?')
+  name: credentials
+  required: false
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- display: Query to fetch offenses
+  name: query
+  required: false
+  type: 0
+  additionalinfo: "Define a query to determine which offenses to fetch. e.g. status=OPEN. See ? for more details."
+- defaultvalue: '20'
+  display: Number of offenses to pull per API call (max 50)
+  name: offenses_per_fetch
+  required: false
+  type: 0
 - defaultvalue: 'true'
   display: Incident IP Enrichment
   hidden: false
@@ -50,12 +55,8 @@ configuration:
   required: false
   type: 8
   additionalinfo: "Enable this to fetch assets that correlate to the fetched offenses."
-- display: Long running instance
-  name: longRunning
-  required: false
-  type: 8
-- defaultvalue: "QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, username"
-  display: Event fields to return from the events query.
+- defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime'
+  display: Event fields to return from the events query (CAUTION this parameter is correlated to the incoming mapper, and changing the values may adversely affect mapping)
   name: events_columns
   required: false
   additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_aql_intro.html"
@@ -81,8 +82,7 @@ configuration:
   name: adv_params
   required: false
   type: 12
-description: 'Fetch offenses from QRadar using Cortex XSOAR. You can fetch the offenses with their related events and assets by creating a comma-separated list of event fields. 
-            **Note**: To enable bringing the related assets, you must enable the Long Running Instance.'
+description: 'Fetch offenses from QRadar using Cortex XSOAR. You can fetch the offenses with their related events and assets by creating a comma-separated list of event fields.'
 display: IBM QRadar v2
 name: QRadar_v2
 script:
