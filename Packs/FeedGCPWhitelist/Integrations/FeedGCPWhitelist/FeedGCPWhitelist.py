@@ -111,12 +111,12 @@ def fetch_indicators(client: Client, params: Dict[str, str]) -> List[Dict]:
                 'value': indicator["ip"],
                 'type': indicator["type"],
             },
-            'fields': {
-                'trafficlightprotocol': tlp_color
-            }
+            'fields': {}
         }
         if feed_tags:
             indicator_obj['fields']['tags'] = feed_tags
+        if tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
         indicators.append(indicator_obj)
     return indicators
