@@ -167,26 +167,6 @@ script:
     execution: false
     description: Retrieves the generated Triage Report for a single task
     name: triage-get-report-triage
-#  - arguments:
-#    - default: false
-#      isArray: false
-#      name: sample_id
-#      required: true
-#      secret: false
-#    deprecated: false
-#    description: Gets a stream of events on a sample
-#    execution: false
-#    name: triage-get-sample-events
-#  - arguments:
-#    - default: false
-#      isArray: false
-#      name: sample_id
-#      required: false
-#      secret: false
-#    deprecated: false
-#    description: Gets a stream of events from all samples
-#    execution: false
-#    name: triage-get-all-sample-events
   - arguments:
     - default: false
       isArray: false
