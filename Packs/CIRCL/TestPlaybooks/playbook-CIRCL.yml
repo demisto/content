@@ -1059,7 +1059,7 @@ tasks:
       - "36"
     scriptarguments:
       queryValue:
-        simple: 1.1.1.1
+        simple: 1.1.1.190
     separatecontext: false
     view: |-
       {
