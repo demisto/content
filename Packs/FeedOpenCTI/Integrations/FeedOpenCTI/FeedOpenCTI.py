@@ -1,5 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
-
+from typing import List, Optional, Tuple
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -8,9 +7,7 @@ from pycti import OpenCTIApiClient
 urllib3.disable_warnings()
 
 # Disable info logging from the api
-import logging
-logger = logging.getLogger('Stix2')
-logger.setLevel(logging.ERROR)
+logging.getLogger('Stix2').setLevel(logging.ERROR)
 
 XSOHR_TYPES = {
     'user-account': "Account",
@@ -164,6 +161,7 @@ def main():
         return_error(
             f"Error [{e}]"
         )
+
 
 if __name__ == "builtins":
     main()
