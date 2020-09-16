@@ -923,6 +923,7 @@ def is_reset_triggered(lock, handle_reset=False):
 
 def fetch_incidents_long_running_events(
     client: QRadarClient,
+    incident_type,
     user_query,
     ip_enrich,
     asset_enrich,
@@ -966,7 +967,7 @@ def fetch_incidents_long_running_events(
         print_debug_msg("Enriching offenses")
         enrich_offense_result(client, enriched_offenses, ip_enrich, asset_enrich)
         print_debug_msg("Enriched offenses successfully.")
-    new_incidents_samples = create_incidents(enriched_offenses)
+    new_incidents_samples = create_incidents(enriched_offenses, incident_type)
     incidents_batch_for_sample = (
         new_incidents_samples if new_incidents_samples else last_run.get("samples", [])
     )
@@ -975,20 +976,20 @@ def fetch_incidents_long_running_events(
     set_integration_context(context, sync=SYNC_CONTEXT)
 
 
-def create_incidents(enriched_offenses):
+def create_incidents(enriched_offenses, incident_type):
     if not enriched_offenses:
         return []
 
     incidents = []
     for offense in enriched_offenses:
-        incidents.append(create_incident_from_offense(offense))
+        incidents.append(create_incident_from_offense(offense, incident_type))
     print_debug_msg(f"Creating {len(incidents)} incidents")
     demisto.createIncidents(incidents)
     return incidents
 
 
 def fetch_incidents_long_running_no_events(
-    client: QRadarClient, user_query, ip_enrich, asset_enrich
+    client: QRadarClient, incident_type, user_query, ip_enrich, asset_enrich
 ):
     last_run = get_integration_context(SYNC_CONTEXT)
     offense_id = last_run["id"] if last_run and "id" in last_run else 0
@@ -1011,8 +1012,7 @@ def fetch_incidents_long_running_no_events(
     if is_reset_triggered(client.lock, handle_reset=True):
         return
 
-    incidents_batch = create_incidents(raw_offenses)
-    demisto.createIncidents(incidents_batch)
+    incidents_batch = create_incidents(raw_offenses, incident_type)
     incidents_batch_for_sample = (
         incidents_batch if incidents_batch else last_run.get("samples", [])
     )
@@ -1021,7 +1021,7 @@ def fetch_incidents_long_running_no_events(
     set_integration_context(context, sync=SYNC_CONTEXT)
 
 
-def create_incident_from_offense(offense):
+def create_incident_from_offense(offense, incident_type):
     """
     Creates incidents from offense
     """
@@ -1037,6 +1037,7 @@ def create_incident_from_offense(offense):
         "labels": labels,
         "rawJSON": json.dumps(offense),
         "occurred": occured,
+        "type": incident_type
     }
 
 
@@ -1862,6 +1863,7 @@ def get_indicators_list(indicator_query, limit, page):
 
 def fetch_loop_with_events(
     client: QRadarClient,
+    incident_type,
     user_query,
     ip_enrich,
     asset_enrich,
@@ -1875,6 +1877,7 @@ def fetch_loop_with_events(
         print_debug_msg("Starting fetch loop with events.")
         fetch_incidents_long_running_events(
             client,
+            incident_type,
             user_query,
             ip_enrich,
             asset_enrich,
@@ -1885,19 +1888,20 @@ def fetch_loop_with_events(
         time.sleep(FETCH_SLEEP)
 
 
-def fetch_loop_no_events(client: QRadarClient, user_query, ip_enrich, asset_enrich):
+def fetch_loop_no_events(client: QRadarClient, incident_type, user_query, ip_enrich, asset_enrich):
     while True:
         is_reset_triggered(client.lock, handle_reset=True)
 
         print_debug_msg("Starting fetch loop with no events.")
         fetch_incidents_long_running_no_events(
-            client, user_query, ip_enrich, asset_enrich
+            client, incident_type, user_query, ip_enrich, asset_enrich
         )
         time.sleep(FETCH_SLEEP)
 
 
 def long_running_main(
     client: QRadarClient,
+    incident_type,
     user_query,
     ip_enrich,
     asset_enrich,
@@ -1909,6 +1913,7 @@ def long_running_main(
     if fetch_mode in (FetchMode.all_events, FetchMode.correlations_only):
         fetch_loop_with_events(
             client,
+            incident_type,
             user_query,
             ip_enrich,
             asset_enrich,
@@ -1917,7 +1922,7 @@ def long_running_main(
             events_limit,
         )
     elif fetch_mode == FetchMode.no_events:
-        fetch_loop_no_events(client, user_query, ip_enrich, asset_enrich)
+        fetch_loop_no_events(client, incident_type, user_query, ip_enrich, asset_enrich)
 
 
 def reset_fetch_incidents():
@@ -1960,6 +1965,7 @@ def main():
         insecure=insecure,
     )
 
+    incident_type = params.get("incidentType")
     fetch_mode = params.get("fetch_mode")
     user_query = params.get("query")
     ip_enrich = params.get("ip_enrich")
@@ -2002,6 +2008,7 @@ def main():
         elif command == "long-running-execution":
             long_running_main(
                 client,
+                incident_type,
                 user_query,
                 ip_enrich,
                 asset_enrich,

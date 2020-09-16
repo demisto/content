@@ -96,7 +96,7 @@ def test_fetch_incidents_long_running_no_events(mocker):
     mocker.patch.object(demisto, "debug")
     sic_mock = mocker.patch.object(QRadar_v2, "set_integration_context")
 
-    fetch_incidents_long_running_no_events(client, user_query="", ip_enrich=False, asset_enrich=False)
+    fetch_incidents_long_running_no_events(client, '', user_query="", ip_enrich=False, asset_enrich=False)
 
     assert sic_mock.call_args[0][0]['id'] == 450
     assert len(sic_mock.call_args[0][0]['samples']) == 1
@@ -131,7 +131,7 @@ def test_fetch_incidents_long_running_events(mocker):
     mocker.patch.object(demisto, "debug")
     sic_mock = mocker.patch.object(QRadar_v2, "set_integration_context")
 
-    fetch_incidents_long_running_events(client, "", False, False, fetch_mode, "", "")
+    fetch_incidents_long_running_events(client, "", "", False, False, fetch_mode, "", "")
 
     assert sic_mock.call_args[0][0]['id'] == 450
     assert len(sic_mock.call_args[0][0]['samples']) == 1
