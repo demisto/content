@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from datetime import datetime, timezone
-from typing import Union, Any, Tuple, Dict
+from typing import Union, Any, Dict
 from dateparser import parse
 
 import urllib3
@@ -20,8 +20,6 @@ MALICIOUS_DICTIONARY: Dict[Any, int] = {
 }
 
 MALICIOUS_THRESHOLD = MALICIOUS_DICTIONARY.get(demisto.params().get('threshold', 'high'))
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 
 ''' CLIENT '''
 
@@ -69,7 +67,7 @@ class Client:
                 else:
                     operator: Optional[str] = self.date_params.get(key, {}).get('operator')
                     api_key: Optional[str] = self.date_params.get(key, {}).get('api_key')
-                    filter_query += f"{api_key}:{operator}{int(parse(args[key]).timestamp())}+"
+                    filter_query += f"{api_key}:{operator}{int(parse(args[key], settings={'TIMEZONE': 'UTC'}).timestamp())}+"
 
         if filter_query.endswith('+'):
             filter_query = filter_query[:-1]
@@ -110,6 +108,24 @@ class Client:
 ''' HELPER FUNCTIONS '''
 
 
+def get_dbot_score_type(indicator_type: str) -> Union[Exception, DBotScoreType, str]:
+    """
+    Returns the dbot score type
+    :param indicator_type: The indicator type
+    :return: The dbot score type
+    """
+    if indicator_type == 'ip':
+        return DBotScoreType.IP
+    elif indicator_type == 'domain':
+        return DBotScoreType.DOMAIN
+    elif indicator_type == 'file' or indicator_type == 'hash':
+        return DBotScoreType.FILE
+    elif indicator_type == 'url':
+        return DBotScoreType.URL
+    else:
+        raise DemistoException('Indicator type is not supported.')
+
+
 def get_score_from_resource(r: Dict[str, Any]) -> int:
     """
     Calculates the DBotScore for the resource
@@ -144,54 +160,46 @@ def get_indicator_hash_type(indicator_value: str) -> Union[str, Exception]:
                                f', SHA1 (40 length) or SHA256 (64 length) hash.')
 
 
-def get_indicator_object(indicator_value: Any, indicator_type: str, dbot_score: Common.DBotScore,
-                         extra_context: Dict[str, Any] = None) -> Union[Common.IP, Common.URL, Common.File,
-                                                                        Common.Domain, None]:
+def get_indicator_object(indicator_value: Any, indicator_type: str, dbot_score: Common.DBotScore,) \
+        -> Union[Common.IP, Common.URL, Common.File, Common.Domain, None]:
     """
     Returns the corresponding indicator common object
     :param indicator_value: The indicator value
     :param indicator_type: The indicator value
     :param dbot_score: The indicator DBotScore
-    :param extra_context: Extra fields of the indicator to add to context
     :return: The indicator common object
     """
     if indicator_type == 'ip':
         return Common.IP(
             ip=indicator_value,
-            dbot_score=dbot_score,
-            extra_context_fields=extra_context
+            dbot_score=dbot_score
         )
     elif indicator_type == 'url':
         return Common.URL(
             url=indicator_value,
-            dbot_score=dbot_score,
-            extra_context_fields=extra_context
+            dbot_score=dbot_score
         )
     elif indicator_type == 'hash':
         hash_type: Union[str, Exception] = get_indicator_hash_type(indicator_value)
         if hash_type == 'hash_md5':
             return Common.File(
                 md5=indicator_value,
-                dbot_score=dbot_score,
-                extra_context_fields=extra_context
+                dbot_score=dbot_score
             )
         elif hash_type == 'hash_sha1':
             return Common.File(
                 sha1=indicator_value,
-                dbot_score=dbot_score,
-                extra_context_fields=extra_context
+                dbot_score=dbot_score
             )
         else:
             return Common.File(
                 sha256=indicator_value,
-                dbot_score=dbot_score,
-                extra_context_fields=extra_context
+                dbot_score=dbot_score
             )
     elif indicator_type == 'domain':
         return Common.Domain(
             domain=indicator_value,
-            dbot_score=dbot_score,
-            extra_context_fields=extra_context
+            dbot_score=dbot_score
         )
     else:
         return None
@@ -214,17 +222,17 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
 
     if resources:
         for r in resources:
-            output, indicator_extra_context = get_indicator_data(r)
+            output = get_indicator_outputs(r)
             outputs.append(output)
             score = get_score_from_resource(r)
             dbot_score = Common.DBotScore(
                 indicator=indicator_value,
-                indicator_type=DBotScoreType.get_dbot_score_type(indicator_type),
+                indicator_type=get_dbot_score_type(indicator_type),
                 integration_name='FalconIntel',
                 malicious_description='High confidence',
                 score=score
             )
-            indicator = get_indicator_object(indicator_value, indicator_type, dbot_score, indicator_extra_context)
+            indicator = get_indicator_object(indicator_value, indicator_type, dbot_score)
             indicators.append(indicator)
     else:
         md = 'No indicator found.'
@@ -234,7 +242,7 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
         outputs_prefix='FalconIntel.Indicator',
         outputs_key_field='ID',
         indicators=indicators,
-        readable_output=md if md else f"{tableToMarkdown(name=title, t=outputs, headerTransform=pascalToSpace)}",
+        readable_output=md if md else {tableToMarkdown(name=title, t=outputs, headerTransform=pascalToSpace)},
         raw_response=res
     )
 
@@ -260,14 +268,13 @@ def get_values(items_list: List[Any], return_type: str = 'str', keys: Union[str,
     return ', '.join(str(item) for item in new_list)
 
 
-def get_indicator_data(o: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+def get_indicator_outputs(o: Dict[str, Any]) -> Dict[str, Any]:
     """
     Build the output and extra context of an indicator
     :param o: The indicator's object
     :return: The indicator's human readable
     """
     output: Dict[str, Any] = dict()
-    indicator_context_fields: Dict[str, Any] = dict()
 
     if o:
         indicator_id = o.get('id')
@@ -289,9 +296,9 @@ def get_indicator_data(o: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any
             'ID': indicator_id,
             'Type': indicator_type,
             'Value': indicator_value,
-            'LastUpdate': datetime.fromtimestamp(last_update, timezone.utc).strftime(DATE_FORMAT) if last_update
+            'LastUpdate': datetime.fromtimestamp(last_update, timezone.utc).isoformat() if last_update
             else None,
-            'PublishDate': datetime.fromtimestamp(publish_date, timezone.utc).strftime(DATE_FORMAT) if publish_date
+            'PublishDate': datetime.fromtimestamp(publish_date, timezone.utc).isoformat() if publish_date
             else None,
             'MaliciousConfidence': malicious_confidence,
             'Reports': reports,
@@ -305,20 +312,13 @@ def get_indicator_data(o: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any
             'Labels': get_values(labels, return_type='list', keys='name')
         })
 
-        indicator_context_fields = assign_params(**{
-            'Reports': reports,
-            'Actors': actors,
-            'MalwareFamilies': malware_families,
-            'KillChains': kill_chains
-        })
-
-    return output, indicator_context_fields
+    return output
 
 
 ''' COMMANDS '''
 
 
-def test_module(client: Client) -> Union[str, Exception]:
+def run_test_module(client: Client) -> Union[str, Exception]:
     """
     If a client is successfully constructed then an accesses token was successfully reached,
     therefore the username and password are valid and a connection was made.
@@ -399,9 +399,9 @@ def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
                 'URL': url,
                 'Slug': slug,
                 'ShortDescription': short_description,
-                'FirstActivityDate': datetime.fromtimestamp(first_activity_date, timezone.utc).strftime(DATE_FORMAT)
+                'FirstActivityDate': datetime.fromtimestamp(first_activity_date, timezone.utc).isoformat()
                 if first_activity_date else None,
-                'LastActivityDate': datetime.fromtimestamp(last_activity_date, timezone.utc).strftime(DATE_FORMAT)
+                'LastActivityDate': datetime.fromtimestamp(last_activity_date, timezone.utc).isoformat()
                 if last_activity_date else None,
                 'Active': active,
                 'KnownAs': known_as,
@@ -439,7 +439,7 @@ def cs_indicators_command(client: Client, args: Dict[str, str]) -> CommandResult
 
     if resources:
         for r in resources:
-            output, indicator_extra_context = get_indicator_data(r)
+            output = get_indicator_outputs(r)
             indicator_value = output.get('Value')
             outputs.append(output)
             indicator_type = output.get('Type')
@@ -452,12 +452,12 @@ def cs_indicators_command(client: Client, args: Dict[str, str]) -> CommandResult
                 score = get_score_from_resource(r)
                 dbot_score = Common.DBotScore(
                     indicator=indicator_value,
-                    indicator_type=DBotScoreType.get_dbot_score_type(indicator_type),
+                    indicator_type=get_dbot_score_type(indicator_type),
                     integration_name='FalconIntel',
                     malicious_description='High confidence',
                     score=score
                 )
-                indicator = get_indicator_object(indicator_value, indicator_type, dbot_score, indicator_extra_context)
+                indicator = get_indicator_object(indicator_value, indicator_type, dbot_score)
                 indicators.append(indicator)
     else:
         md = 'No indicators found.'
@@ -466,7 +466,7 @@ def cs_indicators_command(client: Client, args: Dict[str, str]) -> CommandResult
         outputs=outputs,
         outputs_prefix='FalconIntel.Indicator',
         outputs_key_field='ID',
-        readable_output=md if md else f"{tableToMarkdown(name=title, t=outputs, headerTransform=pascalToSpace)}",
+        readable_output=md if md else tableToMarkdown(name=title, t=outputs, headerTransform=pascalToSpace),
         raw_response=res,
         indicators=indicators
     )
@@ -504,9 +504,9 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
                 'Type': report_type,
                 'SubType': sub_type,
                 'Slug': slug,
-                'CreatedDate': datetime.fromtimestamp(created_date, timezone.utc).strftime(DATE_FORMAT)
+                'CreatedDate': datetime.fromtimestamp(created_date, timezone.utc).isoformat()
                 if created_date else None,
-                'LastModifiedSate': datetime.fromtimestamp(last_modified_date, timezone.utc).strftime(DATE_FORMAT)
+                'LastModifiedSate': datetime.fromtimestamp(last_modified_date, timezone.utc).isoformat()
                 if last_modified_date else None,
                 'ShortDescription': short_description,
                 'TargetIndustries': get_values(target_industries, return_type='list'),
@@ -537,7 +537,7 @@ def main():
         LOG(f'Command being called in CrowdStrike Falcon Intel v2 is: {command}')
         client: Client = Client(params=params)
         if command == 'test-module':
-            result: Union[str, Exception] = test_module(client)
+            result: Union[str, Exception] = run_test_module(client)
             return_results(result)
         elif command == 'file':
             results: CommandResults = file_command(args['file'], client)
@@ -568,5 +568,5 @@ def main():
 
 from CrowdStrikeApiModule import *  # noqa: E402
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ('__main__', 'builtin', 'builtins'):
     main()

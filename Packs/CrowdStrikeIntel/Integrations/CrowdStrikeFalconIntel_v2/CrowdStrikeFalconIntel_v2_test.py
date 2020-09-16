@@ -1,6 +1,6 @@
 import pytest
-from mock import patch
-from Packs.CrowdStrikeIntel.Integrations.CrowdStrikeFalconIntel_v2.CrowdStrikeFalconIntel_v2 import *
+from CrowdStrikeFalconIntel_v2 import *
+from CommonServerPython import DBotScoreType, Common, DemistoException
 
 
 class TestClientHelperFunctions:
@@ -16,22 +16,19 @@ class TestClientHelperFunctions:
         ({'query': 1}, {'filter': 1}),
         ({'wow': 1}, {'filter': "wow:'1'"})
     ])
-    def test_build_request_params(self, args, output):
-        with patch.object(Client, "__init__", lambda a, b: None):
-            client = Client({})
-            client.query_params = TestClientHelperFunctions.QUERY_PARAMS
-            client.date_params = TestClientHelperFunctions.DATE_PARAMS
-            assert client.build_request_params(args) == output
+    def test_build_request_params(self, args, output, mocker):
+        mocker.patch.object(CrowdStrikeClient, "_generate_token")
+        client = Client({})
+        assert client.build_request_params(args) == output
 
     @pytest.mark.parametrize('args, output', [
-        ({'offset': 1, 'max_last_modified_date': '2020-09-14', 'wow': 2}, "last_modified_date:<=1600030800+wow:'2'")
+        ({'offset': 1, 'max_last_modified_date': '2020-09-16T22:28:42.143302', 'wow': 2},
+         "last_modified_date:<=1600284522+wow:'2'")
     ])
-    def test_build_filter_query(self, args, output):
-        with patch.object(Client, "__init__", lambda a, b: None):
-            client = Client({})
-            client.query_params = TestClientHelperFunctions.QUERY_PARAMS
-            client.date_params = TestClientHelperFunctions.DATE_PARAMS
-            assert client.build_filter_query(args) == output
+    def test_build_filter_query(self, args, output, mocker):
+        mocker.patch.object(CrowdStrikeClient, "_generate_token")
+        client = Client({})
+        assert client.build_filter_query(args) == output
 
 
 class TestHelperFunctions:
@@ -158,7 +155,6 @@ class TestHelperFunctions:
             "Malware/SendSafe"
         ]
     }
-    INDICATOR_EXTRA_CONTEXT = {'MalwareFamilies': ['SendSafe'], 'Reports': ['CSIT-18125']}
 
     def test_get_score_from_resource(self):
         assert get_score_from_resource(TestHelperFunctions.INDICATOR_RESOURCE) == 3
@@ -176,22 +172,20 @@ class TestHelperFunctions:
             with pytest.raises(DemistoException):
                 get_indicator_hash_type(hash_value)
 
-    @pytest.mark.parametrize('ind_val, ind_type, dbot_score, extra_context, output', [
+    @pytest.mark.parametrize('ind_val, ind_type, dbot_score, output', [
         ('8.8.8.8', 'ip', Common.DBotScore(indicator='8.8.8.8', indicator_type=DBotScoreType.IP,
                                            integration_name='FalconIntel', score=0, malicious_description=''),
-         {'wow': 1}, Common.IP(ip='8.8.8.8', dbot_score=Common.DBotScore(indicator='8.8.8.8',
-                                                                         indicator_type=DBotScoreType.IP,
-                                                                         integration_name='FalconIntel',
-                                                                         score=0, malicious_description=''),
-                               extra_context_fields={'wow': 1})),
+         Common.IP(ip='8.8.8.8', dbot_score=Common.DBotScore(indicator='8.8.8.8', indicator_type=DBotScoreType.IP,
+                                                             integration_name='FalconIntel', score=0,
+                                                             malicious_description=''))),
         ('wow', 'wow', Common.DBotScore(indicator='CVE-1999-0067', indicator_type=DBotScoreType.CVE,
-                                        integration_name='FalconIntel', score=0, malicious_description=''), {}, None)
+                                        integration_name='FalconIntel', score=0, malicious_description=''), None)
     ])
-    def test_get_indicator_object(self, ind_val, ind_type, dbot_score, extra_context, output):
+    def test_get_indicator_object(self, ind_val, ind_type, dbot_score, output):
         if not output:
-            assert get_indicator_object(ind_val, ind_type, dbot_score, extra_context) == output
+            assert get_indicator_object(ind_val, ind_type, dbot_score) == output
         else:
-            assert get_indicator_object(ind_val, ind_type, dbot_score, extra_context).to_context() == \
+            assert get_indicator_object(ind_val, ind_type, dbot_score).to_context() == \
                    output.to_context()
 
     @pytest.mark.parametrize('items_list, ret_type, keys, output', [
@@ -205,6 +199,20 @@ class TestHelperFunctions:
         assert get_values(items_list, ret_type, keys) == output
 
     def test_get_indicator_data(self):
-        output, extra_context = get_indicator_data(TestHelperFunctions.INDICATOR_RESOURCE)
+        output = get_indicator_outputs(TestHelperFunctions.INDICATOR_RESOURCE)
         assert output == TestHelperFunctions.INDICATOR_OUTPUT
-        assert extra_context == TestHelperFunctions.INDICATOR_EXTRA_CONTEXT
+
+    @pytest.mark.parametrize('_type, output, exception', [
+        ('ip', DBotScoreType.IP, False),
+        ('domain', DBotScoreType.DOMAIN, False),
+        ('file', DBotScoreType.FILE, False),
+        ('hash', DBotScoreType.FILE, False),
+        ('url', DBotScoreType.URL, False),
+        ('wow', None, True)
+    ])
+    def test_get_dbot_score_type(self, _type, output, exception):
+        if exception:
+            with pytest.raises(DemistoException, match='Indicator type is not supported.'):
+                get_dbot_score_type(_type)
+        else:
+            assert get_dbot_score_type(_type) == output
