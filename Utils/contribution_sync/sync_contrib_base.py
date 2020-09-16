@@ -40,7 +40,7 @@ def get_branch_names_with_contrib(repo: Repository) -> List[str]:  # noqa: E999
             prs_with_branch_as_base = repo.get_pulls(state='OPEN', base=branch.name)
             if prs_with_branch_as_base.totalCount >= 1:
                 prs_with_branch_as_head = repo.get_pulls(state='OPEN', head=branch.name)
-                if not prs_with_branch_as_head.totalCount >= 1:
+                if prs_with_branch_as_head.totalCount == 0:
                     branch_names.append(branch.name)
     return branch_names
 
