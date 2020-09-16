@@ -236,18 +236,18 @@ script:
     - default: false
       isArray: false
       name: firstName
-      required: false
+      required: true
       secret: false
     - default: false
       isArray: false
       name: lastName
-      required: false
+      required: true
       secret: false
     - default: false
       isArray: false
       name: password
-      required: false
-      secret: false
+      required: true
+      secret: true
     - auto: PREDEFINED
       default: false
       isArray: false
@@ -260,7 +260,7 @@ script:
       - access_api
       - manage_machines
       - manage_company
-      required: false
+      required: true
       secret: false
     deprecated: false
     execution: false
