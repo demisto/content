@@ -324,17 +324,22 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
             risk_string = item.get('RiskString')
             if isinstance(risk_string, str):
                 raw_json['RiskString'] = format_risk_string(risk_string)
-            indicators.append({
+
+            indicator_obj = {
                 'value': value,
                 'type': raw_json['type'],
                 'rawJSON': raw_json,
                 'fields': {
                     'recordedfutureevidencedetails': lower_case_evidence_details_keys,
                     'tags': client.tags,
-                    'trafficlightprotocol': client.tlp_color
                 },
                 'score': score
-            })
+            }
+
+            if client.tlp_color:
+                indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+
+            indicators.append(indicator_obj)
 
     return indicators
 
