@@ -7,7 +7,7 @@ from pycti import OpenCTIApiClient
 urllib3.disable_warnings()
 
 # Disable info logging from the api
-logging.getLogger('Stix2').setLevel(logging.ERROR)
+logging.getLogger().setLevel(logging.ERROR)
 
 XSOHR_TYPES = {
     'user-account': "Account",
