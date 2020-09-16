@@ -11,14 +11,14 @@ class Client(BaseClient):
 
 
 # Works
-def test_module(client: Client):
+def test_module(client: Client) -> str:
     client._http_request('GET', 'users')
 
     return 'ok'
 
 
 # Works
-def query_samples(client, **args):
+def query_samples(client, **args) -> CommandResults:
     params = {
         'subset': args.get('subset')
     }
@@ -35,7 +35,7 @@ def query_samples(client, **args):
 
 # Works
 #   - Need to add more parameters
-def submit_sample(client: Client, **args):
+def submit_sample(client: Client, **args) -> CommandResults:
 
     data = {
         'kind': args.get('kind'),
@@ -66,7 +66,7 @@ def submit_sample(client: Client, **args):
     return results
 
 # Works
-def get_sample(client: Client, **args):
+def get_sample(client: Client, **args) -> CommandResults:
     sample_id = args.get("sample_id")
     r = client._http_request('GET', f'samples/{sample_id}')
 
@@ -79,7 +79,7 @@ def get_sample(client: Client, **args):
 
 
 # Works
-def get_sample_summary(client: Client, **args):
+def get_sample_summary(client: Client, **args) -> CommandResults:
     sample_id = args.get('sample_id')
     r = client._http_request('GET', f'samples/{sample_id}/summary')
 
@@ -92,7 +92,7 @@ def get_sample_summary(client: Client, **args):
 
 
 # Works
-def delete_sample(client: Client, **args):
+def delete_sample(client: Client, **args) -> str:
     sample_id=args.get('sample_id')
     client._http_request('DELETE', f'samples/{sample_id}')
 
@@ -100,7 +100,7 @@ def delete_sample(client: Client, **args):
 
 
 # Works
-def set_sample_profile(client: Client, **args):
+def set_sample_profile(client: Client, **args) -> str:
     '''
     Used to move a submitted sample from static analysis to behavioural by giving it a profile to run under
     '''
@@ -120,7 +120,7 @@ def set_sample_profile(client: Client, **args):
 
 
 # Works
-def get_static_report(client: Client, **args):
+def get_static_report(client: Client, **args) -> CommandResults:
     '''
     Get's the static analysis report from a given sample
     '''
@@ -138,7 +138,7 @@ def get_static_report(client: Client, **args):
 
 
 # Works
-def get_report_triage(client: Client, **args):
+def get_report_triage(client: Client, **args) -> CommandResults:
     '''
     Works
     Outputs a score, should map to a DBot score
@@ -158,31 +158,19 @@ def get_report_triage(client: Client, **args):
 
 
 # Working
-def get_kernel_monitor(client: Client, **args):
+def get_kernel_monitor(client: Client, **args) -> fileResult:
     sample_id=args.get('sample_id')
     task_id=args.get('task_id')
 
     r = client._http_request('GET', f'samples/{sample_id}/{task_id}/logs/onemon.json', resp_type='text')
 
-    res = []
-    for x in r.split('\n'):
-        try:
-            res.append(json.loads(x))
-        except json.decoder.JSONDecodeError:
-            return_results(f'Error parsing: {x}')
-            continue
-
-    results = CommandResults(
-        outputs_prefix = 'Triage.sample.kernel_monitor',
-        outputs_key_field = 'data',
-        outputs = res
-    )
+    results = fileResult(f'{sample_id}-{task_id}-kernel-monitor.json', r)
 
     return results
 
 
 # Works
-def get_pcap(client: Client, **args):
+def get_pcap(client: Client, **args) -> fileResult:
     sample_id = args.get('sample_id')
     task_id = args.get('task_id')
 
@@ -194,7 +182,7 @@ def get_pcap(client: Client, **args):
     return fileResult(filename, file_content)
 
 
-def get_dumped_files(client: Client, **args):
+def get_dumped_files(client: Client, **args) -> CommandResults:
     '''
     Need to test
         - Need to upload a sample that will have a file to dump, maybe an installer e.g. msi?
@@ -215,7 +203,7 @@ def get_dumped_files(client: Client, **args):
 
 
 # Working
-def get_users(client: Client, **args):
+def get_users(client: Client, **args) -> CommandResults:
     '''
     Works
     '''
@@ -241,7 +229,7 @@ def get_users(client: Client, **args):
 
 
 # Working
-def create_user(client: Client, **args):
+def create_user(client: Client, **args) -> CommandResults:
     '''
     Works
     '''
@@ -270,7 +258,7 @@ def create_user(client: Client, **args):
 
 
 # Working
-def delete_user(client: Client, **args):
+def delete_user(client: Client, **args) -> CommandResults:
     '''
     Works
     '''
@@ -291,7 +279,7 @@ def delete_user(client: Client, **args):
 
 
 # Working
-def create_apikey(client: Client, **args):
+def create_apikey(client: Client, **args) -> CommandResults:
     '''
     - Check the formatting of the output once instance UI is working better
     - Note: It seems you can't create an API key for yourself through the API
@@ -315,7 +303,7 @@ def create_apikey(client: Client, **args):
 
 
 # Working
-def get_apikey(client: Client, **args):
+def get_apikey(client: Client, **args) -> CommandResults:
     '''
     - Check the formatting of the output once instance UI is working better
     '''
@@ -332,7 +320,7 @@ def get_apikey(client: Client, **args):
 
 
 # Working
-def delete_apikey(client: Client, **args):
+def delete_apikey(client: Client, **args) -> CommandResults:
     '''
     Working
     '''
@@ -351,7 +339,7 @@ def delete_apikey(client: Client, **args):
 
 
 # Working
-def get_profile(client: Client, **args):
+def get_profile(client: Client, **args) -> CommandResults:
     '''
     - Need to check the UI for results formatting
     '''
@@ -378,7 +366,7 @@ def get_profile(client: Client, **args):
 
 
 # Working
-def create_profile(client: Client, **args):
+def create_profile(client: Client, **args) -> CommandResults:
 
     data = json.dumps({
         "name": args.get('name'),
@@ -400,7 +388,7 @@ def create_profile(client: Client, **args):
 
 
 # Working
-def update_profile(client: Client, **args):
+def update_profile(client: Client, **args) -> CommandResults:
     profileID = args.get('profileID')
 
     data = {}
@@ -424,7 +412,7 @@ def update_profile(client: Client, **args):
 
 
 # Working
-def delete_profile(client: Client, **args):
+def delete_profile(client: Client, **args) -> CommandResults:
     '''
     Working
     '''
