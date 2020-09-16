@@ -168,13 +168,12 @@ class Client(BaseClient):
             malware_family: dict = block.get("malwarefamily", {})
             ip_detail: dict = block.get("ipDetail", {})
             if indicator:
-                results.append({
+                indicator_obj = {
                     "value": value,
                     "type": indicator,
                     "rawJSON": block,
                     "fields": {
                         "tags": self.tags,
-                        'trafficlightprotocol': self.tlp_color,
                         "name": threat_id,
                         "malwarefamily": malware_family.get("familyName"),
                         "description": malware_family.get("description"),
@@ -187,7 +186,12 @@ class Client(BaseClient):
                         "geolocation": f'{ip_detail.get("latitude", "")},{ip_detail.get("longitude", "")}' if ip_detail
                         else ""
                     }
-                })
+                }
+
+                if self.tlp_color:
+                    indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
+
+                results.append(indicator_obj)
 
         return results
 
