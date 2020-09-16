@@ -1,0 +1,423 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Hatching Triage
+  version: -1
+configuration:
+- additionalinfo: Private url is https://private.tria.ge/api/v0/
+  defaultvalue: https://api.tria.ge/v0/
+  name: base_url
+  required: true
+  type: 0
+- name: API Key
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  name: Verify SSL
+  required: false
+  type: 8
+description: Submit a high volume of samples to run in a sandbox and view reports
+display: Hatching Triage
+name: Hatching Triage
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Get samples from either private or public reports
+      isArray: false
+      name: subset
+      predefined:
+      - owned
+      - public
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-query-samples
+    description: Get a list of all samples either private or public
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Select if sample if a URL or a file
+      isArray: false
+      name: kind
+      predefined:
+      - url
+      - file
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Choose if the sample should be interacted with in the GUI glovebox
+      isArray: false
+      name: interactive
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: Select what profile to run the sample with. Requires the user to
+        be registered with a company
+      isArray: false
+      name: profiles
+      required: false
+      secret: false
+    - default: false
+      description: Data to submit for analysis. For URLs give the URL. For files,
+        give the entry-id of the file
+      isArray: false
+      name: data
+      required: false
+      secret: false
+    deprecated: false
+    description: Submits a file or url for analysis
+    execution: false
+    name: triage-submit-sample
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Pulls back basic information about the sample id given
+    execution: false
+    name: triage-get-sample
+    outputs:
+    - contextPath: Triage
+      type: Unknown
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a summary report of the sample id provided
+    execution: false
+    name: triage-get-sample-summary
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Deletes a sample from the sandbox
+    execution: false
+    name: triage-delete-sample
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Let Triage automatically select a profile, default is True
+      isArray: false
+      name: auto
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: If submitting an archive file, select which files to analyze. Multiple
+        files can be specified with a comma seperator.Format is archive_file_name/sample_file.exe,archive_file_name/sample_file2.exe
+      isArray: false
+      name: pick
+      required: false
+      secret: false
+    - default: false
+      description: Profile ID to use
+      isArray: false
+      name: profiles
+      required: false
+      secret: false
+    deprecated: false
+    description: When a sample is in the static_analysis status, a profile should
+      be selected in order to continue.
+    execution: false
+    name: triage-set-sample-profile
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    description: Get the static analysis of a sample
+    name: triage-get-static-report
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: task_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    description: Retrieves the generated Triage Report for a single task
+    name: triage-get-report-triage
+#  - arguments:
+#    - default: false
+#      isArray: false
+#      name: sample_id
+#      required: true
+#      secret: false
+#    deprecated: false
+#    description: Gets a stream of events on a sample
+#    execution: false
+#    name: triage-get-sample-events
+#  - arguments:
+#    - default: false
+#      isArray: false
+#      name: sample_id
+#      required: false
+#      secret: false
+#    deprecated: false
+#    description: Gets a stream of events from all samples
+#    execution: false
+#    name: triage-get-all-sample-events
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: task_id
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    description: Retrieves the output of the kernel monitor
+    name: triage-get-kernel-monitor
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: task_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-get-pcap
+    description: Retrieves the PCAP of the analysis for further manual analysis
+  - arguments:
+    - default: false
+      isArray: false
+      name: sample_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: task_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: file_name
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-get-dumped-files
+    description: Retrieves files dumped by the sample. The names can be found under the "dumped" section from the triage report output
+  - arguments:
+    - default: false
+      isArray: false
+      name: userID
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-get-users
+    description: Return all users within the company as a paginated list. Returns a single user if a userID is provided
+  - arguments:
+    - default: false
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: firstName
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: lastName
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: permissions
+      predefined:
+      - view_samples
+      - submit_samples
+      - delete_samples
+      - edit_profiles
+      - access_api
+      - manage_machines
+      - manage_company
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-create-user
+    description: Creates a new user and returns it. The user will become a member of the company the requesting user is a member of
+  - arguments:
+    - default: false
+      isArray: false
+      name: userID
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-delete-user
+    description: Delete a user and all associated data, invalidating any sessions and removing their API keys. Any samples submitted by this user are kept
+  - arguments:
+    - default: false
+      isArray: false
+      name: userID
+      required: true
+      secret: false
+    - default: false
+      description: Give a name to the API key
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-create-api-key
+    description: Creates a new key can be used to make API calls on behalf of the specified user. The user should have been granted the access_api permission beforehand
+  - arguments:
+    - default: false
+      isArray: false
+      name: userID
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-get-api-key
+    description: Lists all API keys that the user has.
+  - arguments:
+    - default: false
+      isArray: false
+      name: userID
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-delete-api-key
+    description: Delete the user's API key with the specified name
+  - arguments:
+    - default: false
+      isArray: false
+      name: profileID
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-get-profiles
+    description: List all profiles that your company has
+  - arguments:
+    - default: false
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: network
+      predefined:
+        - drop
+        - internet
+        - proxy
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-create-profile
+    description: Create a new profile
+  - arguments:
+    - default: false
+      isArray: false
+      name: profileID
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-update-profile
+  - arguments:
+    - default: false
+      isArray: false
+      name: profileID
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: triage-delete-profile
+    description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID
+  dockerimage: demisto/python3:3.8.2.6981
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+sourcemoduleid: Hatchling Triage
