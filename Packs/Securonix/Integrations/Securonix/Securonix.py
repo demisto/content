@@ -90,7 +90,7 @@ def parse_data_arr(data_arr: Any, fields_to_drop: list = [], fields_to_include: 
     return readable, outputs
 
 
-def incident_priority_to_dbot_score(priority_str: str):
+def incident_priority_to_dbot_score(priority_str: str, default_severity: str):
     """Converts an priority string to DBot score representation
         alert severity. Can be one of:
         Low    ->  1
@@ -98,12 +98,17 @@ def incident_priority_to_dbot_score(priority_str: str):
         High   ->  3
 
     Args:
-        priority_str: String representation of proirity.
+        priority_str: String representation of priority.
+        default_severity: Default incoming incident severity
 
     Returns:
         Dbot representation of severity
     """
-    priority = priority_str.lower()
+    if default_severity:
+        priority = default_severity.lower()
+    else:
+        priority = priority_str.lower()
+
     if priority == 'low':
         return 1
     if priority == 'medium':
@@ -1112,7 +1117,8 @@ def add_entity_to_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, response
 
 
-def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: str, max_fetch: str, last_run: Dict)\
+def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: str, default_severity: str,
+                    max_fetch: str, last_run: Dict)\
         -> list:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
@@ -1121,6 +1127,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
         client: Client object with request
         fetch_time: From when to fetch if first time, e.g. `3 days`
         incident_status: Incident statuses to fetch, can be: all, opened, closed, updated
+        default_severity: Default incoming incident severity
         last_run: Last fetch object.
         max_fetch: maximum amount of incidents to fetch
 
@@ -1151,7 +1158,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
                 demisto_incidents.append({
                     'name': incident_name,
                     'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
-                    'severity': incident_priority_to_dbot_score(incident.get('priority')),
+                    'severity': incident_priority_to_dbot_score(incident.get('priority'), default_severity),
                     'rawJSON': json.dumps(incident)
                 })
                 already_fetched.append(str(incident_id))  # add already fetched incidents ids to the set
@@ -1250,10 +1257,11 @@ def main():
         if command == 'fetch-incidents':
             fetch_time = params.get('fetch_time', '1 hour')
             incident_status = params.get('incident_status') if 'incident_status' in params else 'opened'
+            default_severity = params.get('default_severity', '')
             max_fetch = str(params.get('max_fetch', '50'))
             max_fetch = str(min('50', max_fetch))  # fetch size should no exceed 50
             last_run = json.loads(demisto.getLastRun().get('value', '{}'))
-            incidents = fetch_incidents(client, fetch_time, incident_status, max_fetch, last_run=last_run)
+            incidents = fetch_incidents(client, fetch_time, incident_status, default_severity, max_fetch, last_run=last_run)
             demisto.incidents(incidents)
         elif command == 'test-module':
             demisto.results(test_module(client))

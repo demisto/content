@@ -43,7 +43,7 @@ type: javascript
 tags:
 - cve
 - enhancement
-comment: Search vulnerability information based on CVE ID
+comment: Deprecated. Search vulnerability information based on CVE ID
 system: true
 deprecated: true
 args:

@@ -17,7 +17,7 @@ subtype: python2
 tags:
 - Utility
 system: true
-comment: "DEPRECATED - Aggregating several context items for IOCs into a single list"
+comment: Deprecated.  Aggregating several context items for IOCs into a single list
 deprecated: true
 scripttarget: 0
 dependson: {}

@@ -12,7 +12,7 @@ script: |
   }
   return res;
 type: javascript
-comment: Returns Demisto users
+comment: Deprecated. Returns Demisto users
 tags:
 - Utility
 system: true
