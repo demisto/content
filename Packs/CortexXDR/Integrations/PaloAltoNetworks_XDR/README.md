@@ -125,8 +125,8 @@ To setup the mirroring follow these instructions:
 * **Do not use the `XDRSyncScript` automation nor any playbook that uses this automation** 
   (e.g `Cortex XDR Incident Sync` or `Cortex XDR incident handling v2`), as it impairs the mirroring functionality.
 
-* When migrating an existing instance to Cortex XSOAR version 6.0.0 or in case the mirroring does not work as expected make sure that:
-   * The default playbook of the `Cortex XDR Incident` incident type is not `Cortex XDR Incident Sync`, chnage it to a 
+* When migrating an existing instance to the mirroring feature or in case the mirroring does not work as expected make sure that:
+   * The default playbook of the `Cortex XDR Incident` incident type is not `Cortex XDR Incident Sync`, change it to a 
      different playbook that does not use `XDRSyncScript`.
    * The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
 
