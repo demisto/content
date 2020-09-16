@@ -18,6 +18,8 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 ---
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
+**Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
+
 ### Required Permissions
 * AdvancedQuery.Read.All - Application
 * Alert.ReadWrite.All - Application
