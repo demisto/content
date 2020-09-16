@@ -600,8 +600,9 @@ def parse_indicators(sub_indicator_list, full_indicator_list, tags, tlp_color):
         indicator['fields'] = {
             "description": indicator["stix_package_short_description"],
             "tags": tags,
-            'trafficlightprotocol': tlp_color
         }
+        if tlp_color:
+            indicator['fields']['trafficlightprotocol'] = tlp_color
 
         temp_copy = indicator.copy()
 
