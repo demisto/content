@@ -25,6 +25,8 @@ BATCH_SIZE = 100                    # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10   # max amount of IPs to enrich per offense
 LOCK_WAIT_TIME = 0.5                # time to wait for lock.acquire
 MAX_WORKERS = 8                     # max concurrent workers used for events enriching
+DOMAIN_ENRCH_FLG = "True"           # when set to true, will try to enrich offense and events with domain names
+RULES_ENRCH_FLG = "True"            # when set to true, will try to enrich offense with rule names
 
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
@@ -33,6 +35,8 @@ ADVANCED_PARAMETER_NAMES = [
     "BATCH_SIZE",
     "OFF_ENRCH_LIMIT",
     "MAX_WORKERS",
+    "DOMAIN_ENRCH_FLG",
+    "RULES_ENRCH_FLG",
 ]
 
 """ GLOBAL VARS """
@@ -562,19 +566,6 @@ class QRadarClient:
 """ Utility functions """
 
 
-def try_parse_integer(int_to_parse, err_msg=None) -> int:
-    """
-    Tries to parse an integer, and if fails will throw DemistoException with given err_msg
-    """
-    try:
-        res = int(int_to_parse)
-    except (TypeError, ValueError) as e:
-        if not err_msg:
-            err_msg = str(e)
-        raise DemistoException(err_msg)
-    return res
-
-
 def get_entry_for_object(
     title, obj, contents, headers=None, context_key=None, human_readable=None
 ):
@@ -859,7 +850,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
     """
     # try to adjust start_offense_id to user_query start offense id
     try:
-        if "id>" in user_query:
+        if isinstance(user_query, str) and "id>" in user_query:
             user_offense_id = int(user_query.split("id>")[1].split(" ")[0])
             if user_offense_id > offense_id:
                 offense_id = user_offense_id
@@ -922,7 +913,7 @@ def is_reset_triggered(lock, handle_reset=False):
     """
     if lock.acquire(timeout=LOCK_WAIT_TIME):
         ctx = get_integration_context(SYNC_CONTEXT)
-        if RESET_KEY in ctx:
+        if ctx and RESET_KEY in ctx:
             if handle_reset:
                 print_debug_msg("Reset fetch-incidents.")
                 set_integration_context(
@@ -1125,9 +1116,9 @@ def enrich_offense_result(
                 assets_list = list(map(lambda o: o['assets'], filter(lambda o: 'assets' in o, response)))
                 for assets in assets_list:
                     domain_ids.update({asset['domain_id'] for asset in assets})
-        if domain_ids:
+        if domain_ids and DOMAIN_ENRCH_FLG == "True":
             enrich_offense_res_with_domain_names(client, domain_ids, response)
-        if rule_ids:
+        if rule_ids and RULES_ENRCH_FLG == "True":
             enrich_offense_res_with_rule_names(client, rule_ids, response)
     else:
         enrich_offense_timestamps_and_closing_reason(client, response)
@@ -1985,7 +1976,10 @@ def main():
                     f"The parameter: {adv_p_kv[0]} is not a valid advanced parameter. Please remove it"
                 )
             else:
-                globals_[adv_p_kv[0]] = try_parse_integer(adv_p_kv[1])
+                try:
+                    globals_[adv_p_kv[0]] = int(adv_p_kv[1])
+                except (TypeError, ValueError):
+                    globals_[adv_p_kv[0]] = adv_p_kv[1]
 
     server = params.get("server")
     credentials = params.get("credentials")
