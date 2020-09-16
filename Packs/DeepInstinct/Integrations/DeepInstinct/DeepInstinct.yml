@@ -4,7 +4,7 @@ commonfields:
 name: Deep Instinct
 display: Deep Instinct
 category: Network Security
-description: Deep Instinct
+description: The Deep Learning cybersecurity platform, for zero time prevention.
 configuration:
 - display: Base server URL
   name: base_url
@@ -310,7 +310,7 @@ script:
       description: comma separeted list of event ids
       isArray: true
     description: close list of events
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   runonce: false
   script: '-'
