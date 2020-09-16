@@ -149,7 +149,7 @@ class TestHelperFunctions:
                       "hash_sha256: 34bd0ce42c46f8688f9c12747e5ad0d12233f5d26f290ce9f325372466c836e7",
                       "hash_sha256: cdde31156a757ce3460ba684be966782697b09b1f882d82bc5fb95b916a07f6a",
                       "hash_md5: 42ffa45446a1158d09cec9db8e274573"
-        ],
+                      ],
         "Labels": [
             "ThreatType/Criminal",
             "ThreatType/SpamBot",

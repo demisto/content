@@ -41,13 +41,13 @@ class Client:
             'max_last_activity_date': {'operator': '<=', 'api_key': 'last_activity_date'}
         }
 
-    def build_request_params(self, args: Dict[str, Union[str, int, Exception]]) -> Dict[str, Any]:
+    def build_request_params(self, args: Dict[str, Any]) -> Dict[str, Any]:
         """
         Build the params dict for the request
         :param args: Cortex XSOAR args
         :return: The params dict
         """
-        params: Dict[str, Optional[str]] = {key: args.get(key) for key in self.query_params}
+        params: Dict[str, Any] = {key: args.get(key) for key in self.query_params}
         query = args.get('query')
         params['filter'] = query if query else self.build_filter_query(args)
         return assign_params(**params)
@@ -80,7 +80,7 @@ class Client:
         return self._cs_client.check_quota_status()
 
     def get_indicator(self, indicator_value: str, indicator_type: str) -> Dict[str, Any]:
-        args: Dict[str, Union[str, int, Exception]] = {
+        args: Dict[str, Any] = {
             'indicator': indicator_value,
             'limit': 1
         }
@@ -208,7 +208,7 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
     """
     res: Dict[str, Any] = client.get_indicator(indicator_value, indicator_type)
     resources: List[Any] = res.get('resources', [])
-    indicators: List[Union[Common.IP, Common.URL, Common.File,Common.Domain, None]] = list()
+    indicators: List[Union[Common.IP, Common.URL, Common.File, Common.Domain, None]] = list()
     outputs: List[Dict[str, Any]] = list()
     md: str = str()
 
@@ -241,8 +241,8 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
     return results
 
 
-def get_values(items_list: List[Any], return_type: str = 'str', keys: Union[str, List[Any]] = 'value')\
-        -> Union[str, List[Any]]:
+def get_values(items_list: List[Any], return_type: str = 'str', keys: Union[str, List[Any]] = 'value') \
+        -> Union[str, List[Union[str, Dict]]]:
     """
     Returns the values of list's items
     :param items_list: The items list
@@ -300,7 +300,7 @@ def get_indicator_data(o: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any
             'KillChains': kill_chains,
             'DomainTypes': domain_types,
             'IPAddressTypes': ip_address_types,
-            'Relations': [f'{item.get("Type")}: {item.get("Indicator")}' for item in
+            'Relations': [f'{item.get("Type")}: {item.get("Indicator")}' for item in  # type: ignore
                           get_values(relations, return_type='list', keys=['indicator', 'type'])],
             'Labels': get_values(labels, return_type='list', keys='name')
         })
@@ -432,7 +432,7 @@ def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
 def cs_indicators_command(client: Client, args: Dict[str, str]) -> CommandResults:
     res: Dict[str, Any] = client.cs_indicators(args)
     resources: List[Any] = res.get('resources', [])
-    indicators: List[Union[Common.IP, Common.URL, Common.File,Common.Domain, None]] = list()
+    indicators: List[Union[Common.IP, Common.URL, Common.File, Common.Domain, None]] = list()
     outputs: List[Dict[str, Any]] = list()
     md: str = str()
     title: str = 'Falcon Intel Indicator search:'
