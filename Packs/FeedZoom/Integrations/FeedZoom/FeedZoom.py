@@ -108,18 +108,19 @@ def fetch_indicators(client: Client, feed_tags: List = [], tlp_color: Optional[s
             "type": type_,
             "service": "Zoom Feed",
             "rawJSON": raw_data,
-            'fields': {
-                'trafficlightprotocol': tlp_color
-            }
+            'fields': {}
         }
         if feed_tags:
             indicator_obj["fields"]['tags'] = feed_tags
+        if tlp_color:
+            indicator_obj["fields"]['trafficlightprotocol'] = tlp_color
+
         indicators.append(indicator_obj)
     return indicators
 
 
 def get_indicators_command(
-    client: Client, params: Dict[str, str], args: Dict[str, str]
+        client: Client, params: Dict[str, str], args: Dict[str, str]
 ) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
@@ -167,7 +168,7 @@ def main():
     demisto.info(f"Command being called is {command}")
 
     try:
-        client = Client(base_url=base_url, verify=insecure, proxy=proxy,)
+        client = Client(base_url=base_url, verify=insecure, proxy=proxy, )
 
         commands: Dict[
             str, Callable[[Client, Dict[str, str], Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]
