@@ -879,10 +879,12 @@ def run_long_running(params, is_test=False):
         ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
         demisto.error(ssl_err_message)
         raise ValueError(ssl_err_message)
+
     except Exception as e:
         demisto.error(f'An error occurred in long running loop: {str(e)}')
         raise ValueError(str(e))
     finally:
+        sys.exit(3)
         if certificate_path:
             os.unlink(certificate_path)
         if private_key_path:
@@ -929,7 +931,7 @@ def update_outbound_command(args, params):
     return hr, {}, indicators
 
 
-try:
+def main():
     """
     Main
     """
@@ -959,5 +961,7 @@ try:
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
-except:
-    pass
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
