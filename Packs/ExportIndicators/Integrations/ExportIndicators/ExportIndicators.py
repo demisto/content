@@ -929,7 +929,7 @@ def update_outbound_command(args, params):
     return hr, {}, indicators
 
 
-def main():
+try:
     """
     Main
     """
@@ -959,7 +959,5 @@ def main():
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
-
-
-if __name__ in ['__main__', '__builtin__', 'builtins']:
-    main()
+except:
+    pass
