@@ -10,12 +10,11 @@
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
 <h3>Required Permissions</h3>
-<li>SecurityEvents.ReadWrite.All - Application</li>
-<li>User.Read.All - Application</li>
-<li>User.Read - Delegated</li>
-<li>User.ReadWrite.All - Application</li>
-<li>Directory.Read.All - Delegated</li>
-<li>Directory.ReadWrite.All - Application</li>
+<ul>
+<li>SecurityEvents.Read.All - Application</li>
+<li>SecurityEvents.ReadWrite.All - Application (required for updating alerts with the command: <code>msg-update-alert</code>)</li>
+<li>User.Read.All - Application (required for the commands: <code>msg-get-user</code> and <code>msg-get-users</code>)</li>
+</ul> 
 
 
 <h2>Configure Microsoft Graph on Cortex XSOAR</h2>
