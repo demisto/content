@@ -109,13 +109,12 @@ class Client(BaseClient):
 
     @staticmethod
     def _process_item(item: dict, tags: list, tlp_color: Optional[str] = None) -> dict:
-        return {
+        indicator_obj = {
             "value": item["value"],
             "type": item["type"],
             "rawJSON": item,
             "fields": {
                 "tags": tags,
-                'trafficlightprotocol': tlp_color,
                 "port": item.get("ports", "").split() if isinstance(item.get("ports"), str) else item.get("ports"),
                 "firstseenbysource": item.get("first_seen", ""),
                 "lastseenbysource": item.get("last_seen", ""),
@@ -125,6 +124,11 @@ class Client(BaseClient):
                 }
             }
         }
+
+        if tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+        return indicator_obj
 
     def _build_iterator_domain(self) -> Generator[dict, None, None]:
         """Gets back a dict of domain attributes.
