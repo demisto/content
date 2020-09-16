@@ -255,10 +255,10 @@ def create_user(client: Client, **args):
     # Make the following data variable parameters
     data = {
         "username": args.get('username'),
-        "first_name": args.get('firstName', 'XSOAR'),
-        "last_name": args.get('lastName', 'Bot'),
-        "password": args.get('password', 'changeme1234'),  # Can this be replaced with /sensitive_input command?
-        "permissions": argToList(args.get('permissions', ['view_samples', 'submit_samples'])) # ["view_samples","submit_samples","access_api"]    # Need to make this a selectable list, find out all available permissions
+        "first_name": args.get('firstName'),
+        "last_name": args.get('lastName'),
+        "password": args.get('password'),
+        "permissions": argToList(args.get('permissions'))
     }
 
     data = json.dumps(data)
