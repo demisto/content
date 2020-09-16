@@ -36,14 +36,9 @@ def query_samples(client, **args):
 # Works
 #   - Need to add more parameters
 def submit_sample(client: Client, **args):
-    # url = f'{base_url}/samples'
 
     data = {
-        # 'kind':'url', # Change this to use a command argument
-        # 'interactive':'false',
-        # 'profile':[]
         'kind': args.get('kind'),
-        # 'interactive': (args.get('interactive', False)),
         'profile': args.get('profiles', [])
     }
 
@@ -83,10 +78,6 @@ def get_sample(client: Client, **args):
     return results
 
 
-# def get_sample_status(client: Client, **args):
-#     # Avoid using this endpoint where possible per docs
-#     pass
-
 # Works
 def get_sample_summary(client: Client, **args):
     sample_id = args.get('sample_id')
@@ -109,7 +100,6 @@ def delete_sample(client: Client, **args):
 
 
 # Works
-#   - Basic auto works, test more with picking and specifying profile
 def set_sample_profile(client: Client, **args):
     '''
     Used to move a submitted sample from static analysis to behavioural by giving it a profile to run under
@@ -167,56 +157,6 @@ def get_report_triage(client: Client, **args):
     return results
 
 
-# FAILING
-# def get_sample_events(client: Client, **args):
-#     '''
-#     Need to test
-#     '''
-#     sample_id=args.get('sample_id')
-#
-#     # This will continue to have events available to pull until the status = reported / failed
-#     while True:
-#         r = client._http_request('GET', f'samples/{sample_id}/events')
-#
-#         results = CommandResults(
-#             outputs_prefix = 'Triage.sample.events',
-#             outputs_key_field = 'data',
-#             outputs = r
-#         )
-#
-#         # If status indicates completion, return to break the loop, else print to WarRoom and continue loop
-#         if r.get('status') in ['reported', 'failed']:
-#             return results
-#         else:
-#             return_results(results)
-#             time.sleep(5)
-
-
-# FAILING
-# Can probably combine this with the above sample events
-# def get_all_sample_events(client: Client, **args):
-#     '''
-#     Need to test
-#     '''
-#     sample_id=args.get('sample_id')
-#
-#     # This will continue to have events available to pull until the status = reported / failed
-#     while True:
-#         r = client._http_request('GET', f'samples/events')
-#
-#         results = CommandResults(
-#             outputs_prefix = 'Triage.sample.events',
-#             outputs_key_field = 'data',
-#             outputs = r
-#         )
-#
-#         # If status indicates completion, return to break the loop, else print to WarRoom and continue loop
-#         if r.get('status') in ['reported', 'failed']:
-#             return results
-#         else:
-#             return_results(results)
-
-
 # Working
 #   - Need to update readable_output
 def get_kernel_monitor(client: Client, **args):
@@ -248,9 +188,6 @@ def get_kernel_monitor(client: Client, **args):
 
 # Works
 def get_pcap(client: Client, **args):
-    '''
-    Works
-    '''
     sample_id = args.get('sample_id')
     task_id = args.get('task_id')
 
@@ -530,12 +467,9 @@ def main():
         'triage-get-sample': get_sample,
         'triage-get-sample-summary': get_sample_summary,
         'triage-delete-sample': delete_sample,
-        # Add in the rest of the commands, already coded, just add in and test
         'triage-set-sample-profile': set_sample_profile,
         'triage-get-static-report': get_static_report,
         'triage-get-report-triage': get_report_triage,
-        # 'triage-get-sample-events': get_sample_events,
-        # 'triage-get-all-sample-events': get_all_sample_events,
         'triage-get-kernel-monitor': get_kernel_monitor,
         'triage-get-pcap': get_pcap,
         'triage-get-dumped-files': get_dumped_files,
