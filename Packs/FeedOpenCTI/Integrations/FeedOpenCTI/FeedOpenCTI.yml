@@ -76,6 +76,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
+  display: '""'
   name: feedExpirationPolicy
   options:
   - never
@@ -85,6 +86,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
+  display: '""'
   name: feedExpirationInterval
   required: false
   type: 1
@@ -118,7 +120,7 @@ script:
       default: false
       defaultValue: all
       description: The indicator types to fetch.
-      isArray: false
+      isArray: true
       name: indicator_types
       predefined:
       - all
@@ -145,6 +147,20 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: opencti-get-indicators
+    outputs:
+    - contextPath: OpenCTI.Indicators.type
+      description: Indicator type.
+      type: String
+    - contextPath: OpenCTI.Indicators.value
+      description: Indicator value.
+      type: String
+    - contextPath: OpenCTI.LastRunID
+      description: the id of the last fetch to use pagination.
+      type: String
+  - deprecated: false
+    description: 'WARNING: This command will reset your fetch history.'
+    execution: false
+    name: opencti-reset-fetch-indicators
   dockerimage: demisto/opencti:1.0.0.10651
   feed: true
   isfetch: false

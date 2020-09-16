@@ -27,7 +27,15 @@ XSOHR_TYPES = {
 }
 
 
-def get_indicators(client, indicator_type: [str], limit: int, last_run_id: Optional[bool] = None)\
+def reset_last_run():
+    """
+    Reset the last run from the integration context
+    """
+    demisto.setIntegrationContext({})
+    return CommandResults(readable_output='Fetch history deleted successfully')
+
+
+def get_indicators(client, indicator_type: [str], limit: int, last_run_id: Optional[str] = None)\
         -> Tuple[str, list]:
     """ Retrieving indicators from the API
 
@@ -61,22 +69,22 @@ def get_indicators(client, indicator_type: [str], limit: int, last_run_id: Optio
     return new_last_run, indicators
 
 
-def fetch_indicators_command(client, indicator_type: list, max_fetch: int) -> list:
+def fetch_indicators_command(client, indicator_type: list, max_fetch: int, is_test=False) -> list:
     """ fetch indicators from the OpenCTI
 
     Args:
         client: OpenCTI Client object
         indicator_type(list): List of indicators types to get.
-        max_fetch: (int) max indicators to fetch
-
+        max_fetch: (int) max indicators to fetch.
+        is_test: (bool) Indicates that it's a test and then does not save the last run.
     Returns:
         list of indicators(list)
     """
     last_run_id = demisto.getIntegrationContext().get('last_run_id')
 
-    new_last_run, indicators_list = get_indicators(client, indicator_type, max_fetch, last_run_id)
+    new_last_run, indicators_list = get_indicators(client, indicator_type, limit=max_fetch, last_run_id=last_run_id)
 
-    if new_last_run:
+    if new_last_run and not is_test:
         demisto.setIntegrationContext({'last_run_id': new_last_run})
 
     return indicators_list
@@ -92,14 +100,20 @@ def get_indicators_command(client, args: dict) -> CommandResults:
     Returns:
         readable_output, raw_response
     """
-    indicator_type = args.get("indicator_types")
+    indicator_type = argToList(args.get("indicator_types"))
 
     last_run_id = args.get('last_id')
     limit = int(args.get('limit', 500))
-    last_run_id, indicators_list = get_indicators(client, indicator_type, limit, last_run_id)
+    last_run_id, indicators_list = get_indicators(client, indicator_type, limit=limit, last_run_id=last_run_id)
     if indicators_list:
+        output = {'LastRunID': last_run_id,
+                  'Indicators': [{'type': indicator['type'], 'value': indicator['value']}
+                                 for indicator in indicators_list]}
         readable_output = tableToMarkdown('Indicators from OpenCTI', indicators_list, headers=["type", "value"])
         return CommandResults(
+            outputs_prefix='OpenCTI',
+            outputs_key_field='LastRunID',
+            outputs=output,
             readable_output=readable_output,
             raw_response=indicators_list
         )
@@ -137,10 +151,14 @@ def main():
         elif command == "test-module":
             '''When setting up an OpenCTI Client it is checked that it is valid and allows requests to be sent.
             and if not he immediately sends an error'''
+            fetch_indicators_command(client, indicator_types, max_fetch, is_test=True)
             return_outputs('ok')
 
         elif command == "opencti-get-indicators":
             return_results(get_indicators_command(client, args))
+
+        elif command == "opencti-reset-fetch-indicators":
+            return_results(reset_last_run())
 
     except Exception as e:
         return_error(
