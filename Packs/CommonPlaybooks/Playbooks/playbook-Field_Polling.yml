@@ -1,15 +1,10 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: f8b9ffe8-ddd9-4b92-855e-2f0ea69d4f23
     propagationLabels:
     - all
-    toServerVersion: ""
 fromversion: 5.0.0
 id: Field Polling - Generic
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Field Polling - Generic
 description: This playbook will poll a field for whether a value exists and whether
   it contains a specific value.
@@ -25,6 +20,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -48,7 +44,7 @@ tasks:
     task:
       id: bfc39c52-2ee9-4ad5-8528-1a18e6f6896f
       version: -1
-      name: Poll Field
+      name: GenericPolling
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -114,6 +110,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -145,26 +142,26 @@ inputs:
   required: true
   description: The field to poll for a value. Ensure that you use the lower case version
     of the field. For example; the Details field should be details
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: value
   value:
     simple: .+
   required: true
   description: The regex to check the field for. By default this is .+ which matches
     anything other than None.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: frequency
   value:
     simple: "1"
   required: true
   description: How often to check (in minutes)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: timeout
   value:
     simple: "10"
   required: true
   description: When to timeout (in minutes)
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
-  - Field polling test
+- Field polling test
