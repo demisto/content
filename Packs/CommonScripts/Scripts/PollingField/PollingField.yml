@@ -1,0 +1,34 @@
+args:
+- description: The field to check
+  name: field
+  required: true
+- description: The regex pattern to check the field for (optional).
+  name: regex
+comment: This script will check that a field exists (and contains data) and optionally
+  check the value of the field for a match against an input value. If a regex was not supplied, the script will checl that the field is not empty.
+  This script can be used with the "GenericPolling" playbook to poll for field population or that
+  a field contains a specific value.
+commonfields:
+  id: pollingField
+  version: -1
+dockerimage: demisto/python3:3.8.5.10845
+enabled: true
+name: pollingField
+outputs:
+- contextPath: PollingCheckField.name
+  description: Field Name
+  type: string
+- contextPath: PollingCheckField.exists
+  description: Field Exists
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- evaluation
+- polling
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
