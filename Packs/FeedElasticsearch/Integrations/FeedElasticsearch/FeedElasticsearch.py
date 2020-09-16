@@ -321,11 +321,12 @@ def hit_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_typ
         ioc_dict['type'] = default_ioc_type
     elif ioc_type_key:
         ioc_dict['type'] = ioc_dict.get(ioc_type_key)
-    ioc_dict['fields'] = {
-        'trafficlightprotocol': tlp_color
-    }
+
+    ioc_dict['fields'] = {}
     if tags:
         ioc_dict['fields']['tags'] = tags
+    if tlp_color:
+        ioc_dict['fields']['trafficlightprotocol'] = tlp_color
 
     return ioc_dict
 
