@@ -174,8 +174,8 @@ class PCAP():
         imf_data = {
             'EntryID': self.entry_id,
             'ID': imf_layer.get('Message-ID', -1),
-            'To': imf_layer.get('to'),
-            'From': imf_layer.get('from'),
+            'To': strip(imf_layer.get('to'), ['<', '>']),
+            'From': strip(imf_layer.get('from'), ['<', '>']),
             'Subject': imf_layer.get('subject'),
             'MimeVersion': imf_layer.get('mime-version')
         }
