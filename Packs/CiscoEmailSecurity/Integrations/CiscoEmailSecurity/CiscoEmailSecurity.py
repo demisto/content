@@ -58,7 +58,7 @@ class Client(BaseClient):
                 }
         }
         output = self.http_request('POST', '/sma/api/v2.0/login', json_data=data, headers=headers)
-        jwt_token = output.json()['data']['jwtToken']
+        jwt_token = output.get('data').get('jwtToken')
         return jwt_token
 
     def list_report(self, url_suffix) -> Dict[str, Any]:
@@ -439,10 +439,9 @@ def list_search_spam_quarantine_command(client, args):
 
 
 def quarantine_message_details_data_to_human_readable(message):
-    readable_output = assign_params(recipient=message.get('envelopeRecipient', [None])[0], date=message.get('date'),
-                                    to_address=message.get('toAddress', [None])[0],
-                                    subject=message.get('subject', [None]),
-                                    from_address=message.get('fromAddress', [None])[0])
+    readable_output = assign_params(recipient=message.get('envelopeRecipient'), date=message.get('date'),
+                                    to_address=message.get('toAddress'), subject=message.get('subject'),
+                                    from_address=message.get('fromAddress'))
     headers = ['recipient', 'to_address', 'from_address', 'subject', 'date']
     human_readable = tableToMarkdown('CiscoEmailSecurity QuarantineMessageDetails', readable_output, headers,
                                      removeNull=True)
@@ -465,7 +464,7 @@ def list_get_quarantine_message_details_command(client, args):
 
 def list_delete_quarantine_messages_command(client, args):
     messages_ids = args.get('messages_ids')
-    url_suffix = f'/sma/api/v2.0/quarantine/messages'
+    url_suffix = '/sma/api/v2.0/quarantine/messages'
     request_body = {
         "quarantineType": "spam",
         "mids": messages_ids
@@ -480,7 +479,7 @@ def list_delete_quarantine_messages_command(client, args):
 
 def list_release_quarantine_messages_command(client, args):
     messages_ids = args.get('messages_ids')
-    url_suffix = f'/sma/api/v2.0/quarantine/messages'
+    url_suffix = '/sma/api/v2.0/quarantine/messages'
     request_body = {
         "action": "release",
         "quarantineType": "spam",

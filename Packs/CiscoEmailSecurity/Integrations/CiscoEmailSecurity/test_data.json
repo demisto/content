@@ -1,4 +1,16 @@
 {
+  "headers_for_login": {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+  },
+  "data_for_login": {
+      "data":
+          {
+              "userName": "username",
+              "passphrase": "passphrase"
+          }
+  },
+
   "args_for_list_report": {
     "start_date": "2017-02-14 09:51:46",
     "end_date": "2017-02-14 09:51:46",
@@ -27,7 +39,7 @@
     "file_hash": "1234abcd"
   },
 
-  "url_params_for_list_messages": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&searchOption=messages&offset=1&limit=1&attachmentNameOperator=is&attachmentNameValue=name&envelopeRecipientfilterOperator=is&envelopeRecipientfilterValue=name&envelopeSenderfilterOperator=is&envelopeSenderfilterValue=name&spamPositive=True&fileSha256=1234abcd",
+  "url_params_for_list_messages": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&searchOption=messages&ciscoHost=All_Hosts&offset=1&limit=1&attachmentNameOperator=is&attachmentNameValue=name&envelopeRecipientfilterOperator=is&envelopeRecipientfilterValue=name&envelopeSenderfilterOperator=is&envelopeSenderfilterValue=name&spamPositive=True&fileSha256=1234abcd",
 
   "args_for_get_details": {
     "start_date": "2017-02-14 09:51:46",
@@ -49,7 +61,7 @@
     "filter_value": "name"
   },
 
-  "url_params_for_spam_quarantine": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&quarantineType=spam&offset=0&limit=50&orderBy=name&orderDir=asc&envelopeRecipientfilterOperator=is&envelopeRecipientfilterValue=name&filterOperator=is&filterValue=name",
+  "url_params_for_spam_quarantine": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&quarantineType=spam&offset=0&limit=20&orderBy=name&orderDir=asc&envelopeRecipientfilterOperator=is&envelopeRecipientfilterValue=name&filterOperator=is&filterValue=name",
 
   "search_messages_response_data": {
                                       "meta": {
@@ -572,7 +584,6 @@
   },
 
   "get_message_details_context": {
-                                    "messages": {
                                                   "direction": "outgoing",
                                                   "smtpAuthId": "",
                                                   "sender": "1234bla@bla1234.blabla",
@@ -639,7 +650,7 @@
                                                   ],
                                                   "showSummaryTimeBox": true,
                                                   "subject": "Testing"
-                                                  }
+
   },
 
   "message_human_readable": "### CiscoEmailSecurity Messages\n|message_id|direction|sender|recipient|subject|timestamp|\n|---|---|---|---|---|---|\n| 22125 | outgoing | 1234bla@bla1234.blabla | 1111@12bla.bla | Testing | 16 Nov 2018 11:19:48 (GMT) |\n",
@@ -724,6 +735,23 @@
                                                           },
                                           "mid": 1755
                                 },
+
+  "quarantine_message_context_to_human_readable": {
+                                                          "envelopeRecipient": [
+                                                          "av_deliver@vm30bsd0004.ibqa"
+                                                          ],
+                                                          "toAddress": [
+                                                          "Surya Allena <sallena@cisco.com>"
+                                                          ],
+                                                          "attachments": [],
+                                                          "messageBody": "Received: from c680q07.ibqa ([2.2.2.2])\r\n by esa.cisco.com with ESMTP; 16 Nov 2018 13:58:55 +0000<br />\nIronPort-SDR: DjDeJA8ZkD90oA9x+n3eGd9Qa/nliZ1dL MyxB7dsrdq8oTnn8YSi5amR2qihbeq2eJwvVjskf1\r\n KE7TdyCXSokg==<br />\nX-IronPort-AV: E=Sophos;i=\"5.56,240,1539648000\"; \r\n d=\"scan'\";a=\"22180\"<br/>\nIronPort-SDR: PPj7KDz4Ur8W2ne2fWP/wSOUBwnY3x1XaBz/ryR/98vI6NPraAsA5q7vzUzyaYFpRCWGgfyJaZ\r\n 4UIJbt91/ WFccoWcqqO86zz6rYcRASCSM=<br />\nIronPort-PHdr: =?us-ascii?q?9a23=3Az7tnkBDwN1EwuviG0RODUyQJP3N1i/DPJgcQr6?=\r\n=?us-ascii?q?AfoPdwSPT7pMbcNUDSrc9gkEXOFd2Cra4c26yO6+jJYi8p2d65",
+                                                          "date": "16 Nov 2018 13:58 (GMT)",
+                                                          "fromAddress": [
+                                                          "testuser <testuser@cisco.com>"
+                                                          ],
+                                                          "subject": "[SUSPICIOUS MESSAGE] [SUSPECTED SPAM] Testing VOF"
+                                },
+
   "quarantine_message_details_human_readable": "### CiscoEmailSecurity QuarantineMessageDetails\n|recipient|to_address|from_address|subject|date|\n|---|---|---|---|---|\n| av_deliver@vm30bsd0004.ibqa | Surya Allena <sallena@cisco.com> | testuser <testuser@cisco.com> | [SUSPICIOUS MESSAGE] [SUSPECTED SPAM] Testing VOF | 16 Nov 2018 13:58 (GMT) |\n",
 
   "quarantine_delete_message_response_data": {

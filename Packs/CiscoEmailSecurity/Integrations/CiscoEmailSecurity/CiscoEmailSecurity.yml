@@ -45,8 +45,8 @@ configuration:
   required: true
   type: 4
 description: Cisco Email Security is an email security gateway . It detects and blocks a wide variety of email-borne threats, such as malware, spam and phishing..
-display: CiscoEmailSecurity
-name: Cisco Email Security
+display: Cisco Email Security
+name: CiscoEmailSecurity
 script:
   commands:
   - arguments:
@@ -1143,7 +1143,7 @@ script:
     description: Cisco email security delete list entry
     execution: false
     name: cisco-email-security-list-entry-delete
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false
@@ -1154,5 +1154,3 @@ script:
   type: python
 tests:
 - No tests
-defaultmapperin: HelloWorld-mapper
-defaultclassifier: HelloWorld

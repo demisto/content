@@ -20,9 +20,9 @@ def test_date_to_cisco_date():
 @pytest.mark.parametrize(
     "limit, expected",
     [
-        ('', 50),
-        ('100', 50),
-        ('20', 20)
+        ('', 20),
+        ('100', 20),
+        ('15', 15)
     ]
 )
 def test_set_limit(limit, expected):
@@ -57,12 +57,13 @@ def test_build_url_params_for_spam_quarantine():
 
 def test_list_search_messages_command(requests_mock):
     from CiscoEmailSecurity import list_search_messages_command
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/message-tracking/messages?"
                       "startDate=2017-02-14T09:51:46.000-0600.000Z&endDate=2017-02-14T09:51:46.000-0600.000Z"
-                      "&searchOption=messages&offset=0&limit=50",
+                      "&searchOption=messages&ciscoHost=All_Hosts&offset=0&limit=20",
                       json=test_data['search_messages_response_data'])
 
-    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+    client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
     res = list_search_messages_command(client, {"start_date": "2017-02-14T09:51:46.000-0600",
                                                 "end_date": "2017-02-14T09:51:46.000-0600"})
@@ -79,12 +80,13 @@ def test_messages_to_human_readable():
 
 def test_list_get_message_details_command(requests_mock):
     from CiscoEmailSecurity import list_get_message_details_command
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/message-tracking/details?"
                       "startDate=2017-02-14T09:51:46.000-0600.000Z&endDate=2017-02-14T09:51:46.000-0600.000Z&"
                       "mid=None&icid=None",
                       json=test_data['get_message_details_response_data'])
 
-    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+    client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
     res = list_get_message_details_command(client, {"start_date": "2017-02-14T09:51:46.000-0600",
                                                     "end_date": "2017-02-14T09:51:46.000-0600"})
@@ -101,11 +103,12 @@ def test_message_to_human_readable():
 
 def test_list_search_spam_quarantine_command(requests_mock):
     from CiscoEmailSecurity import list_search_spam_quarantine_command
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages"
                       "?startDate=2017-02-14T09:51:46.000-0600.000Z&endDate=2017-02-14T09:51:46.000-0600.000Z"
-                      "&quarantineType=spam&offset=0&limit=50", json=test_data['search_spam_quarantine_response_data'])
+                      "&quarantineType=spam&offset=0&limit=20", json=test_data['search_spam_quarantine_response_data'])
 
-    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+    client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
     res = list_search_spam_quarantine_command(client, {"start_date": "2017-02-14T09:51:46.000-0600",
                                                        "end_date": "2017-02-14T09:51:46.000-0600"})
@@ -122,10 +125,11 @@ def test_spam_quarantine_to_human_readable():
 
 def test_list_get_quarantine_message_details_command(requests_mock):
     from CiscoEmailSecurity import list_get_quarantine_message_details_command
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages?mid=None&quarantineType=spam",
                       json=test_data['quarantine_message_details_response_data'])
 
-    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+    client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
     res = list_get_quarantine_message_details_command(client, {"start_date": "2017-02-14T09:51:46.000-0600",
                                                                "end_date": "2017-02-14T09:51:46.000-0600"})
@@ -136,16 +140,17 @@ def test_list_get_quarantine_message_details_command(requests_mock):
 
 def test_quarantine_message_details_data_to_human_readable():
     from CiscoEmailSecurity import quarantine_message_details_data_to_human_readable
-    res = quarantine_message_details_data_to_human_readable(test_data['quarantine_message_details_context'])
+    res = quarantine_message_details_data_to_human_readable(test_data['quarantine_message_context_to_human_readable'])
     assert res == test_data['quarantine_message_details_human_readable']
 
 
 def test_list_delete_quarantine_messages_command(requests_mock):
     from CiscoEmailSecurity import list_delete_quarantine_messages_command
-    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages",
-                       json=test_data['quarantine_delete_message_response_data'])
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
+    requests_mock.delete("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages",
+                         json=test_data['quarantine_delete_message_response_data'])
 
-    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+    client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
     res = list_delete_quarantine_messages_command(client, {"messages_ids": "1234"})
     assert res.readable_output == test_data['quarantine_delete_message_response_data']
@@ -154,10 +159,11 @@ def test_list_delete_quarantine_messages_command(requests_mock):
 
 def test_list_release_quarantine_messages_command(requests_mock):
     from CiscoEmailSecurity import list_release_quarantine_messages_command
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages",
                        json=test_data['quarantine_release_message_response_data'])
 
-    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+    client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
     res = list_release_quarantine_messages_command(client, {"messages_ids": "1234"})
     assert res.readable_output == test_data['quarantine_release_message_response_data']
@@ -167,15 +173,17 @@ def test_list_release_quarantine_messages_command(requests_mock):
 def test_build_url_filter_for_get_list_entries():
     from CiscoEmailSecurity import build_url_filter_for_get_list_entries
     res = build_url_filter_for_get_list_entries({"list_type": "safelist", "view_by": "bla"})
-    assert res == "/sma/api/v2.0/quarantine/safelist?action=view&limit=50&offset=0&quarantineType=spam&viewBy=bla"
+    assert res == "/sma/api/v2.0/quarantine/safelist?action=view&limit=20&offset=0&quarantineType=spam&orderDir=desc" \
+                  "&viewBy=bla"
 
 
 def test_list_entries_get_command(requests_mock):
     from CiscoEmailSecurity import list_entries_get_command
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/quarantine/safelist",
                       json=test_data['get_list_entries_response'])
 
-    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+    client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
     res = list_entries_get_command(client, {"list_type": "safelist", "limit": "25", "order_by": "recipient",
                                             "view_by": "recipient"})
@@ -197,10 +205,11 @@ def test_build_url_and_request_body_for_add_list_entries():
 
 def test_list_entries_add_command(requests_mock):
     from CiscoEmailSecurity import list_entries_add_command
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/quarantine/safelist",
                        json=test_data['add_list_entries_response'])
 
-    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+    client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
     res = list_entries_add_command(client, {"list_type": "safelist", "action": "add", "limit": "25",
                                             "recipient_addresses": ["user1@acme.com", "user2@acme.com"],
@@ -220,10 +229,11 @@ def test_build_url_and_request_body_for_delete_list_entries():
 
 def test_list_entries_delete_command(requests_mock):
     from CiscoEmailSecurity import list_entries_delete_command
-    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/quarantine/safelist",
-                       json=test_data['delete_list_entries_response'])
+    requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
+    requests_mock.delete("https://ciscoemailsecurity/sma/api/v2.0/quarantine/safelist",
+                         json=test_data['delete_list_entries_response'])
 
-    client = Client({"client_id": "a", "client_secret": "b", "base_url": "https://ciscoemailsecurity/",
+    client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
     res = list_entries_delete_command(client, {"list_type": "safelist", "sender_list": ["acme.com"],
                                                "view_by": "recipient"})
