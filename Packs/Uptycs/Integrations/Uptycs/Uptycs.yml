@@ -1,3 +1,4 @@
+fromversion: 5.0.0
 category: Analytics & SIEM
 commonfields:
   id: Uptycs
@@ -11,7 +12,7 @@ configuration:
   name: secret
   required: true
   type: 4
-- display: API domain
+- display: API domain (e.g. teststack.uptycs.io)
   name: domain
   required: true
   type: 0
@@ -55,30 +56,32 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns assets with this hostname. Do not use the "host_name_is" argument
-        and "host_name_like" in the same command.
+      description: Returns assets with this hostname. Do not use the "host_name_is"
+        argument and "host_name_like" in the same command.
       isArray: false
       name: host_name_is
       required: false
       secret: false
     - default: false
       description: Returns assets with this string in the hostname.  Use this argument
-        to find a selection of assets with similar hostnames.  Do not use the "host_name_is" argument
-        and "host_name_like" in the same command.
+        to find a selection of assets with similar hostnames.  Do not use the "host_name_is"
+        argument and "host_name_like" in the same command.
       isArray: false
       name: host_name_like
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: The maximum number of entries to return. Use -1 to return all entries, which might cause performance issues or a time out).
+      description: The maximum number of entries to return. Use -1 to return all entries,
+        which might cause performance issues or a time out).
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Returns assets with this type of operating system. Can be "Ubuntu/Debian", "CentOS/RedHat/Fedora/Amazon Linux", "Mac OS X/Apple OS X/macOS", or "Windows".
+      description: Returns assets with this type of operating system. Can be "Ubuntu/Debian",
+        "CentOS/RedHat/Fedora/Amazon Linux", "Mac OS X/Apple OS X/macOS", or "Windows".
       isArray: false
       name: os
       predefined:
@@ -96,8 +99,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns assets enrolled with Uptycs. Do not use the "host_name_is" argument
-        and "host_name_like" in the same command.
+    description: Returns assets enrolled with Uptycs. Do not use the "host_name_is"
+      argument and "host_name_like" in the same command.
     execution: false
     name: uptycs-get-assets
     outputs:
@@ -127,17 +130,19 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'The SQL query against your Uptycs database.  Queries should be written
-        for a SQLite database. For example, "SELECT * FROM processes" returns the
-        entire table named "processes". '
+      description: 'The SQL query against your Uptycs database.  Queries should be
+        written for a SQLite database. For example, "SELECT * FROM processes" returns
+        the entire table named "processes". '
       isArray: false
       name: query
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of query to run. Can be "global" or "realtime". "Global" returns results for entire history
-        stored in the Uptycs database.  "Realtime" returns results for queries run on endpoints at the time that the query is executed.
+      description: The type of query to run. Can be "global" or "realtime". "Global"
+        returns results for entire history stored in the Uptycs database.  "Realtime"
+        returns results for queries run on endpoints at the time that the query is
+        executed.
       isArray: false
       name: query_type
       predefined:
@@ -146,27 +151,30 @@ script:
       required: true
       secret: false
     - default: false
-      description: ' Use this argument to run a realtime query on a particular asset. This argument will not work for global queries.'
+      description: ' Use this argument to run a realtime query on a particular asset.
+        This argument will not work for global queries.'
       isArray: false
       name: asset_id
       required: false
       secret: false
     - default: false
-      description: ' Use this argument to run a realtime query and return assets with this hostname. This argument will not work for global queries.'
+      description: ' Use this argument to run a realtime query and return assets with
+        this hostname. This argument will not work for global queries.'
       isArray: false
       name: host_name_is
       required: false
       secret: false
     - default: false
-      description: ' Use this argument to run a realtime query and return assets with this string in the hostname. This argument will not work for global queries.'
+      description: ' Use this argument to run a realtime query and return assets with
+        this string in the hostname. This argument will not work for global queries.'
       isArray: false
       name: host_name_like
       required: false
       secret: false
     deprecated: false
-    description: Runs the specified SQL query against your Uptycs database.  A list of
-      tables can be found at osquery.io/schema, or by using the query "select * from
-      information_schema.tables".
+    description: Runs the specified SQL query against your Uptycs database.  A list
+      of tables can be found at osquery.io/schema, or by using the query "select *
+      from information_schema.tables".
     execution: false
     name: uptycs-run-query
     outputs:
@@ -175,14 +183,15 @@ script:
       type: unknown
   - arguments:
     - default: false
-      description: Unique Uptycs alert ID, which will retrieve a specific alert. Do not pass other arguments with this argument.
+      description: Unique Uptycs alert ID, which will retrieve a specific alert. Do
+        not pass other arguments with this argument.
       isArray: false
       name: alert_id
       required: false
       secret: false
     - default: false
-      description: Return assets with this asset ID.  Do not use the "asset_id", "host_name_is" argument
-        and "host_name_like" argument in the same command.
+      description: Return assets with this asset ID.  Do not use the "asset_id", "host_name_is"
+        argument and "host_name_like" argument in the same command.
       isArray: false
       name: asset_id
       required: false
@@ -219,69 +228,72 @@ script:
       required: false
       secret: false
     - default: false
-      description: Return assets with this hostname. Do not use the "asset_id", "host_name_is" argument
-        or "host_name_like" argument in the same command.
+      description: Return assets with this hostname. Do not use the "asset_id", "host_name_is"
+        argument or "host_name_like" argument in the same command.
       isArray: false
       name: host_name_is
       required: false
       secret: false
     - default: false
-      description: Return assets with this string in the hostname. Use this
-        to find a selection of assets with similar hostnames. Do not use the "asset_id" argument, "host_name_is" argument,
-        or "host_name_like" argument in the same command.
+      description: Return assets with this string in the hostname. Use this to find
+        a selection of assets with similar hostnames. Do not use the "asset_id" argument,
+        "host_name_is" argument, or "host_name_like" argument in the same command.
       isArray: false
       name: host_name_like
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: Maximum number of entries to return.  Use -1 to return all entries, which might cause performance issues or a time out).
+      description: Maximum number of entries to return.  Use -1 to return all entries,
+        which might cause performance issues or a time out).
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The date/time from which to start the search for open connections. Format is
-        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
-        be written as "2019-03-15 01:52:36.000".
+      description: The date/time from which to start the search for open connections.
+        Format is "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36
+        am would be written as "2019-03-15 01:52:36.000".
       isArray: false
       name: start_window
       required: false
       secret: false
     - default: false
-      description: The date/time from which to end the search for open connections.  Format is "YYYY-MM-DD
-        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
-        as "2019-03-15 01:52:36.000".
+      description: The date/time from which to end the search for open connections.  Format
+        is "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
       isArray: false
       name: end_window
       required: false
       secret: false
     - default: false
       defaultValue: 10 days
-      description: 'The date/time range of how far back to search, for example: 2 hours,
-        4 minutes, 6 month, 1 day, and so on. Default is 10 days.'
+      description: 'The date/time range of how far back to search, for example: 2
+        hours, 4 minutes, 6 month, 1 day, and so on. Default is 10 days.'
       isArray: false
       name: time_ago
       required: false
       secret: false
     - default: false
-      description: The value for the alert type. Values vary according to the alert type.  For example, the value for a Bad IP alert would
-        have the IP address as the value.  A program crash alert would have the name
-        be the program that crashed.
+      description: The value for the alert type. Values vary according to the alert
+        type.  For example, the value for a Bad IP alert would have the IP address
+        as the value.  A program crash alert would have the name be the program that
+        crashed.
       isArray: false
       name: value
       required: false
       secret: false
     - default: false
-      description: The key for the alert type. Values vary according to the alert type. This tells you what type of alert
-        identifier is stored in the 'value' column.
+      description: The key for the alert type. Values vary according to the alert
+        type. This tells you what type of alert identifier is stored in the 'value'
+        column.
       isArray: false
       name: key
       required: false
       secret: false
     deprecated: false
-    description: Returns alerts from the Uptycs database. Do not use the "asset_id", "host_name_is" argument
-        and "host_name_like" argument in the same command.
+    description: Returns alerts from the Uptycs database. Do not use the "asset_id",
+      "host_name_is" argument and "host_name_like" argument in the same command.
     execution: false
     name: uptycs-get-alerts
     outputs:
@@ -311,10 +323,12 @@ script:
       description: Unique Uptycs ID for an alert.
       type: string
     - contextPath: Uptycs.Alerts.threat_indicator_id
-      description: Unique Uptycs ID that identifies the threat indicator that triggered this alert.
+      description: Unique Uptycs ID that identifies the threat indicator that triggered
+        this alert.
       type: string
     - contextPath: Uptycs.Alerts.threat_source_name
-      description: Name of the source of the threat indicator that triggered this alert.
+      description: Name of the source of the threat indicator that triggered this
+        alert.
       type: string
     - contextPath: Uptycs.Alerts.pid
       description: PID of the process that was responsible for firing the alert.
@@ -325,7 +339,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: Maximum number of entries to return.  Default is 10. Use -1 to return all entries, which might cause performance issues or a time out).
+      description: Maximum number of entries to return.  Default is 10. Use -1 to
+        return all entries, which might cause performance issues or a time out).
       isArray: false
       name: limit
       required: false
@@ -337,7 +352,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: Maximum number of entries to return. Default is 10. Use -1 to return all entries, which might cause performance issues or a time out).
+      description: Maximum number of entries to return. Default is 10. Use -1 to return
+        all entries, which might cause performance issues or a time out).
       isArray: false
       name: limit
       required: false
@@ -348,8 +364,8 @@ script:
     name: uptycs-get-event-rules
   - arguments:
     - default: false
-      description: Return assets with this asset ID.  Do not use the "asset_id" argument, "host_name_is" argument,
-        or "host_name_like" argument in the same command.
+      description: Return assets with this asset ID.  Do not use the "asset_id" argument,
+        "host_name_is" argument, or "host_name_like" argument in the same command.
       isArray: false
       name: asset_id
       required: false
@@ -389,39 +405,40 @@ script:
       required: false
       secret: false
     - default: false
-      description: Return assets with this hostname. Do not use the "asset_id" argument, "host_name_is" argument,
-        or "host_name_like" argument in the same command.
+      description: Return assets with this hostname. Do not use the "asset_id" argument,
+        "host_name_is" argument, or "host_name_like" argument in the same command.
       isArray: false
       name: host_name_is
       required: false
       secret: false
     - default: false
-      description: Return assets with this string in the hostname. Use this
-        to find a selection of assets with similar hostnames.  Do not use the "asset_id" argument, "host_name_is" argument,
-        or "host_name_like" argument in the same command.
+      description: Return assets with this string in the hostname. Use this to find
+        a selection of assets with similar hostnames.  Do not use the "asset_id" argument,
+        "host_name_is" argument, or "host_name_like" argument in the same command.
       isArray: false
       name: host_name_like
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: Maximum number of entries to return. Default is 10. Use -1 to return all entries, which might cause performance issues or a time out.
+      description: Maximum number of entries to return. Default is 10. Use -1 to return
+        all entries, which might cause performance issues or a time out.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The date/time from which to start the search for open connections. Format is
-        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
-        be written as "2019-03-15 01:52:36.000".
+      description: The date/time from which to start the search for open connections.
+        Format is "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36
+        am would be written as "2019-03-15 01:52:36.000".
       isArray: false
       name: start_window
       required: false
       secret: false
     - default: false
-      description: The date/time from which to end the search for open connections. Format is
-        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
-        be written as "2019-03-15 01:52:36.000".
+      description: The date/time from which to end the search for open connections.
+        Format is "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36
+        am would be written as "2019-03-15 01:52:36.000".
       isArray: false
       name: end_window
       required: false
@@ -435,14 +452,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The type of alert indicator that is stored in the 'value' column. Varies according to event type. 
+      description: The type of alert indicator that is stored in the 'value' column.
+        Varies according to event type.
       isArray: false
       name: key
       required: false
       secret: false
     - default: false
-      description: The value for the alert type. Values vary according to the alert type.  For example, the value for a Bad IP alert would
-        have the IP address as the value.  A program crash alert would have the name be the program that crashed.Varies for different events.
+      description: The value for the alert type. Values vary according to the alert
+        type.  For example, the value for a Bad IP alert would have the IP address
+        as the value.  A program crash alert would have the name be the program that
+        crashed.Varies for different events.
       isArray: false
       name: value
       required: false
@@ -487,23 +507,23 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Return assets with this asset ID. Do not use the "asset_id" argument, "host_name_is" argument,
-        or "host_name_like" argument in the same command.
+      description: Return assets with this asset ID. Do not use the "asset_id" argument,
+        "host_name_is" argument, or "host_name_like" argument in the same command.
       isArray: false
       name: asset_id
       required: false
       secret: false
     - default: false
-      description: Return assets with this hostname. Do not use the "asset_id" argument, "host_name_is" argument,
-        or "host_name_like" argument in the same command.
+      description: Return assets with this hostname. Do not use the "asset_id" argument,
+        "host_name_is" argument, or "host_name_like" argument in the same command.
       isArray: false
       name: host_name_is
       required: false
       secret: false
     - default: false
-      description: Return assets with this string in the hostname. Use this
-        to find a selection of assets with similar hostnames. Do not use the "asset_id" argument, "host_name_is" argument,
-        or "host_name_like" argument in the same command.
+      description: Return assets with this string in the hostname. Use this to find
+        a selection of assets with similar hostnames. Do not use the "asset_id" argument,
+        "host_name_is" argument, or "host_name_like" argument in the same command.
       isArray: false
       name: host_name_like
       required: false
@@ -516,23 +536,24 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Maximum number of entries to return.  Default is 10. Use -1 to return all entries, which might cause performance issues or a time out.
+      description: Maximum number of entries to return.  Default is 10. Use -1 to
+        return all entries, which might cause performance issues or a time out.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The date/time from which to start the search for open connections. Format is
-        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
-        be written as "2019-03-15 01:52:36.000".
+      description: The date/time from which to start the search for open connections.
+        Format is "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36
+        am would be written as "2019-03-15 01:52:36.000".
       isArray: false
       name: start_window
       required: false
       secret: false
     - default: false
-      description: The date/time from which to end the search for open connections. Format is
-        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
-        be written as "2019-03-15 01:52:36.000".
+      description: The date/time from which to end the search for open connections.
+        Format is "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36
+        am would be written as "2019-03-15 01:52:36.000".
       isArray: false
       name: end_window
       required: false
@@ -544,8 +565,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specifies how far back to search. Format examples: 2 hours,
-        4 minutes, 6 month, 1 day, etc.'
+      description: 'Specifies how far back to search. Format examples: 2 hours, 4
+        minutes, 6 month, 1 day, etc.'
       isArray: false
       name: time_ago
       required: false
@@ -952,11 +973,10 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: ''''''
       description: Tag value that will be set on the asset
       isArray: false
       name: tag_value
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Sets a tag on a particular asset
@@ -1786,9 +1806,11 @@ script:
     - contextPath: Uptycs.PostedQuery.name
       description: name of query
       type: string
-  dockerimage: demisto/uptycs:1.0.0.1126
+  dockerimage: demisto/uptycs:1.0.0.10664
   isfetch: true
   runonce: true
   script: '-'
   type: python
   subtype: python3
+tests:
+- No tests (auto formatted)

@@ -222,6 +222,9 @@ script:
     - contextPath: Redlock.Alert.AlertTime
       description: The time of the alert
       type: date
+    - contextPath: Redlock.Alert.AlertRules
+      description: Names of the alert rules that triggered this alert.
+      type: string
     - contextPath: Redlock.Alert.Policy.ID
       description: The policy ID
       type: string
