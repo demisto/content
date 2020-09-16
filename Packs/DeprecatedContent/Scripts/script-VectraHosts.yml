@@ -22,7 +22,7 @@ type: python
 subtype: python2
 tags:
 - Vectra
-comment: Host information includes data that correlates the host data to detected
+comment: Deprecated. Host information includes data that correlates the host data to detected
   security events
 system: true
 args:
