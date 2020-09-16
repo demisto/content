@@ -1611,6 +1611,290 @@ script:
     description: List dynamic interfaces
     execution: false
     name: fortimanager-dynamic-interface-list
+  - arguments:
+    - default: false
+      description: The ADOM from which to fetch the dynamic address mapping. Leave
+        empty to use the default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The address from which to fetch the dynamic address mapping.
+      isArray: false
+      name: address
+      required: true
+      secret: false
+    - default: false
+      description: Name of a specific dynamic address mapping to fetch.
+      isArray: false
+      name: dynamic_mapping
+      required: false
+      secret: false
+    - default: false
+      description: From which index to start the list.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which index to get the list
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    deprecated: false
+    description: List dynamic address mappings.
+    execution: false
+    name: fortimanager-dynamic-address-mappings-list
+  - arguments:
+    - default: false
+      description: The ADOM in which to create the dynamic address mapping. Leave
+        empty to use the default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The address in which to create the dynamic mapping.
+      isArray: false
+      name: address
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of address.
+      isArray: false
+      name: type
+      predefined:
+      - ipmask
+      - iprange
+      - fqdn
+      - wildcard
+      - geography
+      - wildcard-fqdn
+      - dynamic
+      required: true
+      secret: false
+    - default: false
+      description: Policy group name.
+      isArray: false
+      name: policy_group
+      required: false
+      secret: false
+    - default: false
+      description: Network interface associated with address.
+      isArray: false
+      name: associated_interface
+      required: false
+      secret: false
+    - default: false
+      description: Comment.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: Fully Qualified Domain Name address.
+      isArray: false
+      name: fqdn
+      required: false
+      secret: false
+    - default: false
+      description: First IP address (inclusive) in the range for the address.
+      isArray: false
+      name: start_ip
+      required: false
+      secret: false
+    - default: false
+      description: Final IP address (inclusive) in the range for the address.
+      isArray: false
+      name: end_ip
+      required: false
+      secret: false
+    - default: false
+      description: IP address and subnet mask of address.
+      isArray: false
+      name: subnet
+      required: false
+      secret: false
+    - default: false
+      description: Subnet name.
+      isArray: false
+      name: subnet_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: SDN.
+      isArray: false
+      name: sdn
+      predefined:
+      - aci
+      - aws
+      - nsx
+      - nuage
+      - azure
+      required: false
+      secret: false
+    - default: false
+      description: URL
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    - default: false
+      description: IP address and wildcard netmask.
+      isArray: false
+      name: wildcard
+      required: false
+      secret: false
+    - default: false
+      description: Fully Qualified Domain Name with wildcard characters.
+      isArray: false
+      name: wildcard_fqdn
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new dynamic address mappings.
+    execution: false
+    name: fortimanager-dynamic-address-mappings-create
+  - arguments:
+    - default: false
+      description: The ADOM in which to update the dynamic address mapping. Leave
+        empty to use the default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The address in which to update the dynamic mapping.
+      isArray: false
+      name: address
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of address.
+      isArray: false
+      name: type
+      predefined:
+      - ipmask
+      - iprange
+      - fqdn
+      - wildcard
+      - geography
+      - wildcard-fqdn
+      - dynamic
+      required: true
+      secret: false
+    - default: false
+      description: Policy group name.
+      isArray: false
+      name: policy_group
+      required: false
+      secret: false
+    - default: false
+      description: Network interface associated with address.
+      isArray: false
+      name: associated_interface
+      required: false
+      secret: false
+    - default: false
+      description: Comment.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: Fully Qualified Domain Name address.
+      isArray: false
+      name: fqdn
+      required: false
+      secret: false
+    - default: false
+      description: First IP address (inclusive) in the range for the address.
+      isArray: false
+      name: start_ip
+      required: false
+      secret: false
+    - default: false
+      description: Final IP address (inclusive) in the range for the address.
+      isArray: false
+      name: end_ip
+      required: false
+      secret: false
+    - default: false
+      description: IP address and subnet mask of address.
+      isArray: false
+      name: subnet
+      required: false
+      secret: false
+    - default: false
+      description: Subnet name.
+      isArray: false
+      name: subnet_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: SDN.
+      isArray: false
+      name: sdn
+      predefined:
+      - aci
+      - aws
+      - nsx
+      - nuage
+      - azure
+      required: false
+      secret: false
+    - default: false
+      description: URL
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    - default: false
+      description: IP address and wildcard netmask.
+      isArray: false
+      name: wildcard
+      required: false
+      secret: false
+    - default: false
+      description: Fully Qualified Domain Name with wildcard characters.
+      isArray: false
+      name: wildcard_fqdn
+      required: false
+      secret: false
+    deprecated: false
+    description: update a dynamic address mappings.
+    execution: false
+    name: fortimanager-dynamic-address-mappings-update
+  - arguments:
+    - default: false
+      description: The ADOM in which to delete the dynamic address mapping. Leave
+        empty to use the default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The address in which to delete the dynamic address mapping.
+      isArray: false
+      name: address
+      required: true
+      secret: false
+    - default: false
+      description: The name of the dynamic address mapping to delete.
+      isArray: false
+      name: dynamic_mapping
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing dynamic address mapping.
+    execution: false
+    name: fortimanager-dynamic-address-mapping-delete
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
