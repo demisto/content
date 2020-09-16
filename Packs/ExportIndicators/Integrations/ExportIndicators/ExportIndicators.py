@@ -879,12 +879,10 @@ def run_long_running(params, is_test=False):
         ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
         demisto.error(ssl_err_message)
         raise ValueError(ssl_err_message)
-
     except Exception as e:
         demisto.error(f'An error occurred in long running loop: {str(e)}')
         raise ValueError(str(e))
     finally:
-        sys.exit(3)
         if certificate_path:
             os.unlink(certificate_path)
         if private_key_path:
