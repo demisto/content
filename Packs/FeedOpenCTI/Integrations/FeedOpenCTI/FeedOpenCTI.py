@@ -9,7 +9,7 @@ urllib3.disable_warnings()
 
 # Disable info logging from the api
 import logging
-logger = logging.getLogger()
+logger = logging.getLogger('Stix2')
 logger.setLevel(logging.ERROR)
 
 XSOHR_TYPES = {
