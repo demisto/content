@@ -49,7 +49,7 @@ def test_get_hardware_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-assets-hardware'], pagination=False)
+    response = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-assets-devices'], pagination=False)
     assert response.outputs[0]['os_type'] == mock_response[0]['os_type']
 
 
@@ -197,7 +197,7 @@ def test_run_queries_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    response = run_queries_command(client, args, COMMANDS_CONFIG['infinipoint-run-queries'])
+    response = run_queries_command(client, args, COMMANDS_CONFIG['infinipoint-execute-action'])
     assert response.outputs['name'] == mock_response['name']
 
 

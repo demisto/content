@@ -1,0 +1,20 @@
+{
+    "name": "McAfee ESM",
+    "description": "Run queries and receive alarms from Intel Security ESM.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "created": "2020-05-24T00:00:00Z",
+    "beta": false,
+    "deprecated": false,
+    "useCases": [],
+    "keywords": ["ESM"],
+    "dependencies": {},
+    "displayedImages": []
+}

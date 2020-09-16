@@ -31,7 +31,7 @@ type: python
 subtype: python2
 tags:
 - protectwise
-comment: Display details about the specified ProtectWise Observation.
+comment: Deprecated. Display details about the specified ProtectWise Observation.
 system: true
 args:
 - name: id
