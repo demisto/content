@@ -25,7 +25,7 @@ BATCH_SIZE = 100                    # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10   # max amount of IPs to enrich per offense
 LOCK_WAIT_TIME = 0.5                # time to wait for lock.acquire
 MAX_WORKERS = 8                     # max concurrent workers used for events enriching
-DOMAIN_ENRCH_FLG = "True"           # when set to true, will try to enrich offense and events with domain names
+DOMAIN_ENRCH_FLG = "True"           # when set to true, will try to enrich offense and assets with domain names
 RULES_ENRCH_FLG = "True"            # when set to true, will try to enrich offense with rule names
 
 ADVANCED_PARAMETER_NAMES = [
