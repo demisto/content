@@ -34,7 +34,7 @@ type: python
 subtype: python2
 tags:
 - checkpoint
-comment: Shows status of a checkpoint task by task uuid.
+comment: Deprecated. Shows status of a checkpoint task by task uuid.
 system: true
 deprecated: true
 args:
