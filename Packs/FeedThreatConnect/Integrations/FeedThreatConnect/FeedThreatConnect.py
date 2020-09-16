@@ -93,7 +93,7 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 
     tlp_color = demisto.getParam('tlp_color')
     if tlp_color:
-        indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+        indicator_obj['fields']['trafficlightprotocol'] = tlp_color  # type: ignore
 
     return indicator_obj
 
