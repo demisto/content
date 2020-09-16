@@ -1,8 +1,8 @@
 commonfields:
-  id: ShowMITREName
+  id: MitreNameLayoutDynamicSection
   version: -1
-name: ShowMITREName
-comment: Shows Mitre Name
+name: MitreNameLayoutDynamicSection
+comment: Populates the MITRE ATT&CK name for the MITRE ATT&CK indicator layout
 script: '-'
 type: python
 tags:

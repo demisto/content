@@ -22,6 +22,7 @@ mitre_field_mapping = {
     "mitredetection": {"name": "x_mitre_detection", "type": "str"},
     "mitreextendedaliases": {"name": "x_mitre_aliases", "type": "list"},
     "mitreexternalreferences": {"name": "external_references", "type": "dict"},
+    "mitreid": {"name": "id", "type": "str"},
     "mitreimpacttype": {"name": "x_mitre_impact_type", "type": "list"},
     "mitrekillchainphases": {"name": "kill_chain_phases", "type": "dict"},
     "mitrelabels": {"name": "labels", "type": "list"},
@@ -250,7 +251,6 @@ class Client:
         # rawjson to the fields in the indicator
         for indicator in indicators:
             indicator['fields'] = dict()
-            indicator['fields']['mitreid'] = indicator['value']
             for field, value in mitre_field_mapping.items():
                 try:
                     # Try and map the field
