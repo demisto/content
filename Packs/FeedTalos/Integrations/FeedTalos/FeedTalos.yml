@@ -2,7 +2,7 @@ commonfields:
   id: Talos Feed
   version: -1
 name: Talos Feed
-display: Talos Feed (Community Contribution)
+display: Talos Feed
 category: Data Enrichment & Threat Intelligence
 description: Use the Talos Feed integration to get indicators from the feed.
 configuration:
@@ -80,16 +80,6 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  type: 8
-  required: false
-- defaultvalue: 'true'
-  display: Fetch indicators
-  name: feed
-  type: 8
-  required: false
-- defaultvalue: 'true'
-  display: Fetch indicators
-  name: feed
   type: 8
   required: false
 script:
