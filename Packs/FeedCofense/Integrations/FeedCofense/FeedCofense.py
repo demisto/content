@@ -189,7 +189,7 @@ class Client(BaseClient):
                 }
 
                 if self.tlp_color:
-                    indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
+                    indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color  # type: ignore
 
                 results.append(indicator_obj)
 
