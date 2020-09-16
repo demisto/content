@@ -49,7 +49,7 @@ type: python
 subtype: python2
 tags:
 - epo
-comment: Trigger an ePO Client Task to update AV signatures for specific endpoints
+comment: Deprecated. Trigger an ePO Client Task to update AV signatures for specific endpoints
 system: true
 deprecated: true
 args:
