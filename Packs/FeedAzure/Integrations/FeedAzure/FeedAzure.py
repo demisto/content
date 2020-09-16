@@ -278,17 +278,20 @@ def fetch_indicators_command(client: Client, feedTags: list, tlp_color: Optional
         iterator = iterator[:limit]
 
     for indicator in iterator:
-        indicators.append({
+        indicator_obj = {
             'value': indicator['value'],
             'type': indicator['type'],
             'fields': {
                 'region': indicator.get('azure_region'),
                 'tags': feedTags,
-                'trafficlightprotocol': tlp_color
             },
             'rawJSON': indicator
-        })
+        }
 
+        if tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+        indicators.append(indicator_obj)
         raw_response.append(indicator)
 
     return indicators, raw_response

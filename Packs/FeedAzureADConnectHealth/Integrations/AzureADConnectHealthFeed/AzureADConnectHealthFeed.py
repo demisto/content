@@ -90,12 +90,12 @@ def fetch_indicators(client: Client, feed_tags: List = [], tlp_color: Optional[s
             'type': type_,
             'service': 'Azure AD Connect Health Feed',
             'rawJSON': raw_data,
-            'fields': {
-                'trafficlightprotocol': tlp_color
-            }
+            'fields': {}
         }
         if feed_tags:
             indicator_obj['fields']['tags'] = feed_tags
+        if tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = feed_tags
 
         indicators.append(indicator_obj)
     return indicators
