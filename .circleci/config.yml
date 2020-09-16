@@ -46,9 +46,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.9.0"
+      CONTENT_VERSION: "20.9.1"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "26c4af211bc71167005408ba70bbd72bba6daab0" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "46fde7a4345e0c25aa496854447104b22684a3cc" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -171,6 +171,11 @@ references:
         if [ -n "${DEMISTO_SDK_NIGHTLY}" ]
           then
             echo "Skipping - not running in demisto-sdk nightly"
+            exit 0
+        fi
+        if [ -n "${CONTRIB_BRANCH}" ]
+          then
+            echo "Skipping - not running in contribution instance"
             exit 0
         fi
         echo "$INSTANCE_ROLE"

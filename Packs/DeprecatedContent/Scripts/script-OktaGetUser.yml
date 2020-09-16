@@ -20,7 +20,7 @@ type: python
 subtype: python2
 tags:
 - okta
-comment: Fetches a specific user when you know the user’s login, please note that
+comment: Deprecated. Fetches a specific user when you know the user’s login, please note that
   one of the parameters bellow is mandatory.
 enabled: true
 args:
