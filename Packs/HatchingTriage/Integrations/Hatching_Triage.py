@@ -158,11 +158,7 @@ def get_report_triage(client: Client, **args):
 
 
 # Working
-#   - Need to update readable_output
 def get_kernel_monitor(client: Client, **args):
-    '''
-    Need to test
-    '''
     sample_id=args.get('sample_id')
     task_id=args.get('task_id')
 
@@ -179,8 +175,7 @@ def get_kernel_monitor(client: Client, **args):
     results = CommandResults(
         outputs_prefix = 'Triage.sample.kernel_monitor',
         outputs_key_field = 'data',
-        outputs = res,
-        readable_output = 'testing'
+        outputs = res
     )
 
     return results
@@ -199,7 +194,6 @@ def get_pcap(client: Client, **args):
     return fileResult(filename, file_content)
 
 
-# ??
 def get_dumped_files(client: Client, **args):
     '''
     Need to test
@@ -407,9 +401,6 @@ def create_profile(client: Client, **args):
 
 # Working
 def update_profile(client: Client, **args):
-    '''
-    Working, but should test with more parameters
-    '''
     profileID = args.get('profileID')
 
     data = {}
