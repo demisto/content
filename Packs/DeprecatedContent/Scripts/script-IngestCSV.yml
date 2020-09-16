@@ -30,7 +30,7 @@ args: []
 tags:
 - Utility
 - ingestion
-comment: Finds a CSV file in the war room and loads it into context.
+comment: Deprecated. Finds a CSV file in the war room and loads it into context.
 system: true
 scripttarget: 0
 dependson: {}

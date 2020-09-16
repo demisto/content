@@ -123,7 +123,7 @@ subtype: python2
 deprecated: true
 tags:
 - ml
-comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
+comment: Deprecated. This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
 enabled: true
 args:
 - name: maxNumberOfIncidents

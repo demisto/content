@@ -83,7 +83,7 @@ tags:
 - checkpoint
 - firewall
 - response
-comment: Block one or more IP addresses using Checkpoint Firewall.
+comment: Deprecated. Block one or more IP addresses using Checkpoint Firewall.
 enabled: true
 args:
 - name: ip
