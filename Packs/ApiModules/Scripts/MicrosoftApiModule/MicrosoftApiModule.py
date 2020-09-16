@@ -35,7 +35,7 @@ class MicrosoftClient(BaseClient):
                  scope: str = 'https://graph.microsoft.com/.default',
                  grant_type: str = CLIENT_CREDENTIALS,
                  redirect_uri: str = 'https://localhost/myapp',
-                 resource: str = '',
+                 resource: Optional[str] = '',
                  multi_resource: bool = False,
                  resources: List[str] = None,
                  verify: bool = True,
@@ -350,8 +350,7 @@ class MicrosoftClient(BaseClient):
 
         access_token = response_json.get('access_token', '')
         expires_in = int(response_json.get('expires_in', 3595))
-        if self.multi_resource:
-            refresh_token = response_json.get('refresh_token', '')
+        refresh_token = response_json.get('refresh_token', '')
 
         return access_token, expires_in, refresh_token
 
