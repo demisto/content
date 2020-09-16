@@ -205,16 +205,20 @@ class Client:
                                     pass
 
                         else:
-                            indicators.append({
+                            indicator_obj = {
                                 "value": value,
                                 "score": self.reputation,
                                 "type": "MITRE ATT&CK",
                                 "rawJSON": mitre_item_json,
                                 "fields": {
                                     "tags": self.tags,
-                                    'trafficlightprotocol': self.tlp_color
                                 }
-                            })
+                            }
+
+                            if self.tlp_color:
+                                indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
+
+                            indicators.append(indicator_obj)
                             indicator_values_list.add(value)
                             counter += 1
                         mitre_id_list.add(mitre_item_json.get('id'))
@@ -226,16 +230,20 @@ class Client:
                                         if x.get('external_id') and x.get('source_name') != "mitre-attack"]
                             for x in ext_refs:
                                 if x not in external_refs:
-                                    indicators.append({
+                                    indicator_obj = {
                                         "value": x,
                                         "score": self.reputation,
                                         "type": "MITRE ATT&CK",
                                         "rawJSON": mitre_item_json,
                                         "fields": {
                                             "tags": self.tags,
-                                            'trafficlightprotocol': self.tlp_color
                                         }
-                                    })
+                                    }
+
+                                    if self.tlp_color:
+                                        indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
+
+                                    indicators.append(indicator_obj)
                                     external_refs.add(x)
 
         # Finally, map all the fields from the indicator
