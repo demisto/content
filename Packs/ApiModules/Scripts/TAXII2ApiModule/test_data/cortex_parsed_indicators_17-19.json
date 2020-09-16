@@ -32,7 +32,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -68,7 +68,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -104,7 +104,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -140,7 +140,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -176,7 +176,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -212,7 +212,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -248,7 +248,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -284,7 +284,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -320,7 +320,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -356,7 +356,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -392,7 +392,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -428,7 +428,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -464,7 +464,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -500,7 +500,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -536,7 +536,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -572,7 +572,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   },
   {
@@ -608,7 +608,7 @@
       "tags": [
         "low"
       ],
-      "trafficlightprotocol": null
+      "trafficlightprotocol": "GREEN"
     }
   }
 ]

@@ -274,7 +274,10 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                         'fields': create_fields_mapping(raw_json, mapping) if mapping else {}
                     }
                     indicator['fields']['tags'] = client.tags
-                    indicator['fields']['trafficlightprotocol'] = client.tlp_color
+
+                    if client.tlp_color:
+                        indicator['fields']['trafficlightprotocol'] = client.tlp_color
+
                     indicators.append(indicator)
     return indicators
 

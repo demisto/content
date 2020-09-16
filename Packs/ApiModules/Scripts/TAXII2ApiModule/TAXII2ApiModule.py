@@ -484,7 +484,10 @@ class Taxii2FeedClient:
                 tags.append(field_tag)
 
         fields["tags"] = tags
-        fields["trafficlightprotocol"] = self.tlp_color
+
+        if self.tlp_color:
+            fields["trafficlightprotocol"] = self.tlp_color
+
         indicator["fields"] = fields
         return indicator
 

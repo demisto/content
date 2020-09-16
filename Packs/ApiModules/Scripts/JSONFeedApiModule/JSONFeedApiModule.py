@@ -134,9 +134,11 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                     'type': current_indicator_type,
                     'fields': {
                         'tags': feedTags,
-                        'trafficlightprotocol': client.tlp_color
                     }
                 }
+
+                if client.tlp_color:
+                    indicator['fields']['trafficlightprotocol'] = client.tlp_color
 
                 attributes = {'source_name': service_name, 'value': indicator_value,
                               'type': current_indicator_type}
