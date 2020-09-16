@@ -184,7 +184,8 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                 if item.get('notes'):
                     indicator_mapping_fields["description"] = item.get('notes')
                 indicator_mapping_fields['tags'] = client.tags
-                indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color
+                if client.tlp_color:
+                    indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color
 
                 indicators.append({
                     'value': value,
