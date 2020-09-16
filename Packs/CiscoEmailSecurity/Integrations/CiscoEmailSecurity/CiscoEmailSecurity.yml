@@ -477,7 +477,7 @@ script:
     name: cisco-email-security-message-details-get
     outputs:
     - contextPath: CiscoEmailSecurity.Message.attachments
-      description: The message attachments.
+      description: The attachments of the message.
       type: String
     - contextPath: CiscoEmailSecurity.Message.direction
       description: The message direction.
@@ -501,7 +501,7 @@ script:
       description: message ID.
       type: Number
     - contextPath: CiscoEmailSecurity.Message.midHeader
-      description: The header of the message ID.
+      description: The header message ID of the message.
       type: String
     - contextPath: CiscoEmailSecurity.Message.recipient
       description: The recipient of the message.
@@ -716,73 +716,73 @@ script:
     name: cisco-email-security-dlp-details-get
     outputs:
     - contextPath: CiscoEmailSecurity.Dlp.attachments
-      description: The dlp attachments.
+      description: The attachments of the DLP.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.direction
-      description: The dlp direction.
+      description: The DLP direction.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpMatchedContent.messagePart
-      description: ''
+      description: The message part of the DLP details.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpMatchedContent.messagePartMatch.classifier
-      description: ''
+      description: The classifier of the DLP details.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpMatchedContent.messagePartMatch.classifierMatch
-      description: ''
+      description: The classifier match of the DLP details.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpPolicy
-      description: ''
+      description: The DLP policy.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.mid
-      description: ''
+      description: The message ID of the DLP details.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.riskFactor
-      description: ''
+      description: The risk factor of the DLP.
       type: Number
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.violationSeverity
-      description: ''
+      description: The violation severity of the DLP.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.hostName
-      description: ''
+      description: The host name of the DLP.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.messageSize
-      description: ''
+      description: The message size of the DLP.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.mid
-      description: ''
+      description: The message ID of the DLP.
       type: Number
     - contextPath: CiscoEmailSecurity.Dlp.midHeader
-      description: ''
+      description: The header message ID of the DLP.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.recipient
-      description: ''
+      description: The recipient of the Dlp.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.sender
-      description: ''
+      description: The sender of the Dlp.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.senderGroup
-      description: ''
+      description: The sender group of the DLP.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.sendingHostSummary.ipAddress
-      description: ''
+      description: The IP address of the host DLP.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.sendingHostSummary.reverseDnsHostname
-      description: ''
+      description: The dns host name of the DLP.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.sendingHostSummary.sbrsScore
-      description: ''
+      description: The sender base score host of the DLP.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.showDLPDetails
-      description: ''
-      type: Number
+      description: Is DLP details is shown.
+      type: Boolean
     - contextPath: CiscoEmailSecurity.Dlp.smtpAuthId
-      description: ''
+      description: The SMTP auth ID of the DLP.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.subject
-      description: ''
+      description: The subject of the DLP.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.timestamp
-      description: ''
+      description: The date time of the DLP.
       type: String
   - arguments:
     - default: false
@@ -822,61 +822,61 @@ script:
     name: cisco-email-security-amp-details-get
     outputs:
     - contextPath: CiscoEmailSecurity.Amp.ampDetails.description
-      description: ''
+      description: The description of the AMP details.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.ampDetails.lastEvent
-      description: ''
-      type: Number
+      description: Is this the last event of the AMP details.
+      type: Boolean
     - contextPath: CiscoEmailSecurity.Amp.ampDetails.timestamp
-      description: ''
+      description: The dete time of the AMP details.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.attachments
-      description: ''
+      description: The attachments of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.direction
-      description: ''
+      description: The direction of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.hostName
-      description: ''
+      description: The host name of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.messageSize
-      description: ''
+      description: The message size of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.mid
-      description: ''
+      description: The message ID of the AMP.
       type: Number
     - contextPath: CiscoEmailSecurity.Amp.midHeader
-      description: ''
+      description: The header message ID of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.recipient
-      description: ''
+      description: The recipient of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.sender
-      description: ''
+      description: The sender of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.senderGroup
-      description: ''
+      description: The sender group of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.sendingHostSummary.ipAddress
-      description: ''
+      description: The IP address of the host AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.sendingHostSummary.reverseDnsHostname
-      description: ''
+      description: The dns host name of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.sendingHostSummary.sbrsScore
-      description: ''
+      description: The sender base score host of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.showAMPDetails
-      description: ''
-      type: Number
+      description: Is AMP details is shown.
+      type: Boolean
     - contextPath: CiscoEmailSecurity.Amp.smtpAuthId
-      description: ''
+      description: The SMTP auth ID of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.subject
-      description: ''
+      description: The subject of the AMP.
       type: String
     - contextPath: CiscoEmailSecurity.Amp.timestamp
-      description: ''
+      description: The date time of the AMP.
       type: String
   - arguments:
     - default: false
@@ -916,64 +916,64 @@ script:
     name: cisco-email-security-url-details-get
     outputs:
     - contextPath: CiscoEmailSecurity.Url.attachments
-      description: ''
+      description: The attachments of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.direction
-      description: ''
+      description: The direction of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.hostName
-      description: ''
+      description: The hostName of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.mid
-      description: ''
+      description: The message ID of the URL.
       type: Number
     - contextPath: CiscoEmailSecurity.Url.midHeader
-      description: ''
+      description: The header message ID of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.recipient
-      description: ''
+      description: The recipient of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.sdrAge
-      description: ''
+      description: The software defined radio age of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.sdrCategory
-      description: ''
+      description: The software defined radio category of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.sdrReputation
-      description: ''
+      description: The software defined radio reputation of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.sender
-      description: ''
+      description: The URL of thesender.
       type: String
     - contextPath: CiscoEmailSecurity.Url.senderGroup
-      description: ''
+      description: The sender group of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.sendingHostSummary.ipAddress
-      description: ''
+      description: The IP address of the host URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.sendingHostSummary.reverseDnsHostname
-      description: ''
+      description: The dns host name of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.sendingHostSummary.sbrsScore
-      description: ''
+      description: The sender base score host of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.showURLDetails
-      description: ''
-      type: Number
+      description: Is URL details is shown.
+      type: Boolean
     - contextPath: CiscoEmailSecurity.Url.smtpAuthId
-      description: ''
+      description: The SMTP auth ID of the URL.
       type: String
     - contextPath: CiscoEmailSecurity.Url.subject
-      description: ''
+      description: The URL subject.
       type: String
     - contextPath: CiscoEmailSecurity.Url.urlDetails.description
-      description: ''
+      description: The description of the URL details.
       type: String
     - contextPath: CiscoEmailSecurity.Url.urlDetails.lastEvent
-      description: ''
-      type: Number
+      description: Is this the last event of the URL details.
+      type: Boolean
     - contextPath: CiscoEmailSecurity.Url.urlDetails.timestamp
-      description: ''
+      description: The date time of the URL details.
       type: String
   - arguments:
     - default: false
