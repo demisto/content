@@ -314,6 +314,18 @@ def test_try_poll_offense_events_with_retry__sad(mocker):
 
 
 def test_enrich_offense_result(mocker):
+    """
+    Enrich offense results with assets, domains and rules
+
+    Given:
+        - Offense response was fetched from QRadar with rule ids and domain ids
+    When:
+        - Enriching fetched offense
+    Then:
+        - domain_name has been added to offense
+        - domain_name has been added to offense asset
+        - rule name has been added to offense
+    """
     closing_reason_dict = [{'is_deleted': False, 'is_reserved': False, 'text': 'False-Positive, Tuned', 'id': 2}]
     offense_types = [{'property_name': 'sourceIP', 'custom': False, 'name': 'Source IP', 'id': 0}]
     domains = [{'name': '', 'tenant_id': 0, 'id': 0, 'log_source_group_ids': []}]
