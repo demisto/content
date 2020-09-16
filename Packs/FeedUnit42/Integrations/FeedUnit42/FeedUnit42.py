@@ -83,7 +83,7 @@ def parse_indicators(objects: list, feed_tags: list = [], tlp_color: Optional[st
             pattern = indicator_object.get('pattern')
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
-                    indicators.append({
+                    indicator_obj = {
                         "value": indicator_object.get('name'),
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES[key],
                         "rawJSON": indicator_object,
@@ -93,9 +93,13 @@ def parse_indicators(objects: list, feed_tags: list = [], tlp_color: Optional[st
                             "tags": list((set(indicator_object.get('labels'))).union(set(feed_tags))),
                             "modified": indicator_object.get('modified'),
                             "reportedby": 'Unit42',
-                            'trafficlightprotocol': tlp_color
                         }
-                    })
+                    }
+
+                    if tlp_color:
+                        indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+                    indicators.append(indicator_obj)
 
     return indicators
 
