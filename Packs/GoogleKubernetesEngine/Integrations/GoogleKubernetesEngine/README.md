@@ -18,7 +18,7 @@ Command, argument, and output desctiptions were taken from the Google documentat
 
 1. Select or create a Cloud Platform project:
 
-   <img src="/Users/grabin/dev/demisto/content/Packs/GoogleKubernetesEngine/doc_files/create-project-1.png" alt="create-project" style="zoom:67%;" />
+   <img src="https://github.com/demisto/content/blob/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/create-project-1.png" alt="create-project" style="zoom:40%;" />
 
    > After creating the new project - We will refer `ID` column (marked in green) as `project id`.
 
@@ -26,49 +26,49 @@ Command, argument, and output desctiptions were taken from the Google documentat
 
    1. Choose `APIs & Services` in main menu -> Choose 'Libary':
 
-      <img src="/Users/grabin/dev/demisto/content/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-menu.png" alt="Menu" style="zoom:67%;" />
+      <img src="https://github.com/demisto/content/blob/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-menu.png" alt="Menu" style="zoom:40%;" />
 
    2. Search for `Kubernetes Engine API`:
 
-      <img src="/Users/grabin/dev/demisto/content/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-search.png" alt="Search" style="zoom:67%;" />
+      <img src="https://github.com/demisto/content/blob/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-search.png" alt="Search" style="zoom:40%;" />
 
    3. Enable `Kubernetes Engine API`:
 
-      <img src="/Users/grabin/dev/demisto/content/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable.png" alt="enable-1" style="zoom:67%;" />
+      <img src="https://github.com/demisto/content/blob/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable-1.png" alt="enable-1" style="zoom:40%;" />
 
    4. Select project -> Choose 'open':
 
-      <img src="/Users/grabin/dev/demisto/content/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable-2.png" alt="enable-2" style="zoom: 67%;" />
+      <img src="https://github.com/demisto/content/blob/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable-2.png" alt="enable-2" style="zoom: 40%;" />
 
 3. Create service account with right restricted permissions:
 
    1. Choose `IAM & Admin` in main menu -> Choose `Service Accounts`:
 
-      <img src="/Users/grabin/dev/demisto/content/Packs/GoogleKubernetesEngine/doc_files/service-acount-menu.png" alt="menu" style="zoom:67%;" />
+      <img src="https://github.com/demisto/content/blob/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-acount-menu.png" alt="menu" style="zoom:40%;" />
 
-      2. Press `CREATE SERVICE ACCOUNT` from top bar:
+   2. Press `CREATE SERVICE ACCOUNT` from top bar:
 
-         <img src="/Users/grabin/dev/demisto/content/Packs/GoogleKubernetesEngine/doc_files/service-account-create-1.png" alt="create-1" style="zoom:67%;" />
+      <img src="https://github.com/demisto/content/blob/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-1.png" alt="create-1" style="zoom:40%;" />
 
-      3. In step number 2 of the creation process -> Choose role `Kubernetes Engine Admin`:
+   3. In step number 2 of the creation process -> Choose role `Kubernetes Engine Admin`:
 
-         <img src="/Users/grabin/dev/demisto/content/Packs/GoogleKubernetesEngine/doc_files/service-account-create-2.png" alt="create-2" style="zoom:67%;" />
+      <img src="https://github.com/demisto/content/blob/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-2.png" alt="create-2" style="zoom:40%;" />
 
-      4. Choose `IAM & Admin` in main menu -> Choose `Service Accounts` -> Open the account you just created .
+   4. Choose `IAM & Admin` in main menu -> Choose `Service Accounts` -> Open the account you just created .
 
-      5. Generate new credentials by the following steps:
+   5. Generate new credentials by the following steps:
 
-         1. Create new key:
+      1. Create new key:
 
-            <img src="/Users/grabin/dev/demisto/content/Packs/GoogleKubernetesEngine/doc_files/service-account-create-3.png" alt="create-3" style="zoom:67%;" />
+         <img src="https://github.com/demisto/content/blob/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-3.png" alt="create-3" style="zoom:40%;" />
 
-         
+      
 
-         2. Choose `JSON` type -> Press `CREATE` and save the credentials in known and secured location :
+      2. Choose `JSON` type -> Press `CREATE` and save the credentials in known and secured location :
 
-            <img src="/Users/grabin/dev/demisto/content/Packs/GoogleKubernetesEngine/doc_files/service-account-create-4.png" alt="create-3" style="zoom:67%;" />
+         <img src="https://github.com/demisto/content/blob/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-4.png" alt="create-3" style="zoom:40%;" />
 
-            > This generated file will be refer as `credentials.json` that you will use to configure the instance in Cortex XSOAR.
+         > This generated file will be refer as `credentials.json` that you will use to configure the instance in Cortex XSOAR.
 
 ## Configure GoogleKubernetesEngine on Cortex XSOAR
 
@@ -80,7 +80,7 @@ Command, argument, and output desctiptions were taken from the Google documentat
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | credentials_json | JSON credentials - The content of the generated `credentials.json` file. | True |
-| default_project | Default project - Can be overwriten in commands execution. | True |
+| default_project | Default project id - Can be overwriten in commands execution. | True |
 | default_zone | Default zone - Can be overwriten in commands execution. | True |
 
 4. Click **Test** to validate the URLs, `credentials.json`, and connection.
