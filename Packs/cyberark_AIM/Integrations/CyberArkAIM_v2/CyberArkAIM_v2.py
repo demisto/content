@@ -148,7 +148,7 @@ def main():
         if command in commands:
             return_results(commands[command](client))  # type: ignore[operator]
         else:
-            raise NotImplementedError(f'{command} is not an existing CyberArk PAS command')
+            raise NotImplementedError(f'{command} is not an existing CyberArk AIM command')
     except Exception as err:
         return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
     finally:
