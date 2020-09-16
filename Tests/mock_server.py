@@ -154,7 +154,7 @@ class AMIConnection:
         self.run_script(self.UPLOAD_MOCKS_SCRIPT, build_name, build_number)
 
     def clone_mock_data(self):
-        remote_key_filepath = self.copy_file(os.path.join('/home/circleci/.ssh/', self.MOCK_KEY_FILE))
+        remote_key_filepath = self.copy_file(os.path.join('~/.ssh/', self.MOCK_KEY_FILE))
         self.run_script(self.CLONE_MOCKS_SCRIPT, remote_key_filepath)
 
 
@@ -193,9 +193,9 @@ class MITMProxy:
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
-    def configure_proxy_in_demisto(self, demisto_api_key, server, proxy=''):
-        client = demisto_client.configure(base_url=server, api_key=demisto_api_key,
-                                          verify_ssl=False)
+    def configure_proxy_in_demisto(self, client, proxy=''):
+        # client = demisto_client.configure(base_url=server, api_key=demisto_api_key,
+        #                                   verify_ssl=False)
         system_conf_response = demisto_client.generic_request_func(
             self=client,
             path='/system/config',
