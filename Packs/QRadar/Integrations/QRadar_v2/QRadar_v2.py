@@ -436,6 +436,19 @@ class QRadarClient:
         params = {"name": ref_name, "value": value}
         return self.send_request("DELETE", url, params=params)
 
+    def get_rules(self, _range=None, _filter=None, _fields=None):
+        """
+        Get rules
+        """
+        url = f"{self._server}/api/analytics/rules"
+        params = {"filter": _filter} if _filter else {}
+        headers = dict(self._auth_headers)
+        if _fields:
+            params["fields"] = _fields
+        if _range:
+            headers["Range"] = "items={0}".format(_range)
+        return self.send_request("GET", url, headers, params=params)
+
     def get_devices(self, _range=None, _filter=None, _fields=None):
         """
         Get devices
@@ -1077,14 +1090,16 @@ def enrich_offense_result(
     * epoch timestamps -> ISO time string
     * closing reason id -> name
     * Domain id -> name
-        - collect all ids from offense (if available)
+        - collect all ids from offenses (if available)
         - collect all ids from assets (if available)
         - get id->name map
         - update all values in offenses and assets
+    * Rule id -> name
     * IP id -> value
     * IP value -> Asset
     """
     domain_ids = set()
+    rule_ids = set()
     if isinstance(response, list):
         type_dict = client.get_offense_types()
         closing_reason_dict = client.get_closing_reasons(
@@ -1096,6 +1111,10 @@ def enrich_offense_result(
             )
             if 'domain_id' in offense:
                 domain_ids.add(offense['domain_id'])
+            if 'rules' in offense and isinstance(offense['rules'], list):
+                for rule in offense['rules']:
+                    if 'id' in rule:
+                        rule_ids.add(rule['id'])
 
         if ip_enrich or asset_enrich:
             enrich_offense_res_with_source_and_destination_address(
@@ -1108,6 +1127,8 @@ def enrich_offense_result(
                     domain_ids.update({asset['domain_id'] for asset in assets})
         if domain_ids:
             enrich_offense_res_with_domain_names(client, domain_ids, response)
+        if rule_ids:
+            enrich_offense_res_with_rule_names(client, rule_ids, response)
     else:
         enrich_offense_timestamps_and_closing_reason(client, response)
 
@@ -1128,6 +1149,20 @@ def enrich_offense_res_with_domain_names(client, domain_ids, response):
             for asset in offense['assets']:
                 if 'domain_id' in asset:
                     asset['domain_name'] = domain_names.get(asset['domain_id'], '')
+
+
+def enrich_offense_res_with_rule_names(client, rule_ids, response):
+    """
+    Add name to the offense rules
+    """
+    rule_filter = 'id=' + 'or id='.join(str(rule_ids).replace(' ', '').split(','))[1:-1]
+    rules = client.get_rules(_filter=rule_filter)
+    rule_names = {r['id']: r['name'] for r in rules}
+    for offense in response:
+        if 'rules' in offense and isinstance(offense['rules'], list):
+            for rule in offense['rules']:
+                if 'id' in rule:
+                    rule['name'] = rule_names.get(rule['id'], '')
 
 
 def enrich_offense_timestamps_and_closing_reason(

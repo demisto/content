@@ -317,6 +317,7 @@ def test_enrich_offense_result(mocker):
     closing_reason_dict = [{'is_deleted': False, 'is_reserved': False, 'text': 'False-Positive, Tuned', 'id': 2}]
     offense_types = [{'property_name': 'sourceIP', 'custom': False, 'name': 'Source IP', 'id': 0}]
     domains = [{'name': '', 'tenant_id': 0, 'id': 0, 'log_source_group_ids': []}]
+    rules = [{'name': 'Outbound port scan', 'id': 100452}]
     client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
     offense = deepcopy(RAW_RESPONSES["qradar-update-offense"])
     offense['assets'] = deepcopy(RAW_RESPONSES['qradar-get-asset-by-id'])
@@ -325,7 +326,9 @@ def test_enrich_offense_result(mocker):
     mocker.patch.object(client, "get_closing_reasons", return_value=closing_reason_dict)
     mocker.patch.object(client, "get_offense_types", return_value=offense_types)
     mocker.patch.object(client, "get_devices", return_value=domains)
+    mocker.patch.object(client, "get_rules", return_value=rules)
 
     enrich_offense_result(client, response)
     assert 'domain_name' in response[0]
     assert 'domain_name' in response[0]['assets'][0]
+    assert 'name' in response[0]['rules'][0]
