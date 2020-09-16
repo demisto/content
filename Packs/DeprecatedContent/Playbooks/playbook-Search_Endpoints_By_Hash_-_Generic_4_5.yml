@@ -5,6 +5,7 @@ fromversion: 4.5.0
 system: true
 description: Deprecated. Use the Search Endpoints By Hash - Generic V2 playbook instead. Hunt using available tools
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
