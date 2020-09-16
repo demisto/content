@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 import requests
 from dateutil.parser import parse
 from typing import Dict, List, Optional
@@ -68,8 +67,11 @@ class Client(BaseClient):
                     'lastseenbysource': indicator.get('lastseenbysource'),
                     'name': indicator.get('name'),
                     'tags': feedTags,
-                    'trafficlightprotocol': self.tlp_color
                 }
+
+                if self.tlp_color:
+                    indicator['fields']['trafficlightprotocol'] = self.tlp_color
+
                 indicator_list.append(indicator)
 
                 current_indicator_index = current_indicator_index + 1
