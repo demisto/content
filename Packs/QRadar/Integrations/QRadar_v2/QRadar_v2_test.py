@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from CommonServerPython import DemistoException
 import demistomock as demisto
 import pytest
@@ -18,7 +20,8 @@ from QRadar_v2 import (
     fetch_incidents_long_running_events,
     enrich_offense_with_events,
     try_create_search_with_retry,
-    try_poll_offense_events_with_retry
+    try_poll_offense_events_with_retry,
+    enrich_offense_result
 )
 
 with open("TestData/commands_outputs.json", "r") as f:
@@ -308,3 +311,21 @@ def test_try_poll_offense_events_with_retry__sad(mocker):
 
     actual = try_poll_offense_events_with_retry(client, offense_id, query_status, search_id, max_retries)
     assert actual == []
+
+
+def test_enrich_offense_result(mocker):
+    closing_reason_dict = [{'is_deleted': False, 'is_reserved': False, 'text': 'False-Positive, Tuned', 'id': 2}]
+    offense_types = [{'property_name': 'sourceIP', 'custom': False, 'name': 'Source IP', 'id': 0}]
+    domains = [{'name': '', 'tenant_id': 0, 'id': 0, 'log_source_group_ids': []}]
+    client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
+    offense = deepcopy(RAW_RESPONSES["qradar-update-offense"])
+    offense['assets'] = deepcopy(RAW_RESPONSES['qradar-get-asset-by-id'])
+    response = [offense]
+
+    mocker.patch.object(client, "get_closing_reasons", return_value=closing_reason_dict)
+    mocker.patch.object(client, "get_offense_types", return_value=offense_types)
+    mocker.patch.object(client, "get_devices", return_value=domains)
+
+    enrich_offense_result(client, response)
+    assert 'domain_name' in response[0]
+    assert 'domain_name' in response[0]['assets'][0]

@@ -1072,29 +1072,64 @@ def enrich_offense_result(
     client: QRadarClient, response, ip_enrich=False, asset_enrich=False
 ):
     """
-    Enriches the values of a given offense result (ip_enrich enriches destination and source ips)
-    :return:
+    Enriches the values of a given offense result
+    * epoch timestamps -> ISO time string
+    * closing reason id -> name
+    * Domain id -> name
+        - collect all ids from offense (if available)
+        - collect all ids from assets (if available)
+        - get id->name map
+        - update all values in offenses and assets
+    * IP id -> value
+    * IP value -> Asset
     """
+    domain_ids = set()
     if isinstance(response, list):
         type_dict = client.get_offense_types()
         closing_reason_dict = client.get_closing_reasons(
             include_deleted=True, include_reserved=True
         )
         for offense in response:
-            enrich_single_offense_result(
+            enrich_offense_timestamps_and_closing_reason(
                 client, offense, type_dict, closing_reason_dict
             )
+            if 'domain_id' in offense:
+                domain_ids.add(offense['domain_id'])
+
+        if ip_enrich or asset_enrich:
+            enrich_offense_res_with_source_and_destination_address(
+                client, response, ip_enrich, asset_enrich
+            )
+            if asset_enrich:
+                # get assets from offenses that have assets
+                assets_list = list(map(lambda o: o['assets'], filter(lambda o: 'assets' in o, response)))
+                for assets in assets_list:
+                    domain_ids.update({asset['domain_id'] for asset in assets})
+        if domain_ids:
+            enrich_offense_res_with_domain_names(client, domain_ids, response)
     else:
-        enrich_single_offense_result(client, response)
-    if ip_enrich or asset_enrich:
-        enrich_offense_res_with_source_and_destination_address(
-            client, response, ip_enrich, asset_enrich
-        )
+        enrich_offense_timestamps_and_closing_reason(client, response)
 
     return response
 
 
-def enrich_single_offense_result(
+def enrich_offense_res_with_domain_names(client, domain_ids, response):
+    """
+    Add domain_name to the offense and assets results
+    """
+    domain_filter = 'id=' + 'or id='.join(str(domain_ids).replace(' ', '').split(','))[1:-1]
+    domains = client.get_devices(_filter=domain_filter)
+    domain_names = {d['id']: d['name'] for d in domains}
+    for offense in response:
+        if 'domain_id' in offense:
+            offense['domain_name'] = domain_names.get(offense['domain_id'], '')
+        if 'assets' in offense:
+            for asset in offense['assets']:
+                if 'domain_id' in asset:
+                    asset['domain_name'] = domain_names.get(asset['domain_id'], '')
+
+
+def enrich_offense_timestamps_and_closing_reason(
     client: QRadarClient, offense, type_dict=None, closing_reason_dict=None,
 ):
     """
@@ -1112,7 +1147,7 @@ def enrich_single_offense_result(
 
 
 def enrich_offense_res_with_source_and_destination_address(
-    client: QRadarClient, response, ip_enrich=True, asset_enrich=True
+    client: QRadarClient, response, ip_enrich=False, asset_enrich=False
 ):
     """
     Enriches offense result dictionary with source and destination addresses
@@ -1438,7 +1473,8 @@ def create_single_asset_result_and_enrich_endpoint_dict(
             endpoint_dict.get("IPAddress").append(ip_address.get("value"))
     if full_values:
         if "domain_id" in asset:
-            domain_name = get_domain_name(client, asset.get("domain_id"))
+            domain = client.get_domains_by_id(asset.get("domain_id"))
+            domain_name = domain.get('name') if isinstance(domain, dict) else None
             if domain_name:
                 endpoint_dict.get("Domain").append(domain_name)
     # Adding values found in properties of the asset
@@ -1475,26 +1511,6 @@ def create_empty_endpoint_dict(full_values):
         endpoint_dict["MACAddress"] = []
         endpoint_dict["Domain"] = []
     return endpoint_dict
-
-
-def get_domain_name(client: QRadarClient, domain_id=None):
-    """
-    Retrieves domain name using domain id
-    """
-    try:
-        query_param = {
-            "query_expression": f"SELECT DOMAINNAME({domain_id}) AS 'Domain name' FROM events GROUP BY 'Domain name'"
-        }
-        search_id = client.search(query_param)["search_id"]
-        time.sleep(5)
-        return (
-            client.get_search_results(search_id)
-            .get("events", [{}])[0]
-            .get("Domain name")
-        )
-    except Exception as e:
-        print_debug_msg(f"Failed to get domain name for {domain_id}. Error: {str(e)}", client.lock)
-        return None
 
 
 def get_closing_reasons_command(
