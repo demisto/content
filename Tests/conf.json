@@ -1557,12 +1557,12 @@
         },
         {
             "integrations": "Microsoft Graph User",
-            "playbookID": "Microsoft Graph - Test",
+            "playbookID": "Microsoft Graph User - Test",
             "instance_names": "ms_graph_user_dev"
         },
         {
             "integrations": "Microsoft Graph User",
-            "playbookID": "Microsoft Graph - Test",
+            "playbookID": "Microsoft Graph User - Test",
             "instance_names": "ms_graph_user_prod"
         },
         {
