@@ -119,7 +119,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "4444@bla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -147,7 +147,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "1111@blabla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -175,7 +175,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "5555@bla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -203,7 +203,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "9985@ironport.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -231,7 +231,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "3333@bla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -259,7 +259,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "999@bla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -287,7 +287,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "2222@blabla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -342,7 +342,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "4444@bla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -368,7 +368,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "1111@blabla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -394,7 +394,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "5555@bla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -420,7 +420,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "9985@ironport.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -446,7 +446,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "3333@bla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -472,7 +472,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "999@bla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -498,7 +498,7 @@
                                           "verdictChart": "0",
                                           "senderDomain": "example.com",
                                           "recipient": [
-                                          "2222@blabla.com"
+                                          "user.com"
                                           ],
                                           "sbrs": "None",
                                           "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
@@ -513,8 +513,8 @@
                                                     "messages": {
                                                                   "direction": "outgoing",
                                                                   "smtpAuthId": "",
-                                                                  "sender": "1234bla@bla1234.blabla",
-                                                                  "midHeader": "<1111111111.12345@blabla.bla>",
+                                                                  "sender": "user.com",
+                                                                  "midHeader": "<user.com>",
                                                                   "timestamp": "16 Nov 2018 11:19:48 (GMT)",
                                                                   "showAMP": true,
                                                                   "hostName": "c680q07.ibqa (2.2.2.2)",
@@ -575,7 +575,7 @@
                                                                   ],
                                                                   "senderGroup": "RELAYLIST",
                                                                   "recipient": [
-                                                                  "1111@12bla.bla"
+                                                                  "user.com"
                                                                   ],
                                                                   "showSummaryTimeBox": true,
                                                                   "subject": "Testing"
@@ -586,8 +586,8 @@
   "get_message_details_context": {
                                                   "direction": "outgoing",
                                                   "smtpAuthId": "",
-                                                  "sender": "1234bla@bla1234.blabla",
-                                                  "midHeader": "<1111111111.12345@blabla.bla>",
+                                                  "sender": "user.com",
+                                                  "midHeader": "<user.com>",
                                                   "timestamp": "16 Nov 2018 11:19:48 (GMT)",
                                                   "showAMP": true,
                                                   "hostName": "c680q07.ibqa (2.2.2.2)",
@@ -646,14 +646,14 @@
                                                   ],
                                                   "senderGroup": "RELAYLIST",
                                                   "recipient": [
-                                                  "1111@12bla.bla"
+                                                  "user.com"
                                                   ],
                                                   "showSummaryTimeBox": true,
                                                   "subject": "Testing"
 
   },
 
-  "message_human_readable": "### CiscoEmailSecurity Messages\n|message_id|direction|sender|recipient|subject|timestamp|\n|---|---|---|---|---|---|\n| 22125 | outgoing | 1234bla@bla1234.blabla | 1111@12bla.bla | Testing | 16 Nov 2018 11:19:48 (GMT) |\n",
+  "message_human_readable": "### CiscoEmailSecurity Messages\n|message_id|direction|sender|recipient|subject|timestamp|\n|---|---|---|---|---|---|\n| 22125 | outgoing | user.com | user.com | Testing | 16 Nov 2018 11:19:48 (GMT) |\n",
 
   "search_spam_quarantine_response_data": {
                                             "data": [
@@ -663,7 +663,7 @@
                                                                       "test@test.com"
                                                                       ],
                                                                       "toAddress": [
-                                                                      "hello@mail.qa"
+                                                                      "user.com"
                                                                       ],
                                                                       "subject": "[SPAM] Spam",
                                                                       "date": "21 Nov 2018 14:31 (GMT)",
@@ -683,7 +683,7 @@
                                                       "test@test.com"
                                                       ],
                                                       "toAddress": [
-                                                      "hello@mail.qa"
+                                                      "user.com"
                                                       ],
                                                       "subject": "[SPAM] Spam",
                                                       "date": "21 Nov 2018 14:31 (GMT)",
@@ -695,7 +695,7 @@
                                       "mid": 170
   }],
 
-  "spam_quarantine_human_readable": "### CiscoEmailSecurity SpamQuarantine\n|recipient|to_address|from_address|subject|date|\n|---|---|---|---|---|\n| test@test.com | hello@mail.qa | danel | [SPAM] Spam | 21 Nov 2018 14:31 (GMT) |\n",
+  "spam_quarantine_human_readable": "### CiscoEmailSecurity SpamQuarantine\n|recipient|to_address|from_address|subject|date|\n|---|---|---|---|---|\n| test@test.com | user.com | danel | [SPAM] Spam | 21 Nov 2018 14:31 (GMT) |\n",
 
   "quarantine_message_details_response_data": {
                                                 "data": {
@@ -779,7 +779,7 @@
           "xyz.com",
           "abc.com"
     ],
-         "recipientAddress": "u1@space.com"
+         "recipientAddress": "user.com"
        }
       ]
     },
@@ -791,7 +791,7 @@
       "xyz.com",
       "abc.com"
     ],
-    "recipientAddress": "u1@space.com"
+    "recipientAddress": "user.com"
     }
   ],
 
@@ -803,8 +803,8 @@
       {
         "action": "add",
         "recipientAddresses": [
-          "user1@acme.com",
-          "user2@acme.com"
+          "user.com",
+          "user.com"
         ],
         "senderList": [
           "acme.com"
@@ -817,8 +817,8 @@
   {
     "action": "add",
     "recipientAddresses": [
-        "user1@acme.com",
-        "user2@acme.com"
+        "user.com",
+        "user.com"
     ],
     "senderList": [
         "acme.com"
@@ -830,8 +830,8 @@
     "data": {
       "action": "delete",
       "recipientList": [
-        "user@cronos.com",
-        "user3@cosco.com"
+        "user.com",
+        "user.com"
       ],
       "totalCount": 2
     }
@@ -840,8 +840,8 @@
   "delete_list_entries_context": {
     "action": "delete",
       "recipientList": [
-        "user@cronos.com",
-        "user3@cosco.com"
+        "user.com",
+        "user.com"
       ],
       "totalCount": 2
   }

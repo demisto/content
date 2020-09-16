@@ -195,12 +195,12 @@ def test_build_url_and_request_body_for_add_list_entries():
     from CiscoEmailSecurity import build_url_and_request_body_for_add_list_entries
     res_url, res_request_body = build_url_and_request_body_for_add_list_entries({"list_type": "safelist",
                                                                                  "action": "add", "recipient_addresses":
-                                                                                ["user1@acme.com", "user2@acme.com"],
+                                                                                ["user.com", "user.com"],
                                                                                 "sender_list": ["acme.com"],
                                                                                  "view_by": "recipient"})
     assert res_url == "/sma/api/v2.0/quarantine/safelist"
     assert res_request_body == {"action": "add", "quarantineType": "spam", "viewBy": "recipient",
-                                "recipientAddresses": ["user1@acme.com", "user2@acme.com"], "senderList": ["acme.com"]}
+                                "recipientAddresses": ["user.com", "user.com"], "senderList": ["acme.com"]}
 
 
 def test_list_entries_add_command(requests_mock):
@@ -212,7 +212,7 @@ def test_list_entries_add_command(requests_mock):
     client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
     res = list_entries_add_command(client, {"list_type": "safelist", "action": "add", "limit": "25",
-                                            "recipient_addresses": ["user1@acme.com", "user2@acme.com"],
+                                            "recipient_addresses": ["user.com", "user.com"],
                                             "sender_list": ["acme.com"], "view_by": "recipient"})
     assert res.outputs == test_data['add_list_entries_context']
     assert res.outputs_prefix == 'CiscoEmailSecurity.listEntriesAdd'

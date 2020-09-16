@@ -3,8 +3,7 @@ commonfields:
   id: CiscoEmailSecurity
   version: -1
 configuration:
-- defaultvalue: https://soar.monstersofhack.com
-  display: Server URL (e.g. https://soar.monstersofhack.com)
+- display: Server URL (e.g. https://192.168.0.1)
   name: base_url
   required: true
   type: 0
@@ -44,7 +43,8 @@ configuration:
   name: api_password
   required: true
   type: 4
-description: Cisco Email Security is an email security gateway . It detects and blocks a wide variety of email-borne threats, such as malware, spam and phishing..
+description: Cisco Email Security is an email security gateway . It detects and blocks
+  a wide variety of email-borne threats, such as malware, spam and phishing..
 display: Cisco Email Security
 name: CiscoEmailSecurity
 script:
@@ -722,67 +722,46 @@ script:
       description: The dlp direction.
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpMatchedContent.messagePart
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpMatchedContent.messagePartMatch.classifier
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpMatchedContent.messagePartMatch.classifierMatch
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.dlpPolicy
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.mid
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.riskFactor
-      description: ''
       type: Number
     - contextPath: CiscoEmailSecurity.Dlp.dlpDetails.violationSeverity
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.hostName
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.messageSize
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.mid
-      description: ''
       type: Number
     - contextPath: CiscoEmailSecurity.Dlp.midHeader
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.recipient
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.sender
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.senderGroup
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.sendingHostSummary.ipAddress
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.sendingHostSummary.reverseDnsHostname
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.sendingHostSummary.sbrsScore
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.showDLPDetails
-      description: ''
       type: Number
     - contextPath: CiscoEmailSecurity.Dlp.smtpAuthId
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.subject
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Dlp.timestamp
-      description: ''
       type: String
   - arguments:
     - default: false
@@ -822,61 +801,42 @@ script:
     name: cisco-email-security-amp-details-get
     outputs:
     - contextPath: CiscoEmailSecurity.Amp.ampDetails.description
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.ampDetails.lastEvent
-      description: ''
       type: Number
     - contextPath: CiscoEmailSecurity.Amp.ampDetails.timestamp
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.attachments
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.direction
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.hostName
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.messageSize
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.mid
-      description: ''
       type: Number
     - contextPath: CiscoEmailSecurity.Amp.midHeader
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.recipient
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.sender
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.senderGroup
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.sendingHostSummary.ipAddress
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.sendingHostSummary.reverseDnsHostname
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.sendingHostSummary.sbrsScore
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.showAMPDetails
-      description: ''
       type: Number
     - contextPath: CiscoEmailSecurity.Amp.smtpAuthId
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.subject
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Amp.timestamp
-      description: ''
       type: String
   - arguments:
     - default: false
@@ -916,64 +876,44 @@ script:
     name: cisco-email-security-url-details-get
     outputs:
     - contextPath: CiscoEmailSecurity.Url.attachments
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.direction
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.hostName
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.mid
-      description: ''
       type: Number
     - contextPath: CiscoEmailSecurity.Url.midHeader
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.recipient
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.sdrAge
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.sdrCategory
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.sdrReputation
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.sender
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.senderGroup
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.sendingHostSummary.ipAddress
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.sendingHostSummary.reverseDnsHostname
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.sendingHostSummary.sbrsScore
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.showURLDetails
-      description: ''
       type: Number
     - contextPath: CiscoEmailSecurity.Url.smtpAuthId
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.subject
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.urlDetails.description
-      description: ''
       type: String
     - contextPath: CiscoEmailSecurity.Url.urlDetails.lastEvent
-      description: ''
       type: Number
     - contextPath: CiscoEmailSecurity.Url.urlDetails.timestamp
-      description: ''
       type: String
   - arguments:
     - default: false
