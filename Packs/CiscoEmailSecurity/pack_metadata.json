@@ -1,6 +1,6 @@
 {
-    "name": "CiscoEmailSecurity",
-    "description": "integration for Cisco Email Security",
+    "name": "Cisco Email Security",
+    "description": "Cisco Email Security is an email security gateway . It detects and blocks a wide variety of email-borne threats, such as malware, spam and phishing.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

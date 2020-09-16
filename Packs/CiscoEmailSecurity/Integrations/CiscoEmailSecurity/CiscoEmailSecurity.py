@@ -8,7 +8,7 @@ from typing import Any, Dict
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-MAX_MESSAGES_TO_GET = 50
+MAX_MESSAGES_TO_GET = 20
 SAFELIST_AND_BLOCKLIST_TO_FILTER_URL = {
     "safelist": "/sma/api/v2.0/quarantine/safelist",
     "blocklist": "/sma/api/v2.0/quarantine/blocklist"
@@ -111,7 +111,7 @@ class Client(BaseClient):
 
     def list_delete_quarantine_messages(self, url_suffix, request_body):
         return self.http_request(
-            method='POST',
+            method='DELETE',
             url_suffix=url_suffix,
             json_data=request_body
         )
@@ -138,7 +138,7 @@ class Client(BaseClient):
 
     def list_entries_delete(self, url_suffix, request_body):
         return self.http_request(
-            method='POST',
+            method='DELETE',
             url_suffix=url_suffix,
             json_data=request_body
         )
@@ -210,7 +210,8 @@ def build_url_params_for_list_messages(args):
     limit = set_limit(args.get('limit'))
     offset = int(args.get('offset', '0'))
 
-    url_params = f'?startDate={start_date}&endDate={end_date}&searchOption=messages&offset={offset}&limit={limit}'
+    url_params = f'?startDate={start_date}&endDate={end_date}&searchOption=messages&ciscoHost=All_Hosts' \
+                 f'&offset={offset}&limit={limit}'
 
     arguments = assign_params(**args)
 
@@ -269,13 +270,13 @@ def build_url_params_for_list_messages(args):
 def messages_to_human_readable(messages):
     messages_readable_outputs = []
     for message in messages:
-        readable_output = assign_params(message_id=message.get('attributes').get('mid'),
-                                        cisco_message_id=message.get('attributes').get('icid'),
-                                        sender=message.get('attributes').get('sender'),
-                                        sender_ip=message.get('attributes').get('senderIp'),
-                                        subject=message.get('attributes').get('subject'),
-                                        serial_number=message.get('attributes').get('serialNumber'),
-                                        timestamp=message.get('attributes').get('timestamp'))
+        readable_output = assign_params(message_id=dict_safe_get(message, ['attributes', 'mid'], None),
+                                        cisco_message_id=dict_safe_get(message, ['attributes', 'icid'], None),
+                                        sender=dict_safe_get(message, ['attributes', 'sender'], None),
+                                        sender_ip=dict_safe_get(message, ['attributes', 'senderIp'], None),
+                                        subject=dict_safe_get(message, ['attributes', 'subject'], None),
+                                        serial_number=dict_safe_get(message, ['attributes', 'serialNumber'], None),
+                                        timestamp=dict_safe_get(message, ['attributes', 'timestamp'], None))
         messages_readable_outputs.append(readable_output)
     headers = ['message_id', 'cisco_message_id', 'sender', 'sender_ip', 'subject', 'serial_number', 'timestamp']
     human_readable = tableToMarkdown('CiscoEmailSecurity Messages', messages_readable_outputs, headers, removeNull=True)
@@ -289,7 +290,7 @@ def list_search_messages_command(client, args):
     messages_response_data = client.list_messages(url_suffix_to_filter_by)
     messages_data = messages_response_data.get('data')
     for message in messages_data:
-        message['attributes']['mid'] = message.get('attributes').get('mid')[0]
+        message['attributes']['mid'] = message.get('attributes', {}).get('mid', [None])[0]
     human_readable = messages_to_human_readable(messages_data)
     return CommandResults(
         readable_output=human_readable,
@@ -303,24 +304,19 @@ def build_url_params_for_get_details(args, url_suffix):
     start_date = date_to_cisco_date(args.get('start_date'))
     end_date = date_to_cisco_date(args.get('end_date'))
     message_id = args.get('message_id')
-    icid = args.get('icid')
-    url_params = f'?startDate={start_date}&endDate={end_date}&mid={message_id}&icid={icid}'
-
-    if args.get('appliance_serial_number'):
-        appliance_serial_number = args.get('appliance_serial_number')
-        url_params += f'&serialNumber={appliance_serial_number}'
+    injection_connection_id = args.get('icid')
+    appliance_serial_number = args.get('appliance_serial_number')
+    url_params = f'?startDate={start_date}&endDate={end_date}&mid={message_id}&icid={injection_connection_id}' \
+                 f'&serialNumber={appliance_serial_number}'
 
     url_suffix_to_filter_by = url_suffix + url_params
     return url_suffix_to_filter_by
 
 
 def details_get_to_human_readable(message):
-    readable_output = assign_params(message_id=message.get('messages').get('mid'),
-                                    direction=message.get('messages').get('direction'),
-                                    sender=message.get('messages').get('sender'),
-                                    recipient=message.get('messages').get('recipient')[0],
-                                    subject=message.get('messages').get('subject'),
-                                    timestamp=message.get('messages').get('timestamp'))
+    readable_output = assign_params(message_id=message.get('mid'), direction=message.get('direction'),
+                                    sender=message.get('sender'), recipient=message.get('recipient'),
+                                    subject=message.get('subject'), timestamp=message.get('timestamp'))
     headers = ['message_id', 'direction', 'sender', 'recipient', 'subject', 'timestamp']
     human_readable = tableToMarkdown('CiscoEmailSecurity Messages', readable_output, headers, removeNull=True)
     return human_readable
@@ -328,9 +324,10 @@ def details_get_to_human_readable(message):
 
 def response_data_to_context_and_human_readable(response_data):
     context_data = response_data.get('data')
-    context_data['messages']['mid'] = context_data.get('messages').get('mid')[0]
-    human_readable = details_get_to_human_readable(context_data)
-    return context_data, human_readable
+    context_message = context_data.get('messages')
+    context_message['mid'] = context_message.get('mid', [None])[0]
+    human_readable = details_get_to_human_readable(context_message)
+    return context_message, human_readable
 
 
 def list_get_message_details_command(client, args):
@@ -372,12 +369,10 @@ def list_get_amp_details_command(client, args):
 def list_get_url_details_command(client, args):
     url_suffix_to_filter_by = build_url_params_for_get_details(args, '/sma/api/v2.0/message-tracking/url-details')
     message_get_details_response_data = client.list_get_url_details(url_suffix_to_filter_by)
-    message_data = message_get_details_response_data.get('data')
-    message_data['messages']['mid'] = message_data.get('messages').get('mid')
-    human_readable = details_get_to_human_readable(message_data)
+    message_data, human_readable = response_data_to_context_and_human_readable(message_get_details_response_data)
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='CiscoEmailSecurity.Amp',
+        outputs_prefix='CiscoEmailSecurity.Url',
         outputs_key_field='messages.mid',
         outputs=message_data
     )
@@ -416,11 +411,11 @@ def build_url_params_for_spam_quarantine(args):
 def spam_quarantine_to_human_readable(spam_quarantine):
     spam_quarantine_readable_outputs = []
     for message in spam_quarantine:
-        readable_output = assign_params(recipient=message.get('attributes').get('envelopeRecipient')[0],
-                                        to_address=message.get('attributes').get('toAddress')[0],
-                                        subject=message.get('attributes').get('subject'),
-                                        date=message.get('attributes').get('date'),
-                                        from_address=message.get('attributes').get('fromAddress')[0])
+        readable_output = assign_params(recipient=dict_safe_get(message, ['attributes', 'envelopeRecipient'], None),
+                                        to_address=dict_safe_get(message, ['attributes', 'toAddress'], None),
+                                        subject=dict_safe_get(message, ['attributes', 'subject'], None),
+                                        date=dict_safe_get(message, ['attributes', 'date'], None),
+                                        from_address=dict_safe_get(message, ['attributes', 'fromAddress'], None))
         spam_quarantine_readable_outputs.append(readable_output)
     headers = ['recipient', 'to_address', 'from_address', 'subject', 'date']
     human_readable = tableToMarkdown('CiscoEmailSecurity SpamQuarantine', spam_quarantine_readable_outputs, headers,
@@ -444,11 +439,10 @@ def list_search_spam_quarantine_command(client, args):
 
 
 def quarantine_message_details_data_to_human_readable(message):
-    readable_output = assign_params(recipient=message.get('attributes').get('envelopeRecipient')[0],
-                                    to_address=message.get('attributes').get('toAddress')[0],
-                                    subject=message.get('attributes').get('subject'),
-                                    date=message.get('attributes').get('date'),
-                                    from_address=message.get('attributes').get('fromAddress')[0])
+    readable_output = assign_params(recipient=message.get('envelopeRecipient', [None])[0], date=message.get('date'),
+                                    to_address=message.get('toAddress', [None])[0],
+                                    subject=message.get('subject', [None]),
+                                    from_address=message.get('fromAddress', [None])[0])
     headers = ['recipient', 'to_address', 'from_address', 'subject', 'date']
     human_readable = tableToMarkdown('CiscoEmailSecurity QuarantineMessageDetails', readable_output, headers,
                                      removeNull=True)
@@ -460,7 +454,7 @@ def list_get_quarantine_message_details_command(client, args):
     url_suffix_to_filter_by = f'/sma/api/v2.0/quarantine/messages?mid={message_id}&quarantineType=spam'
     quarantine_message_details_response = client.list_quarantine_get_details(url_suffix_to_filter_by)
     quarantine_message_details = quarantine_message_details_response.get('data')
-    human_readable = quarantine_message_details_data_to_human_readable(quarantine_message_details)
+    human_readable = quarantine_message_details_data_to_human_readable(quarantine_message_details.get('attributes'))
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='CiscoEmailSecurity.QuarantineMessageDetails',
@@ -505,7 +499,7 @@ def build_url_filter_for_get_list_entries(args):
     limit = set_limit(args.get('limit'))
     offset = int(args.get('offset', '0'))
     view_by = args.get('view_by')
-    url_params = f"?action=view&limit={limit}&offset={offset}&quarantineType=spam&viewBy={view_by}"
+    url_params = f"?action=view&limit={limit}&offset={offset}&quarantineType=spam&orderDir=desc&viewBy={view_by}"
     order_by = args.get('order_by')
     if order_by:
         url_params += f"&orderBy={order_by}"
