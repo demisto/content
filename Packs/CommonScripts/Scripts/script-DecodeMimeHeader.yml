@@ -53,7 +53,7 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-dockerimage:
+dockerimage: demisto/python:2.7.17.3066
 toversion: 4.5.9
 tests:
 - No test

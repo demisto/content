@@ -24,8 +24,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Unified security management and advanced threat protection across hybrid cloud workloads.
-display: Azure Security Center
+description: Deprecated. Unified security management and advanced threat protection across hybrid cloud workloads.
+display: Azure Security Center (Deprecated)
 name: Azure Security Center
 script:
   commands:

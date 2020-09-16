@@ -3,13 +3,14 @@ version: -1
 name: File Enrichment - Generic
 fromversion: 3.6.0
 description: |-
-  DEPRECATED. Use "File Enrichment - Generic v2" playbook instead. Enrich a file using one or more integrations.
+  Deprecated. Use "File Enrichment - Generic v2" playbook instead. Enrich a file using one or more integrations.
 
   File enrichment includes:
   * File history
   * Threat information
   * File reputation
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"

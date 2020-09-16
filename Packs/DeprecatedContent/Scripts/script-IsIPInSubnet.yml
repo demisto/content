@@ -5,7 +5,7 @@ name: IsIPInSubnet
 script: >-
   return isIPInSubnet(args.ip, args.subnet) ? 'yes' : 'no'
 type: javascript
-comment: Returns 'yes' if IP is in subent. Otherwise returns 'no'
+comment: Deprecated. Returns 'yes' if IP is in subent. Otherwise returns 'no'
 tags:
 - Condition
 enabled: true

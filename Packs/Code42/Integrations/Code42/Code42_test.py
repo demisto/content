@@ -472,7 +472,7 @@ MOCK_ALERT_DETAILS_RESPONSE = """{
             "fileCategories": [
               {
                 "type$": "OBSERVED_FILE_CATEGORY",
-                "category": "Image",
+                "category": "SourceCode",
                 "fileCount": 3,
                 "totalFileSize": 533846,
                 "isSignificant": true
@@ -724,7 +724,7 @@ MOCK_OBSERVATION_QUERIES = [
             },
             {
                 "filterClause": "AND",
-                "filters": [{"operator": "IS", "term": "fileCategory", "value": "IMAGE"}],
+                "filters": [{"operator": "IS", "term": "fileCategory", "value": "SOURCE_CODE"}],
             },
         ],
         "pgNum": 1,

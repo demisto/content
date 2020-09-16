@@ -16,9 +16,9 @@ configuration:
   name: database
   required: true
   type: 0
-- display: Use SSL/TLS secured connection
+- defaultvalue: 'false'
+  display: Use SSL/TLS secured connection
   hidden: false
-  defaultvalue: false
   name: use_ssl
   required: false
   type: 8
@@ -74,6 +74,12 @@ script:
       description: Limits the result returned from MongoDB
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Sorting order for the query results. Use the format "field1:asc,field2:desc".
+      isArray: false
+      name: sort
       required: false
       secret: false
     deprecated: false

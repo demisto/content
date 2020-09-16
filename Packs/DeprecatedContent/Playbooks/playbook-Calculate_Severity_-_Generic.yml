@@ -3,7 +3,7 @@ version: -1
 name: Calculate Severity - Generic
 fromversion: 3.6.0
 description: |-
-  DEPRECATED. Use "Calculate Severity - Generic v2" playbook instead. Calculates and assign the incident severity based on the highest returned severity level from the following severity calculations:
+  Deprecated. Use "Calculate Severity - Generic v2" playbook instead. Calculates and assign the incident severity based on the highest returned severity level from the following severity calculations:
 
   * Indicators DBotScore - Calculates the incident severity level according to the highest indicator DBotScore.
   * Critical assets - Determines if a critical assest is associated with the invesigation.
@@ -11,6 +11,7 @@ description: |-
 
   NOTE: the new severity level overwrites the previous severity level even if the previous severity level was more severe.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"

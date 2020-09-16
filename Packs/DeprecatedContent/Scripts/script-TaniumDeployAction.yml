@@ -92,7 +92,7 @@ script: >-
 type: javascript
 tags:
 - tanium
-comment: Execute an action, optionally with parameters, and filtering - based on an existing package. See https://kb.tanium.com/SOAP for more information
+comment: Deprecated. Execute an action, optionally with parameters, and filtering - based on an existing package. See https://kb.tanium.com/SOAP for more information
 args:
 - name: packageName
   description: Specify the package name. e.g. !TaniumDeployAction packageName="Clean Stale Tanium Client Data"

@@ -2,9 +2,8 @@ id: dedup_incidents_-_ml
 version: -1
 name: DeDup incidents - ML
 fromversion: "3.5.0"
-description: |+
-  DEPRECATED. Check for duplicate incidents for the current incident, and close it if any duplicate has been found by machine-learning  find duplicates automation.
-
+description: Deprecated. Check for duplicate incidents for the current incident, and close it if any duplicate has been found by machine-learning  find duplicates automation.
+hidden: true
 starttaskid: "0"
 tasks:
   "0":

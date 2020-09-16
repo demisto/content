@@ -283,7 +283,11 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
-  dockerimage: demisto/elasticsearch:1.0.0.10134
+  - deprecated: false
+    execution: false
+    name: get-mapping-fields
+    description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
+  dockerimage: demisto/elasticsearch:1.0.0.11003
   feed: false
   isfetch: true
   longRunning: false
@@ -292,6 +296,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
 toversion: 4.5.9
 tests:
 - No test

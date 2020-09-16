@@ -401,13 +401,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the threat (use with either threadId or campaignId).
+      description: The ID of the threat (use with either threatId or campaignId).
       isArray: false
       name: threatId
       required: false
       secret: false
     - default: false
-      description: ID of the campaign (use with either threadId or campaignId).
+      description: ID of the campaign (use with either threatId or campaignId).
       isArray: false
       name: campaignId
       required: false
@@ -764,6 +764,7 @@ script:
       description: The version of the platform.
       type: String
   dockerimage: demisto/python3:3.7.4.977
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false

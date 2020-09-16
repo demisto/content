@@ -9,7 +9,7 @@ script: >
 
   return {Type: entryTypes.note, Contents: allArr, ContentsFormat: formats.json, HumanReadable: tableToMarkdown('Modules', allArr, ['brand', 'instance', 'category', 'state']), EntryContext: {ConfiguredModules: allArr}};
 type: javascript
-comment: Returns all Demisto modules (integrations instances)
+comment: Deprecated. Returns all Demisto modules (integrations instances)
 tags:
 - Utility
 system: true

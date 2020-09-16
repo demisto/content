@@ -351,17 +351,17 @@ Get all employees on the Departing Employee List.
 ### All Departing Employees
 |DepartureDate|Note|UserID|Username|
 |---|---|---|---|
-|  | test | 921286907298179098 | user1@example.com |
-| 2020-07-20 | This is added using csv file to test bulk adding of users to high risk employee list | 948938588694228306 | user1@example.com |
-|  |  | 912249223544144039 | unicode@example.com |
-|  |  | 894165832411107815 | testuser@example.com |
-|  | L3 security risk | 949093399968329042 | user2@example.com |
-|  | tests and more tests | 942897397520286581 | user3@example.com |
-|  |  | 906619740182876328 | user4@example.com |
-|  |  | 906619632003387560 | user5@example.com |
-|  |  | 912338501981077099 | user6@example.com |
-|  | leaving for competition | 951984198921509692 | user7@example.com.com |
-|  | Leaving for competitor | 895005723650937319 | user8@example.com |
+| 2020-07-19 | User added from XSOAR | 921286907298179098 | user1@example.com |
+| 2020-07-20 | User added from Jira ticket | 948938588694228306 | user1@example.com |
+| 2020-07-20 | No note. | 912249223544144039 | unicode@example.com |
+| 2020-07-20 | Lots of suspicious activity | 894165832411107815 | testuser@example.com |
+| 2020-07-20 | L3 security risk | 949093399968329042 | user2@example.com |
+| 2020-07-21 | Problems with performance | 942897397520286581 | user3@example.com |
+| 2020-07-21 | Problems with performance | 906619740182876328 | user4@example.com |
+| 2020-07-21 | Was a contract employee | 906619632003387560 | user5@example.com |
+| 2020-07-21 | Was a contract employee | 912338501981077099 | user6@example.com |
+| 2020-07-25 | Leaving for competitor | 951984198921509692 | user7@example.com.com |
+| 2020-07-25 | Leaving for competitor | 895005723650937319 | user8@example.com |
 
 
 ### code42-highriskemployee-add
@@ -562,11 +562,11 @@ Get all employees on the High Risk Employee List.
 ### Retrieved All High Risk Employees
 |Note|UserID|Username|
 |---|---|---|
-| tests and more tests | 942897397520286581 | user1@example.com |
-| Leaving for competitor | 895005723650937319 | user2@example.com |
-| Test user addition from XSOAR | 912098363086307495 | user3@example.com |
-| test | 921286907298179098 | user4@example.com |
-| Risky activity | 942876157732602741 | user5@example.com |
+| Clicked Phishing link | 942897397520286581 | user1@example.com |
+| Lots of non-work-related activity | 895005723650937319 | user2@example.com |
+| User added using XSOAR | 912098363086307495 | user3@example.com |
+| User has performance concerns | 921286907298179098 | user4@example.com |
+| Highly demanded employee | 942876157732602741 | user5@example.com |
 
 
 ### code42-highriskemployee-add-risk-tags
@@ -668,7 +668,7 @@ Creates a Code42 user.
 | --- | --- | --- |
 | orgname | The name of the Code42 organization from which to add the user. | Required |
 | username | The username to give to the user. | Required |
-| email |  | Required |
+| email | The email of the user to create. | Required |
 
 
 #### Context Output

@@ -29,8 +29,7 @@ type: python
 subtype: python2
 tags:
 - nessus
-comment: |
-  Creates a new scan
+comment: Deprecated. Creates a new scan
 system: true
 args:
 - name: editor

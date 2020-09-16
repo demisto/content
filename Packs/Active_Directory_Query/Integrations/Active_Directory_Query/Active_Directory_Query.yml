@@ -248,7 +248,8 @@ script:
     - name: username
       description: Queries users by the samAccountName attribute.
     - name: limit
-      description: The maximum number of objects to return (default is 20).
+      description: The maximum number of objects to return. Default is 20.
+      defaultValue: "20"
     - name: email
       description: Queries by the user's email address.
     - name: user-account-control-out

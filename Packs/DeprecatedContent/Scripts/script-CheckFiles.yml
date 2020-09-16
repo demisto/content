@@ -36,7 +36,7 @@ type: javascript
 tags:
 - server
 - threat-intel
-comment: Iterate on all file artifacts in the investigation and return details of positives
+comment: Deprecated. Iterate on all file artifacts in the investigation and return details of positives
 system: true
 deprecated: true
 args:

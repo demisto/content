@@ -5,6 +5,7 @@ version: -1
 name: Search Endpoints By Hash - Carbon Black Response
 description: Deprecated. Use the Search Search Endpoints By Hash - Carbon Black Response V2 playbook instead. Hunt for malicious indicators using Carbon Black.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
