@@ -25,7 +25,7 @@ subtype: python2
 tags:
 - url
 - domain
-comment: Extract Domain from a URL. Domain will include sub-domain as well
+comment: Deprecated. Extract Domain from a URL. Domain will include sub-domain as well
 system: true
 deprecated: true
 args:

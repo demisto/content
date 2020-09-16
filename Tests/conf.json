@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+         {
+            "integrations": "SecurityIntelligenceServicesFeed",
+            "playbookID": "SecurityIntelligenceServicesFeed - Test",
+            "fromversion": "5.5.0"
+        },
         {
             "integrations": [
                 "Mail Listener v2",
@@ -1195,12 +1200,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "McAfee ESM v2",
-            "instance_names": "v11.3",
-            "playbookID": "Init_McAfee_ESM_v2_Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240,
@@ -1515,6 +1514,26 @@
             "instance_names": "microsoft_defender_atp_dev"
         },
         {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender - ATP - Indicators Test",
+            "instance_names": "microsoft_defender_atp_prod"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender - ATP - Indicators Test",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender - ATP - Indicators Test",
+            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+        },
+        {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
@@ -1538,12 +1557,12 @@
         },
         {
             "integrations": "Microsoft Graph User",
-            "playbookID": "Microsoft Graph - Test",
+            "playbookID": "Microsoft Graph User - Test",
             "instance_names": "ms_graph_user_dev"
         },
         {
             "integrations": "Microsoft Graph User",
-            "playbookID": "Microsoft Graph - Test",
+            "playbookID": "Microsoft Graph User - Test",
             "instance_names": "ms_graph_user_prod"
         },
         {
@@ -2942,6 +2961,7 @@
         {
             "integrations": "TruSTAR v2",
             "playbookID": "TruSTAR v2-Test",
+            "fromversion": "5.0.0",
             "timeout": 500
         },
         {
@@ -3033,7 +3053,6 @@
         "HybridAnalysis-Test": "Issue 26599",
         "Tenable.io test": "Issue 26727",
         "Tenable.io Scan Test": "Issue 26727",
-        "URL Enrichment - Generic v2 - Test": "Issue 26463",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Pwned v2 test": "Issue 26601",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
@@ -3041,25 +3060,20 @@
         "Google Chronicle Backstory List IOCs - Test": "Issue 26461",
         "hashIncidentFields-test": "Issue 26850",
         "Mail Sender (New) Test": "Issue 25602",
-        "CirclIntegrationTest": "Issue 25600",
         "Luminate-TestPlaybook": "Issue 27016",
         "AutoFocus V2 test": "Issue 26464",
         "test-Expanse": "Issue 27279",
         "Fidelis Elevate Network": "Issue 26453",
         "SepioPrimeAPI-Test": "Issue 27240",
-        "Trend Micro Apex - Test": "Issue 27280",
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
-        "Infinipoint-Test": "Issue 27453",
-        "663e1ec3-5590-4e23-8d99-d8a4e0c22a52": "Issue 27454",
-        "Init_McAfee_ESM_v2_Test": "issue #26187",
         "MISP V2 Test": "Issue 26905",
         "Logzio - Test": "Issue 26729",
         "pyEWS_Test": "Issue 28339"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Symantec Management Center": "Issue 23960",
         "PerceptionPoint": "Issue 25795",
@@ -3154,21 +3168,20 @@
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
         "Blueliv ThreatCompass": "Community contribution",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
-        "AlphaSOC Wisdom": "API key has expired",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
+
         "_comment4": "~~~ NO INSTANCE - SUPPORTED BY THE COMMUNITY ~~~",
         "Zabbix": "Supported by external developer",
         "SafeBreach v2": "it is a partner integration, no instance",
@@ -3176,7 +3189,7 @@
         "Recorded Future v2": "supported by partner",
         "Humio": "supported by the partner",
         "Digital Guardian": "partner integration",
-        
+
         "_comment5": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3184,7 +3197,6 @@
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
-        "urlscan.io": "Issue 21831",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
@@ -3343,7 +3355,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
