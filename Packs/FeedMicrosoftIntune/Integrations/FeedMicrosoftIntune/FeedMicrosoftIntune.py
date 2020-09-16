@@ -122,12 +122,12 @@ def fetch_indicators(client: Client, feed_tags: List = [], limit: int = -1) -> L
             "value": value,
             "type": type_,
             "rawJSON": raw_data,
-            'fields': {
-                'trafficlightprotocol': client.tlp_color
-            }
+            'fields': {}
         }
         if feed_tags:
             indicator_obj['fields']['tags'] = feed_tags
+        if client.tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
 
         indicators.append(indicator_obj)
     return indicators
