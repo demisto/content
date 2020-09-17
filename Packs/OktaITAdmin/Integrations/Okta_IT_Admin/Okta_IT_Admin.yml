@@ -1,96 +1,79 @@
+category: IT Services
 commonfields:
   id: Okta IT Admin
   version: -1
-name: Okta IT Admin
-display: Okta IT Admin
-category: IT Services
-description: Integration with Okta's cloud-based identity management service
 configuration:
 - display: Okta URL (https://<domain>.okta.com)
   name: url
-  defaultvalue: ""
-  type: 0
   required: true
+  type: 0
 - display: API Token (see Detailed Instructions)
   name: apitoken
-  defaultvalue: ""
-  type: 4
   required: true
+  type: 4
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
 - display: Custom Mapping for Create User
   name: customMappingCreateUser
-  defaultvalue: ""
-  type: 12
   required: false
-  additionalinfo: An optional custom mapping that takes custom values in the SCIM
-    data into the integration.
+  type: 12
 - display: Custom Mapping used for Update User
   name: customMappingUpdateUser
-  defaultvalue: ""
-  type: 12
   required: false
-  additionalinfo: An optional custom mapping that takes custom values in the SCIM
-    data into the integration.
-- display: "Okta Query Filter"
+  type: 12
+- display: Okta Query Filter
   name: fetchLogsQuery
-  defaultvalue: ""
+  required: false
   type: 12
-  required: false
-- display: "Event Time Frequency"
+- display: Event Time Frequency
   name: fetch_events_time_minutes
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Email Notification Ids (Separated by comma)
   name: email_notification_ids
-  defaultvalue: ""
-  type: 0
   required: false
-  additionalinfo: Used to notify any errors via email
+  type: 0
 - display: SMTP Server Host
   name: smtp_server
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: SMTP Server Port
   name: smtp_port
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: From Email
   name: from_email
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Integration with Okta's cloud-based identity management service
+display: Okta IT Admin
+name: Okta IT Admin
 script:
-  script: ''
-  type: python
   commands:
-  - name: create-user
-    arguments:
-    - name: scim
+  - arguments:
+    - default: false
+      isArray: false
+      name: user-profile
       required: true
-      description: SCIM content in JSON format
-    - name: customMapping
-      description: An optional custom mapping that takes custom values in the SCIM
-        data into the integration.
+      secret: false
+    deprecated: false
+    description: Creates a user
+    execution: true
+    name: create-user
     outputs:
     - contextPath: CreateUser
       description: Command context path
@@ -125,19 +108,31 @@ script:
     - contextPath: CreateUser.username
       description: Value of username passed as argument
       type: String
-    description: Creates a user
-    execution: true
-  - name: update-user
-    arguments:
-    - name: oldScim
-      required: true
+  - arguments:
+    - default: false
       description: Old SCIM content in JSON format
-    - name: newScim
+      isArray: false
+      name: oldScim
       required: true
+      secret: false
+    - default: false
       description: New SCIM content in JSON format
-    - name: customMapping
+      isArray: false
+      name: newScim
+      required: true
+      secret: false
+    - default: false
       description: An optional custom mapping that takes custom values in the SCIM
         data into the integration.
+      isArray: false
+      name: customMapping
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing user resource found with the "oldscim" with the
+      data in the "newscim"
+    execution: true
+    name: update-user
     outputs:
     - contextPath: UpdateUser
       description: Command context path
@@ -173,14 +168,17 @@ script:
     - contextPath: UpdateUser.username
       description: Value of username passed as argument
       type: String
-    description: Updates an existing user resource found with the "oldscim" with the
-      data in the "newscim"
-    execution: true
-  - name: get-user
-    arguments:
-    - name: scim
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
       required: true
-      description: SCIM content in JSON format
+      secret: false
+    deprecated: false
+    description: Retrieves a single user resource.
+    execution: false
+    name: get-user
     outputs:
     - contextPath: GetUser
       description: Command context path
@@ -215,12 +213,17 @@ script:
     - contextPath: GetUser.username
       description: User''s username
       type: String
-    description: Retrieves a single user resource.
-  - name: enable-user
-    arguments:
-    - name: scim
-      required: true
+  - arguments:
+    - default: false
       description: SCIM content in JSON format
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    deprecated: false
+    description: Enable active users by setting the active attribute equal to true.
+    execution: true
+    name: enable-user
     outputs:
     - contextPath: EnableUser
       description: Command context path
@@ -255,13 +258,17 @@ script:
     - contextPath: EnableUser.username
       description: Value of username passed as argument
       type: String
-    description: Enable active users by setting the active attribute equal to true.
-    execution: true
-  - name: disable-user
-    arguments:
-    - name: scim
-      required: true
+  - arguments:
+    - default: false
       description: SCIM content in JSON format
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    deprecated: false
+    description: Disable active users by setting the active attribute equal to false.
+    execution: true
+    name: disable-user
     outputs:
     - contextPath: DisableUser
       description: Command context path
@@ -296,16 +303,23 @@ script:
     - contextPath: DisableUser.username
       description: Value of username passed as argument
       type: String
-    description: Disable active users by setting the active attribute equal to false.
-    execution: true
-  - name: okta-get-assigned-user-for-app
-    arguments:
-    - name: applicationId
-      required: true
+  - arguments:
+    - default: false
       description: Application id of the application for which to get information
-    - name: userId
+      isArray: false
+      name: applicationId
       required: true
+      secret: false
+    - default: false
       description: User ID of the user for which to get information.
+      isArray: false
+      name: userId
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetches a specific user assignment for an application by id
+    execution: false
+    name: okta-get-assigned-user-for-app
     outputs:
     - contextPath: Okta.UserAppAssignment.profile
       description: App-specific profile for the user
@@ -334,11 +348,14 @@ script:
     - contextPath: Okta.UserAppAssignment.errorMessage
       description: Error Message if the command fails
       type: String
-    description: Fetches a specific user assignment for an application by id
   dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
   subtype: python3
-fromversion: 6.0.0
+  type: python
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0
