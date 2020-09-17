@@ -637,7 +637,7 @@
         },
         {
             "integrations": "QRadar",
-            "playbookID": "test playbook - QRadarCorreltaions",
+            "playbookID": "test playbook - QRadarCorrelations",
             "timeout": 600,
             "fromversion": "5.0.0"
         },
