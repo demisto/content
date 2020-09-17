@@ -382,7 +382,7 @@ def test_list_entries_add_command(requests_mock):
     res = list_entries_add_command(client, {"list_type": "safelist", "action": "add", "limit": "25",
                                             "recipient_addresses": ["user.com", "user.com"],
                                             "sender_list": ["acme.com"], "view_by": "recipient"})
-    assert res.outputs == test_data['add_list_entries_context']
+    assert res.readable_output == test_data['add_list_entries_context']
     assert res.outputs_prefix == 'CiscoEmailSecurity.listEntriesAdd'
 
 
@@ -423,5 +423,5 @@ def test_list_entries_delete_command(requests_mock):
                      "insecure": False, "proxy": False})
     res = list_entries_delete_command(client, {"list_type": "safelist", "sender_list": ["acme.com"],
                                                "view_by": "recipient"})
-    assert res.outputs == test_data['delete_list_entries_context']
+    assert res.readable_output == test_data['delete_list_entries_context']
     assert res.outputs_prefix == 'CiscoEmailSecurity.listEntriesDelete'
