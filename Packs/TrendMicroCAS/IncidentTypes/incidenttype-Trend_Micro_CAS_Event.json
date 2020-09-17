@@ -17,5 +17,6 @@
  "weeks": 0,
  "weeksR": 0,
  "fromVersion": "5.0.0",
- "layout": "Trend Micro CAS"
+ "layout": "Trend Micro CAS",
+ "description": "incident type for Trend Micro CAS"
 }
