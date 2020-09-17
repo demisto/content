@@ -42,7 +42,7 @@
      "complex": null,
      "simple": "message.file_name"
     },
-    "Malware_Name": {
+    "Malware Name": {
      "complex": null,
      "simple": "message.ransomware_name"
     },

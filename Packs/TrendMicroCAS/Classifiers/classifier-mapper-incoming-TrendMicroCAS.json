@@ -46,7 +46,7 @@
     },
     "Malware Name": {
      "complex": null,
-     "simple": "message.detection_time"
+     "simple": "message.ransomware_name"
     },
     "Policy Details": {
      "complex": null,
