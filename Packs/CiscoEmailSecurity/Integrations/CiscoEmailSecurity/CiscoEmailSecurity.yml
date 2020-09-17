@@ -1127,7 +1127,7 @@ script:
     name: cisco-email-security-list-entry-delete
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
