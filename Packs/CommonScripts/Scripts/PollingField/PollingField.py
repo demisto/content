@@ -10,7 +10,7 @@ def check_field(field_value, regex=None):
         if re.match(regex, field_value):
             return True
     else:
-        if len(field_value) > 0:
+        if field_value:
             return True
     return False
 
@@ -18,7 +18,7 @@ def check_field(field_value, regex=None):
 def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
 
     field = args.get('field')
-    regex = args.get('regex', None)
+    regex = args.get('regex')
     regex = re.compile(regex) if regex else None
 
     incident = demisto.incidents()[0]
@@ -40,7 +40,7 @@ def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
         'PollingCheckField(val.field == obj.field)': data
     }
 
-    human_readable = "The field exists" if data['exists'] else "The field does not exist"
+    human_readable = 'The field exists.' if data['exists'] else 'The field does not exist.'
     return human_readable, context, data
 
 
