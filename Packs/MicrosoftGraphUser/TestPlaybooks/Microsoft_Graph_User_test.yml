@@ -1,6 +1,6 @@
-id: Microsoft Graph - Test
+id: Microsoft Graph User - Test
 version: -1
-name: Microsoft Graph - Test
+name: Microsoft Graph User - Test
 starttaskid: "0"
 tasks:
   "0":
