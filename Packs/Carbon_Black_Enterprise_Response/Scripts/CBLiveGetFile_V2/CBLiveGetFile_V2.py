@@ -70,10 +70,10 @@ def create_active_session(sensor_id: str, timeout: str) -> str:
         str: New active session to sensor, If not able to create session return '0'.
     """
     session_id = ERROR_SESSION
-    output = demisto.executeCommand("cb-session-create-and-wait", {'sensor': sensor_id, 'command-timeout': timeout})
 
     for trial in range(3):
         try:
+            output = demisto.executeCommand("cb-session-create-and-wait", {'sensor': sensor_id, 'command-timeout': timeout})
             raw_response = json.loads(dict_safe_get(output, [0, 'Contents']))
             session_id = dict_safe_get(raw_response, ["id"], ERROR_SESSION)
             break
@@ -193,17 +193,17 @@ def build_table_dict(entry_contexts: List[dict]) -> List[dict]:
     Returns:
         list: filtered list with modified headers
     """
-    root_ec = 'CbLiveResponse.Commands(val.CbCommandID==obj.CbCommandID&&val.CbSessionID==obj.CbSessionID)'
-
     table = []
-    for file_ec in [ec.get(root_ec, {}) for ec in entry_contexts]:
+    for ec in entry_contexts:
+
         table_entry = {}
 
-        for key, value in file_ec.items():
-            if key == "FileID":
-                table_entry["File ID"] = value
-            elif key == "OperandObject":
-                table_entry["File path"] = value
+        for file_ec in ec.values():
+            for key, value in file_ec.items():
+                if key == "FileID":
+                    table_entry["File ID"] = value
+                elif key == "OperandObject":
+                    table_entry["File path"] = value
 
         table.append(table_entry)
 

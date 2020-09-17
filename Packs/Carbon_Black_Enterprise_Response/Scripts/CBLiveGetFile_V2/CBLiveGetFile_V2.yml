@@ -88,3 +88,11 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.8.5.10845
+dependson:
+  must:
+    - cb-session-create-and-wait
+    - cb-session-close
+    - cb-get-file-from-endpoint
+    - cb-list-sensors
+    - cb-list-sessions
+
