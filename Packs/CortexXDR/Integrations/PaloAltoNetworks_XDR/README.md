@@ -58,9 +58,11 @@ You need to collect several pieces of information in order to configure the inte
     * __Server URL (copy URL from XDR - click ? to see more info.)__
     * __API Key ID__
     * __API Key__
+    * __Maximum number of incidents per fetch__
+    * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
+    * __HTTP Timeout__ (default is 120 seconds)
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
@@ -1335,3 +1337,5 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 | Audit | XDR Agent policy updated on aaaaa.compute.internal |  | ea303670c76e4ad09600c8b346f7c804 | aaaaa.compute.internal |  | 1579282965742.36 | Success | Policy Update | 1579280769141.43 | 7.0.0.1915 | Policy |
 
 
+## Troubleshooting
+ - In case you encounter ReadTimeoutError, we recommend increasing the HTTP request timeout by setting it in the **HTTP Timeout** integration parameter.
