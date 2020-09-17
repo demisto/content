@@ -1,6 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+import datetime
+from datetime import timedelta
 import urllib3
 import traceback
 from typing import Any, Dict
@@ -129,9 +131,20 @@ class Client(BaseClient):
         )
 
 
+def get_dates_for_test_module():
+    now = datetime.datetime.now()
+    start = now + timedelta(days=1)
+    end = now + timedelta(days=2)
+
+    end_date = end.isoformat()
+    start_date = start.isoformat()
+    return start_date, end_date
+
+
 def test_module(client: Client) -> str:
-    suffix_url = "/sma/api/v2.0/message-tracking/messages?startDate=2018-01-01T00:00:00.000Z&" \
-                 "endDate=2019-11-20T09:36:00.000Z&ciscoHost=All_Hosts&searchOption=messages&offset=0&limit=20"
+    start_date, end_date = get_dates_for_test_module()
+    suffix_url = f"/sma/api/v2.0/message-tracking/messages?startDate={start_date}&" \
+                 f"endDate={end_date}&ciscoHost=All_Hosts&searchOption=messages&offset=0&limit=20"
     try:
         client.list_messages(suffix_url)
     except DemistoException as e:
