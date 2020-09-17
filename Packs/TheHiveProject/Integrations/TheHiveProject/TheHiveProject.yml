@@ -1178,7 +1178,8 @@ script:
     name: thehive-get-case-tasks
   - arguments:
     - name: id
-      required: true,
+      required: true
+      description: Task ID
     description: Get a specific task.
     name: thehive-get-task
     outputs:
