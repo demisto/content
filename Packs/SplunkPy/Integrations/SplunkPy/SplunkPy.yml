@@ -94,7 +94,9 @@ configuration:
   name: hec_url
   required: false
   type: 0
-- defaultvalue: 10 minutes
+- additionalInfo: How far back in time to go when performing the first fetch or when
+    creating a mapping with the Select Schema option.
+  defaultvalue: 10 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
   hidden: false
@@ -105,18 +107,14 @@ configuration:
   name: use_requests_handler
   required: false
   type: 8
-- additionalinfo: Name of the field that includes the Event Type (classifier field)
+- additionalInfo: Used only for Mapping with the Select Schema option. The name of
+    the field that contains the type of the event or alert. The default value is "source"
+    which is a good option for Notable Events, however you may choose any custom field
+    that suits the need.
   defaultvalue: source
-  display: Event Type Field Name
+  display: Event Type Field
   hidden: false
   name: type_field
-  required: false
-  type: 0
-- additionalinfo: The Splunk index where the fetched objects reside.
-  defaultvalue: notable
-  display: Fetch index Name
-  hidden: false
-  name: fetch_index
   required: false
   type: 0
 description: Run queries on Splunk servers.
@@ -644,6 +642,11 @@ script:
     execution: false
     name: splunk-kv-store-collection-delete-entry
   dockerimage45: demisto/splunksdk:1.0
+  - deprecated: false
+    description: Query Splunk to retrieve a list of sample alerts by alert type. Used
+      for Mapping fetched incidents through the Get Schema option.
+    execution: false
+    name: get-mapping-fields
   dockerimage: demisto/splunksdk:1.0.0.10663
   feed: false
   isfetch: true

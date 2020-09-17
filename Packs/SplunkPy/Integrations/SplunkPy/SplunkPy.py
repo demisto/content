@@ -869,11 +869,12 @@ def get_store_data(service):
 
 def get_mapping_fields_command(service):
     # Create the query to get unique objects
-    index = demisto.params().get('fetch_index', 'notable')
     type_field = demisto.params().get('type_field', 'source')
 
     # If fetchQuery is not populated, default to index=<indexname> as the prefix
-    fetch_query = demisto.params().get('fetchQuery', 'index="{}"'.format(index))
+    fetch_query = demisto.params().get('fetchQuery', '')
+    if not fetch_query:
+        raise Exception("Fetch Query must be provided to retrieve schema samples.")
     args = {'query': '{} | dedup {}'.format(fetch_query, type_field)}
     query = build_search_query(args)
 
