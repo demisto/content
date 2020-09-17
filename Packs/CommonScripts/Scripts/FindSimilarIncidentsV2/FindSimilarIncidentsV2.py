@@ -117,6 +117,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
                                    .replace('"', r'\"')
                                    .replace("\n", "\\n")
                                    .replace("\r", "\\r")
+                                   if isinstance(t[1], STRING_TYPES) else t[1]
                                    ),
             similar_incident_keys.items()))
     incident_time = parse_datetime(incident_time)
@@ -362,7 +363,7 @@ def main():
     if len(duplicate_incidents or []) > 0:
         duplicate_incidents_rows = map(lambda x: incident_to_record(x, TIME_FIELD), duplicate_incidents)
 
-        duplicate_incidents_rows = list(sorted(duplicate_incidents_rows, key=lambda x: x['time']))
+        duplicate_incidents_rows = list(sorted(duplicate_incidents_rows, key=lambda x: (x['time'], x['id'])))
 
         context = {
             'similarIncidentList': duplicate_incidents_rows[:MAX_CANDIDATES_IN_LIST],

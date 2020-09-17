@@ -13,7 +13,9 @@ def setup(mocker):
         DBotSuggestClassifierMapping.SIEM_FIELDS)
     for siem_field in SIEM_FIELDS:
         machine_name = siem_field.replace(" ", "").lower()
-        all_incident_fields.append({INCIDENT_FIELD_NAME: siem_field, INCIDENT_FIELD_MACHINE_NAME: machine_name})
+        all_incident_fields.append({INCIDENT_FIELD_NAME: siem_field,
+                                    INCIDENT_FIELD_MACHINE_NAME: machine_name,
+                                    INCIDENT_FIELD_SYSTEM: True})
     init()
 
 
@@ -194,7 +196,7 @@ def test_main_arcsight(mocker):
     assert 'Event-File Type' == get_complex_value_key(mapper['File Type']['complex'])
     assert 'Event-Destination Address' == get_complex_value_key(mapper['Destination IP']['complex'])
     assert 'Event-Source Address' == get_complex_value_key(mapper['Source IP']['complex'])
-    assert 'Event-Attacker Geo Country Code' == get_complex_value_key(mapper['Country']['complex'])
+    assert 'Event-Source Geo Country Code' == get_complex_value_key(mapper['Country']['complex'])
     assert 'Event-Source Host Name' == get_complex_value_key(mapper['Source Hostname']['complex'])
     assert 'Event-Start Time' == get_complex_value_key(mapper['occurred']['complex'])
     assert 'Event-Agent ID' == get_complex_value_key(mapper['Agent ID']['complex'])
@@ -215,10 +217,7 @@ def test_main_splunk(mocker):
 
 def test_main_outgoing(mocker):
     incidents = json.load(open('TestData/outgoing.json'))
-    fields = []
-    for siem_field in SIEM_FIELDS:
-        machine_name = siem_field.replace(" ", "").lower()
-        fields.append({INCIDENT_FIELD_NAME: siem_field, INCIDENT_FIELD_MACHINE_NAME: machine_name})
+
     args = {
         'incidentSamples': incidents,
         'incidentSamplesType': 'outgoingSamples',
@@ -227,16 +226,13 @@ def test_main_outgoing(mocker):
     mocker.patch.object(demisto, 'args', return_value=args)
     mapper = main()
 
-    assert 'severity' == get_complex_value_key(mapper['src_priority'])
+    assert 'severity' == get_complex_value_key(mapper['user_priority'])
     assert 'category' == get_complex_value_key(mapper['category'])
 
 
 def test_main_splunk_schemes(mocker, capfd):
     incidents = json.load(open('TestData/splunk_scheme.json'))
-    fields = []
-    for siem_field in SIEM_FIELDS:
-        machine_name = siem_field.replace(" ", "").lower()
-        fields.append({INCIDENT_FIELD_NAME: siem_field, INCIDENT_FIELD_MACHINE_NAME: machine_name})
+
     args = {
         'incidentSamples': incidents,
         'incidentSamplesType': 'scheme',
@@ -247,10 +243,26 @@ def test_main_splunk_schemes(mocker, capfd):
     assert 'protocol' == get_complex_value_key(mapper['Protocol']['complex'])
     assert 'severity' == get_complex_value_key(mapper['severity']['complex'])
     assert 'body' == get_complex_value_key(mapper['Email Body']['complex'])
-    assert 'subject' == get_complex_value_key(mapper['Email Subject']['complex'])
+    assert 'ssl_subject_email' == get_complex_value_key(mapper['Email Subject']['complex'])
     assert 'country' == get_complex_value_key(mapper['Country']['complex'])
     assert 'vendor_product' == get_complex_value_key(mapper['Vendor Product']['complex'])
     assert 'signature' == get_complex_value_key(mapper['Signature']['complex'])
     assert 'os' == get_complex_value_key(mapper['OS']['complex'])
     assert 'app' == get_complex_value_key(mapper['App']['complex'])
     assert 'description' == get_complex_value_key(mapper['Description']['complex'])
+
+
+def test_custom_field(mocker, capfd):
+    incidents = json.load(open('TestData/splunk_scheme.json'))
+    fields = [{INCIDENT_FIELD_SYSTEM: False,
+               INCIDENT_FIELD_MACHINE_NAME: 'payloadtype',
+               INCIDENT_FIELD_NAME: 'Payload Type'}]
+    args = {
+        'incidentSamples': incidents,
+        'incidentSamplesType': 'scheme',
+        'incidentFields': fields,
+    }
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mapper = main()
+    assert len(mapper) == 1
+    assert 'payload_type' == get_complex_value_key(mapper['Payload Type']['complex'])

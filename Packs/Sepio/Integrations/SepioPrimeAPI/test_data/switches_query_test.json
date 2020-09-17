@@ -1,0 +1,24 @@
+[
+    {
+        "SwitchID": "04:2A:E2:D3:1A:80_FOC2011W50M",
+        "IpAddress": "192.168.100.29",
+        "Name": "sepio-2960-x",
+        "Model": "WS-C2960X-24TD-L",
+        "IosVersion": "15.2(2)E6",
+        "LastUpdate": "06/21/2020 16:36:04",
+        "NumberOfPorts": 26,
+        "Status": "Normal",
+        "IsAlarmed": false
+    },
+    {
+        "SwitchID": "DC:7B:94:96:17:80_FOC1428V67S",
+        "IpAddress": "192.168.100.25",
+        "Name": "sepio2960g",
+        "Model": "WS-C2960G-24TC-L",
+        "IosVersion": "12.2(52)SE",
+        "LastUpdate": "06/21/2020 16:39:11",
+        "NumberOfPorts": 24,
+        "Status": "Normal",
+        "IsAlarmed": false
+    }
+]

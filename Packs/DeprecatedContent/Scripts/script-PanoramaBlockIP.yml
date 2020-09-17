@@ -56,7 +56,7 @@ type: javascript
 tags:
 - firewall
 - panorama
-comment: Blocks IP with Panorama
+comment: Deprecated. Blocks IP with Panorama
 enabled: true
 args:
 - name: ip
@@ -91,5 +91,4 @@ dependson:
   must:
   - panorama
 tests:
-- palo_alto_firewall_test_pb
-- blockip_test_playbook
+- No tests

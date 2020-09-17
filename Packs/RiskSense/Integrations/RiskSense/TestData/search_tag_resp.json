@@ -1,0 +1,39 @@
+{
+  "errors": [],
+  "page": {
+    "size": 20,
+    "totalElements": 1,
+    "totalPages": 1,
+    "number": 0
+  },
+  "_embedded": {
+    "tags": [
+      {
+        "id": 243364,
+        "name": "TestForMe",
+        "type": "CUSTOM",
+        "description": "Tag Created for TestForMe",
+        "priority": null,
+        "locked": false,
+        "readOnly": false,
+        "startDate": null,
+        "dueDate": null,
+        "daysRemaining": 0,
+        "totalFindingCount": 0,
+        "openFindingCount": 0,
+        "percentageComplete": 0,
+        "created": "2020-04-29",
+        "updated": "2020-04-29",
+        "color": "#648d9f",
+        "owner": [
+          "owner"
+        ]
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "http://platform.risksense.com/api/v1/client/747/tag/search?page=0&size=20&sort=id,asc"
+    }
+  }
+}

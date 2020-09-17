@@ -5,7 +5,7 @@
 <li>Query and search indexes.</li>
 <li>Calculate query and search scores based on accuracy of results.</li>
 </ul>
-<h2>Detailed Description</h2>
+<h2>Additional Information</h2>
 <p>The Elasticsearch v2 integration supports Elasticsearch 6.0.0 and later.</p>
 <p>Strings are queried using the Lucene syntax. For more information about the Lucene syntax, see: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax">https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax</a></p>
 <p>For more information about request response fields, see: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-explain">https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-explain</a></p>
@@ -327,3 +327,13 @@
 <p> <img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/Elasticsearch_v2_1.png" alt="1.png"></p>
 <h2>Troubleshooting</h2>
 <p>For more information about the correct time format, see <a href="http://strftime.org/" target="_self">http://strftime.org/</a>.</p>
+<h2>Schema Mapping</h2>
+<p>Cortex XSOAR version 6.0 introduces an improved classification & mapping experience, which includes fetching schema data.</p>
+<p>Elasticsearch v2 integration supports fetching the schema of indexes that are set in the <strong>Index from which to fetch incidents</strong> integration parameter, thereby enabling mapping fields per index.</p>
+<h3>Setup schema mapping</h3> 
+<ol>
+<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Classification &amp; Mapping</strong>.</li>
+<li>Create a new mapper and edit an existing one</li>
+<li>Set <strong>Get data</strong> to <strong>Select schema</strong> and <strong>Select instance</strong> to the Elasticsearch v2 integration instance to fetch from.</li>
+<li>Map fields according to the fetched index schema.</li>
+</ol>

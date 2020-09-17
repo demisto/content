@@ -124,13 +124,17 @@ def prepare_args(command, args):
     :rtype: ``dict``
     """
     if command in ['msgraph-mail-create-draft', 'send-mail']:
+        if args.get('htmlBody', None):
+            email_body = args.get('htmlBody')
+        else:
+            email_body = args.get('body', '')
         return {
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
             'subject': args.get('subject', ''),
-            'body': args.get('body', ''),
-            'body_type': args.get('body_type', 'text'),
+            'body': email_body,
+            'body_type': args.get('body_type', 'html'),
             'flag': args.get('flag', 'notFlagged'),
             'importance': args.get('importance', 'Low'),
             'internet_message_headers': argToList(args.get('headers')),

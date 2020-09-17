@@ -154,30 +154,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
-    taskid: c25e6c71-5851-4335-88b5-b557b9e33e12
-    type: regular
-    task:
-      id: c25e6c71-5851-4335-88b5-b557b9e33e12
-      version: -1
-      name: Manual troubleshooting needed
-      type: regular
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
     id: "7"
     taskid: 6576b7f6-bf3b-488b-83c5-b318db6cdbcb

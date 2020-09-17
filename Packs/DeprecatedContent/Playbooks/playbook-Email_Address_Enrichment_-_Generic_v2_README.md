@@ -1,4 +1,4 @@
-Enriches email addresses.  
+DEPRECATED. Use "Email Address Enrichment - Generic v2.1" playbook instead. Enriches email addresses.  
 
 Email address enrichment involves:
 - Getting information from Active Directory for internal addresses.

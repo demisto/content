@@ -37,7 +37,9 @@
     "results_from": "1",
     "results_to": "1"
   },
-
+  "email_command": {
+    "email": "testgamil.com"
+  },
   "api_response": {
     "balance": 4955,
     "entries":     [

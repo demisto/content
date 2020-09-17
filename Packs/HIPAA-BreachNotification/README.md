@@ -8,6 +8,6 @@ The playbook helps you understand whether a breach occurred and whether notifica
 - In case the notification is required, the pack will help with the notification process, to send an breach notification to the following: Affected individuals, the Secretary of HHS, Consumer Reporting Agencies and Media notice 
 As part of this pack, you will also get out-of-the-box HIPAA breach notification incident views, and a full layout. All of these are easily customizable to suit the needs of your organization.
 
-_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/phishing-investigation---generic-v2)_
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/hipaa---breach-notification)_
 
 ![HIPAA-BreachNotification](https://raw.githubusercontent.com/demisto/content/master/Packs/HIPAA-BreachNotification/doc_files/HIPAA_-_Breach_Notification.png)

@@ -30,7 +30,8 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit")
+                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                    downloads_count=10)
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'test_pack_id'
         assert parsed_metadata['description'] == 'Description of test pack'
@@ -54,6 +55,7 @@ class TestMetadataParsing:
         assert 'integrations' in parsed_metadata
         assert parsed_metadata['useCases'] == ["Some Use Case"]
         assert parsed_metadata['keywords'] == ["dummy keyword", "Additional dummy keyword"]
+        assert parsed_metadata['downloads'] == 10
         assert 'dependencies' in parsed_metadata
 
     def test_parsed_metadata_empty_input(self):
@@ -63,7 +65,8 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash")
+                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                    downloads_count=10)
 
         assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
@@ -86,9 +89,24 @@ class TestMetadataParsing:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
                                                     pack_id="test_pack_id", integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash")
+                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                    downloads_count=10)
 
         assert parsed_metadata['price'] == expected
+
+    @pytest.mark.parametrize('is_feed_pack, tags',
+                             [(True, ["tag number one", "Tag number two", 'TIM']),
+                              (False, ["tag number one", "Tag number two"])
+                              ])
+    def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, is_feed_pack, tags):
+        """ Test 'TIM' tag is added if is_feed_pack is True
+        """
+        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                    pack_id='test_pack_id', integration_images=[], author_image="",
+                                                    dependencies_data={}, server_min_version="5.5.0",
+                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                    downloads_count=10, is_feed_pack=True)
+        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'TIM']
 
 
 class TestParsingInternalFunctions:
@@ -177,6 +195,9 @@ class TestHelperFunctions:
                              [
                                  (["some data", "some other data"], False, ["some data", "some other data"]),
                                  (["some data", "some other data"], True, ["Some Data", "Some Other Data"]),
+                                 (["HIPAA Breach Notification"], True, ["HIPAA Breach Notification"]),
+                                 (["HIPAA breach Notification"], True, ["HIPAA Breach Notification"]),
+                                 (["INPUT IS ALREADY UPPERCASE"], True, ["INPUT IS ALREADY UPPERCASE"]),
                                  ([], False, []),
                                  ([], True, []),
                                  ("", False, []),
@@ -232,6 +253,36 @@ class TestHelperFunctions:
                                            compared_content_item=compared_content_item, pack_name="dummy")
 
         assert result == expected_result
+
+    @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed',
+                             [
+                                 # Check is_feed by Integration
+                                 ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
+                                   'script': {'commands': [], 'dockerimage': 'bla', 'feed': True}},
+                                  'Integration', True),
+                                 ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
+                                   'script': {'commands': [], 'dockerimage': 'bla', 'feed': False}},
+                                  'Integration', False),
+                                 # Checks no feed parameter
+                                 ({'category': 'NotTIM', 'configuration': [{'display': 'Services'}],
+                                   'script': {'commands': [], 'dockerimage': 'bla'}},
+                                  'Integration', False),
+
+                                 # Check is_feed by playbook
+                                 ({'id': 'TIM - Example', 'version': -1, 'fromversion': '5.5.0',
+                                   'name': 'TIM - Example', 'description': 'This is a playbook TIM example'},
+                                  'Playbook', True),
+                                 ({'id': 'NotTIM - Example', 'version': -1, 'fromversion': '5.5.0',
+                                   'name': 'NotTIM - Example', 'description': 'This is a playbook which is not TIM'},
+                                  'Playbook', False)
+                             ])
+    def test_is_feed(self, yaml_context, yaml_type, is_actually_feed):
+        """ Tests that is_feed for pack changes if it has a playbook that starts with "TIM " or an integration with
+            script.feed==true
+        """
+        dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
+        dummy_pack.is_feed_pack(yaml_context, yaml_type)
+        assert dummy_pack.is_feed == is_actually_feed
 
 
 class TestVersionSorting:
@@ -540,3 +591,273 @@ class TestLoadUserMetadata:
         assert print_error_mock.call_count == 1
         assert not task_status
         assert user_metadata == {}
+
+
+class TestSetDependencies:
+
+    @staticmethod
+    def get_pack_metadata():
+        metadata_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'metadata.json')
+        with open(metadata_path, 'r') as metadata_file:
+            pack_metadata = json.load(metadata_file)
+
+        return pack_metadata
+
+    def test_set_dependencies_new_dependencies(self):
+        """
+           Given:
+               - Pack with user dependencies
+               - New generated dependencies
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be merged with the generated ones
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+        generated_dependencies = {
+            'ImpossibleTraveler': {
+                'dependencies': {
+                    'HelloWorld': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'HelloWorld',
+                        'certification': 'certified'
+                    },
+                    'ServiceNow': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'Ipstack': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    },
+                    'Active_Directory_Query': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Active Directory Query v2',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        p = Pack('ImpossibleTraveler', 'dummy_path')
+        dependencies = json.dumps(metadata['dependencies'])
+        dependencies = json.loads(dependencies)
+        dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == dependencies
+
+    def test_set_dependencies_no_user_dependencies(self):
+        """
+           Given:
+               - Pack without user dependencies
+               - New generated dependencies
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be the generated ones
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'ImpossibleTraveler': {
+                'dependencies': {
+                    'HelloWorld': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'HelloWorld',
+                        'certification': 'certified'
+                    },
+                    'ServiceNow': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'Ipstack': {
+                        'mandatory': False,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    },
+                    'Active_Directory_Query': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Active Directory Query v2',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        metadata['dependencies'] = {}
+        p = Pack('ImpossibleTraveler', 'dummy_path')
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
+
+    def test_set_dependencies_no_generated_dependencies(self):
+        """
+           Given:
+               - Pack with user dependencies
+               - No generated dependencies
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be the user ones
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+        dependencies = metadata['dependencies']
+        p = Pack('ImpossibleTraveler', 'dummy_path')
+        p.set_pack_dependencies(metadata, {})
+
+        assert metadata['dependencies'] == dependencies
+
+    def test_set_dependencies_core_pack(self):
+        """
+           Given:
+               - Core pack with new dependencies
+               - No mandatory dependencies that are not core packs
+           When:
+               - Formatting metadata
+           Then:
+               - The dependencies in the metadata file should be merged
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'HelloWorld': {
+                'dependencies': {
+                    'CommonPlaybooks': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        metadata['dependencies'] = {}
+        metadata['name'] = 'HelloWorld'
+        metadata['id'] = 'HelloWorld'
+        p = Pack('HelloWorld', 'dummy_path')
+        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
+        dependencies = json.loads(dependencies)
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == dependencies
+
+    def test_set_dependencies_core_pack_new_mandatory_dependency(self):
+        """
+           Given:
+               - Core pack with new dependencies
+               - Mandatory dependencies that are not core packs
+           When:
+               - Formatting metadata
+           Then:
+               - An exception should be raised
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'HelloWorld': {
+                'dependencies': {
+                    'CommonPlaybooks': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'SlackV2': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        metadata['dependencies'] = {}
+        p = Pack('HelloWorld', 'dummy_path')
+
+        with pytest.raises(Exception) as e:
+            p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
+
+    def test_set_dependencies_core_pack_mandatory_dependency_override(self):
+        """
+           Given:
+               - Core pack with new dependencies
+               - Mandatory dependencies that are not core packs that were overridden in the user metadata
+           When:
+               - Formatting metadata
+           Then:
+               - Metadata should be formatted correctly
+       """
+        from Tests.Marketplace.marketplace_services import Pack
+
+        metadata = self.get_pack_metadata()
+
+        generated_dependencies = {
+            'HelloWorld': {
+                'dependencies': {
+                    'CommonPlaybooks': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'ServiceNow',
+                        'certification': 'certified'
+                    },
+                    'Ipstack': {
+                        'mandatory': True,
+                        'minVersion': '1.0.0',
+                        'author': 'Cortex XSOAR',
+                        'name': 'Ipstack',
+                        'certification': 'certified'
+                    }
+                }
+            }
+        }
+
+        p = Pack('HelloWorld', 'dummy_path')
+        user_dependencies = metadata['dependencies']
+        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
+        dependencies = json.loads(dependencies)
+        dependencies.update(user_dependencies)
+
+        p.set_pack_dependencies(metadata, generated_dependencies)
+
+        assert metadata['dependencies'] == dependencies

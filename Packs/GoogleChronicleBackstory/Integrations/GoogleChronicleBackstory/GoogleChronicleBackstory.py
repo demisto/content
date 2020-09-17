@@ -170,8 +170,7 @@ def validate_response(client, url, method='GET'):
             return response
         except json.decoder.JSONDecodeError:
             raise ValueError('Invalid response format while making API call to Chronicle. Response not in JSON format')
-    else:
-        raise ValueError('API rate limit exceeded. Try again later.')
+    raise ValueError('API rate limit exceeded. Try again later.')
 
 
 def get_params_for_reputation_command():

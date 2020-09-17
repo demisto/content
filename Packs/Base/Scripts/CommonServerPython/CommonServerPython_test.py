@@ -15,7 +15,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy
+    appendContext, auto_detect_indicator_type, handle_proxy, MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT
 
 try:
     from StringIO import StringIO
@@ -835,6 +835,22 @@ def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
         is_demisto_version_ge('4.5.0')
 
 
+def test_is_demisto_version_build_ge(mocker):
+    mocker.patch.object(
+        demisto,
+        'demistoVersion',
+        return_value={
+            'version': '6.0.0',
+            'buildNumber': '50000'
+        }
+    )
+    assert is_demisto_version_ge('6.0.0', '49999')
+    assert is_demisto_version_ge('6.0.0', '50000')
+    assert not is_demisto_version_ge('6.0.0', '50001')
+    assert not is_demisto_version_ge('6.1.0', '49999')
+    assert not is_demisto_version_ge('5.5.0', '50001')
+
+
 def test_assign_params():
     from CommonServerPython import assign_params
     res = assign_params(a='1', b=True, c=None, d='')
@@ -921,6 +937,58 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
+    def test_multiple_outputs_keys(self):
+        """
+        Given
+        - File has 3 unique keys. sha256, md5 and sha1
+
+        When
+        - creating CommandResults with outputs_key_field=[sha1, sha256, md5]
+
+        Then
+        - entrycontext DT expression contains all 3 unique fields
+        """
+        from CommonServerPython import CommandResults
+
+        files = [
+            {
+                'sha256': '111',
+                'sha1': '111',
+                'md5': '111'
+            },
+            {
+                'sha256': '222',
+                'sha1': '222',
+                'md5': '222'
+            }
+        ]
+        results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
+
+        assert list(results.to_context()['EntryContext'].keys())[0] == \
+               'File(val.sha1 == obj.sha1 && val.sha256 == obj.sha256 && val.md5 == obj.md5)'
+
+    def test_output_prefix_includes_dt(self):
+        """
+        Given
+        - Returning File with only outputs_prefix which includes DT in it
+        - outputs key fields are not provided
+
+        When
+        - creating CommandResults
+
+        Then
+        - EntryContext key should contain only the outputs_prefix
+        """
+        from CommonServerPython import CommandResults
+
+        files = []
+        results = CommandResults(outputs_prefix='File(val.sha1 == obj.sha1 && val.md5 == obj.md5)',
+                                 outputs_key_field='', outputs=files)
+
+        assert list(results.to_context()['EntryContext'].keys())[0] == \
+               'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
+
+
     def test_readable_only_context(self):
         """
         Given:
@@ -1010,7 +1078,8 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1093,7 +1162,8 @@ class TestCommandResults:
                         'Type': 'ip'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1121,7 +1191,8 @@ class TestCommandResults:
             'HumanReadable': tableToMarkdown('Results', tickets),
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
+            },
+            'IndicatorTimeline': []
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1152,7 +1223,8 @@ class TestCommandResults:
             'HumanReadable': None,
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
-            }
+            },
+            'IndicatorTimeline': []
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1295,8 +1367,64 @@ class TestCommandResults:
                         'Type': 'domain'
                     }
                 ]
-            }
+            },
+            'IndicatorTimeline': []
         }
+
+    def test_indicator_timeline_with_list_of_indicators(self):
+        """
+       Given:
+           -  a list of an indicator
+       When
+           - creating an IndicatorTimeline object
+           - creating a CommandResults objects using the IndicatorTimeline object
+       Then
+           - the IndicatorTimeline receives the appropriate category and message
+       """
+        from CommonServerPython import CommandResults, IndicatorsTimeline
+
+        indicators = ['8.8.8.8']
+        timeline = IndicatorsTimeline(indicators=indicators, category='test', message='message')
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=timeline
+        )
+
+        assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
+            {'Value': '8.8.8.8', 'Category': 'test', 'Message': 'message'}
+        ])
+
+    def test_indicator_timeline_running_from_an_integration(self, mocker):
+        """
+       Given:
+           -  a list of an indicator
+       When
+           - mocking the demisto.params()
+           - creating an IndicatorTimeline object
+           - creating a CommandResults objects using the IndicatorTimeline object
+       Then
+           - the IndicatorTimeline receives the appropriate category and message
+       """
+        from CommonServerPython import CommandResults, IndicatorsTimeline
+        mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+        indicators = ['8.8.8.8']
+        timeline = IndicatorsTimeline(indicators=indicators)
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=timeline
+        )
+
+        assert sorted(results.to_context().get('IndicatorTimeline')) == sorted([
+            {'Value': '8.8.8.8', 'Category': 'Integration Update'}
+        ])
 
 
 class TestBaseClient:
@@ -1550,18 +1678,86 @@ def test_http_client_debug(mocker):
     assert debug_log is not None
 
 
-def test_parse_date_range():
-    utc_now = datetime.utcnow()
-    utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
-    # testing UTC date time and range of 2 days
-    assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
-    assert abs(utc_start_time - utc_end_time).days == 2
+class TestParseDateRange:
+    @staticmethod
+    def test_utc_time_sanity():
+        utc_now = datetime.utcnow()
+        utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
+        # testing UTC date time and range of 2 days
+        assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+        assert abs(utc_start_time - utc_end_time).days == 2
 
-    local_now = datetime.now()
-    local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
-    # testing local datetime and range of 73 minutes
-    assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
-    assert abs(local_start_time - local_end_time).seconds / 60 == 73
+    @staticmethod
+    def test_local_time_sanity():
+        local_now = datetime.now()
+        local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
+        # testing local datetime and range of 73 minutes
+        assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
+        assert abs(local_start_time - local_end_time).seconds / 60 == 73
+
+    @staticmethod
+    def test_with_trailing_spaces():
+        utc_now = datetime.utcnow()
+        utc_start_time, utc_end_time = parse_date_range('2 days   ', utc=True)
+        # testing UTC date time and range of 2 days
+        assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+        assert abs(utc_start_time - utc_end_time).days == 2
+
+    @staticmethod
+    def test_case_insensitive():
+        utc_now = datetime.utcnow()
+        utc_start_time, utc_end_time = parse_date_range('2 Days', utc=True)
+        # testing UTC date time and range of 2 days
+        assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+        assert abs(utc_start_time - utc_end_time).days == 2
+
+    @staticmethod
+    def test_error__invalid_input_format(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('2 Days ago', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'date_range must be "number date_range_unit"' in results['Contents']
+
+    @staticmethod
+    def test_error__invalid_time_value_not_a_number(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('ten Days', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'The time value is invalid' in results['Contents']
+
+    @staticmethod
+    def test_error__invalid_time_value_not_an_integer(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('1.5 Days', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'The time value is invalid' in results['Contents']
+
+    @staticmethod
+    def test_error__invalid_time_unit(mocker):
+        mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
+        demisto_results = mocker.spy(demisto, 'results')
+
+        try:
+            parse_date_range('2 nights', utc=True)
+        except Exception as exp:
+            assert str(exp) == 'mock exit'
+        results = demisto.results.call_args[0][0]
+        assert 'The unit of date_range is invalid' in results['Contents']
 
 
 def test_encode_string_results():
@@ -1588,6 +1784,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
 
@@ -1610,6 +1807,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert outputs == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
 
@@ -1624,6 +1822,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert timeline == results['IndicatorTimeline']
@@ -1639,6 +1838,7 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert 'Category' in results['IndicatorTimeline'][0].keys()
@@ -1655,9 +1855,21 @@ class TestReturnOutputs:
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1
         assert raw_response == results['Contents']
+        assert 'json' == results['ContentsFormat']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
         assert ignore_auto_extract == results['IgnoreAutoExtract']
+
+    def test_return_outputs_text_raw_response(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        raw_response = 'string'
+        return_outputs(md, raw_response=raw_response)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert raw_response == results['Contents']
+        assert 'text' == results['ContentsFormat']
 
 
 def test_argToBoolean():
@@ -2112,7 +2324,14 @@ def test_merge_lists():
         assert obj in expected
 
 
-@pytest.mark.parametrize('version, expected', [({'version': '5.5.0'}, False), ({'version': '6.0.0'}, True)])
+@pytest.mark.parametrize('version, expected',
+                         [
+                             ({'version': '5.5.0'}, False),
+                             ({'version': '6.0.0'}, True),
+                             ({'version': '5.5.0', 'buildNumber': MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT}, True),
+                             ({'version': '5.5.0', 'buildNumber': str(int(MIN_5_5_BUILD_FOR_VERSIONED_CONTEXT) - 1)}, False)
+                         ]
+                         )
 def test_is_versioned_context_available(mocker, version, expected):
     from CommonServerPython import is_versioned_context_available
     # Set
@@ -2274,3 +2493,185 @@ def test_set_latest_integration_context_fail(mocker):
 
     # Assert
     assert int_context_calls == CommonServerPython.CONTEXT_UPDATE_RETRY_TIMES
+
+
+def test_handle_outgoing_error_in_mirror__should_update(mocker):
+    """
+    Given:
+        -  an integration context with and outgoing mirror error that was not printed
+    When
+        - running handle_outgoing_error_in_mirror
+    Then
+        - the result is the expected out error entry
+        - 'out_mirror_error' in the incident data is set to True
+    """
+    from CommonServerPython import handle_outgoing_error_in_mirror
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"out_mirror_error": "Some Error",
+                                                                        "out_error_printed": False})
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    out_entry = handle_outgoing_error_in_mirror(incident_data)
+    expected_out_entry = {
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
+    }
+    assert out_entry == expected_out_entry
+    assert incident_data.get('out_mirror_error') == 'Some Error'
+
+
+def test_handle_outgoing_error_in_mirror__should_not_update(mocker):
+    """
+    Given:
+        -  an integration context with and outgoing mirror error that was printed
+    When
+        - running handle_outgoing_error_in_mirror
+    Then
+        - the result is an empty dict
+        - 'out_mirror_error' in the incident data is set to True
+    """
+    from CommonServerPython import handle_outgoing_error_in_mirror
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"out_mirror_error": "Some Error",
+                                                                        "out_error_printed": True})
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    out_entry = handle_outgoing_error_in_mirror(incident_data)
+    assert out_entry == {}
+    assert incident_data.get('out_mirror_error') == 'Some Error'
+
+
+def test_handle_incoming_error_in_mirror__should_update_in_only(mocker):
+    """
+    Given:
+        -  an integration context with and outgoing mirror error that was printed and no in error
+        -  A new incoming mirror error message
+    When
+        - running handle_incoming_error_in_mirror
+    Then
+        - the result is the expected in error entry without an out error entry
+        - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
+    """
+    from CommonServerPython import handle_incoming_error_in_mirror
+    integrartion_context = {
+        "out_mirror_error": "Some Error",
+        "out_error_printed": True,
+    }
+
+    expected_in_error_entry = {
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring incoming data: My in error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    response = handle_incoming_error_in_mirror(incident_data, "My in error")
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
+    assert len(response.entries) == 1
+    assert response.entries[0] == expected_in_error_entry
+
+
+def test_handle_incoming_error_in_mirror__should_update_in_and_out(mocker):
+    """
+   Given:
+       -  an integration context with and outgoing mirror error that was not printed and no in error
+       -  A new incoming mirror error message
+   When
+       - running handle_incoming_error_in_mirror
+   Then
+       - the result has the expected in error entry and out error entry
+       - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
+   """
+    from CommonServerPython import handle_incoming_error_in_mirror
+    integrartion_context = {
+        "out_mirror_error": "Some Error",
+        "out_error_printed": False,
+    }
+    expected_in_error_entry = {
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring incoming data: My in error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
+    }
+    expected_out_entry = {
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    response = handle_incoming_error_in_mirror(incident_data, "My in error")
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
+    assert len(response.entries) == 2
+    assert expected_in_error_entry in response.entries
+    assert expected_out_entry in response.entries
+
+
+def test_handle_incoming_error_in_mirror__should_update_out_only(mocker):
+    """
+   Given:
+       -  an integration context with and outgoing mirror error that was not printed and incoming error that was printed
+   When
+       - running handle_incoming_error_in_mirror
+   Then
+       - the result has the expected out error entry and no in error entry
+       - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
+   """
+    from CommonServerPython import handle_incoming_error_in_mirror
+    integrartion_context = {
+        "out_mirror_error": "Some Error",
+        "out_error_printed": False,
+        "in_mirror_error": "My in error",
+        "in_error_printed": True
+    }
+    expected_out_entry = {
+        'Type': 1,
+        'Contents': "",
+        'HumanReadable': "An error occurred while mirroring outgoing data: Some Error",
+        'ReadableContentsFormat': 'text',
+        'ContentsFormat': 'text',
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    response = handle_incoming_error_in_mirror(incident_data, "My in error")
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
+    assert len(response.entries) == 1
+    assert expected_out_entry in response.entries
+
+
+def test_handle_incoming_error_in_mirror__should_not_update(mocker):
+    """
+   Given:
+       -  an integration context with and outgoing mirror error that was printed and incoming error that was printed
+   When
+       - running handle_incoming_error_in_mirror
+   Then
+       - the result has no entries
+       - 'out_mirror_error' and 'in_mirror_error' in the incident data are set to True
+   """
+    from CommonServerPython import handle_incoming_error_in_mirror
+    integrartion_context = {
+        "out_mirror_error": "Some Error",
+        "out_error_printed": True,
+        "in_mirror_error": "My in error",
+        "in_error_printed": True
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integrartion_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', return_value="")
+    incident_data = {}
+    response = handle_incoming_error_in_mirror(incident_data, "My in error")
+    assert response.mirrored_object.get('in_mirror_error') == 'My in error'
+    assert response.mirrored_object.get('out_mirror_error') == 'Some Error'
+    assert len(response.entries) == 0

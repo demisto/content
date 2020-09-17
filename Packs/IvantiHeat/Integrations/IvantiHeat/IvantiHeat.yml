@@ -1,0 +1,382 @@
+category: Case Management
+commonfields:
+  id: Ivanti Heat
+  version: -1
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  hidden: false
+  name: token
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: subject
+  display: The object field to use for incident name
+  hidden: false
+  name: incident_name_field
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Ivanti Heat integration to manage issues and
+  create Cortex XSOAR incidents from Ivanti Heat.
+display: Ivanti Heat
+name: Ivanti Heat
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Business object ID.
+      isArray: false
+      name: rec-id
+      required: false
+      secret: false
+    - default: false
+      description: Start date of object records to return, in the following format
+        2012-01-01T00:00:00Z.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: End date of object records to return, in the following format 2012-01-01T00:00:00Z.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '25'
+      description: The maximum number of object records to return. Default is 25.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Starting record index from which to begin retrieving object records. Default is 0.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Fetches business object records based on the defined search keyword.
+      isArray: false
+      name: search-query
+      required: false
+      secret: false
+    - default: false
+      description: Type of object record.
+      isArray: false
+      name: object-type
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetches business object records based on the defined filter values.
+    execution: false
+    name: ivanti-heat-objects-list
+    outputs:
+    - contextPath: Ivantiheat.incidents.RecId
+      description: Incident ID.
+      type: String
+    - contextPath: Ivantiheat.incidents.Subject
+      description: Incident subject.
+      type: String
+    - contextPath: Ivantiheat.incidents.Status
+      description: Incident status.
+      type: String
+    - contextPath: Ivantiheat.incidents.CreatedDateTime
+      description: Incident creation time.
+      type: Date
+    - contextPath: Ivantiheat.incidents.Symptom
+      description: Incident description.
+      type: String
+    - contextPath: Ivantiheat.incidents.OwnerTeam
+      description: Incident owner team.
+      type: String
+    - contextPath: Ivantiheat.incidents.IncidentNumber
+      description: Incident number.
+      type: Number
+    - contextPath: Ivantiheat.incidents.CreatedBy
+      description: The user who created the incident.
+      type: String
+    - contextPath: Ivantiheat.incidents.Owner
+      description: Incident owner.
+      type: String
+    - contextPath: Ivantiheat.incidents.Category
+      description: Incident category.
+      type: String
+    - contextPath: Ivantiheat.incidents.Priority
+      description: Incident priority.
+      type: Number
+    - contextPath: Ivantiheat.incidents.TypeOfIncident
+      description: Incident type.
+      type: String
+    - contextPath: Ivantiheat.incidents.ActualCategory
+      description: Incident actual category.
+      type: String
+    - contextPath: Ivantiheat.incidents.SocialTextHeader
+      description: Incident text header.
+      type: String
+    - contextPath: Ivantiheat.incidents.Email
+      description: Incident owner email address.
+      type: String
+  - arguments:
+    - default: false
+      description: Business object ID to update
+      isArray: false
+      name: rec-id
+      required: true
+      secret: false
+    - default: false
+      description: Fields values in JSON format to update in the record, e.g., {"Priority":5}.
+      isArray: false
+      name: fields
+      required: true
+      secret: false
+    - default: false
+      description: Type of object record.
+      isArray: false
+      name: object-type
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates details of a business object, such as a change, problem, or
+      incident.
+    execution: false
+    name: ivanti-heat-object-update
+    outputs:
+    - contextPath: Ivantiheat.incidents.RecId
+      description: Incident ID.
+      type: String
+    - contextPath: Ivantiheat.incidents.Subject
+      description: Incident subject.
+      type: String
+    - contextPath: Ivantiheat.incidents.Status
+      description: Incident status.
+      type: String
+    - contextPath: Ivantiheat.incidents.CreatedDateTime
+      description: Incident creation time.
+      type: Date
+    - contextPath: Ivantiheat.incidents.Symptom
+      description: Incident description.
+      type: String
+    - contextPath: Ivantiheat.incidents.OwnerTeam
+      description: Incident owner team.
+      type: String
+    - contextPath: Ivantiheat.incidents.IncidentNumber
+      description: The incident number.
+      type: Number
+    - contextPath: Ivantiheat.incidents.CreatedBy
+      description: The user who created the incident.
+      type: String
+    - contextPath: Ivantiheat.incidents.Owner
+      description: Incident owner.
+      type: String
+    - contextPath: Ivantiheat.incidents.Category
+      description: Incident category.
+      type: String
+    - contextPath: Ivantiheat.incidents.Priority
+      description: Incident priority.
+      type: Number
+    - contextPath: Ivantiheat.incidents.TypeOfIncident
+      description: Incident type.
+      type: String
+    - contextPath: Ivantiheat.incidents.ActualCategory
+      description: Incident actual category.
+      type: String
+    - contextPath: Ivantiheat.incidents.SocialTextHeader
+      description: Incident text header.
+      type: String
+    - contextPath: Ivantiheat.incidents.Email
+      description: Incident owner email address.
+      type: String
+  - arguments:
+    - default: false
+      description: Business object ID
+      isArray: false
+      name: rec-id
+      required: true
+      secret: false
+    - default: false
+      description: Type of object record
+      isArray: false
+      name: object-type
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a business object by record ID, such as a change, problem, or incident.
+    execution: false
+    name: ivanti-heat-object-delete
+  - arguments:
+    - default: false
+      description: The attachment ID.
+      isArray: false
+      name: attachment-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets attachments from business objects by attachment ID.
+    execution: false
+    name: ivanti-heat-object-attachment-download
+  - arguments:
+    - default: false
+      description: The entry ID of the file in Cortex XSOAR context.
+      isArray: false
+      name: entry-id
+      required: true
+      secret: false
+    - default: false
+      description: Business object ID.
+      isArray: false
+      name: rec-id
+      required: true
+      secret: false
+    - default: false
+      description: Type of object record.
+      isArray: false
+      name: object-type
+      required: true
+      secret: false
+    deprecated: false
+    description: Uploads attachments to business objects.
+    execution: false
+    name: ivanti-heat-object-attachment-upload
+    outputs:
+    - contextPath: Ivantiheat.Attachment.AttachmentId
+      description: The ID of the attachment.
+      type: String
+    - contextPath: Ivantiheat.Attachment.FileName
+      description: The name of the attachment.
+      type: String
+    - contextPath: Ivantiheat.Attachment.RecId
+      description: Attachement business object ID.
+      type: String
+  - arguments:
+    - default: false
+      description: Type of object record.
+      isArray: false
+      name: object-type
+      required: true
+      secret: false
+    - default: false
+      description: Business object ID.
+      isArray: false
+      name: object-id
+      required: true
+      secret: false
+    - default: false
+      description: The action to perform on the business object.
+      isArray: false
+      name: action
+      required: true
+      secret: false
+    - default: false
+      description: The request body in JSON format. Alternatively, you can use a script to create the
+        request payload, e.g., IvantiHeatCloseIncidentExample.
+      isArray: false
+      name: request-data
+      required: true
+      secret: false
+    deprecated: false
+    description: Performs quick actions on a business object. For example, close,
+      clone, or resolve an incident or a problem.
+    execution: false
+    name: ivanti-heat-object-perform-action
+  - arguments:
+    - default: false
+      description: Type of object record.
+      isArray: false
+      name: object-type
+      required: true
+      secret: false
+    - default: false
+      description: Fields values in JSON format. Alternatively, you can use a script for create the request
+        payload, e.g., IvantiHeatCreateIncidentExample.
+      isArray: false
+      name: fields
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates business objects that are available out-of-the-box, such as a Change,
+      Problem, Incident, or any custom defined business object.
+    execution: false
+    name: ivanti-heat-object-create
+    outputs:
+    - contextPath: Ivantiheat.incidents.RecId
+      description: Incident ID.
+      type: String
+    - contextPath: Ivantiheat.incidents.Subject
+      description: Incident subject.
+      type: String
+    - contextPath: Ivantiheat.incidents.Status
+      description: Incident status.
+      type: String
+    - contextPath: Ivantiheat.incidents.CreatedDateTime
+      description: Incident creation time.
+      type: Date
+    - contextPath: Ivantiheat.incidents.Symptom
+      description: Incident description.
+      type: String
+    - contextPath: Ivantiheat.incidents.OwnerTeam
+      description: Incident owner team.
+      type: String
+    - contextPath: Ivantiheat.incidents.IncidentNumber
+      description: The incident number.
+      type: Number
+    - contextPath: Ivantiheat.incidents.CreatedBy
+      description: The user who created the incident.
+      type: String
+    - contextPath: Ivantiheat.incidents.Owner
+      description: Incident owner.
+      type: String
+    - contextPath: Ivantiheat.incidents.Category
+      description: Incident category.
+      type: String
+    - contextPath: Ivantiheat.incidents.Priority
+      description: Incident priority.
+      type: Number
+    - contextPath: Ivantiheat.incidents.TypeOfIncident
+      description: Incident type.
+      type: String
+    - contextPath: Ivantiheat.incidents.ActualCategory
+      description: Incident actual category.
+      type: String
+    - contextPath: Ivantiheat.incidents.SocialTextHeader
+      description: Incident text header.
+      type: String
+    - contextPath: Ivantiheat.incidents.Email
+      description: Incident owner email address.
+      type: String
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- Ivanti Heat - Test
