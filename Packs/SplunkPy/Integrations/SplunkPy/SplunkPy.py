@@ -564,7 +564,7 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     if fields:
         try:
             parsed_fields = json.loads(fields)
-        except:
+        except Exception:
             parsed_fields = {'fields': fields}
 
     args = assign_params(
