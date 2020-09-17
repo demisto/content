@@ -30,18 +30,6 @@ class Client(BaseClient):
             'jwtToken': self._jwt_token
         }
 
-    def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
-                     files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
-
-        return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                     json_data=json_data, params=params, data=data, files=files, timeout=timeout,
-                                     ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
-
-    def _generate_base64_token(self) -> str:
-        basic_authorization_to_encode = f'{self.username}:{self.password}'
-        basic_authorization = base64.b64encode(basic_authorization_to_encode.encode('ascii')).decode('utf-8')
-        return basic_authorization
-
     def _generate_jwt_token(self) -> str:
         headers = {
             'Content-Type': 'application/json',
@@ -54,89 +42,89 @@ class Client(BaseClient):
                     "passphrase": base64.b64encode(self.password.encode('ascii')).decode('utf-8')
                 }
         }
-        output = self.http_request('POST', '/sma/api/v2.0/login', json_data=data, headers=headers)
+        output = self._http_request('POST', '/sma/api/v2.0/login', json_data=data, headers=headers)
         jwt_token = output.get('data').get('jwtToken')
         return jwt_token
 
-    def list_report(self, url_suffix) -> Dict[str, Any]:
-        return self.http_request(
+    def list_report(self, url_params) -> Dict[str, Any]:
+        return self._http_request(
             method='GET',
-            url_suffix=url_suffix,
+            url_suffix='/sma/api/v2.0/reporting' + url_params
         )
 
-    def list_messages(self, url_suffix) -> Dict[str, Any]:
-        return self.http_request(
+    def list_messages(self, url_params) -> Dict[str, Any]:
+        return self._http_request(
             method='GET',
-            url_suffix=url_suffix
+            url_suffix='/sma/api/v2.0/message-tracking/messages' + url_params
         )
 
-    def list_get_message_details(self, url_suffix):
-        return self.http_request(
+    def list_get_message_details(self, url_params):
+        return self._http_request(
             method='GET',
-            url_suffix=url_suffix
+            url_suffix='/sma/api/v2.0/message-tracking/details' + url_params
         )
 
-    def list_get_dlp_details(self, url_suffix):
-        return self.http_request(
+    def list_get_dlp_details(self, url_params):
+        return self._http_request(
             method='GET',
-            url_suffix=url_suffix
+            url_suffix='/sma/api/v2.0/message-tracking/dlp-details' + url_params
         )
 
-    def list_get_amp_details(self, url_suffix):
-        return self.http_request(
+    def list_get_amp_details(self, url_params):
+        return self._http_request(
             method='GET',
-            url_suffix=url_suffix
+            url_suffix='/sma/api/v2.0/message-tracking/amp-details' + url_params
         )
 
-    def list_get_url_details(self, url_suffix):
-        return self.http_request(
+    def list_get_url_details(self, url_params):
+        return self._http_request(
             method='GET',
-            url_suffix=url_suffix
+            url_suffix='/sma/api/v2.0/message-tracking/url-details' + url_params
         )
 
-    def list_spam_quarantine(self, url_suffix):
-        return self.http_request(
+    def list_spam_quarantine(self, url_params):
+        return self._http_request(
             method='GET',
-            url_suffix=url_suffix
+            url_suffix='/sma/api/v2.0/quarantine/messages' + url_params
         )
 
-    def list_quarantine_get_details(self, url_suffix):
-        return self.http_request(
+    def list_quarantine_get_details(self, message_id):
+        return self._http_request(
             method='GET',
-            url_suffix=url_suffix
+            url_suffix=f'/sma/api/v2.0/quarantine/messages?mid={message_id}&quarantineType=spam'
         )
 
-    def list_delete_quarantine_messages(self, url_suffix, request_body):
-        return self.http_request(
+    def list_delete_quarantine_messages(self, request_body):
+        return self._http_request(
             method='DELETE',
-            url_suffix=url_suffix,
+            url_suffix='/sma/api/v2.0/quarantine/messages',
             json_data=request_body
         )
 
-    def list_release_quarantine_messages(self, url_suffix, request_body):
-        return self.http_request(
+    def list_release_quarantine_messages(self, request_body):
+        return self._http_request(
             method='POST',
-            url_suffix=url_suffix,
+            url_suffix='/sma/api/v2.0/quarantine/messages',
             json_data=request_body
         )
 
-    def list_entries_get(self, url_suffix):
-        return self.http_request(
+    def list_entries_get(self, url_params, list_type):
+        return self._http_request(
             method='GET',
-            url_suffix=url_suffix
+            url_suffix=f"/sma/api/v2.0/quarantine/{list_type}" + url_params
         )
 
-    def list_entries_add(self, url_suffix, request_body):
-        return self.http_request(
+    def list_entries_add(self, list_type, request_body):
+        return self._http_request(
             method='POST',
-            url_suffix=url_suffix,
+            url_suffix=f"/sma/api/v2.0/quarantine/{list_type}",
             json_data=request_body
         )
 
-    def list_entries_delete(self, url_suffix, request_body):
-        return self.http_request(
+    def list_entries_delete(self, list_type, request_body):
+        return self._http_request(
             method='DELETE',
-            url_suffix=url_suffix,
+            url_suffix=f"/sma/api/v2.0/quarantine/{list_type}",
             json_data=request_body
         )
 
@@ -189,10 +177,8 @@ def build_url_params_for_list_report(args):
 
 
 def list_report_command(client: Client, args: Dict[str, Any]):
-    url_suffix = '/sma/api/v2.0/reporting'
     url_params = build_url_params_for_list_report(args)
-    url_suffix_to_filter_by = url_suffix + url_params
-    report_response_data = client.list_report(url_suffix_to_filter_by)
+    report_response_data = client.list_report(url_params)
     return CommandResults(
         readable_output='',
         outputs_prefix='CiscoEmailSecurity.report',
@@ -281,10 +267,8 @@ def messages_to_human_readable(messages):
 
 
 def list_search_messages_command(client, args):
-    url_suffix = '/sma/api/v2.0/message-tracking/messages'
     url_params = build_url_params_for_list_messages(args)
-    url_suffix_to_filter_by = url_suffix + url_params
-    messages_response_data = client.list_messages(url_suffix_to_filter_by)
+    messages_response_data = client.list_messages(url_params)
     messages_data = messages_response_data.get('data')
     for message in messages_data:
         message['attributes']['mid'] = message.get('attributes', {}).get('mid', [None])[0]
@@ -297,7 +281,7 @@ def list_search_messages_command(client, args):
     )
 
 
-def build_url_params_for_get_details(args, url_suffix):
+def build_url_params_for_get_details(args):
     start_date = date_to_cisco_date(args.get('start_date'))
     end_date = date_to_cisco_date(args.get('end_date'))
     message_id = args.get('message_id')
@@ -305,9 +289,7 @@ def build_url_params_for_get_details(args, url_suffix):
     appliance_serial_number = args.get('appliance_serial_number')
     url_params = f'?startDate={start_date}&endDate={end_date}&mid={message_id}&icid={injection_connection_id}' \
                  f'&serialNumber={appliance_serial_number}'
-
-    url_suffix_to_filter_by = url_suffix + url_params
-    return url_suffix_to_filter_by
+    return url_params
 
 
 def details_get_to_human_readable(message):
@@ -328,8 +310,8 @@ def response_data_to_context_and_human_readable(response_data):
 
 
 def list_get_message_details_command(client, args):
-    url_suffix_to_filter_by = build_url_params_for_get_details(args, '/sma/api/v2.0/message-tracking/details')
-    message_get_details_response_data = client.list_get_message_details(url_suffix_to_filter_by)
+    url_params = build_url_params_for_get_details(args)
+    message_get_details_response_data = client.list_get_message_details(url_params)
     message_data, human_readable = response_data_to_context_and_human_readable(message_get_details_response_data)
     return CommandResults(
         readable_output=human_readable,
@@ -340,8 +322,8 @@ def list_get_message_details_command(client, args):
 
 
 def list_get_dlp_details_command(client, args):
-    url_suffix_to_filter_by = build_url_params_for_get_details(args, '/sma/api/v2.0/message-tracking/dlp-details')
-    message_get_details_response_data = client.list_get_dlp_details(url_suffix_to_filter_by)
+    url_params = build_url_params_for_get_details(args)
+    message_get_details_response_data = client.list_get_dlp_details(url_params)
     message_data, human_readable = response_data_to_context_and_human_readable(message_get_details_response_data)
     return CommandResults(
         readable_output=human_readable,
@@ -352,8 +334,8 @@ def list_get_dlp_details_command(client, args):
 
 
 def list_get_amp_details_command(client, args):
-    url_suffix_to_filter_by = build_url_params_for_get_details(args, '/sma/api/v2.0/message-tracking/amp-details')
-    message_get_details_response_data = client.list_get_amp_details(url_suffix_to_filter_by)
+    url_params = build_url_params_for_get_details(args)
+    message_get_details_response_data = client.list_get_amp_details(url_params)
     message_data, human_readable = response_data_to_context_and_human_readable(message_get_details_response_data)
     return CommandResults(
         readable_output=human_readable,
@@ -364,8 +346,8 @@ def list_get_amp_details_command(client, args):
 
 
 def list_get_url_details_command(client, args):
-    url_suffix_to_filter_by = build_url_params_for_get_details(args, '/sma/api/v2.0/message-tracking/url-details')
-    message_get_details_response_data = client.list_get_url_details(url_suffix_to_filter_by)
+    url_params = build_url_params_for_get_details(args)
+    message_get_details_response_data = client.list_get_url_details(url_params)
     message_data, human_readable = response_data_to_context_and_human_readable(message_get_details_response_data)
     return CommandResults(
         readable_output=human_readable,
@@ -421,10 +403,8 @@ def spam_quarantine_to_human_readable(spam_quarantine):
 
 
 def list_search_spam_quarantine_command(client, args):
-    url_suffix = '/sma/api/v2.0/quarantine/messages'
     url_params = build_url_params_for_spam_quarantine(args)
-    url_suffix_to_filter_by = url_suffix + url_params
-    spam_quarantine_response_data = client.list_spam_quarantine(url_suffix_to_filter_by)
+    spam_quarantine_response_data = client.list_spam_quarantine(url_params)
     spam_quarantine_data = spam_quarantine_response_data.get('data')
     human_readable = spam_quarantine_to_human_readable(spam_quarantine_data)
     return CommandResults(
@@ -447,8 +427,7 @@ def quarantine_message_details_data_to_human_readable(message):
 
 def list_get_quarantine_message_details_command(client, args):
     message_id = args.get('message_id')
-    url_suffix_to_filter_by = f'/sma/api/v2.0/quarantine/messages?mid={message_id}&quarantineType=spam'
-    quarantine_message_details_response = client.list_quarantine_get_details(url_suffix_to_filter_by)
+    quarantine_message_details_response = client.list_quarantine_get_details(message_id)
     quarantine_message_details = quarantine_message_details_response.get('data')
     human_readable = quarantine_message_details_data_to_human_readable(quarantine_message_details.get('attributes'))
     return CommandResults(
@@ -461,12 +440,11 @@ def list_get_quarantine_message_details_command(client, args):
 
 def list_delete_quarantine_messages_command(client, args):
     messages_ids = args.get('messages_ids')
-    url_suffix = '/sma/api/v2.0/quarantine/messages'
     request_body = {
         "quarantineType": "spam",
         "mids": messages_ids
     }
-    delete_quarantine_messages_response = client.list_delete_quarantine_messages(url_suffix, request_body)
+    delete_quarantine_messages_response = client.list_delete_quarantine_messages(request_body)
     return CommandResults(
         readable_output=delete_quarantine_messages_response,
         outputs_prefix='CiscoEmailSecurity.QuarantineDeleteMessages',
@@ -476,13 +454,12 @@ def list_delete_quarantine_messages_command(client, args):
 
 def list_release_quarantine_messages_command(client, args):
     messages_ids = args.get('messages_ids')
-    url_suffix = '/sma/api/v2.0/quarantine/messages'
     request_body = {
         "action": "release",
         "quarantineType": "spam",
         "mids": messages_ids
     }
-    release_quarantine_messages_response = client.list_release_quarantine_messages(url_suffix, request_body)
+    release_quarantine_messages_response = client.list_release_quarantine_messages(request_body)
     return CommandResults(
         readable_output=release_quarantine_messages_response,
         outputs_prefix='CiscoEmailSecurity.QuarantineDeleteMessages',
@@ -491,7 +468,6 @@ def list_release_quarantine_messages_command(client, args):
 
 
 def build_url_filter_for_get_list_entries(args):
-    url_suffix = SAFELIST_AND_BLOCKLIST_TO_FILTER_URL[args.get('list_type')]
     limit = set_limit(args.get('limit'))
     offset = int(args.get('offset', '0'))
     view_by = args.get('view_by')
@@ -499,13 +475,13 @@ def build_url_filter_for_get_list_entries(args):
     order_by = args.get('order_by')
     if order_by:
         url_params += f"&orderBy={order_by}"
-    url_suffix_to_filter_by = url_suffix + url_params
-    return url_suffix_to_filter_by
+    return url_params
 
 
 def list_entries_get_command(client, args):
-    url_suffix_to_filter_by = build_url_filter_for_get_list_entries(args)
-    list_entries_response = client.list_entries_get(url_suffix_to_filter_by)
+    list_type = args.get('list_type')
+    url_params = build_url_filter_for_get_list_entries(args)
+    list_entries_response = client.list_entries_get(url_params, list_type)
     list_entries = list_entries_response.get('data')
     return CommandResults(
         readable_output=list_entries,
@@ -515,9 +491,7 @@ def list_entries_get_command(client, args):
     )
 
 
-def build_url_and_request_body_for_add_list_entries(args):
-    url_suffix = SAFELIST_AND_BLOCKLIST_TO_FILTER_URL[args.get('list_type')]
-
+def build_request_body_for_add_list_entries(args):
     request_body = {
         "action": args.get('action'),
         "quarantineType": "spam",
@@ -532,12 +506,13 @@ def build_url_and_request_body_for_add_list_entries(args):
         request_body["senderAddresses"] = args.get('sender_addresses')
     if args.get('sender_list'):
         request_body["senderList"] = args.get('sender_list')
-    return url_suffix, request_body
+    return request_body
 
 
 def list_entries_add_command(client, args):
-    url_suffix, request_body = build_url_and_request_body_for_add_list_entries(args)
-    list_entries_response = client.list_entries_add(url_suffix, request_body)
+    list_type = args.get('list_type')
+    request_body = build_request_body_for_add_list_entries(args)
+    list_entries_response = client.list_entries_add(list_type, request_body)
     list_entries = list_entries_response.get('data')
     return CommandResults(
         readable_output=list_entries,
@@ -547,9 +522,7 @@ def list_entries_add_command(client, args):
     )
 
 
-def build_url_and_request_body_for_delete_list_entries(args):
-    url_suffix = SAFELIST_AND_BLOCKLIST_TO_FILTER_URL[args.get('list_type')]
-
+def build_request_body_for_delete_list_entries(args):
     request_body = {
         "quarantineType": "spam",
         "viewBy": args.get('view_by')
@@ -558,12 +531,13 @@ def build_url_and_request_body_for_delete_list_entries(args):
         request_body["recipientList"] = args.get('recipient_list')
     if args.get('sender_list'):
         request_body["senderList"] = args.get('sender_list')
-    return url_suffix, request_body
+    return request_body
 
 
 def list_entries_delete_command(client, args):
-    url_suffix, request_body = build_url_and_request_body_for_delete_list_entries(args)
-    list_entries_response = client.list_entries_delete(url_suffix, request_body)
+    list_type = args.get('list_type')
+    request_body = build_request_body_for_delete_list_entries(args)
+    list_entries_response = client.list_entries_delete(list_type, request_body)
     list_entries = list_entries_response.get('data')
     return CommandResults(
         readable_output=list_entries,

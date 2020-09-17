@@ -32,30 +32,76 @@ def test_set_limit(limit, expected):
 
 
 def test_build_url_params_for_list_report():
+    """
+    Given:
+        Arguments To flirt with.
+    When:
+        The function builds a URL filter from these arguments.
+    Then:
+        We check that the URL filter matches what the command asks for.
+
+    """
     from CiscoEmailSecurity import build_url_params_for_list_report
     res = build_url_params_for_list_report(test_data['args_for_list_report'])
     assert res == test_data['url_params_for_list_reports']
 
 
 def test_build_url_params_for_list_messages():
+    """
+    Given:
+        Arguments To flirt with.
+    When:
+        The function builds a URL filter from these arguments.
+    Then:
+        We check that the URL filter matches what the command asks for.
+
+    """
     from CiscoEmailSecurity import build_url_params_for_list_messages
     res = build_url_params_for_list_messages(test_data['args_for_list_messages'])
     assert res == test_data['url_params_for_list_messages']
 
 
 def test_build_url_params_for_get_details():
+    """
+    Given:
+        Arguments To flirt with.
+    When:
+        The function builds a URL filter from these arguments.
+    Then:
+        We check that the URL filter matches what the command asks for.
+
+    """
     from CiscoEmailSecurity import build_url_params_for_get_details
-    res = build_url_params_for_get_details(test_data['args_for_get_details'], '/sma/api/v2.0/quarantine/messages')
+    res = build_url_params_for_get_details(test_data['args_for_get_details'])
     assert res == test_data['url_params_for_get_details']
 
 
 def test_build_url_params_for_spam_quarantine():
+    """
+    Given:
+        Arguments To flirt with.
+    When:
+        The function builds a URL filter from these arguments.
+    Then:
+        We check that the URL filter matches what the command asks for.
+
+    """
     from CiscoEmailSecurity import build_url_params_for_spam_quarantine
     res = build_url_params_for_spam_quarantine(test_data['args_for_spam_quarantine'])
     assert res == test_data['url_params_for_spam_quarantine']
 
 
 def test_list_search_messages_command(requests_mock):
+    """
+    Given:
+        Arguments for command - list_search_messages.
+    When:
+        The API gives us results according to the arguments we sent.
+    Then:
+        We check that what is in context (outputs, outputs_prefix, outputs_key_field)
+        is what should be according to the arguments we sent to the API.
+
+    """
     from CiscoEmailSecurity import list_search_messages_command
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/message-tracking/messages?"
@@ -73,12 +119,31 @@ def test_list_search_messages_command(requests_mock):
 
 
 def test_messages_to_human_readable():
+    """
+    Given:
+        Messages response data.
+    When:
+        The function arranges the data and returns it in the Markdown table.
+    Then:
+        We check that the table that the function returns corresponds to the data that the function received.
+
+    """
     from CiscoEmailSecurity import messages_to_human_readable
     res = messages_to_human_readable(test_data['search_messages_context'])
     assert res == test_data['messages_human_readable']
 
 
 def test_list_get_message_details_command(requests_mock):
+    """
+    Given:
+        Arguments for command - list_get_message_details.
+    When:
+        The API gives us results according to the arguments we sent.
+    Then:
+        We check that what is in context (outputs, outputs_prefix, outputs_key_field)
+        is what should be according to the arguments we sent to the API.
+
+    """
     from CiscoEmailSecurity import list_get_message_details_command
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/message-tracking/details?"
@@ -96,12 +161,31 @@ def test_list_get_message_details_command(requests_mock):
 
 
 def test_message_to_human_readable():
+    """
+    Given:
+        Message response data.
+    When:
+        The function arranges the data and returns it in the Markdown table.
+    Then:
+        We check that the table that the function returns corresponds to the data that the function received.
+
+    """
     from CiscoEmailSecurity import details_get_to_human_readable
     res = details_get_to_human_readable(test_data['get_message_details_context'])
     assert res == test_data['message_human_readable']
 
 
 def test_list_search_spam_quarantine_command(requests_mock):
+    """
+    Given:
+        Arguments for command - list_search_spam_quarantine.
+    When:
+        The API gives us results according to the arguments we sent.
+    Then:
+        We check that what is in context (outputs, outputs_prefix, outputs_key_field)
+        is what should be according to the arguments we sent to the API.
+
+    """
     from CiscoEmailSecurity import list_search_spam_quarantine_command
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages"
@@ -118,12 +202,31 @@ def test_list_search_spam_quarantine_command(requests_mock):
 
 
 def test_spam_quarantine_to_human_readable():
+    """
+    Given:
+        Spam quarantine response data.
+    When:
+        The function arranges the data and returns it in the Markdown table.
+    Then:
+        We check that the table that the function returns corresponds to the data that the function received.
+
+    """
     from CiscoEmailSecurity import spam_quarantine_to_human_readable
     res = spam_quarantine_to_human_readable(test_data['search_spam_quarantine_context'])
     assert res == test_data['spam_quarantine_human_readable']
 
 
 def test_list_get_quarantine_message_details_command(requests_mock):
+    """
+    Given:
+        Arguments for command - get_quarantine_message_details.
+    When:
+        The API gives us results according to the arguments we sent.
+    Then:
+        We check that what is in context (outputs, outputs_prefix, outputs_key_field)
+        is what should be according to the arguments we sent to the API.
+
+    """
     from CiscoEmailSecurity import list_get_quarantine_message_details_command
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages?mid=None&quarantineType=spam",
@@ -139,12 +242,31 @@ def test_list_get_quarantine_message_details_command(requests_mock):
 
 
 def test_quarantine_message_details_data_to_human_readable():
+    """
+    Given:
+        Spam quarantine message details response data.
+    When:
+        The function arranges the data and returns it in the Markdown table.
+    Then:
+        We check that the table that the function returns corresponds to the data that the function received.
+
+    """
     from CiscoEmailSecurity import quarantine_message_details_data_to_human_readable
     res = quarantine_message_details_data_to_human_readable(test_data['quarantine_message_context_to_human_readable'])
     assert res == test_data['quarantine_message_details_human_readable']
 
 
 def test_list_delete_quarantine_messages_command(requests_mock):
+    """
+    Given:
+        Arguments for command - delete_quarantine_messages.
+    When:
+        The API gives us results according to the arguments we sent.
+    Then:
+        We check that what is in context (readable_output, outputs_prefix)
+        is what should be according to the arguments we sent to the API.
+
+    """
     from CiscoEmailSecurity import list_delete_quarantine_messages_command
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.delete("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages",
@@ -158,6 +280,16 @@ def test_list_delete_quarantine_messages_command(requests_mock):
 
 
 def test_list_release_quarantine_messages_command(requests_mock):
+    """
+    Given:
+        Arguments for command - release_quarantine_messages.
+    When:
+        The API gives us results according to the arguments we sent.
+    Then:
+        We check that what is in context (readable_output, outputs_prefix)
+        is what should be according to the arguments we sent to the API.
+
+    """
     from CiscoEmailSecurity import list_release_quarantine_messages_command
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages",
@@ -171,13 +303,31 @@ def test_list_release_quarantine_messages_command(requests_mock):
 
 
 def test_build_url_filter_for_get_list_entries():
+    """
+    Given:
+        Arguments To flirt with.
+    When:
+        The function builds a URL filter from these arguments.
+    Then:
+        We check that the URL filter matches what the command asks for.
+
+    """
     from CiscoEmailSecurity import build_url_filter_for_get_list_entries
     res = build_url_filter_for_get_list_entries({"list_type": "safelist", "view_by": "bla"})
-    assert res == "/sma/api/v2.0/quarantine/safelist?action=view&limit=20&offset=0&quarantineType=spam&orderDir=desc" \
-                  "&viewBy=bla"
+    assert res == "?action=view&limit=20&offset=0&quarantineType=spam&orderDir=desc&viewBy=bla"
 
 
 def test_list_entries_get_command(requests_mock):
+    """
+    Given:
+        Arguments for command - list_entries_get.
+    When:
+        The API gives us results according to the arguments we sent.
+    Then:
+        We check that what is in context (outputs, outputs_prefix)
+        is what should be according to the arguments we sent to the API.
+
+    """
     from CiscoEmailSecurity import list_entries_get_command
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/quarantine/safelist",
@@ -191,19 +341,37 @@ def test_list_entries_get_command(requests_mock):
     assert res.outputs_prefix == 'CiscoEmailSecurity.ListEntriesGet'
 
 
-def test_build_url_and_request_body_for_add_list_entries():
-    from CiscoEmailSecurity import build_url_and_request_body_for_add_list_entries
-    res_url, res_request_body = build_url_and_request_body_for_add_list_entries({"list_type": "safelist",
-                                                                                 "action": "add", "recipient_addresses":
-                                                                                ["user.com", "user.com"],
-                                                                                "sender_list": ["acme.com"],
-                                                                                 "view_by": "recipient"})
-    assert res_url == "/sma/api/v2.0/quarantine/safelist"
+def test_build_request_body_for_add_list_entries():
+    """
+    Given:
+        Arguments To flirt with.
+    When:
+        The function builds a request body from these arguments.
+    Then:
+        We check that the request body matches what the command asks for.
+
+    """
+    from CiscoEmailSecurity import build_request_body_for_add_list_entries
+    res_request_body = build_request_body_for_add_list_entries({"list_type": "safelist",
+                                                                "action": "add", "recipient_addresses":
+                                                                ["user.com", "user.com"],
+                                                                "sender_list": ["acme.com"],
+                                                                "view_by": "recipient"})
     assert res_request_body == {"action": "add", "quarantineType": "spam", "viewBy": "recipient",
                                 "recipientAddresses": ["user.com", "user.com"], "senderList": ["acme.com"]}
 
 
 def test_list_entries_add_command(requests_mock):
+    """
+    Given:
+        Arguments for command - list_entries_add.
+    When:
+        The API gives us results according to the arguments we sent.
+    Then:
+        We check that what is in context (outputs, outputs_prefix)
+        is what should be according to the arguments we sent to the API.
+
+    """
     from CiscoEmailSecurity import list_entries_add_command
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/quarantine/safelist",
@@ -218,16 +386,34 @@ def test_list_entries_add_command(requests_mock):
     assert res.outputs_prefix == 'CiscoEmailSecurity.listEntriesAdd'
 
 
-def test_build_url_and_request_body_for_delete_list_entries():
-    from CiscoEmailSecurity import build_url_and_request_body_for_delete_list_entries
-    res_url, res_request_body = build_url_and_request_body_for_delete_list_entries({"list_type": "safelist",
-                                                                                    "sender_list": ["acme.com"],
-                                                                                    "view_by": "recipient"})
-    assert res_url == "/sma/api/v2.0/quarantine/safelist"
+def test_build_request_body_for_delete_list_entries():
+    """
+    Given:
+        Arguments To flirt with.
+    When:
+        The function builds a request body from these arguments.
+    Then:
+        We check that the request body matches what the command asks for.
+
+    """
+    from CiscoEmailSecurity import build_request_body_for_delete_list_entries
+    res_request_body = build_request_body_for_delete_list_entries({"list_type": "safelist",
+                                                                   "sender_list": ["acme.com"],
+                                                                   "view_by": "recipient"})
     assert res_request_body == {"quarantineType": "spam", "viewBy": "recipient", "senderList": ["acme.com"]}
 
 
 def test_list_entries_delete_command(requests_mock):
+    """
+    Given:
+        Arguments for command - list_entries_add.
+    When:
+        The API gives us results according to the arguments we sent.
+    Then:
+        We check that what is in context (outputs, outputs_prefix)
+        is what should be according to the arguments we sent to the API.
+
+    """
     from CiscoEmailSecurity import list_entries_delete_command
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
     requests_mock.delete("https://ciscoemailsecurity/sma/api/v2.0/quarantine/safelist",

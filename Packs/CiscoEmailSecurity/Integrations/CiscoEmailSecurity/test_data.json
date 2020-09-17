@@ -49,7 +49,7 @@
     "appliance_serial_number": "1234"
   },
 
-  "url_params_for_get_details": "/sma/api/v2.0/quarantine/messages?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&mid=1234&icid=1234&serialNumber=1234",
+  "url_params_for_get_details": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&mid=1234&icid=1234&serialNumber=1234",
 
   "args_for_spam_quarantine": {
     "start_date": "2017-02-14 09:51:46",
