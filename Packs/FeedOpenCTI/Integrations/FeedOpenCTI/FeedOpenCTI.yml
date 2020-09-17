@@ -40,7 +40,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '200'
-  display: max_indicator_to_fetch
+  display: Max Indicators Per Fetch (defult is 500)
   hidden: false
   name: max_indicator_to_fetch
   required: false
