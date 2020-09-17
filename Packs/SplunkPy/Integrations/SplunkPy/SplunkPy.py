@@ -23,6 +23,7 @@ SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
 FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
+PROXIES = handle_proxy()
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
 REPLACE_FLAG = params.get('replaceKeys', False)
@@ -163,7 +164,7 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
     args['output_mode'] = 'json'
 
     mod_notables = requests.post(baseurl + 'services/notable_update', data=args, headers=auth_header,
-                                 verify=VERIFY_CERTIFICATE)
+                                 verify=VERIFY_CERTIFICATE, proxies=PROXIES)
 
     return mod_notables.json()
 
@@ -256,6 +257,7 @@ def requests_handler(url, message, **kwargs):
             data=data,
             headers=headers,
             verify=VERIFY_CERTIFICATE,
+            proxies=PROXIES,
             **kwargs
         )
     except requests.exceptions.HTTPError as e:
@@ -558,10 +560,17 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
+    parsed_fields = None
+    if fields:
+        try:
+            parsed_fields = json.loads(fields)
+        except:
+            parsed_fields = {'fields': fields}
+
     args = assign_params(
         event=event,
         host=host,
-        fields={'fields': fields} if fields else None,
+        fields=parsed_fields,
         index=index,
         sourcetype=source_type,
         source=source,
@@ -574,7 +583,7 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     }
 
     response = requests.post(baseurl + '/services/collector/event', data=json.dumps(args), headers=headers,
-                             verify=VERIFY_CERTIFICATE)
+                             verify=VERIFY_CERTIFICATE, proxies=PROXIES)
     return response
 
 
@@ -612,7 +621,7 @@ def splunk_edit_notable_event_command(proxy):
     password = demisto.params()['authentication']['password']
     auth_req = requests.post(baseurl + 'services/auth/login',
                              data={'username': username, 'password': password, 'output_mode': 'json'},
-                             verify=VERIFY_CERTIFICATE)
+                             verify=VERIFY_CERTIFICATE, proxies=PROXIES)
 
     sessionKey = auth_req.json()['sessionKey']
     eventIDs = None
@@ -685,7 +694,7 @@ def test_module(service):
         }
         try:
             requests.get(params.get('hec_url') + '/services/collector/health', headers=headers,
-                         verify=VERIFY_CERTIFICATE)
+                         verify=VERIFY_CERTIFICATE, proxies=PROXIES)
         except Exception as e:
             return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
