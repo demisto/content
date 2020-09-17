@@ -1,8 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-import datetime
-from datetime import timedelta
 import urllib3
 import traceback
 from typing import Any, Dict
@@ -132,7 +130,7 @@ class Client(BaseClient):
 
 
 def get_dates_for_test_module():
-    now = datetime.datetime.now()
+    now = datetime.now()
     start = now + timedelta(days=1)
     end = now + timedelta(days=2)
 
