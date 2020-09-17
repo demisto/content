@@ -23,7 +23,7 @@ class TestClientHelperFunctions:
 
     @pytest.mark.parametrize('args, output', [
         ({'offset': 1, 'max_last_modified_date': '2020-09-16T22:28:42.143302', 'wow': 2},
-         "last_modified_date:<=1600284522+wow:'2'")
+         "last_modified_date:<=1600295322+wow:'2'")
     ])
     def test_build_filter_query(self, args, output, mocker):
         mocker.patch.object(CrowdStrikeClient, "_generate_token")
