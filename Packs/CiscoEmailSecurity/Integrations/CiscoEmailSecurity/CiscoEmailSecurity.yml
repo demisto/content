@@ -26,6 +26,7 @@ configuration:
   required: true
   type: 4
 - display: Fetch incidents
+  defaultValue: false
   name: isFetch
   required: false
   type: 8
