@@ -1557,12 +1557,12 @@
         },
         {
             "integrations": "Microsoft Graph User",
-            "playbookID": "Microsoft Graph - Test",
+            "playbookID": "Microsoft Graph User - Test",
             "instance_names": "ms_graph_user_dev"
         },
         {
             "integrations": "Microsoft Graph User",
-            "playbookID": "Microsoft Graph - Test",
+            "playbookID": "Microsoft Graph User - Test",
             "instance_names": "ms_graph_user_prod"
         },
         {
@@ -1647,6 +1647,11 @@
             "integrations": "QRadar",
             "playbookID": "test_Qradar",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "QRadar_v2",
+            "playbookID": "test_Qradar_v2",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "VMware",
