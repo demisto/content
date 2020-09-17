@@ -154,7 +154,7 @@ def get_file_from_endpoint_path(session_id: str, path: str) -> Tuple[Union[dict,
         # Get file from enpoint
         output = demisto.executeCommand("cb-get-file-from-endpoint", {'session': session_id, 'path': path})
         entry_context = dict_safe_get(output, [0, 'EntryContext'])
-        # Output file to waroom as soon as possible, But removing human readable so it will be signle summary in the end.
+        # Output file to war-room as soon as possible, But removing human-readable so it will be a single summary in the end.
         output[0]['HumanReadable'] = ""
         demisto.results(output)
 
