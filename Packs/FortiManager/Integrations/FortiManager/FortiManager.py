@@ -499,7 +499,7 @@ def commit_adom_command(client, args):
 
 def commit_device_command(client, args):
     client.fortimanager_api_call('exec', f"/dvmdb/{get_global_or_adom(client, args)}/workspace/"
-                                             f"commit/dev/{args.get('device')}")
+                                         f"commit/dev/{args.get('device')}")
 
     return f"Committed ADOM {get_global_or_adom(client, args)} to device {args.get('device')}"
 
@@ -515,6 +515,40 @@ def install_policy_package_command(client, args):
                                          'datetime': args.get('datetime')
                                      })
     return f"Installed a policy package {args.get('get')} in ADOM: {get_global_or_adom(client, args)}"
+
+
+def lock_adom_command(client, args):
+    client.fortimanager_api_call('exec', f"/dvmdb/{get_global_or_adom(client, args)}/workspace/lock")
+    return f"Locked {get_global_or_adom(client, args)}"
+
+
+def unlock_adom_command(client, args):
+    client.fortimanager_api_call('exec', f"/dvmdb/{get_global_or_adom(client, args)}/workspace/unlock")
+    return f"Unlocked {get_global_or_adom(client, args)}"
+
+
+def lock_device_command(client, args):
+    client.fortimanager_api_call('exec', f"/dvmdb/{get_global_or_adom(client, args)}/workspace/lock/"
+                                         f"dev/{args.get('device')}")
+    return f"Locked Device {args.get('device')} in ADOM {get_global_or_adom(client, args)}"
+
+
+def unlock_device_command(client, args):
+    client.fortimanager_api_call('exec', f"/dvmdb/{get_global_or_adom(client, args)}/workspace/unlock/"
+                                         f"dev/{args.get('device')}")
+    return f"Unlocked Device {args.get('device')} in ADOM {get_global_or_adom(client, args)}"
+
+
+def lock_package_command(client, args):
+    client.fortimanager_api_call('exec', f"/dvmdb/{get_global_or_adom(client, args)}/workspace/lock/"
+                                         f"pkg/{args.get('package')}")
+    return f"Locked Package {args.get('package')} in ADOM {get_global_or_adom(client, args)}"
+
+
+def unlock_package_command(client, args):
+    client.fortimanager_api_call('exec', f"/dvmdb/{get_global_or_adom(client, args)}/workspace/unlock/"
+                                         f"pkg/{args.get('package')}")
+    return f"Unlocked Package {args.get('package')} in ADOM {get_global_or_adom(client, args)}"
 
 
 ''' MAIN FUNCTION '''
@@ -655,6 +689,24 @@ def main() -> None:
 
         elif demisto.command() == 'fortimanager-policy-package-install':
             return_results(install_policy_package_command(client, demisto.args()))
+
+        elif demisto.command() == 'fortimanager-adom-lock':
+            return_results(lock_adom_command(client, demisto.args()))
+
+        elif demisto.command() == 'fortimanager-adom-unlock':
+            return_results(unlock_adom_command(client, demisto.args()))
+
+        elif demisto.command() == 'fortimanager-device-lock':
+            return_results(lock_device_command(client, demisto.args()))
+
+        elif demisto.command() == 'fortimanager-device-unlock':
+            return_results(unlock_device_command(client, demisto.args()))
+
+        elif demisto.command() == 'fortimanager-package-lock':
+            return_results(lock_package_command(client, demisto.args()))
+
+        elif demisto.command() == 'fortimanager-package-unlock':
+            return_results(unlock_package_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception:

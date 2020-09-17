@@ -2004,6 +2004,99 @@ script:
     description: Schedule a policy package installation.
     execution: false
     name: fortimanager-policy-package-install
+  - arguments:
+    - default: false
+      description: The ADOM to lock. Leave empty to use the default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    deprecated: false
+    description: Lock an ADOM.
+    execution: false
+    name: fortimanager-adom-lock
+  - arguments:
+    - default: false
+      description: The ADOM to unlock. Leave empty to use the default integration
+        ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    deprecated: false
+    description: Unlock an ADOM.
+    execution: false
+    name: fortimanager-adom-unlock
+  - arguments:
+    - default: false
+      description: The ADOM to lock the device on. Leave empty to use the default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The device to lock.
+      isArray: false
+      name: device
+      required: false
+      secret: false
+    deprecated: false
+    description: Lock a device.
+    execution: false
+    name: fortimanager-device-lock
+  - arguments:
+    - default: false
+      description: The ADOM to unlock the device on. Leave empty to use the default integration
+        ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The device to unlock.
+      isArray: false
+      name: device
+      required: false
+      secret: false
+    deprecated: false
+    description: Unlock a device.
+    execution: false
+    name: fortimanager-device-unlock
+  - arguments:
+    - default: false
+      description: The ADOM to lock the package on. Leave empty to use the default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The package to lock.
+      isArray: false
+      name: package
+      required: false
+      secret: false
+    deprecated: false
+    description: Lock an ADOM.
+    execution: false
+    name: fortimanager-package-lock
+  - arguments:
+    - default: false
+      description: The ADOM to unlock the package on. Leave empty to use the default integration
+        ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The package to unlock.
+      isArray: false
+      name: package
+      required: false
+      secret: false
+    deprecated: false
+    description: Unlock a package.
+    execution: false
+    name: fortimanager-package-unlock
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: false
