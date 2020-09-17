@@ -23,6 +23,22 @@ configuration:
   name: apikey
   required: true
   type: 4
+- display: HTTP Timeout
+  additionalinfo: Sets the timeout of the HTTP requests sent to Cortex XDR API (in seconds).
+  defaultvalue: 120
+  name: timeout
+  required: false
+  type: 0
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -31,11 +47,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
-  required: false
-  type: 0
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
@@ -488,6 +499,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name
       description: File signature vendor name
       type: String
+    - contextPath: Account.Username
+      description: The username in the relevant system.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to this endpoint.
+      type: String
   - arguments:
     - default: false
       description: XDR incident ID. You can get the incident ID from the output of
@@ -834,8 +851,8 @@ script:
       isArray: false
       name: sort_order
       predefined:
-        - asc
-        - desc
+      - asc
+      - desc
       required: false
       secret: false
     deprecated: false
@@ -900,6 +917,21 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.group_name
       description: The name of the group to which the endpoint belongs.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to this endpoint.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The unique ID within the tool retrieving the endpoint.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The IP address of the endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: The domain of the endpoint.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Endpoint OS.
       type: String
   - deprecated: false
     description: Gets a list of all the agent versions to use for creating a distribution
@@ -1397,7 +1429,201 @@ script:
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.DESCRIPTION
       description: Agent report description.
       type: String
-  dockerimage: demisto/python3:3.7.4.977
+  - arguments:
+    - default: false
+      description: String that represents a list of hashed files you want to blacklist.
+        Must be a valid SHA256 hash.
+      isArray: true
+      name: hash_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the action.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Blacklists requested files which have not already been blacklisted
+      or whitelisted.
+    execution: false
+    name: xdr-blacklist-files
+  - arguments:
+    - default: false
+      description: String that represents a list of hashed files you want to whitelist.
+        Must be a valid SHA256 hash.
+      isArray: true
+      name: hash_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the action.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Whitelists requested files which have not already been blacklisted
+      or whitelisted.
+    execution: false
+    name: xdr-whitelist-files
+  - arguments:
+    - default: false
+      description: List of endpoint IDs.
+      isArray: true
+      name: endpoint_id_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the path of the file you want to quarantine.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the file’s hash. Must be a valid SHA256
+        hash.
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Quarantines a file on selected endpoints. You can select up to 1000
+      endpoints.
+    execution: false
+    name: xdr-quarantine-files
+  - arguments:
+    - default: false
+      description: String the represents the endpoint ID.
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the file hash. Must be a valid SHA256 hash.
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the file path.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the quarantine status for a selected file.
+    execution: false
+    name: xdr-get-quarantine-status
+  - arguments:
+    - default: false
+      description: String that represents the file in hash. Must be a valid SHA256
+        hash.
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the endpoint ID. If you do not enter a specific
+        endpoint ID, the request will run restore on all endpoints which relate to
+        the quarantined file you defined.
+      isArray: false
+      name: endpoint_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Restores a quarantined file on requested endpoints.
+    execution: false
+    name: xdr-restore-file
+  - arguments:
+    - default: false
+      description: List of endpoint IDs.
+      isArray: false
+      name: endpoint_id_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the distribution list.
+      isArray: false
+      name: dist_name
+      required: false
+      secret: false
+    - default: false
+      description: Integer in timestamp epoch milliseconds.
+      isArray: false
+      name: gte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Integer in timestamp epoch milliseconds.
+      isArray: false
+      name: gte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: Integer in timestamp epoch milliseconds
+      isArray: false
+      name: lte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Integer in timestamp epoch milliseconds
+      isArray: false
+      name: lte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: List of IP addresses.
+      isArray: false
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the endpoint group.
+      isArray: false
+      name: group_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of operating system.
+      isArray: false
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint alias name.
+      isArray: false
+      name: alias
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether an endpoint has been isolated. Can be "isolated" or "unisolated".
+      isArray: false
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+      required: false
+      secret: false
+    - default: false
+      description: Name of the host.
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    deprecated: false
+    description: Runs a scan on a selected endpoint. To scan all endpoints, run this
+      command with no filters.
+    execution: true
+    name: xdr-endpoint-scan
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false
@@ -1406,6 +1632,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- Test XDR Playbook
 fromversion: 4.1.0
-defaultClassifier: Cortex XDR - IR
-defaultMapperIn: Cortex XDR - IR-mapper
+defaultclassifier: Cortex XDR - IR
+defaultmapperin: Cortex XDR - IR-mapper

@@ -3,9 +3,10 @@ Create and Manage Azure Virtual Machines
 <br/>
 This integration was integrated and tested with Azure Compute API Version: 2017-12-01.
 </p>
-<h2>Detailed Description</h2>
+<h2>Authentication</h2>
+For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
 <ul>
-<li>To allow us access to Azure Compute, an admin has to approve our app using an admin consent flow, by clicking on the following <a href="https://oproxy.demisto.ninja/ms-azure-compute)">link</a>.</li>
 <li>After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
 <li>In order to assign a role to the application after consent was given: 
   <ul>
@@ -44,14 +45,6 @@ This integration was integrated and tested with Azure Compute API Version: 2017-
     Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
   </li>
 </ol>
-
-<h2>Use a Self-Deployed Azure Application</h2>
-<p>To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the <a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">Microsoft documentation</a></p>
-<p>The Tenant ID, Client ID, and Client secret are required for the integration.
-When you configure the integration in Demisto enter those parameters in the appropriate fields (instead of how you received them from the admin consent in the current doc).
-<p>ID - Client ID<br>
-Token - Tenant ID<br>
-Key - Client Secret</p></p>
 
 <div class="cl-preview-section">
   <h2 id="commands">Commands</h2>

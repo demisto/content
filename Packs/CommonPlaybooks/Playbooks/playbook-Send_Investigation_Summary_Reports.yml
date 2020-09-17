@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: Find Closed Incidents
       description: Searches Demisto incidents to identify closed incidents.
-      scriptName: SearchIncidents
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""

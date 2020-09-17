@@ -61,7 +61,8 @@ configuration:
   required: false
   type: 8
   defaultvalue: "true"
-- display: Tags
+- additionalinfo: Supports CSV values.
+  display: Tags
   name: feedTags
   required: false
   type: 0
@@ -91,7 +92,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: fastly-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.6980
+  dockerimage: demisto/jmespath:1.0.0.8854
   feed: true
   isfetch: false
   longRunning: false

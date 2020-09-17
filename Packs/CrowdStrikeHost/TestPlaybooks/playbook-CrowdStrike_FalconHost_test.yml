@@ -1,20 +1,15 @@
-elasticcommonfields: {}
 id: FalconHost Test
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+vcShouldKeepItemLegacyProdMachine: false
 name: FalconHost Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "c3d0808c-fef8-42bf-bc88-c4d681200d78"
+    taskid: 814a2191-34e0-40f0-8666-40c67174a0e3
     type: start
     task:
-      elasticcommonfields: {}
-      id: "c3d0808c-fef8-42bf-bc88-c4d681200d78"
+      id: 814a2191-34e0-40f0-8666-40c67174a0e3
       version: -1
       name: ""
       iscommand: false
@@ -26,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 265,
           "y": 50
         }
       }
@@ -34,14 +29,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: "0b2b1d55-17ea-48d5-99c4-546e4d25de57"
+    taskid: f16f4c13-934e-422f-8415-6d84bd306c88
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "0b2b1d55-17ea-48d5-99c4-546e4d25de57"
+      id: f16f4c13-934e-422f-8415-6d84bd306c88
       version: -1
       name: Search devices
       description: Search for devices in your environment by platform, host name,
@@ -63,7 +57,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 265,
           "y": 370
         }
       }
@@ -71,14 +65,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: "b76a1dae-2ba1-40da-81d6-2ed628084bf2"
+    taskid: d84e95eb-b9a3-457e-83c9-4cab302a94b5
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "b76a1dae-2ba1-40da-81d6-2ed628084bf2"
+      id: d84e95eb-b9a3-457e-83c9-4cab302a94b5
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -97,7 +90,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 265,
           "y": 195
         }
       }
@@ -105,14 +98,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: "24428a6a-46ee-4d67-8f56-9645df13d580"
+    taskid: 1a6ef7d7-f6a0-4028-8111-56913ffcc87d
     type: condition
     task:
-      elasticcommonfields: {}
-      id: "24428a6a-46ee-4d67-8f56-9645df13d580"
+      id: 1a6ef7d7-f6a0-4028-8111-56913ffcc87d
       version: -1
       name: Found any devices?
       type: condition
@@ -136,7 +128,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 265,
           "y": 545
         }
       }
@@ -144,14 +136,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: "2561f88c-efdb-466c-a231-1dc73572ac46"
+    taskid: d3f6e785-edad-4a2b-89ed-1247ea92d857
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "2561f88c-efdb-466c-a231-1dc73572ac46"
+      id: d3f6e785-edad-4a2b-89ed-1247ea92d857
       version: -1
       name: Get device details
       description: Get details for one or more devices, according to device ID
@@ -169,7 +160,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 377.5,
           "y": 720
         }
       }
@@ -177,14 +168,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: "dc1e8c3c-8608-4ca5-a290-558845a302eb"
+    taskid: c5092555-1c08-41ae-8d39-b4cee81f02fd
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "dc1e8c3c-8608-4ca5-a290-558845a302eb"
+      id: c5092555-1c08-41ae-8d39-b4cee81f02fd
       version: -1
       name: Verify Endpoint
       description: |-
@@ -209,7 +199,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 377.5,
           "y": 895
         }
       }
@@ -217,14 +207,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: "be1933ad-2852-48bb-8421-d702c4959231"
+    taskid: e32e6cd8-3a3f-4af6-8f74-aa25e3f5166f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "be1933ad-2852-48bb-8421-d702c4959231"
+      id: e32e6cd8-3a3f-4af6-8f74-aa25e3f5166f
       version: -1
       name: Search by MD5
       description: Returns a list of device IDs on which an indicator ran
@@ -244,7 +233,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 377.5,
           "y": 1245
         }
       }
@@ -252,14 +241,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: "5d3db641-f79f-496f-9bed-b15eca350fc0"
+    taskid: 30a8b402-3b19-4fcd-85c2-89c784800ce4
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "5d3db641-f79f-496f-9bed-b15eca350fc0"
+      id: 30a8b402-3b19-4fcd-85c2-89c784800ce4
       version: -1
       name: Get details
       description: Get details for one or more devices, according to device ID
@@ -269,7 +257,7 @@ tasks:
       brand: FalconHost
     nexttasks:
       '#none#':
-      - "23"
+      - "33"
     scriptarguments:
       ids:
         simple: ${FalconHostDevices}
@@ -277,7 +265,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 490,
           "y": 1595
         }
       }
@@ -285,14 +273,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: "e523fb12-c3d0-42bf-ad11-426fe2eefeb2"
+    taskid: 89baa8b3-c51d-4fd3-82ca-4ab5b0aa68f8
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "e523fb12-c3d0-42bf-ad11-426fe2eefeb2"
+      id: 89baa8b3-c51d-4fd3-82ca-4ab5b0aa68f8
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -314,7 +301,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 377.5,
           "y": 1070
         }
       }
@@ -322,14 +309,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: "96ecfd8d-8345-4d78-a4c1-bd8439133bc0"
+    taskid: 68dfc3fe-83f7-4055-8ae4-2c8ea4e0277b
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "96ecfd8d-8345-4d78-a4c1-bd8439133bc0"
+      id: 68dfc3fe-83f7-4055-8ae4-2c8ea4e0277b
       version: -1
       name: Search with number offset
       description: Search for devices in your environment by platform, host name,
@@ -351,22 +337,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1945
+          "x": 377.5,
+          "y": 2470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: "d76dc448-ddd3-4164-b16c-ef5bb63218d0"
+    taskid: 96b3082f-634e-4464-8243-eb28911f29fa
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "d76dc448-ddd3-4164-b16c-ef5bb63218d0"
+      id: 96b3082f-634e-4464-8243-eb28911f29fa
       version: -1
       name: Get device details
       description: Get details for one or more devices, according to device ID
@@ -384,22 +369,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2120
+          "x": 377.5,
+          "y": 2645
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: "90399b9b-4b87-48aa-9d0b-7d5a61ec3d48"
+    taskid: bebd7ce9-ca44-4728-8bc2-d182accddbf5
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "90399b9b-4b87-48aa-9d0b-7d5a61ec3d48"
+      id: bebd7ce9-ca44-4728-8bc2-d182accddbf5
       version: -1
       name: Set number offset
       description: Sets a value into the context with the given context key
@@ -420,22 +404,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1770
+          "x": 377.5,
+          "y": 2295
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: "0538af06-8fdd-4113-98e7-99e174e1aff2"
+    taskid: d9e46570-c5f0-4c44-8aaa-a9f001c8d688
     type: condition
     task:
-      elasticcommonfields: {}
-      id: "0538af06-8fdd-4113-98e7-99e174e1aff2"
+      id: d9e46570-c5f0-4c44-8aaa-a9f001c8d688
       version: -1
       name: Found any devices?
       type: condition
@@ -443,7 +426,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "23"
+      - "33"
       "yes":
       - "18"
     separatecontext: false
@@ -459,7 +442,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 377.5,
           "y": 1420
         }
       }
@@ -467,14 +450,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: "4db38125-e1c3-4911-9dec-8559ad767753"
+    taskid: 9c68c21d-78a8-4487-89c1-0a7876c8b74a
     type: condition
     task:
-      elasticcommonfields: {}
-      id: "4db38125-e1c3-4911-9dec-8559ad767753"
+      id: 9c68c21d-78a8-4487-89c1-0a7876c8b74a
       version: -1
       name: Check detections were fetched
       description: Check detections were fetched
@@ -512,22 +494,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 2500
+          "x": 265,
+          "y": 2995
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: "c17e52a0-5e56-451a-a31f-9ce6f7a6b7fe"
+    taskid: 4b1c707d-956b-48c6-8db8-ea6eadb7a0bd
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "c17e52a0-5e56-451a-a31f-9ce6f7a6b7fe"
+      id: 4b1c707d-956b-48c6-8db8-ea6eadb7a0bd
       version: -1
       name: Get Detection Details
       description: Fetch details of a Crowdstrike Detection using the detection ID
@@ -547,22 +528,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 2755
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: "efd3a3b5-7cd4-452a-a63b-bed069f26fd2"
+    taskid: 79dd6e1e-4b80-42e8-8628-3078e72aef69
     type: title
     task:
-      elasticcommonfields: {}
-      id: "efd3a3b5-7cd4-452a-a63b-bed069f26fd2"
+      id: 79dd6e1e-4b80-42e8-8628-3078e72aef69
       version: -1
       name: No Detections to check
       type: title
@@ -572,22 +552,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 542.5,
-          "y": 2755
+          "x": 480,
+          "y": 3185
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: "d782f73e-82c3-4aab-b57b-47672b8187c0"
+    taskid: e915c6ff-a88b-47d5-8572-14fdec4d6ee8
     type: condition
     task:
-      elasticcommonfields: {}
-      id: "d782f73e-82c3-4aab-b57b-47672b8187c0"
+      id: e915c6ff-a88b-47d5-8572-14fdec4d6ee8
       version: -1
       name: Assert detections details were fetched
       description: Assert detections details were fetched
@@ -611,22 +590,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 2940
+          "x": 50,
+          "y": 3345
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: "dd288834-40d0-4f0f-85c6-ff021b62ac52"
+    taskid: b9c891b1-3d19-4a68-8519-2f48f94b7105
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "dd288834-40d0-4f0f-85c6-ff021b62ac52"
+      id: b9c891b1-3d19-4a68-8519-2f48f94b7105
       version: -1
       name: Change Detection to in_progress
       description: Sets the state of a detection in Falcon Host. You can obtain detection
@@ -649,22 +627,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 3120
+          "x": 50,
+          "y": 3520
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: "5be55b33-7679-46fd-9381-63291044ffec"
+    taskid: db5f714e-a4e7-4da1-8d07-2083c0b33e5a
     type: title
     task:
-      elasticcommonfields: {}
-      id: "5be55b33-7679-46fd-9381-63291044ffec"
+      id: db5f714e-a4e7-4da1-8d07-2083c0b33e5a
       version: -1
       name: Done
       description: Done
@@ -675,22 +652,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 3320
+          "x": 50,
+          "y": 3695
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: "98ba8ad4-29cb-41d0-90b8-d327336e913b"
+    taskid: f40e6b74-da7f-4dd9-8196-18957526f7d3
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "98ba8ad4-29cb-41d0-90b8-d327336e913b"
+      id: f40e6b74-da7f-4dd9-8196-18957526f7d3
       version: -1
       name: Search Detections Since 2017
       description: String search through all Crowdstrike Detection fields.  For example,
@@ -711,22 +687,126 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 2300
+          "x": 265,
+          "y": 2820
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: d6c3da2e-28a9-43a6-87ab-7b8e0385079d
+    type: regular
+    task:
+      id: d6c3da2e-28a9-43a6-87ab-7b8e0385079d
+      version: -1
+      name: Search by IPv4
+      description: Returns a list of device IDs on which an indicator ran
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      type:
+        simple: ipv4
+      value:
+        simple: 10.2.101.237
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 4529e31f-2a27-48d8-83c0-e26bccad20e7
+    type: regular
+    task:
+      id: 4529e31f-2a27-48d8-83c0-e26bccad20e7
+      version: -1
+      name: Search by IPv6
+      description: Returns a list of device IDs on which an indicator ran
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      type:
+        simple: ipv6
+      value:
+        simple: 2001:4860:4860::8888
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 657811da-8607-42da-87e2-fa4b393a1de2
+    type: regular
+    task:
+      id: 657811da-8607-42da-87e2-fa4b393a1de2
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3335,
-        "width": 872.5,
+        "height": 3710,
+        "width": 820,
         "x": 50,
         "y": 50
       }

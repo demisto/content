@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 INCIDENT_FIELD_NAME = "name"
 INCIDENT_FIELD_MACHINE_NAME = "cliName"
+INCIDENT_FIELD_SYSTEM = "system"
 
 SAMPLES_INCOMING = 'incomingSamples'
 SAMPLES_SCHEME = 'scheme'
@@ -24,8 +25,11 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
                'Account Type': {'aliases': ['accounttype', 'account type'],
                                 'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'Agent ID': {'aliases': ['agentid', 'agent id'],
+               'Agent ID': {'aliases': ['agentid', 'agent id', 'sensor id', 'tenant id'],
                             'validators': []},
+
+               'Tenant Name': {'aliases': ['tenant name', 'tenant name'],
+                               'validators': ['validate_alphanumeric_with_common_punct']},
 
                'App': {'aliases': ['app', 'app'], 'validators': ['validate_alphanumeric_with_common_punct']},
 
@@ -37,9 +41,15 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
 
                'City': {'aliases': ['city'], 'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'Command Line': {'aliases': ['commandline', 'command line', 'process file name', 'process file path',
-                                            'process full path', 'process full path'],
+               'Command Line': {'aliases': ['commandline', 'command line', 'cmdline', 'cmd line', 'process file name',
+                                            'process file path',
+                                            'process full path', 'process full path', 'cmd'],
                                 'validators': ['validate_file_full_path']},
+
+               'Event ID': {'aliases': ['eventid', 'event id', 'alert id', 'offense id'],
+                            'validators': ['validate_alphanumeric_with_common_punct']},
+               'Event Type': {'aliases': ['eventtype', 'event type', 'alert type'],
+                              'validators': ['validate_alphanumeric_with_common_punct']},
 
                'Company Name': {'aliases': ['companyname',
                                             'company name',
@@ -55,19 +65,6 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
 
                'Description': {'aliases': ['description'], 'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'Dest': {'aliases': ['dest', 'dst'], 'validators': ['validate_hostname']},
-
-               'Dest NT Domain': {'aliases': ['destntdomain',
-                                              'dest nt domain',
-                                              'destination network',
-                                              'destination domain',
-                                              'target domain',
-                                              'dest dns',
-                                              'dest pci domain',
-                                              'dest host name',
-                                              'dest hostname'],
-                                  'validators': []},
-
                'Destination IP': {'aliases': ['destinationip',
                                               'destination ip',
                                               'destination address',
@@ -76,6 +73,11 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
                                               'target address',
                                               'dst'],
                                   'validators': ['validate_ip']},
+               'Destination Port': {'aliases': ['destinationport',
+                                                'destination port',
+                                                'dst port',
+                                                'dest port'],
+                                    'validators': ['validate_number']},
 
                'Email BCC': {'aliases': ['emailbcc', 'email bcc', 'bcc recipient', 'bcc'],
                              'validators': ['validate_email']},
@@ -129,7 +131,7 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
                                         'recipient'],
                             'validators': ['validate_email']},
 
-               'File Hash': {'aliases': ['filehash', 'file hash', 'event file hash'],
+               'File Hash': {'aliases': ['filehash', 'file hash', 'event file hash', 'md5', 'sha1', 'sha256'],
                              'validators': ['validate_hash']},
                'File Name': {'aliases': ['filename', 'file name'], 'validators': []},
                'File Path': {'aliases': ['filepath', 'file path', 'full path', 'full path'],
@@ -139,20 +141,28 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
                'File Type': {'aliases': ['filetype', 'file type'],
                              'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'First Seen': {'aliases': ['firstseen', 'first seen'], 'validators': ['validate_date']},
-
-               'Hostname': {
-                   'aliases': ['hostname', 'host name', 'devicename', 'device name', 'endpoint name', 'end point name'],
+               'Source Hostname': {
+                   'aliases': ['source hostname', 'source host name', 'src hostname', 'src host name'],
                    'validators': ['validate_hostname']},
 
-               'Infected Hosts': {'aliases': ['infectedhosts', 'infected hosts'],
-                                  'validators': ['validate_hostname']},
+               'Destination Hostname': {
+                   'aliases': ['destination hostname', 'destination host name',
+                               'dest hostname', 'dest host name', 'dst hostname', 'dst host name',
+                               'target hostname', 'target host name'],
+                   'validators': ['validate_hostname']},
 
-               'Last Seen': {'aliases': ['lastseen', 'last seen'], 'validators': ['validate_date']},
+               'Source Network': {'aliases': ['source network', 'sourcenetwork', 'src network'],
+                                  'validators': ['validate_alphanumeric_with_common_punct']},
+               'Destination Network': {'aliases': ['destination network', 'destinationnetwork',
+                                                   'dest network', 'dst network', 'target netwrok'],
+                                       'validators': ['validate_alphanumeric_with_common_punct']},
+
+               'Device Name': {
+                   'aliases': ['devicename', 'device name', 'endpoint name', 'end point name'],
+                   'validators': ['validate_alphanumeric_with_common_punct']},
 
                'MAC Address': {'aliases': ['macaddress', 'mac address', 'mac', 'src mac', 'source mac'],
                                'validators': ['validate_mac']},
-               'MD5': {'aliases': ['md5', 'md5'], 'validators': ['validate_md5']},
 
                'PID': {'aliases': ['pid', 'process pid', 'parent process pid', 'target process pid'],
                        'validators': ['validate_number']},
@@ -161,32 +171,21 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
 
                'Region': {'aliases': ['region', 'region'], 'validators': ['validate_alphanumeric_with_common_punct']},
 
-               'SHA256': {'aliases': ['sha256', 'sha256'], 'validators': ['validate_sha256']},
                'Signature': {'aliases': ['signature', 'signature'], 'validators': []},
 
                'Source IP': {
                    'aliases': ['sourceip', 'source ip', 'src ip', 'src address', 'source address', 'computer ip',
                                'device ip',
-                               'attacker address', 'attacker ip', 'sender ip', 'sender address', 'offense source',
-                               'agent ip'],
+                               'attacker address', 'attacker ip', 'sender ip', 'sender address', 'agent ip'],
                    'validators': ['validate_ip']},
 
-               'Src': {'aliases': ['src', 'src'], 'validators': ['validate_hostname']},
+               'Source Port': {'aliases': ['sourceport',
+                                           'source port',
+                                           'src port'],
+                               'validators': ['validate_number']},
 
-               'Src NT Domain': {'aliases': ['srcntdomain',
-                                             'src nt domain',
-                                             'source nt domain',
-                                             'src pci domain',
-                                             'source pci domain',
-                                             'src nt host',
-                                             'src dns',
-                                             'source network',
-                                             'source nt host',
-                                             'device domain'],
-                                 'validators': ['']},
-
-               'Src OS': {'aliases': ['srcos', 'src os', 'os type', 'os version'],
-                          'validators': []},
+               'OS': {'aliases': ['operating system', 'os type', 'os version', 'os'],
+                      'validators': []},
 
                'Subtype': {'aliases': ['subtype', 'subtype'],
                            'validators': ['validate_alphanumeric_with_common_punct']},
@@ -196,8 +195,17 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
 
                'Traps ID': {'aliases': ['trapsid', 'traps id', 'trap id'], 'validators': []},
 
-               'Username': {'aliases': ['username', 'username', 'user name', 'src user name', 'target user name',
-                                        'target username'], 'validators': ['validate_alphanumeric_with_common_punct']},
+               'Source Username': {'aliases': ['username', 'username', 'user name', 'src user name',
+                                               'src username', 'source username', 'source user name'],
+                                   'validators': ['validate_alphanumeric_with_common_punct']},
+               'Destination Username': {'aliases': ['destination username', 'destination user name',
+                                                    'dest username', 'dest user name', 'dst username', 'dst user name',
+                                                    'target user name', 'target username'],
+                                        'validators': ['validate_alphanumeric_with_common_punct']},
+
+               'Detection URL': {'aliases': ['detection url'],
+                                 'validators': ['validate_url']},
+
                'Vendor ID': {'aliases': ['vendorid', 'vendor id'], 'validators': []},
                'Vendor Product': {'aliases': ['vendorproduct', 'vendor product'],
                                   'validators': ['validate_alphanumeric_with_common_punct']},
@@ -216,6 +224,11 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
 
                'severity': {'aliases': ['event severity', 'severity', 'event priority', 'priority', 'urgency'],
                             'validators': []},
+
+               'Log Source': {'aliases': ['log source', 'log sources', 'logsource'], 'validators': []},
+
+               'Protocol': {'aliases': ['protocol'], 'validators': []},
+
                }
 
 suffix_mapping = {
@@ -300,7 +313,14 @@ class Validator:
         self.MD5_REGEX = re.compile('^[a-fA-F0-9]{32}$')
         self.HASH_REGEX = re.compile('^[a-fA-F0-9]+$')
         self.MAC_REGEX = re.compile('^[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$', re.IGNORECASE)
-        self.COMMON_NAME_CHARECTERS = re.compile('^[a-zA-Z"\s_\-\']+$')
+        self.URL_REGEX = re.compile(
+            r'^(?:http|ftp|hxxp)s?://'  # http:// or https://
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+            r'localhost|'  # localhost...
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+            r'(?::\d+)?'  # optional port
+            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+        self.COMMON_NAME_CHARECTERS = re.compile('^[0-9a-zA-Z"\s_\-\'./]+$')
         self.HOSTNAME_PART_REGEX = re.compile('(?!-)[A-Z\d-]{1,63}(?<!-)$')
         self.FULL_FILE_PATH_REGEX = re.compile('^((?:/[^/\n]+)*|.*(\\\\.*))$')
         self.date_validator = DateValidator()
@@ -316,6 +336,9 @@ class Validator:
             return True
         except socket.error:
             return False
+
+    def validate_url(self, field_name, value, json_field_name=None):
+        return self.validate_regex(self.URL_REGEX, value)
 
     def validate_email(self, field_name, value, json_field_name=None):
         return self.validate_regex(self.EMAIL_REGEX, value)
@@ -370,19 +393,19 @@ class Validator:
         return validate_func(field_name, value, json_field_name)
 
 
-def is_sublist_of_list(s, l):
+def is_sublist_of_list(s, lst):
     sub_set = False
     if s == []:
         sub_set = True
-    elif s == l:
+    elif s == lst:
         sub_set = True
-    elif len(s) > len(l):
+    elif len(s) > len(lst):
         sub_set = False
     else:
-        for i in range(len(l)):
-            if l[i] == s[0]:
+        for i in range(len(lst)):
+            if lst[i] == s[0]:
                 n = 1
-                while (n < len(s)) and (i + n) < len(l) and (l[i + n] == s[n]):
+                while (n < len(s)) and (i + n) < len(lst) and (lst[i + n] == s[n]):
                     n += 1
 
                 if n == len(s):
@@ -484,6 +507,14 @@ def suggest_field(json_field_name, json_field_value=None):
     return suggest_field_with_alias(json_field_name, json_field_value)[0]
 
 
+def generate_aliases(field):
+    aliases = []
+    aliases.append(field.lower())
+    aliases.append(" ".join(normilize(field)))
+    aliases.append("".join(normilize(field)))
+    return aliases
+
+
 def get_aliasing(siem_fields):
     aliasing_map = {}
     aliases_terms_map = {}
@@ -502,8 +533,25 @@ def get_alias_index(field_name, alias):
     return SIEM_FIELDS[field_name]['aliases'].index(alias)  # type: ignore
 
 
-def get_most_relevant(field_name, field_mappings):
-    candidates = sorted(field_mappings, key=lambda x: get_alias_index(field_name, x[1]))
+def get_most_relevant_json_field(field_name, json_field_to_alias):
+    if len(json_field_to_alias) == 0:
+        return
+
+    # calculate jaccard score for each alias, and get the candidates with max score
+    scores = {}
+    for json_field, alias in json_field_to_alias.items():
+        scores[json_field] = jaccard_similarity_for_string_terms(json_field, alias)
+    scores = {k: v for k, v in scores.items() if v == max(scores.values())}
+
+    # calculate jaccard score for each field, and get the candidates with max score
+    for json_field, alias in json_field_to_alias.items():
+        scores[json_field] = jaccard_similarity_for_string_terms(json_field, field_name)
+    scores = {k: v for k, v in scores.items() if v == max(scores.values())}
+
+    # for candidates with the same score with the least alias index
+    candidates = sorted(list(scores.keys()),
+                        key=lambda json_field: get_alias_index(field_name, json_field_to_alias[json_field]))
+
     return candidates[0]
 
 
@@ -518,13 +566,15 @@ def match_for_incident(incident_to_match):
 
     mapping = {}  # type: ignore
     for json_field_name, json_field_value in incident.items():
+        # we try to get suggestion if it's scheme or if the value is not empty
         if SCHEME_ONLY or json_field_value:
-            suggestion, alias = suggest_field_with_alias(json_field_name, json_field_value)
-            if suggestion:
-                if suggestion not in mapping:
-                    mapping[suggestion] = []
-                mapping[suggestion].append((json_field_name, alias))
-    return {k: get_most_relevant(k, v)[0] for k, v in mapping.items()}
+            incident_field_suggestion, alias = suggest_field_with_alias(json_field_name, json_field_value)
+            if incident_field_suggestion:
+                if incident_field_suggestion not in mapping:
+                    mapping[incident_field_suggestion] = {}
+                mapping[incident_field_suggestion][json_field_name] = alias
+    return {incident_field_name: get_most_relevant_json_field(incident_field_name, json_field_to_alias) for
+            incident_field_name, json_field_to_alias in mapping.items()}
 
 
 def jaccard_similarity(list1, list2):
@@ -563,8 +613,10 @@ def match_for_incidents(incidents_to_match):
         for k, v in match_for_incident(flat_incident).items():
             if k not in fields_cnt:
                 fields_cnt[k] = Counter()
-            fields_cnt[k][v] += 1
-    mapping_result = {k: v.most_common()[0][0] for k, v in fields_cnt.items()}
+            if v:
+                fields_cnt[k][v] += 1
+    mapping_result = {field_name: get_most_relevant_match_for_field(field_name, field_cnt) for field_name, field_cnt in
+                      fields_cnt.items()}
     return mapping_result
 
 
@@ -631,7 +683,10 @@ def parse_incident_sample(sample):
     if type(sample) is dict and 'rawJSON' in sample:
         incident = json.loads(sample['rawJSON'])
     else:
-        incident = json.loads(sample)
+        try:
+            incident = json.loads(sample)
+        except Exception:
+            incident = sample
     return incident
 
 
@@ -652,6 +707,9 @@ def init():
     if fields and len(fields) > 0:
         fields_names = map(lambda x: x['name'], fields)
         SIEM_FIELDS = filter_by_dict_by_keys(SIEM_FIELDS, fields_names)
+        for custom_field in filter(lambda x: not x['system'], fields):
+            field_name = custom_field[INCIDENT_FIELD_NAME]
+            SIEM_FIELDS[field_name] = {'aliases': generate_aliases(field_name), 'validators': []}
 
     FIELD_NAME_TO_CLI_NAME = {field[INCIDENT_FIELD_NAME]: field[INCIDENT_FIELD_MACHINE_NAME] for field in fields}
 

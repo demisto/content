@@ -25,7 +25,7 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Trust any certificate (not secure)
@@ -35,14 +35,12 @@ configuration:
   required: false
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
-  type: 13
   required: false
+  type: 13
 - display: Initial fetching history (in minutes)
   name: fetch_interval
   defaultvalue: "10"

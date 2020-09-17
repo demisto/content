@@ -19,7 +19,8 @@ def test_json_feed_no_config():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'])
+        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
+                                              auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
@@ -47,7 +48,8 @@ def test_json_feed_with_config():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'])
+        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
+                                              auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
@@ -78,7 +80,8 @@ def test_json_feed_with_config_mapping():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'])
+        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
+                                              auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
         indicator = indicators[0]
         custom_fields = indicator['fields']
@@ -113,7 +116,7 @@ def test_list_of_indicators_with_no_json_object():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'])
+        indicators = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
         assert len(indicators) == 3
         assert indicators[0].get('value') == '1.1.1.1'
         assert indicators[0].get('type') == 'IP'

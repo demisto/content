@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 268876ff-639e-4006-874a-a79e02cc95bf
+    taskid: 4e436ced-fc4d-4a67-80fe-ae0aaf602bbb
     type: start
     task:
-      id: 268876ff-639e-4006-874a-a79e02cc95bf
+      id: 4e436ced-fc4d-4a67-80fe-ae0aaf602bbb
       version: -1
       name: ""
       iscommand: false
@@ -20,8 +20,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -112
+          "x": 265,
+          "y": 50
         }
       }
     note: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 7db207a7-ad98-4343-8db3-80b8951302d4
+    taskid: 2538bd73-c5f9-46a4-8d0b-6c7fe3b8f97f
     type: regular
     task:
-      id: 7db207a7-ad98-4343-8db3-80b8951302d4
+      id: 2538bd73-c5f9-46a4-8d0b-6c7fe3b8f97f
       version: -1
       name: Create array in context
       description: Find all users associated with a role
@@ -56,8 +56,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 224
+          "x": 265,
+          "y": 195
         }
       }
     note: false
@@ -67,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 803761a8-9be3-4bb7-8c0f-d4d305528f6f
+    taskid: e9061539-cf17-4165-8e03-446500f82b3b
     type: condition
     task:
-      id: 803761a8-9be3-4bb7-8c0f-d4d305528f6f
+      id: e9061539-cf17-4165-8e03-446500f82b3b
       version: -1
       name: Check existing value
       description: Look for value in a list
@@ -96,8 +96,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 398
+          "x": 265,
+          "y": 370
         }
       }
     note: false
@@ -107,10 +107,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 5bfe9ed3-c070-46ff-8faa-1b5feebf7804
+    taskid: 99b95b38-f5cc-498c-8362-a81988d1dbbe
     type: regular
     task:
-      id: 5bfe9ed3-c070-46ff-8faa-1b5feebf7804
+      id: 99b95b38-f5cc-498c-8362-a81988d1dbbe
       version: -1
       name: Bad...
       type: regular
@@ -120,8 +120,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 22,
-          "y": 571
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -131,10 +131,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: cdf4eb33-c8f7-42f3-8c76-523fdb8384a7
+    taskid: 597cbd6c-650c-4501-8902-44a302bc3a40
     type: condition
     task:
-      id: cdf4eb33-c8f7-42f3-8c76-523fdb8384a7
+      id: 597cbd6c-650c-4501-8902-44a302bc3a40
       version: -1
       name: Check a non exist value
       scriptName: IsValueInArray
@@ -159,8 +159,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 697
+          "x": 480,
+          "y": 545
         }
       }
     note: false
@@ -170,10 +170,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: c3d3732b-6cc6-4008-84d7-ceafa0bb66ea
+    taskid: d4224065-aa6c-4d9f-8eb6-6ffd93062e7e
     type: regular
     task:
-      id: c3d3732b-6cc6-4008-84d7-ceafa0bb66ea
+      id: d4224065-aa6c-4d9f-8eb6-6ffd93062e7e
       version: -1
       name: Bad...
       type: regular
@@ -183,8 +183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 46,
-          "y": 875
+          "x": 265,
+          "y": 720
         }
       }
     note: false
@@ -194,10 +194,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: ab8aaac0-d242-463f-8be1-9fd800dcdb45
+    taskid: 6d43579b-fc97-4d73-8d22-851f22fba381
     type: condition
     task:
-      id: ab8aaac0-d242-463f-8be1-9fd800dcdb45
+      id: 6d43579b-fc97-4d73-8d22-851f22fba381
       version: -1
       name: 'Check two equal strings '
       scriptName: IsValueInArray
@@ -222,8 +222,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1012
+          "x": 695,
+          "y": 720
         }
       }
     note: false
@@ -233,10 +233,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 0f19c80d-4cac-4848-83ef-5d2c0a09c8fa
+    taskid: fc6d9efa-2327-421f-855b-311d3f92f98c
     type: regular
     task:
-      id: 0f19c80d-4cac-4848-83ef-5d2c0a09c8fa
+      id: fc6d9efa-2327-421f-855b-311d3f92f98c
       version: -1
       name: Bad...
       type: regular
@@ -246,8 +246,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 46,
-          "y": 1173
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -257,10 +257,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: e770565c-9b81-4fbf-86af-a20be65283a3
+    taskid: 59ee38a0-9df8-4d7f-8bd0-13b14d904f61
     type: condition
     task:
-      id: e770565c-9b81-4fbf-86af-a20be65283a3
+      id: 59ee38a0-9df8-4d7f-8bd0-13b14d904f61
       version: -1
       name: 'Check two non equal strings '
       scriptName: IsValueInArray
@@ -285,8 +285,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1351
+          "x": 910,
+          "y": 895
         }
       }
     note: false
@@ -296,10 +296,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 36adc2a3-a170-4bc5-8f49-797fcbc6c895
+    taskid: d0a415ea-7754-4934-8a5d-3c24a878abaa
     type: regular
     task:
-      id: 36adc2a3-a170-4bc5-8f49-797fcbc6c895
+      id: d0a415ea-7754-4934-8a5d-3c24a878abaa
       version: -1
       name: Bad...
       type: regular
@@ -309,36 +309,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 46,
-          "y": 1519
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "10":
-    id: "10"
-    taskid: 691e195e-0d5b-46fe-804a-3081e7652437
-    type: regular
-    task:
-      id: 691e195e-0d5b-46fe-804a-3081e7652437
-      version: -1
-      name: Close
-      scriptName: CloseInvestigation
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      notes: {}
-      reason: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2430
+          "x": 695,
+          "y": 1070
         }
       }
     note: false
@@ -348,10 +320,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: f7d82642-3594-4464-83ca-b72dc0c6c804
+    taskid: e0cbf7ae-4722-4599-83b3-0822451a384d
     type: condition
     task:
-      id: f7d82642-3594-4464-83ca-b72dc0c6c804
+      id: e0cbf7ae-4722-4599-83b3-0822451a384d
       version: -1
       name: Check empty array
       scriptName: IsValueInArray
@@ -375,8 +347,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1729
+          "x": 1125,
+          "y": 1070
         }
       }
     note: false
@@ -386,10 +358,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 10326c52-dfe8-4cbb-8f5f-f35857707a3e
+    taskid: c3f8fb52-a64b-49d2-8389-1aedde4c2ab2
     type: regular
     task:
-      id: 10326c52-dfe8-4cbb-8f5f-f35857707a3e
+      id: c3f8fb52-a64b-49d2-8389-1aedde4c2ab2
       version: -1
       name: Bad...
       type: regular
@@ -399,8 +371,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 46,
-          "y": 1893
+          "x": 910,
+          "y": 1245
         }
       }
     note: false
@@ -410,10 +382,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: ab42d7d4-0d3d-4dad-8fd1-448bc0adf9d8
+    taskid: 18fb0ed0-515f-4f01-838a-4f32139fdab8
     type: condition
     task:
-      id: ab42d7d4-0d3d-4dad-8fd1-448bc0adf9d8
+      id: 18fb0ed0-515f-4f01-838a-4f32139fdab8
       version: -1
       name: Check empty value
       scriptName: IsValueInArray
@@ -422,7 +394,7 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "10"
+      - "15"
       "yes":
       - "14"
     scriptarguments:
@@ -437,8 +409,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2056
+          "x": 1340,
+          "y": 1245
         }
       }
     note: false
@@ -448,10 +420,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 9bd5ef1c-e627-4bab-81ba-ea2833c9bc70
+    taskid: 3ac8f0d5-c5ea-4b2f-80f1-2612c0623ecb
     type: regular
     task:
-      id: 9bd5ef1c-e627-4bab-81ba-ea2833c9bc70
+      id: 3ac8f0d5-c5ea-4b2f-80f1-2612c0623ecb
       version: -1
       name: Bad...
       type: regular
@@ -461,8 +433,32 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 46,
-          "y": 2225
+          "x": 1125,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: fa9ce7d1-e32e-43fe-8408-cdbea31246b6
+    type: title
+    task:
+      id: fa9ce7d1-e32e-43fe-8408-cdbea31246b6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1435
         }
       }
     note: false
@@ -475,10 +471,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2637,
-        "width": 808,
-        "x": 22,
-        "y": -112
+        "height": 1465,
+        "width": 1885,
+        "x": 50,
+        "y": 50
       }
     }
   }

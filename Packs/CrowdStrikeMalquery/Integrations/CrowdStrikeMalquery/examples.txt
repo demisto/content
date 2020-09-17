@@ -1,0 +1,10 @@
+cs-malquery-samples-multidownload samples=742db9f3ae1b7322dfe8ab81476cd3146f9c0ce086fc4cd38a1072fb6cae8662,d77cf874521ee7d4bb7f54bd8cef3d60ec24d267cf2d502f819880f0819f5766
+cs-malquery-file-download file_id=d77cf874521ee7d4bb7f54bd8cef3d60ec24d267cf2d502f819880f0819f5766
+cs-malquery-exact-search hex=8948208b480833ca33f989502489482889782c8bd7 filter_meta=sha256,type,size limit=5
+cs-malquery-fuzzy-search hex=8948208b480833ca33f989502489482889782c8bd7 filter_meta=sha256,type,size limit=5
+cs-malquery-hunt file_type=PE32 filter_meta=sha256,type,size limit=5 yara_rule="rule CrowdStrike_16142_01 : wiper { strings: $ = { 41 61 43 63 64 44 65 46 66 47 68 69 4B 4C 6C 4D 6D 6E 4E 6F 4F 70 50 72 52 73 53 54 74 55 75 56 76 77 57 78 79 5A 7A 33 32 2E 5C 45 62 67 6A 48 49 20 5F 59 51 42 3A 22 2F 40 } condition: all of them and filesize < 800KB }"
+cs-malquery-get-request request_id=096f6aa5-f245-4b09-790f-133bc89d4d26
+file file=d77cf874521ee7d4bb7f54bd8cef3d60ec24d267cf2d502f819880f0819f5766
+cs-malquery-sample-fetch request_id=e2e1aecb-6e34-44f7-5d42-932880276c5e
+cs-malquery-get-ratelimit
+

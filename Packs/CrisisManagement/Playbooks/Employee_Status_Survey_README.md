@@ -33,6 +33,3 @@ There are no outputs for this playbook.
 ## Playbook Image
 ---
 ![Employee_Status_Survey](https://raw.githubusercontent.com/demisto/content/ec6cda315c0d1e15cf36a3c93cc936dd90dfbc48/Packs/CrisisManagement/doc_files/Employee_Status_Survey.png)
-
-## Playbook Demo Video
-[Crisis Management in Cortex XSOAR](https://www.youtube.com/watch?v=J6DcD5y5B_U "Crisis Management in Cortex XSOAR")

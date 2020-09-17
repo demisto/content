@@ -1,0 +1,7 @@
+{
+  "RiskSense.TagAssociation(val.AssociationID == obj.AssociationID)": {
+    "AssociationID": 2542063,
+    "Created": "2020-04-29T08:46:54",
+    "TagName": "TestForMe"
+  }
+}

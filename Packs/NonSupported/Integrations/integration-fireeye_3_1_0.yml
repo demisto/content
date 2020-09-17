@@ -36,7 +36,7 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 script:

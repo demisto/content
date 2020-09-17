@@ -212,5 +212,5 @@ script:
   subtype: python3
 tests:
   - Gmail Single User - Test
-defaultClassifier: Gmail Single User
-defaultMapperIn: Gmail Single User-mapper
+defaultclassifier: Gmail Single User
+defaultmapperin: Gmail Single User-mapper

@@ -23,13 +23,10 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedTypes": [
-        "Access"
-    ],
-    "systemAssociatedTypes": [
-        "Access"
-    ],
-    "associatedToAll": false,
+    "associatedTypes": [],
+    "systemAssociatedTypes": null,
+    "associatedToAll": true,
     "unmapped": false,
-    "unsearchable": false
+    "unsearchable": false,
+    "fromVersion": "4.1.0"
 }

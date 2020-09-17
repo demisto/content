@@ -1,16 +1,15 @@
-elasticcommonfields: {}
 id: AlienVaultReputationFeed_Test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: AlienVaultReputationFeed_Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 10dd718c-c314-423e-89ca-c0fca06a2e93
+    taskid: def8b814-3f4f-4dd3-88bd-7f212513388b
     type: start
     task:
-      elasticcommonfields: {}
-      id: 10dd718c-c314-423e-89ca-c0fca06a2e93
+      id: def8b814-3f4f-4dd3-88bd-7f212513388b
       version: -1
       name: ""
       iscommand: false
@@ -33,11 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 4a51a852-0721-46ae-84f8-716a34f88a45
+    taskid: 4eddbd7e-e8d6-4c13-8e22-014eb2c05698
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 4a51a852-0721-46ae-84f8-716a34f88a45
+      id: 4eddbd7e-e8d6-4c13-8e22-014eb2c05698
       version: -1
       name: Get Indicators
       description: Gets the feed indicators.
@@ -49,12 +47,11 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      extend-context:
-        simple: AlienVaultFeed.value=value::AlienVaultFeed.type=type
       indicator_type:
         simple: IP
       limit:
-        simple: "10"
+        simple: "1"
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -70,11 +67,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: ef01415d-6ac6-4e16-8ab8-4e413645d416
+    taskid: 9a8c841c-b3b4-4fd7-844d-4feb2a9cbbd6
     type: title
     task:
-      elasticcommonfields: {}
-      id: ef01415d-6ac6-4e16-8ab8-4e413645d416
+      id: 9a8c841c-b3b4-4fd7-844d-4feb2a9cbbd6
       version: -1
       name: Done
       description: Done
@@ -96,11 +92,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 6e57e6a8-83a8-48f1-8136-19044c339538
+    taskid: f350f97f-d796-4813-85d7-ef642242d124
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 6e57e6a8-83a8-48f1-8136-19044c339538
+      id: f350f97f-d796-4813-85d7-ef642242d124
       version: -1
       name: Delete Context
       description: Delete field from context.
@@ -133,13 +128,12 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: e3ef64ee-d2da-42b7-820a-15805a5519a0
+    taskid: 4e6003ba-28b9-4ea8-8208-9fb2c9694133
     type: condition
     task:
-      elasticcommonfields: {}
-      id: e3ef64ee-d2da-42b7-820a-15805a5519a0
+      id: 4e6003ba-28b9-4ea8-8208-9fb2c9694133
       version: -1
-      name: Assert Output
+      name: Assert Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -150,15 +144,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: AlienVaultFeed.type
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: AlienVaultFeed.value
+              complex:
+                root: ${IP}
             iscontext: true
     view: |-
       {
@@ -187,4 +177,3 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: AlienVaultReputationFeed_Test
-fromversion: 5.5.0

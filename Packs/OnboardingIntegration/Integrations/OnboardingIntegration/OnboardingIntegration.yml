@@ -216,5 +216,5 @@ script:
   subtype: python2
 tests:
   - No Tests
-defaultClassifier: OnboardingIntegration
-defaultMapperIn: OnboardingIntegration-mapper
+defaultclassifier: OnboardingIntegration
+defaultmapperin: OnboardingIntegration-mapper

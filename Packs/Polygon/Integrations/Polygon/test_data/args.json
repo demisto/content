@@ -1,0 +1,25 @@
+{
+	"client_kwargs": {
+        "base_url": "http://123-fake-api.com",
+        "api_key": "12345678",
+        "verify": false,
+        "language": "en"
+    },
+    "upload_file_args": {
+        "file_id": "12345",
+        "password": ""
+    },
+    "upload_url_args": {
+        "url": "http://test.com"
+    },
+    "analysis_info_args": {
+        "tds_analysis_id": [
+            "F1"
+        ]
+    },
+    "file_args": {
+        "file": [
+            "44b3f79dfd7c5861501a19a3bac89f544c7ff815"
+        ]
+    }
+}

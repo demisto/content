@@ -40,7 +40,7 @@ tasks:
       - '2'
     scriptarguments:
       ip:
-        simple: 212.126.107.130
+        simple: 51.254.240.48
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
     note: false
@@ -93,7 +93,7 @@ tasks:
       - '7'
     scriptarguments:
       url:
-        simple: heckwassleftran2.ru
+        simple: zsn5qtrgfpu4tmpg.onion.gq
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
     note: false
@@ -167,7 +167,7 @@ tasks:
       - '10'
     scriptarguments:
       file:
-        simple: 77d736dc280968d0af8c3f46e673f821
+        simple: 6be4f92e2ae9a2a9d411f7be9ecd06495f847009
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
     note: false
@@ -216,7 +216,7 @@ tasks:
       - '13'
     scriptarguments:
       email:
-        simple: forme@kanhseai.com
+        simple: earner@zoho.com
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
     note: false

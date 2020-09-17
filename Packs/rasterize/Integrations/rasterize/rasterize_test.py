@@ -1,4 +1,6 @@
-from rasterize import rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS
+from rasterize import rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command
+import demistomock as demisto
+from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
 import subprocess
 import os
@@ -157,3 +159,16 @@ def test_rasterize_url_long_load(mocker, http_wait_server):
     # test that with a higher value we get a response
     assert rasterize('http://localhost:10888', width=250, height=250, r_type='png', max_page_load_time=0)
     assert not return_error_mock.called
+
+
+def test_rasterize_image_to_pdf(mocker):
+    path = os.path.realpath('test_data/image.png')
+    mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
+    mocker.patch.object(demisto, 'results')
+    rasterize_image_command()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['entryInfoFile']

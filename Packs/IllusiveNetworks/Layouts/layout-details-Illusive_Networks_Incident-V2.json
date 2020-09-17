@@ -323,96 +323,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "illusivenetworksincidentid",
-                                "height": 22,
-                                "id": "6d59a050-8dec-11ea-9553-b12d34873242",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "illusivenetworksincidentstepstocrownjewel",
-                                "height": 22,
-                                "id": "1cc9a990-8e1f-11ea-a277-7de3b1fedb37",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "illusivenetworksincidenthasforensics",
-                                "height": 22,
-                                "id": "e18cb7d0-8dee-11ea-9553-b12d34873242",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "illusivenetworksincidentsourceoperatingsystem",
-                                "height": 22,
-                                "id": "ae91b090-952a-11ea-84cc-019d17233c81",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "illusivenetworksincidenthostname",
-                                "height": 22,
-                                "id": "216ec740-9528-11ea-ae71-f549aa358616",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "illusivenetworksincidentlastseenuser",
-                                "height": 22,
-                                "id": "233a5f80-9528-11ea-ae71-f549aa358616",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "illusivenetworksincidentforensicstimeine",
-                                "height": 22,
-                                "id": "05fcb630-950e-11ea-ba8c-41d8788098b8",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "illusivenetworksincidentriskinsights",
-                                "height": 22,
-                                "id": "e9e41990-8e1c-11ea-a277-7de3b1fedb37",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "illusivenetworksincidentsstepstodomainadmin",
-                                "height": 22,
-                                "id": "ebf76930-8e1c-11ea-a277-7de3b1fedb37",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "illusivenetworksincidentstepstodomainadmin",
-                                "height": 22,
-                                "id": "1fde3c90-8e1f-11ea-a277-7de3b1fedb37",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "illusivenetworkshasforensics",
                                 "height": 22,
                                 "id": "0ca93260-95d1-11ea-94aa-1737b983591b",
@@ -440,10 +350,118 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "illusivenetworkseventsnumber",
+                                "height": 22,
+                                "id": "d819e690-b626-11ea-ae3e-e56bbd85d07c",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "illusivenetworkslastseenuser",
                                 "height": 22,
                                 "id": "1040b100-95d1-11ea-94aa-1737b983591b",
-                                "index": 4,
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "illusivenetworksdeceptionfamilies",
+                                "height": 22,
+                                "id": "a7be4660-ba01-11ea-aa99-d32517c11b24",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "illusivenetworksincidentid",
+                                "height": 22,
+                                "id": "6d59a050-8dec-11ea-9553-b12d34873242",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "illusivenetworksincidentstepstocrownjewel",
+                                "height": 22,
+                                "id": "1cc9a990-8e1f-11ea-a277-7de3b1fedb37",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "illusivenetworksincidenthasforensics",
+                                "height": 22,
+                                "id": "e18cb7d0-8dee-11ea-9553-b12d34873242",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "illusivenetworksincidentsourceoperatingsystem",
+                                "height": 22,
+                                "id": "ae91b090-952a-11ea-84cc-019d17233c81",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "illusivenetworksincidenthostname",
+                                "height": 22,
+                                "id": "216ec740-9528-11ea-ae71-f549aa358616",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "illusivenetworksincidentlastseenuser",
+                                "height": 22,
+                                "id": "233a5f80-9528-11ea-ae71-f549aa358616",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "illusivenetworksincidentforensicstimeine",
+                                "height": 22,
+                                "id": "05fcb630-950e-11ea-ba8c-41d8788098b8",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "illusivenetworksincidentriskinsights",
+                                "height": 22,
+                                "id": "e9e41990-8e1c-11ea-a277-7de3b1fedb37",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "illusivenetworksincidentsstepstodomainadmin",
+                                "height": 22,
+                                "id": "ebf76930-8e1c-11ea-a277-7de3b1fedb37",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "illusivenetworksincidentstepstodomainadmin",
+                                "height": 22,
+                                "id": "1fde3c90-8e1f-11ea-a277-7de3b1fedb37",
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -452,7 +470,7 @@
                                 "fieldId": "illusivenetworkssourceoperatingsystem",
                                 "height": 22,
                                 "id": "111abd50-95d1-11ea-94aa-1737b983591b",
-                                "index": 5,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -461,7 +479,7 @@
                                 "fieldId": "illusivenetworksstepstocrownjewel",
                                 "height": 22,
                                 "id": "1235ca40-95d1-11ea-94aa-1737b983591b",
-                                "index": 6,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -470,7 +488,7 @@
                                 "fieldId": "illusivenetworksstepstodomainadmin",
                                 "height": 22,
                                 "id": "18c63d90-95d1-11ea-94aa-1737b983591b",
-                                "index": 7,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -516,5 +534,6 @@
         ],
         "typeId": "Illusive Networks Incident",
         "version": -1
-    }
+    },
+    "toVersion": "5.9.9"
 }

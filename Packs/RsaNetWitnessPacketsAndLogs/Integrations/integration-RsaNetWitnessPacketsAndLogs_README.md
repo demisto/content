@@ -1478,3 +1478,6 @@
 </tbody>
 </table>
 <p> </p>
+<hr>
+<h2>Troubleshooting</h2>
+<p>When executing the <code>!netwitness-query</code> command and you want to use the <code>sessionid</code> RSA NetWitness meta key as part of the query that is passed to the <code>query</code> argument, please note that for any given session that Decoders, Concentrators, and Brokers appliances all maintain Session IDs which may be different. You can read more about using Session IDs <a href="https://community.rsa.com/docs/DOC-67073">here</a>.</p>

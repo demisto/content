@@ -1,0 +1,1155 @@
+id: Cortex XDR - Port Scan - Adjusted
+version: -1
+name: Cortex XDR - Port Scan - Adjusted
+description: |-
+  Investigates a Cortex XDR incident containing internal port scan alerts. The playbook:
+  - Syncs data with Cortex XDR.
+  - Notifies management about a compromised host.
+  - Escalates the incident in case of lateral movement alert detection.
+
+  The playbook is used as a sub- playbook in 'Cortex XDR Incident Handling - v2'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7c46d5ad-2e77-4213-8d84-4de23934ce23
+    type: start
+    task:
+      id: 7c46d5ad-2e77-4213-8d84-4de23934ce23
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+      - "45"
+      - "46"
+      - "40"
+      - "24"
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1b4bbd64-b7ee-4c7d-8cdc-0ed013a62734
+    type: regular
+    task:
+      id: 1b4bbd64-b7ee-4c7d-8cdc-0ed013a62734
+      version: -1
+      name: Check if attacker is internal or external
+      description: Uses an automated script to determine if the IP used in the incident
+        is in one of the ranges provided.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      ip:
+        complex:
+          root: AttackerIPs
+          transformers:
+          - operator: uniq
+      ipRanges: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 7a7a6ec8-c9fa-415a-87bc-bc507762e35e
+    type: regular
+    task:
+      id: 7a7a6ec8-c9fa-415a-87bc-bc507762e35e
+      version: -1
+      name: Save email addresses to notify
+      description: Saves the email addresses to notify about the compromised host
+        if any emails were configured in the playbook inputs.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      append: {}
+      key:
+        simple: EmailAddressesToNotify
+      stringify: {}
+      value:
+        complex:
+          root: inputs.EmailAddressesToNotify
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2620,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 9de655f8-11e9-4297-8a3d-90b5c7878c91
+    type: condition
+    task:
+      id: 9de655f8-11e9-4297-8a3d-90b5c7878c91
+      version: -1
+      name: Has there been a successful login to the scanned host?
+      description: Manually check if there has been a successful login to the scanned
+        host following the port scan.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "98"
+      "yes":
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 1835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 65b36c78-8ae6-4b39-8db7-d7d0ad96039f
+    type: regular
+    task:
+      id: 65b36c78-8ae6-4b39-8db7-d7d0ad96039f
+      version: -1
+      name: 'Set block ports to True '
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      append: {}
+      key:
+        simple: PortScan.BlockPorts
+      stringify: {}
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 64fbf8eb-55c3-4f8e-8b29-0fd97ddf5728
+    type: regular
+    task:
+      id: 64fbf8eb-55c3-4f8e-8b29-0fd97ddf5728
+      version: -1
+      name: Save attacker IPs
+      description: Saves the IP address from which the port scan originated.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: PortScan.AttackerIPs
+      stringify: {}
+      value:
+        complex:
+          root: PaloAltoNetworksXDR
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.xdr_alert_id
+                iscontext: true
+          accessor: Incident.alerts.host_ip
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 67145acf-123a-44ac-83d5-6de9ad5967e0
+    type: regular
+    task:
+      id: 67145acf-123a-44ac-83d5-6de9ad5967e0
+      version: -1
+      name: Save attacker username
+      description: Saves the username associated with the port scan.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      append: {}
+      key:
+        simple: PortScan.AttackerUsername
+      stringify: {}
+      value:
+        complex:
+          root: PaloAltoNetworksXDR
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: user_name
+                iscontext: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: user_name
+                iscontext: true
+              right:
+                value:
+                  simple: N/A
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.xdr_alert_id
+                iscontext: true
+          accessor: Incident.alerts
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: user_name
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 90618b30-5615-45e8-84ca-91bb9e0fb297
+    type: regular
+    task:
+      id: 90618b30-5615-45e8-84ca-91bb9e0fb297
+      version: -1
+      name: Save file artifacts
+      description: Saves file artifacts associated with the incident.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      append: {}
+      key:
+        simple: PortScan.FileArtifacts
+      stringify: {}
+      value:
+        complex:
+          root: PaloAltoNetworksXDR
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.xdr_alert_id
+                iscontext: true
+          accessor: Incident.file_artifacts
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: a154ff28-c430-49ac-85ef-049af8fb1adc
+    type: regular
+    task:
+      id: a154ff28-c430-49ac-85ef-049af8fb1adc
+      version: -1
+      name: Save attacker hostname
+      description: Saves the hostname that performed the port scan.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      append: {}
+      key:
+        simple: PortScan.AttackerHostnames
+      stringify: {}
+      value:
+        complex:
+          root: PaloAltoNetworksXDR
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.xdr_alert_id
+                iscontext: true
+          accessor: Incident.alerts.host_name
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: b86c3a71-3196-46ba-82d2-4394de10f48d
+    type: condition
+    task:
+      id: b86c3a71-3196-46ba-82d2-4394de10f48d
+      version: -1
+      name: Was there a case of lateral movement following the scan?
+      description: Checks whether there was a lateral movement alert that came after
+        the port scan alert.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "88"
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PortScan.LateralMovementFirstDatetime
+            iscontext: true
+      - - operator: isBefore
+          left:
+            value:
+              simple: PortScan.PortScanFirstDatetime
+            iscontext: true
+          right:
+            value:
+              simple: LateralMovementFirstDatetime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 50d1df58-29c9-4257-8ddf-01971eae17e9
+    type: regular
+    task:
+      id: 50d1df58-29c9-4257-8ddf-01971eae17e9
+      version: -1
+      name: Save incident alerts
+      description: Saves the alerts associated with this incident in a new context
+        key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+      - "51"
+    scriptarguments:
+      append: {}
+      key:
+        simple: IncidentAlerts
+      stringify: {}
+      value:
+        complex:
+          root: PaloAltoNetworksXDR
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.xdr_alert_id
+                iscontext: true
+          accessor: Incident.alerts
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3105,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 81d8b30b-307b-4ea0-8426-0d4f01c5becc
+    type: regular
+    task:
+      id: 81d8b30b-307b-4ea0-8426-0d4f01c5becc
+      version: -1
+      name: Save port scan date time
+      description: Saves the date and time of the first port scan alert.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: PortScan.PortScanFirstDatetime
+      stringify: {}
+      value:
+        complex:
+          root: IncidentAlerts
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: IncidentAlerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Port Scan
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.xdr_alert_id
+                iscontext: true
+          accessor: detection_timestamp
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: TimeStampToDate
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2860,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 72154049-3cbe-4d93-8b24-676bd59cc38b
+    type: regular
+    task:
+      id: 72154049-3cbe-4d93-8b24-676bd59cc38b
+      version: -1
+      name: Save lateral movement date time
+      description: Saves the date and time of the first lateral movement alert, when
+        it exists.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: PortScan.LateralMovementFirstDatetime
+      stringify: {}
+      value:
+        complex:
+          root: IncidentAlerts
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: IncidentAlerts.category
+                iscontext: true
+              right:
+                value:
+                  simple: Lateral Movement
+              ignorecase: true
+          accessor: detection_timestamp
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: TimeStampToDate
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3320,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: 6d49f70a-f26a-4fa6-80e9-70a448ad330a
+    type: regular
+    task:
+      id: 6d49f70a-f26a-4fa6-80e9-70a448ad330a
+      version: -1
+      name: Escalate incident to higher tier
+      description: Assigns the incident to a random user who has the role configured
+        in the RoleForEscalation playbook input.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      assignBy:
+        simple: random
+      email: {}
+      onCall:
+        complex:
+          root: inputs.OnCall
+      roles:
+        complex:
+          root: inputs.RoleForEscalation
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2440,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: 1ab03196-0d35-431c-83f5-1b5d8b3b6e73
+    type: condition
+    task:
+      id: 1ab03196-0d35-431c-83f5-1b5d8b3b6e73
+      version: -1
+      name: Can the incident be auto-escalated to a higher tier?
+      description: Checks whether a role from which analysts can be assigned to the
+        incident was configured in the RoleForEscalation playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "88"
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RoleForEscalation
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 4830e0a6-14de-40fb-8b7a-331a28311f0b
+    type: condition
+    task:
+      id: 4830e0a6-14de-40fb-8b7a-331a28311f0b
+      version: -1
+      name: Can a host compromise notification be sent via email?
+      description: Checks whether any email addresses to notify were configured, and
+        whether any mail sender integrations are enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EmailAddressesToNotify
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EWS v2
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail Single User
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1502.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: b9dc1315-c732-4365-8561-999d8662de3d
+    type: regular
+    task:
+      id: b9dc1315-c732-4365-8561-999d8662de3d
+      version: -1
+      name: Send notification emails about compromise
+      description: Sends an email to the email addresses configured in the playbook
+        inputs telling them that a host was compromised.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      from: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: Port scan & potential compromise
+      templateParams: {}
+      to:
+        complex:
+          root: inputs.EmailAddressesToNotify
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: f0f2d1d0-d4c1-4089-8ed9-31e88ea93610
+    type: title
+    task:
+      id: f0f2d1d0-d4c1-4089-8ed9-31e88ea93610
+      version: -1
+      name: Exploitation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: a6627a56-c465-4d96-8e3e-4f1ed0ed6bbb
+    type: title
+    task:
+      id: a6627a56-c465-4d96-8e3e-4f1ed0ed6bbb
+      version: -1
+      name: Port Blocking
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "91":
+    id: "91"
+    taskid: e7bd791b-e0f7-4bb4-8a08-9b5112da9293
+    type: playbook
+    task:
+      id: e7bd791b-e0f7-4bb4-8a08-9b5112da9293
+      version: -1
+      name: IP Enrichment - Internal - Generic v2
+      description: |-
+        Enrich Internal IP addresses using one or more integrations.
+
+        - Resolve IP address to hostname (DNS)
+        - Separate internal and external IP addresses
+        - Get host information for IP addresses
+      playbookName: IP Enrichment - Internal - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      IP:
+        complex:
+          root: PortScan
+          accessor: AttackerIPs
+          transformers:
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalIPRanges
+      ResolveIP:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 2047.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "96":
+    id: "96"
+    taskid: 0dfd512e-ddfc-40ab-879c-301b55822d1a
+    type: title
+    task:
+      id: 0dfd512e-ddfc-40ab-879c-301b55822d1a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "97":
+    id: "97"
+    taskid: 65a62ec6-98d0-4d9f-870b-618561453d17
+    type: title
+    task:
+      id: 65a62ec6-98d0-4d9f-870b-618561453d17
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "91"
+      - "75"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "98":
+    id: "98"
+    taskid: b50a8913-48c0-4157-84af-215f0bf57211
+    type: regular
+    task:
+      id: b50a8913-48c0-4157-84af-215f0bf57211
+      version: -1
+      name: 'Set block ports to False '
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      append: {}
+      key:
+        simple: BlockPorts
+      stringify: {}
+      value:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2032.5,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "32_34_yes": 0.51,
+      "32_98_#default#": 0.47,
+      "48_86_yes": 0.56,
+      "48_88_#default#": 0.44,
+      "64_63_yes": 0.44,
+      "64_88_#default#": 0.23,
+      "75_48_#default#": 0.52,
+      "75_76_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2195,
+        "width": 2750,
+        "x": 950,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: WhitelistedPorts
+  value: {}
+  required: false
+  description: A list of comma-separated ports that should not be blocked even if
+    used in an attack.
+  playbookInputQuery:
+- key: BlockAttackerIP
+  value:
+    simple: "False"
+  required: false
+  description: Determines whether attacking IPs should be automatically blocked using firewalls.
+  playbookInputQuery:
+- key: EmailAddressesToNotify
+  value: {}
+  required: false
+  description: A list of comma-separated values of email addresses that should receive
+    a notification about compromised hosts.
+  playbookInputQuery:
+- key: InternalIPRanges
+  value: {}
+  required: false
+  description: 'A list of IP ranges to check the IP against. The list should be provided
+    in CIDR notation, separated by commas. An example of a list of ranges would be:
+    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
+    will use default list provided in the IsIPInRanges script (the known IPv4 private
+    address ranges).'
+  playbookInputQuery:
+- key: RoleForEscalation
+  value: {}
+  required: false
+  description: The name of the Cortex XSOAR role of the users that the incident can be
+    escalated to in case of developments like lateral movement. If this input is left empty, no escalation will take place.
+  playbookInputQuery:
+- key: OnCall
+  value:
+    simple: "false"
+  required: false
+  description: Set to true to assign only the users that are currently on shift.
+  playbookInputQuery:
+- key: xdr_alert_id
+  value: {}
+  required: false
+  description: Unique ID for the XDR alert.
+  playbookInputQuery:
+outputs:
+- contextPath: PortScan.BlockPorts
+  description: Indicates whether there's a need to block the ports used for exploitation
+    on the scanned host.
+  type: unknown
+- contextPath: PortScan.AttackerIPs
+  description: Attacker IPs from the port scan alert.
+  type: unknown
+- contextPath: PortScan.AttackerHostnames
+  description: Attacker hostnames from the port scan alert.
+  type: unknown
+- contextPath: PortScan.AttackerUsername
+  description: Attacker username from the port scan alert.
+  type: unknown
+- contextPath: PortScan.FileArtifacts
+  description: File artifacts from the port scan alert.
+  type: unknown
+- contextPath: PortScan.LateralMovementFirstDatetime
+  description: Lateral Movement First Date time from the port scan alert.
+  type: unknown
+- contextPath: PortScan.PortScanFirstDatetime
+  description: Port Scan First Date time
+  type: unknown
+tests:
+- No test.
+fromversion: 5.0.0

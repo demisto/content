@@ -36,15 +36,16 @@ outputs:
   description: A list of file names that were extracted from the ZIP file.
   type: Unknown
 script: '-'
+subtype: python3
 system: false
 tags:
 - Utility
 - file
 timeout: '0'
 type: python
-dockerimage: demisto/7zip
+dockerimage: demisto/unzip:1.0.0.10233
+dockerimage45: demisto/7zip
 runonce: false
 tests:
 - ZipFile-Test
 - UnzipFile-Test
-subtype: python2

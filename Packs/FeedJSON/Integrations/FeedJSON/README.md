@@ -78,8 +78,8 @@ There is no context output for this command.
 
 ## Demo Video
 <video controls>
-    <source src="https://github.com/demisto/content/raw/b4bf86e4b8a4e5217abca615618b40f587896565/Packs/FeedJSON/Integrations/FeedJSON/demo_video/Json_generic_feed_demo.mp4"
+    <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedJSON/Json_generic_feed_demo.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/blob/b4bf86e4b8a4e5217abca615618b40f587896565/Packs/FeedJSON/Integrations/FeedJSON/demo_video/Json_generic_feed_demo.mp4 
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedJSON/Json_generic_feed_demo.mp4 
 </video>
 

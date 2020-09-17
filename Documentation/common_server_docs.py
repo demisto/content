@@ -22,8 +22,9 @@ PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeCo
                     "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
                     "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException",
                     "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator",
-                    "IndicatorType", "EntryType", "EntryFormat", "CommandResults", "return_results", "abstractmethod",
-                    "HTTPAdapter", "Retry", "Common"]
+                    "IndicatorType", "EntryType", "EntryFormat", "abstractmethod",
+                    "HTTPAdapter", "Retry", "Common", "randint", "GetDemistoVersion", "get_demisto_version",
+                    "Optional", "List", "BaseWidget", "Any"]
 
 PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
 
@@ -159,14 +160,14 @@ def create_py_documentation(path, origin, language):
                     print('Processing {}'.format(a))
 
                     if inspect.isclass(ns.get(a)):
-                        y["argList"] = list(inspect.getargspec(ns.get(a).__init__))[0] \
+                        y["argList"] = list(inspect.getfullargspec(ns.get(a).__init__))[0] \
                             if PY_IRREGULAR_FUNCS.get(a, None) is None \
                             else PY_IRREGULAR_FUNCS[a]["argList"]
 
                         # init will contains self, so remove the self from the arg list
                         y["argList"].remove('self')
                     else:
-                        y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if PY_IRREGULAR_FUNCS.get(a, None) is None \
+                        y["argList"] = list(inspect.getfullargspec(ns.get(a)))[0] if PY_IRREGULAR_FUNCS.get(a, None) is None \
                             else PY_IRREGULAR_FUNCS[a]["argList"]
 
                     x.append(y)

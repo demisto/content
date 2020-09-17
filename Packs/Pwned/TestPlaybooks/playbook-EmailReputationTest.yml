@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 22b5220c-858e-4345-8454-eb6b491a7865
+    taskid: a97453d5-a2fa-4c41-8f83-4db5187a62df
     type: start
     task:
-      id: 22b5220c-858e-4345-8454-eb6b491a7865
+      id: a97453d5-a2fa-4c41-8f83-4db5187a62df
       version: -1
       name: ""
       iscommand: false
@@ -28,12 +28,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 8949501b-f9eb-462a-89b6-10ec1f199b48
+    taskid: ec4ed45c-5fd2-430d-8146-719484f85a11
     type: regular
     task:
-      id: 8949501b-f9eb-462a-89b6-10ec1f199b48
+      id: ec4ed45c-5fd2-430d-8146-719484f85a11
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -43,7 +45,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     scriptarguments:
       all:
         simple: "yes"
@@ -62,42 +64,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: f6d9c061-864b-44f1-865e-cd6c936f38f0
-    type: regular
-    task:
-      id: f6d9c061-864b-44f1-865e-cd6c936f38f0
-      version: -1
-      name: Delete Indicator
-      scriptName: DeleteIndicators
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      query:
-        simple: salkunkel@twc.com  # disable-secrets-detection
-      whitelist: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 2a8faa66-6754-4100-8b13-f73cd945329e
+    taskid: 03e7248e-8a2b-4f91-809a-770820f49174
     type: regular
     task:
-      id: 2a8faa66-6754-4100-8b13-f73cd945329e
+      id: 03e7248e-8a2b-4f91-809a-770820f49174
       version: -1
       name: Extract Indicator
       script: Builtin|||extractIndicators
@@ -112,7 +86,7 @@ tasks:
       filePath: {}
       investigationID: {}
       text:
-        simple: 'Email which pwned should mark as malicious: salkunkel@twc.com'  # disable-secrets-detection
+        simple: 'Email which pwned should mark as malicious: salkunkel@twc.com'
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -125,12 +99,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 200050bf-42bd-4ce1-8107-24a4c4924069
+    taskid: 94739de8-ce55-416d-81b4-c8807c5dacf5
     type: regular
     task:
-      id: 200050bf-42bd-4ce1-8107-24a4c4924069
+      id: 94739de8-ce55-416d-81b4-c8807c5dacf5
       version: -1
       name: Get Indicator Score
       description: Add into the incident's context the system internal DBot score
@@ -146,7 +122,7 @@ tasks:
       extend-context:
         simple: res_score=.
       indicator:
-        simple: salkunkel@twc.com  # disable-secrets-detection
+        simple: salkunkel@twc.com
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -159,12 +135,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 84438d9a-be4c-4feb-82da-eb62bf79fca9
+    taskid: 3e99b273-02af-4be5-88eb-78674e237d42
     type: regular
     task:
-      id: 84438d9a-be4c-4feb-82da-eb62bf79fca9
+      id: 3e99b273-02af-4be5-88eb-78674e237d42
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -193,12 +171,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 6c1c7aa6-bc8f-43ed-8304-0ac42d7bf552
+    taskid: ee9d34f7-ffc7-4964-8e29-b451bf5aa29d
     type: regular
     task:
-      id: 6c1c7aa6-bc8f-43ed-8304-0ac42d7bf552
+      id: ee9d34f7-ffc7-4964-8e29-b451bf5aa29d
       version: -1
       name: Sleep
       description: Sleep for X seconds, Needed to make sure that indicator is returned
@@ -224,12 +204,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 8bcbbc02-fbc3-4df4-8815-4b4126b3b8e9
+    taskid: e6d25456-80a8-4bdd-8a01-d54158c03a5c
     type: condition
     task:
-      id: 8bcbbc02-fbc3-4df4-8815-4b4126b3b8e9
+      id: e6d25456-80a8-4bdd-8a01-d54158c03a5c
       version: -1
       name: Verify Score
       type: condition
@@ -262,12 +244,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 46aee8e6-6e57-46e9-8f19-05156909d7d4
+    taskid: a56772e5-791e-436e-8ffe-c18ee2673e07
     type: regular
     task:
-      id: 46aee8e6-6e57-46e9-8f19-05156909d7d4
+      id: a56772e5-791e-436e-8ffe-c18ee2673e07
       version: -1
       name: Error
       description: Prints an error entry with a given message
@@ -277,7 +261,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: "Didn't get proper score for indicator. Expected: 2, Got: ${res_score.DBotScore.[0].Score}"
+        simple: 'Did not get proper score for indicator. Expected: 2, Got: ${res_score.DBotScore.[0].Score}'
     separatecontext: false
     view: |-
       {
@@ -289,12 +273,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 345ae849-616a-4687-86c7-29563fca8513
+    taskid: 45084026-1258-44e7-86f7-4f1941a4d4c5
     type: regular
     task:
-      id: 345ae849-616a-4687-86c7-29563fca8513
+      id: 45084026-1258-44e7-86f7-4f1941a4d4c5
       version: -1
       name: Success
       description: Prints text to war room (Markdown supprted)
@@ -316,6 +302,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},

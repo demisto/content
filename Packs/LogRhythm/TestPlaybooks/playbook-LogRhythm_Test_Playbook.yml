@@ -1,32 +1,40 @@
 id: LogRhythm-Test-Playbook
 version: -1
 name: LogRhythm-Test-Playbook
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: 5f6e967a-7828-4125-86d9-dde2f0ce23f6
+  "0":
+    id: "0"
+    taskid: 81443c64-49fd-4d9d-82df-f456ba40028d
     type: start
     task:
-      id: 5f6e967a-7828-4125-86d9-dde2f0ce23f6
+      id: 81443c64-49fd-4d9d-82df-f456ba40028d
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
-  '1':
-    id: '1'
-    taskid: b5da8696-33ca-4d17-8fce-6b8db9d41848
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ee87721d-2353-4386-86d1-a0fb3d90bc00
     type: regular
     task:
-      id: b5da8696-33ca-4d17-8fce-6b8db9d41848
+      id: ee87721d-2353-4386-86d1-a0fb3d90bc00
       version: -1
       name: Get alarm by id
       description: Retrieve alarms in a given time period, optionally filtered by
@@ -34,209 +42,274 @@ tasks:
       script: '|||lr-get-alarm-by-id'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     scriptarguments:
       alarm-id:
-        simple: '1'
+        simple: ${inputs.alarm_id}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
-  '2':
-    id: '2'
-    taskid: 1f263fd6-2218-404f-82d9-f1ef932db74f
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c7328d73-1a23-4367-8618-05e0a9f1a6bd
     type: regular
     task:
-      id: 1f263fd6-2218-404f-82d9-f1ef932db74f
+      id: c7328d73-1a23-4367-8618-05e0a9f1a6bd
       version: -1
       name: Clear context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
-  '3':
-    id: '3'
-    taskid: 20494b3a-dcbd-4ade-8fec-d08cde99609d
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3959b198-d124-46e1-8301-9b23893622b1
     type: regular
     task:
-      id: 20494b3a-dcbd-4ade-8fec-d08cde99609d
+      id: 3959b198-d124-46e1-8301-9b23893622b1
       version: -1
       name: Add alarm comment
       script: '|||lr-add-alarm-comments'
       type: regular
       iscommand: true
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       alarm-id:
-        simple: '1'
+        simple: ${inputs.alarm_id}
       comments:
         simple: test
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
     note: false
     timertriggers: []
-  '4':
-    id: '4'
-    taskid: d5742d70-391a-40de-8a66-a5893ec7cb80
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 209a88e5-d289-411e-89c1-7995015f3568
     type: regular
     task:
-      id: d5742d70-391a-40de-8a66-a5893ec7cb80
+      id: 209a88e5-d289-411e-89c1-7995015f3568
       version: -1
       name: Get alarm events
       script: '|||lr-get-alarm-events-by-id'
       type: regular
       iscommand: true
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '12'
+      - "21"
     scriptarguments:
       alarm-id:
-        simple: '1'
+        simple: ${inputs.alarm_id}
       include-raw-log: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
     note: false
     timertriggers: []
-  '6':
-    id: '6'
-    taskid: 356608d3-a463-43ad-8953-fb64dd3259f0
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 7df19295-cf3a-4af1-8af7-f165cc9e9ff2
     type: regular
     task:
-      id: 356608d3-a463-43ad-8953-fb64dd3259f0
+      id: 7df19295-cf3a-4af1-8af7-f165cc9e9ff2
       version: -1
       name: Get alarms
       script: '|||lr-get-alarms'
       type: regular
       iscommand: true
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '14'
+      - "14"
     scriptarguments:
       all-users:
-        simple: 'true'
+        simple: "true"
       count: {}
       end-date:
-        simple: '2020-06-01'
+        simple: "2020-06-01"
       start-date:
-        simple: '2020-05-01'
+        simple: "2020-05-01"
       status:
         simple: New
+      time_frame: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
     note: false
     timertriggers: []
-  '7':
-    id: '7'
-    taskid: 5161c983-2c21-4da7-8caa-bbef37e8dc01
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: d74710c4-7871-487c-85d9-34516a889557
     type: regular
     task:
-      id: 5161c983-2c21-4da7-8caa-bbef37e8dc01
+      id: d74710c4-7871-487c-85d9-34516a889557
       version: -1
       name: Update status - New
       script: '|||lr-update-alarm-status'
       type: regular
       iscommand: true
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
+      - "15"
     scriptarguments:
       alarm-id:
-        simple: '1'
+        simple: ${inputs.alarm_id}
       comments: {}
       status:
         simple: New
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
     note: false
     timertriggers: []
-  '8':
-    id: '8'
-    taskid: 98beae29-6284-45ca-89cc-807541ebe5d0
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 56e25cdc-8f06-4be7-8ae6-cccaa920e747
     type: regular
     task:
-      id: 98beae29-6284-45ca-89cc-807541ebe5d0
+      id: 56e25cdc-8f06-4be7-8ae6-cccaa920e747
       version: -1
       name: Update status - Closed
       script: '|||lr-update-alarm-status'
       type: regular
       iscommand: true
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '16'
+      - "16"
     scriptarguments:
       alarm-id:
-        simple: '1'
+        simple: ${inputs.alarm_id}
       comments: {}
       status:
         simple: Closed
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
     note: false
     timertriggers: []
-  '9':
-    id: '9'
-    taskid: 553d42ff-9308-4ae4-81a4-82af8ac89c96
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 198b5efc-8920-4e3a-81e0-4c4391910993
     type: title
     task:
-      id: 553d42ff-9308-4ae4-81a4-82af8ac89c96
+      id: 198b5efc-8920-4e3a-81e0-4c4391910993
       version: -1
       name: Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2995\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3170
+        }
+      }
     note: false
     timertriggers: []
-  '10':
-    id: '10'
-    taskid: d4fc0fef-2a3d-40cb-8c78-698acf896b63
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 6037d2b4-7840-4896-83d7-b0ce6b9374be
     type: condition
     task:
-      id: d4fc0fef-2a3d-40cb-8c78-698acf896b63
+      id: 6037d2b4-7840-4896-83d7-b0ce6b9374be
       version: -1
       name: Verify output
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '3'
+      "yes":
+      - "3"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -250,28 +323,37 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '1'
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+              simple: inputs.alarm_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
     note: false
     timertriggers: []
-  '11':
-    id: '11'
-    taskid: 296193f4-f306-484f-8585-2d8ca259b3ff
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: b5c9c9a4-c1be-472e-83b3-405b82103a61
     type: condition
     task:
-      id: 296193f4-f306-484f-8585-2d8ca259b3ff
+      id: b5c9c9a4-c1be-472e-83b3-405b82103a61
       version: -1
       name: Verify output
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '4'
+      "yes":
+      - "4"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -281,27 +363,35 @@ tasks:
           right:
             value:
               simple: test
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
     note: false
     timertriggers: []
-  '12':
-    id: '12'
-    taskid: 6daf4a92-c30b-47f5-82e4-2aabdff6ca65
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 72545323-f31b-4f78-8dec-2e2cdd4625f6
     type: condition
     task:
-      id: 6daf4a92-c30b-47f5-82e4-2aabdff6ca65
+      id: 72545323-f31b-4f78-8dec-2e2cdd4625f6
       version: -1
       name: Verify output
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '6'
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -313,27 +403,35 @@ tasks:
             value:
               simple: LogRhythm.Alarm.Event.ImpactedHostName
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
     note: false
     timertriggers: []
-  '14':
-    id: '14'
-    taskid: 8efb5f5c-ebbf-4d95-8053-6da40d7c910a
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 958dcec9-644f-4841-83e5-0a3e87ebc54c
     type: condition
     task:
-      id: 8efb5f5c-ebbf-4d95-8053-6da40d7c910a
+      id: 958dcec9-644f-4841-83e5-0a3e87ebc54c
       version: -1
       name: Verify output
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '7'
+      "yes":
+      - "7"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -342,28 +440,37 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '1'
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+              simple: inputs.alarm_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
     note: false
     timertriggers: []
-  '15':
-    id: '15'
-    taskid: 2b9fd75d-2589-41dd-820a-159d49351594
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 1205e77d-135a-44c6-84a9-6e0747ee213d
     type: condition
     task:
-      id: 2b9fd75d-2589-41dd-820a-159d49351594
+      id: 1205e77d-135a-44c6-84a9-6e0747ee213d
       version: -1
       name: Verify output
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '8'
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -373,27 +480,35 @@ tasks:
           right:
             value:
               simple: New
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
     note: false
     timertriggers: []
-  '16':
-    id: '16'
-    taskid: 05effc0f-6fc1-451a-88ad-282627696fae
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: ebf8537f-1e63-43c0-8c68-4d7e63653fa7
     type: condition
     task:
-      id: 05effc0f-6fc1-451a-88ad-282627696fae
+      id: ebf8537f-1e63-43c0-8c68-4d7e63653fa7
       version: -1
       name: Verify output
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '17'
+      "yes":
+      - "17"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -403,49 +518,65 @@ tasks:
           right:
             value:
               simple: Closed
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2470
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '17':
-    id: '17'
-    taskid: b782261b-8cda-41ff-8ed2-1101d75f8e0b
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 03d0ea6d-2667-4f5a-81c8-7eaa13d5d5d3
     type: regular
     task:
-      id: b782261b-8cda-41ff-8ed2-1101d75f8e0b
+      id: 03d0ea6d-2667-4f5a-81c8-7eaa13d5d5d3
       version: -1
       name: Execute query
       description: Executes a query for logs that match query parameters.
       script: '|||lr-execute-query'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
+      - "19"
     scriptarguments:
       end-date:
-        simple: '2020-06-01'
+        simple: "2020-06-01"
       keyword:
         simple: failed
       page-size:
-        simple: '5'
+        simple: "5"
       start-date:
-        simple: '2020-05-01'
+        simple: "2020-05-01"
       time-frame: {}
       time_frame:
         simple: Custom
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2470\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2645
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '19':
-    id: '19'
-    taskid: d53bb3c4-1b5f-4b4c-871a-410887e385b4
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: b3bb6635-b892-40eb-8b71-d9a722ca906b
     type: regular
     task:
-      id: d53bb3c4-1b5f-4b4c-871a-410887e385b4
+      id: b3bb6635-b892-40eb-8b71-d9a722ca906b
       version: -1
       name: Get hosts by entity
       description: Retrieve a list of hosts for a given entity, or an empty list if
@@ -453,36 +584,43 @@ tasks:
       script: '|||lr-get-hosts-by-entity-id'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '20'
+      - "20"
     scriptarguments:
       entity-id:
-        simple: '1'
+        simple: "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2645\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2820
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '20':
-    id: '20'
-    taskid: cddc0330-b053-4507-884c-194f56ec97c0
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 0a1a2073-66e2-4e70-80cd-1b6c409bc85f
     type: condition
     task:
-      id: cddc0330-b053-4507-884c-194f56ec97c0
+      id: 0a1a2073-66e2-4e70-80cd-1b6c409bc85f
       version: -1
       name: Verify output
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '9'
+      "yes":
+      - "9"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -491,15 +629,74 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '1'
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2820\n  }\n}"
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2995
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 3010,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
-  \    }\n  }\n}"
-inputs: []
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 8e48f833-0491-46f5-8955-2af28a1da866
+    type: condition
+    task:
+      id: 8e48f833-0491-46f5-8955-2af28a1da866
+      version: -1
+      name: Are there alarm events ?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Alarm.Event
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3185,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: alarm_id
+  value:
+    simple: "1150"
+  required: false
+  description: ""
+  playbookInputQuery: null
 outputs: []
-fromversion: 5.0.0
-description: ''

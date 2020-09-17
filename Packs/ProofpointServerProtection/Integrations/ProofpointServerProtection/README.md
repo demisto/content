@@ -4,6 +4,8 @@ Use the Proofpoint Protection Server integration to manage your email security a
 
 This integration was integrated and tested with version 8.11.12 of Proofpoint Protection Server.
 
+Users must be assigned to the admin role to use this integration.
+
 ## Use Cases
 ---
 1. Manage senders list.
@@ -21,6 +23,7 @@ This integration was integrated and tested with version 8.11.12 of Proofpoint Pr
     * __Server URL (e.g., https://192.168.0.1:10000)__
     * __Username__
     * __Password__
+    * __Proofpoint Protection Server Version (e.g., 8.14.2)__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.

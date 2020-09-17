@@ -80,6 +80,20 @@ def test_build_where_clause():
         assert build_where_clause(args) == expected_result
 
 
+def test_build_where_clause_ip_port():
+    from CortexDataLake import build_where_clause
+    test_cases = [({'query': 'Test'}, 'Test'),
+                  ({'ip': 'ip1,ip2',
+                    'port': '555,888'},
+                   '(source_ip.value = "ip1" OR dest_ip.value = "ip1" OR '
+                   'source_ip.value = "ip2" OR dest_ip.value = "ip2") '
+                   'AND (source_port = 555 OR dest_port = 555 OR source_port = 888 OR dest_port = 888)'
+                   ),
+                  ({'source_ip': 'ip1', 'non_relevant_arg': 'value'}, '(source_ip.value = "ip1")')]
+    for args, expected_result in test_cases:
+        assert build_where_clause(args) == expected_result
+
+
 def test_prepare_fetch_incidents_query():
     from CortexDataLake import prepare_fetch_incidents_query
     timestamp = '2020-02-20T16:49:05'
@@ -87,8 +101,8 @@ def test_prepare_fetch_incidents_query():
     firewall_severity = ['Critical', 'High']
     fetch_limit = 10
     expected_response = 'SELECT * FROM `firewall.threat` WHERE ' \
-                        '(TIME(time_generated) Between TIME(TIMESTAMP("2020-02-20T16:49:05")) ' \
-                        'AND TIME(CURRENT_TIMESTAMP)) AND' \
+                        'time_generated Between TIMESTAMP("2020-02-20T16:49:05") ' \
+                        'AND CURRENT_TIMESTAMP AND' \
                         ' (sub_type.value = "attack" OR sub_type.value = "url") AND' \
                         ' (vendor_severity.value = "Critical" OR vendor_severity.value = "High") ' \
                         'ORDER BY time_generated ASC ' \

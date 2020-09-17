@@ -2,25 +2,20 @@
     "name": "Humio",
     "description": "Instantly search live log data at scale. Create dashboards to visualize and analyze complex systems in real time",
     "support": "partner",
-    "serverMinVersion": "5.0.0",
-    "currentVersion": "1.0.0",
-    "author": "Kristian Gausel",
+    "currentVersion": "1.0.1",
+    "author": "Humio",
     "url": "",
     "email": "integrations@humio.com",
     "categories": [
         "Analytics & SIEM"
     ],
     "tags": [
-        "humio",
-        "log-management",
-        "siem"
+        "Log-management"
     ],
     "created": "2020-04-30T15:56:44Z",
-    "updated": "2020-04-30T15:56:44Z",
-    "beta": false,
-    "deprecated": false,
-    "certification": "certified",
     "useCases": [],
     "keywords": [],
-    "dependencies": {}
+    "githubUser": [
+        "KGausel"
+    ]
 }

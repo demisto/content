@@ -114,9 +114,9 @@ class FileObject(object):
         if size is not None:
             result['stix_file_size'] = size.text
 
-        format = next((c for c in props if c.name == 'File_Format'), None)
-        if format is not None:
-            result['stix_file_format'] = format.text
+        file_format = next((c for c in props if c.name == 'File_Format'), None)
+        if file_format is not None:
+            result['stix_file_format'] = file_format.text
 
         return result
 
@@ -372,8 +372,7 @@ class Taxii11(object):
         if message_id is None:
             message_id = Taxii11.new_message_id()
 
-        return '''<Discovery_Request xmlns="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" message_id="{}"/>'''.format(
-            message_id)
+        return f'''<Discovery_Request xmlns="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" message_id="{message_id}"/>'''
 
     @staticmethod
     def collection_information_request(message_id=None):
@@ -424,11 +423,9 @@ class Taxii11(object):
         if message_id is None:
             message_id = Taxii11.new_message_id()
 
-        return '''<taxii_11:Poll_Fulfillment xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1"
-                    message_id="{}" collection_name="{}" result_id="{}" result_part_number="{}"/>'''.format(message_id,
-                                                                                                            collection_name,
-                                                                                                            result_id,
-                                                                                                            result_part_number)
+        return f'''<taxii_11:Poll_Fulfillment xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1"
+                    message_id="{message_id}" collection_name="{collection_name}" result_id="{result_id}"
+                    result_part_number="{result_part_number}"/>'''
 
     @staticmethod
     def headers(content_type=None, accept=None, services=None, protocol=None):
@@ -471,7 +468,7 @@ class Taxii11(object):
 class TAXIIClient(object):
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
                  discovery_service: str = '', poll_service: str = None, collection: str = None,
-                 credentials: dict = None, cert_text: str = None, key_text: str = None, **kwargs):
+                 credentials: dict = None, cert_text: str = None, key_text: str = None, tags: str = None, **kwargs):
         """
         TAXII Client
         :param insecure: Set to true to ignore https certificate
@@ -511,7 +508,7 @@ class TAXIIClient(object):
         self.username = None
         self.password = None
         self.crt = None
-
+        self.tags = argToList(tags)
         # authentication
         if credentials:
             if '_header:' in credentials.get('identifier', None):
@@ -565,12 +562,11 @@ class TAXIIClient(object):
 
             try:
                 all_collections = taxii_client.get_collections()
+                return [collection.name for collection in all_collections]
             except Exception as e:
                 if is_raise_error:
                     raise ConnectionError()
                 return_error(f'{INTEGRATION_NAME} - An error occurred when trying to fetch available collections.\n{e}')
-
-            return [collection.name for collection in all_collections]
 
         return []
 
@@ -605,7 +601,8 @@ class TAXIIClient(object):
 
         return r
 
-    def _raise_for_taxii_error(self, response):
+    @staticmethod
+    def _raise_for_taxii_error(response):
         if response.contents[0].name != 'Status_Message':
             return
 
@@ -682,13 +679,13 @@ class TAXIIClient(object):
         self._raise_for_taxii_error(result)
 
         # from here we look for the collection
-        collections = result.find_all('Collection', collection_name=self.collection)
-        if len(collections) == 0:
-            raise RuntimeError('{} - collection {} not found'.format(INTEGRATION_NAME, self.collection))
+        collections_found = result.find_all('Collection', collection_name=self.collection)
+        if len(collections_found) == 0:
+            raise RuntimeError(f'{INTEGRATION_NAME} - collection {self.collection} not found')
 
         # and the right poll service
         poll_service = None
-        for coll in collections:
+        for coll in collections_found:
             pservice = coll.find('Polling_Service')
             if pservice is None:
                 LOG('{} - Collection with no Polling_Service: {!r}'.format(INTEGRATION_NAME, coll))
@@ -703,7 +700,6 @@ class TAXIIClient(object):
             if poll_service is None:
                 poll_service = address
                 continue
-
             msgbindings = coll_service.find_all('Message_Binding')
             if len(msgbindings) != 0:
                 for msgbinding in msgbindings:
@@ -939,13 +935,14 @@ def interval_in_sec(val):
         return None
     if isinstance(val, int):
         return val
-    range_split = val.split()
-    if len(range_split) != 2:
-        raise ValueError('Interval must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day.')
-    number = int(range_split[0])
-    range_unit = range_split[1].lower()
-    if range_unit not in ['minute', 'minutes', 'hour', 'hours', 'day', 'days']:
-        raise ValueError('The unit of Interval is invalid. Must be minutes, hours or days')
+    else:
+        range_split = val.split()
+        if len(range_split) != 2:
+            raise ValueError('Interval must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day.')
+        number = int(range_split[0])
+        range_unit = range_split[1].lower()
+        if range_unit not in ['minute', 'minutes', 'hour', 'hours', 'day', 'days']:
+            raise ValueError('The unit of Interval is invalid. Must be minutes, hours or days')
 
     multipliers = {
         'minute': 60,
@@ -981,9 +978,10 @@ def fetch_indicators_command(client):
         if indicator:
             item['value'] = indicator
             indicators.append({
-                "value": indicator,
-                "type": item.get('type'),
-                "rawJSON": item,
+                'value': indicator,
+                'type': item.get('type'),
+                'fields': {'tags': client.tags},
+                'rawJSON': item,
             })
     return indicators
 
@@ -1000,7 +998,7 @@ def get_indicators_command(client, args):
 
 def main():
     # Write configure here
-    params = {k: v for k, v in demisto.params().items() if v is not None}
+    params = {key: value for key, value in demisto.params().items() if value is not None}
     handle_proxy()
     client = TAXIIClient(**params)
     command = demisto.command()

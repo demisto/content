@@ -118,6 +118,7 @@ def test_list_incident_relations_command(args, client, mocker):
     assert next_link == 'https://test.com'
     assert len(result['value']) == 1
 
+
 @pytest.mark.parametrize('args,client', [  # disable-secrets-detection
     ({'incident_id': 'inc_id', 'message': 'test_message'}, mock_client(self_deployed=False))])
 def test_incident_add_comment_command(args, client, mocker):

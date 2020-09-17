@@ -35,6 +35,8 @@ def exit_if_timed_out(loop_start_time, current_time):
 
 
 def main():
+    global SETUP_TIMEOUT
+    instance_name_to_wait_on = sys.argv[1]
     ready_ami_list = []
     failure = False
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
@@ -43,7 +45,8 @@ def main():
 
     loop_start_time = time.time()
     last_update_time = loop_start_time
-    instance_ips_to_poll = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips]
+    instance_ips_to_poll = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips if
+                            ami_instance_name == instance_name_to_wait_on]
 
     print(f'[{datetime.datetime.now()}] Starting wait loop')
     while instance_ips_to_poll:
@@ -58,17 +61,21 @@ def main():
                 try:
                     res = requests.request(method=method, url=(host + path), verify=False)
                 except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as exp:
-                    print_error(f'{ami_instance_name} encountered an error: {str(exp)}\n'
-                                f'Spot instance was dropped by amazon, if raised often - report to team leader.')
-                    instance_ips_to_poll.remove(ami_instance_ip)
+                    print_error(f'{ami_instance_name} encountered an error: {str(exp)}')
+                    if SETUP_TIMEOUT != 60 * 10:
+                        print_warning('Setting SETUP_TIMEOUT to 10 minutes.')
+                        SETUP_TIMEOUT = 60 * 10
                     failure = True
+                    continue
                 except Exception as exp:
                     print_warning(f'{ami_instance_name} encountered an error: {str(exp)}\n'
                                   f'Will retry this step later.')
                     continue
                 if res.status_code == 200:
+                    if SETUP_TIMEOUT != 60 * 60:
+                        print('Resetting SETUP_TIMEOUT to an hour.')
+                        SETUP_TIMEOUT = 60 * 60
                     print(f'[{datetime.datetime.now()}] {ami_instance_name} is ready to use')
-                    # ready_ami_list.append(ami_instance_name)
                     instance_ips_to_poll.remove(ami_instance_ip)
                 # printing the message every 30 seconds
                 elif current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:

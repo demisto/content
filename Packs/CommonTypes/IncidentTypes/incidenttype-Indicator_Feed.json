@@ -21,5 +21,6 @@
 	"preProcessingScript": "",
 	"closureScript": "",
 	"disabled": false,
-	"reputationCalc": 0
+	"reputationCalc": 0,
+	"layout": "Indicator Feed"
 }

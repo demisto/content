@@ -12,6 +12,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 GROUP_TYPES = {0: 'Filter-based group', 1: 'Action group', 2: 'Action policy pair group', 3: 'Ad hoc group',
                4: 'Manual group'}
 DEMISTO_API_ACTION_NAME = 'via Demisto API'
+DEFAULT_COMPLETION_PERCENTAGE = "95"
 
 
 class Client(BaseClient):
@@ -146,7 +147,7 @@ class Client(BaseClient):
         res = self.do_request('POST', 'questions', question_body)
         return res.get('data').get('id'), res
 
-    def parse_question_results(self, result):
+    def parse_question_results(self, result, completion_percentage):
         results_sets = result.get('data').get('result_sets')[0]
         estimated_total = results_sets.get('estimated_total')
         mr_tested = results_sets.get('mr_tested')
@@ -154,9 +155,9 @@ class Client(BaseClient):
         if not estimated_total and not mr_tested:
             return None
 
-        percantage = mr_tested / estimated_total * 100
+        percentage = mr_tested / estimated_total * 100
 
-        if percantage < 95:
+        if percentage < completion_percentage:
             return None
         if results_sets.get('row_count') == 0:
             return []
@@ -646,8 +647,13 @@ def ask_question(client, data_args):
     question_text = data_args.get('question-text')
     parameters = data_args.get('parameters')
 
-    body = client.parse_question(question_text, parameters)
-    id_, res = client.create_question(body)
+    if parameters:
+        body = client.parse_question(question_text, parameters)
+        id_, res = client.create_question(body)
+    else:
+        res = client.do_request('POST', 'questions', {'query_text': question_text})
+        id_ = res.get('data').get('id')
+
     context = {'ID': id_}
     context = createContext(context, removeNull=True)
     outputs = {'Tanium.Question(val.ID && val.ID === obj.ID)': context}
@@ -668,9 +674,13 @@ def get_question_metadata(client, data_args):
 
 def get_question_result(client, data_args):
     id_ = data_args.get('question-id')
+    completion_percentage = int(data_args.get('completion-percentage', DEFAULT_COMPLETION_PERCENTAGE))
+    if completion_percentage > 100 or completion_percentage < 1:
+        raise ValueError('completion-percentage argument is invalid, Please enter number between 1 to 100')
+
     res = client.do_request('GET', 'result_data/question/' + str(id_))
 
-    rows = client.parse_question_results(res)
+    rows = client.parse_question_results(res, completion_percentage)
 
     if rows is None:
         context = {'QuestionID': id_, 'Status': 'Pending'}
@@ -721,10 +731,13 @@ def get_saved_question_metadata(client, data_args):
 
 def get_saved_question_result(client, data_args):
     id_ = data_args.get('question-id')
+    completion_percentage = int(data_args.get('completion-percentage', DEFAULT_COMPLETION_PERCENTAGE))
+    if completion_percentage > 100 or completion_percentage < 1:
+        raise ValueError('completion-percentage argument is invalid, Please enter number between 1 to 100')
 
     res = client.do_request('GET', 'result_data/saved_question/' + str(id_))
 
-    rows = client.parse_question_results(res)
+    rows = client.parse_question_results(res, completion_percentage)
     if rows is None:
         context = {'SavedQuestionID': id_, 'Status': 'Pending'}
         return f'Question is still executing, Question id: {str(id_)}',\
@@ -1016,32 +1029,32 @@ def main():
 
     commands = {
         'test-module': test_module,
-        f'tn-get-system-status': get_system_status,
-        f'tn-get-package': get_package,
-        f'tn-create-package': create_package,
-        f'tn-list-packages': get_packages,
-        f'tn-get-sensor': get_sensor,
-        f'tn-list-sensors': get_sensors,
-        f'tn-ask-question': ask_question,
-        f'tn-get-question-metadata': get_question_metadata,
-        f'tn-get-question-result': get_question_result,
-        f'tn-create-saved-question': create_saved_question,
-        f'tn-get-saved-question-metadata': get_saved_question_metadata,
-        f'tn-get-saved-question-result': get_saved_question_result,
-        f'tn-list-saved-questions': get_saved_questions,
-        f'tn-create-action': create_action,
-        f'tn-create-action-by-host': create_action_by_host,
-        f'tn-get-action': get_action,
-        f'tn-list-actions': get_actions,
-        f'tn-create-saved-action': create_saved_action,
-        f'tn-get-saved-action': get_saved_action,
-        f'tn-list-saved-actions': get_saved_actions,
-        f'tn-list-saved-actions-pending-approval': get_saved_actions_pending,
-        f'tn-create-filter-based-group': create_filter_based_group,
-        f'tn-create-manual-group': create_manual_group,
-        f'tn-get-group': get_group,
-        f'tn-list-groups': get_groups,
-        f'tn-delete-group': delete_group
+        'tn-get-system-status': get_system_status,
+        'tn-get-package': get_package,
+        'tn-create-package': create_package,
+        'tn-list-packages': get_packages,
+        'tn-get-sensor': get_sensor,
+        'tn-list-sensors': get_sensors,
+        'tn-ask-question': ask_question,
+        'tn-get-question-metadata': get_question_metadata,
+        'tn-get-question-result': get_question_result,
+        'tn-create-saved-question': create_saved_question,
+        'tn-get-saved-question-metadata': get_saved_question_metadata,
+        'tn-get-saved-question-result': get_saved_question_result,
+        'tn-list-saved-questions': get_saved_questions,
+        'tn-create-action': create_action,
+        'tn-create-action-by-host': create_action_by_host,
+        'tn-get-action': get_action,
+        'tn-list-actions': get_actions,
+        'tn-create-saved-action': create_saved_action,
+        'tn-get-saved-action': get_saved_action,
+        'tn-list-saved-actions': get_saved_actions,
+        'tn-list-saved-actions-pending-approval': get_saved_actions_pending,
+        'tn-create-filter-based-group': create_filter_based_group,
+        'tn-create-manual-group': create_manual_group,
+        'tn-get-group': get_group,
+        'tn-list-groups': get_groups,
+        'tn-delete-group': delete_group
     }
 
     try:

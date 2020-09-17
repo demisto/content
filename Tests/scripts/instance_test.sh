@@ -19,6 +19,6 @@ USERNAME=$temp
 
 [ -n "${INSTANCE_TESTS}" ] && IS_INSTANCE_TESTS=true || IS_INSTANCE_TESTS=false
 
-python3 ./Tests/instance_notifier.py -n $IS_INSTANCE_TESTS -s "$SLACK_TOKEN" -e "$SECRET_CONF_PATH" -u "$USERNAME" -p "$PASSWORD" -b "$CIRCLE_BUILD_URL"
+python3 ./Tests/instance_notifier.py -t $IS_INSTANCE_TESTS -s "$SLACK_TOKEN" -e "$SECRET_CONF_PATH" -u "$USERNAME" -p "$PASSWORD" -b "$CIRCLE_BUILD_URL" -n "$CIRCLE_BUILD_NUM"
 
 echo "Finished slack notifier execution"

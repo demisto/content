@@ -53,7 +53,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: Supports comma-separated values.
+- additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   required: false
@@ -87,7 +87,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: gcp-whitelist-get-indicators
-  dockerimage: demisto/dnspython:1.0.0.7770
+  dockerimage: demisto/dnspython:1.0.0.8854
   feed: true
   isfetch: false
   longRunning: false

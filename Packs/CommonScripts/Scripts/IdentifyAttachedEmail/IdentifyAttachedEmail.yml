@@ -31,6 +31,5 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 tests:
-- process_email_-_generic_-_test
-- Phishing v2 Test - Inline
-- Phishing v2 Test - Attachment
+- Process Email - Generic - Test - Incident Starter
+- Phishing v2 - Test - Incident Starter

@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 from requests import Session
-from zeep import Client
+from zeep import Client, Settings
 from zeep.transports import Transport
 from requests.auth import AuthBase, HTTPBasicAuth
 from zeep import helpers
@@ -15,6 +15,7 @@ import urllib3
 import uuid
 import tempfile
 import os
+import shutil
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -29,7 +30,17 @@ def get_cache_path():
             pass
         else:
             raise
-    return os.path.join(path, "cache.db")
+    db_path = os.path.join(path, "cache.db")
+    try:
+        if not os.path.isfile(db_path):
+            static_init_db = os.getenv('ZEEP_STATIC_CACHE_DB', '/zeep/static/cache.db')
+            if os.path.isfile(static_init_db):
+                demisto.debug(f'copying static init db: {static_init_db} to: {db_path}')
+                shutil.copyfile(static_init_db, db_path)
+    except Exception as ex:
+        # non fatal
+        demisto.error(f'Failed copying static init db to: {db_path}. Error: {ex}')
+    return db_path
 
 
 class SymantecAuth(AuthBase):
@@ -654,10 +665,10 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
             if fetch_limit == 0:
                 break
             fetch_limit -= 1
-            incident_details = json.loads(json.dumps(helpers.serialize_object(client.service.incidentDetail(
+            incident_details = json.dumps(helpers.serialize_object(client.service.incidentDetail(
                 incidentId=incident_id
-            )[0]), default=datetime_to_iso_format))
-            incident_creation_time = incident_details.get('incident', {}).get('incidentCreationDate')
+            )[0]), default=datetime_to_iso_format)
+            incident_creation_time = json.loads(incident_details).get('incident', {}).get('incidentCreationDate')
             incident: dict = {
                 'rawJSON': incident_details,
                 'name': f'Symantec DLP incident {incident_id}',
@@ -708,7 +719,8 @@ def main():
     session.verify = verify_ssl
     cache: SqliteCache = SqliteCache(path=get_cache_path(), timeout=None)
     transport: Transport = Transport(session=session, cache=cache)
-    client: Client = Client(wsdl=wsdl, transport=transport)
+    settings: Settings = Settings(strict=False, xsd_ignore_sequence_order=True)
+    client: Client = Client(wsdl=wsdl, transport=transport, settings=settings)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')

@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 27097a72-8399-4e27-85f5-897c27106ce3
+    taskid: 6f985d96-565d-4836-84a8-5c64a6f0f054
     type: start
     task:
-      id: 27097a72-8399-4e27-85f5-897c27106ce3
+      id: 6f985d96-565d-4836-84a8-5c64a6f0f054
       version: -1
       name: ""
       iscommand: false
@@ -24,12 +24,17 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 4447dd62-1e51-483b-802f-202205b781f4
+    taskid: fdb233ee-250f-4e76-8a44-5c8cb60e3742
     type: regular
     task:
-      id: 4447dd62-1e51-483b-802f-202205b781f4
+      id: fdb233ee-250f-4e76-8a44-5c8cb60e3742
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -52,12 +57,17 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 6cc1640f-24df-4b6a-8cf2-5d2daaac5c57
+    taskid: 84b8ce61-dbf9-44f5-81ea-cb36210a6a96
     type: regular
     task:
-      id: 6cc1640f-24df-4b6a-8cf2-5d2daaac5c57
+      id: 84b8ce61-dbf9-44f5-81ea-cb36210a6a96
       version: -1
       name: ExtractHTMLTables with single one column table with header
       description: |-
@@ -85,12 +95,17 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 9f902e22-b34e-4559-8238-8752c1afda3e
+    taskid: 69356d1f-4850-4f81-8cc8-a0c337ff3a81
     type: condition
     task:
-      id: 9f902e22-b34e-4559-8238-8752c1afda3e
+      id: 69356d1f-4850-4f81-8cc8-a0c337ff3a81
       version: -1
       name: Both values exist in array
       description: Check if a given value exists in the context. Will return 'no'
@@ -115,36 +130,17 @@ tasks:
           "y": 545
         }
       }
-  "4":
-    id: "4"
-    taskid: 4861114d-746b-4d17-8a2f-3a730474a3eb
-    type: regular
-    task:
-      id: 4861114d-746b-4d17-8a2f-3a730474a3eb
-      version: -1
-      name: Close
-      scriptName: CloseInvestigation
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      notes:
-        simple: All good
-      reason: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 2295
-        }
-      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 50da60bb-61ac-4ad6-8f89-8f43eb32cb9f
+    taskid: 46e4b665-56cd-4025-8dc6-b6e5c29b4e4f
     type: regular
     task:
-      id: 50da60bb-61ac-4ad6-8f89-8f43eb32cb9f
+      id: 46e4b665-56cd-4025-8dc6-b6e5c29b4e4f
       version: -1
       name: Bad
       scriptName: Print
@@ -161,12 +157,17 @@ tasks:
           "y": 2295
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: f3996270-b954-45af-8c5a-2aa642158c5d
+    taskid: 5cdcb58d-4398-4cb2-84c0-ec4c138e80a9
     type: regular
     task:
-      id: f3996270-b954-45af-8c5a-2aa642158c5d
+      id: 5cdcb58d-4398-4cb2-84c0-ec4c138e80a9
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -188,12 +189,17 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 6c97d562-b5ba-4ae3-8247-dff72f8e60f4
+    taskid: 0edabdca-e319-4746-8ec1-f996259aa82e
     type: regular
     task:
-      id: 6c97d562-b5ba-4ae3-8247-dff72f8e60f4
+      id: 0edabdca-e319-4746-8ec1-f996259aa82e
       version: -1
       name: ExtractHTMLTables with single one column table without header
       description: |-
@@ -221,12 +227,17 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 5b223b46-ef77-4705-8235-ed9f1914284b
+    taskid: 583d4e43-5d38-423d-8a93-24623e778876
     type: condition
     task:
-      id: 5b223b46-ef77-4705-8235-ed9f1914284b
+      id: 583d4e43-5d38-423d-8a93-24623e778876
       version: -1
       name: Both values exist in array
       description: Check if a given value exists in the context. Will return 'no'
@@ -251,12 +262,17 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: b00906ec-8c99-4640-8e94-b27ab0d4d6ad
+    taskid: 5fd0ceec-578d-4695-8469-c37084e34433
     type: regular
     task:
-      id: b00906ec-8c99-4640-8e94-b27ab0d4d6ad
+      id: 5fd0ceec-578d-4695-8469-c37084e34433
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -278,12 +294,17 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: b8d9b854-ff36-42b8-8b13-a246e05eb894
+    taskid: f5d4fc0b-beb5-4b65-8c45-b1064e4489d0
     type: regular
     task:
-      id: b8d9b854-ff36-42b8-8b13-a246e05eb894
+      id: f5d4fc0b-beb5-4b65-8c45-b1064e4489d0
       version: -1
       name: ExtractHTMLTables with two columns and no headers
       description: |-
@@ -311,12 +332,17 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: f84d4e7d-ba50-4356-84a5-2b1d6bfe975b
+    taskid: b3a182f9-c634-4c36-83c4-b11ac4e08bd1
     type: condition
     task:
-      id: f84d4e7d-ba50-4356-84a5-2b1d6bfe975b
+      id: b3a182f9-c634-4c36-83c4-b11ac4e08bd1
       version: -1
       name: Both objects exist
       description: Check if a given value exists in the context. Will return 'no'
@@ -341,12 +367,17 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 1d36419e-6dec-413b-8a0c-1cfe0821c9be
+    taskid: 923566c3-69e7-4c6b-8ac6-4a4fbd008647
     type: regular
     task:
-      id: 1d36419e-6dec-413b-8a0c-1cfe0821c9be
+      id: 923566c3-69e7-4c6b-8ac6-4a4fbd008647
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -368,12 +399,17 @@ tasks:
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: e2a761e1-7877-458f-8efd-a1387983208b
+    taskid: 9be54c10-3781-4902-8064-fc4f5be5ba2f
     type: regular
     task:
-      id: e2a761e1-7877-458f-8efd-a1387983208b
+      id: 9be54c10-3781-4902-8064-fc4f5be5ba2f
       version: -1
       name: ExtractHTMLTables with two columns and headers
       description: |-
@@ -401,12 +437,17 @@ tasks:
           "y": 1945
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 2d78f082-e841-47f2-86e1-0e6d59f8d90f
+    taskid: df03d00f-21d2-4ced-8aff-aa87a5375244
     type: condition
     task:
-      id: 2d78f082-e841-47f2-86e1-0e6d59f8d90f
+      id: df03d00f-21d2-4ced-8aff-aa87a5375244
       version: -1
       name: All objects exist
       description: Check if a given value exists in the context. Will return 'no'
@@ -419,7 +460,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "4"
+      - "15"
     scriptarguments:
       value:
         simple: ${HTMLTables(val.kuku == 'a' && val.kaka == '1' || val.kuku == 'b'
@@ -432,6 +473,35 @@ tasks:
           "y": 2120
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 3e903ef7-74e2-4a3e-8fa8-ba69ef2260a9
+    type: title
+    task:
+      id: 3e903ef7-74e2-4a3e-8fa8-ba69ef2260a9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},

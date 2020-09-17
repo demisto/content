@@ -1,14 +1,14 @@
 id: Test-BPA
-version: -1
+version: 8
 name: Test-BPA
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 33930745-eeda-4467-808f-b3109964dd33
+    taskid: 06afda6f-3011-4b7d-81cd-d7d68376ef74
     type: start
     task:
-      id: 33930745-eeda-4467-808f-b3109964dd33
+      id: 06afda6f-3011-4b7d-81cd-d7d68376ef74
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: a584565d-45e0-48d6-8b3e-911de18654d2
+    taskid: 7c822901-b728-43ea-87a5-20d0a5712cec
     type: regular
     task:
-      id: a584565d-45e0-48d6-8b3e-911de18654d2
+      id: 7c822901-b728-43ea-87a5-20d0a5712cec
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -67,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 864913ea-71c9-49dd-88d4-1d93b5bdff93
+    taskid: 1523fbb5-8f28-49f0-8562-ec01e9e8a2c4
     type: regular
     task:
-      id: 864913ea-71c9-49dd-88d4-1d93b5bdff93
+      id: 1523fbb5-8f28-49f0-8562-ec01e9e8a2c4
       version: -1
       name: pan-os-bpa-submit-job
       description: Submits a BPA job.
@@ -99,10 +99,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 333cfc71-49f5-4be0-8e02-bd8f2dac3835
+    taskid: 25a4742a-99e5-457d-87fb-9c3bd103cc36
     type: playbook
     task:
-      id: 333cfc71-49f5-4be0-8e02-bd8f2dac3835
+      id: 25a4742a-99e5-457d-87fb-9c3bd103cc36
       version: -1
       name: GenericPolling
       description: |-
@@ -155,10 +155,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: e3843b2a-b8e9-45ae-8820-2788455081eb
+    taskid: 9bc78e2e-5722-4e96-8a5a-1f503d1dd7a2
     type: condition
     task:
-      id: e3843b2a-b8e9-45ae-8820-2788455081eb
+      id: 9bc78e2e-5722-4e96-8a5a-1f503d1dd7a2
       version: -1
       name: Test BPA Checks Are Returned
       type: condition
@@ -166,7 +166,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -206,10 +206,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 86e0b324-2b01-4958-8c27-78c66a293c83
+    taskid: 86268dac-3b75-4713-8a92-13672c5a90d0
     type: regular
     task:
-      id: 86e0b324-2b01-4958-8c27-78c66a293c83
+      id: 86268dac-3b75-4713-8a92-13672c5a90d0
       version: -1
       name: closeInvestigation
       description: Close the current incident
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1770
         }
       }
     note: false
@@ -240,10 +240,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 548b923e-b896-40bf-8d8f-42ac39c45874
+    taskid: 0642547e-3930-45ed-8c6c-04f10290e6b1
     type: regular
     task:
-      id: 548b923e-b896-40bf-8d8f-42ac39c45874
+      id: 0642547e-3930-45ed-8c6c-04f10290e6b1
       version: -1
       name: pan-os-get-documentation
       description: Get documentaion
@@ -269,10 +269,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 4f8f98eb-d21f-4d4b-828a-eada7d92941a
+    taskid: 9da2cd68-133e-4adc-8526-e5b7cb3ef2ef
     type: regular
     task:
-      id: 4f8f98eb-d21f-4d4b-828a-eada7d92941a
+      id: 9da2cd68-133e-4adc-8526-e5b7cb3ef2ef
       version: -1
       name: pan-os-bpa-get-job-results
       description: Returns results of BPA job.
@@ -299,12 +299,126 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "10":
+    id: "10"
+    taskid: 9f72939b-1058-45b6-88b1-6cc21b0bfa04
+    type: regular
+    task:
+      id: 9f72939b-1058-45b6-88b1-6cc21b0bfa04
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: PAN-OS-BPA.SubmittedJob.JobID
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: ec9101b0-65a8-49be-8794-304ab19e17f0
+    type: regular
+    task:
+      id: ec9101b0-65a8-49be-8794-304ab19e17f0
+      version: -1
+      name: pan-os-bpa-get-job-results
+      description: Returns results of BPA job.
+      script: BPA|||pan-os-bpa-get-job-results
+      type: regular
+      iscommand: true
+      brand: BPA
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      exclude_passed_checks:
+        simple: "true"
+      task_id:
+        simple: ${PAN-OS-BPA.SubmittedJob.JobID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1a12b604-293a-4fdf-8b0b-1cf8e7b0d2a7
+    type: condition
+    task:
+      id: 1a12b604-293a-4fdf-8b0b-1cf8e7b0d2a7
+      version: -1
+      name: Test BPA Checks Are Returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: PAN-OS-BPA
+                filters:
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: PAN-OS-BPA.JobResults.Checks.check_passed
+                      iscontext: true
+                accessor: JobResults.Checks
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1815,
         "width": 380,
         "x": 50,
         "y": 50

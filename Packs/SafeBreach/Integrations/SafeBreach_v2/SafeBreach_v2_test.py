@@ -1,10 +1,8 @@
 import json
 import demistomock as demisto
-from SafeBreach_v2 import *
-
-# from CommonServerPython import *
-from SafeBreach_v2 import get_safebreach_simulation_command, get_indicators_command, \
-    rerun_simulation_command
+from CommonServerPython import *
+from SafeBreach_v2 import get_insights_command, get_remediation_data_command, rerun_simulation_command, \
+    get_safebreach_simulation_command, get_indicators_command, insight_rerun_command, Client
 
 MOCK_URL = "https://safebreach-fake-api.com"
 MOCK_ACCOUNT_ID = '1234567'
@@ -16,8 +14,9 @@ client = Client(
     base_url=MOCK_URL,
     api_key=MOCK_API_KEY,
     account_id=MOCK_ACCOUNT_ID,
-    proxies=False,
+    proxies=handle_proxy(),
     verify=False,
+    tags=['tag1', 'tag2'],
 )
 
 
@@ -29,14 +28,18 @@ def load_test_data(json_path):
 REMEDATION_DATA_LIST = load_test_data('./test_data/remediation_data.json')
 GET_INSIGHTS_LIST = load_test_data('./test_data/insights.json')
 SIMULATION = load_test_data('./test_data/simulation.json')
+NODES = load_test_data('./test_data/nodes.json')
 
 
-def test_get_insights(mocker, requests_mock):
-    mocker.patch.object(demisto, 'args', return_value={'insightIds': [9]})
-    mocker.patch.object(demisto, 'results')
-
+def test_get_insights(requests_mock, mocker):
     requests_mock.get(f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights?type=actionBased',
                       json=GET_INSIGHTS_LIST)
+    requests_mock.get(
+        f'{MOCK_URL}/api/config/v1/accounts/{MOCK_ACCOUNT_ID}/nodes?details=true&deleted=true&assets=true',
+        json=NODES)
+    mocker.patch.object(demisto, 'args', return_value={'insightIds': [9]})
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'params', return_value={'url': MOCK_URL})
 
     res = get_insights_command(client, demisto.args(), True)
     assert demisto.results.call_count == 1
@@ -45,7 +48,7 @@ def test_get_insights(mocker, requests_mock):
     fake_safebreach_context = {
         "Id": 9,
         "Category": 'Endpoint',
-        "Severity": "Medium"
+        "Severity": "High"
     }
 
     assert fake_safebreach_context['Id'] == context['SafeBreach.Insight(val.Id == obj.Id)'][0]['Id']
@@ -54,32 +57,37 @@ def test_get_insights(mocker, requests_mock):
     assert len(res) == 1
 
 
-def test_get_remediation_data(mocker, requests_mock):
+def test_get_remediation_data(requests_mock, mocker):
     mocker.patch.object(demisto, 'args', return_value={'insightId': INSIGHT_ID})
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'params', return_value={'url': MOCK_URL})
 
     requests_mock.get(f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights?type=actionBased',
                       json=GET_INSIGHTS_LIST)
     requests_mock.get(f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights/{INSIGHT_ID}/remediation',
                       json=REMEDATION_DATA_LIST)
-
+    requests_mock.get(
+        f'{MOCK_URL}/api/config/v1/accounts/{MOCK_ACCOUNT_ID}/nodes?details=true&deleted=true&assets=true',
+        json=NODES)
     get_remediation_data_command(client, demisto.args(), True)
     assert demisto.results.call_count == 1
     outputs = demisto.results.call_args[0][0]
     context = outputs['EntryContext']
     sha256_to_check = '109c702578b261d0eda01506625423f5a2b8cc107b0d8dfad84d39fb02bfa5cb'
     assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['Id'] == INSIGHT_ID
+    assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['RawRemediationData'][0]['type'] == 'SHA256'
+    assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['RawRemediationData'][0]['value'] == sha256_to_check
     assert context['File(val.SHA256 == obj.SHA256)'][0]['SHA256'] == sha256_to_check
     assert context['DBotScore(val.Indicator == obj.Indicator)'][0]['Indicator'] == sha256_to_check
 
 
-def test_rerun_insight(mocker, requests_mock):
-    mocker.patch.object(demisto, 'args', return_value={'insightId': '9'})
+def test_rerun_insight(requests_mock, mocker):
+    mocker.patch.object(demisto, 'args', return_value={'insightIds': '9'})
     mocker.patch.object(demisto, 'results')
 
     response = {
         "data": {
-            "name": "Insight (Demisto) - Test",
+            "name": "Insight (XSOAR) - Test",
             "moveIds": [
                 1,
                 2,
@@ -109,19 +117,25 @@ def test_rerun_insight(mocker, requests_mock):
     assert demisto.results.call_count == 1
     outputs = demisto.results.call_args[0][0]
     context = outputs['EntryContext']
-    assert context['SafeBreach.Insight(val.Id == obj.Id)']['Id'] == INSIGHT_ID
-    assert context['SafeBreach.Insight(val.Id == obj.Id)']['Rerun'][0]['Id'] == response['data']['runId']
+    assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['Id'] == int(INSIGHT_ID)
+    assert context['SafeBreach.Insight(val.Id == obj.Id)'][0]['Rerun'][0]['Id'] == response['data']['runId']
 
 
-def test_get_indicators(mocker, requests_mock):
+def test_get_indicators(requests_mock, mocker):
     mocker.patch.object(demisto, 'args', return_value={'limit': '10'})
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'params', return_value={'url': MOCK_URL})
+
     for insight_id in [5, 6, 8, 9, 13, 14, 17]:
         requests_mock.get(f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights/{insight_id}/remediation',
                           json=REMEDATION_DATA_LIST)
 
-    requests_mock.get(f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights?type=actionBased',
-                      json=GET_INSIGHTS_LIST)
+    requests_mock.get(
+        f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights?type=actionBased',
+        json=GET_INSIGHTS_LIST)
+    requests_mock.get(
+        f'{MOCK_URL}/api/config/v1/accounts/{MOCK_ACCOUNT_ID}/nodes?details=true&deleted=true&assets=true',
+        json=NODES)
     insight_category = ['Endpoint', 'Web']
     insight_data_type = ['Hash', 'Domain']
     hash_to_search = '109c702578b261d0eda01506625423f5a2b8cc107b0d8dfad84d39fb02bfa5cb'
@@ -131,7 +145,7 @@ def test_get_indicators(mocker, requests_mock):
     assert res[0]['type'] == 'File'
 
 
-def test_get_simulation(mocker, requests_mock):
+def test_get_simulation(requests_mock, mocker):
     mocker.patch.object(demisto, 'args', return_value={'simulationId': SIMULATION_ID})
     mocker.patch.object(demisto, 'results')
 
@@ -145,7 +159,7 @@ def test_get_simulation(mocker, requests_mock):
     assert context['SafeBreach.Simulation(val.Id == obj.Id)']['Id'] == SIMULATION_ID
 
 
-def test_rerun_simulation(mocker, requests_mock):
+def test_rerun_simulation(requests_mock, mocker):
     mocker.patch.object(demisto, 'args', return_value={'simulationId': SIMULATION_ID})
     mocker.patch.object(demisto, 'results')
     response = {
@@ -182,3 +196,32 @@ def test_rerun_simulation(mocker, requests_mock):
     context = outputs['EntryContext']
     assert context['SafeBreach.Simulation(val.Id == obj.Id)']['Id'] == SIMULATION_ID
     assert context['SafeBreach.Simulation(val.Id == obj.Id)']['Rerun']['Id'] == response['data']['runId']
+
+
+def test_feed_tags(requests_mock, mocker):
+    """
+    Given:
+    - client which has tag params
+    When:
+    - Executing get indicators command on feed
+    Then:
+    - Validate the tags supplied are added to the tags list in addition to the tags that were there before
+    """
+    mocker.patch.object(demisto, 'args', return_value={'limit': '10'})
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'params', return_value={'url': MOCK_URL})
+
+    for insight_id in [5, 6, 8, 9, 13, 14, 17]:
+        requests_mock.get(f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights/{insight_id}/remediation',
+                          json=REMEDATION_DATA_LIST)
+
+    requests_mock.get(
+        f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/insights?type=actionBased',
+        json=GET_INSIGHTS_LIST)
+    requests_mock.get(
+        f'{MOCK_URL}/api/config/v1/accounts/{MOCK_ACCOUNT_ID}/nodes?details=true&deleted=true&assets=true',
+        json=NODES)
+    insight_category = ['Endpoint', 'Web']
+    insight_data_type = ['Hash', 'Domain']
+    res = get_indicators_command(client, insight_category, insight_data_type, demisto.args())
+    assert all(elem in res[0]['fields']['tags'] for elem in ['tag1', 'tag2'])

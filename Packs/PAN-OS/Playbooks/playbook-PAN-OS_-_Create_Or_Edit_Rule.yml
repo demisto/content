@@ -341,10 +341,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 05eecf81-1e2f-4b18-825f-b7d27e0647d4
+    taskid: cf574631-9b8d-409c-8141-accafec2b8f0
     type: regular
     task:
-      id: 05eecf81-1e2f-4b18-825f-b7d27e0647d4
+      id: cf574631-9b8d-409c-8141-accafec2b8f0
       version: -1
       name: Move the rule into its position
       description: Changes the location of a policy rule.
@@ -371,12 +371,6 @@ tasks:
       where:
         complex:
           root: inputs.rule-position
-          transformers:
-          - operator: d8d43bef-f48a-47ad-8502-b191d615158c
-            args:
-              defaultValue:
-                value:
-                  simple: bottom
     separatecontext: false
     view: |-
       {
@@ -533,8 +527,10 @@ inputs:
 - key: pre-post-rulebase
   value: {}
   required: false
-  description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure.
+  description: Determines whether the rule is a pre-rulebase or post-rulebase rule,
+    according to the rule structure.
     Exists only in panorama!
 outputs: []
 tests:
   - no test
+sourceplaybookid: PAN-OS - Create Or Edit Rule

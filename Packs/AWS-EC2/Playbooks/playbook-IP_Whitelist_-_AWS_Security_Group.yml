@@ -1,0 +1,876 @@
+id: IP Whitelist - AWS Security Group
+version: -1
+name: IP Whitelist - AWS Security Group
+description: Sync a list of IP addresses to an AWS Security Group.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c85f856f-9810-4ab0-8729-ee1dfac7485c
+    type: start
+    task:
+      id: c85f856f-9810-4ab0-8729-ee1dfac7485c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 84551e34-e39d-49af-8f9c-519daf296254
+    type: title
+    task:
+      id: 84551e34-e39d-49af-8f9c-519daf296254
+      version: -1
+      name: Allow IPs on AWS (Sec Group Ingress)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 5ce745a5-3013-44aa-8f88-fd2c7ea0243e
+    type: regular
+    task:
+      id: 5ce745a5-3013-44aa-8f88-fd2c7ea0243e
+      version: -1
+      name: Add allowed Tag
+      description: Adds the tag defined in inputs.IndicatorTagName.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      a: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      alexcustom: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      companysize: {}
+      creationdate: {}
+      custom: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedthreattype: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      indicatorcategory: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags:
+        simple: ${inputs.IndicatorTagName}
+      threattypes: {}
+      trafficlightprotocol: {}
+      trafficlightprotocoltlp: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: ${ListCompare
+          accessor: LeftOnly}
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "-1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 3f3f330a-fab8-4067-8aff-95a1e6b0e813
+    type: regular
+    task:
+      id: 3f3f330a-fab8-4067-8aff-95a1e6b0e813
+      version: -1
+      name: Describe Security Groups
+      description: Describes one or more of your security groups.
+      script: AWS - EC2|||aws-ec2-describe-security-groups
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      filters: {}
+      groupIds: {}
+      groupNames:
+        simple: ${inputs.SecurityGroupName}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1012.5,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 59c54288-6d6a-4793-8777-9baaeae2af74
+    type: regular
+    task:
+      id: 59c54288-6d6a-4793-8777-9baaeae2af74
+      version: -1
+      name: Add IPs to AWS Security Group
+      description: Adds ingress rule to a security group.
+      script: '|||aws-ec2-authorize-security-group-ingress-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      IpPermissionsIpProtocol: {}
+      IpPermissionsToPort: {}
+      IpPermissionsfromPort: {}
+      IpRangesCidrIp: {}
+      IpRangesDesc: {}
+      Ipv6RangesCidrIp: {}
+      Ipv6RangesDesc: {}
+      PrefixListId: {}
+      PrefixListIdDesc: {}
+      UserIdGroupPairsDescription: {}
+      UserIdGroupPairsGroupId: {}
+      UserIdGroupPairsGroupName: {}
+      UserIdGroupPairsPeeringStatus: {}
+      UserIdGroupPairsUserId: {}
+      UserIdGroupPairsVpcId: {}
+      UserIdGroupPairsVpcPeeringConnectionId: {}
+      cidrIp:
+        simple: ${ListCompare.LeftOnly}
+      fromPort: {}
+      groupId:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.GroupId
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      ipProtocol:
+        simple: "-1"
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      sourceSecurityGroupName: {}
+      toPort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: f239a3a3-482a-4e21-85ff-321537aa71e4
+    type: regular
+    task:
+      id: f239a3a3-482a-4e21-85ff-321537aa71e4
+      version: -1
+      name: Map IPs as CIDR ranges
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      append: {}
+      key:
+        simple: AllowedCIDRs
+      stringify: {}
+      value:
+        complex:
+          root: ${inputs
+          accessor: IP}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /32
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 802.5,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 8a1ec2e1-2f6c-4ab1-86dc-7f587b6fd52a
+    type: regular
+    task:
+      id: 8a1ec2e1-2f6c-4ab1-86dc-7f587b6fd52a
+      version: -1
+      name: Revoke IPs from AWS Security Group
+      description: Removes egress rule from a security group. To remove a rule, the
+        values that you specify (for example, ports) must match the existing rule's
+        values exactly.
+      script: '|||aws-ec2-revoke-security-group-ingress-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      cidrIp:
+        simple: ${ListCompare.RightOnly}
+      fromPort: {}
+      groupId:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.GroupId
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      ipProtocol:
+        simple: "-1"
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      sourceSecurityGroupName: {}
+      toPort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 224e4558-67e0-4a68-828a-781414358c9b
+    type: regular
+    task:
+      id: 224e4558-67e0-4a68-828a-781414358c9b
+      version: -1
+      name: Remove allowed Tag
+      description: Removes the tag defined in inputs.IndicatorTagName.
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: ${inputs.IndicatorTagName}
+      indicatorsValues:
+        complex:
+          root: ${ListCompare
+          accessor: RightOnly}
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "-1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: d7869678-c140-4948-8f5a-6daa317373a4
+    type: regular
+    task:
+      id: d7869678-c140-4948-8f5a-6daa317373a4
+      version: -1
+      name: Compare IP list with current AWS allow list
+      scriptName: CompareLists
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+      - "32"
+    scriptarguments:
+      left:
+        simple: ${AllowedCIDRs}
+      right:
+        simple: ${AWS.EC2.SecurityGroups.IpPermissions.[0].IpRanges.CidrIp}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 8846755b-df88-477e-8075-dfbe8349b807
+    type: condition
+    task:
+      id: 8846755b-df88-477e-8075-dfbe8349b807
+      version: -1
+      name: Is AWS EC2 integration enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - EC2
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: AWS - EC2
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 63f88ed9-a184-4062-8ed7-de7c170a81d8
+    type: condition
+    task:
+      id: 63f88ed9-a184-4062-8ed7-de7c170a81d8
+      version: -1
+      name: Any IPs to allow which are not already in AWS?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ListCompare.LeftOnly
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: ded851c7-5bc7-4f2e-8238-e57849966324
+    type: condition
+    task:
+      id: ded851c7-5bc7-4f2e-8238-e57849966324
+      version: -1
+      name: Any IPs in AWS allow list that should be removed?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ListCompare.RightOnly
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 1e8d132f-c94a-4418-8056-64e102d4ed17
+    type: title
+    task:
+      id: 1e8d132f-c94a-4418-8056-64e102d4ed17
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: ea3c38a0-8354-492d-8c1d-8c9eec68cb4f
+    type: condition
+    task:
+      id: ea3c38a0-8354-492d-8c1d-8c9eec68cb4f
+      version: -1
+      name: Security Group retrieved successfully?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AWS.EC2.SecurityGroups.GroupName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1012.5,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 2a06ac93-6908-46b6-82d1-234ec106abf1
+    type: title
+    task:
+      id: 2a06ac93-6908-46b6-82d1-234ec106abf1
+      version: -1
+      name: Security Group not found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: c28c2363-66e7-435c-826c-2d52dffecded
+    type: regular
+    task:
+      id: c28c2363-66e7-435c-826c-2d52dffecded
+      version: -1
+      name: Engineer - Fix Security Group Name and rerun
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 810ac836-5ce8-4568-8f9b-6c3fda6ad566
+    type: condition
+    task:
+      id: 810ac836-5ce8-4568-8f9b-6c3fda6ad566
+      version: -1
+      name: Is the Security Group empty?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: AWS.EC2.SecurityGroups.IpPermissions.[0].IpRanges.CidrIp
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 802.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 51ed900a-7f88-46aa-8532-4237e6a7daad
+    type: regular
+    task:
+      id: 51ed900a-7f88-46aa-8532-4237e6a7daad
+      version: -1
+      name: Set new list of IP addresses
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ListCompare.LeftOnly
+      stringify: {}
+      value:
+        simple: ${AllowedCIDRs}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "28_14_yes": 0.54,
+      "28_34_#default#": 0.58,
+      "32_34_#default#": 0.1,
+      "33_21_yes": 0.54,
+      "33_34_#default#": 0.11,
+      "35_20_yes": 0.69,
+      "38_26_#default#": 0.65
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2235,
+        "width": 1630,
+        "x": 270,
+        "y": -300
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: IP
+  value: {}
+  required: true
+  playbookInputQuery:
+  description: IP addresses to set in the allow list
+- key: SecurityGroupName
+  value: {}
+  required: true
+  description: Name of the AWS Security Group to update
+  playbookInputQuery:
+- key: IndicatorTagName
+  value:
+    simple: AWS_IP_Whitelist
+  required: true
+  playbookInputQuery:
+  description: Name of the Indicator Tag to apply to any IPs allowed by this playbook.
+outputs: []
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

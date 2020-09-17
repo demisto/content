@@ -1,16 +1,14 @@
 id: Kenna Test
 version: -1
-contentitemfields:
-  propagationLabels: []
 name: Kenna Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 92db6856-64f1-43ae-8487-3dac84e4b321
+    taskid: a26517f9-2932-4597-86f9-c8586892aab0
     type: start
     task:
-      id: 92db6856-64f1-43ae-8487-3dac84e4b321
+      id: a26517f9-2932-4597-86f9-c8586892aab0
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: c111a353-42b1-47e2-84b8-a8891a7d0b11
+    taskid: 5d457631-e47c-48b5-8dcb-5c3d1a4adc58
     type: regular
     task:
-      id: c111a353-42b1-47e2-84b8-a8891a7d0b11
+      id: 5d457631-e47c-48b5-8dcb-5c3d1a4adc58
       version: -1
       name: kenna-get-connectors
       description: Returns all of your connectors
@@ -62,10 +60,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 1360028e-d41e-4227-8353-9cc2c2834a18
+    taskid: 1fcebd93-7d0b-49ee-84b9-419d5360ce57
     type: regular
     task:
-      id: 1360028e-d41e-4227-8353-9cc2c2834a18
+      id: 1fcebd93-7d0b-49ee-84b9-419d5360ce57
       version: -1
       name: kenna-search-vulnerabilities
       description: Filtering vulnerabilities by those that Kenna recommends.
@@ -78,8 +76,10 @@ tasks:
       - "16"
     scriptarguments:
       id: {}
+      limit: {}
       min-score: {}
       status: {}
+      to_context: {}
       top-priority: {}
     separatecontext: false
     view: |-
@@ -96,10 +96,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 95784aa0-dce6-4fba-819e-6c6ddcd7ff6a
+    taskid: 8dedd321-e0da-4a89-8e43-8a73612797be
     type: regular
     task:
-      id: 95784aa0-dce6-4fba-819e-6c6ddcd7ff6a
+      id: 8dedd321-e0da-4a89-8e43-8a73612797be
       version: -1
       name: kenna-update-vulnerability
       description: Update a single vulnerability's attributes by ID
@@ -136,10 +136,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 4c484f51-2074-4bec-8dec-be8336601659
+    taskid: d12bf592-d511-4783-8082-bf214aa29a28
     type: condition
     task:
-      id: 4c484f51-2074-4bec-8dec-be8336601659
+      id: d12bf592-d511-4783-8082-bf214aa29a28
       version: -1
       name: Connectors ID List Exists?
       type: condition
@@ -175,10 +175,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 73cb1a02-2de5-4577-84fd-80e45c345bf0
+    taskid: f27053d7-500c-404c-8438-8abaf8150b99
     type: title
     task:
-      id: 73cb1a02-2de5-4577-84fd-80e45c345bf0
+      id: f27053d7-500c-404c-8438-8abaf8150b99
       version: -1
       name: Done
       type: title
@@ -199,10 +199,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: e8de4835-b6a6-4ce5-8378-8080a0534830
+    taskid: 3152765b-6961-4e44-8abd-6b23b0f18da4
     type: regular
     task:
-      id: e8de4835-b6a6-4ce5-8378-8080a0534830
+      id: 3152765b-6961-4e44-8abd-6b23b0f18da4
       version: -1
       name: Failed
       description: Prints an error entry with a given message
@@ -228,12 +228,12 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: a0c42b4d-cf9d-4040-88b3-591d1c56f65a
+    taskid: 3c282043-611f-402b-8fa9-29746742ee33
     type: condition
     task:
-      id: a0c42b4d-cf9d-4040-88b3-591d1c56f65a
+      id: 3c282043-611f-402b-8fa9-29746742ee33
       version: -1
-      name: Fixes list contain?
+      name: Verify Search Fixes Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -254,6 +254,14 @@ tasks:
             value:
               simple: Kenna.Fixes.Assets.ID
             iscontext: true
+      - - operator: hasLength
+          left:
+            value:
+              simple: Kenna.Fixes
+            iscontext: true
+          right:
+            value:
+              simple: "30"
     view: |-
       {
         "position": {
@@ -268,10 +276,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 69bbf3c5-aafb-42cf-88ff-61a819b1ee57
+    taskid: 87b54be9-81cf-48a3-8d61-7ef08d74f0a7
     type: regular
     task:
-      id: 69bbf3c5-aafb-42cf-88ff-61a819b1ee57
+      id: 87b54be9-81cf-48a3-8d61-7ef08d74f0a7
       version: -1
       name: kenna-search-assets-round1
       description: Filtering assets by those that Kenna recommands
@@ -303,10 +311,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 9c4bdd35-a7c1-4e19-80db-7fe5f3520987
+    taskid: 99bc4c92-fab7-4927-8d1c-3e6f31fcf590
     type: condition
     task:
-      id: 9c4bdd35-a7c1-4e19-80db-7fe5f3520987
+      id: 99bc4c92-fab7-4927-8d1c-3e6f31fcf590
       version: -1
       name: Check Asset List
       type: condition
@@ -349,10 +357,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 8095c4ee-2088-4b52-885c-5eeee8d50830
+    taskid: 0eea7d49-ee32-4b0f-8db1-259eb5049ac5
     type: condition
     task:
-      id: 8095c4ee-2088-4b52-885c-5eeee8d50830
+      id: 0eea7d49-ee32-4b0f-8db1-259eb5049ac5
       version: -1
       name: Check Search Vulnerabilities
       type: condition
@@ -397,10 +405,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 1adcca0f-457c-4515-8b7e-daff1021d69b
+    taskid: db27bfff-c1a7-4a82-887e-bf29edb24774
     type: regular
     task:
-      id: 1adcca0f-457c-4515-8b7e-daff1021d69b
+      id: db27bfff-c1a7-4a82-887e-bf29edb24774
       version: -1
       name: check vulnerabilities after update
       description: Filtering vulnerabilities by those that Kenna recommends.
@@ -438,10 +446,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 970b460a-9d51-4ab9-83c2-0b30d336a79f
+    taskid: cafb86b2-ceb8-4220-8249-739ef4a0f22e
     type: condition
     task:
-      id: 970b460a-9d51-4ab9-83c2-0b30d336a79f
+      id: cafb86b2-ceb8-4220-8249-739ef4a0f22e
       version: -1
       name: check status after update
       type: condition
@@ -478,10 +486,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: f5041d5f-bcc4-42d9-8745-992a349cede7
+    taskid: 90d7c307-2816-4b6a-8f68-4f9874ac7a99
     type: regular
     task:
-      id: f5041d5f-bcc4-42d9-8745-992a349cede7
+      id: 90d7c307-2816-4b6a-8f68-4f9874ac7a99
       version: -1
       name: kenna-add-tag
       description: Add tag to Asset id
@@ -516,10 +524,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 82150d5f-9af5-4e97-891c-7f62d76e49b2
+    taskid: f70955af-8306-4c11-8cea-62bf3c20de41
     type: regular
     task:
-      id: 82150d5f-9af5-4e97-891c-7f62d76e49b2
+      id: f70955af-8306-4c11-8cea-62bf3c20de41
       version: -1
       name: kenna-search-assets-round2
       description: Filtering assets by those that Kenna recommands
@@ -556,10 +564,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 05e8e9e6-3a7f-47c6-8a12-20bf5ec2d7d5
+    taskid: 5c90e2cf-f65e-4e75-8cfb-cdf00eed98ca
     type: condition
     task:
-      id: 05e8e9e6-3a7f-47c6-8a12-20bf5ec2d7d5
+      id: 5c90e2cf-f65e-4e75-8cfb-cdf00eed98ca
       version: -1
       name: check tag addition
       type: condition
@@ -596,10 +604,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: c88025e1-326c-43d0-8d4b-14e5cf30bf65
+    taskid: 51c0e2fa-ca9c-4635-8614-03701e2768cb
     type: regular
     task:
-      id: c88025e1-326c-43d0-8d4b-14e5cf30bf65
+      id: 51c0e2fa-ca9c-4635-8614-03701e2768cb
       version: -1
       name: kenna-delete-tag
       description: Delete tags from specific Asset
@@ -634,10 +642,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: ed77ec03-8d21-480f-8a00-f951d4c0257c
+    taskid: a7464572-217b-48d8-84ee-177537f655b2
     type: condition
     task:
-      id: ed77ec03-8d21-480f-8a00-f951d4c0257c
+      id: a7464572-217b-48d8-84ee-177537f655b2
       version: -1
       name: check tag deletion
       type: condition
@@ -678,10 +686,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: ba1c4934-9518-4010-8854-19dd3e8c2834
+    taskid: 4ba73f47-3331-46e6-86ab-91e9187318da
     type: regular
     task:
-      id: ba1c4934-9518-4010-8854-19dd3e8c2834
+      id: 4ba73f47-3331-46e6-86ab-91e9187318da
       version: -1
       name: Kenna-search-fixes
       description: Filters fixes by a given set of vulnerability and asset parameters
@@ -695,7 +703,8 @@ tasks:
       - "12"
     scriptarguments:
       id: {}
-      limit: {}
+      limit:
+        simple: "30"
       min-score: {}
       status: {}
       to_context: {}

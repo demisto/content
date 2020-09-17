@@ -23,13 +23,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "18"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 250
+          "y": 80
         }
       }
     note: false
@@ -250,18 +250,78 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 29813f24-d676-4746-834e-da00d0270dac
+    type: condition
+    task:
+      id: 29813f24-d676-4746-834e-da00d0270dac
+      version: -1
+      name: Is AWS - IAM integration enabled?
+      description: "Is AWS - IAM integration enabled?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - IAM
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
       "17_16_twoKeys": 0.52,
-      "17_7_#default#": 0.29
+      "17_7_#default#": 0.29,
+      "18_14_yes": 0.5
     },
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 1255,
         "width": 805,
         "x": -160,
-        "y": 250
+        "y": 80
       }
     }
   }

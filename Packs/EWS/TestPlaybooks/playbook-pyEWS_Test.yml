@@ -3,6 +3,7 @@ version: -1
 name: pyEWS_Test
 description: ""
 fromversion: "3.5.0"
+starttaskid: "0"
 tasks:
   "0":
     id: "0"

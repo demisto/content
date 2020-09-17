@@ -137,14 +137,38 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
     prints_manager = ParallelPrintsManager(1)
 
-    installed_packs = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
-                                                                             client,
-                                                                             prints_manager)
+    installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
+                                                                                      client,
+                                                                                      prints_manager)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
     assert 'TestPack' in installed_packs
+    assert success is True
 
-    installed_packs = script.search_and_install_packs_and_their_dependencies(bad_pack_ids,
-                                                                             client,
-                                                                             prints_manager)
+    installed_packs, _ = script.search_and_install_packs_and_their_dependencies(bad_pack_ids,
+                                                                                client,
+                                                                                prints_manager)
     assert bad_pack_ids[0] not in installed_packs
+
+
+def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
+    """
+    Given
+    - Error when searching for a pack
+    When
+    - Running integrations configuration tests.
+    Then
+    - Ensure a flag is raised
+    """
+    good_pack_ids = ['HelloWorld']
+
+    client = MockClient()
+
+    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
+    mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
+    prints_manager = ParallelPrintsManager(1)
+
+    installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
+                                                                                      client,
+                                                                                      prints_manager)
+    assert success is False

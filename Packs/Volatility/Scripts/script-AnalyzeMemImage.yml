@@ -1,6 +1,6 @@
 commonfields:
   id: AnalyzeMemImage
-  version: 1
+  version: -1
 name: AnalyzeMemImage
 script: |-
   var imginfo = executeCommand('Vol', {file:args.memdump, system: args.system, cmd:'imageinfo'});

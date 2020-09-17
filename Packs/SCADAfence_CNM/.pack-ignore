@@ -1,0 +1,5 @@
+[file:pack_metadata.json]
+ignore=PA113
+
+[file:integration-SCADAfence_CNM.yml]
+ignore=IN126

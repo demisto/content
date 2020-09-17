@@ -14,7 +14,10 @@ SOURCE_NAME = "Proofpoint Feed"
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, auth_code, **kwargs):
+    def __init__(self, base_url, auth_code, tags: list = None, **kwargs):
+        if tags is None:
+            tags = []
+        self._tags: list = tags
         base_url = url_concat(base_url, auth_code, "reputation")
         super().__init__(base_url, **kwargs)
 
@@ -104,12 +107,13 @@ class Client(BaseClient):
                 yield item
 
     @staticmethod
-    def _process_item(item: dict) -> dict:
+    def _process_item(item: dict, tags: list) -> dict:
         return {
             "value": item["value"],
             "type": item["type"],
             "rawJSON": item,
             "fields": {
+                "tags": tags,
                 "port": item.get("ports", "").split() if isinstance(item.get("ports"), str) else item.get("ports"),
                 "firstseenbysource": item.get("first_seen", ""),
                 "lastseenbysource": item.get("last_seen", ""),
@@ -145,7 +149,7 @@ class Client(BaseClient):
             list of indicators
         """
         return [
-            self._process_item(item)
+            self._process_item(item, self._tags)
             for item in self._build_iterator_domain()
         ]
 
@@ -156,7 +160,7 @@ class Client(BaseClient):
             list of indicators
         """
         return [
-            self._process_item(item)
+            self._process_item(item, self._tags)
             for item in self._build_iterator_ip()
         ]
 
@@ -253,10 +257,11 @@ def main():
     args = demisto.args()
     base_url = "https://rules.emergingthreats.net/"
     client = Client(
-        base_url=base_url,
+        base_url,
         auth_code=params.get("auth_code"),
         verify=not params.get("insecure", False),
         proxy=params.get("proxy"),
+        tags=argToList(params.get("feedTags"))
     )
     command = demisto.command()
     demisto.info("Command being called is {}".format(command))

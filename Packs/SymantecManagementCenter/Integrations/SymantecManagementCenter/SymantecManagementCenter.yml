@@ -607,6 +607,7 @@ script:
       - URL_LIST
       - IP_LIST
       - CATEGORY_LIST
+      - LOCAL_CATEGORY_DB
       required: true
       secret: false
     - default: false
@@ -687,6 +688,7 @@ script:
       - URL_LIST
       - IP_LIST
       - CATEGORY_LIST
+      - LOCAL_CATEGORY_DB
       required: true
       secret: false
     - default: false
@@ -726,7 +728,86 @@ script:
     description: Deletes content from a policy in Symantec MC.
     execution: false
     name: symantec-mc-delete-policy-content
-  dockerimage: demisto/python3:3.7.3.221
+  - arguments:
+    - default: false
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the
+        UUID.
+      isArray: false
+      name: uuid
+      required: false
+      secret: false
+    - default: false
+      description: The policy name to update content in.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Policy content type.
+      isArray: false
+      name: content_type
+      predefined:
+      - URL_LIST
+      - IP_LIST
+      - LOCAL_CATEGORY_DB
+      required: true
+      secret: false
+    - default: false
+      description: Description of the policy change.
+      isArray: false
+      name: change_description
+      required: true
+      secret: false
+    - default: false
+      description: The version of the schema for this content. This value will correspond
+        to the format of the content. Run the symantec-mc-get-policy command to get
+        the schema version.
+      isArray: false
+      name: schema_version
+      required: false
+      secret: false
+    - default: false
+      description: 'CSV list of IP addresses to update, for example: "1.2.3.4, 8.8.8.8".'
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: 'CSV list of URLs to update, for example: "www.google.com, www.github.com".'
+      isArray: true
+      name: url
+      required: false
+      secret: false
+    - default: false
+      description: 'CSV list of category names to update, for example: "Job Search/Careers,
+        Content Servers".'
+      isArray: true
+      name: category
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Relevant for URL and IP.
+      isArray: false
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Content description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates content in a policy in Symantec MC.
+    execution: false
+    name: symantec-mc-update-policy-content
+  dockerimage: demisto/python3:3.8.3.9324
   isfetch: false
   runonce: false
   script: '-'

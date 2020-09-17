@@ -350,7 +350,7 @@ tasks:
       remove_protocol: {}
       remove_query: {}
       since:
-        simple: 365d
+        simple: 720d
     separatecontext: false
     view: |-
       {

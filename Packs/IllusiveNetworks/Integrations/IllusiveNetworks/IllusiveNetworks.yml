@@ -104,6 +104,9 @@ script:
     - contextPath: Illusive.Forensics.Status
       description: The process progress ( Done, InProgress)
       type: String
+    - contextPath: Illusive.Forensics.Evidence.date
+      description: The forensics evidence date
+      type: Date
   - arguments:
     - default: false
       description: The hostname or IP address of the desired host
@@ -393,7 +396,7 @@ script:
     outputs:
     - contextPath: Illusive.Event.eventId
       description: 'The created event ID of the operation '
-      type: String
+      type: Number
   - arguments:
     - default: false
       description: |
@@ -475,25 +478,25 @@ script:
       description: The compromised host's policy
       type: String
     - contextPath: Illusive.Incident.riskInsights.stepsToCrownJewel
-      description: The compromised host?s lateral distance from Crown Jewels
+      description: The compromised host's lateral distance from Crown Jewels
       type: Number
     - contextPath: Illusive.Incident.riskInsights.stepsToDomainAdmin
-      description: The compromised host?s lateral distance from domain admin accounts
+      description: The compromised host's lateral distance from domain admin accounts
       type: Number
     - contextPath: Illusive.Incident.sourceHostname
       description: The compromised host's name
       type: String
     - contextPath: Illusive.Incident.sourceIp
-      description: The compromised host?s IP address
+      description: The compromised host's IP address
       type: String
     - contextPath: Illusive.Incident.sourceOperatingSystem
-      description: The compromised host?s operating system
+      description: The compromised host's operating system
       type: String
     - contextPath: Illusive.Incident.unread
       description: Whether the incident has been read
       type: Boolean
     - contextPath: Illusive.Incident.userNotes
-      description: The analyst?s comments
+      description: The analyst's comments
       type: String
   - arguments:
     - default: false
@@ -509,14 +512,140 @@ script:
     outputs:
     - contextPath: Illusive.Event.incidentId
       description: The Incident ID
-      type: String
+      type: Number
     - contextPath: Illusive.Event.eventId
       description: The given event ID
-      type: String
+      type: Number
     - contextPath: Illusive.Event.status
       description: The status command ( Done, InProgress)
       type: String
-  dockerimage: demisto/python3:3.8.2.6981
+  - arguments:
+    - default: false
+      description: The incident ID on which to retrieve the associated events
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of events to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Use offset and limit for pagination
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve all the events that are associated with an incident
+    execution: false
+    name: illusive-get-incident-events
+    outputs:
+    - contextPath: Illusive.Incident.incidentId
+      description: The corresponding incident ID
+      type: Number
+    - contextPath: Illusive.Incident.eventsNumber
+      description: The number of associated events
+      type: Number
+    - contextPath: Illusive.Incident.Event.eventId
+      description: The event ID
+      type: Number
+    - contextPath: Illusive.Incident.Event.eventTimeUTC
+      description: The event time
+      type: Date
+    - contextPath: Illusive.Incident.Event.hasForensics
+      description: Whether the event has forensics
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The event ID to retrieve the forensics analyzers from
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve Illusive's forensics analyzers on a certain event
+    execution: false
+    name: illusive-get-forensics-analyzers
+    outputs:
+    - contextPath: Illusive.Event.incidentId
+      description: The corresponding incident ID
+      type: Number
+    - contextPath: Illusive.Event.eventId
+      description: The corresponding event ID
+      type: Number
+    - contextPath: Illusive.Event.ForensicsAnalyzers.analyzerName
+      description: The forensics analyzer name
+      type: String
+    - contextPath: Illusive.Event.ForensicsAnalyzers.analyzerValue
+      description: The forensics analyzer description
+      type: String
+  - arguments:
+    - default: false
+      description: The event ID to retrieve the triggering process information from
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the triggering process information from Illusive's forensics
+    execution: false
+    name: illusive-get-forensics-triggering-process-info
+    outputs:
+    - contextPath: Illusive.Event.incidentId
+      description: The corresponding incident ID
+      type: Number
+    - contextPath: Illusive.Event.eventId
+      description: The corresponding event ID
+      type: Number
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.commandLine
+      description: The triggering process command line
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.connectionsNum
+      description: The triggering process active connections
+      type: Number
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.md5
+      description: The triggering process md5
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.sha256
+      description: The triggering process sha256
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.name
+      description: The triggering process name
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.parent
+      description: The parent process of the triggering process
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.path
+      description: The triggering process path
+      type: String
+    - contextPath: Illusive.Event.ForensicsTriggeringProcess.startTime
+      description: The triggering process start time
+      type: Date
+  - arguments:
+    - default: false
+      description: The event ID to retrieve the forensics artifacts from
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: DESKTOP_SCREENSHOTS
+      description: 'The type of forensics artifact to retrieve'
+      isArray: false
+      name: artifact_type
+      predefined:
+      - DESKTOP_SCREENSHOTS
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve forensics artifacts from Illusive's forensics
+    execution: false
+    name: illusive-get-forensics-artifacts
+  dockerimage: demisto/python3:3.8.3.9324
   feed: false
   isfetch: true
   longRunning: false
@@ -527,5 +656,5 @@ script:
   type: python
 tests:
 - No tests
-defaultClassifier: Illusive Networks
-defaultMapperIn: Illusive Networks-mapper
+defaultmapperin: Illusive Networks-mapper
+defaultclassifier: Illusive Networks

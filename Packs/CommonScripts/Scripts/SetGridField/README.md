@@ -14,10 +14,10 @@ Update Grid Table from items or key value pairs.
 | **Argument Name** | **Description** |
 | --- | --- |
 | context_path | Context path to list of items with similar properties or key value pairs. |
-| grid_id | Grid ID to modify. |
+| grid_id | Grid ID to modify. This argument can be either: 1) Grid name as it appears in the layout. 2) Grid "Machine name", as can be found in the grid incident field editor under Settings->Advanced->Fields (Incidents). |
 | overwrite | True if to overwrite Grid Data, False otherwise. |
-| columns | Grid columns \- comma sperated \(col1,col2,..,coln\) |
-| keys | Keys to retrieve from items or &quot;\*&quot; for max keys \(limited when item list to columns amount\) \- Key will not be columns correlated. |
+| columns | Comma-separated list of grid columns to populate (as appear in the original Grid), for example: (col1,col2,..,coln). |
+| keys | Keys to retrieve from items or &quot;\*&quot; for max keys \(limited when item list to columns amount\) \- Key will not be columns correlated. If you want to leave an empty column, please provide a place holder name that should not be in the context data such as "PLACE_HOLDER" |
 | sort_by | Column name to sort the rows by. |
 
 ## Command Example
@@ -57,7 +57,7 @@ Assume the following:
 ```
 
 2. Grid: \
-![Grid](https://github.com/demisto/content/blob/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid.png)
+![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid.png)
 
 Considering the following cases:
 1. Key value to Grid:
@@ -66,7 +66,7 @@ Considering the following cases:
 ```
 
 Grid after update: \
-![Grid](https://github.com/demisto/content/blob/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid_key_value_update.png)
+![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid_key_value_update.png)
  
 2. List of item properties to Grid:
 ```shell script
@@ -74,7 +74,7 @@ Grid after update: \
 ```
 
 Grid after update: \
-![Grid](https://github.com/demisto/content/blob/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid_list_update.png) 
+![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid_list_update.png) 
 
 
 

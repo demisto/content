@@ -1,0 +1,128 @@
+{
+  "name": "xxxx",
+  "nodeConfig": {
+    "machineType": "xxxx",
+    "diskSizeGb": 100,
+    "oauthScopes": [
+      "xxx"
+    ],
+    "metadata": {
+      "disable-legacy-endpoints": "xxxx"
+    },
+    "imageType": "xxxx",
+    "serviceAccount": "xxxx",
+    "diskType": "xxxx",
+    "shieldedInstanceConfig": {
+      "enableIntegrityMonitoring": true
+    }
+  },
+  "masterAuth": {
+    "username": "xxxx",
+    "password": "xxxx",
+    "clusterCaCertificate": "xxxx"
+  },
+  "loggingService": "xxxx",
+  "monitoringService": "xxxx",
+  "network": "xxxx",
+  "clusterIpv4Cidr": "xxxx",
+  "addonsConfig": {
+    "httpLoadBalancing": {},
+    "horizontalPodAutoscaling": {},
+    "kubernetesDashboard": {},
+    "networkPolicyConfig": {}
+  },
+  "subnetwork": "xxxx",
+  "nodePools": [
+    {
+      "name": "xxxx",
+      "config": {
+        "machineType": "xxxx",
+        "diskSizeGb": 100,
+        "oauthScopes": [
+          "xxxx"
+        ],
+        "metadata": {
+          "disable-legacy-endpoints": "true"
+        },
+        "imageType": "true",
+        "serviceAccount": "true",
+        "diskType": "true",
+        "shieldedInstanceConfig": {
+          "enableIntegrityMonitoring": true
+        }
+      },
+      "initialNodeCount": 6,
+      "autoscaling": {
+        "enabled": true,
+        "minNodeCount": 6,
+        "maxNodeCount": 10
+      },
+      "management": {
+        "autoUpgrade": true,
+        "autoRepair": true
+      },
+      "maxPodsConstraint": {
+        "maxPodsPerNode": "110"
+      },
+      "podIpv4CidrSize": 24,
+      "selfLink": "true",
+      "version": "true",
+      "instanceGroupUrls": [
+        "true"
+      ],
+      "status": "RUNNING"
+    }
+  ],
+  "locations": [
+    "europe-west2-a"
+  ],
+  "labelFingerprint": "true",
+  "legacyAbac": {},
+  "networkPolicy": {},
+  "ipAllocationPolicy": {
+    "useIpAliases": true,
+    "clusterIpv4Cidr": "true",
+    "servicesIpv4Cidr": "true",
+    "clusterSecondaryRangeName": "true",
+    "servicesSecondaryRangeName": "true",
+    "clusterIpv4CidrBlock": "true",
+    "servicesIpv4CidrBlock": "true"
+  },
+  "masterAuthorizedNetworksConfig": {
+    "enabled": true,
+    "cidrBlocks": [
+      {
+        "cidrBlock": "true"
+      }
+    ]
+  },
+  "maintenancePolicy": {
+    "resourceVersion": "true"
+  },
+  "binaryAuthorization": {},
+  "networkConfig": {
+    "network": "true",
+    "subnetwork": "true"
+  },
+  "defaultMaxPodsConstraint": {
+    "maxPodsPerNode": "110"
+  },
+  "authenticatorGroupsConfig": {},
+  "databaseEncryption": {
+    "state": "DECRYPTED"
+  },
+  "selfLink": "true",
+  "zone": "true",
+  "endpoint": "true",
+  "initialClusterVersion": "true",
+  "currentMasterVersion": "true",
+  "currentNodeVersion": "true",
+  "createTime": "true",
+  "status": "RUNNING",
+  "servicesIpv4Cidr": "true",
+  "instanceGroupUrls": [
+    "true"
+  ],
+  "currentNodeCount": 6,
+  "location": "europe-west2-a"
+}

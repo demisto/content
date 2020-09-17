@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
   required: false
 - display: Indicator Reputation
@@ -69,6 +69,12 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
 description: Use the AlienVault Reputation feed integration to fetch indicators from
     the feed.
 display: AlienVault Reputation Feed
@@ -93,7 +99,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: alienvault-get-indicators
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.5.10289
   feed: true
   isfetch: false
   longRunning: false

@@ -21,6 +21,11 @@ def get_ec2_sg_public_rules(group_id, ip_permissions, checked_protocol=None, che
         which can be passed on to the following command:
         aws-ec2-revoke-security-group-ingress-rule
     """
+
+    # If the SG only has one rule, we have to convert the dict to a list with one element
+    if (isinstance(ip_permissions, dict)):
+        ip_permissions = [ip_permissions]
+
     public_rules = []
     for rule in ip_permissions:
         # Check protocol

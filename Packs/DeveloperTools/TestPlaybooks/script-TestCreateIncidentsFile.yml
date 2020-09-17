@@ -1,7 +1,6 @@
 commonfields:
-  elasticcommonfields: {}
   id: TestCreateIncidentsFile
-  version: 22
+  version: -1
 name: TestCreateIncidentsFile
 script: |-
   encoded_file_content = \
@@ -1712,8 +1711,10 @@ enabled: true
 args:
 - name: fileID
   defaultValue: encodedIncidentsFile
+  description: ''
 scripttarget: 0
 subtype: python2
 runonce: false
-dockerimage: demisto/python:2.7.17.6135
+dockerimage: demisto/python:2.7.18.9326
 runas: DBotWeakRole
+comment: ''

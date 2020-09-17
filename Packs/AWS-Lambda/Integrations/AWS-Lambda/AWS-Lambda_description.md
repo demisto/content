@@ -11,4 +11,4 @@ on your AWS environment.
 2. Attach a Role to the Instance Profile.
 3. Configure the Necessary IAM Roles that the AWS Integration Can Assume.
 
-For detailed instructions, [see the AWS Integrations Configuration Guide](https://support.demisto.com/hc/en-us/articles/360005686854-AWS-Integrations-Configuration-Guide).
+For detailed instructions, [see the AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
