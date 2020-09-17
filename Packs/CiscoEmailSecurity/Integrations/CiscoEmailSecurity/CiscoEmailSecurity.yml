@@ -26,10 +26,13 @@ configuration:
   required: true
   type: 4
 - display: Fetch incidents
-  hidden: false
   name: isFetch
   required: false
   type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 description: Cisco Email Security is an email security gateway . It detects and blocks
   a wide variety of email-borne threats, such as malware, spam and phishing.
 display: Cisco Email Security
