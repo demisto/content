@@ -1966,7 +1966,7 @@ script:
     - contextPath: CDL.Logging.URL.DestDeviceHost
       description: Hostname of the device session destination.
       type: String
-  dockerimage: demisto/python_pancloud_v2:1.0.0.11342
+  dockerimage: demisto/python_pancloud_v2:1.0.0.11460
   feed: false
   isfetch: true
   longRunning: false
