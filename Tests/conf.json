@@ -3309,6 +3309,7 @@
         "MongoDB Key Value Store": "Our instance not using SSL",
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
+        "EWSO365": "oproxy dependent",
         "QRadar": "Playbooks has parallel steps which are causing inconsistent results"
     },
     "parallel_integrations": [
