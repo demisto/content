@@ -395,7 +395,7 @@ tasks:
       bailiwick: {}
       limit: {}
       max_count: {}
-      owner:
+      owner_name:
         simple: ns1.google.com
       rrtype: {}
       time_first_after: {}
@@ -519,57 +519,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: DNSDB.Rate.Limit
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DNSDB.Rate.Unlimited
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DNSDB.Rate.Remaining
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DNSDB.Rate.Reset
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DNSDB.Rate.NeverResets
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DNSDB.Rate.Expires
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DNSDB.Rate.ResultsMax
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DNSDB.Rate.OffsetMax
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DNSDB.Rate.OffsetNotAllowed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DNSDB.Rate.BurstSize
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: DNSDB.Rate.BurstWindow
+              simple: DNSDB.Rate
             iscontext: true
     view: |-
       {
