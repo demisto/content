@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Field Polling Generic](Insert the link to your image here)
+![Field Polling Generic](https://github.com/demisto/content/blob/978fcd6bff93c2c821cd5f2104bd3f20ee33bf87/Packs/CommonPlaybooks/doc_files/playbook-Field_Polling.png)

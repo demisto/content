@@ -75,7 +75,7 @@ tasks:
       PollingCommandArgName:
         simple: field
       PollingCommandName:
-        simple: pollingField
+        simple: PollingField
       Timeout:
         complex:
           root: inputs.timeout

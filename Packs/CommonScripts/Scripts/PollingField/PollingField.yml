@@ -19,7 +19,7 @@ outputs:
   description: Field Name
   type: string
 - contextPath: PollingCheckField.exists
-  description: Whether field Exists.
+  description: Whether the field Exists.
 runas: DBotWeakRole
 runonce: false
 script: ''
