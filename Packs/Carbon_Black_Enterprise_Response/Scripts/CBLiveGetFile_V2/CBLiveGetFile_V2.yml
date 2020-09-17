@@ -95,4 +95,6 @@ dependson:
     - cb-get-file-from-endpoint
     - cb-list-sensors
     - cb-list-sessions
+tests:
+  - No Test
 
