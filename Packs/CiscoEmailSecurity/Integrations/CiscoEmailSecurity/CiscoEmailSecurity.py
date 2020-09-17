@@ -23,9 +23,6 @@ class Client(BaseClient):
         super().__init__(base_url=params.get('base_url'), verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))
 
-        # self._token_base64 = self._generate_base64_token()
-        # self._headers = {'Authorization': 'Basic ' + self._token_base64}
-
         self._jwt_token = self._generate_jwt_token()
         self._headers = {
             'Content-Type': 'application/json',
@@ -197,7 +194,7 @@ def list_report_command(client: Client, args: Dict[str, Any]):
     url_suffix_to_filter_by = url_suffix + url_params
     report_response_data = client.list_report(url_suffix_to_filter_by)
     return CommandResults(
-        readable_output='human_readable',
+        readable_output='',
         outputs_prefix='CiscoEmailSecurity.report',
         outputs_key_field='',
         outputs=report_response_data
