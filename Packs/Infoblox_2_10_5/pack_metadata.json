@@ -1,0 +1,14 @@
+{
+    "name": "Infoblox_2.10.5",
+    "description": "Added commands to allow Adding, Deleting and Updating host records. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "scottbrumley",
+    "url": "",
+    "email": "",
+    "created": "2020-09-17T16:26:55Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
