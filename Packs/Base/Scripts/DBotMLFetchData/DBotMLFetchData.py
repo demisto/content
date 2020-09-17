@@ -63,6 +63,7 @@ MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 500
 MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
 FROM_DATA_FIRST_EXECUTION = FROM_DATA_PERIODIC_EXECUTION = '30 days ago'
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+FIRST_EXECUTION_ARGUMENTS = {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION, 'fromDate': FROM_DATA_FIRST_EXECUTION}
 
 IMG_FORMATS = ['.jpeg', '.gif', '.bmp', '.png', '.jfif', '.tiff', '.eps', '.indd', '.jpg']
 
@@ -524,7 +525,7 @@ def transform_text_to_ngrams_counter(email_body_word_tokenized, email_subject_wo
     return text_ngrams
 
 
-def extract_features_from_incident(row):
+def extract_features_from_incident(row, label_fields):
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_ATTACHMENT_FIELD, EMAIL_HEADERS_FIELD
     email_body = row[EMAIL_BODY_FIELD] if EMAIL_BODY_FIELD in row else ''
     email_subject = row[EMAIL_SUBJECT_FIELD] if EMAIL_SUBJECT_FIELD in row else ''
@@ -556,8 +557,7 @@ def extract_features_from_incident(row):
     headers_features = get_headers_features(email_headers)
     url_feautres = get_url_features(email_body=email_body, email_html=email_html, soup=soup)
     attachments_features = get_attachments_features(email_attachments=email_attachments)
-
-    return {
+    res = {
         'ngrams_features': ngrams_features,
         'lexical_features': lexical_features,
         'characters_features': characters_features,
@@ -570,36 +570,28 @@ def extract_features_from_incident(row):
         'id': str(row['id']) if 'id' in row else None,
 
     }
+    for label in label_fields:
+        if label in row:
+            res[label] = row[label]
+        else:
+            res[label] = float('nan')
+    return res
 
 
-def extract_features_from_all_incidents(incidents_df):
-    X = {  # type: ignore
-        'ngrams_features': [],
-        'lexical_features': [],
-        'characters_features': [],
-        'html_feature': [],
-        'ml_features': [],
-        'headers_features': [],
-        'url_features': [],
-        'attachments_features': [],
-        'created': [],
-        'id': []
-    }   # type: ignore
+def extract_features_from_all_incidents(incidents_df, label_fields):
+    X = []
     exceptions_log = []
     exception_indices = set()
     timeout_indices = set()
-    preprocessed_indices = set()
     durations = []
     for index, row in incidents_df.iterrows():
         signal.alarm(5)
         try:
             start = time.time()
-            X_i = extract_features_from_incident(row)
+            X_i = extract_features_from_incident(row, label_fields)
             end = time.time()
-            for k, v in X_i.items():
-                X[k].append(v)
+            X.append(X_i)
             durations.append(end - start)
-            preprocessed_indices.add(index)
         except TimeoutException:
             timeout_indices.add(index)
         except ShortTextException:
@@ -611,7 +603,7 @@ def extract_features_from_all_incidents(incidents_df):
                 break
         finally:
             signal.alarm(0)
-    return X, preprocessed_indices, Counter(exceptions_log).most_common(), exception_indices, timeout_indices, durations
+    return X, Counter(exceptions_log).most_common(), exception_indices, timeout_indices, durations
 
 
 def extract_data_from_incidents(incidents, input_label_field=None):
@@ -635,15 +627,12 @@ def extract_data_from_incidents(incidents, input_label_field=None):
     y = []
     for i, label in enumerate(label_fields):
         y.append({'field_name': label,
-                  'rank': '#{}'.format(i + 1),
-                  'values': incidents_df[label].tolist()})
+                  'rank': '#{}'.format(i + 1)})
     load_external_resources()
-    X, preprocessed_indices, exceptions_log, exception_indices, timeout_indices, durations\
-        = extract_features_from_all_incidents(incidents_df)
-    for i, label_dict in enumerate(y):
-        y[i]['values'] = [label_dict['values'][incident_index] for incident_index in preprocessed_indices]
+    X, exceptions_log, exception_indices, timeout_indices, durations\
+        = extract_features_from_all_incidents(incidents_df, label_fields)
     return {'X': X,
-            'n_fetched_incidents': len(preprocessed_indices),
+            'n_fetched_incidents': len(X),
             'y': y,
             'log':
                 {'exceptions': exceptions_log,
@@ -665,23 +654,26 @@ def return_json_entry(obj):
 def get_args_based_on_last_execution():
     lst = demisto.executeCommand('getList', {'listName': LAST_EXECUTION_LIST_NAME})
     if isError(lst):  # if first execution
-        return {'limit': MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION, 'fromDate': FROM_DATA_FIRST_EXECUTION}
-    else:
-        last_execution_datetime = datetime.strptime(lst[0]['Contents'], DATETIME_FORMAT)
-        try:
-            query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_QUERY_TIMEFORMAT))
-        except Exception:
-            query = None  # type: ignore
-        finally:
-            res = {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION, 'fromDate': FROM_DATA_PERIODIC_EXECUTION}
-            if query is not None:
-                res['query'] = query  # type: ignore
-            return res
+        return FIRST_EXECUTION_ARGUMENTS
+    try:
+        list_content = lst[0]['Contents']
+        split_list_content = list_content.split(',')
+        last_execution_time, last_execution_version = split_list_content[0], split_list_content[1]
+        if last_execution_version != FETCH_DATA_VERSION:
+            return FIRST_EXECUTION_ARGUMENTS
+        last_execution_datetime = datetime.strptime(last_execution_time, DATETIME_FORMAT)
+        query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_QUERY_TIMEFORMAT))
+        return {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION,
+                'fromDate': FROM_DATA_PERIODIC_EXECUTION,
+                'query': query}
+    except Exception:
+        return FIRST_EXECUTION_ARGUMENTS
 
 
 def update_last_execution_time():
     execution_datetime_str = datetime.strftime(datetime.now(), DATETIME_FORMAT)
-    res = demisto.executeCommand("createList", {"listName": LAST_EXECUTION_LIST_NAME, "listData": execution_datetime_str})
+    list_content = ','.join([execution_datetime_str, FETCH_DATA_VERSION])
+    res = demisto.executeCommand("createList", {"listName": LAST_EXECUTION_LIST_NAME, "listData": list_content})
     if is_error(res):
         demisto.results(res)
 

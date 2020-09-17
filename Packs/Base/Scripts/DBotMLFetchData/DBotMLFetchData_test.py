@@ -380,8 +380,7 @@ def test_whole_preprocessing(mocker):
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
     assert len(data['log']['exceptions']) == 0
-    assert len(data['X']['ngrams_features']) == 100
-    assert len(data['y'][0]['values']) == 100
+    assert len(data['X']) == 100
 
 
 def test_whole_preprocessing_short_incident(mocker):
@@ -404,15 +403,10 @@ def test_whole_preprocessing_short_incident(mocker):
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
     assert len(data['log']['exceptions']) == 1
-    assert len(data['X']['ngrams_features']) == 100
-    assert len(data['y'][0]['values']) == 100
+    assert len(data['X']) == 100
     # check labels order kept as original excluding the short label
-    incident_id_to_label = {inc['id']: inc['closeReason'] for i, inc in enumerate(incidents)
-                            if i != short_text_incident_index}
-    for id_, label in zip(data['X']['id'], data['y'][0]['values']):
-        assert incident_id_to_label[id_] == label
-    assert Counter(data['y'][0]['values']) == Counter([inc['closeReason'] for i, inc in enumerate(incidents)
-                                                       if i != short_text_incident_index])
+    assert Counter(x['closeReason'] for x in data['X']) == Counter(
+        [inc['closeReason'] for i, inc in enumerate(incidents) if i != short_text_incident_index])
 
 
 def test_whole_preprocessing_incdient_without_label(mocker):
@@ -434,11 +428,7 @@ def test_whole_preprocessing_incdient_without_label(mocker):
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
     assert len(data['log']['exceptions']) == 0
-    assert len(data['X']['ngrams_features']) == 100
-    assert len(data['y'][0]['values']) == 100
+    assert len(data['X']) == 100
     # check labels order kept as original excluding the short label
-    incident_id_to_label = {inc['id']: inc['closeReason'] for i, inc in enumerate(incidents) if i != no_label_idx}
-    for id_, label in zip(data['X']['id'], data['y'][0]['values']):
-        assert incident_id_to_label[id_] == label
-    assert Counter(data['y'][0]['values']) == Counter([inc['closeReason'] for i, inc in enumerate(incidents)
-                                                       if i != no_label_idx])
+    assert Counter(x['closeReason'] for x in data['X']) == Counter(
+        [inc['closeReason'] for i, inc in enumerate(incidents) if i != no_label_idx])
