@@ -3,7 +3,6 @@ import dateparser
 from typing import List, Tuple, Dict, Callable, Any, Optional, Union
 
 from CommonServerPython import *
-from demistomock import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -87,6 +86,14 @@ DEFAULT_RECORD_FIELDS = {
     'sys_updated_on': 'UpdatedAt',
     'sys_created_by': 'CreatedBy',
     'sys_created_on': 'CreatedAt'
+}
+
+
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
 }
 
 
@@ -550,7 +557,7 @@ class Client(BaseClient):
         """
         query_params = {'sysparm_limit': 1, 'sysparm_query': f'name={template_name}'}
 
-        result = self.send_request('GET', 'table/sys_template', params=query_params)
+        result = self.send_request('table/sys_template', 'GET', params=query_params)
 
         if len(result['result']) == 0:
             raise ValueError("Incorrect template name.")
@@ -1791,6 +1798,14 @@ def fetch_incidents(client: Client) -> list:
     for result in res.get('result', []):
         labels = []
 
+        result['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
+        result['mirror_tags'] = [
+            demisto.params().get('comment_tag'),
+            demisto.params().get('file_tag'),
+            demisto.params().get('work_notes_tag')
+        ]
+        result['mirror_instance'] = demisto.integrationInstance()
+
         if client.timestamp_field not in result:
             raise ValueError(f"The timestamp field [{client.timestamp_field}] does not exist in the ticket")
 
@@ -1973,6 +1988,14 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     # Parse user dict to email
     assigned_to = ticket.get('assigned_to', {})
     caller = ticket.get('caller_id', {})
+    assignment_group = ticket.get('assignment_group', {})
+
+    if assignment_group:
+        group_result = client.get('sys_user_group', assignment_group.get('value'))
+        group = group_result.get('result', {})
+        group_name = group.get('name')
+        ticket['assignment_group'] = group_name
+
     if assigned_to:
         user_result = client.get('sys_user', assigned_to.get('value'))
         user = user_result.get('result', {})
@@ -2049,9 +2072,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
                 key = ''
-                if 'work_notes' in tags:
+                if params.get('work_notes_tag') in tags:
                     key = 'work_notes'
-                elif 'comments' in tags:
+                elif params.get('comment_tag') in tags:
                     key = 'comments'
                 user = entry.get('user', 'dbot')
                 text = f"({user}): {str(entry.get('contents', ''))}"
