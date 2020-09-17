@@ -38,11 +38,39 @@ display: FortiManager
 name: FortiManager
 script:
   commands:
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: The ADOM from which to fetch the devices. Leave empty to use the
+        instance ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The name of a specific device to get.
+      isArray: false
+      name: device
+      required: false
+      secret: false
+    deprecated: false
     description: List all devices in the instance ADOM
     execution: false
     name: fortimanager-devices-list
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: The ADOM from which to fetch the device groups. Leave empty to
+        use the instance ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The name of a device group to fetch.
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    deprecated: false
     description: List ADOM device groups.
     execution: false
     name: fortimanager-device-groups-list
@@ -1895,9 +1923,90 @@ script:
     description: Delete an existing dynamic address mapping.
     execution: false
     name: fortimanager-dynamic-address-mapping-delete
+  - arguments:
+    - default: false
+      description: The ADOM to commit. Leave empty to use the default integration
+        ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    deprecated: false
+    description: Commit your changes of an entire ADOM.
+    execution: false
+    name: fortimanager-commit-adom
+  - arguments:
+    - default: false
+      description: The ADOM where the device exists. Leave empty to use the default
+        integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: The device to which we want to commit the changes
+      isArray: false
+      name: device
+      required: false
+      secret: false
+    deprecated: false
+    description: Commit changes to a device.
+    execution: false
+    name: fortimanager-commit-device
+  - arguments:
+    - default: false
+      description: The comment for the new ADOM revision.
+      isArray: false
+      name: adom_rev_comment
+      required: true
+      secret: false
+    - default: false
+      description: The name for the new ADOM revision.
+      isArray: false
+      name: adom_rev_name
+      required: true
+      secret: false
+    - default: false
+      description: The ADOM in which to install the policy package. Leave empty to
+        use the default integration ADOM.
+      isArray: false
+      name: adom
+      required: false
+      secret: false
+    - default: false
+      description: 'Indicates the date and time of the schedule. Enter in the following
+        format: YYYY-MM-DD hh:mm'
+      isArray: false
+      name: datetime
+      required: true
+      secret: false
+    - default: false
+      description: The comment for the device configuration revision that will be
+        generated during install.
+      isArray: false
+      name: dev_rev_comment
+      required: false
+      secret: false
+    - default: false
+      description: Target device or device groups. If no target is provided in the
+        request, the installation will be scheduled for all package installation targets.
+      isArray: false
+      name: scope
+      required: false
+      secret: false
+    - default: false
+      description: The policy package to install.
+      isArray: false
+      name: package
+      required: true
+      secret: false
+    deprecated: false
+    description: Schedule a policy package installation.
+    execution: false
+    name: fortimanager-policy-package-install
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
