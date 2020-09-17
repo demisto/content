@@ -25,14 +25,13 @@ configuration:
   name: api_password
   required: true
   type: 4
-- defaultvalue: 'False'
-  display: Fetch incidents
+- display: Fetch incidents
   hidden: false
   name: isFetch
   required: false
   type: 8
 description: Cisco Email Security is an email security gateway . It detects and blocks
-  a wide variety of email-borne threats, such as malware, spam and phishing..
+  a wide variety of email-borne threats, such as malware, spam and phishing.
 display: Cisco Email Security
 name: CiscoEmailSecurity
 script:

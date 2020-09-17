@@ -518,7 +518,6 @@ def list_entries_add_command(client, args):
         readable_output=list_entries,
         outputs_prefix='CiscoEmailSecurity.listEntriesAdd',
         outputs_key_field='mid',
-        outputs=list_entries
     )
 
 
@@ -543,7 +542,6 @@ def list_entries_delete_command(client, args):
         readable_output=list_entries,
         outputs_prefix='CiscoEmailSecurity.listEntriesDelete',
         outputs_key_field='mid',
-        outputs=list_entries
     )
 
 
