@@ -128,7 +128,7 @@ def verify(client: Client, args: Dict):
             p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
             v = client.smime.verify(p7, flags=SMIME.PKCS7_NOVERIFY)
             return_results(fileResult('unwrapped-' + signed_message.get('name'), v))
-            human_readable = f'The signature verified\n\n'
+            human_readable = 'The signature verified\n\n'
 
     return human_readable, {}
 
