@@ -1649,6 +1649,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "QRadar_v2",
+            "playbookID": "test_Qradar_v2",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "VMware",
             "playbookID": "VMWare Test"
         },
