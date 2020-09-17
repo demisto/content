@@ -34,167 +34,167 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximal number of returned results.
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of the results to initially skip.
+      description: Number of results to initially skip. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: Show all host objects
+    description: Returns all host objects.
     execution: false
     name: checkpoint-host-list
     outputs:
     - contextPath: CheckPoint.Host.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.Host.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.Host.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.Host.ipv4
-      description: IP-v4 address of a spesific host
+      description: IPv4 address of the specifie host.
       type: String
   - arguments:
     - default: false
-      description: object unique identifier (uid) or name
+      description: Object unique identifier (UID) or name for which to get data.
       isArray: false
       name: identifier
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: get all data of a given host
+    description: Gets full data for the specified host.
     execution: false
     name: checkpoint-host-get
     outputs:
     - contextPath: CheckPoint.Host.name
-      description: host name
+      description: Host name.
       type: Unknown
     - contextPath: CheckPoint.Host.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.Host.type
-      description: object type
+      description: Object type.
       type: Unknown
     - contextPath: CheckPoint.Host.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.Host.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.Host.ipv4-address
-      description: IP address
+      description: Host IPv4 address.
       type: String
     - contextPath: CheckPoint.Host.ipv6-address
       description: IP address
       type: String
     - contextPath: CheckPoint.Host.read-only
-      description: indicates if the object is read only
+      description: Indicates if the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.Host.creator
-      description: indicates the creator of the object
+      description: The creator of the object.
       type: String
     - contextPath: CheckPoint.Host.last-modifier
-      description: indicates the last user modified the object
+      description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.Host.groups-name
-      description: Group object name linked to current host object.
+      description: The name of the group object linked to the current host object.
       type: String
     - contextPath: CheckPoint.Host.groups-uid
-      description: Group object uid linked to current host object.
+      description: The UID of the group object linked to the current host object.
       type: Unknown
   - arguments:
     - default: false
-      description: name of the new host
+      description: The name of the new host.
       isArray: true
       name: name
       required: true
       secret: false
     - default: false
-      description: ip address
+      description: The IP address of the new host.
       isArray: true
       name: ip_address
       required: true
       secret: false
     - default: false
-      description: group identifier.
+      description: Collection of group identifiers.
       isArray: true
       name: groups
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Add new host
+    description: Adds a new host.
     execution: false
     name: checkpoint-host-add
     outputs:
     - contextPath: CheckPoint.Host.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.Host.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.Host.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.Host.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.Host.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.Host.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.Host.creator
-      description: indicates the creator of the object
+      description: The creator of the object.
       type: String
     - contextPath: CheckPoint.Host.last-modifier
-      description: indicates the last user modifies the object
+      description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.Host.ipv4-address
-      description: ip address
+      description: Host IPv4 address.
       type: String
     - contextPath: CheckPoint.Host.ipv6-address
-      description: IP address
+      description: Host IPv6 address.
       type: String
     - contextPath: CheckPoint.Host.read-only
-      description: indicates if the object is read only
+      description: Indicates if the object is read-only.
       type: String
     - contextPath: CheckPoint.Host.groups
-      description: Collection of group identifiers
+      description: Collection of group identifiers.
       type: String
   - arguments:
     - default: false
-      description: Object unique identifier or name
+      description: Object unique identifier (UID) or name.
       isArray: false
       name: identifier
       required: true
@@ -220,7 +220,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Apply changes ignoring warnings.
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
       isArray: false
       name: ignore_warnings
       predefined:
@@ -232,8 +232,8 @@ script:
       default: false
       defaultValue: 'False'
       description: |-
-        Apply changes ignoring errors. You won't be able to publish such a changes.
-        If ignore-warnings flag was omitted - warnings will also be ignored.
+        Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False". Note: you won't be able to publish such these changes.
+        If the ignore-warnings flag was omitted, warnings will also be ignored.
       isArray: false
       name: ignore_errors
       predefined:
@@ -249,155 +249,155 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: update host changes
+    description: Updates the specified host.
     execution: false
     name: checkpoint-host-update
     outputs:
     - contextPath: CheckPoint.Host.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.Host.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.Host.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.Host.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.Host.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.Host.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.Host.creator
-      description: indicates the creator of the object
+      description: The creator of the object.
       type: String
     - contextPath: CheckPoint.Host.last-modifier
-      description: indicates the last user modified the object
+      description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.Host.ipv4-address
-      description: IP address
+      description: Host IPv4 address.
       type: String
     - contextPath: CheckPoint.Host.read-only
-      description: IP address
+      description: Indicates if the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.Host.group-name
-      description: Group object name linked to the host.
+      description: The name of the group object linked to the host.
       type: String
     - contextPath: CheckPoint.Host.group-uid
-      description: Group object name linked to the host
+      description: The UID of the group object linked to the host.
       type: String
   - arguments:
     - default: false
-      description: uid or name.
+      description: Object unique identifier (UID) or name.
       isArray: true
       name: identifier
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: delete host
+    description: Deletes the specified host.
     execution: false
     name: checkpoint-host-delete
     outputs:
     - contextPath: CheckPoint.Host.message
-      description: operation status
+      description: Status of the delete operation.
       type: String
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximal number of returned results.
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of the results to initially skip.
+      description: Number of results to initially skip. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: Show a list of all groups
+    description: Gets a list of all groups.
     execution: false
     name: checkpoint-group-list
     outputs:
     - contextPath: CheckPoint.Group.name
-      description: object's name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.Group.uid
-      description: object's uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.Group.type
-      description: Type of the object
+      description: Object type.
       type: String
   - arguments:
     - default: false
-      description: object uid or name
+      description: Object unique identifier (UID) or name.
       isArray: false
       name: identifier
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: Get all data of a given group
+    description: Gets full data for the specified group.
     execution: false
     name: checkpoint-group-get
     outputs:
     - contextPath: CheckPoint.Group.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.Group.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.Group.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.Group.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.Group.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.Group.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.Group.creator
-      description: indicates the creator of the object
+      description: The creator of the object.
       type: String
     - contextPath: CheckPoint.Group.last-modifier
-      description: indicates the last user modified the object
+      description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.Group.read-only
-      description: indicates if the object is read only
+      description: Indicates if the object is read-only.
       type: Boolean
   - arguments:
     - default: false
@@ -408,68 +408,68 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: add a group
+    description: Adds a group.
     execution: false
     name: checkpoint-group-add
     outputs:
     - contextPath: CheckPoint.Group.name
-      description: object's name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.Group.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.Group.type
-      description: object type
+      description: Object type.
       type: Unknown
     - contextPath: CheckPoint.Group.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.Group.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.Group.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.Group.creator
-      description: Indicates the object creator
+      description: The creator of the object.
       type: String
     - contextPath: CheckPoint.Group.last-modifier
-      description: Indicates the last user modified the object
+      description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.Group.read-only
-      description: Indicates whether the object is read-only
+      description: Indicates if the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.Group.groups-name
-      description: groups name
+      description: Groups name.
       type: Unknown
   - arguments:
     - default: false
-      description: uid or name.
+      description: Object unique identifier (UID) or name.
       isArray: false
       name: identifier
       required: true
       secret: false
     - default: false
-      description: New name of the group object
+      description: New name of the group object.
       isArray: false
       name: new_name
       required: false
       secret: false
     - default: false
-      description: Comments string.
+      description: Comments for the group object.
       isArray: false
       name: comments
       required: false
       secret: false
     - default: false
       defaultValue: 'True'
-      description: Apply changes ignoring warnings.
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
       isArray: false
       name: ignore_warnings
       predefined:
@@ -479,7 +479,10 @@ script:
       secret: false
     - default: false
       defaultValue: 'False'
-      description: Apply changes ignoring errors.
+      description: |-
+        Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
+        Note: you won't be able to publish such these changes.
+        If the ignore-warnings flag was omitted, warnings will also be ignored.
       isArray: false
       name: ignore_errors
       predefined:
@@ -489,110 +492,110 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     - default: false
-      description: Collection of Network objects identified by the name or UID.
+      description: Collection of network objects identified by the name or UID.
       isArray: true
       name: members
       required: false
       secret: false
     deprecated: false
-    description: update group object
+    description: Updates the specified group object.
     execution: false
     name: checkpoint-group-update
     outputs:
     - contextPath: CheckPoint.Group.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.Group.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.Group.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.Group.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.Group.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.Group.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.Group.creator
-      description: Indicates the creator of the object
+      description: Rhe creator of the object.
       type: String
     - contextPath: CheckPoint.Group.last-modifier
-      description: Indicates the lasr user modified the object
+      description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.Group.read-only
-      description: Indicates if the object is read only
+      description: Indicates if the object is read-only.
       type: Boolean
   - arguments:
     - default: false
-      description: object name or uid
+      description: Object unique identifier (UID) or name.
       isArray: true
       name: identifier
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: delete a group object
+    description: Deletes the specified group object.
     execution: false
     name: checkpoint-group-delete
     outputs:
     - contextPath: CheckPoint.Group.message
-      description: Operation massege
+      description: Operation messege.
       type: String
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximal number of returned results.
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of the results to initially skip.
+      description: Number of results to initially skip. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: List all address range objects
+    description: Gets a list all address range objects.
     execution: false
     name: checkpoint-address-range-list
     outputs:
     - contextPath: CheckPoint.AddressRange.name
-      description: Object's name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.AddressRange.uid
-      description: Object's uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.AddressRange.type
-      description: Type of the object.
+      description: Object type.
       type: String
   - arguments:
     - default: false
-      description: object name
+      description: Name for the new address range object.
       isArray: false
       name: name
       required: true
@@ -611,8 +614,7 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: If another object with the same identifier already exists, it will
-        be updated.
+      description: Whether to update objects with the same identifier. Can be "true" or "false". Default is "false".
       isArray: false
       name: set_if_exists
       predefined:
@@ -622,7 +624,7 @@ script:
       secret: false
     - default: false
       defaultValue: 'true'
-      description: Apply changes ignoring warnings.
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
       isArray: false
       name: ignore_warnings
       predefined:
@@ -632,7 +634,10 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Apply changes ignoring errors.
+      description: |-
+        Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
+        Note: you won't be able to publish such these changes.
+        If the ignore-warnings flag was omitted, warnings will also be ignored.
       isArray: false
       name: ignore_errors
       predefined:
@@ -642,79 +647,79 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     - default: false
-      description: 'Collection of group identifiers. '
+      description: Collection of group identifiers.
       isArray: true
       name: groups
       required: false
       secret: false
     deprecated: false
-    description: Add address range object
+    description: Adds an address range object.
     execution: false
     name: checkpoint-address-range-add
     outputs:
     - contextPath: CheckPoint.AddressRange.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.AddressRange.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.AddressRange.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.AddressRange.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.AddressRange.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.AddressRange.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.AddressRange.ipv4-address-first
-      description: First IPv4 address in the range
+      description: First IPv4 address in the range.
       type: String
     - contextPath: CheckPoint.AddressRange.ipv4-address-last
-      description: Last IPv4 address in the range
+      description: Last IPv4 address in the range.
       type: String
     - contextPath: CheckPoint.AddressRange.ipv6-address-first
-      description: First IPv4 address in the range
+      description: First IPv6 address in the range.
       type: String
     - contextPath: CheckPoint.AddressRange.ipv6-address-last
-      description: Last IPv6 address in the range
+      description: Last IPv6 address in the range.
       type: String
     - contextPath: CheckPoint.AddressRange.read-only
-      description: Indicates whether the object is read-only.
+      description: Indicates if the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.AddressRange.creator
-      description: Indicates the creator of the object
+      description: The creator of the object.
       type: String
     - contextPath: CheckPoint.AddressRange.last-modifier
-      description: Indicates the last user modified the object
+      description: Indicates the user that last modified the object.
       type: String
     - contextPath: CheckPoint.AddressRange.groups
-      description: Name of the group object
+      description: Name of the group object.
       type: String
   - arguments:
     - default: false
-      description: uid or name.
+      description: Name for the new address range object.
       isArray: false
       name: identifier
       required: true
       secret: false
     - default: false
-      description: First IP address in the range. IPv4 or IPv6 address.
+      description: First IP address in the range. Can be an IPv4 or IPv6 address.
       isArray: false
       name: ip_address_first
       required: false
       secret: false
     - default: false
-      description: Last IP address in the range. IPv4 or IPv6 address.
+      description: Last IP address in the range. Can be an IPv4 or IPv6 address.
       isArray: false
       name: ip_address_last
       required: false
@@ -726,14 +731,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comments string.
+      description: Comments for the object.
       isArray: false
       name: comments
       required: false
       secret: false
     - default: false
       defaultValue: 'True'
-      description: Apply changes ignoring warnings.
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
       isArray: false
       name: ignore_warnings
       predefined:
@@ -743,7 +748,10 @@ script:
       secret: false
     - default: false
       defaultValue: 'False'
-      description: Apply changes ignoring errors.
+      description: |-
+        Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
+        Note: you won't be able to publish such these changes.
+        If the ignore-warnings flag was omitted, warnings will also be ignored.
       isArray: false
       name: ignore_errors
       predefined:
@@ -759,159 +767,159 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Update an address range object
+    description: Updates the specified address range object.
     execution: false
     name: checkpoint-address-range-update
     outputs:
     - contextPath: CheckPoint.AddressRange.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.AddressRange.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.AddressRange.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.AddressRange.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.AddressRange.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.AddressRange.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.AddressRange.ipv4-address-first
-      description: First IPv4 address in the range
+      description: First IPv4 address in the range.
       type: String
     - contextPath: CheckPoint.AddressRange.ipv4-address-last
-      description: Last IPv4 address in the range
+      description: Last IPv4 address in the range.
       type: String
     - contextPath: CheckPoint.AddressRange.ipv6-address-first
-      description: First IPv4 address in the range
+      description: First IPv6 address in the range.
       type: String
     - contextPath: CheckPoint.AddressRange.ipv6-address-last
-      description: Last IPv6 address in the range
+      description: Last IPv6 address in the range.
       type: String
     - contextPath: CheckPoint.AddressRange.read-only
-      description: Indicates whether the object is read-only.
+      description: Indicates if the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.AddressRange.groups
-      description: List of all groups the address range is linked to
+      description: List of all groups the address range is linked to.
       type: String
   - arguments:
     - default: false
-      description: object name or uid
+      description: Name for the new address range object.
       isArray: true
       name: identifier
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Delete a given address range
+    description: Deletes the specified address range.
     execution: false
     name: checkpoint-address-range-delete
     outputs:
     - contextPath: CheckPoint.AddressRange.message
-      description: Operation status
+      description: Status of the operation.
       type: String
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximal number of returned results.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Skip that many results before beginning to return them.
+      description: Number of results to initially skip. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: List all threat indicators
+    description: Gets a list of all threat indicators.
     execution: false
     name: checkpoint-threat-indicator-list
     outputs:
     - contextPath: CheckPoint.ThreatIndicator.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.type
-      description: object type
+      description: Object type.
       type: String
   - arguments:
     - default: false
-      description: object uid or name
+      description: Object unique identifier (UID) or name.
       isArray: false
       name: identifier
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: Get data for a given list indicator
+    description: Gets data for the specified list indicator.
     execution: false
     name: checkpoint-threat-indicator-get
     outputs:
     - contextPath: CheckPoint.ThreatIndicator.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.domain-name
-      description: Domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.domain-uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.domain-type
-      description: domain type
+      description: Domain type.
       type: Unknown
     - contextPath: CheckPoint.ThreatIndicator.creator
-      description: creator
+      description: Creator of the threat indicator.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.last-modifier
-      description: Indicates the last user modified the object
+      description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.read-only
-      description: Indicates whether the object is read-only.
+      description: Indicates if the object is read-only.
       type: Boolean
   - arguments:
     - default: false
-      description: threat indicator name
+      description: Name for the new threat indicator.
       isArray: false
       name: name
       required: true
@@ -925,13 +933,13 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Add a threat indicator
+    description: Adds a threat indicator.
     execution: false
     name: checkpoint-threat-indicator-add
     outputs:
@@ -940,7 +948,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: uid or name.
+      description: Object unique identifier (UID) or name.
       isArray: false
       name: identifier
       required: true
@@ -948,7 +956,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Prevent
-      description: the action to set.
+      description: The action to set for the indicator.
       isArray: false
       name: action
       predefined:
@@ -965,162 +973,160 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comments string.
+      description: Comments for the object.
       isArray: false
       name: comments
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Update a given indicator
+    description: Updates the specified indicator.
     execution: false
     name: checkpoint-threat-indicator-update
     outputs:
     - contextPath: CheckPoint.ThreatIndicator.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.action
       description: The indicator's action.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.creator
-      description: Indicates the creator of the object
+      description: The creator of the object.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.last-modifier
-      description: Indicates the last user modified the object
+      description: The user that last modified the object.
       type: String
     - contextPath: CheckPoint.ThreatIndicator.read-only
-      description: Indicates whether the object is read-only.
+      description: Indicates if the object is read-only.
       type: Boolean
   - arguments:
     - default: false
-      description: uid or name object
+      description: Object unique identifier (UID) or name.
       isArray: false
       name: identifier
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: Get all date of a given address range object
+    description: Gets full data for the specified address range object.
     execution: false
     name: checkpoint-address-range-get
     outputs:
     - contextPath: CheckPoint.AddressRange.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.AddressRange.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.AddressRange.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.AddressRange.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.AddressRange.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.AddressRange.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.AddressRange.groups-name
-      description: Group object name linked to current host object
+      description: The name of the group object linked to current host object.
       type: String
     - contextPath: CheckPoint.AddressRange.groups-uid
-      description: Group object uid linked to current host object
+      description: The UID of the group object linked to current host object.
       type: String
   - arguments:
     - default: false
-      description: object name or uid
+      description: Object unique identifier (UID) or name.
       isArray: true
       name: identifier
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: delete threat indicator
+    description: Deletes the specified threat indicator.
     execution: false
     name: checkpoint-threat-indicator-delete
     outputs:
     - contextPath: CheckPoint.ThreatIndicator.message
-      description: Operation status
+      description: Status of the delete operation.
       type: String
   - arguments:
     - default: false
-      defaultValue: object name or uid
-      description: object name or uid
+      description: Object unique identifier (UID) or name.
       isArray: false
       name: identifier
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximal number of returned results.
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of the results to initially skip.
+      description: Number of results to initially skip. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: Shows the entire Access Rules layer. This layer is divided into sections.
-      An Access Rule may be within a section, or independent of a section.
+    description: Returns the entire Access Rules layer.
     execution: false
     name: checkpoint-access-rule-list
     outputs:
     - contextPath: CheckPoint.AccessRule.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.AccessRule.uid
-      description: object uid
+      description: Object UID.
       type: String
   - arguments:
     - default: false
-      description: Layer that the rule belongs to identified by the name or UID.
+      description: Layer to which to assign the rule, identified by the name or UID.
       isArray: false
       name: layer
       required: true
@@ -1140,8 +1146,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Drop
-      description: 'Action settings. valid values are: Accept, Drop, Apply Layer,
-        Ask and Info. default value is Drop.'
+      description: 'Action settings. Valid values are: Accept, Drop, Apply Layer,
+        Ask and Info. Default value is Drop.'
       isArray: false
       name: action
       predefined:
@@ -1154,7 +1160,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Communities or Directional. Valid values: Any, All_GwToGw.'
+      description: 'Communities or Directional. Valid values: Any or All_GwToGw.'
       isArray: false
       name: vpn
       predefined:
@@ -1163,81 +1169,81 @@ script:
       required: false
       secret: false
     - default: false
-      description: Collection of Network objects identified by the name or UID.
+      description: Collection of network objects identified by the name or UID.
       isArray: false
       name: destination
       required: false
       secret: false
     - default: false
-      description: Collection of Network objects identified by the name or UID.
+      description: Collection of network objects identified by the name or UID.
       isArray: false
       name: service
       required: false
       secret: false
     - default: false
-      description: Collection of Network objects identified by the name or UID.
+      description: Collection of network objects identified by the name or UID.
       isArray: false
       name: source
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Create new access rule
+    description: Creates a new access rule.
     execution: false
     name: checkpoint-access-rule-add
     outputs:
     - contextPath: CheckPoint.AccessRule.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.AccessRule.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.AccessRule.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.AccessRule.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.AccessRule.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.AccessRule.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.AccessRule.enabled
-      description: Enable/Disable the rule.
+      description: Indicates if the rule is enabled or disabled.
       type: Boolean
     - contextPath: CheckPoint.AccessRule.layer
-      description: Layer that the rule belongs to identified by the name or UID.
+      description: Layer to which the rule was assigned, identified by the name or UID.
       type: String
     - contextPath: CheckPoint.AccessRule.creator
-      description: Indicated the object creator
+      description: The object creator.
       type: String
     - contextPath: CheckPoint.AccessRule.last-modifier
-      description: Indicates the last user modofied the object
+      description: The user that last modofied the object.
       type: String
   - arguments:
     - default: false
-      description: object name or uid, OR rule number
+      description: Object unique identifier (UID), rule name, or rule number.
       isArray: false
       name: identifier
       required: true
       secret: false
     - default: false
-      description: Layer that the rule belongs to identified by the name or UID.
+      description: Layer to which the rule belongs, identified by the name or UID.
       isArray: false
       name: layer
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: action to be taken on the rule
+      description: Action to be taken on the rule.
       isArray: false
       name: action
       predefined:
@@ -1251,7 +1257,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Enable/Disable the rule.
+      description: If "true", the rule is enabled. Default is "true".
       isArray: false
       name: enabled
       predefined:
@@ -1267,7 +1273,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: New position in the rulebase. Value can be int to set specific
+      description: New position in the rulebase. Value can be "int" to set a specific
         position, or str- 'top' or 'bottom'
       isArray: false
       name: new_position
@@ -1275,7 +1281,7 @@ script:
       secret: false
     - default: false
       defaultValue: 'true'
-      description: Apply changes ignoring warnings.
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
       isArray: false
       name: ignore_warnings
       predefined:
@@ -1285,7 +1291,10 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Apply changes ignoring errors
+      description: |-
+        Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
+        Note: you won't be able to publish such these changes.
+        If the ignore-warnings flag was omitted, warnings will also be ignored.
       isArray: false
       name: ignore_errors
       predefined:
@@ -1295,124 +1304,124 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Edit existing access rule using object name or uid.
+    description: Modifies an existing access rule, using object name or UID.
     execution: false
     name: checkpoint-access-rule-update
     outputs:
     - contextPath: CheckPoint.AccessRule.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.AccessRule.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.AccessRule.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.AccessRule.action-name
-      description: action name
+      description: Action name.
       type: String
     - contextPath: CheckPoint.AccessRule.action-uid
-      description: action uid
+      description: Action UID.
       type: String
     - contextPath: CheckPoint.AccessRule.action-type
-      description: action type
+      description: Action type.
       type: Unknown
     - contextPath: CheckPoint.AccessRule.action-domain-name
-      description: action domain name
+      description: Action domain name.
       type: String
     - contextPath: CheckPoint.AccessRule.content-direction
-      description: On which direction the file types processing is applied.
+      description: The direction on which the file types processing is applied.
       type: String
     - contextPath: CheckPoint.AccessRule.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.AccessRule.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.AccessRule.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.AccessRule.enabled
-      description: Enable/Disable the rule.
+      description: Indicates if the rule is enabled or disabled.
       type: Boolean
     - contextPath: CheckPoint.AccessRule.layer
-      description: Layer that the rule belongs to identified by the name or UID.
+      description: Layer to which the rule belongs, identified by the name or UID.
       type: String
     - contextPath: CheckPoint.AccessRule.creator
-      description: Indicates the creator of the object
+      description: The creator of the object.
       type: String
     - contextPath: CheckPoint.AccessRule.last-modifier
-      description: Indicates the last user modified the object
+      description: The user that last modified the object.
       type: String
   - arguments:
     - default: false
-      description: uid, name or rule-number.
+      description: Object unique identifier (UID), rule name, or rule number.
       isArray: true
       name: identifier
       required: true
       secret: false
     - default: false
-      description: Layer that the rule belongs to identified by the name or UID.
+      description: Layer to which the rule belongs, identified by the name or UID.
       isArray: false
       name: layer
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Delete access rule
+    description: Deletes the specified access rule.
     execution: false
     name: checkpoint-access-rule-delete
     outputs:
     - contextPath: CheckPoint.AccessRule.message
-      description: Operation status
+      description: Status of the delete operation.
       type: String
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximal number of returned results.
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of the results to initially skip
+      description: Number of results to initially skip. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: Retrieve all objects.
+    description: Retrieves all objects.
     execution: false
     name: checkpoint-application-site-list
     outputs:
     - contextPath: CheckPoint.ApplicationSite.name
-      description: objects name
+      description: Object names.
       type: String
     - contextPath: CheckPoint.ApplicationSite.uid
-      description: objects uid
+      description: Objects UIDs.
       type: String
     - contextPath: CheckPoint.ApplicationSite.type
-      description: objects type
+      description: Object types.
       type: String
   - arguments:
     - default: false
@@ -1423,14 +1432,14 @@ script:
       secret: false
     - default: false
       description: Each application is assigned to one primary category based on its
-        most defining aspect
+        most defining aspect.
       isArray: false
       name: primary_category
       required: true
       secret: false
     - default: false
       description: |-
-        can be:
+        Can be:
           url-list(str): URLs that determine this particular application.
           application-signature(str): Application signature generated by Signature Tool.
       isArray: true
@@ -1439,7 +1448,7 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
@@ -1451,55 +1460,55 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add application site
+    description: Adds an application site.
     execution: false
     name: checkpoint-application-site-add
     outputs:
     - contextPath: CheckPoint.ApplicationSite.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.ApplicationSite.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.ApplicationSite.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.ApplicationSite.application-id
-      description: application ID
+      description: Application ID.
       type: Number
     - contextPath: CheckPoint.ApplicationSite.description
-      description: A description for the application.
+      description: A description of the application.
       type: String
     - contextPath: CheckPoint.ApplicationSite.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.ApplicationSite.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.ApplicationSite.domain-type
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.ApplicationSite.url-list
-      description: URLs that determine this particular application.
+      description: URLs that determine this application.
       type: String
     - contextPath: CheckPoint.ApplicationSite.creator
-      description: Indicates the creator of the object
+      description: The creator of the object.
       type: String
     - contextPath: CheckPoint.ApplicationSite.last-modifier
-      description: Indicates the last user modified this object
+      description: The user that last modified this object.
       type: String
     - contextPath: CheckPoint.ApplicationSite.groups
-      description: Collection of group identifiers
+      description: Collection of group identifiers.
       type: Unknown
   - arguments:
     - default: false
-      description: uid or name.
+      description: Object unique identifier (UID) or name.
       isArray: false
       name: identifier
       required: true
       secret: false
     - default: false
-      description: A description for the application.
+      description: A description of the application.
       isArray: false
       name: description
       required: false
@@ -1526,7 +1535,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: States whether the URL is defined as a Regular Expression or not.
+      description: If "True", the URL is defined as a Regular Expression. Default is "True".
       isArray: false
       name: urls_defined_as_regular_expression
       predefined:
@@ -1542,13 +1551,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Adds to collection of values.
+      description: Adds to collection of URLs.
       isArray: true
       name: url_list_to_add
       required: false
       secret: false
     - default: false
-      description: Removes from collection of values.
+      description: Removes from collection of URLs.
       isArray: true
       name: url_list_to_remove
       required: false
@@ -1561,83 +1570,83 @@ script:
       required: false
       secret: false
     - default: false
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: "Edit existing application using object name or uid. \nIt's impossible\
-      \ to set  'application-signature' when the application was initialized with\
-      \ 'url-list' and vice-verse."
+    description: "Edits an existing application using the object name or UID. \nIt's impossible\
+      \ to set 'application-signature' when the application was initialized with 'url-list'\
+      \ and vice-versa."
     execution: false
     name: checkpoint-application-site-update
     outputs:
     - contextPath: CheckPoint.ApplicationSite.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.ApplicationSite.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.ApplicationSite.type
-      description: object ty[e
+      description: Object type.
       type: String
     - contextPath: CheckPoint.ApplicationSite.application-id
-      description: application ID
+      description: Application ID.
       type: Number
     - contextPath: CheckPoint.ApplicationSite.description
       description: A description for the application.
       type: String
     - contextPath: CheckPoint.ApplicationSite.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.ApplicationSite.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.ApplicationSite.domain-type
-      description: domain type
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.ApplicationSite.url-list
-      description: URLs that determine this particular application.
+      description: URLs that determine this application.
       type: String
     - contextPath: CheckPoint.ApplicationSite.groups
-      description: Collection of group identifiers
+      description: Collection of group identifiers.
       type: String
     - contextPath: CheckPoint.ApplicationSite.primary-category
       description: Objects primary category.
       type: String
   - arguments:
     - default: false
-      description: uid or name object
+      description: Object unique identifier (UID) or name.
       isArray: true
       name: identifier
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Delete existing application site object using object name or uid.
+    description: Deletes an existing application site object using the object name or UID.
     execution: false
     name: checkpoint-application-site-delete
     outputs:
     - contextPath: CheckPoint.ApplicationSite.message
-      description: Operation status.
+      description: Status of the delete operation.
       type: String
   - arguments:
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: publish changes
+    description: Publishes changes.
     execution: false
     name: checkpoint-publish
     outputs:
@@ -1646,13 +1655,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the Policy Package to be installed.
+      description: The name of the Policy Package to install.
       isArray: false
       name: policy_package
       required: true
       secret: false
     - default: false
-      description: On what targets to execute this command. Targets may be identified
+      description: The targets on which to execute this command. Targets can be identified
         by their name, or object unique identifier.
       isArray: false
       name: targets
@@ -1661,7 +1670,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Set to be true in order to install the Access Control policy.
+      description: If "True", will install the Access Control policy.
       isArray: false
       name: access
       predefined:
@@ -1671,13 +1680,13 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Intsalling policy
+    description: Intsalls an Access Control policy.
     execution: false
     name: checkpoint-install-policy
     outputs:
@@ -1686,14 +1695,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the Policy Package to be installed.
+      description: The name of the Policy Package to verify.
       isArray: false
       name: policy_package
       required: true
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
@@ -1715,7 +1724,7 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
@@ -1726,66 +1735,66 @@ script:
     name: checkpoint-show-task
     outputs:
     - contextPath: CheckPoint.ShowTask.task-id
-      description: Task ID
+      description: Task ID.
       type: String
     - contextPath: CheckPoint.ShowTask.task-name
-      description: Task name
+      description: Task name.
       type: String
     - contextPath: CheckPoint.ShowTask.status
-      description: Task status
+      description: Task status.
       type: String
     - contextPath: CheckPoint.ShowTask.progress-percentage
-      description: Task prograss in percentage
+      description: Task progress in percentage.
       type: Unknown
     - contextPath: CheckPoint.ShowTask.suppressed
-      description: Indicates if the task is suppressed
+      description: Indicates if the task is suppressed.
       type: Boolean
   - arguments:
     - default: false
       defaultValue: '600'
-      description: Session expiration timeout in seconds. Default 600 seconds. Session
+      description: Session expiration timeout in seconds. Default is 600 seconds. Session
         timeout range is between 600 to 3600 seconds.
       isArray: false
       name: session_timeout
       required: false
       secret: false
     deprecated: false
-    description: Login to CheckPoint and get the session id
+    description: Log in to CheckPoint and get the session ID.
     execution: false
     name: checkpoint-login-and-get-session-id
     outputs:
     - contextPath: CheckPoint.Login.session-id
-      description: Session ID
+      description: Session ID.
       type: String
   - arguments:
     - default: false
-      description: Session ID to logout from
+      description: Session ID to log out from.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Logout from a given session
+    description: Log out from a given session.
     execution: false
     name: checkpoint-logout
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximal number of returned results
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of the results to initially skip
+      description: Number of the results to initially skip. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
@@ -1796,95 +1805,95 @@ script:
     name: checkpoint-packages-list
     outputs:
     - contextPath: CheckPoint.Packages.name
-      description: Name of the package
+      description: Name of the package.
       type: String
     - contextPath: CheckPoint.Packages.uid
-      description: UID of the package
+      description: UID of the package.
       type: String
     - contextPath: CheckPoint.Packages.type
-      description: Type of the package
+      description: Type of the package.
       type: String
     - contextPath: CheckPoint.Packages.domain-name
-      description: Domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.Packages.domain-uid
-      description: Domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.Packages.domain-type
-      description: Domain type
+      description: Domain type.
       type: String
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximal number of returned results
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of the results to initially skip
+      description: Number of the results to initially skip. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: Retrieve all gateways and servers
+    description: Retrieve all gateways and servers.
     execution: false
     name: checkpoint-gateways-list
     outputs:
     - contextPath: CheckPoint.Gateways.name
-      description: Gateway name
+      description: Gateway name.
       type: String
     - contextPath: CheckPoint.Gateways.uid
-      description: Gateway uid
+      description: Gateway UID.
       type: String
     - contextPath: CheckPoint.Gateways.type
-      description: Gateway type
+      description: Gateway type.
       type: String
     - contextPath: CheckPoint.Gateways.version
-      description: Gateway vesion
+      description: Gateway version.
       type: String
     - contextPath: CheckPoint.Gateways.network-security-blades
-      description: Gateway network security blades
+      description: Gateway network security blades.
       type: String
     - contextPath: CheckPoint.Gateways.management-blades
-      description: Gateway management blades
+      description: Gateway management blades.
       type: String
     - contextPath: CheckPoint.Gateways.domain-name
-      description: Domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.Gateways.domain-uid
-      description: Domain UID
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.Gateways.domain-type
-      description: Doamin type
+      description: Domain type.
       type: String
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximal number of returned results
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of the results to initially skip
+      description: Number of the results to initially skip. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
@@ -1895,22 +1904,22 @@ script:
     name: checkpoint-application-site-category-list
     outputs:
     - contextPath: CheckPoint.ApplicationSiteCategory.name
-      description: Name of the package
+      description: Name of the package.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.uid
-      description: UID of the package
+      description: UID of the package.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.type
-      description: Type of the package
+      description: Type of the package.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.domain-name
-      description: Domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.domain-uid
-      description: Domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.domain-type
-      description: Domain type
+      description: Domain type.
       type: String
   - arguments:
     - default: false
@@ -1926,45 +1935,45 @@ script:
       required: false
       secret: false
     - default: false
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: true
       secret: false
     deprecated: false
-    description: Add new application site category
+    description: Adds new application site category.
     execution: false
     name: checkpoint-application-site-category-add
     outputs:
     - contextPath: CheckPoint.ApplicationSiteCategory.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.description
       description: A description for the application.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.domain-type
-      description: domain name
+      description: Domain type.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.creator
-      description: Indicates the creator of the object
+      description: Indicates the creator of the object.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.last-modifier
-      description: Indicates the last user modified this object
+      description: Indicates the last user modified this object.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.groups
-      description: Collection of group identifiers
+      description: Collection of group identifiers.
       type: Unknown
   - arguments:
     - default: false
@@ -1975,51 +1984,51 @@ script:
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
       secret: false
     deprecated: false
-    description: Retrieve application site category object using object name or uid.
+    description: Retrieve application site category object using object name or UID.
     execution: false
     name: checkpoint-application-site-category-get
     outputs:
     - contextPath: CheckPoint.ApplicationSiteCategory.name
-      description: host name
+      description: Host name.
       type: Unknown
     - contextPath: CheckPoint.ApplicationSiteCategory.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.type
-      description: object type
+      description: Object type.
       type: Unknown
     - contextPath: CheckPoint.ApplicationSiteCategory.domain-name
-      description: domain name
+      description: Domain name.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.domain-uid
-      description: domain uid
+      description: Domain UID.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.read-only
-      description: indicates if the object is read only
+      description: Indicates if the object is read only.
       type: Boolean
     - contextPath: CheckPoint.ApplicationSiteCategory.creator
-      description: indicates the creator of the object
+      description: Indicates the creator of the object.
       type: String
     - contextPath: CheckPoint.ApplicationSiteCategory.last-modifier
-      description: indicates the last user modified the object
+      description: Indicates the last user modified the object.
       type: String
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximal number of returned results.
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Number of the results to initially skip.
+      description: Number of the results to initially skip. Default is 0.
       isArray: false
       name: offset
       required: false
@@ -2049,15 +2058,15 @@ script:
       secret: false
     - default: false
       defaultValue: object
-      description: 'he objects'' type, e.g.: host, service-tcp, network, address-range.
-        Default value is object'
+      description: 'The object type, e.g.: host, service-tcp, network, address-range.
+        Default value is object.'
       isArray: false
       name: object_type
       required: false
       secret: false
     - default: false
       defaultValue: None
-      description: Execute command with a specific session ID
+      description: Executes the command with the specified session ID.
       isArray: false
       name: session_id
       required: false
@@ -2068,16 +2077,16 @@ script:
     name: checkpoint-show-objects
     outputs:
     - contextPath: CheckPoint.Object.name
-      description: object name
+      description: Object name.
       type: String
     - contextPath: CheckPoint.Object.uid
-      description: object uid
+      description: Object UID.
       type: String
     - contextPath: CheckPoint.Object.type
-      description: object type
+      description: Object type.
       type: String
     - contextPath: CheckPoint.Object.ipv4
-      description: IP-v4 address of a spesific object
+      description: IPv4 address of the specified object.
       type: String
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
