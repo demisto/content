@@ -11,11 +11,6 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
-    "useCases": [
-        "fetching alerts",
-        "resolve/dismiss the alerts",
-        "lisitng cloud app activity",
-        "searching files and users"
-    ],
+    "useCases": [],
     "keywords": []
 }
