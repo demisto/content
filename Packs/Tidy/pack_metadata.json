@@ -1,0 +1,22 @@
+{
+    "name": "Tidy",
+    "description": "Tidy project handle enpoint software installation.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Hackaton tidy team",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "created": "2020-09-18T11:50:45Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [
+        "Install",
+        "Endpoint"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "GalRabin"
+    ]
+}

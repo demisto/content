@@ -1,0 +1,154 @@
+category: IT Services
+commonfields:
+  id: Tidy
+  version: -1
+configuration:
+- additionalinfo: Private key for authenticating with clients
+  display: Private key
+  hidden: false
+  name: private_key
+  required: false
+  type: 4
+- display: Proxy
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+description: Tidy integration handle endpoints enviorment installation.
+display: Tidy
+name: Tidy
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Python versions to install
+      isArray: true
+      name: versions
+      predefined:
+      - 2.7.18
+      - 3.7.5
+      - 3.8.5
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Versions to define as default version in enviorment.
+      isArray: true
+      name: globals
+      predefined:
+      - 2.7.18
+      - 3.7.5
+      - 3.8.5
+      required: true
+      secret: false
+    deprecated: false
+    description: Install CPython versions using pyenv.
+    execution: false
+    name: tidy-python
+    outputs:
+    - contextPath: Tidy.Endpoint.Hostname
+      description: Endpoint hostname.
+      type: String
+    - contextPath: Tidy.Endpoint.IP
+      description: Endpoint IP.
+      type: String
+    - contextPath: Tidy.Endpoint.OperatingSystem
+      description: Endpoint operating system.
+      type: String
+    - contextPath: Tidy.Endpoint.User
+      description: Endpoint logged user.
+      type: String
+    - contextPath: Tidy.Endpoint.Python.Version
+      description: Python version installed in endpoint.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: GoLang versions to install
+      isArray: true
+      name: versions
+      predefined:
+      - 1.1.6
+      - 1.1.8
+      - 1.1.13
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Versions to define as default version in enviorment.
+      isArray: true
+      name: globals
+      predefined:
+      - 1.1.6
+      - 1.1.8
+      - 1.1.13
+      required: true
+      secret: false
+    deprecated: false
+    description: Install GoLang versions using goenv.
+    execution: false
+    name: tidy-golang
+    outputs:
+    - contextPath: Tidy.Endpoint.Hostname
+      description: Endpoint hostname.
+      type: String
+    - contextPath: Tidy.Endpoint.IP
+      description: Endpoint IP.
+      type: String
+    - contextPath: Tidy.Endpoint.OperatingSystem
+      description: Endpoint operating system.
+      type: String
+    - contextPath: Tidy.Endpoint.User
+      description: Endpoint logged user.
+      type: String
+    - contextPath: Tidy.Endpoint.GoLang.Version
+      description: 'GoLang version installed in endpoint. '
+      type: String
+  - arguments:
+    - default: false
+      description: Repository ssh/https address.
+      isArray: true
+      name: repos
+      required: true
+      secret: false
+    - default: false
+      description: Endpoint path to clone repository into.
+      isArray: false
+      name: endpoint_path
+      required: true
+      secret: false
+    deprecated: false
+    description: Clone git repositories.
+    execution: false
+    name: tidy-git
+    outputs:
+    - contextPath: Tidy.Endpoint.Hostname
+      description: Endpoint hostname.
+      type: String
+    - contextPath: Tidy.Endpoint.IP
+      description: Endpoint IP.
+      type: String
+    - contextPath: Tidy.Endpoint.OperatingSystem
+      description: Endpoint operating system.
+      type: String
+    - contextPath: Tidy.Endpoint.User
+      description: Endpoint logged user.
+      type: String
+    - contextPath: Tidy.Endpoint.Git.Repo
+      description: HTTPS/SSH repository address.
+      type: String
+    - contextPath: Tidy.Endpoint.Git.EndpointPath
+      description: Repository cloned into this path.
+      type: String
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: HelloWorld-mapper
+defaultclassifier: HelloWorld
