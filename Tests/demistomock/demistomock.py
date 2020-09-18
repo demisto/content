@@ -859,7 +859,12 @@ def createIncidents(incidents, lastRun=None, userID=None):
     Creates incident in long running execution
 
     Args:
-      incidents (list): List of incident objects to create
+      incidents (list): List of incident objects to create, with the following keys:
+        - name (required) - str
+        - type (required - if not provided will create unclassified incident) - str
+        - labels (required) - list
+        - rawJSON (required) - str
+        - occurred (optional) - str
       lastRun (dict): the LastRun object to set (Default value = None)
       userID lastIndicator: The user associated with the request (Default value = None)
 
