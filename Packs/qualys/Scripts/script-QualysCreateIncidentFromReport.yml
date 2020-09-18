@@ -140,3 +140,5 @@ runonce: false
 dependson:
   must:
   - qualys-host-list
+tests:
+  - No test

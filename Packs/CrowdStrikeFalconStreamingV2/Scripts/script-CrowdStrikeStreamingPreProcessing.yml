@@ -38,3 +38,5 @@ comment: |
 enabled: true
 scripttarget: 0
 runas: DBotRole
+tests:
+  - No test - this is a preprocessing script

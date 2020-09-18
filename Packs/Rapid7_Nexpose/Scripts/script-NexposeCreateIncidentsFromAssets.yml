@@ -101,3 +101,5 @@ runonce: false
 dependson:
   must:
   - nexpose-get-asset
+tests:
+  - No test
