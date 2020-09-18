@@ -135,6 +135,7 @@ args:
 - name: incidentType
   description: The incident type to create incidents for. Default is "Vulnerability".
 scripttarget: 0
+runas: DBotWeakRole
 runonce: false
 dependson:
   must:
