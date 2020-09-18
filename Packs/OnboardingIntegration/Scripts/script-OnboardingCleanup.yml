@@ -48,7 +48,6 @@ tags: []
 comment: Cleanup the incidents and indicators created by OnboardingIntegration
 enabled: true
 scripttarget: 0
-runas: DBotWeakRole
 runonce: false
 dockerimage: demisto/python3
 subtype: python3
