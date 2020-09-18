@@ -637,7 +637,7 @@
         },
         {
             "integrations": "QRadar",
-            "playbookID": "test playbook - QRadarCorreltaions",
+            "playbookID": "test playbook - QRadarCorrelations",
             "timeout": 600,
             "fromversion": "5.0.0"
         },
@@ -1647,6 +1647,11 @@
             "integrations": "QRadar",
             "playbookID": "test_Qradar",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "QRadar_v2",
+            "playbookID": "test_Qradar_v2",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "VMware",
@@ -3302,6 +3307,7 @@
         "MongoDB Key Value Store": "Our instance not using SSL",
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
+        "EWSO365": "oproxy dependent",
         "QRadar": "Playbooks has parallel steps which are causing inconsistent results"
     },
     "parallel_integrations": [
@@ -3368,7 +3374,7 @@
             "demisto/google-k8s-engine:1.0.0.9467": {
                 "pid_threshold": 11
             },
-            "demisto/threatconnect-tcex:1.0.0.10664": {
+            "demisto/threatconnect-tcex": {
                 "pid_threshold": 11
             }
         }
