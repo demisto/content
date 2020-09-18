@@ -37,7 +37,7 @@ tags:
 - threat-intel
 - whois
 - server
-comment: A simple script that outputs a shorter summary of the !whois command output
+comment: Deprecated. A simple script that outputs a shorter summary of the !whois command output
 system: true
 args:
 - name: query

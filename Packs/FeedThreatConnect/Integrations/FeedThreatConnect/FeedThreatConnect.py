@@ -81,7 +81,7 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     Returns:
         dict: Parsed indicator.
     """
-    return {
+    indicator_obj = {
         "value": indicator.get('summary'),
         "type": INDICATOR_MAPPING_NAMES.get(indicator.get('type', '')),
         "rawJSON": indicator,
@@ -91,6 +91,12 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
         },
     }
 
+    tlp_color = demisto.getParam('tlp_color')
+    if tlp_color:
+        indicator_obj['fields']['trafficlightprotocol'] = tlp_color  # type: ignore
+
+    return indicator_obj
+
 
 ##########
 # Client #
@@ -99,6 +105,7 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 
 class Client:
     """Object represnt a client for ThreatConnect actions"""
+
     def __init__(self, access_key: str, secret_key: str, api_path: str):
         """ Initialize client configuration:
 

@@ -82,7 +82,7 @@ tasks:
       searchMethod:
         simple: Specific Accounts(requires emails argument)
       startTime:
-        simple: 2019-07-10T00:00:00.000000Z
+        simple: 2020-07-10T00:00:00.000000Z
       terms:
         simple: test*
       timeFrame: {}
