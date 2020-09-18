@@ -307,7 +307,7 @@ def get_user_command(client, args):
 def update_user_command(client, args):
     user_profile = args.get('user-profile')
     app_data = client.iam.map_user_profile_to_app_data(user_profile, OUTGOING_MAPPER)
-    if 'id' not in app_data and args.get('create-if-not-exists'):
+    if 'id' not in app_data and args.get('create-if-not-exists') == 'true':
         return create_user_command(client, args)
     user_id = app_data.pop('id')
     res = client.update_user(user_id, app_data)
