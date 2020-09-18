@@ -4568,7 +4568,7 @@ class IAMCommandHelper:
         self.context = {}
         self.readable_output = ''
 
-    def get_entry_data(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
+    def return_outputs(self, success=None, active=None, iden=None, username=None, email=None, error_code=None,
                        error_message=None, details=None):
         self.create_outputs(success, active, iden, username, email, error_code, error_message, details)
         self.create_context()
@@ -4596,11 +4596,12 @@ class IAMCommandHelper:
         }
 
     def create_context(self):
-        self.context[f'{self.command}(val.id == obj.id && val.instanceName == obj.instanceName)'] = self.outputs
+        dt = self.command +'(val.id == obj.id && val.instanceName == obj.instanceName)'
+        self.context[dt] = self.outputs
 
     def create_readable_output(self):
         self.readable_output = tableToMarkdown(
-            name=f'{self.command} results ({self.brand})',
+            name=self.command + ' results ({})'.format(self.brand),
             t=self.outputs,
             headers=["brand", "instanceName", "success", "active", "id", "username",
                      "email", "errorCode", "errorMessage", "details"],

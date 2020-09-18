@@ -11,47 +11,16 @@ import traceback
 requests.packages.urllib3.disable_warnings()
 
 '''CONSTANTS'''
+
+
 INCOMING_MAPPER = 'User Profile - Okta (Incoming)'
 OUTGOING_MAPPER = 'User Profile - Okta (Outgoing)'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SEARCH_LIMIT = 1000
-PROFILE_ARGS = [
-    'firstName',
-    'lastName',
-    'email',
-    'login',
-    'secondEmail',
-    'middleName',
-    'honorificPrefix',
-    'honorificSuffix',
-    'title',
-    'displayName',
-    'nickName',
-    'profileUrl',
-    'primaryPhone',
-    'mobilePhone',
-    'streetAddress',
-    'city',
-    'state',
-    'zipCode',
-    'countryCode',
-    'postalAddress',
-    'preferredLanguage',
-    'locale',
-    'timezone',
-    'userType',
-    'employeeNumber',
-    'costCenter',
-    'organization',
-    'division',
-    'department',
-    'managerId',
-    'manager'
-]
 
 DEPROVISIONED_STATUS = 'DEPROVISIONED'
 SCIM_EXTENSION_SCHEMA = "urn:scim:schemas:extension:custom:1.0:user"
-params = demisto.params()
+
 
 '''CLIENT CLASS'''
 
@@ -67,6 +36,7 @@ class Client(BaseClient):
         self.verify = verify
         self.headers = headers
         self.auth = auth
+        self.iam = IAMCommandHelper()
 
     def http_request(self, method, url_suffix, full_url=None, params=None, data=None, headers=None):
         if headers is None:
@@ -136,10 +106,10 @@ class Client(BaseClient):
             params=query_params
         )
 
-    def update_user(self, user_id, profile, cred):
+    def update_user(self, user_id, profile):
         body = {
             "profile": profile,
-            "credentials": cred
+            "credentials": {}
         }
         uri = f"users/{user_id}"
         return self.http_request(
@@ -188,107 +158,8 @@ class Client(BaseClient):
             paged_results += response.json()
         return paged_results
 
-    # Build profile dict with pre-defined keys custom mapping (for user)
-    def build_create_user_profile(self, args, scim, custom_mapping):
-        parsed_scim_data = map_scim(scim)
-        profile = dict()
-
-        for key, value in parsed_scim_data.items():
-            if key in PROFILE_ARGS:
-                if parsed_scim_data.get(key):
-                    profile[key] = parsed_scim_data[key]
-
-        if args.get('customMapping'):
-            custom_mapping = json.loads(args.get('customMapping'))
-        elif custom_mapping:
-            custom_mapping = json.loads(custom_mapping)
-
-        extension_schema = scim.get(SCIM_EXTENSION_SCHEMA)
-        if custom_mapping and extension_schema:
-            for key, value in custom_mapping.items():
-                # key is the attribute name in input scim. value is the attribute name of app profile
-                if extension_schema.get(key):
-                    profile[value] = extension_schema.get(key)
-
-        demisto.log(json.dumps(profile))
-        return profile
-
-    def build_update_user_profile(self, args, scim, custom_mapping):
-        profile = dict()
-
-        if args.get('customMapping'):
-            custom_mapping = json.loads(args.get('customMapping'))
-        elif custom_mapping:
-            custom_mapping = json.loads(custom_mapping)
-
-        extension_schema = scim.get(SCIM_EXTENSION_SCHEMA)
-        if custom_mapping and extension_schema:
-            for key, value in custom_mapping.items():
-                # key is the attribute name in input scim. value is the attribute name of app profile
-                if extension_schema.get(key):
-                    profile[value] = extension_schema.get(key)
-
-        return profile
-
 
 '''HELPER FUNCTIONS'''
-
-
-def verify_and_load_scim_data(scim):
-    try:
-        scim = json.loads(scim)
-    except Exception:
-        pass
-    if type(scim) != dict:
-        raise Exception("SCIM data is not a valid JSON")
-    return scim
-
-
-def map_scim(scim):
-    try:
-        scim = json.loads(scim)
-    except Exception:
-        pass
-    if type(scim) != dict:
-        raise Exception('Provided client data is not JSON compatible')
-
-    scim_extension = SCIM_EXTENSION_SCHEMA.replace('.', '\.')
-
-    mapping = {
-        "countryCode": "addresses(val.primary && val.primary==true).[0].country",
-        "city": "addresses(val.primary && val.primary==true).[0].locality",
-        "zipCode": "addresses(val.primary && val.primary==true).[0].postalCode",
-        "state": "addresses(val.primary && val.primary==true).[0].region",
-        "streetAddress": "addresses(val.primary && val.primary==true).[0].streetAddress",
-        "costCenter": scim_extension + ".costcenter",
-        "department": scim_extension + ".department",
-        "displayName": "displayName",
-        "division": scim_extension + ".division",
-        "email": "emails(val.primary && val.primary==true).[0].value",
-        "mobilePhone": "phoneNumbers(val.type && val.type=='mobile').[0].value",
-        "employeeNumber": scim_extension + ".employeeNumber",
-        "id": "id",
-        "locale": "locale",
-        "manager": scim_extension + ".manager.value",
-        "lastName": "name.familyName",
-        "firstName": "name.givenName",
-        "nickName": "nickName",
-        "organization": scim_extension + ".organization",
-        "preferredLanguage": "preferredLanguage",
-        "profileUrl": "profileUrl",
-        "timezone": "timezone",
-        "title": "title",
-        "userName": "userName",
-        "login": "userName",
-        "userType": "userType"
-    }
-    parsed_scim = dict()
-    for k, v in mapping.items():
-        try:
-            parsed_scim[k] = demisto.dt(scim, v)
-        except Exception:
-            parsed_scim[k] = None
-    return parsed_scim
 
 
 def get_time_elapsed(fetch_time, last_run):
@@ -329,14 +200,26 @@ def send_email(subject, body=''):
         smtp_client.quit()
 
 
+def get_error_details(res_json):
+    error_msg = f'{res_json.get("errorSummary")}. '
+    causes = ''
+    for idx, cause in enumerate(res_json.get('errorCauses'), 1):
+        causes += f'{idx}. {cause.get("errorSummary")}\n'
+    if causes:
+        error_msg += f'Reason:\n{causes}'
+    return error_msg
+
+
 '''COMMAND FUNCTIONS'''
 
 
 def test_module(client, args):
     # Validating fetch_time parameter
-    fetch_time = params.get('fetch_events_time_minutes')
+    fetch_time = demisto.params().get('fetch_events_time_minutes')
+    is_fetch = demisto.params().get('isFetch')
     try:
-        fetch_time = int(fetch_time)
+        if fetch_time not in [None, ''] and is_fetch:
+            fetch_time = int(fetch_time)
     except Exception:
         raise Exception('Please enter valid fetch_time parameter.')
 
@@ -349,259 +232,101 @@ def test_module(client, args):
 
 
 def enable_disable_user_command(client, args):
-    scim = verify_and_load_scim_data(args.get('scim'))
-    parsed_scim = map_scim(scim)
-    user_id = parsed_scim.get('id')
-    username = parsed_scim.get('userName')
-
-    if not (user_id or username):
-        raise Exception('You must provide either the id or username of the user')
-    elif not user_id:
-        # Get the userid using username
-        res = client.get_user_id(username)
-
-        if res.status_code == 200:
-            res_json = res.json()
-            if res_json and len(res_json) == 1:
-                user_id = res_json[0].get('id')
-            else:
-                # Empty list. No user found with that id. Return 404
-                res_json = res.json()
-                generic_iam_context = OutputContext(success=False, iden=user_id, username=username, errorCode=404,
-                                                    errorMessage='User Not Found', details=res_json)
-                readable_output = tableToMarkdown(name='Get Okta User:',
-                                                  t=generic_iam_context.data,
-                                                  headers=["brand", "instanceName", "success", "active", "id", "username",
-                                                           "email", "errorCode", "errorMessage", "details"],
-                                                  removeNull=True
-                                                  )
-                generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && ' \
-                                         f'val.instanceName == obj.instanceName)'
-                return (
-                    readable_output,
-                    {generic_iam_context_dt: generic_iam_context.data},
-                    generic_iam_context.data
-                )
-        else:
-            res_json = res.json()
-            generic_iam_context = OutputContext(success=False, iden=user_id, username=username,
-                                                errorCode=res_json.get('errorCode'),
-                                                errorMessage=res_json.get('errorSummary'), details=res_json)
-            readable_output = tableToMarkdown(name='Get Okta User:',
-                                              t=generic_iam_context.data,
-                                              headers=["brand", "instanceName", "success", "active", "id", "username",
-                                                       "email", "errorCode", "errorMessage", "details"],
-                                              removeNull=True
-                                              )
-            generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-            return (
-                readable_output,
-                {generic_iam_context_dt: generic_iam_context.data},
-                generic_iam_context.data
-            )
+    user_profile = args.get('user-profile')
+    app_data = client.iam.map_user_profile_to_app_data(user_profile, OUTGOING_MAPPER)
+    user_id = app_data.pop('id')
 
     if demisto.command() == 'enable-user':
-        format_pre_text = 'Enable'
-        active = True
         res = client.activate_user(user_id)
-    elif demisto.command() == 'disable-user':
-        format_pre_text = 'Disable'
-        active = False
+        active = True
+    else:
         res = client.deactivate_user(user_id)
+        active = False
 
     res_json = res.json()
 
     if res.status_code == 200:
-        generic_iam_context = OutputContext(success=True, iden=user_id, username=username, active=active)
-    elif res.status_code == 404:
-        generic_iam_context = OutputContext(success=False, iden=user_id, username=username, errorCode=404,
-                                            errorMessage=res_json.get('errorSummary'), details=res_json)
-    else:
-        generic_iam_context = OutputContext(success=False, iden=user_id, username=username,
-                                            errorCode=res_json.get('errorCode'),
-                                            errorMessage=res_json.get('errorSummary'), details=res_json)
+        return client.iam.return_outputs(success=True,
+                                         iden=res_json.get('id'),
+                                         email=res_json.get('profile', {}).get('email'),
+                                         username=res_json.get('profile', {}).get('login'),
+                                         details=res_json,
+                                         active=active)
 
-    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-
-    outputs = {
-        generic_iam_context_dt: generic_iam_context.data
-    }
-
-    readable_output = tableToMarkdown(name=f'{format_pre_text} Okta User:',
-                                      t=generic_iam_context.data,
-                                      headers=["brand", "instanceName", "success", "active", "id", "username", "email",
-                                               "errorCode", "errorMessage", "details"],
-                                      removeNull=True
-                                      )
-    return (
-        readable_output,
-        outputs,
-        generic_iam_context.data
-    )
-
-
-def get_error_details(res_json):
-    error_msg = f'{res_json.get("errorSummary")}. '
-    causes = ''
-    for idx, cause in enumerate(res_json.get('errorCauses'), 1):
-        causes += f'{idx}. {cause.get("errorSummary")}\n'
-    if causes:
-        error_msg += f'Reason:\n{causes}'
-    return error_msg
+    return client.iam.return_outputs(success=False,
+                                     error_code=res_json.get('errorCode'),
+                                     error_message=get_error_details(res_json),
+                                     details=res_json)
 
 
 def create_user_command(client, args):
-    iam = IAMCommandHelper()
-
     user_profile = args.get('user-profile')
-    app_data = iam.map_user_profile_to_app_data(user_profile, OUTGOING_MAPPER)
+    app_data = client.iam.map_user_profile_to_app_data(user_profile, OUTGOING_MAPPER)
     res = client.create_user(app_data)
     res_json = res.json()
 
     if res.status_code == 200:
         active = False if res_json.get('status') == DEPROVISIONED_STATUS else True
 
-        return iam.get_entry_data(success=True,
-                                  iden=res_json.get('id'),
-                                  email=res_json.get('profile', {}).get('email'),
-                                  username=res_json.get('profile', {}).get('login'),
-                                  details=res_json,
-                                  active=active)
-    else:
-        return iam.get_entry_data(success=False,
-                                  error_code=res_json.get('errorCode'),
-                                  error_message=get_error_details(res_json),
-                                  details=res_json)
+        return client.iam.return_outputs(success=True,
+                                         iden=res_json.get('id'),
+                                         email=res_json.get('profile', {}).get('email'),
+                                         username=res_json.get('profile', {}).get('login'),
+                                         details=res_json,
+                                         active=active)
+
+    return client.iam.return_outputs(success=False,
+                                     error_code=res_json.get('errorCode'),
+                                     error_message=get_error_details(res_json),
+                                     details=res_json)
 
 
 def get_user_command(client, args):
-    iam = IAMCommandHelper()
-
     user_profile = args.get('user-profile')
-    app_data = iam.map_user_profile_to_app_data(user_profile, OUTGOING_MAPPER)
+    app_data = client.iam.map_user_profile_to_app_data(user_profile, OUTGOING_MAPPER)
     user_id = app_data.get('id')
-    if not user_id:
-        username = app_data.get('login')
-        if not username:
-            return_error('username must be provided.')
-
-        res = client.get_user_id(username)
-        res_json = res.json()
-        if len(res_json) < 1:
-            return iam.get_entry_data(success=False,
-                                      error_code=404,
-                                      error_message='User not found')
-        else:
-            user_id = res_json[0].get('id')
     res = client.get_user(user_id)
     res_json = res.json()
 
     if res.status_code == 200:
         active = False if res_json.get('status') == DEPROVISIONED_STATUS else True
 
-        return iam.get_entry_data(success=True,
-                                  iden=res_json.get('id'),
-                                  email=res_json.get('profile', {}).get('email'),
-                                  username=res_json.get('profile', {}).get('login'),
-                                  details=res_json,
-                                  active=active)
-    else:
-        return iam.get_entry_data(success=False,
-                                  error_code=res_json.get('errorCode'),
-                                  error_message=get_error_details(res_json),
-                                  details=res_json)
+        return client.iam.return_outputs(success=True,
+                                         iden=res_json.get('id'),
+                                         email=res_json.get('profile', {}).get('email'),
+                                         username=res_json.get('profile', {}).get('login'),
+                                         details=res_json,
+                                         active=active)
+
+    return client.iam.return_outputs(success=False,
+                                     error_code=res_json.get('errorCode'),
+                                     error_message=get_error_details(res_json),
+                                     details=res_json)
 
 
 def update_user_command(client, args):
-    custom_mapping = demisto.params().get('customMappingUpdateUser')
-
-    old_scim = verify_and_load_scim_data(args.get('oldScim'))
-    new_scim = verify_and_load_scim_data(args.get('newScim'))
-
-    parsed_old_scim = map_scim(old_scim)
-    user_id = parsed_old_scim.get('id')
-    username = parsed_old_scim.get('userName')
-
-    if not (user_id or username):
-        raise Exception('You must provide either the id or username of the user')
-    elif not user_id:
-        # Get the userid using username
-        res = client.get_user_id(username)
-
-        if res.status_code == 200:
-            res_json = res.json()
-            if res_json and len(res_json) == 1:
-                user_id = res_json[0].get('id')
-            else:
-                # Empty list. No user found with that id. Return 404
-                res_json = res.json()
-                generic_iam_context = OutputContext(success=False, iden=user_id, username=username, errorCode=404,
-                                                    errorMessage='User Not Found', details=res_json)
-                readable_output = tableToMarkdown(name='Get Okta User:',
-                                                  t=generic_iam_context.data,
-                                                  headers=["brand", "instanceName", "success", "active", "id", "username",
-                                                           "email", "errorCode", "errorMessage", "details"],
-                                                  removeNull=True
-                                                  )
-                generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && ' \
-                                         f'val.instanceName == obj.instanceName)'
-                return (
-                    readable_output,
-                    {generic_iam_context_dt: generic_iam_context.data},
-                    generic_iam_context.data
-                )
-        else:
-            res_json = res.json()
-            generic_iam_context = OutputContext(success=False, iden=user_id, username=username,
-                                                errorCode=res_json.get('errorCode'),
-                                                errorMessage=res_json.get('errorSummary'), details=res_json)
-            readable_output = tableToMarkdown(name='Get Okta User:',
-                                              t=generic_iam_context.data,
-                                              headers=["brand", "instanceName", "success", "active", "id", "username",
-                                                       "email", "errorCode", "errorMessage", "details"],
-                                              removeNull=True
-                                              )
-            generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-            return (
-                readable_output,
-                {generic_iam_context_dt: generic_iam_context.data},
-                generic_iam_context.data
-            )
-
-    profile = client.build_update_user_profile(args, new_scim, custom_mapping)
-    res = client.update_user(user_id=user_id, profile=profile, cred={})
-
+    user_profile = args.get('user-profile')
+    app_data = client.iam.map_user_profile_to_app_data(user_profile, OUTGOING_MAPPER)
+    if 'id' not in app_data and args.get('create-if-not-exists'):
+        return create_user_command(client, args)
+    user_id = app_data.pop('id')
+    res = client.update_user(user_id, app_data)
     res_json = res.json()
 
     if res.status_code == 200:
-        email = res_json.get('profile', {}).get('email')
-        username = res_json.get('profile', {}).get('login')
         active = False if res_json.get('status') == DEPROVISIONED_STATUS else True
-        generic_iam_context = OutputContext(success=True, iden=res_json.get('id'), email=email,
-                                            username=username, details=res_json, active=active)
-    else:
-        generic_iam_context = OutputContext(success=False, username=username, iden=user_id,
-                                            email=parsed_old_scim.get('email'),
-                                            errorCode=res_json.get('errorCode'),
-                                            errorMessage=res_json.get('errorSummary'), details=res_json)
 
-    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
+        return client.iam.return_outputs(success=True,
+                                         iden=res_json.get('id'),
+                                         email=res_json.get('profile', {}).get('email'),
+                                         username=res_json.get('profile', {}).get('login'),
+                                         details=res_json,
+                                         active=active)
 
-    outputs = {
-        generic_iam_context_dt: generic_iam_context.data
-    }
-
-    readable_output = tableToMarkdown(name='Update Okta User:',
-                                      t=generic_iam_context.data,
-                                      headers=["brand", "instanceName", "success", "active", "id", "username", "email",
-                                               "errorCode", "errorMessage", "details"],
-                                      removeNull=True
-                                      )
-    return (
-        readable_output,
-        outputs,
-        generic_iam_context.data
-    )
+    return client.iam.return_outputs(success=False,
+                                     error_code=res_json.get('errorCode'),
+                                     error_message=get_error_details(res_json),
+                                     details=res_json)
 
 
 def fetch_incidents(client, last_run, fetch_time):
@@ -685,7 +410,7 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    # get the service API url
+    params = demisto.params()
     base_url = urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
     apitoken = demisto.params().get('apitoken')
     verify_certificate = not demisto.params().get('insecure', False)

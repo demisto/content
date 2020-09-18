@@ -66,6 +66,7 @@ script:
   commands:
   - arguments:
     - default: false
+      description: A User Profile indicator
       isArray: false
       name: user-profile
       required: true
@@ -110,22 +111,20 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Old SCIM content in JSON format
+      description: A User Profile indicator
       isArray: false
-      name: oldScim
+      name: user-profile
       required: true
       secret: false
-    - default: false
-      description: New SCIM content in JSON format
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: If no Okta ID supplied, create the user in Okta
       isArray: false
-      name: newScim
-      required: true
-      secret: false
-    - default: false
-      description: An optional custom mapping that takes custom values in the SCIM
-        data into the integration.
-      isArray: false
-      name: customMapping
+      name: create-if-not-exists
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -170,7 +169,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A User Profile indicator.
+      description: A User Profile indicator
       isArray: false
       name: user-profile
       required: true
@@ -215,9 +214,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: SCIM content in JSON format
+      description: A User Profile indicator
       isArray: false
-      name: scim
+      name: user-profile
       required: true
       secret: false
     deprecated: false
@@ -260,9 +259,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: SCIM content in JSON format
+      description: A User Profile indicator
       isArray: false
-      name: scim
+      name: user-profile
       required: true
       secret: false
     deprecated: false
