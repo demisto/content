@@ -862,7 +862,7 @@ def createIncidents(incidents, lastRun=None, userID=None):
       incidents (list):
         List of incident objects to create, with the following required keys, and some common optional keys
             - name (required) - str
-            - type (required) - if not provided will create unclassified incident) - str
+            - type (required - if not provided will create unclassified incident) - str
             - labels (optonal) - list of {"type": _, "value": _} objects
             - rawJSON (required) - str
             - occurred (optional) - str
