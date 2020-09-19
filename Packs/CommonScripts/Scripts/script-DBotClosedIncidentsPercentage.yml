@@ -28,4 +28,5 @@ comment: Data output script for populating dashboard pie graph widget with the p
   of incidents closed by DBot vs. incidents closed by analysts
 enabled: true
 scripttarget: 0
+runas: DBotRole
 runonce: false
