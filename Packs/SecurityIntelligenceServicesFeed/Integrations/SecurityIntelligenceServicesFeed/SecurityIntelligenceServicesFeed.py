@@ -90,7 +90,7 @@ class Client:
             proxies = handle_proxy()
 
             # Throws a ValueError if Proxy is empty in configuration.
-            if not proxies.get('https') or proxies.get('https') == '':
+            if not proxies.get('https', True):
                 raise ValueError(MESSAGES['BLANK_PROXY_ERROR'] + str(proxies))
 
             self.config = config.Config(proxies=proxies)
