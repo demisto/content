@@ -182,6 +182,8 @@ def create_py_documentation(path, origin, language):
 
 def create_ps_documentation(path, origin, language):
 
+    if not os.path.exists(path):
+        return '', False
     is_error_ps = False
 
     with open(path, 'r') as file:
