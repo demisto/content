@@ -30,3 +30,5 @@ enabled: true
 scripttarget: 0
 runas: DBotRole
 runonce: false
+tests:
+- No tests (auto formatted)

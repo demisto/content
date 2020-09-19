@@ -123,3 +123,5 @@ timeout: 300ns
 runas: DBotRole
 runonce: false
 fromversion: "3.5.0"
+tests:
+- No tests (auto formatted)
