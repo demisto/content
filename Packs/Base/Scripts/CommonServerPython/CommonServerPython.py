@@ -3062,7 +3062,7 @@ def pascalToSpace(s):
         # double space to handle capital words like IP/URL/DNS that not included in the regex
         s = s.replace(t, ' {} '.format(t.title()))
 
-    # split and join: to remove double spacing caused by previous workaround
+    # split and join: to remove doubleF spacing caused by previous workaround
     s = ' '.join(s.split())
     return s
 
