@@ -578,6 +578,7 @@ outputs:
 - contextPath: duplicateCandidateList
   description: Duplicate incident candidates list.
 scripttarget: 0
+runas: DBotWeakRole
 dockerimage: demisto/machine-learning
 fromversion: 3.5.0
 deprecated: true
