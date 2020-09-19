@@ -1,0 +1,36 @@
+{
+ "kind": "close",
+ "layout": {
+  "id": "Case layout",
+  "name": "Case layout",
+  "version": -1,
+  "kind": "close",
+  "typeId": "Case",
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_closereason",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_closenotes",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   }
+  ]
+ },
+ "fromVersion": "4.1.0",
+ "toVersion": "5.0.0",
+ "typeId": "Case",
+ "version": -1,
+ "description": ""
+}
