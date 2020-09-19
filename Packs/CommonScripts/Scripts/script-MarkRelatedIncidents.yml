@@ -36,3 +36,6 @@ args:
   description: The list of related incident IDs we want to mark
   isArray: true
 scripttarget: 0
+runas: DBotRole
+tests:
+- No tests (auto formatted)
