@@ -218,6 +218,7 @@ outputs:
 scripttarget: 0
 timeout: 12µs
 runonce: true
+runas: DBotWeakRole
 dockerimage: demisto/dl:1.1
 deprecated: true
 fromversion: 4.1.0
