@@ -48,7 +48,7 @@ configuration:
 - display: Fetch indicators
   name: feed
   required: false
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
 - defaultvalue: Good
   display: Indicator Reputation
@@ -143,5 +143,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
-defaultClassifier: AWS Feed
-defaultMapperIn: AWS Feed-mapper
+defaultclassifier: AWS Feed
+defaultmapperin: AWS Feed-mapper

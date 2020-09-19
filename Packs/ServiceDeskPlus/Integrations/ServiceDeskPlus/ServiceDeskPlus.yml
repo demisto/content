@@ -68,7 +68,9 @@ configuration:
   name: fetch_filter
   required: false
   type: 12
-description: Use this integration to manage Service Desk Plus requests. The integration allows you to create, update, and delete requests, assign groups and technicians to requests, and link/unlink requests and modify their resolution.
+description: Use this integration to manage Service Desk Plus requests. The integration
+  allows you to create, update, and delete requests, assign groups and technicians
+  to requests, and link/unlink requests and modify their resolution.
 display: Service Desk Plus
 name: ServiceDeskPlus
 script:
@@ -162,7 +164,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes the request with the specified ID. To delete multiple IDs, pass a comma-separated list (string) of the IDs of the requests.
+    description: Deletes the request with the specified ID. To delete multiple IDs,
+      pass a comma-separated list (string) of the IDs of the requests.
     execution: false
     name: service-desk-plus-request-delete
   - arguments:
@@ -180,8 +183,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Request type. Choose one of the listed options or provide
-        a dictionary representing a request_type object. Can be "Incident", "Request For Information", or "Service Request".
+      description: Request type. Choose one of the listed options or provide a dictionary
+        representing a request_type object. Can be "Incident", "Request For Information",
+        or "Service Request".
       isArray: false
       name: request_type
       predefined:
@@ -193,7 +197,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Impact of the request. Choose one of the listed options or provide
-        a dictionary representing an impact object. Can be "Affects Business", "Affects Department", "Affects Group", or "Affects User".
+        a dictionary representing an impact object. Can be "Affects Business", "Affects
+        Department", "Affects Group", or "Affects User".
       isArray: false
       name: impact
       predefined:
@@ -207,7 +212,8 @@ script:
       default: false
       defaultValue: Open
       description: Indicates the current status of this request. Choose one of the
-        listed options or provide a dictionary representing a status object. Can be "Open", "Closed", "On Hold", "Resolved", or "Canceled".
+        listed options or provide a dictionary representing a status object. Can be
+        "Open", "Closed", "On Hold", "Resolved", or "Canceled".
       isArray: false
       name: status
       predefined:
@@ -221,7 +227,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: The mode in which to create the request. Choose one of the listed
-        options or provide a dictionary representing a mode object. Can be "E-mail", "Phone Call", or "Web Form".
+        options or provide a dictionary representing a mode object. Can be "E-mail",
+        "Phone Call", or "Web Form".
       isArray: false
       name: mode
       predefined:
@@ -233,7 +240,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Level of the request. Choose one of the listed options or provide
-        a dictionary representing a level object. Can be "Tier 1", "Tier 2", "Tier 3", or "Tier 4".
+        a dictionary representing a level object. Can be "Tier 1", "Tier 2", "Tier
+        3", or "Tier 4".
       isArray: false
       name: level
       predefined:
@@ -246,7 +254,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Urgency of the request. Choose one of the listed options or provide
-        a dictionary representing an urgency object. Can be "High", "Low", "Normal", or "Urgent".
+        a dictionary representing an urgency object. Can be "High", "Low", "Normal",
+        or "Urgent".
       isArray: false
       name: urgency
       predefined:
@@ -259,7 +268,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Priority of the request. Choose one of the listed options or provide
-        a dictionary representing a priority object. Can be "High", "Low", "Normal", or "Meduium".
+        a dictionary representing a priority object. Can be "High", "Low", "Normal",
+        or "Meduium".
       isArray: false
       name: priority
       predefined:
@@ -311,15 +321,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Category to which the request belongs. Enter the name of the
-        category or a dictionary representing a category object.
+      description: Category to which the request belongs. Enter the name of the category
+        or a dictionary representing a category object.
       isArray: false
       name: category
       required: false
       secret: false
     - default: false
-      description: Subcategory to which the request belongs. Enter the name of
-        the subcategory or a dictionary representing a subcategory object.
+      description: Subcategory to which the request belongs. Enter the name of the
+        subcategory or a dictionary representing a subcategory object.
       isArray: false
       name: subcategory
       required: false
@@ -332,8 +342,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Array of email IDs to notify about the happenings
-        of the request.
+      description: Array of email IDs to notify about the happenings of the request.
       isArray: false
       name: email_ids_to_notify
       required: false
@@ -352,9 +361,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Holds UDF fields'' values (string) associated with the request in the format:
-        "key1:value1,key2:value2" or a dictionary in the form
-        "{''key1'':''val1'',''key2'':''val2''}".'
+      description: 'Holds UDF fields'' values (string) associated with the request
+        in the format: "key1:value1,key2:value2" or a dictionary in the form "{''key1'':''val1'',''key2'':''val2''}".'
       isArray: false
       name: udf_fields
       required: false
@@ -424,8 +432,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Request type. Choose one of the listed options or provide
-        a dictionary representing a request_type object. Can be "Incident", "Request For Information", or "Service Request".
+      description: Request type. Choose one of the listed options or provide a dictionary
+        representing a request_type object. Can be "Incident", "Request For Information",
+        or "Service Request".
       isArray: false
       name: request_type
       predefined:
@@ -437,7 +446,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Impact of the request. Choose one of the listed options or provide
-        a dictionary representing an impact object. Can be "Affects Business", "Affects Department", "Affects Group", or "Affects User".
+        a dictionary representing an impact object. Can be "Affects Business", "Affects
+        Department", "Affects Group", or "Affects User".
       isArray: false
       name: impact
       predefined:
@@ -451,7 +461,8 @@ script:
       default: false
       defaultValue: Open
       description: Indicates the current status of this request. Choose one of the
-        listed options or provide a dictionary representing a status object. Can be "Open", "Closed", "On Hold", "Resolved", or "Canceled".
+        listed options or provide a dictionary representing a status object. Can be
+        "Open", "Closed", "On Hold", "Resolved", or "Canceled".
       isArray: false
       name: status
       predefined:
@@ -465,7 +476,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: The mode in which to create the request. Choose one of the listed
-        options or provide a dictionary representing a mode object. Can be "E-mail", "Phone Call", or "Web Form".
+        options or provide a dictionary representing a mode object. Can be "E-mail",
+        "Phone Call", or "Web Form".
       isArray: false
       name: mode
       predefined:
@@ -477,7 +489,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Level of the request. Choose one of the listed options or provide
-        a dictionary representing a level object. Can be "Tier 1", "Tier 2", "Tier 3", or "Tier 4".
+        a dictionary representing a level object. Can be "Tier 1", "Tier 2", "Tier
+        3", or "Tier 4".
       isArray: false
       name: level
       predefined:
@@ -490,7 +503,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Urgency of the request. Choose one of the listed options or provide
-        a dictionary representing an urgency object. Can be "High", "Low", "Normal", or "Urgent".
+        a dictionary representing an urgency object. Can be "High", "Low", "Normal",
+        or "Urgent".
       isArray: false
       name: urgency
       predefined:
@@ -503,7 +517,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Priority of the request. Choose one of the listed options or provide
-        a dictionary representing a priority object. Can be "High", "Low", "Normal", or "Meduium".
+        a dictionary representing a priority object. Can be "High", "Low", "Normal",
+        or "Meduium".
       isArray: false
       name: priority
       predefined:
@@ -555,15 +570,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Category to which the request belongs. Enter the name of the
-        category or a dictionary representing a category object.
+      description: Category to which the request belongs. Enter the name of the category
+        or a dictionary representing a category object.
       isArray: false
       name: category
       required: false
       secret: false
     - default: false
-      description: Subcategory to which this request belongs. Enter the name of
-        the subcategory or a dictionary representing a subcategory object.
+      description: Subcategory to which this request belongs. Enter the name of the
+        subcategory or a dictionary representing a subcategory object.
       isArray: false
       name: subcategory
       required: false
@@ -576,8 +591,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Array of email IDs to notify about the happenings
-        of the request.
+      description: Array of email IDs to notify about the happenings of the request.
       isArray: false
       name: email_ids_to_notify
       required: false
@@ -596,9 +610,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Holds UDF fields'' values (string) associated with the request in the format:
-        "key1:value1,key2:value2" or a dictionary in the form
-        "{''key1'':''val1'',''key2'':''val2''}".'
+      description: 'Holds UDF fields'' values (string) associated with the request
+        in the format: "key1:value1,key2:value2" or a dictionary in the form "{''key1'':''val1'',''key2'':''val2''}".'
       isArray: false
       name: udf_fields
       required: false
@@ -785,7 +798,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether to link or unlink this request with the specified requests. Can be "Link" or "Unlink".
+      description: Specifies whether to link or unlink this request with the specified
+        requests. Can be "Link" or "Unlink".
       isArray: false
       name: action
       predefined:
@@ -794,8 +808,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of request IDs to link or unlink from the given request.
-        Multiple IDs can be passed, separated by a comma
+      description: A comma-separated list of request IDs to link or unlink from the
+        given request. Multiple IDs can be passed, separated by a comma
       isArray: false
       name: linked_requests_id
       required: true
@@ -817,11 +831,19 @@ script:
       name: closure_comments
       required: false
       secret: false
-    - default: false
-      description: 'A dictionary that represents the closure code to add
-        to the request. For example, {"name": "success"}.'
+    - auto: PREDEFINED
+      default: false
+      description: The closure code to add to the request. Can be "Cancelled", "Failed",
+        "Postponed", "Rejected", "Success" or "Unable to Reproduce".
       isArray: false
       name: closure_code
+      predefined:
+      - Cancelled
+      - Failed
+      - Postponed
+      - Rejected
+      - Success
+      - Unable to Reproduce
       required: false
       secret: false
     - default: false
@@ -832,7 +854,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A boolean value indicating whether the requester needs to acknowledge the resolution. Can be "true" or "false".
+      description: A boolean value indicating whether the requester needs to acknowledge
+        the resolution. Can be "true" or "false".
       isArray: false
       name: requester_ack_resolution
       predefined:

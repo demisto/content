@@ -10,11 +10,7 @@
     "categories": [
         "Messaging"
     ],
-    "tags": [
-        "Google",
-        "pub",
-        "sub"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": []
 }

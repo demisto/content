@@ -14,7 +14,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'false'
+  defaultValue: 'true'
   description: Set to 'true' to overwrite Grid Data.
   isArray: false
   name: overwrite
@@ -31,7 +31,11 @@ args:
   secret: false
 - default: false
   defaultValue: '*'
-  description: "Keys to retrieve from items. Keys will not be columns correlated. Default is all keys. **Note**: when the amount of values exceeds the amount columns, it truncates the last values that are outside the range for table"
+  description: 'Keys to retrieve from items. Keys will not be columns correlated.
+    Default is all keys. **Note**: when the number of values exceeds the number of columns,
+    it truncates the last values that are outside the range for table. If you want
+    to leave an empty column, provide a place holder name that should not be
+    in the context data, such as "PLACE_HOLDER".'
   isArray: true
   name: keys
   required: false
@@ -62,7 +66,6 @@ name: SetGridField
 script: '-'
 subtype: python3
 system: false
-tags: []
 timeout: '0'
 type: python
 dockerimage: demisto/pandas:1.0.0.9364

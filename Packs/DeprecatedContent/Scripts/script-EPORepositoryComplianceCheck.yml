@@ -83,7 +83,7 @@ type: python
 subtype: python2
 tags:
 - epo
-comment: Check a list of ePO servers to see if they are up to date.
+comment: Deprecated. Check a list of ePO servers to see if they are up to date.
 system: true
 deprecated: true
 args:

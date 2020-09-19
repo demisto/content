@@ -119,6 +119,21 @@ class TestLogzio:
         assert time_range["to"] == "1581174759"
         assert time_range["from"] == "1581261159"
 
+    def test_logzio_search_command_human_date(self, requests_mock):
+        client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
+        args = {
+            "from_time": "2020-03-29T14:46:17.236Z",
+            "to_time": "2020-03-29T18:46:17.236Z"
+        }
+
+        requests_mock.post("{}{}".format(BASE_URL, Logzio.SEARCH_LOGS_API_SUFFIX), json=SEARCH_LOGS_RESPONSE_EMPTY_BODY)
+        Logzio.search_logs_command(client, args)
+        request_body = requests_mock.request_history[0].json()
+
+        time_range = request_body["query"]["bool"]["must"][1]["range"]["@timestamp"]
+        assert time_range["to"] == 1585507577000
+        assert time_range["from"] == 1585493177000
+
     def test_logzio_get_rule_logs(self, requests_mock):
         client = Logzio.Client("us", "fake-security-token", "fake-operational-token", False, False)
         args = {

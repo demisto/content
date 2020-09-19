@@ -5,7 +5,11 @@
 Microsoft Graph lets your app get an authorized access to files in OneDrive, SharePoint and MS Teams across all organization. (requires admin consent).
 This integration was integrated and tested with version xx of Microsoft_Graph_Files
 
-## Required Permissions
+## Authentication
+---
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
+
+### Required Permissions
 1. Directory.Read.All - Delegated
 2. Files.ReadWrite.All - Application
 3. Files.ReadWrite.All - Delegated
@@ -27,15 +31,6 @@ This integration was integrated and tested with version xx of Microsoft_Graph_Fi
    - __Trust any certificate (not secure)__
    - __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
-
-
-## Use a Self-Deployed Azure Application
-
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
-<br/>The Tenant ID, Client ID, and Client secret are required for the integration. When you configure the integration in Demisto enter those parameters in the appropriate fields (instead of how you received them from the admin consent in the current doc).
-* ID - Client ID
-* Token - Tenant ID
-* Key - Client Secret
 
 ## Commands
 

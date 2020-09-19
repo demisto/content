@@ -7,14 +7,16 @@
     "url": "https://group-ib.com",
     "email": "tds@group-ib.com",
     "created": "2020-05-21T16:19:58Z",
-    "categories": ["Forensics & Malware Analysis"],
-    "tags": ["sandbox"],
-    "useCases": [
-    	"Submit a file and get a report (detonation)",
-    	"Submit a URL and get a report (detonation)",
-    	"Lookup file reputation by hash",
-    	"Retrieve a PCAP file",
-    	"Retrieve video taken during analysis"
+    "categories": [
+        "Forensics & Malware Analysis"
     ],
-    "keywords": ["sandbox"]
+    "tags": [],
+    "useCases": [
+    ],
+    "keywords": [
+        "sandbox"
+    ],
+    "githubUser": [
+        "gib-tds"
+    ]
 }

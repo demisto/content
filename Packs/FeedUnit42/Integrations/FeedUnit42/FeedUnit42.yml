@@ -12,6 +12,7 @@ configuration:
   name: feed
   required: false
   type: 8
+  defaultvalue: 'true'
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
@@ -61,7 +62,8 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- display: Tags
+- additionalinfo: Supports CSV values.
+  display: Tags
   hidden: false
   name: feedTags
   required: false

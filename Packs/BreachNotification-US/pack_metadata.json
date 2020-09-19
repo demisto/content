@@ -1,16 +1,16 @@
 {
     "name": "US - Breach Notification",
-    "description": " ",
+    "description": "This ContentPpack helps you understand if a breach has occurred and automates repetitive tasks associated with US Breach notification procedures.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [],
     "tags": [
-        "Breach Notification",
-        "PII",
-        "Compliance"
+        "Breach",
+        "Compliance",
+        "PII"
     ],
     "created": "2020-05-06T18:47:57Z",
     "useCases": [

@@ -58,9 +58,11 @@ You need to collect several pieces of information in order to configure the inte
     * __Server URL (copy URL from XDR - click ? to see more info.)__
     * __API Key ID__
     * __API Key__
+    * __Maximum number of incidents per fetch__
+    * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
+    * __HTTP Timeout__ (default is 120 seconds)
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
@@ -145,12 +147,9 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | PaloAltoNetworksXDR.Incident.alert_count | number | Total number of alerts in the incident. | 
 | PaloAltoNetworksXDR.Incident.med_severity_alert_count | number | Number of alerts with the severity MEDIUM. | 
 | PaloAltoNetworksXDR.Incident.user_count | number | Number of users involved in the incident. | 
-| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident
-"low","medium","high"
- | 
+| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Can be "low", "medium", or "high". | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive" or "resolved_other"
- | 
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new", "under_investigation", "resolved_threat_handled", "resolved_known_issue", "resolved_duplicate", "resolved_false_positive", or "resolved_other". | 
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.notes | String | Comments entered by the user regarding the incident. | 
@@ -348,6 +347,8 @@ Returns additional data for the specified incident, for example, related alerts,
 | PaloAltoNetworksXDR.Incident.file_artifacts.type | String | The artifact type "META" "GID" "CID" "HASH" "IP" "DOMAIN" "REGISTRY" "HOSTNAME" | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256 | String | SHA-256 hash of the file | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name | String | File signature vendor name | 
+| Account.Username | String | The username in the relevant system. | 
+| Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
 
 
 ##### Command Example
@@ -356,6 +357,16 @@ Returns additional data for the specified incident, for example, related alerts,
 ##### Context Example
 ```
 {
+    "Account": {
+        "Username": [
+            null
+        ]
+    },
+    "Endpoint": {
+        "Hostname": [
+            null
+        ]
+    },
     "PaloAltoNetworksXDR.Incident": {
         "host_count": 1, 
         "manual_severity": "medium", 
@@ -854,7 +865,11 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 | PaloAltoNetworksXDR.Endpoint.endpoint_version | String | Endpoint version. | 
 | PaloAltoNetworksXDR.Endpoint.is_isolated | String | Whether the endpoint is isolated. | 
 | PaloAltoNetworksXDR.Endpoint.group_name | String | The name of the group to which the endpoint belongs. | 
-
+| Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
+| Endpoint.ID | String | The unique ID within the tool retrieving the endpoint. | 
+| Endpoint.IPAddress | String | The IP address of the endpoint. | 
+| Endpoint.Domain | String | The domain of the endpoint. | 
+| Endpoint.OS | String | Endpoint OS. | 
 
 ##### Command Example
 ```!xdr-get-endpoints isolate="unisolated" first_seen_gte="3 month" page="0" limit="30" sort_order="asc"```
@@ -862,6 +877,26 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 ##### Context Example
 ```
 {
+    "Endpoint": [
+        {
+            "Domain": "WORKGROUP",
+            "Hostname": "aaaaa.compute.internal",
+            "ID": "ea303670c76e4ad09600c8b346f7c804",
+            "IPAddress": [
+                "172.31.11.11"
+            ],
+            "OS": "AGENT_OS_WINDOWS"
+        },
+        {
+            "Domain": "WORKGROUP",
+            "Hostname": "EC2AMAZ-P7PPOI4",
+            "ID": "f8a2f58846b542579c12090652e79f3d",
+            "IPAddress": [
+                "2.2.2.2"
+            ],
+            "OS": "AGENT_OS_WINDOWS"
+        }
+    ],
     "PaloAltoNetworksXDR.Endpoint": [
         {
             "domain": "", 
@@ -1301,3 +1336,6 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 | Audit | XDR Agent policy updated on aaaaa.compute.internal |  | ea303670c76e4ad09600c8b346f7c804 | aaaaa.compute.internal |  | 1579286565904.3281 | Success | Policy Update | 1579284369143.7048 | 7.0.0.1915 | Policy |
 | Audit | XDR Agent policy updated on aaaaa.compute.internal |  | ea303670c76e4ad09600c8b346f7c804 | aaaaa.compute.internal |  | 1579282965742.36 | Success | Policy Update | 1579280769141.43 | 7.0.0.1915 | Policy |
 
+
+## Troubleshooting
+ - In case you encounter ReadTimeoutError, we recommend increasing the HTTP request timeout by setting it in the **HTTP Timeout** integration parameter.

@@ -10,6 +10,7 @@ def main():
     circle_aritfact = sys.argv[1]
     env_file = sys.argv[2]
     instance_role = sys.argv[3]
+    time_to_live = sys.argv[4]
     with open(env_file, 'r') as json_file:
         env_results = json.load(json_file)
 
@@ -29,16 +30,20 @@ def main():
             print(exc.output)
 
         try:
+            server_ip = env["InstanceDNS"].split('.')[0]
             subprocess.check_output(
                 scp_string.format(
                     env["SSHuser"],
                     env["InstanceDNS"],
-                    "{}/server_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''))),
+                    "{}/server_{}_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''), server_ip)),
                 shell=True)
 
         except subprocess.CalledProcessError as exc:
             print(exc.output)
 
+        if time_to_live:
+            print(f'Skipping - Time to live was set to {time_to_live} minutes')
+            return
         if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))):
             print(f'Destroying instance {env.get("Role", "Unknown role")}')
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])

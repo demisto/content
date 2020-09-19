@@ -40,9 +40,10 @@ def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[in
     Returns:
         dict: Filtered dict.
     """
-    new_dict = dict()
     # Iterate over all the items in dictionary
     if keys[0] != "*":
+        # create empty dict of given headers
+        new_dict = {key: "" for key in keys}
         for (key, value) in dict_obj.items():
             # Check if item satisfies the given condition then add to new dict
             if key in keys:
@@ -79,18 +80,18 @@ def unpack_all_data_from_dict(entry_context: Dict[Any, Any], keys: List[str], co
                 for item in value:
                     if isinstance(item, dict):
                         recursively_unpack_data(filter_dict(item, keys), path + '.' + key)
-                    elif isinstance(item, (str, int, float, bool)):
+                    else:
                         unpacked_data.append(
                             {
                                 columns[0]: key,
-                                columns[1]: item
+                                columns[1]: item if isinstance(item, (str, int, float, bool)) else ""
                             }
                         )
-            elif isinstance(value, (str, int, float, bool)):
+            else:
                 unpacked_data.append(
                     {
                         columns[0]: key,
-                        columns[1]: value
+                        columns[1]: value if isinstance(value, (str, int, float, bool)) else ""
                     }
                 )
 
@@ -110,7 +111,10 @@ def get_current_table(grid_id: str) -> List[Dict[Any, Any]]:
     """
     current_table: Optional[List[dict]] = demisto.incidents()[0].get("CustomFields", {}).get(grid_id)
     if current_table is None:
-        raise ValueError(f"The grid id isn't valid: {grid_id}")
+        raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you "
+                         "entered the \"Machine name\" as it appears in the incident field editor in Settings->Advanced"
+                         "->Fields (Incident). Also make sure that this value appears in the incident Context Data "
+                         "under incident - if not then please consult with support.")
 
     return pd.DataFrame(current_table)
 
@@ -247,6 +251,9 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
         Returns:
             list: Table representation for the Grid.
     """
+    # Assert columns match keys
+    if keys[0] != '*' and (len(columns) != len(keys)):
+        raise DemistoException(f'The number of keys: {len(keys)} should match the number of columns: {len(columns)}.')
     # Get old Data
     old_table = get_current_table(grid_id=grid_id)
     # Normalize columns to match connected words.
