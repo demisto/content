@@ -2945,7 +2945,7 @@
             "integrations": "Unit42 Feed",
             "playbookID": "Unit42 Feed - Test",
             "fromversion": "5.5.0",
-            "timeout": 1200
+            "timeout": 800
         },
         {
             "integrations": "CrowdStrikeMalquery",
