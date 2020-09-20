@@ -3,6 +3,7 @@
 ## XSOAR [Partner](https://xsoar.pan.dev/docs/partners/become-a-tech-partner)?
 In case you are a technological partner:
 - [ ] The title must be in the following format: **[YOUR_PARTNER_ID] short description**.
+
 If you are not a technological partner (i.e. PANW employee, customer or individual developer), please delete this section.
 
 ## Status
