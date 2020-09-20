@@ -157,6 +157,7 @@ args:
   defaultValue: "no"
 scripttarget: 0
 timeout: 400ns
+runas: DBotWeakRole
 runonce: false
 dockerimage: demisto/ml-telemetry
 fromversion: "3.5.0"
