@@ -13,8 +13,8 @@ from distutils.version import LooseVersion
 import demisto_client
 
 from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-    run_command, get_last_release_version, checked_type, get_yaml, str2bool, format_version
-from demisto_sdk.commands.validate.file_validator import FilesValidator
+    run_command, get_last_release_version, find_type, get_yaml, str2bool, format_version
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from demisto_sdk.commands.common.constants import YML_INTEGRATION_REGEXES, RUN_ALL_TESTS_FORMAT
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
@@ -196,18 +196,18 @@ def get_new_and_modified_integration_files(git_sha1):
     """
     # get changed yaml files (filter only added and modified files)
     tag = get_last_release_version()
-    file_validator = FilesValidator()
+    file_validator = ValidateManager()
     change_log = run_command('git diff --name-status {}'.format(git_sha1))
-    modified_files, added_files, _, _ = file_validator.get_modified_files(change_log, tag)
+    modified_files, added_files, _, _ = file_validator.get_modified_and_added_files(change_log, tag)
     all_integration_regexes = YML_INTEGRATION_REGEXES
 
     new_integration_files = [
-        file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
+        file_path for file_path in added_files if find_type(file_path, all_integration_regexes)
     ]
 
     modified_integration_files = [
         file_path for file_path in modified_files if
-        isinstance(file_path, str) and checked_type(file_path, all_integration_regexes)
+        isinstance(file_path, str) and find_type(file_path, all_integration_regexes)
     ]
 
     return new_integration_files, modified_integration_files
