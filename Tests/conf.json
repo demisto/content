@@ -2718,7 +2718,7 @@
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0",
-            "memory_threshold": 130,
+            "memory_threshold": 150,
             "timeout": 600
         },
         {
