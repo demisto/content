@@ -35,6 +35,7 @@ class Client:
     severity: str = ''
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
     tag = 'Cortex XDR'
+    tlp_color = None
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an ' +    # noqa: W504
@@ -326,10 +327,13 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
         "fields": {
             "tags": Client.tag,
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
-            "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME'))
+            "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
         },
         "rawJSON": ioc
     }
+    if Client.tlp_color:
+        entry['fields']['trafficlightprotocol'] = Client.tlp_color
+
     return entry
 
 
@@ -423,6 +427,7 @@ def main():
     Client.severity = params.get('severity', '').upper()
     Client.query = params.get('query', Client.query)
     Client.tag = params.get('feedTags', params.get('tag', Client.tag))
+    Client.tlp_color = params.get('tlp_color')
     client = Client(params)
     commands = {
         'test-module': module_test,
