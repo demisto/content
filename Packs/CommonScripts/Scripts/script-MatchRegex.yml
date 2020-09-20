@@ -39,7 +39,7 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: Extract regex data from given text - supports groups and looping as well.
+comment: Deprecated. Use the *MatchRegexV2* script instead.
 enabled: true
 args:
 - name: data
@@ -55,9 +55,12 @@ args:
   description: The context key to populate with the result
 - name: flags
   description: The regex flags to match. Default is -gim.
-  defaultValue: 
+  defaultValue:
 outputs:
 - contextPath: MatchRegex.results
   description: List of Regex matches
   type: string
 scripttarget: 0
+deprecated: true
+tests:
+  - No test - deprecated. use MatchRegexV2

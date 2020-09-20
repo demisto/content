@@ -1,4 +1,3 @@
-Deprecated. Use the *MatchRegexV2* script instead.
 Extracts regex data from a given text. This supports groups and looping as well.
 
 ## Script Data
@@ -6,7 +5,7 @@ Extracts regex data from a given text. This supports groups and looping as well.
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | javascript |
+| Script Type | python3 |
 | Tags | Utility |
 
 
