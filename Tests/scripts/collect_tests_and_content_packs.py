@@ -17,6 +17,7 @@ from typing import Dict, Tuple
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
+from configparser import ConfigParser, MissingSectionHeaderError  # TODO: remove and use sdk tools when available
 
 coloredlogs.install(level=logging.DEBUG, fmt='[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s')
 
@@ -175,6 +176,8 @@ SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
 # number of random tests to run when there're no runnable tests
 RANDOM_TESTS_NUM = 3
+
+IGNORE_TEST_FLAG = 'auto-test'  # TODO: remove and use sdk tools when available
 
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
@@ -1190,8 +1193,45 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
+    ignored_tests_set = set()
+    for pack in packs_to_install:
+        ignored_tests_set.update(get_test_ignore_set(pack))
+    tests.symmetric_difference_update(ignored_tests_set)
 
     return tests, packs_to_install
+
+
+def get_test_ignore_set(pack_name: str):  # TODO: remove and use sdk tools when available
+    ignored_tests_set = set()
+    if pack_name:
+        pack_ignore_path = get_pack_ignore_file_path(pack_name)
+
+        if os.path.isfile(pack_ignore_path):
+            try:
+                config = ConfigParser(allow_no_value=True)
+                config.read(pack_ignore_path)
+
+                # create file specific ignored errors list
+                for section in config.sections():
+                    if section.startswith("file:"):
+                        file_name = section[5:]
+                        for key in config[section]:
+                            if key == 'ignore':
+                                ignore_list = str(config[section][key]).split(',')
+                                if IGNORE_TEST_FLAG in ignore_list:
+                                    path = os.path.join(PACKS_DIR, pack_name, TEST_PLAYBOOKS_DIR, file_name)
+                                    if os.path.isfile(path):
+                                        test_yaml = tools.get_yaml(path)
+                                        if 'id' in test_yaml:
+                                            ignored_tests_set.add(test_yaml['id'])
+            except MissingSectionHeaderError:
+                pass
+
+    return ignored_tests_set
+
+
+def get_pack_ignore_file_path(pack_name):  # TODO: remove and use sdk tools when available
+    return os.path.join(PACKS_DIR, pack_name, PACKS_PACK_IGNORE_FILE_NAME)
 
 
 def get_from_version_and_to_version_bounderies(all_modified_files_paths: set, id_set: dict) -> Tuple[str, str]:
