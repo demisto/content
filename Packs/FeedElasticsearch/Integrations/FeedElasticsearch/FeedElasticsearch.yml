@@ -25,7 +25,7 @@ configuration:
     index. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant
     account in a multi-tenant environment. Generic Feed contains a feed in a format
     specified by the user
-  defaultvalue: Cortex XSOAR Feed
+  defaultvalue: Cortex XSOAR MT Shared Feed
   display: Feed Type
   hidden: false
   name: feed_type
@@ -71,6 +71,16 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
   type: 15
 - defaultvalue: indicatorType
   display: ''
@@ -168,7 +178,7 @@ script:
     description: Gets indicators available in the configured Elasticsearch database.
     execution: false
     name: es-get-indicators
-  dockerimage: demisto/elasticsearch:1.0.0.10134
+  dockerimage: demisto/elasticsearch:1.0.0.11003
   feed: true
   isfetch: false
   longRunning: false
