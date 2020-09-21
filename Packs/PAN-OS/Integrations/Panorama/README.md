@@ -803,7 +803,7 @@
 <pre>!panorama-list-address-groups</pre>
 <h5>Human Readable Output</h5>
 <p><a href="https://user-images.githubusercontent.com/37335599/50421902-e2602800-084c-11e9-9c87-c21fb77d4553.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/50421902-e2602800-084c-11e9-9c87-c21fb77d4553.png" alt="screen shot 2018-12-25 at 13 56 20"></a></p>
-<h3 id="h_17078113636441545893426970">9. Get information for an address group</h3>
+<h3 id="h_17078113636441545893426970">9. Get information for an address group. A dynamic address group with a tag will return only the tag name, not the IPs associated with this tag.</h3>
 <hr>
 <p>Returns details for the specified address group.</p>
 <h5>Base Command</h5>

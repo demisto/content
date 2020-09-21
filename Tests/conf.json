@@ -707,6 +707,7 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "Panorama Query Logs - Test",
+            "fromversion": "5.5.0",
             "timeout": 1500,
             "nightly": true
         },
@@ -1796,7 +1797,7 @@
             "playbookID": "Sandblast_malicious_test"
         },
         {
-            "playbookID": "TestMatchRegex"
+            "playbookID": "TestMatchRegexV2"
         },
         {
             "integrations": "ActiveMQ",
@@ -2470,7 +2471,7 @@
         },
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
-            "fromversion": "4.5.0",
+            "fromversion": "5.5.0",
             "timeout": 1500,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
@@ -3038,8 +3039,6 @@
         "Phishing - Core - Test - Actual Incident": "Should never run as standalone. Issue #25947",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "PAN-OS Query Logs For Indicators Test": "Issue #23505",
-        "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
         "GCS Bucket Management - Test": "used in GCS - Test as sub playbook",
         "GCS Object Operations - Test": "used in GCS - Test as sub playbook",
@@ -3069,7 +3068,8 @@
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
         "MISP V2 Test": "Issue 26905",
-        "pyEWS_Test": "Issue 28339"
+        "pyEWS_Test": "Issue 28339",
+        "DuoAdmin API test playbook": "Issue 24937"
     },
     "skipped_integrations": {
 
