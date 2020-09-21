@@ -74,10 +74,10 @@ type: python
 subtype: python2
 tags:
 - active directory
-comment: "Use Active Directory to retrieve the list of users or computers that are members
-  of the specified group. Group must be given by its AD Distinguished Name. The \"attributes\"
+comment: Deprecated. Use Active Directory to retrieve the list of users or computers that are members
+  of the specified group. Group must be given by its AD Distinguished Name. The attributes
   argument receives a comma-separated list of additional attributes you wish to be
-  displayed in the results.\nExample usage: !ADGetGroupMembers memberType=user groupdn=\"CN=Administrators,CN=Builtin,DC=acme,DC=int\" attributes=name,email "
+  displayed in the results.nExample usage !ADGetGroupMembers memberType=user groupdn=CN=Administrators,CN=Builtin,DC=acme,DC=int attributes=name,email
 system: true
 args:
 - name: groupdn

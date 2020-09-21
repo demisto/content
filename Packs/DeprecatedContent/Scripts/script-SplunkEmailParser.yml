@@ -68,11 +68,11 @@ type: javascript
 tags:
 - splunk
 - ingestion
-comment: "Classify an incident created from an email originating from Splunk.\nThe
-  mail type should be in plain text, and inline: table should be selected.\nParsing
+comment: Deprecated. Classify an incident created from an email originating from Splunk.\nThe
+  mail type should be in plain text, and inline -  table should be selected.\nParsing
   is done in the following manner -\ntype is the header sourcetype, severity is the
   mail importance level, \nthe incident name is the mail subject and the systems are
-  taken from host."
+  taken from host.
 system: true
 deprecated: true
 args:
