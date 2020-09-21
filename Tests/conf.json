@@ -1797,7 +1797,7 @@
             "playbookID": "Sandblast_malicious_test"
         },
         {
-            "playbookID": "TestMatchRegex"
+            "playbookID": "TestMatchRegexV2"
         },
         {
             "integrations": "ActiveMQ",
