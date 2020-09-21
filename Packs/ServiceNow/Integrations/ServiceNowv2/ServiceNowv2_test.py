@@ -519,5 +519,5 @@ def test_get_remote_data_no_attachment(mocker):
     mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)
 
     res = get_remote_data_command(client, args, params)
-
     assert res[1]['Contents'] == 'This is a comment'
+    assert len(res) == 2
