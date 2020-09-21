@@ -1,17 +1,17 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
+import concurrent.futures
 import json
 import time
-import urllib3
 import traceback
-from urllib import parse
 from copy import deepcopy
-import concurrent.futures
 from threading import Lock
+from typing import Optional, List, Callable, Dict, Tuple
+from urllib import parse
 
+import demistomock as demisto
 import requests
+import urllib3
+from CommonServerPython import *
+from CommonServerUserPython import *
 from requests.exceptions import HTTPError
 
 # disable insecure warnings
@@ -529,6 +529,25 @@ class QRadarClient:
             "POST", url, params=params, data=json.dumps(indicators_list)
         )
 
+    def get_custom_fields(self, limit: Optional[int] = None) -> List[dict]:
+        url = urljoin(self._server, "api/config/event_sources/custom_properties/regex_properties")
+        fields = []
+        # Paging
+        start = 0
+        stop = 49
+        while True:
+            headers = self._auth_headers
+            headers['Range'] = f"items={start}-{stop}"
+            response = self.send_request("GET", url, headers=headers)
+            if not response:  # Out of fields
+                break
+            fields.extend(response)
+            if limit is not None and len(fields) > limit:
+                fields = fields[:limit]
+                break
+            start, stop = stop, stop*2
+        return fields
+
     def enrich_source_addresses_dict(self, src_adrs):
         """
         helper function: Enriches the source addresses ids dictionary with the source addresses values corresponding to the ids
@@ -561,6 +580,7 @@ class QRadarClient:
             for dst_adr in dst_res:
                 dst_adrs[dst_adr["id"]] = dst_adr["local_destination_ip"]
         return dst_adrs
+
 
 
 """ Utility functions """
@@ -602,7 +622,7 @@ def epoch_to_iso(ms_passed_since_epoch):
     """
     Converts epoch (miliseconds) to ISO string
     """
-    if isinstance(ms_passed_since_epoch, int) and ms_passed_since_epoch >= 0:
+    if int(ms_passed_since_epoch) >= 0:
         return datetime.utcfromtimestamp(ms_passed_since_epoch / 1000.0).strftime(
             "%Y-%m-%dT%H:%M:%S.%fZ"
         )
@@ -613,13 +633,13 @@ def print_debug_msg(msg, lock: Lock = None):
     """
     Prints a debug message with QRadarMsg prefix, while handling lock.acquire (if available)
     """
-    debug_msg = f"QRadarMsg - {msg}"
+    err_msg = f"QRadarMsg - {msg}"
     if lock:
         if lock.acquire(timeout=LOCK_WAIT_TIME):
-            demisto.debug(debug_msg)
+            demisto.debug(err_msg)
             lock.release()
     else:
-        demisto.debug(debug_msg)
+        demisto.debug(err_msg)
 
 
 def filter_dict_null(d):
@@ -895,7 +915,7 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
                         "No offenses could be fetched, please make sure there are offenses available for this user."
                     )
                 lim_id = lim_offense[0]["id"]  # if there's no id, raise exception
-            if lim_id >= end_offense_id:  # increment the search until we reach limit
+            if int(lim_id) >= end_offense_id:  # increment the search until we reach limit
                 start_offense_id += client.offenses_per_fetch
             else:
                 latest_offense_fnd = True
@@ -960,8 +980,8 @@ def fetch_incidents_long_running_events(
                 events_limit=events_limit,
             )
         )
-    for future in concurrent.futures.as_completed(futures):
-        enriched_offenses.append(future.result())
+        for future in concurrent.futures.as_completed(futures):
+            enriched_offenses.append(future.result())
 
     if is_reset_triggered(client.lock, handle_reset=True):
         return
@@ -1264,16 +1284,18 @@ def enrich_single_offense_res_with_source_and_destination_address(
     asset_ips = set()
     if isinstance(offense.get("source_address_ids"), list):
         for i in range(len(offense["source_address_ids"])):
-            source_address = src_adrs[offense["source_address_ids"][i]]
             if not skip_enrichment:
-                offense["source_address_ids"][i] = source_address
-            asset_ips.add(source_address)
+                offense["source_address_ids"][i] = src_adrs[
+                    offense["source_address_ids"][i]
+                ]
+            asset_ips.add(src_adrs[offense["source_address_ids"][i]])
     if isinstance(offense.get("local_destination_address_ids"), list):
         for i in range(len(offense["local_destination_address_ids"])):
-            destination_address = dst_adrs[offense["local_destination_address_ids"][i]]
             if not skip_enrichment:
-                offense["local_destination_address_ids"][i] = destination_address
-            asset_ips.add(destination_address)
+                offense["local_destination_address_ids"][i] = dst_adrs[
+                    offense["local_destination_address_ids"][i]
+                ]
+            asset_ips.add(dst_adrs[offense["local_destination_address_ids"][i]])
 
     return asset_ips
 
@@ -1956,6 +1978,145 @@ def reset_fetch_incidents():
     return "fetch-incidents was reset successfully."
 
 
+def get_mapping_fields(client: QRadarClient, **args) -> dict:
+    offense = {
+        "username_count": "int",
+        "description": "str",
+        "rules": {
+            "id": "int",
+            "type": "str",
+            "name": "str"
+        },
+        "event_count": "int",
+        "flow_count": "int",
+        "assigned_to": "NoneType",
+        "security_category_count": "int",
+        "follow_up": "bool",
+        "source_address_ids": "str",
+        "source_count": "int",
+        "inactive": "bool",
+        "protected": "bool",
+        "closing_user": "str",
+        "destination_networks": "str",
+        "source_network": "str",
+        "category_count": "int",
+        "close_time": "str",
+        "remote_destination_count": "int",
+        "start_time": "str",
+        "magnitude": "int",
+        "last_updated_time": "str",
+        "credibility": "int",
+        "id": "int",
+        "categories": "str",
+        "severity": "int",
+        "policy_category_count": "int",
+        "closing_reason_id": "str",
+        "device_count": "int",
+        "offense_type": "str",
+        "relevance": "int",
+        "domain_id": "int",
+        "offense_source": "str",
+        "local_destination_address_ids": "int",
+        "local_destination_count": "int",
+        "status": "str",
+        "domain_name": "str"
+    }
+    events = {
+        "events": {
+            "qidname_qid": "str",
+            "logsourcename_logsourceid": "str",
+            "categoryname_highlevelcategory": "str",
+            "categoryname_category": "str",
+            "protocolname_protocolid": "str",
+            "sourceip": "str",
+            "sourceport": "int",
+            "destinationip": "str",
+            "destinationport": "int",
+            "qiddescription_qid": "str",
+            "username": "NoneType",
+            "rulename_creeventlist": "str",
+            "sourcegeographiclocation": "str",
+            "sourceMAC": "str",
+            "sourcev6": "str",
+            "destinationgeographiclocation": "str",
+            "destinationv6": "str",
+            "logsourcetypename_devicetype": "str",
+            "credibility": "int",
+            "severity": "int",
+            "magnitude": "int",
+            "eventcount": "int",
+            "eventDirection": "str",
+            "postNatDestinationIP": "str",
+            "postNatDestinationPort": "int",
+            "postNatSourceIP": "str",
+            "postNatSourcePort": "int",
+            "preNatDestinationPort": "int",
+            "preNatSourceIP": "str",
+            "preNatSourcePort": "int",
+            "utf8_payload": "str",
+            "starttime": "str",
+            "devicetime": "int"
+        }
+    }
+    assets = {
+        "assets": {
+            "interfaces": {
+                "mac_address": "str",
+                "last_seen_profiler": "int",
+                "created": "str",
+                "last_seen_scanner": "int",
+                "first_seen_scanner": "int",
+                "ip_addresses": {
+                    "last_seen_profiler": "int",
+                    "created": "str",
+                    "last_seen_scanner": "int",
+                    "first_seen_scanner": "int",
+                    "network_id": "int",
+                    "id": "int",
+                    "type": "str",
+                    "first_seen_profiler": "int",
+                    "value": "str"
+                },
+                "id": "int",
+                "first_seen_profiler": "int"
+            },
+            "id": "int",
+            "properties": {
+                "last_reported": "str",
+                "name": "str",
+                "type_id": "int",
+                "id": "int",
+                "last_reported_by": "str",
+                "value": "str"
+            },
+            "domain_id": "int",
+            "domain_name": "str"
+        }
+    }
+    custom_fields = {
+        'events': {field['name']: field['property_type'] for field in client.get_custom_fields()}
+        }
+    fields = {
+        'events: builtin fields': events,
+        'offense': offense,
+        'assets': assets,
+        'events: custom fields': custom_fields
+    }
+    return fields
+
+def get_custom_properties_command(client: QRadarClient, args: dict) -> Tuple[str, dict]:
+    try:
+        limit = int(args.get('limit'))
+    except (TypeError, ValueError):
+        limit = None
+
+    properties = client.get_custom_fields(limit)
+    human_readable = tableToMarkdown(
+        "QRadar: Custom Properties:",
+        properties
+    )
+    return human_readable, {'QRadar': properties}
+
 def main():
     params = demisto.params()
 
@@ -2004,7 +2165,7 @@ def main():
     command = demisto.command()
     try:
         demisto.debug(f"Command being called is {command}")
-        normal_commands = {
+        normal_commands: Dict[str, Callable] = {
             "test-module": test_module,
             "qradar-offenses": get_offenses_command,
             "qradar-offense-by-id": get_offense_by_id_command,
@@ -2025,7 +2186,7 @@ def main():
             "qradar-delete-reference-set-value": delete_reference_set_value_command,
             "qradar-get-domains": get_domains_command,
             "qradar-get-domain-by-id": get_domains_by_id_command,
-            "qradar-upload-indicators": upload_indicators_command,
+            "qradar-upload-indicators": upload_indicators_command
         }
         if command in normal_commands:
             args = demisto.args()
@@ -2045,6 +2206,10 @@ def main():
             )
         elif command == "qradar-reset-last-run":
             demisto.results(reset_fetch_incidents())
+        elif command == "get-mapping-fields":
+            demisto.results(get_mapping_fields(client))
+        elif command == "qradar-get-custom-attribute"":
+            return_outputs()
     except Exception as e:
         error = f"Error has occurred in the QRadar Integration: {str(e)}"
         LOG(traceback.format_exc())
