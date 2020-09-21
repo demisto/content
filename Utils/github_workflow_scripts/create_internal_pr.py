@@ -112,6 +112,8 @@ def main():
     print(f'{t.cyan}Removing protection from branch "{head_branch}"{t.normal}')
     contrib_branch = content_repo.get_branch(head_branch)
     contrib_branch.remove_protection()
+    contrib_branch.remove_required_status_checks()
+    contrib_branch.remove_required_pull_request_reviews()
 
 
 if __name__ == "__main__":
