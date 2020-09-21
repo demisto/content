@@ -3,7 +3,7 @@ from CommonServerPython import *
 import jwt
 import json
 import requests
-from typing import (Set, List)
+from typing import Set, List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -124,7 +124,7 @@ class Client(BaseClient):
             full_url=blob_url,
             headers=headers,
             params=params,
-            timeout=timeout
+            timeout=timeout,
         )
         return response
 
@@ -155,7 +155,7 @@ class Client(BaseClient):
             url_suffix=self.suffix_template.format(self.tenant_id, 'content'),
             headers=headers,
             params=params,
-            timeout=timeout
+            timeout=timeout,
         )
         return response
 
@@ -185,20 +185,14 @@ class Client(BaseClient):
             'PublisherIdentifier': PUBLISHER_IDENTIFIER,
             'contentType': content_type
         }
-        try:
-            self._http_request(
-                method='POST',
-                url_suffix=self.suffix_template.format(self.tenant_id, start_or_stop_suffix),
-                headers=headers,
-                params=params,
-                ok_codes=(200, 201, 202, 203, 204),
-                return_empty_response=True
-            )
-            return True
-        except Exception as e:
-            if start_or_stop_suffix == 'start' and 'The subscription is already enabled. No property change' in str(e):
-                return False
-            raise e
+        return self._http_request(
+            method='POST',
+            url_suffix=self.suffix_template.format(self.tenant_id, start_or_stop_suffix),
+            headers=headers,
+            params=params,
+            ok_codes=(200, 201, 202, 203, 204),
+            return_empty_response=True
+        )
 
 
 def test_module():
@@ -235,18 +229,22 @@ def get_start_or_stop_subscription_context(content_type, start_or_stop):
 
 def start_or_stop_subscription_command(client, args, start_or_stop):
     content_type = args.get('content_type')
-    new_subscription = client.start_or_stop_subscription_request(content_type, start_or_stop)
-    if start_or_stop == 'start' and not new_subscription:
-        return_outputs('The subscription is already enabled. No property change.')
-        return
-    human_readable = get_start_or_stop_subscription_human_readable(content_type, start_or_stop)
-    entry_context = get_start_or_stop_subscription_context(content_type, start_or_stop)
+    try:
+        client.start_or_stop_subscription_request(content_type, start_or_stop)
+        human_readable = get_start_or_stop_subscription_human_readable(content_type, start_or_stop)
+        entry_context = get_start_or_stop_subscription_context(content_type, start_or_stop)
 
-    return_outputs(
-        readable_output=human_readable,
-        outputs=entry_context,
-        raw_response={}
-    )
+        return_outputs(
+            readable_output=human_readable,
+            outputs=entry_context,
+            raw_response={}
+        )
+
+    except Exception as e:
+        if start_or_stop == 'start' and 'The subscription is already enabled. No property change' in str(e):
+            return_outputs('The subscription is already enabled.')
+        else:
+            raise
 
 
 def get_enabled_subscriptions_content_types(enabled_subscriptions):
@@ -317,7 +315,7 @@ def get_all_content_type_records(client, content_type, start_time, end_time, tim
     content_blobs = client.list_content_request(content_type, start_time, end_time, timeout)
     # The list_content request returns a list of content records, each containing a url that holds the actual data
     content_uris = [content_blob.get('contentUri') for content_blob in content_blobs]
-    content_records: List = list()
+    content_records: List = []
     for uri in content_uris:
         content_records_in_uri = client.get_blob_data_request(uri, timeout)
         content_records.extend(content_records_in_uri)
