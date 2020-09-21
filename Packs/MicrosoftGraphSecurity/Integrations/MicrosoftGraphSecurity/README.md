@@ -11,7 +11,7 @@ For more details about the authentication used in this integration, see <a href=
 
 <h3>Required Permissions</h3>
 <ul>
-<li>SecurityEvents.Read.All - Application</li>
+<li>SecurityEvents.Read.All - Application (required for the commands: <code>msg-search-alerts</code> and <code>msg-get-alert-details</code>)</li>
 <li>SecurityEvents.ReadWrite.All - Application (required for updating alerts with the command: <code>msg-update-alert</code>)</li>
 <li>User.Read.All - Application (required for the commands: <code>msg-get-user</code> and <code>msg-get-users</code>)</li>
 </ul> 
