@@ -83,7 +83,7 @@ def test_poll_field_from_root_with_regex_success(mocker):
     mocker.patch.object(demisto, 'incidents', return_value=[incident_contains_field_in_root])
     args = {
         'field': 'field_name',
-        'regex': 'Test'
+        'regex': '^Test'
     }
 
     result = poll_field(args)
@@ -105,7 +105,7 @@ def test_poll_field_from_root_with_regex_failure(mocker):
     mocker.patch.object(demisto, 'incidents', return_value=[incident_contains_field_in_root])
     args = {
         'field': 'field_name',
-        'regex': 'NOT'
+        'regex': '^Testing'
     }
 
     result = poll_field(args)
