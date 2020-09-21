@@ -62,7 +62,7 @@ def flatten_json(y):
 
     flatten(y)
     return out
-def elastic_output_as_table(raw_elastic_json_obj, filter_out_columns=None):
+def elastic_output_as_table(raw_elastic_json_obj):
     """
     This supplemental method converts an Elasticsearch output JSON object to a Demisto table
 
