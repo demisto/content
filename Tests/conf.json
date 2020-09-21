@@ -1662,10 +1662,6 @@
             "playbookID": "Anomali_ThreatStream_Test"
         },
         {
-            "integrations": "Farsight DNSDB",
-            "playbookID": "DNSDBTest"
-        },
-        {
             "integrations": "carbonblack-v2",
             "playbookID": "Carbon Black Response Test",
             "fromversion": "5.0.0"
@@ -2718,7 +2714,7 @@
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0",
-            "memory_threshold": 130,
+            "memory_threshold": 150,
             "timeout": 600
         },
         {
@@ -2826,6 +2822,10 @@
         {
             "integrations": "MongoDB",
             "playbookID": "MongoDB - Test"
+        },
+        {
+            "integrations": "DNSDB_v2",
+            "playbookID": "DNSDB-Test"
         },
         {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
@@ -3063,7 +3063,6 @@
         "Pwned v2 test": "Issue 26601",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
-        "Google Chronicle Backstory List IOCs - Test": "Issue 26461",
         "hashIncidentFields-test": "Issue 26850",
         "Mail Sender (New) Test": "Issue 25602",
         "Luminate-TestPlaybook": "Issue 27016",
@@ -3146,7 +3145,6 @@
         "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Netskope": "instance is down",
-        "Farsight DNSDB": "Issue 15512",
         "Service Manager": "Expired license",
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
@@ -3217,6 +3215,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
         "BPA": "Playbook using GenericPolling which is inconsistent",
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
