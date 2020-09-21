@@ -234,6 +234,7 @@ def get_modified_files_for_testing(files_string):
     modified_files_list = []
     modified_tests_list = []
     all_files = files_string.split('\n')
+    print(f'\n\n\n\n all files is: {all_files} \n\n\n\n')
 
     for _file in all_files:
         file_data = _file.split()
@@ -244,7 +245,7 @@ def get_modified_files_for_testing(files_string):
             file_path = file_data[2]
         else:
             file_path = file_data[1]
-
+        print(f'\n\n\n\n file_status: {file_status}, file_path: {file_path} \n\n\n\n')
         # ignoring deleted files.
         # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
         if ((file_status.lower() == 'm' or file_status.lower() == 'a' or file_status.lower().startswith('r'))
