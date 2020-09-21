@@ -3075,7 +3075,8 @@
         "Cherwell - test": "Issue 26780",
         "MISP V2 Test": "Issue 26905",
         "Logzio - Test": "Issue 26729",
-        "pyEWS_Test": "Issue 28339"
+        "pyEWS_Test": "Issue 28339",
+        "DuoAdmin API test playbook": "Issue 24937"
     },
     "skipped_integrations": {
 
@@ -3172,8 +3173,7 @@
         "Ivanti Heat": "Issue 26259",
         "Bambenek Consulting Feed": "Issue 26184",
         "AWS - Athena - Beta": "Issue 19834",
-        "Blueliv ThreatCompass": "Community contribution",
-        "DUO Admin": "Issue 24937",
+        "Blueliv ThreatCompass": "Community contribution"
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
