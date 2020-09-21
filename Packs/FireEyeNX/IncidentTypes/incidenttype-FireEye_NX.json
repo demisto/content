@@ -1,9 +1,9 @@
 {
-  "id": "FireEye NX Incident",
+  "id": "FireEye NX",
   "version": -1,
   "vcShouldIgnore": false,
   "locked": false,
-  "name": "FireEye NX Incident",
+  "name": "FireEye NX",
   "prevName": "FireEye NX Incident",
   "color": "#753ffa",
   "hours": 0,
