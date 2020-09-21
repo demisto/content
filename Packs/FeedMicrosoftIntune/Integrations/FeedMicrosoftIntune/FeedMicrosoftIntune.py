@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Dict, List, Tuple, Any, Callable
+from typing import Dict, List, Tuple, Any, Callable, Optional
 
 import urllib3
 import re
@@ -17,14 +17,16 @@ class Client(BaseClient):
     Client to use in the Microsoft Intune Feed integration. Overrides BaseClient.
     """
 
-    def __init__(self, base_url: str, verify: bool = False, proxy: bool = False):
+    def __init__(self, base_url: str, verify: bool = False, proxy: bool = False, tlp_color: Optional[str] = None):
         """
         Implements class for Microsoft Intune feeds.
         :param url: the Intune endpoint URL
         :verify: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
+        :param tlp_color: Traffic Light Protocol color.
         """
         super().__init__(base_url, verify=verify, proxy=proxy)
+        self.tlp_color = tlp_color
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
@@ -32,10 +34,10 @@ class Client(BaseClient):
         Returns:
             A list of objects, containing the indicators.
         """
-        result = []
-        domains = []
-        ipv4s = []
-        ipv4cidrs = []
+        result = []  # type: list
+        domains = []  # type: list
+        ipv4s = []  # type: list
+        ipv4cidrs = []  # type: list
         r = self._http_request('GET', url_suffix='', full_url=self._base_url, resp_type='text')
 
         soup = BeautifulSoup(r, 'html.parser')
@@ -120,11 +122,13 @@ def fetch_indicators(client: Client, feed_tags: List = [], limit: int = -1) -> L
             "value": value,
             "type": type_,
             "rawJSON": raw_data,
+            'fields': {}
         }
         if feed_tags:
-            indicator_obj['fields'] = {
-                'tags': feed_tags
-            }
+            indicator_obj['fields']['tags'] = feed_tags
+        if client.tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+
         indicators.append(indicator_obj)
     return indicators
 
@@ -175,6 +179,7 @@ def main():
     base_url = params.get('url')
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    tlp_color = params.get('tlp_color')
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -184,6 +189,7 @@ def main():
             base_url=base_url,
             verify=insecure,
             proxy=proxy,
+            tlp_color=tlp_color
         )
 
         commands: Dict[

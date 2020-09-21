@@ -230,11 +230,11 @@ def main():
 
     zipped_packs = []
     success = True
-    # try:
-    zipped_packs = download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
-    # except Exception as e:
-    #     print_error(f'Failed downloading packs: {e}')
-    #     success = False
+    try:
+        zipped_packs = download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
+    except Exception as e:
+        print_error(f'Failed downloading packs: {e}')
+        success = False
 
     if remove_test_playbooks:
         try:
