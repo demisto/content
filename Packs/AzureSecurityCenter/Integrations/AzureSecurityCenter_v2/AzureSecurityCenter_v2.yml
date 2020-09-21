@@ -130,7 +130,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get an alert that is associated a resource group or a subscription.
+    description: Gets an alert that is associated a resource group or a subscription.
     execution: false
     name: azure-sc-get-alert
     outputs:
@@ -144,26 +144,26 @@ script:
       description: The time the vendor detected the incident.
       type: date
     - contextPath: AzureSecurityCenter.Alert.ReportedTime
-      description: The time the incident was reported to Microsoft.Security in UTC.
+      description: The time the incident was reported to Microsoft.Security, in UTC.
       type: date
     - contextPath: AzureSecurityCenter.Alert.ReportedSeverity
-      description: The estimated severity of this alert.
+      description: The estimated severity of the alert.
       type: string
     - contextPath: AzureSecurityCenter.Alert.State
       description: The alert state (Active, Dismissed, etc.).
       type: string
     - contextPath: AzureSecurityCenter.Alert.ConfidenceScore
-      description: Level of confidence we have on the alert.
+      description: Level of confidence for the alert.
       type: string
     - contextPath: AzureSecurityCenter.Alert.ActionTaken
-      description: The action that was taken as a response to the alert (Active, Blocked
+      description: The action that was taken in a response to the alert (Active, Blocked
         etc.).
       type: string
     - contextPath: AzureSecurityCenter.Alert.CanBeInvestigated
-      description: Whether this alert can be investigated with Azure Security Center.
+      description: Whether this alert can be investigated using Azure Security Center.
       type: string
     - contextPath: AzureSecurityCenter.Alert.RemediationSteps
-      description: Recommended steps to reradiate the incident.
+      description: Recommended steps to remediate the incident.
       type: string
     - contextPath: AzureSecurityCenter.Alert.VendorName
       description: Name of the vendor that discovered the incident.
@@ -191,7 +191,7 @@ script:
       description: Changing set of properties depending on the alert type.
       type: string
     - contextPath: AzureSecurityCenter.Alert.Entities
-      description: Objects that are related to this alerts.
+      description: Objects that are related to the alert.
       type: string
   - arguments:
     - default: false
