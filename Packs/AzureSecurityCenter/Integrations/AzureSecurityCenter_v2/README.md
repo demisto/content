@@ -1190,12 +1190,12 @@ There are no context output for this command.
 <tr>
 <td>AzureSecurityCenter.Alert.ReportedTime</td>
 <td>date</td>
-<td>The time the incident was reported to Microsoft.Security in UTC.</td>
+<td>The time the incident was reported to Microsoft.Security, in UTC.</td>
 </tr>
 <tr>
 <td>AzureSecurityCenter.Alert.ReportedSeverity</td>
 <td>string</td>
-<td>The estimated severity of this alert.</td>
+<td>The estimated severity of the alert.</td>
 </tr>
 <tr>
 <td>AzureSecurityCenter.Alert.State</td>
@@ -1205,7 +1205,7 @@ There are no context output for this command.
 <tr>
 <td>AzureSecurityCenter.Alert.ConfidenceScore</td>
 <td>string</td>
-<td>Level of confidence we have on the alert.</td>
+<td>Level of confidence for the alert.</td>
 </tr>
 <tr>
 <td>AzureSecurityCenter.Alert.ActionTaken</td>
@@ -1215,12 +1215,12 @@ There are no context output for this command.
 <tr>
 <td>AzureSecurityCenter.Alert.CanBeInvestigated</td>
 <td>string</td>
-<td>Whether this alert can be investigated with Azure Security Center.</td>
+<td>Whether this alert can be investigated using Azure Security Center.</td>
 </tr>
 <tr>
 <td>AzureSecurityCenter.Alert.RemediationSteps</td>
 <td>string</td>
-<td>Recommended steps to reradiate the incident.</td>
+<td>Recommended steps to remediate the incident.</td>
 </tr>
 <tr>
 <td>AzureSecurityCenter.Alert.VendorName</td>
@@ -1255,7 +1255,7 @@ There are no context output for this command.
 <tr>
 <td>AzureSecurityCenter.Alert.Description</td>
 <td>string</td>
-<td>Description of the incident and what it means.</td>
+<td>Description and explanation of the incident.</td>
 </tr>
 <tr>
 <td>AzureSecurityCenter.Alert.ExtendedProperties</td>
@@ -1265,7 +1265,7 @@ There are no context output for this command.
 <tr>
 <td>AzureSecurityCenter.Alert.Entities</td>
 <td>string</td>
-<td>Objects that are related to this alerts.</td>
+<td>Objects that are related to the alert.</td>
 </tr>
 </tbody>
 </table>
