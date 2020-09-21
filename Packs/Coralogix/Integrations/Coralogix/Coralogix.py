@@ -1,4 +1,5 @@
 # TODO: Add description to the integration in /home/yuvalk/Projects/__INTEGRATIONS__/integration-coralogix-demisto/Packs/Coralogix/Integrations/Coralogix/Coralogix_description.md
+from datetime import timezone
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -8,7 +9,6 @@ from CommonServerUserPython import *
 import json
 import requests
 import urllib3
-import datetime
 import dateutil.parser
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -296,7 +296,7 @@ def fetch_incidents(cgx_private_key, cgx_endpoint_url, incidents_base_query, app
         max_items_to_retrieve=incidents_max_fetch
     ).raw_response
 
-    newest_incident_date_obj = datetime.datetime(year=1970, month=1, day=1)
+    newest_incident_date_obj = datetime(year=1970, month=1, day=1)
     incidents = []
     if "hits" in raw_data and "hits" in raw_data["hits"]:
         for document in raw_data["hits"]["hits"]:
@@ -309,10 +309,10 @@ def fetch_incidents(cgx_private_key, cgx_endpoint_url, incidents_base_query, app
             }
             incidents.append(incident)
             incident_date_obj = dateutil.parser.parse(incident_date)
-            if incident_date_obj.replace(tzinfo=datetime.timezone.utc).timestamp() > newest_incident_date_obj.replace(tzinfo=datetime.timezone.utc).timestamp():
+            if incident_date_obj.replace(tzinfo=timezone.utc).timestamp() > newest_incident_date_obj.replace(tzinfo=timezone.utc).timestamp():
                 newest_incident_date_obj = incident_date_obj
 
-    demisto.setLastRun({"last_run_timestamp": newest_incident_date_obj.replace(tzinfo=datetime.timezone.utc).timestamp()})
+    demisto.setLastRun({"last_run_timestamp": newest_incident_date_obj.replace(tzinfo=timezone.utc).timestamp()})
     return incidents
 
 def main():
