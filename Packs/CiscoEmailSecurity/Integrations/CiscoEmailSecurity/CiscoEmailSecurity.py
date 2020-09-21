@@ -131,11 +131,11 @@ class Client(BaseClient):
 
 def get_dates_for_test_module():
     now = datetime.now()
-    start = now - timedelta(days=1)
-    end = now - timedelta(days=2)
+    start = now - timedelta(days=2)
+    end = now - timedelta(days=1)
 
-    end_date = end.isoformat()
     start_date = start.isoformat()
+    end_date = end.isoformat()
     return start_date, end_date
 
 

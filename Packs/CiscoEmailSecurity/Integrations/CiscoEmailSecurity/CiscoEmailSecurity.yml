@@ -1037,7 +1037,8 @@ script:
       isArray: false
       name: list_type
       predefined:
-      - safelist/blocklist
+      - safelist
+      - blocklist
       required: true
       secret: false
     - auto: PREDEFINED
@@ -1046,7 +1047,9 @@ script:
       isArray: false
       name: action
       predefined:
-      - add/edit/append
+      - add
+      - edit
+      - append
       required: true
       secret: false
     - default: false
