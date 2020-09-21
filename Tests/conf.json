@@ -1662,10 +1662,6 @@
             "playbookID": "Anomali_ThreatStream_Test"
         },
         {
-            "integrations": "Farsight DNSDB",
-            "playbookID": "DNSDBTest"
-        },
-        {
             "integrations": "carbonblack-v2",
             "playbookID": "Carbon Black Response Test",
             "fromversion": "5.0.0"
@@ -2828,6 +2824,10 @@
             "playbookID": "MongoDB - Test"
         },
         {
+            "integrations": "DNSDB_v2",
+            "playbookID": "DNSDB-Test"
+        },
+        {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout": 60000,
             "fromversion": "4.5.0"
@@ -3145,7 +3145,6 @@
         "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Netskope": "instance is down",
-        "Farsight DNSDB": "Issue 15512",
         "Service Manager": "Expired license",
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
