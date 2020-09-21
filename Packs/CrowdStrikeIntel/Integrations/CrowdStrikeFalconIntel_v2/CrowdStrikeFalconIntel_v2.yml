@@ -4,7 +4,7 @@ commonfields:
 name: CrowdStrike Falcon Intel v2
 display: CrowdStrike Falcon Intel v2
 category: Data Enrichment & Threat Intelligence
-description: CrowdStrike Threat intelligence service integration helps organizations defend themselves against adversary activity by investigating incidents, accelerating alert triage and response.
+description: CrowdStrike Threat intelligence service integration helps organizations defend themselves against adversary activity by investigating incidents, and accelerating alert triage and response.
 configuration:
 - display: Client ID
   name: credentials
