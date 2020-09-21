@@ -253,8 +253,8 @@ def coralogix_tag_command(
             )
 
     except json.JSONDecodeError:
-        raise ValueError('Failed to tag the following timestamp ' + tag_timestamp + ' under the name ' + tag_name +
-                         '. This is the raw response:\n' + response.text)
+        raise ValueError('Failed to tag the following timestamp ' + tag_timestamp + ' under the name ' + tag_name
+                         + '. This is the raw response:\n' + response.text)
 
 
 def test_module(cgx_private_key, cgx_endpoint_url):
