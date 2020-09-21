@@ -11,6 +11,7 @@ requests.packages.urllib3.disable_warnings()
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 APP_NAME = 'ms-management-api'
+PUBLISHER_IDENTIFIER = 'ebac1a16-81bf-449b-8d43-5732c3c1d999'  # This isn't a secret and is public knowledge.
 
 CONTENT_TYPE_TO_TYPE_ID_MAPPING = {
     'ExchangeAdmin': 1,
@@ -115,7 +116,7 @@ class Client(BaseClient):
             'Authorization': auth_string
         }
         params = {
-            'PublisherIdentifier': 'ebac1a16-81bf-449b-8d43-5732c3c1d999'
+            'PublisherIdentifier': PUBLISHER_IDENTIFIER
         }
         response = self._http_request(
             method='GET',
@@ -141,7 +142,7 @@ class Client(BaseClient):
             'Authorization': auth_string
         }
         params = {
-            'PublisherIdentifier': 'ebac1a16-81bf-449b-8d43-5732c3c1d999',
+            'PublisherIdentifier': PUBLISHER_IDENTIFIER,
             'contentType': content_type
         }
 
@@ -164,7 +165,7 @@ class Client(BaseClient):
             'Authorization': auth_string
         }
         params = {
-            'PublisherIdentifier': 'ebac1a16-81bf-449b-8d43-5732c3c1d999'
+            'PublisherIdentifier': PUBLISHER_IDENTIFIER
         }
         response = self._http_request(
             method='GET',
@@ -181,7 +182,7 @@ class Client(BaseClient):
             'Authorization': auth_string
         }
         params = {
-            'PublisherIdentifier': 'ebac1a16-81bf-449b-8d43-5732c3c1d999',
+            'PublisherIdentifier': PUBLISHER_IDENTIFIER,
             'contentType': content_type
         }
         try:
