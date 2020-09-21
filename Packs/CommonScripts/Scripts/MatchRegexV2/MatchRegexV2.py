@@ -50,25 +50,30 @@ def main(args: Dict):
     if group > regex.groups:
         group = 0
 
-    human_readable = 'Regex does not match.'
     results = []
     if multiple_matches:
         regex_result = regex.search(data)
         while regex_result:
             results.append(regex_result.group(group))
             regex_result = regex.search(data, regex_result.span()[1])
-
     else:
         regex_result = regex.search(data)
         if regex_result:
             results = regex_result.group(group)
 
-    context: Dict = {}
+    results = results[0] if len(results) == 1 else results
+
+    if results:
+        human_readable = json.dumps(results)
+    else:
+        human_readable = 'Regex does not match.'
+
+    context = {}
     if context_key:
         context = {context_key: results}
 
-    results = results[0] if len(results) == 1 else results
-    demisto.executeCommand('setContext', {'MatchRegex.results': results})
+    # clearing the context field in order to override it instead of appending it.
+    demisto.setContext('MatchRegex.results', results)
     return CommandResults(readable_output=human_readable,
                           outputs=context,
                           raw_response=results,
