@@ -249,17 +249,16 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
-def turn_off_telemetry(dem_client):
+def turn_off_telemetry(xsoar_client):
     """
     Turn off telemetry on the AMI instance
 
-    :param server: demisto server to connect to
-    :param demisto_api_key: api key to use for connection
+    :param xsoar_client: Preconfigured client for the XSOAR instance
     :return: None
     """
 
-    body, status_code, _ = demisto_client.generic_request_func(self=dem_client, method='POST',
-                                                               path='/telemetry?status=notelemetry')
+    body, status_code, _ = xsoar_client.generic_request_func(self=xsoar_client, method='POST',
+                                                             path='/telemetry?status=notelemetry')
 
     if status_code != 200:
         print_error('Request to turn off telemetry failed with status code "{}"\n{}'.format(status_code, body))
@@ -820,11 +819,11 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
         prints_manager.execute_thread_prints(thread_index)
         return
-    dem_client = demisto_client.configure(base_url=server, username=demisto_user,
-                                          password=demisto_pass, verify_ssl=False)
+    xsoar_client = demisto_client.configure(base_url=server, username=demisto_user,
+                                            password=demisto_pass, verify_ssl=False)
 
     # turn off telemetry
-    turn_off_telemetry(dem_client)
+    turn_off_telemetry(xsoar_client)
 
     proxy = None
     if is_ami:
@@ -838,7 +837,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     skipped_integration = set([])
     playbook_skipped_integration = set([])
 
-    disable_all_integrations(dem_client, prints_manager, thread_index=thread_index)
+    disable_all_integrations(xsoar_client, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
@@ -852,7 +851,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     try:
         # first run the mock tests to avoid mockless side effects in container
         if is_ami and mockable_tests:
-            proxy.configure_proxy_in_demisto(dem_client, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
+            configure_proxy_in_demisto(xsoar_client, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
             executed_in_current_round, mockable_tests_queue = initialize_queue_and_executed_tests_set(mockable_tests)
             while not mockable_tests_queue.empty():
                 t = mockable_tests_queue.get()
@@ -868,7 +867,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                   unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                                   build_name, server_numeric_version, demisto_user, demisto_pass, prints_manager,
                                   thread_index=thread_index)
-            proxy.configure_proxy_in_demisto(dem_client, '')
+            configure_proxy_in_demisto(xsoar_client, '')
 
             # reset containers after clearing the proxy server configuration
             reset_containers(server, demisto_user, demisto_pass, prints_manager, thread_index)
