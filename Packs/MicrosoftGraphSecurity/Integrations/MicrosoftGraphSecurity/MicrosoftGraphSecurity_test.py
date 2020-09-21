@@ -1,6 +1,27 @@
 import pytest
 from MicrosoftGraphSecurity import MsGraphClient
 
+# msg-get-user data:
+RAW_USERS_DATA = {'@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#users', 'value': [
+    {'businessPhones': [], 'displayName': 'Graph Test', 'givenName': None, 'jobTitle': 'Test',
+     'mail': "Test@demistodev.onmicrosoft.com", 'mobilePhone': None, 'officeLocation': None, 'preferredLanguage': None,
+     'surname': None, 'userPrincipalName': '0e3f5d4140cc4448a857e565a4d228e1@demistodev.onmicrosoft.com',
+     'id': '5bfe522c-d817-4ea8-b52c-cc959e10e623'},
+    {'businessPhones': ['0525399091'], 'displayName': 'Test Graph 2', 'givenName': 'Test',
+     'jobTitle': 'Staff Software Developer', 'mail': 'test2@demistodev.onmicrosoft.com', 'mobilePhone': '0525399091',
+     'officeLocation': None, 'preferredLanguage': None, 'surname': None,
+     'userPrincipalName': 'test2@demistodev.onmicrosoft.com', 'id': '00df702c-cdae-460d-a442-46db6cecca29'}]}
+EXPECTED_USER_CONTEXT = {'MsGraph.User(val.ID && val.ID === obj.ID)': [
+    {'Name': 'Graph Test', 'Title': 'Test', 'Email': 'Test@demistodev.onmicrosoft.com',
+     'ID': '5bfe522c-d817-4ea8-b52c-cc959e10e623'},
+    {'Name': 'Test Graph 2', 'Title': 'Staff Software Developer', 'Email': 'test2@demistodev.onmicrosoft.com',
+     'ID': '00df702c-cdae-460d-a442-46db6cecca29'}]}
+EXPECTED_USER_HUMAN_READABLE = \
+    '### Microsoft Graph Users\n|Name|Title|Email|ID|\n|---|---|---|---|\n' \
+    '| Graph Test | Test | Test@demistodev.onmicrosoft.com | 5bfe522c-d817-4ea8-b52c-cc959e10e623 |\n' \
+    '| Test Graph 2 | Staff Software Developer | test2@demistodev.onmicrosoft.com | ' \
+    '00df702c-cdae-460d-a442-46db6cecca29 |\n'
+
 # msg-search-alerts data:
 ALERTS_RAW_RESPONSE = {'@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#Security/alerts', 'value': [{
     'id': 'da637229984903196572_-755436942', 'azureTenantId': '<azureTenantId>',
@@ -168,6 +189,14 @@ EXPECTED_ALERT_DETAILS_HR_FILE_STATE = \
 
 client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
                               base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed')
+
+
+def test_get_users_command(mocker):
+    from MicrosoftGraphSecurity import get_users_command
+    mocker.patch.object(client_mocker, "get_users", return_value=RAW_USERS_DATA)
+    hr, ec, _ = get_users_command(client_mocker, {})
+    assert hr == EXPECTED_USER_HUMAN_READABLE
+    assert ec == EXPECTED_USER_CONTEXT
 
 
 @pytest.mark.parametrize(
