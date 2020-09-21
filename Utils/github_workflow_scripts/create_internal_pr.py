@@ -3,21 +3,15 @@
 import json
 import os
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 import urllib3
 from blessings import Terminal
 from github import Github
-from github.Repository import Repository
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # override print so we have a timestamp with each print
 org_print = print
-
-REVIEWERS = ['guyfreund', 'reutshal', 'barchen1']
-HACKATHON_BODY_MESSAGE = 'Hackathon Award Categories'
-WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
-              'wizard @{selected_reviewer} will very shortly look over your proposed changes. '
 
 
 def timestamped_print(*args, **kwargs):
@@ -54,39 +48,16 @@ def get_env_var(env_var_name: str, default_val: Optional[str] = None) -> str:
     return env_var_val
 
 
-def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
-    """Checks the number of open PRs that have either been assigned to a user or a review was requested
-    from the user for each potential reviewer and returns the user with the smallest amount
-
-    Args:
-        potential_reviewers (List): The github usernames from which a reviewer will be selected
-        repo (Repository): The relevant repo
-
-    Returns:
-        str: The github username to assign to a PR
-    """
-    pulls = repo.get_pulls(state='OPEN')
-    assigned_prs_per_potential_reviewer = {reviewer: 0 for reviewer in potential_reviewers}
-    for pull in pulls:
-        assignees = set([assignee.login for assignee in pull.assignees])
-        requested_reviewers, _ = pull.get_review_requests()
-        requested_reviewers = set([requested_reviewer.login for requested_reviewer in requested_reviewers])
-        combined_list = assignees.union(requested_reviewers)
-        for reviewer in potential_reviewers:
-            if reviewer in combined_list:
-                assigned_prs_per_potential_reviewer[reviewer] = assigned_prs_per_potential_reviewer.get(reviewer) + 1
-    selected_reviewer = sorted(assigned_prs_per_potential_reviewer, key=assigned_prs_per_potential_reviewer.get)[0]
-    return selected_reviewer
-
-
 def main():
-    """Handles External PRs (PRs from forks)
+    """Creates Internal PRs from Merged External PRs
 
     Performs the following operations:
-    1. If the external PR's base branch is master we create a new branch and set it as the base branch of the PR.
-    2. Labels the PR with the "Contribution" label. (Adds the "Hackathon" label where applicable.)
-    3. Assigns a Reviewer.
-    4. Creates a welcome comment
+    1. Creates new PR.
+        A) Uses body of merged external PR as the body of the new PR.
+        B) Uses base branch of merged external PR as head branch of the new PR to master.
+        C) Adds 'docs-approved' label if it was on the merged external PR, otherwise assigns 'kirbles19' as a reviewer.
+        D) Requests review from the same users as on the merged external PR.
+        E) Assigns the same users as on the merged external PR.
 
     Will use the following env vars:
     - CONTENTBOT_GH_ADMIN_TOKEN: token to use to update the PR
@@ -97,7 +68,7 @@ def main():
     if not payload_str:
         raise ValueError('EVENT_PAYLOAD env variable not set or empty')
     payload = json.loads(payload_str)
-    print(f'{t.cyan}Processing PR started{t.normal}')
+    print(f'{t.cyan}Creation of Internal PR started{t.normal}')
     print(f'{t.cyan}event payload: {payload}{t.normal}')
 
     org_name = 'demisto'
@@ -113,13 +84,16 @@ def main():
     base_branch = 'master'
     head_branch = merged_pr.base.ref
     pr = content_repo.create_pull(title=title, body=body, base=base_branch, head=head_branch, draft=False)
+    print(f'{t.cyan}Internal PR Created - {pr.html_url}{t.normal}')
 
     labels = [label.name for label in merged_pr.labels]
     docs_approved_label = 'docs-approved'
     if docs_approved_label in labels:
         pr.add_to_labels(docs_approved_label)
+        print(f'{t.cyan}"docs-approved" label added{t.normal}')
     else:
         pr.add_to_assignees('kirbles19')
+        print(f'{t.cyan}"kirbles19" user assigned{t.normal}')
 
     merged_by = merged_pr.merged_by.login
     reviewers, _ = merged_pr.get_review_requests()
@@ -127,12 +101,12 @@ def main():
     # request reviews from the same people as in the merged PR
     new_pr_reviewers = [merged_by] if merged_by else reviewers_logins
     pr.create_review_request(reviewers=new_pr_reviewers)
+    print(f'{t.cyan}Requested review from {new_pr_reviewers}{t.normal}')
 
     # assign same users as in the merged PR
     assignees = [assignee.login for assignee in merged_pr.assignees if assignee.login != 'kirbles19']
     pr.add_to_assignees(*assignees)
-
-
+    print(f'{t.cyan}Assigned users {assignees}{t.normal}')
 
 
 if __name__ == "__main__":
