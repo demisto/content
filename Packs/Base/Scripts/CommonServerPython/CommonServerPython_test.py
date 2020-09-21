@@ -646,6 +646,9 @@ def test_logger_replace_strs(mocker):
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
 
 
+TEST_SSH_KEY = '-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
+               'AAAAdzc2gtcn\n-----END OPENSSH PRIVATE KEY-----'
+
 SENSITIVE_PARAM = {
     'app': None,
     'authentication': {
@@ -657,7 +660,7 @@ SENSITIVE_PARAM = {
             'name': '',
             'password': 'cred_pass',
             'sortValues': None,
-            'sshkey': 'ssh_key_secret',
+            'sshkey': TEST_SSH_KEY,
             'sshkeyPass': 'ssh_key_secret_pass',
             'user': '',
             'vaultInstanceId': '',
@@ -676,7 +679,7 @@ def test_logger_replace_strs_credentials(mocker):
     ilog = IntegrationLogger()
     # log some secrets
     ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh pass: ssh_key_secret_pass. ident: ident_pass:')
-    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass'):
+    for s in ('cred_pass', TEST_SSH_KEY, 'ssh_key_secret_pass', 'ident_pass'):
         assert s not in ilog.messages[0]
 
 
