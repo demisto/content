@@ -131,8 +131,8 @@ class Client(BaseClient):
 
 def get_dates_for_test_module():
     now = datetime.now()
-    start = now + timedelta(days=1)
-    end = now + timedelta(days=2)
+    start = now - timedelta(days=1)
+    end = now - timedelta(days=2)
 
     end_date = end.isoformat()
     start_date = start.isoformat()
@@ -191,7 +191,7 @@ def list_report_command(client: Client, args: Dict[str, Any]):
     url_params = build_url_params_for_list_report(args)
     report_response_data = client.list_report(url_params)
     return CommandResults(
-        readable_output='',
+        readable_output=f'{report_response_data}',
         outputs_prefix='CiscoEmailSecurity.report',
         outputs_key_field='',
         outputs=report_response_data

@@ -305,7 +305,7 @@ def test_list_release_quarantine_messages_command(requests_mock):
 def test_build_url_filter_for_get_list_entries():
     """
     Given:
-        Arguments To flirt with.
+        Arguments To filter with.
     When:
         The function builds a URL filter from these arguments.
     Then:
