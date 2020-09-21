@@ -509,7 +509,7 @@ class Client(BaseClient):
             if "Instance Hibernating page" in res.text:
                 raise DemistoException(
                     "A connection was established but the instance is in hibernate mode.\n"
-                    "Please wake your instance and try again")
+                    "Please wake your instance and try again.")
             try:
                 json_res = res.json()
             except Exception as err:
