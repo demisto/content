@@ -108,6 +108,11 @@ def main():
     pr.add_to_assignees(*assignees)
     print(f'{t.cyan}Assigned users {assignees}{t.normal}')
 
+    # remove branch protections
+    print(f'{t.cyan}Removing protection from branch "{head_branch}"{t.normal}')
+    contrib_branch = content_repo.get_branch(head_branch)
+    contrib_branch.remove_protection()
+
 
 if __name__ == "__main__":
     main()
