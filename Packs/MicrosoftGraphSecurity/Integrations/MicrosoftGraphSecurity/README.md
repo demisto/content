@@ -13,7 +13,7 @@ For more details about the authentication used in this integration, see <a href=
 <ul>
 <li>SecurityEvents.Read.All - Application (required for the commands: <code>msg-search-alerts</code> and <code>msg-get-alert-details</code>)</li>
 <li>SecurityEvents.ReadWrite.All - Application (required for updating alerts with the command: <code>msg-update-alert</code>)</li>
-<li>User.Read.All - Application (required for the commands: <code>msg-get-user</code> and <code>msg-get-users</code>)</li>
+<li>User.Read.All - Application (Only required if using the deprecated commands: <code>msg-get-user</code> and <code>msg-get-users</code>)</li>
 </ul> 
 
 
