@@ -543,6 +543,13 @@ script:
       required: true
       description: Environment ID to submit URL to
       defaultValue: "100"
+    - name: dontThrowErrorOnFileDetonation
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Not throwing error when sending URL that points to a file.
+      defaultValue: "false"
     outputs:
     - contextPath: File.SHA256
       description: File SHA256

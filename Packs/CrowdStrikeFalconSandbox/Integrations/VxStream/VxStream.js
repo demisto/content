@@ -25,6 +25,20 @@ if (serverUrl[serverUrl.length - 1] === '/') {
     serverUrl = serverUrl.substring(0, serverUrl.length - 1);
 }
 
+// Add `contains` to String prototype.
+if (!('contains' in String.prototype))
+    String.prototype.contains = function(str, startIndex) {
+        return -1 !== String.prototype.indexOf.call(this, str, startIndex);
+    };
+
+function argToBool(arg){
+    switch (typeof arg){
+        case 'boolean': return arg;
+        case 'string': return (arg === 'true');
+        case 'undefined': return false;
+    }
+
+}
 function entryError(errorCode, text) {
     var error = 'Falcon Sandbox returned an error (' + errorCode + ') - ' + text;
     return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: error};
@@ -565,11 +579,20 @@ function detonateFile(entryId, delay, timeout) {
     throw ('Timeout due to no answer after ' + timeOut + ' seconds.');
 }
 
-function submitUrlCmd(url, environmentID) {
+function submitUrlCmd(url, environmentID, dontThrowErrorOnFileDetonation) {
     if (version === 'v1') {
         throw 'This command is supported only in API v2.'
     }
-    var response = submitUrl(url, environmentID);
+    try {
+      var response = submitUrl(url, environmentID);
+    } catch (exception) {
+          var notSupported = 'The provided URL resolves to a file.'
+          if (dontThrowErrorOnFileDetonation && exception.contains(notSupported)){
+              return notSupported;
+          } else {
+              throw exception;
+          }
+    }
     var context = {
         'File(val.hash && val.hash === obj.hash)': {
             'SHA256': response['sha256'],
@@ -749,7 +772,7 @@ switch (command) {
     case 'crowdstrike-detonate-file':
         return detonateFile(args.entryId, args.delay, args.timeout);
     case 'crowdstrike-submit-url':
-        return submitUrlCmd(args.url, args.environmentID);
+        return submitUrlCmd(args.url, args.environmentID, argToBool(args.dontThrowErrorOnFileDetonation));
     case 'crowdstrike-get-screenshots':
         return getScreenshotsCmd(args.file, args.environmentID, args.JobID);
     case 'file':

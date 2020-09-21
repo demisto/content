@@ -1,67 +1,83 @@
 id: Test-Detonate URL - Crowdstrike
 version: -1
 name: Test-Detonate URL - Crowdstrike
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: d5cd3fa4-321a-4d11-85ab-d15bbb97754c
+  "0":
+    id: "0"
+    taskid: a42042b7-fa12-4606-8a60-178d5bbecb18
     type: start
     task:
-      id: d5cd3fa4-321a-4d11-85ab-d15bbb97754c
+      id: a42042b7-fa12-4606-8a60-178d5bbecb18
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
-  '1':
-    id: '1'
-    taskid: 9a811e86-f854-40da-8260-e9bd58201051
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: b531c6bd-5441-419c-8b8a-db775361f729
     type: regular
     task:
-      id: 9a811e86-f854-40da-8260-e9bd58201051
+      id: b531c6bd-5441-419c-8b8a-db775361f729
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
+      - "5"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       key: {}
       keysToKeep: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
-  '3':
-    id: '3'
-    taskid: c6b5a843-947e-4170-8a8d-d6af8b83352d
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c179a2d5-9b68-44f4-8ada-39a30a384f4e
     type: regular
     task:
-      id: c6b5a843-947e-4170-8a8d-d6af8b83352d
+      id: c179a2d5-9b68-44f4-8ada-39a30a384f4e
       version: -1
       name: Set URL
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     scriptarguments:
       append: {}
       key:
@@ -69,29 +85,37 @@ tasks:
       value:
         simple: https://www.google.com
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
-  '4':
-    id: '4'
-    taskid: 73b9c430-abb2-45be-8a3c-2cd45c496ecf
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ea80fa14-ec9b-4a51-863f-1ab238720d18
     type: playbook
     task:
-      id: 73b9c430-abb2-45be-8a3c-2cd45c496ecf
+      id: ea80fa14-ec9b-4a51-863f-1ab238720d18
       version: -1
       name: Detonate URL - CrowdStrike
       playbookName: Detonate URL - CrowdStrike
       type: playbook
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     scriptarguments:
       EnvironmentID:
-        simple: '100'
+        simple: "100"
       Interval:
-        simple: '5'
+        simple: "5"
       Timeout:
-        simple: '30'
+        simple: "30"
       URL:
         complex:
           root: URL
@@ -99,14 +123,74 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
     note: false
     timertriggers: []
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 590,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d7f93aaa-8ac9-4955-82c6-77898460f93c
+    type: playbook
+    task:
+      id: d7f93aaa-8ac9-4955-82c6-77898460f93c
+      version: -1
+      name: 'Detonate URL - CrowdStrike'
+      description: Detonate one or more files using the CrowdStrike Falcon Sandbox
+        integration. This playbook returns relevant reports to the War Room and file
+        reputations to the context data.
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      EnvironmentID:
+        simple: "100"
+      Interval:
+        simple: "5"
+      Timeout:
+        simple: "30"
+      URL:
+        simple: https://pngriver.com/wp-content/uploads/2018/04/Download-Mario-PNG-File.png
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 840,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
 fromversion: 5.0.0
