@@ -43,8 +43,8 @@ For more details about the authentication used in this integration, see <a href=
 <li><a href="#h_842458104521538470633978">Search alerts: msg-search-alerts</a></li>
 <li><a href="#h_3611731291071538470639531">Get details for an alert: msg-get-alert-details</a></li>
 <li><a href="#h_4798847561611538470644248">Update an alert: msg-update-alert</a></li>
-<li><a href="#h_6620251952141538470649590">Get a list of user objects: msg-get-users</a> - Deprecated - Please use the Microsoft Graph User integration instead.</li>
-<li><a href="#h_4642340712641538470655690">Get information for a user object: msg-get-user</a> - Deprecated - Please use the Microsoft Graph User integration instead.</li>
+<li><a href="#h_6620251952141538470649590">Get a list of user objects: msg-get-users</a> - Deprecated - Use the Microsoft Graph User integration instead.</li>
+<li><a href="#h_4642340712641538470655690">Get information for a user object: msg-get-user</a> - Deprecated - Use the Microsoft Graph User integration instead.</li>
 </ol>
 <h3 id="h_842458104521538470633978">1. Search alerts</h3>
 <hr>
