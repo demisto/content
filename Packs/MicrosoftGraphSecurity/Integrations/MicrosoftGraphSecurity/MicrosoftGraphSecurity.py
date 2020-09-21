@@ -84,6 +84,16 @@ class MsGraphClient:
             data['tags'] = [tags]
         self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=data, resp_type="text")
 
+    def get_users(self):
+        cmd_url = 'users'
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return response
+
+    def get_user(self, user_id):
+        cmd_url = f'users/{user_id}'
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return response
+
 
 def create_filter_query(filter_param: str, providers_param: str):
     filter_query = ""
@@ -417,6 +427,41 @@ def update_alert_command(client: MsGraphClient, args):
     return human_readable, ec, context
 
 
+def get_users_command(client: MsGraphClient, args):
+    users = client.get_users()['value']
+    outputs = []
+    for user in users:
+        outputs.append({
+            'Name': user['displayName'],
+            'Title': user['jobTitle'],
+            'Email': user['mail'],
+            'ID': user['id']
+        })
+    ec = {
+        'MsGraph.User(val.ID && val.ID === obj.ID)': outputs
+    }
+    table_headers = ['Name', 'Title', 'Email', 'ID']
+    human_readable = tableToMarkdown('Microsoft Graph Users', outputs, table_headers, removeNull=True)
+    return human_readable, ec, users
+
+
+def get_user_command(client: MsGraphClient, args):
+    user_id = args.get('user_id')
+    raw_user = client.get_user(user_id)
+    user = {
+        'Name': raw_user['displayName'],
+        'Title': raw_user['jobTitle'],
+        'Email': raw_user['mail'],
+        'ID': raw_user['id']
+    }
+    ec = {
+        'MsGraph.User(val.ID && val.ID === obj.ID)': user
+    }
+    table_headers = ['Name', 'Title', 'Email', 'ID']
+    human_readable = tableToMarkdown('Microsoft Graph User ' + user_id, user, table_headers, removeNull=True)
+    return human_readable, ec, raw_user
+
+
 def test_function(client: MsGraphClient, args):
     """
        Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -474,6 +519,8 @@ def main():
         'msg-search-alerts': search_alerts_command,
         'msg-get-alert-details': get_alert_details_command,
         'msg-update-alert': update_alert_command,
+        'msg-get-users': get_users_command,
+        'msg-get-user': get_user_command
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
