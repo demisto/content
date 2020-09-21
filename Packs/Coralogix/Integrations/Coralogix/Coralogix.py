@@ -1,4 +1,4 @@
-# TODO: Add description to the integration in /home/yuvalk/Projects/__INTEGRATIONS__/integration-coralogix-demisto/Packs/Coralogix/Integrations/Coralogix/Coralogix_description.md
+# TODO: Add description to the integration in <root>/Packs/Coralogix/Integrations/Coralogix/Coralogix_description.md
 from datetime import timezone
 
 import demistomock as demisto
@@ -16,16 +16,19 @@ requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 ''' SUPPLEMENTAL FUNCTIONS '''
+
+
 def strip_or_empty(o):
     try:
         if o is not None:
             return o.strip()
         else:
             o = ''
-    except:
+    except AttributeError:
         o = ''
 
     return o
+
 
 def flatten_json(y):
     """
@@ -62,6 +65,8 @@ def flatten_json(y):
 
     flatten(y)
     return out
+
+
 def elastic_output_as_table(raw_elastic_json_obj):
     """
     This supplemental method converts an Elasticsearch output JSON object to a Demisto table
@@ -81,8 +86,21 @@ def elastic_output_as_table(raw_elastic_json_obj):
 
     return table
 
+
 ''' COMMANDS '''
-def coralogix_search_command(cgx_private_key, cgx_endpoint_url, query, columns_to_include_in_human_readable, application_name, subsystem_name, severity, since_timestamp=None, to_timestamp="now", max_items_to_retrieve=-1):
+
+
+def coralogix_search_command(
+        cgx_private_key,
+        cgx_endpoint_url,
+        query,
+        columns_to_include_in_human_readable,
+        application_name,
+        subsystem_name,
+        severity,
+        since_timestamp=None,
+        to_timestamp="now",
+        max_items_to_retrieve=-1):
     """
     This method handles the cgx_search command which allows the user to search for data on a Coralogix account
 
@@ -127,14 +145,14 @@ def coralogix_search_command(cgx_private_key, cgx_endpoint_url, query, columns_t
     }
     if since_timestamp is not None:
         request_data["query"]["bool"]["must"].append({
-                            "range": {
-                                "coralogix.timestamp": {
-                                    "gt": since_timestamp,
-                                    "lt": to_timestamp
-                                }
-                            }
-                        })
-    if since_timestamp is None and to_timestamp is not "now":
+            "range": {
+                "coralogix.timestamp": {
+                    "gt": since_timestamp,
+                    "lt": to_timestamp
+                }
+            }
+        })
+    if since_timestamp is None and to_timestamp != "now":
         raise ValueError("to_timestamp can only be set together with since_timestamp")
 
     if max_items_to_retrieve > 0:
@@ -154,7 +172,11 @@ def coralogix_search_command(cgx_private_key, cgx_endpoint_url, query, columns_t
         formatted_data = elastic_output_as_table(raw_elastic_json_obj=results_raw)
         return CommandResults(
             raw_response=results_raw,
-            readable_output=tableToMarkdown('Coralogix Search Results', formatted_data, columns_to_include_in_human_readable, removeNull=True),
+            readable_output=tableToMarkdown(
+                'Coralogix Search Results',
+                formatted_data,
+                columns_to_include_in_human_readable,
+                removeNull=True),
             outputs_key_field="_id",
             outputs_prefix='Coralogix.SearchResults',
             outputs=results_raw['hits']['hits']
@@ -162,24 +184,41 @@ def coralogix_search_command(cgx_private_key, cgx_endpoint_url, query, columns_t
     else:
         return CommandResults(
             raw_response=results_raw,
-            readable_output=tableToMarkdown('Coralogix Search Results', [], columns_to_include_in_human_readable, removeNull=True),
+            readable_output=tableToMarkdown(
+                'Coralogix Search Results',
+                [],
+                columns_to_include_in_human_readable,
+                removeNull=True),
             outputs_key_field="_id",
             outputs_prefix='Coralogix.SearchResults',
             outputs=[]
         )
 
-def coralogix_tag_command(private_key, coralogix_url, application_name, subsystem_name, tag_name, tag_timestamp ="", tag_icon_url =""):
+
+def coralogix_tag_command(
+        private_key,
+        coralogix_url,
+        application_name,
+        subsystem_name,
+        tag_name,
+        tag_timestamp="",
+        tag_icon_url=""):
     """
-    This method handles the cgx_tag command which allows the user to tag a certain timestamp on Coralogix (for example to mark the time at which an incident has occurred)
+    This method handles the cgx_tag command which allows the user to tag a certain timestamp on Coralogix (for example to mark
+        the time at which an incident has occurred)
 
     Args:
         private_key - String, Coralogix Private Key (From the integration's settings page)
         coralogix_url - String, Coralogix Web-API base URL (From the integration's settings page)
-        application_name - String, The application name that will be associated with the tag (Would probably be something like 'Demisto')
-        subsystem_name - String, The subsystem name that will be associated with the tag (Would probably be something like 'Demisto')
+        application_name - String, The application name that will be associated with the tag (Would probably be
+                       something like 'Demisto')
+        subsystem_name - String, The subsystem name that will be associated with the tag (Would probably be
+                       something like 'Demisto')
         tag_name - String, The name of the tag that will be created
-        tag_timestamp - String, The date at which to put the tag in Coralogix. (Optional, if not set the current time will be used by Coralogix)
-        tag_icon_url - String, A URL for an image that will be used in the tag. Cannot exceed 50KB. (Optional, if not set, Coralogix will automatically choose an image)
+        tag_timestamp - String, The date at which to put the tag in Coralogix. (Optional, if not set,
+                       the current time will be used by Coralogix)
+        tag_icon_url - String, A URL for an image that will be used in the tag. Cannot exceed 50KB. (Optional, if not set,
+                       Coralogix will automatically choose an image)
     Returns:
         The raw response from Coralogix WebAPI. If it is JSON parsable it will return it as an object, otherwise - as a string.
     """
@@ -215,6 +254,7 @@ def coralogix_tag_command(private_key, coralogix_url, application_name, subsyste
 
     except json.JSONDecodeError:
         raise ValueError('Failed to tag the following timestamp ' + tag_timestamp + ' under the name ' + tag_name + '. This is the raw response:\n' + response.text)
+
 
 def test_module(cgx_private_key, cgx_endpoint_url):
     """
@@ -264,9 +304,20 @@ def test_module(cgx_private_key, cgx_endpoint_url):
     if results_raw is not None and 'hits' in results_raw:
         return 'ok'
     else:
-        return 'Test failed (No result was received from Coralogix or the response was unexpected `' + json.dumps(results_raw) + '`)'
+        return 'Test failed (No result was received from Coralogix or the response was unexpected `' + \
+               json.dumps(results_raw) + '`)'
 
-def fetch_incidents(cgx_private_key, cgx_endpoint_url, incidents_base_query, application_name, subsystem_name, severity, incidents_name_field, incidents_first_fetch_range, incidents_max_fetch, columns_to_include_in_human_readable):
+def fetch_incidents(
+        cgx_private_key,
+        cgx_endpoint_url,
+        incidents_base_query,
+        application_name,
+        subsystem_name,
+        severity,
+        incidents_name_field,
+        incidents_first_fetch_range,
+        incidents_max_fetch,
+        columns_to_include_in_human_readable):
     """
     This method handles querying Coralogix for incidents by using the configured query and parameters
 
@@ -309,11 +360,13 @@ def fetch_incidents(cgx_private_key, cgx_endpoint_url, incidents_base_query, app
             }
             incidents.append(incident)
             incident_date_obj = dateutil.parser.parse(incident_date)
-            if incident_date_obj.replace(tzinfo=timezone.utc).timestamp() > newest_incident_date_obj.replace(tzinfo=timezone.utc).timestamp():
+            if incident_date_obj.replace(tzinfo=timezone.utc).timestamp() > \
+                    newest_incident_date_obj.replace(tzinfo=timezone.utc).timestamp():
                 newest_incident_date_obj = incident_date_obj
 
     demisto.setLastRun({"last_run_timestamp": newest_incident_date_obj.replace(tzinfo=timezone.utc).timestamp()})
     return incidents
+
 
 def main():
     # CONSTANTS
@@ -367,7 +420,8 @@ def main():
     # Get other parameters
     tag_application_name = strip_or_empty(demisto.params().get('app_name', ''))
     tag_subsystem_name = strip_or_empty(demisto.params().get('subsystem_name', ''))
-    incidents_first_fetch_range_raw = strip_or_empty(demisto.params().get('incidents_first_fetch_range', default_incidents_first_fetch_range))
+    incidents_first_fetch_range_raw = strip_or_empty(demisto.params().get('incidents_first_fetch_range',
+                                                                          default_incidents_first_fetch_range))
     incidents_max_fetch_raw = strip_or_empty(demisto.params().get('incidents_max_fetch', default_incidents_max_fetch))
     incidents_query = strip_or_empty(demisto.params().get('incidents_query', default_incidents_max_fetch))
     incidents_name_field = strip_or_empty(demisto.params().get('incident_description_field', default_incident_description_field))
