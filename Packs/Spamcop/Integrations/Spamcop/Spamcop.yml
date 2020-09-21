@@ -1,0 +1,27 @@
+commonfields:
+  id: Spamcop
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Spamcop
+display: Spamcop
+category: Data Enrichment & Threat Intelligence
+description: SpamCop is an email spam reporting service, integration allow checking
+  the reputation of an IP address
+configuration: []
+script:
+  script: ''
+  type: python
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP which details you want to find
+    outputs:
+    - contextPath: Spamcop.IP
+      description: IP details
+      type: String
+    description: Get IP details from Spamcop service
+  dockerimage: demisto/python3:3.8.5.10845
+  runonce: false
+  subtype: python3
