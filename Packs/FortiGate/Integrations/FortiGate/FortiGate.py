@@ -43,10 +43,7 @@ def login():
         'secretkey': PASSWORD,
         'ajax': 1
     }
-    demisto.info("################")
-    demisto.info("Logging into FortiGate")
     session.post(SERVER + url_suffix, data=params, verify=USE_SSL)  # type: ignore
-    demisto.info("Logged into Fortigate")
     # check for the csrf token in cookies we got, add it to headers of session,
     # or else we can't perform HTTP request that is not get.
     for cookie in session.cookies:
@@ -73,9 +70,7 @@ def http_request(method, url_suffix, params={}, data=None):
         return_error('Error in API call to FortiGate [%d] - %s' % (res.status_code, res.reason))
     if method.upper() != 'GET':
         return res.status_code
-    demisto.info("################################")
     demisto.info("status_code: "+str(res.status_code))
-    demisto.info("################################")
     demisto.info("full res: " + res.content)
     return res.json()
 
