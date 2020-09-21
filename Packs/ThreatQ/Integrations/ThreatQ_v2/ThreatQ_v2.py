@@ -158,6 +158,7 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
 
         if not files:
             params = json.dumps(params)
+            api_call_headers.update({'Content-Type': 'application/json'})
 
     response = requests.request(
         method,
