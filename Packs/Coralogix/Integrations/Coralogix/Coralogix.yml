@@ -15,7 +15,7 @@ configuration:
   display: Private Key
   name: privatekey
   required: true
-  type: 0
+  type: 4
 - additionalinfo: This is the Coralogix Application Name that will be used when creating
     tags in Coralogix by using the coralogix-tag command
   defaultvalue: Demisto
