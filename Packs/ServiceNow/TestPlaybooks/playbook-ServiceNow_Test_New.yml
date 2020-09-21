@@ -2006,10 +2006,10 @@ tasks:
     quietmode: 0
   "77":
     id: "77"
-    taskid: dbb30749-2c8a-4e2b-8e91-6e6a0468aaf4
+    taskid: 8aecc429-b507-42dc-8452-be279449cba7
     type: regular
     task:
-      id: dbb30749-2c8a-4e2b-8e91-6e6a0468aaf4
+      id: 8aecc429-b507-42dc-8452-be279449cba7
       version: -1
       name: Test fetch
       description: Execute FetchIncident for a given instance
@@ -2022,22 +2022,11 @@ tasks:
       - "78"
     scriptarguments:
       add_to_context: {}
-      brand_name: {}
+      brand_name:
+        simple: ServiceNow v2
       error_msg_in_incident: {}
       expect_data: {}
-      instance_name:
-        complex:
-          root: modules
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: modules.brand
-                iscontext: true
-              right:
-                value:
-                  simple: ServiceNow v2
-          accessor: name
+      instance_name: {}
     separatecontext: false
     view: |-
       {
