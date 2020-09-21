@@ -50,7 +50,7 @@ tasks:
       - "2"
     scriptarguments:
       execution-timeout:
-        simple: "1000"
+        simple: "1400"
       limit:
         simple: "3"
     separatecontext: false
