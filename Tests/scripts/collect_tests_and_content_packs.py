@@ -234,7 +234,6 @@ def get_modified_files_for_testing(files_string):
     modified_files_list = []
     modified_tests_list = []
     all_files = files_string.split('\n')
-    print(f'\n\n\n\n all files is: {all_files} \n\n\n\n')
 
     for _file in all_files:
         file_data = _file.split()
@@ -245,7 +244,6 @@ def get_modified_files_for_testing(files_string):
             file_path = file_data[2]
         else:
             file_path = file_data[1]
-        print(f'\n\n\n\n file_status: {file_status}, file_path: {file_path} \n\n\n\n')
         # ignoring deleted files.
         # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
         if ((file_status.lower() == 'm' or file_status.lower() == 'a' or file_status.lower().startswith('r'))
@@ -1281,7 +1279,6 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
         if path_to_pack:
             changed_files = get_list_of_files_in_the_pack(path_to_pack)
             files_string = changed_files_to_string(changed_files)
-            print(f'\n\n\n\n changed file string is: {files_string} \n\n\n\n')
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
