@@ -390,6 +390,12 @@ script:
     execution: false
     name: microsoft-cas-activities-list
     outputs:
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: String
     - contextPath: MicrosoftCloudAppSecurity.Activities._id
       description: The ID of the activity.
       type: String
