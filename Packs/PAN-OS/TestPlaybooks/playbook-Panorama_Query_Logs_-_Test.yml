@@ -1,6 +1,5 @@
 id: Panorama Query Logs - Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Panorama Query Logs - Test
 starttaskid: "0"
 tasks:
