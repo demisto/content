@@ -1,6 +1,6 @@
-id: test playbook - QRadarCorreltaions
+id: test playbook - QRadarCorrelations
 version: -1
-name: test playbook - QRadarCorreltaions
+name: test playbook - QRadarCorrelations
 starttaskid: '0'
 tasks:
   '0':
