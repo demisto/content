@@ -301,7 +301,7 @@ script:
       description: Alert status
       type: string
   - deprecated: true
-    description: Deprecated - Please use the Microsoft Graph User integration instead.
+    description: Deprecated. Use the Microsoft Graph User integration instead.
     execution: false
     name: msg-get-users
     outputs:
@@ -325,7 +325,7 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Deprecated - Please use the Microsoft Graph User integration instead.
+    description: Deprecated. Use the Microsoft Graph User integration instead.
     execution: false
     name: msg-get-user
     outputs:
