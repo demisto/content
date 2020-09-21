@@ -13,7 +13,7 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.8.5.10845
 enabled: true
-name: pollingField
+name: PollingField
 outputs:
 - contextPath: PollingCheckField.name
   description: Field Name
