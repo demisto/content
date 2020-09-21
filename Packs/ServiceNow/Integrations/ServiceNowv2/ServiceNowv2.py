@@ -506,6 +506,10 @@ class Client(BaseClient):
                                        auth=(self._username, self._password),
                                        verify=self._verify, proxies=self._proxies)
 
+            if "Instance Hibernating page" in res.text:
+                raise DemistoException(
+                    "A connection was established but the instance is in hibernate mode.\n"
+                    "Please wake your instance and try again")
             try:
                 json_res = res.json()
             except Exception as err:
@@ -1864,7 +1868,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
 
-    result = client.send_request(f'table/{client.ticket_type}?sysparm_limit=1', 'GET')
+    result = client.send_request(f'table/{client.ticket_type}', params={'sysparm_limit': 1}, method='GET')
     if 'result' not in result:
         raise Exception('ServiceNow error: ' + str(result))
     ticket = result.get('result')
@@ -2193,5 +2197,5 @@ def main():
             raise
 
 
-if __name__ in ["__builtin__", "builtins"]:
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
