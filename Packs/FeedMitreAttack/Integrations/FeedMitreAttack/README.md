@@ -12,6 +12,7 @@ For more information click [here](https://www.mitre.org/capabilities/cybersecuri
 | includeAPT | This option will also create indicators using APT / actor name references if they are part of a MITRE Intrusion Set | False |
 | feedReputation | The indicator reputation (defaults to 'None'). | False |
 | feedReliability | The source's reliability. | True |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy | The feed's expiration policy. | False |
 | feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | The feed fetch interval. | False |

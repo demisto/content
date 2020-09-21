@@ -2,7 +2,7 @@
     "name": "Sixgill Darkfeed - Core Edition",
     "description": "Get contextual and actionable insights to proactively block underground threats in real-time with the most comprehensive, automated stream of IOCs \n\nFor organizations who are currently Darkfeed customers.",
     "support": "partner",
-    "currentVersion": "1.1.4",
+    "currentVersion": "1.1.5",
     "author": "Sixgill",
     "url": "https://info.cybersixgill.com/darkfeed-demo-request?__hstc=243871258.1ada04342b527588fbfc3ce61f48de94.1595252142770.1595252142770.1595254236156.2&__hssc=243871258.1.1595254236156&__hsfp=3682459443",
     "email": "support@cybersixgill.com",

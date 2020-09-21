@@ -146,7 +146,9 @@ tags:
 - incidents
 timeout: 300ns
 type: python
-dockerimage: demisto/python:2.7.18.9326
+dockerimage: demisto/python:2.7.18.10627
+dockerimage45: demisto/python:2.7.18.9326
+runas: DBotRole
 runonce: false
 tests:
 - Dedup - Generic v2 - Test
