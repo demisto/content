@@ -148,6 +148,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: Narrows the search to the specified Coralogix severity value
       isArray: false
       name: severity
       required: false
