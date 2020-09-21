@@ -23,6 +23,9 @@ from datetime import datetime
 import tldextract
 from email.utils import parseaddr
 
+EXECUTION_JSON_FIELD = 'last_execution'
+VERSION_JSON_FIELD = 'script_version'
+
 MAX_ALLOWED_EXCEPTIONS = 20
 
 NO_FETCH_EXTRACT = tldextract.TLDExtract(suffix_list_urls=None)
@@ -57,7 +60,7 @@ DOMAIN_TO_RANK = None
 WORD_TO_REGEX = None
 WORD_TO_NGRAMS = None
 
-FETCH_DATA_VERSION = '1.0'
+FETCH_DATA_VERSION = '2.0'
 LAST_EXECUTION_LIST_NAME = 'FETCH_DATA_ML_LAST_EXECUTION'
 MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 500
 MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
@@ -657,8 +660,9 @@ def get_args_based_on_last_execution():
         return FIRST_EXECUTION_ARGUMENTS
     try:
         list_content = lst[0]['Contents']
-        split_list_content = list_content.split(',')
-        last_execution_time, last_execution_version = split_list_content[0], split_list_content[1]
+        last_execution_json_data = json.loads(list_content)
+        last_execution_time = last_execution_json_data[EXECUTION_JSON_FIELD]
+        last_execution_version = last_execution_json_data[VERSION_JSON_FIELD]
         if last_execution_version != FETCH_DATA_VERSION:
             return FIRST_EXECUTION_ARGUMENTS
         last_execution_datetime = datetime.strptime(last_execution_time, DATETIME_FORMAT)
@@ -672,7 +676,7 @@ def get_args_based_on_last_execution():
 
 def update_last_execution_time():
     execution_datetime_str = datetime.strftime(datetime.now(), DATETIME_FORMAT)
-    list_content = ','.join([execution_datetime_str, FETCH_DATA_VERSION])
+    list_content = json.dumps({EXECUTION_JSON_FIELD: execution_datetime_str, VERSION_JSON_FIELD: FETCH_DATA_VERSION})
     res = demisto.executeCommand("createList", {"listName": LAST_EXECUTION_LIST_NAME, "listData": list_content})
     if is_error(res):
         demisto.results(res)
