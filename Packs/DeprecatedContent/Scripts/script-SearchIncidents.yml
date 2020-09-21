@@ -132,5 +132,6 @@ outputs:
   description: Phases of the found incidents
 scripttarget: 0
 deprecated: true
+runas: DBotWeakRole
 tests:
   - No test
