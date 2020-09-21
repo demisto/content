@@ -491,3 +491,33 @@ def test_get_remote_data(mocker):
 
     assert res[1]['File'] == 'test.txt'
     assert res[2]['Contents'] == 'This is a comment'
+
+
+def test_get_remote_data_no_attachment(mocker):
+    """
+    Given:
+        -  ServiceNow client
+        -  arguments: id and LastUpdate(set to lower then the modification time).
+        -  ServiceNow ticket
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket was updated with no attachment.
+    """
+
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 0}
+    params = {}
+    mocker.patch.object(client, 'get', return_value=RESPONSE_TICKET_MIRROR)
+    mocker.patch.object(client, 'get_ticket_attachments', return_value=[])
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
+    mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)
+
+    res = get_remote_data_command(client, args, params)
+
+    assert res[1]['Contents'] == 'This is a comment'
