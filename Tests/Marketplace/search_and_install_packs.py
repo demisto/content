@@ -266,7 +266,7 @@ def install_all_content_packs(client, host, prints_manager, thread_index=0):
     all_packs = []
 
     for pack_id in os.listdir(PACKS_FULL_PATH):
-        if pack_id not in IGNORED_FILES and pack_id != 'Silverfort':  # todo: remove silverfort when fixed
+        if pack_id not in IGNORED_FILES:
             add_pack_to_installation_request(pack_id, all_packs)
     install_packs(client, host, prints_manager, thread_index, all_packs)
 
