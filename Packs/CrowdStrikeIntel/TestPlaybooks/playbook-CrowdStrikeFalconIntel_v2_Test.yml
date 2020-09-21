@@ -530,17 +530,17 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 05f3b7ba-ee21-410d-82c3-4ea69f452b27
+    taskid: 07256b12-e6f3-46ed-8cd2-0b24c7df0349
     type: regular
     task:
-      id: 05f3b7ba-ee21-410d-82c3-4ea69f452b27
+      id: 07256b12-e6f3-46ed-8cd2-0b24c7df0349
       version: -1
       name: ip command
       description: Check IP reputation.
-      script: CrowdStrikeFalconIntel|||ip
+      script: CrowdStrike Falcon Intel v2|||ip
       type: regular
       iscommand: true
-      brand: CrowdStrikeFalconIntel
+      brand: CrowdStrike Falcon Intel v2
     nexttasks:
       '#none#':
       - "14"
@@ -567,7 +567,7 @@ tasks:
     task:
       id: b656510c-0b93-4d02-8b86-5af49b08d759
       version: -1
-      name: Verify Outputs (ip command)
+      name: Verify Outputs (file command)
       type: condition
       iscommand: false
       brand: ""
@@ -649,6 +649,4 @@ view: |-
   }
 inputs: []
 outputs: []
-tests:
-  - No tests
 fromversion: 5.0.0
