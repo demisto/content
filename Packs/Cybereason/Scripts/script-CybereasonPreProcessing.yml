@@ -33,5 +33,6 @@ comment: |-
 enabled: true
 scripttarget: 0
 runonce: false
+runas: DBotWeakRole
 tests:
  - No test
