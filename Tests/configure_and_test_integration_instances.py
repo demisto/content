@@ -975,7 +975,7 @@ def get_tests(server_numeric_version, prints_manager, tests, is_nightly=False, i
 
 def get_changed_integrations(build, prints_manager):
     new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(
-        build) if not build.is_private else [], []
+        build) if not build.is_private else ([], [])
     new_integrations_names, modified_integrations_names = [], []
 
     if new_integrations_files:
