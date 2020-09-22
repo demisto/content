@@ -500,5 +500,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+  dockerimage45: demisto/crypto:1.0.0.10743
 tests:
 - Microsoft Graph User - Test
