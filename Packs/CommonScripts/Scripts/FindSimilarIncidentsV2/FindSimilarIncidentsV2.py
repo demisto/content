@@ -112,13 +112,15 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
                           max_number_of_results, extra_query, applied_condition):
     condition_string = ' %s ' % applied_condition.lower()
 
-    similar_keys_query = []
-    for key in similar_incident_keys.items():
-        compare_str = '%s:=%s' if str(key[1]).isdigit() else '%s="%s"'
-        similar_keys_query.append(compare_str % (key[0], str(key[1]).replace('"', r'\"')
-                                                 .replace("\n", "\\n").replace("\r", "\\r")))
+    similar_keys_list = []
+    for key, value in similar_incident_keys.items():
+        compare_str = '{}:={}' if str(value).isdigit() else '{}="{}"'
+        similar_keys_list.append(compare_str.format(key, str(value)
+                                 .replace('"', r'\"')
+                                 .replace("\n", "\\n").
+                                 replace("\r", "\\r")))
 
-    similar_keys_query = condition_string.join(similar_keys_query)
+    similar_keys_query = condition_string.join(similar_keys_list)
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
     min_date = incident_time - timedelta(hours=hours_back)
