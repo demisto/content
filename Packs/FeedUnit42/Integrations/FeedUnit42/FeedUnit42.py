@@ -204,7 +204,7 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
         Demisto Outputs.
     """
     limit = int(args.get('limit', '10'))
-    objects: list = client.get_stix_objects()
+    objects: list = client.get_stix_objects(test=True)
     indicators = parse_indicators(objects, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]
 
