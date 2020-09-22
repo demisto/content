@@ -10,6 +10,24 @@ jobs:
           command: |
             exit 0
           when: always
+  Level1-2:
+    docker:
+      - image: devdemisto/content-build:3.0.0.7332
+    steps:
+      - run:
+          name: level1-2-step1
+          shell: /bin/bash
+          command: |
+            echo "running level1-2-step1"
+            exit 1
+          when: always
+      - run:
+          name: level1-2-step2
+          shell: /bin/bash
+          command: |
+            echo "running level1-2-step1"
+            exit 0
+          when: on_success
   Level2-1:
     docker:
       - image: devdemisto/content-build:3.0.0.7332
@@ -30,3 +48,4 @@ workflows:
       - Level2-1:
           requires:
             - Level1-1
+            - Level1-2
