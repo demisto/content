@@ -604,7 +604,7 @@ class Pack(object):
         downloads_count = 0
 
         if self._pack_name in packs_statistic_df.index.values:
-            downloads_count = int(packs_statistic_df.loc[self._pack_name]['num_count'].astype('int32'))
+            downloads_count = int(packs_statistic_df.loc[self._pack_name]['num_count'].astype('int32', errors='ignore'))
 
         return downloads_count
 
