@@ -236,7 +236,7 @@ script:
       - ignored
       description: The status to which you want to transition a detection.
     - name: assigned_to_uuid
-      description: ' A user ID, for example: 1234567891234567891. '
+      description: ' A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive.'
     - name: comment
       description: Optional comment to add to the detection. Comments are displayed with the detection in Falcon and usually used to provide context or notes for other Falcon users.
     - name: show_in_ui
@@ -247,7 +247,7 @@ script:
       description: If set to true, will display the dectection in the UI.
     - name: username
       description: Username to assign the detections to (This is usually the
-        user’s email address, but may vary based on your configuration).
+        user’s email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive.
     description: Resolves and updates a detection.
   - name: cs-falcon-contain-host
     arguments:
