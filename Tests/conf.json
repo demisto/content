@@ -2993,6 +2993,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "TrendMicro Cloud App Security",
+            "playbookID": "playbook_TrendmicroCAS_Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
         },
