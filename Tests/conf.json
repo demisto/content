@@ -2993,6 +2993,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "TrendMicro Cloud App Security",
+            "playbookID": "playbook_TrendmicroCAS_Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
         },
@@ -3074,7 +3079,8 @@
         "Cherwell - test": "Issue 26780",
         "MISP V2 Test": "Issue 26905",
         "Logzio - Test": "Issue 26729",
-        "pyEWS_Test": "Issue 28339"
+        "pyEWS_Test": "Issue 28339",
+        "DuoAdmin API test playbook": "Issue 24937"
     },
     "skipped_integrations": {
 
