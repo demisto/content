@@ -68,7 +68,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 
 Lists alerts for the subscription according to the specified filters.
 
-*Requires subscription_id*
+*Require Subscription ID*
 ##### Base Command
 
 `azure-sc-list-alert`
@@ -132,7 +132,7 @@ Lists alerts for the subscription according to the specified filters.
 
 Updates Advanced Threat Detection settings.
 
-*Requires subscription_id*
+*Require Subscription ID*
 ##### Base Command
 
 `azure-sc-update-atp`
@@ -165,7 +165,7 @@ Updates Advanced Threat Detection settings.
 
 Returns the Advanced Threat Protection setting.
 
-*Requires subscription_id*
+*Require Subscription ID*
 ##### Base Command
 
 `azure-sc-get-atp`
@@ -197,7 +197,7 @@ Returns the Advanced Threat Protection setting.
 
 Updates a specific auto provisioning setting.
 
-*Requires subscription_id*
+*Require Subscription ID*
 ##### Base Command
 
 `azure-sc-update-aps`
@@ -250,7 +250,7 @@ Updates a specific auto provisioning setting.
 
 Returns details of a specific auto provisioning setting.
 
-*Requires subscription_id*
+*Require Subscription ID*
 ##### Base Command
 
 `azure-sc-get-aps`
@@ -302,7 +302,7 @@ Returns details of a specific auto provisioning setting.
 
 Lists auto provisioning settings in the subscription.
 
-*Requires subscription_id*
+*Require Subscription ID*
 ##### Base Command
 
 `azure-sc-list-aps`
@@ -353,7 +353,7 @@ Lists auto provisioning settings in the subscription.
 
 Lists all policies for protecting resources using Just-in-Time access control.
 
-*Requires subscription_id*
+*Require Subscription ID*
 ##### Base Command
 
 `azure-sc-list-jit`
@@ -385,7 +385,7 @@ Lists all policies for protecting resources using Just-in-Time access control.
 
 Lists all the storage accounts available under the subscription.
 
-*Requires subscription_id*
+*Require Subscription ID*
 ##### Base Command
 
 `azure-sc-list-storage`
@@ -493,7 +493,7 @@ There are no input arguments for this command.
 
 The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
 
-*Requires subscription_id*
+*Require Subscription ID*
 ##### Base Command
 
 `azure-sc-list-location`
@@ -538,7 +538,7 @@ There are no context output for this command.
 
 Get an alert that is associated a resource group or a subscription.
 
-*Requires subscription_id*
+*Require Subscription ID*
 ##### Base Command
 
 `azure-sc-get-alert`
