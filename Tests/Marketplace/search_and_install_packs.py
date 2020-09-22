@@ -190,6 +190,9 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
 
     # make the pack installation request
     try:
+        request_msg = '\ninstall request  body: {}\n'.format(str(request_data))
+        prints_manager.add_print_job(request_msg, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
+        prints_manager.execute_thread_prints(thread_index)
         response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                             path='/contentpacks/marketplace/install',
                                                                             method='POST',
@@ -198,7 +201,9 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                                                                             _request_timeout=request_timeout)
 
         if 200 <= status_code < 300:
-            message = 'Packs were successfully installed!\n'
+            result_object = ast.literal_eval(response_data)
+            res_msg = result_object.get('message', '')
+            message = 'Packs were successfully installed!\n with status code {status_code}\n{res_msg}\n'
             prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
         else:
             result_object = ast.literal_eval(response_data)
