@@ -58,8 +58,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Microsoft Graph grants Demisto authorized access to a user's Microsoft Outlook
-  mail data in a personal account or organization account.
+description: Microsoft Graph grants Demisto authorized access to a user's Microsoft
+  Outlook mail data in a personal account or organization account.
 display: Microsoft Graph Mail Single User
 name: Microsoft Graph Mail Single User
 script:
@@ -153,8 +153,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of CIDs to embed attachments within the actual
-        email.
+      description: A comma-separated list of CIDs to embed attachments within the
+        actual email.
       isArray: true
       name: attach_cids
       required: false
@@ -302,8 +302,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of attachments to display
-        in the email to send. Must be the same number of elements as attachIDs.
+      description: A comma-separated list of names of attachments to display in the
+        email to send. Must be the same number of elements as attachIDs.
       isArray: true
       name: attach_names
       required: false
@@ -385,7 +385,7 @@ script:
     description: Tests connectivity of the email.
     execution: false
     name: msgraph-mail-test
-  dockerimage: demisto/crypto:1.0.0.8854
+  dockerimage: demisto/crypto:1.0.0.11412
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -393,8 +393,10 @@ script:
   script: '-'
   type: python
   subtype: python3
+  dockerimage45: demisto/crypto:1.0.0.8854
 tests:
 - No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in
   NonCircleTests folder
 defaultclassifier: Microsoft Graph Mail Single User
 defaultmapperin: Microsoft Graph Mail Single User-mapper
+fromversion: 4.1.0

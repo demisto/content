@@ -222,7 +222,7 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-        - dismiss
+      - dismiss
 #        - reactivate
     deprecated: false
     description: Update an alert's state.
@@ -291,8 +291,8 @@ script:
       secret: false
     - default: false
       defaultValue: current
-      description: Name of the Advanced Threat Detection setting. The default setting's name
-        is 'current'.
+      description: Name of the Advanced Threat Detection setting. The default setting's
+        name is 'current'.
       isArray: false
       name: setting_name
       required: false
@@ -327,8 +327,8 @@ script:
   - arguments:
     - default: true
       defaultValue: default
-      description: Name of the auto provisioning setting. The default setting's name is
-        'default'.
+      description: Name of the auto provisioning setting. The default setting's name
+        is 'default'.
       isArray: false
       name: setting_name
       required: true
@@ -513,5 +513,7 @@ script:
   script: '-'
   type: python
   subtype: python3
+  dockerimage45: demisto/crypto:1.0.0.8854
 tests:
 - Azure SecurityCenter - Test
+fromversion: 4.1.0
