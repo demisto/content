@@ -27,7 +27,7 @@ jobs:
           command: |
             echo "running level1-2-step1"
             exit 0
-          when: on_success
+          when: always
   Level2-1:
     docker:
       - image: devdemisto/content-build:3.0.0.7332
