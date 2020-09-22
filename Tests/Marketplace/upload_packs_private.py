@@ -906,7 +906,7 @@ def option_handler():
     return parser.parse_args()
 
 
-def main():
+def prepare_test_directories():
     packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
     zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
     if not os.path.exists(packs_dir):
@@ -915,6 +915,10 @@ def main():
     if not os.path.exists(zip_path):
         print("Temp dir not found. Creating.")
         os.mkdir(zip_path)
+
+
+def main():
+    prepare_test_directories()
     upload_config = option_handler()
     packs_artifacts_path = upload_config.artifacts_path
     extract_destination_path = upload_config.extract_path
