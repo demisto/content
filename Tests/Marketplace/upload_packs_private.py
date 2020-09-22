@@ -289,7 +289,6 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
 
         if is_private or current_index_generation == index_generation:
-            print_error("uploading index")
             index_blob.upload_from_filename(index_zip_path)
             print_color(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
         else:
