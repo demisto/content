@@ -1,6 +1,14 @@
 import pytest
+import json
+import os
 from CrowdStrikeFalconIntel_v2 import *
 from CommonServerPython import DBotScoreType, Common, DemistoException
+
+with open(os.path.normpath(os.path.join(__file__, '..', './test_data/indicator_resource.json'))) as f:
+    INDICATOR_RESOURCE = json.load(f)
+
+with open(os.path.normpath(os.path.join(__file__, '..', './test_data/indicator_output.json'))) as f:
+    INDICATOR_OUTPUT = json.load(f)
 
 
 class TestClientHelperFunctions:
@@ -17,147 +25,46 @@ class TestClientHelperFunctions:
         ({'wow': 1}, {'filter': "wow:'1'"})
     ])
     def test_build_request_params(self, args, output, mocker):
+        """Unit test
+        Given
+        - demisto args
+        When
+        - A query arg is provided and when not
+        Then
+        - If query arg is present it is the filter value, else build the params dict
+        """
         mocker.patch.object(CrowdStrikeClient, "_generate_token")
         client = Client({})
         assert client.build_request_params(args) == output
 
-    @pytest.mark.parametrize('args, output', [
-        ({'offset': 1, 'max_last_modified_date': '2020-09-16T22:28:42.143302', 'wow': 2},
-         "last_modified_date:<=1600295322+wow:'2'")
-    ])
-    def test_build_filter_query(self, args, output, mocker):
+    def test_build_filter_query(self, mocker):
+        """Unit test
+        Given
+        - demisto args
+        When
+        - Both date and regular field is provided
+        Then
+        - Build the filter query according to FQL
+        """
         mocker.patch.object(CrowdStrikeClient, "_generate_token")
         client = Client({})
+        args = {'offset': 1, 'max_last_modified_date': '2020-09-16T22:28:42.143302', 'wow': 2}
+        output = "last_modified_date:<=1600295322+wow:'2'"
         assert client.build_filter_query(args) == output
 
 
 class TestHelperFunctions:
-    INDICATOR_RESOURCE = {
-        "_marker": "1600081765f9d74900f63c77b0b570a38c42244b8a",
-        "actors": [],
-        "deleted": False,
-        "domain_types": [],
-        "id": "hash_sha1_873ac498179c3d642d816f74dfd42a4e7cdf5bc4",
-        "indicator": "873ac498179c3d642d816f74dfd42a4e7cdf5bc4",
-        "ip_address_types": [],
-        "kill_chains": [],
-        "labels": [
-            {
-                "created_on": 1600081757,
-                "last_valid_on": 1600081757,
-                "name": "ThreatType/Criminal"
-            },
-            {
-                "created_on": 1600081757,
-                "last_valid_on": 1600081757,
-                "name": "ThreatType/SpamBot"
-            },
-            {
-                "created_on": 1591207986,
-                "last_valid_on": 1591207986,
-                "name": "CSD/CSIT-18125"
-            },
-            {
-                "created_on": 1600081754,
-                "last_valid_on": 1600081765,
-                "name": "MaliciousConfidence/High"
-            },
-            {
-                "created_on": 1600081757,
-                "last_valid_on": 1600081757,
-                "name": "Malware/SendSafe"
-            }
-        ],
-        "last_updated": 1600081765,
-        "malicious_confidence": "high",
-        "malware_families": [
-            "SendSafe"
-        ],
-        "published_date": 1600081754,
-        "relations": [
-            {
-                "created_date": 1600081757,
-                "id": "hash_md5_afd591503665a5a5073ddf93cdc97c2b",
-                "indicator": "afd591503665a5a5073ddf93cdc97c2b",
-                "last_valid_date": 1600081757,
-                "type": "hash_md5"
-            },
-            {
-                "created_date": 1600081757,
-                "id": "ip_address_91.220.131.49",
-                "indicator": "91.220.131.49",
-                "last_valid_date": 1600081757,
-                "type": "ip_address"
-            },
-            {
-                "created_date": 1600081757,
-                "id": "hash_sha1_1a3986bf774fa1b841147ef7c1bb2d965f0f0664",
-                "indicator": "1a3986bf774fa1b841147ef7c1bb2d965f0f0664",
-                "last_valid_date": 1600081757,
-                "type": "hash_sha1"
-            },
-            {
-                "created_date": 1600081757,
-                "id": "hash_sha256_34bd0ce42c46f8688f9c12747e5ad0d12233f5d26f290ce9f325372466c836e7",
-                "indicator": "34bd0ce42c46f8688f9c12747e5ad0d12233f5d26f290ce9f325372466c836e7",
-                "last_valid_date": 1600081757,
-                "type": "hash_sha256"
-            },
-            {
-                "created_date": 1600081754,
-                "id": "hash_sha256_cdde31156a757ce3460ba684be966782697b09b1f882d82bc5fb95b916a07f6a",
-                "indicator": "cdde31156a757ce3460ba684be966782697b09b1f882d82bc5fb95b916a07f6a",
-                "last_valid_date": 1600081754,
-                "type": "hash_sha256"
-            },
-            {
-                "created_date": 1600081754,
-                "id": "hash_md5_42ffa45446a1158d09cec9db8e274573",
-                "indicator": "42ffa45446a1158d09cec9db8e274573",
-                "last_valid_date": 1600081754,
-                "type": "hash_md5"
-            }
-        ],
-        "reports": [
-            "CSIT-18125"
-        ],
-        "targets": [],
-        "threat_types": [
-            "Criminal",
-            "SpamBot"
-        ],
-        "type": "hash_sha1",
-        "vulnerabilities": []
-    }
-    INDICATOR_OUTPUT = {
-        "ID": "hash_sha1_873ac498179c3d642d816f74dfd42a4e7cdf5bc4",
-        "Type": "hash_sha1",
-        "Value": "873ac498179c3d642d816f74dfd42a4e7cdf5bc4",
-        "MaliciousConfidence": "high",
-        "Reports": [
-            "CSIT-18125"
-        ],
-        "MalwareFamilies": [
-            "SendSafe"
-        ],
-        "Relations": ["hash_md5: afd591503665a5a5073ddf93cdc97c2b",
-                      "ip_address: 91.220.131.49",
-                      "hash_sha1: 1a3986bf774fa1b841147ef7c1bb2d965f0f0664",
-                      "hash_sha256: 34bd0ce42c46f8688f9c12747e5ad0d12233f5d26f290ce9f325372466c836e7",
-                      "hash_sha256: cdde31156a757ce3460ba684be966782697b09b1f882d82bc5fb95b916a07f6a",
-                      "hash_md5: 42ffa45446a1158d09cec9db8e274573"
-                      ],
-        "Labels": [
-            "ThreatType/Criminal",
-            "ThreatType/SpamBot",
-            "CSD/CSIT-18125",
-            "MaliciousConfidence/High",
-            "Malware/SendSafe"
-        ]
-    }
 
     def test_get_score_from_resource(self):
-        assert get_score_from_resource(TestHelperFunctions.INDICATOR_RESOURCE) == 3
+        """Unit test
+        Given
+        - A falcon intel resource, can be actor, report, indicator...
+        When
+        - We need to calculate the dbot score of the resource
+        Then
+        - The dbot score is calculated
+        """
+        assert get_score_from_resource(INDICATOR_RESOURCE) == 3
 
     @pytest.mark.parametrize('hash_value, hash_type, exception', [
         ('88302dbc829636b6ef926f0f055bdebd', 'hash_md5', False),
@@ -166,6 +73,14 @@ class TestHelperFunctions:
         ('wow', '', True)
     ])
     def test_get_indicator_hash_type(self, hash_value, hash_type, exception):
+        """Unit test
+        Given
+        - The hash value
+        When
+        - The type is unknown
+        Then
+        - Return the correct type
+        """
         if not exception:
             assert get_indicator_hash_type(hash_value) == hash_type
         else:
@@ -182,6 +97,14 @@ class TestHelperFunctions:
                                         integration_name='FalconIntel', score=0, malicious_description=''), None)
     ])
     def test_get_indicator_object(self, ind_val, ind_type, dbot_score, output):
+        """Unit test
+        Given
+        - The indicator value and type and its corresponding dbot score
+        When
+        - The indicator object doesn't exist
+        Then
+        - Create the indicator object
+        """
         if not output:
             assert get_indicator_object(ind_val, ind_type, dbot_score) == output
         else:
@@ -196,11 +119,27 @@ class TestHelperFunctions:
 
     ])
     def test_get_values(self, items_list, ret_type, keys, output):
+        """Unit test
+        Given
+        - A list of objects
+        When
+        - We need one or more fields of these object as a list
+        Then
+        - Depending on the return type and the number of keys, return the needed list
+        """
         assert get_values(items_list, ret_type, keys) == output
 
     def test_get_indicator_data(self):
-        output = get_indicator_outputs(TestHelperFunctions.INDICATOR_RESOURCE)
-        assert output == TestHelperFunctions.INDICATOR_OUTPUT
+        """Unit test
+        Given
+        - Indicator resource from falcon intel
+        When
+        - We need the indicator outputs to show in war-room
+        Then
+        - Create the correct output
+        """
+        output = get_indicator_outputs(INDICATOR_RESOURCE)
+        assert output == INDICATOR_OUTPUT
 
     @pytest.mark.parametrize('_type, output, exception', [
         ('ip', DBotScoreType.IP, False),
@@ -211,6 +150,14 @@ class TestHelperFunctions:
         ('wow', None, True)
     ])
     def test_get_dbot_score_type(self, _type, output, exception):
+        """Unit test
+        Given
+        - The indicator type
+        When
+        - We need the DBotScoreType object corresponding to the indicator type
+        Then
+        - Return the correct DBotScoreType
+        """
         if exception:
             with pytest.raises(DemistoException, match='Indicator type is not supported.'):
                 get_dbot_score_type(_type)

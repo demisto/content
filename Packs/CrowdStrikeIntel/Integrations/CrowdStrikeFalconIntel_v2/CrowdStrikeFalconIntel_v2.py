@@ -67,6 +67,8 @@ class Client:
                 else:
                     operator: Optional[str] = self.date_params.get(key, {}).get('operator')
                     api_key: Optional[str] = self.date_params.get(key, {}).get('api_key')
+                    # Parsing date argument of ISO format or free language into datetime object,
+                    # replacing TZ with UTC, taking its timestamp format and rounding it up.
                     filter_query += f"{api_key}:" \
                                     f"{operator}{int(parse(args[key]).replace(tzinfo=timezone.utc).timestamp())}+"
 
@@ -269,29 +271,29 @@ def get_values(items_list: List[Any], return_type: str = 'str', keys: Union[str,
     return ', '.join(str(item) for item in new_list)
 
 
-def get_indicator_outputs(o: Dict[str, Any]) -> Dict[str, Any]:
+def get_indicator_outputs(resource: Dict[str, Any]) -> Dict[str, Any]:
     """
     Build the output and extra context of an indicator
-    :param o: The indicator's object
+    :param resource: The indicator's object
     :return: The indicator's human readable
     """
     output: Dict[str, Any] = dict()
 
-    if o:
-        indicator_id = o.get('id')
-        indicator_value = o.get('indicator')
-        indicator_type = o.get('type')
-        last_update = o.get('last_update')
-        publish_date = o.get('publish_date')
-        malicious_confidence = o.get('malicious_confidence')
-        reports = o.get('reports')
-        actors = o.get('actors')
-        malware_families = o.get('malware_families')
-        kill_chains = o.get('kill_chains')
-        domain_types = o.get('domain_types')
-        ip_address_types = o.get('ip_address_types')
-        relations: List[Any] = o.get('relations', [])[:10]
-        labels: List[Any] = o.get('labels', [])[:10]
+    if resource:
+        indicator_id = resource.get('id')
+        indicator_value = resource.get('indicator')
+        indicator_type = resource.get('type')
+        last_update = resource.get('last_update')
+        publish_date = resource.get('publish_date')
+        malicious_confidence = resource.get('malicious_confidence')
+        reports = resource.get('reports')
+        actors = resource.get('actors')
+        malware_families = resource.get('malware_families')
+        kill_chains = resource.get('kill_chains')
+        domain_types = resource.get('domain_types')
+        ip_address_types = resource.get('ip_address_types')
+        relations: List[Any] = resource.get('relations', [])[:10]
+        labels: List[Any] = resource.get('labels', [])[:10]
 
         output = assign_params(**{
             'ID': indicator_id,
@@ -321,12 +323,11 @@ def get_indicator_outputs(o: Dict[str, Any]) -> Dict[str, Any]:
 
 def run_test_module(client: Client) -> Union[str, Exception]:
     """
-    If a client is successfully constructed then an accesses token was successfully reached,
+    If a client is successfully constructed then an access token was successfully created,
     therefore the username and password are valid and a connection was made.
-    Additionally, checks if not using all the optional quota and check that an http request to actors & indicators
-    endpoints in successful.
+    On top of the above, this function checks for allocated quota and validates the http request to actors & indicators.
     :param client: the client object with an access token
-    :return: ok if got a valid accesses token and not all the quota is used at the moment
+    :return: ok if got a valid access token and not all the quota is used at the moment
     """
     output: Dict[str, Any] = client.check_quota_status()
 

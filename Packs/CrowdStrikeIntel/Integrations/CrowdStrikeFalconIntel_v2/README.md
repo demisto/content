@@ -63,23 +63,23 @@ Check file reputation.
 
 
 #### Command Example
-```!file file=c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638```
+```!file file=sha256_value```
 
 #### Context Example
 ```
 {
     "DBotScore": {
-        "Indicator": "c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638",
+        "Indicator": "sha256_value",
         "Score": 3,
         "Type": "file",
         "Vendor": "FalconIntel"
     },
     "FalconIntel": {
-        "Indicator": {
+        "Indzicator": {
             "Actors": [
                 "CIRCUSSPIDER"
             ],
-            "ID": "hash_sha256_c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638",
+            "ID": "hash_sha256_id",
             "Labels": [
                 "CSD/CSA-201011",
                 "ThreatType/Criminal",
@@ -116,7 +116,7 @@ Check file reputation.
                 "CSWR-20011"
             ],
             "Type": "hash_sha256",
-            "Value": "c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638"
+            "Value": "sha256_value"
         }
     },
     "File": {
@@ -145,7 +145,7 @@ Check file reputation.
             "CSIT-20081",
             "CSWR-20011"
         ],
-        "SHA256": "c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638"
+        "SHA256": "sha256_value"
     }
 }
 ```
@@ -156,7 +156,7 @@ Check file reputation.
 >
 >|Actors|ID|Labels|Malicious Confidence|Malware Families|Relations|Reports|Type|Value|
 >|---|---|---|---|---|---|---|---|---|
->| CIRCUSSPIDER | hash_sha256_c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638 | CSD/CSA-201011,<br/>ThreatType/Criminal,<br/>CSD/CSWR-20018,<br/>CSD/CSWR-20023,<br/>CSD/CSDR-20035,<br/>CSD/CSWR-20020,<br/>CSD/CSWR-20024,<br/>CSD/CSWR-20021,<br/>MaliciousConfidence/High,<br/>Malware/NetWalker | high | NetWalker | hash_md5: 0432b62130ca06c04d5a12a5e9841300,<br/>hash_sha1: fd2b8fff2c583a1af1b86f150be8f611a2292197 | CSA-201011,<br/>CSWR-20018,<br/>CSWR-20023,<br/>CSDR-20035,<br/>CSWR-20020,<br/>CSWR-20024,<br/>CSWR-20021,<br/>CSA-200605,<br/>CSA-200385,<br/>CSDR-20090,<br/>CSWR-20017,<br/>CSIT-20081,<br/>CSWR-20011 | hash_sha256 | c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638 |
+>| CIRCUSSPIDER | hash_sha256_sha256_value | CSD/CSA-201011,<br/>ThreatType/Criminal,<br/>CSD/CSWR-20018,<br/>CSD/CSWR-20023,<br/>CSD/CSDR-20035,<br/>CSD/CSWR-20020,<br/>CSD/CSWR-20024,<br/>CSD/CSWR-20021,<br/>MaliciousConfidence/High,<br/>Malware/NetWalker | high | NetWalker | hash_md5: 0432b62130ca06c04d5a12a5e9841300,<br/>hash_sha1: fd2b8fff2c583a1af1b86f150be8f611a2292197 | CSA-201011,<br/>CSWR-20018,<br/>CSWR-20023,<br/>CSDR-20035,<br/>CSWR-20020,<br/>CSWR-20024,<br/>CSWR-20021,<br/>CSA-200605,<br/>CSA-200385,<br/>CSDR-20090,<br/>CSWR-20017,<br/>CSIT-20081,<br/>CSWR-20011 | hash_sha256 | sha256_value |
 
 
 ### url
@@ -237,16 +237,16 @@ Check the given URL reputation.
                 "Zloader"
             ],
             "Relations": [
-                "hash_sha256: 1f906509b047f7d789ba730939ec6b6023c9531ded335f5a405a32d14b84d017",
-                "hash_sha256: c5f35cc01739b6d490ad25df3081ea282cbcf83e1c4f41e4416edec35099e62f",
-                "hash_sha256: 21f8fe0ed62b13d68f022a3389b569acb2ca3b1f99ca7c6dcf3fe58197f788a8",
-                "hash_md5: baff86af61079249a89b4f5a0e8f2567",
-                "hash_md5: 5aa7be72b8e1a13a195308fa26d6dabd",
-                "hash_sha1: a62237a14e8d390bd9023b312083386bf00f4cc4",
-                "hash_sha1: 157cf246924880a2f7fadcf51821e440c8ef8f29",
-                "hash_md5: 2ef77e88c3761bbd698078aa9b93cdbd",
-                "hash_sha1: 6fdce3ddab9d9c3f7f662be2f07c7fb16ba2af6f",
-                "hash_sha1: b106a6ecd59606390f6b2ff8a51b1e14fee806fd"
+                "hash_sha256: sha256_value",
+                "hash_sha256: sha256_value",
+                "hash_sha256: sha256_value",
+                "hash_md5: md5_value",
+                "hash_md5: md5_value",
+                "hash_sha1: sha1_value",
+                "hash_sha1: sha1_value",
+                "hash_md5: md5_value",
+                "hash_sha1: sha1_value",
+                "hash_sha1: sha1_value"
             ],
             "Reports": [
                 "CSA-200342",
@@ -292,7 +292,7 @@ Check the given URL reputation.
 >
 >|ID|Kill Chains|Labels|Malicious Confidence|Malware Families|Relations|Reports|Type|Value|
 >|---|---|---|---|---|---|---|---|---|
->| url_https://withifceale.top/treusparq.php | C2 | CSD/CSA-200342,<br/>KillChain/C2,<br/>Malware/Zloader,<br/>CSD/CSDR-20011,<br/>CSD/CSIT-20009,<br/>CSD/CSA-191551,<br/>MaliciousConfidence/High,<br/>ThreatType/Criminal,<br/>CSD/CSA-200038,<br/>ThreatType/Banking | high | Zloader | hash_sha256: 1f906509b047f7d789ba730939ec6b6023c9531ded335f5a405a32d14b84d017,<br/>hash_sha256: c5f35cc01739b6d490ad25df3081ea282cbcf83e1c4f41e4416edec35099e62f,<br/>hash_sha256: 21f8fe0ed62b13d68f022a3389b569acb2ca3b1f99ca7c6dcf3fe58197f788a8,<br/>hash_md5: baff86af61079249a89b4f5a0e8f2567,<br/>hash_md5: 5aa7be72b8e1a13a195308fa26d6dabd,<br/>hash_sha1: a62237a14e8d390bd9023b312083386bf00f4cc4,<br/>hash_sha1: 157cf246924880a2f7fadcf51821e440c8ef8f29,<br/>hash_md5: 2ef77e88c3761bbd698078aa9b93cdbd,<br/>hash_sha1: 6fdce3ddab9d9c3f7f662be2f07c7fb16ba2af6f,<br/>hash_sha1: b106a6ecd59606390f6b2ff8a51b1e14fee806fd | CSA-200342,<br/>CSDR-20011,<br/>CSIT-20009,<br/>CSA-191551,<br/>CSA-200038,<br/>CSIT-17112,<br/>CSA-200149 | url | https://withifceale.top/treusparq.php |
+>| url_https://withifceale.top/treusparq.php | C2 | CSD/CSA-200342,<br/>KillChain/C2,<br/>Malware/Zloader,<br/>CSD/CSDR-20011,<br/>CSD/CSIT-20009,<br/>CSD/CSA-191551,<br/>MaliciousConfidence/High,<br/>ThreatType/Criminal,<br/>CSD/CSA-200038,<br/>ThreatType/Banking | high | Zloader | hash_sha256: sha256_value,<br/>hash_sha256: sha256_value,<br/>hash_sha256: sha256_value,<br/>hash_md5: md5_value,<br/>hash_md5: md5_value,<br/>hash_sha1: sha1_value,<br/>hash_sha1: sha1_value,<br/>hash_md5: md5_value,<br/>hash_sha1: sha1_value,<br/>hash_sha1: sha1_value | CSA-200342,<br/>CSDR-20011,<br/>CSIT-20009,<br/>CSA-191551,<br/>CSA-200038,<br/>CSIT-17112,<br/>CSA-200149 | url | https://withifceale.top/treusparq.php |
 
 
 ### domain
@@ -382,16 +382,16 @@ Check the given URL reputation.
             ],
             "MaliciousConfidence": "high",
             "Relations": [
-                "hash_md5: 5aa7be72b8e1a13a195308fa26d6dabd",
-                "hash_sha1: b106a6ecd59606390f6b2ff8a51b1e14fee806fd",
-                "hash_sha1: 157cf246924880a2f7fadcf51821e440c8ef8f29",
-                "hash_md5: baff86af61079249a89b4f5a0e8f2567",
-                "hash_sha1: 6fdce3ddab9d9c3f7f662be2f07c7fb16ba2af6f",
-                "hash_md5: 2c17a3ec9e32cb77c7a39a324d9fbfd8",
-                "hash_md5: 2ef77e88c3761bbd698078aa9b93cdbd",
-                "hash_sha256: c5f35cc01739b6d490ad25df3081ea282cbcf83e1c4f41e4416edec35099e62f",
-                "hash_sha256: 21f8fe0ed62b13d68f022a3389b569acb2ca3b1f99ca7c6dcf3fe58197f788a8",
-                "hash_sha1: a62237a14e8d390bd9023b312083386bf00f4cc4"
+                "hash_md5: md5_value",
+                "hash_sha1: sha1_value",
+                "hash_sha1: sha1_value",
+                "hash_md5: md5_value",
+                "hash_sha1: sha1_value",
+                "hash_md5: md5_value",
+                "hash_md5: md5_value",
+                "hash_sha256: sha256_value",
+                "hash_sha256: sha256_value",
+                "hash_sha1: sha1_value"
             ],
             "Reports": [
                 "CSA-191551",
@@ -412,7 +412,7 @@ Check the given URL reputation.
 >
 >|ID|Kill Chains|Labels|Malicious Confidence|Relations|Reports|Type|Value|
 >|---|---|---|---|---|---|---|---|
->| domain_xeemoquo.top | C2 | CSD/CSA-191551,<br/>CSD/CSA-200038,<br/>MaliciousConfidence/High,<br/>KillChain/C2,<br/>CSD/CSDR-20011,<br/>CSD/CSA-200149 | high | hash_md5: 5aa7be72b8e1a13a195308fa26d6dabd,<br/>hash_sha1: b106a6ecd59606390f6b2ff8a51b1e14fee806fd,<br/>hash_sha1: 157cf246924880a2f7fadcf51821e440c8ef8f29,<br/>hash_md5: baff86af61079249a89b4f5a0e8f2567,<br/>hash_sha1: 6fdce3ddab9d9c3f7f662be2f07c7fb16ba2af6f,<br/>hash_md5: 2c17a3ec9e32cb77c7a39a324d9fbfd8,<br/>hash_md5: 2ef77e88c3761bbd698078aa9b93cdbd,<br/>hash_sha256: c5f35cc01739b6d490ad25df3081ea282cbcf83e1c4f41e4416edec35099e62f,<br/>hash_sha256: 21f8fe0ed62b13d68f022a3389b569acb2ca3b1f99ca7c6dcf3fe58197f788a8,<br/>hash_sha1: a62237a14e8d390bd9023b312083386bf00f4cc4 | CSA-191551,<br/>CSA-200038,<br/>CSDR-20011,<br/>CSA-200149 | domain | xeemoquo.top |
+>| domain_xeemoquo.top | C2 | CSD/CSA-191551,<br/>CSD/CSA-200038,<br/>MaliciousConfidence/High,<br/>KillChain/C2,<br/>CSD/CSDR-20011,<br/>CSD/CSA-200149 | high | hash_md5: md5_value,<br/>hash_sha1: sha1_value,<br/>hash_sha1: sha1_value,<br/>hash_md5: md5_value,<br/>hash_sha1: sha1_value,<br/>hash_md5: md5_value,<br/>hash_md5: md5_value,<br/>hash_sha256: sha256_value,<br/>hash_sha256: sha256_value,<br/>hash_sha1: sha1_value | CSA-191551,<br/>CSA-200038,<br/>CSDR-20011,<br/>CSA-200149 | domain | xeemoquo.top |
 
 
 ### ip
@@ -459,13 +459,13 @@ Check IP reputation.
 
 
 #### Command Example
-```!ip ip=185.203.116.58```
+```!ip ip=8.8.8.8```
 
 #### Context Example
 ```
 {
     "DBotScore": {
-        "Indicator": "185.203.116.58",
+        "Indicator": "8.8.8.8",
         "Score": 3,
         "Type": "ip",
         "Vendor": "FalconIntel"
@@ -475,7 +475,7 @@ Check IP reputation.
             "Actors": [
                 "QUILTEDTIGER"
             ],
-            "ID": "ip_address_185.203.116.58",
+            "ID": "ip_address_8.8.8.8",
             "KillChains": [
                 "C2"
             ],
@@ -493,26 +493,26 @@ Check IP reputation.
                 "Badnews"
             ],
             "Relations": [
-                "hash_sha1: 7db999c546820acc518b29a23d98c65aac3608bf",
-                "hash_sha256: 6de9ea7e1947ccd2207450766fe53c4980ba6f1c98b9c8941c63e8ec12333955",
-                "hash_md5: 5b37930d22068b7b6834086e06487758",
-                "hash_md5: aa5f2abb7066d340c5a87dd3dcd8c9df",
-                "hash_sha256: deac3182eca049ba33af97c25c70ba319c88ed29a7ea3407f7fb88b2d3b4cc54",
-                "hash_sha1: 21682642cca2bce6edb04091ecb55aedd71fce76",
-                "hash_md5: 2cd524dd96e3e97df70f2ca111d7c18e",
-                "hash_sha1: 2e4ebcd5e9e343e9d59f125a2a2bfe26638e0e79",
-                "hash_sha256: 09fbede6bc3718897b261333deec80d3d6f862d8b714a35b6f03929193ccf690",
-                "hash_sha1: 66300acece57fe056f139605bcf025d7977c8d59"
+                "hash_sha1: sha1_value",
+                "hash_sha256: sha256_value",
+                "hash_md5: md5_value",
+                "hash_md5: md5_value",
+                "hash_sha256: sha256_value",
+                "hash_sha1: sha1_value",
+                "hash_md5: md5_value",
+                "hash_sha1: sha1_value",
+                "hash_sha256: sha256_value",
+                "hash_sha1: sha1_value"
             ],
             "Type": "ip_address",
-            "Value": "185.203.116.58"
+            "Value": "8.8.8.8"
         }
     },
     "IP": {
         "Actors": [
             "QUILTEDTIGER"
         ],
-        "Address": "185.203.116.58",
+        "Address": "8.8.8.8",
         "KillChains": [
             "C2"
         ],
@@ -533,7 +533,7 @@ Check IP reputation.
 >
 >|Actors|ID|Kill Chains|Labels|Malicious Confidence|Malware Families|Relations|Type|Value|
 >|---|---|---|---|---|---|---|---|---|
->| QUILTEDTIGER | ip_address_185.203.116.58 | C2 | KillChain/C2,<br/>Malware/Badnews,<br/>Actor/QUILTEDTIGER,<br/>ThreatType/Targeted,<br/>MitreATTCK/CommandAndControl/StandardApplicationLayerProtocol,<br/>MaliciousConfidence/High,<br/>MitreATTCK/CommandAndControl/CommonlyUsedPort | high | Badnews | hash_sha1: 7db999c546820acc518b29a23d98c65aac3608bf,<br/>hash_sha256: 6de9ea7e1947ccd2207450766fe53c4980ba6f1c98b9c8941c63e8ec12333955,<br/>hash_md5: 5b37930d22068b7b6834086e06487758,<br/>hash_md5: aa5f2abb7066d340c5a87dd3dcd8c9df,<br/>hash_sha256: deac3182eca049ba33af97c25c70ba319c88ed29a7ea3407f7fb88b2d3b4cc54,<br/>hash_sha1: 21682642cca2bce6edb04091ecb55aedd71fce76,<br/>hash_md5: 2cd524dd96e3e97df70f2ca111d7c18e,<br/>hash_sha1: 2e4ebcd5e9e343e9d59f125a2a2bfe26638e0e79,<br/>hash_sha256: 09fbede6bc3718897b261333deec80d3d6f862d8b714a35b6f03929193ccf690,<br/>hash_sha1: 66300acece57fe056f139605bcf025d7977c8d59 | ip_address | 185.203.116.58 |
+>| QUILTEDTIGER | ip_address_8.8.8.8 | C2 | KillChain/C2,<br/>Malware/Badnews,<br/>Actor/QUILTEDTIGER,<br/>ThreatType/Targeted,<br/>MitreATTCK/CommandAndControl/StandardApplicationLayerProtocol,<br/>MaliciousConfidence/High,<br/>MitreATTCK/CommandAndControl/CommonlyUsedPort | high | Badnews | hash_sha1: sha1_value,<br/>hash_sha256: sha256_value,<br/>hash_md5: md5_value,<br/>hash_md5: md5_value,<br/>hash_sha256: sha256_value,<br/>hash_sha1: sha1_value,<br/>hash_md5: md5_value,<br/>hash_sha1: sha1_value,<br/>hash_sha256: sha256_value,<br/>hash_sha1: sha1_value | ip_address | 8.8.8.8 |
 
 
 ### cs-actors
@@ -789,14 +789,14 @@ Search known indicators based on the given parameters.
 ```
 {
     "DBotScore": {
-        "Indicator": "177.40.218.93",
+        "Indicator": "8.8.8.8",
         "Score": 3,
         "Type": "ip",
         "Vendor": "FalconIntel"
     },
     "FalconIntel": {
         "Indicator": {
-            "ID": "ip_address_177.40.218.93",
+            "ID": "ip_address_id",
             "KillChains": [
                 "C2"
             ],
@@ -828,11 +828,11 @@ Search known indicators based on the given parameters.
                 "CSWR-20014"
             ],
             "Type": "ip_address",
-            "Value": "177.40.218.93"
+            "Value": "8.8.8.8"
         }
     },
     "IP": {
-        "Address": "177.40.218.93",
+        "Address": "8.8.8.8",
         "KillChains": [
             "C2"
         ],
@@ -863,7 +863,7 @@ Search known indicators based on the given parameters.
 >### Falcon Intel Indicator search:
 >|ID|Kill Chains|Labels|Malicious Confidence|Malware Families|Reports|Type|Value|
 >|---|---|---|---|---|---|---|---|
->| ip_address_177.40.218.93 | C2 | CSD/CSA-191023,<br/>CSD/CSA-191350,<br/>CSD/CSA-181072,<br/>CSD/CSWR-17018,<br/>CSD/CSWR-20022,<br/>CSD/CSWR-19024,<br/>MaliciousConfidence/High,<br/>KillChain/C2,<br/>CSD/CSIT-16091,<br/>ThreatType/Commodity | high | njRAT | CSA-191023,<br/>CSA-191350,<br/>CSA-181072,<br/>CSWR-17018,<br/>CSWR-20022,<br/>CSWR-19024,<br/>CSIT-16091,<br/>CSA-201008,<br/>CSWR-20014 | ip_address | 177.40.218.93 |
+>| ip_address_id | C2 | CSD/CSA-191023,<br/>CSD/CSA-191350,<br/>CSD/CSA-181072,<br/>CSD/CSWR-17018,<br/>CSD/CSWR-20022,<br/>CSD/CSWR-19024,<br/>MaliciousConfidence/High,<br/>KillChain/C2,<br/>CSD/CSIT-16091,<br/>ThreatType/Commodity | high | njRAT | CSA-191023,<br/>CSA-191350,<br/>CSA-181072,<br/>CSWR-17018,<br/>CSWR-20022,<br/>CSWR-19024,<br/>CSIT-16091,<br/>CSA-201008,<br/>CSWR-20014 | ip_address | 8.8.8.8 |
 
 
 ### cs-reports
@@ -929,7 +929,7 @@ The Falcon Intel Reports API allows to query CrowdStrike intelligence publicatio
             "LastModifiedSate": "2020-07-24T10:15:02.000Z",
             "Name": "Snort Changelog",
             "ShortDescription": "Added one additional rule to detect Hancitor malware traffic decsribed in CSIT-16107. ",
-            "Slug": "snort-changelog-9-5-2016-6",
+            "Slug": "slug_value",
             "SubType": "Snort/Suricata",
             "Type": "Feeds",
             "URL": "https://falcon.crowdstrike.com/intelligence/reports/snort-changelog-9-5-2016-6/"
