@@ -121,8 +121,6 @@ references:
         echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
 
-        pip3 install git+https://github.com/demisto/demisto-sdk@adding-option-to-ignore-missing-file
-
         echo "========== Build Parameters =========="
         set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH="
         python --version
@@ -136,9 +134,9 @@ references:
       command: |
         demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8 --suffix _4_5
 
-  restore_cache: &restore_cache
-    restore_cache:
-      key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+#  restore_cache: &restore_cache
+#    restore_cache:
+#      key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
 
   destroy_instances: &destroy_instances
     run:
@@ -295,7 +293,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *restore_cache
+#      - *restore_cache
       - *prepare_environment
       - save_cache:
           paths:
@@ -316,7 +314,7 @@ jobs:
           condition: << pipeline.parameters.instance_tests >>
           steps:
             - setup_remote_docker
-            - *restore_cache
+#            - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
             - *run_unit_testing_and_lint
@@ -338,7 +336,7 @@ jobs:
       - unless:
           condition: << pipeline.parameters.instance_tests >>
           steps:
-            - *restore_cache
+#            - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
             - *secrets
@@ -411,7 +409,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *restore_cache
+#      - *restore_cache
       - *prepare_environment
       - *get_contribution_pack
       - *add_ssh_keys
