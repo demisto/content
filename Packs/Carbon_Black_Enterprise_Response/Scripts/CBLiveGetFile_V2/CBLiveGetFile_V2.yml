@@ -1,12 +1,12 @@
 args:
 - default: false
-  description: hostname of a Carbon Black sensor (Could be IP).
+  description: Hostname or IP of a Carbon Black sensor.
   isArray: false
   name: endpoint
   required: true
   secret: false
 - default: false
-  description: Comma seprated files path to download from the endpoint..
+  description: Comma-separated list of file paths to download from the endpoint.
   isArray: true
   name: path
   required: true
@@ -14,16 +14,15 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: '2000'
-  description: Session timeout (ms).
+  description: Session timeout (ms). Default is 2000.
   isArray: false
   name: timeout
   predefined:
-  - Session timeout (If a command will not be issued after this time the session will
+  - Session timeout (If a command is not issued after this time the session will
     be closed)
   required: false
   secret: false
-comment: 'This automation translate endpoint (hostname/IP) to sensor id, Than it downloads
-  given file paths by opening session and closing it.  '
+comment: 'This automation translates an endpoint's hostname/IP to the Carbon Black sensor ID. It then opens a session to the endpoint to download the given file paths and closes the session.  '
 commonfields:
   id: CBLiveGetFile_V2
   version: -1
@@ -37,7 +36,7 @@ outputs:
   description: The command name.
   type: String
 - contextPath: CbLiveResponse.Commands.Status
-  description: The command Status ('pending', 'in progress', 'complete', 'error',
+  description: The command status ('pending', 'in progress', 'complete', 'error', or
     'canceled').
   type: String
 - contextPath: CbLiveResponse.Commands.CommandCompletionTime
@@ -53,16 +52,16 @@ outputs:
   description: File size.
   type: String
 - contextPath: CbLiveResponse.File.SHA1
-  description: File SHA1.
+  description: File SHA1 hash.
   type: String
 - contextPath: CbLiveResponse.File.SHA256
-  description: File SHA256.
+  description: File SHA256 hash.
   type: String
 - contextPath: CbLiveResponse.File.Name
   description: File name.
   type: String
 - contextPath: CbLiveResponse.File.SSDeep
-  description: File SSDeep.
+  description: File SSDeep hash.
   type: String
 - contextPath: CbLiveResponse.File.EntryID
   description: File EntryID.
