@@ -17,8 +17,7 @@ class CrowdStrikeClient(BaseClient):
         self._token = self._generate_token()
         self._headers = {'Authorization': 'bearer ' + self._token}
 
-    @staticmethod
-    def _error_handler(res: requests.Response):
+    def _error_handler(self, res: requests.Response):
         """
         Converting the errors of the API to a string, in case there are no error, return an empty string
         :param res: the request's response
@@ -31,6 +30,14 @@ class CrowdStrikeClient(BaseClient):
             errors = error_entry.get('errors', [])
             err_msg += '\n'.join(f"{error.get('code')}: {error.get('message')}" for  # pylint: disable=no-member
                                  error in errors)
+            if 'Failed to issue access token - Not Authorized' in err_msg:
+                err_msg = err_msg.replace('Failed to issue access token - Not Authorized',
+                                          f'Client Secret ({self._client_secret}) is invalid.')
+            elif 'Failed to generate access token for clientID' in err_msg:
+                err_msg = err_msg.replace('Failed to generate access token for clientID=', 'Client ID (')
+                if err_msg.endswith('.'):
+                    err_msg = err_msg[:-1]
+                err_msg += ') is invalid.'
             raise DemistoException(err_msg)
         except ValueError:
             err_msg += '\n{}'.format(res.text)
