@@ -1,0 +1,14 @@
+{
+    "name": "Content Pack Management",
+    "description": "This pack allows mass management of content packs for update and removal.\n\nThe Demisto API is used, so a valid API key and integration needs to be used too.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "aburt-demisto",
+    "url": "",
+    "email": "",
+    "created": "2020-09-22T16:44:56Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

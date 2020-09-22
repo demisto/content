@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#75cd00",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Content Pack Management",
+ "layout": "ce34e611-b9c2-48d7-8e37-82b4e18f7b6a",
+ "locked": false,
+ "name": "Content Pack Management",
+ "playbookId": "33af74a4-df1f-40dc-8a1a-46cfe8d54e76",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

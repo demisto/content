@@ -1,0 +1,118 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 662b7d12-4ec0-4f4b-8fe4-cf26bb384a9f
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: Update Content Pack
+inputs:
+- description: ""
+  key: package_id
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Update Content Pack
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e2dc0949-0f1a-4784-8974-2495e30c3ffa
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: e2dc0949-0f1a-4784-8974-2495e30c3ffa
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f51c76eb-c26c-409b-8c7e-051917b84e89
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: f51c76eb-c26c-409b-8c7e-051917b84e89
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      package_id:
+        simple: ${inputs.package_id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d32d3281-f1d0-421b-824e-b965dba5364c
+      iscommand: false
+      name: Update the package
+      script: 007d7cc3-1543-4598-8abc-7e9a390a2afa
+      type: regular
+      version: -1
+    taskid: d32d3281-f1d0-421b-824e-b965dba5364c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

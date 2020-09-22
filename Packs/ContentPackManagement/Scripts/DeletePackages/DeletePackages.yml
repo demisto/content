@@ -1,0 +1,24 @@
+args:
+- description: The package ID to delete
+  name: package_id
+  required: true
+commonfields:
+  id: deletePackages
+  version: -1
+dependson:
+  must:
+  - Demisto REST API|||demisto-api-get
+dockerimage: demisto/python3:3.8.5.10845
+enabled: true
+name: deletePackages
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- marketplace
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

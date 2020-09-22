@@ -1,0 +1,35 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Content Pack Management"
+ ],
+ "caseInsensitive": true,
+ "cliName": "contentpackmanagementaction",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_contentpackmanagementaction",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Content Pack Management Action",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  "",
+  "Remove Content Packs",
+  "Selectively Update Packs",
+  "Update All Packs"
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}
