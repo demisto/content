@@ -45,6 +45,7 @@ workflows:
   commit:
     jobs:
       - Level1-1
+      - Level1-2
       - Level2-1:
           requires:
             - Level1-1
