@@ -197,6 +197,15 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 resource_path='/license/upload',
                 method='POST',
                 header_params=header_params, files=files)
+            if 200 <= status_code < 300:
+                message = 'Liceense was successfully updated!\n'
+                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
+            else:
+                result_object = ast.literal_eval(response_data)
+                message = result_object.get('message', '')
+                err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
+                prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+                raise Exception(err_msg)
         except:
             print("Everything is broken")
 
