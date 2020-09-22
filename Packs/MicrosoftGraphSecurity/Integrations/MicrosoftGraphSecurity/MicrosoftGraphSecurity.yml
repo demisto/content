@@ -300,8 +300,8 @@ script:
     - contextPath: MsGraph.Alert.Status
       description: Alert status
       type: string
-  - deprecated: false
-    description: Retrieve a list of user objects.
+  - deprecated: true
+    description: Deprecated. Use the Microsoft Graph User integration instead.
     execution: false
     name: msg-get-users
     outputs:
@@ -324,8 +324,8 @@ script:
       name: user_id
       required: true
       secret: false
-    deprecated: false
-    description: Retrieve the properties and relationships of user object.
+    deprecated: true
+    description: Deprecated. Use the Microsoft Graph User integration instead.
     execution: false
     name: msg-get-user
     outputs:
@@ -352,5 +352,5 @@ script:
   type: python
   dockerimage45: demisto/crypto:1.0.0.7634
 tests:
-- Microsoft Graph Test
+- Microsoft Graph Security Test
 fromversion: 4.1.0
