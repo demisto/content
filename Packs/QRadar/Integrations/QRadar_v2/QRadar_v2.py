@@ -529,14 +529,21 @@ class QRadarClient:
             "POST", url, params=params, data=json.dumps(indicators_list)
         )
 
-    def get_custom_fields(self, limit: Optional[int] = None) -> List[dict]:
+    def get_custom_fields(
+            self, fields: Optional[str] = None, like: bool = False,
+            filter_: Optional[str] = None, limit: Optional[int] = None) -> List[dict]:
         url = urljoin(self._server, "api/config/event_sources/custom_properties/regex_properties")
+        headers = self._auth_headers
         fields = []
         # Paging
         start = 0
         stop = 49
+        params = {}
+        if filter_:
+            params['filter'] = filter_
+        elif fields:
+            params['filter'] = f'name = "{fields}"'
         while True:
-            headers = self._auth_headers
             headers['Range'] = f"items={start}-{stop}"
             response = self.send_request("GET", url, headers=headers)
             if not response:  # Out of fields
@@ -1978,7 +1985,7 @@ def reset_fetch_incidents():
     return "fetch-incidents was reset successfully."
 
 
-def get_mapping_fields(client: QRadarClient, **args) -> dict:
+def get_mapping_fields(client: QRadarClient) -> dict:
     offense = {
         "username_count": "int",
         "description": "str",
@@ -2104,18 +2111,21 @@ def get_mapping_fields(client: QRadarClient, **args) -> dict:
     }
     return fields
 
+
 def get_custom_properties_command(client: QRadarClient, args: dict) -> Tuple[str, dict]:
     try:
         limit = int(args.get('limit'))
     except (TypeError, ValueError):
         limit = None
-
-    properties = client.get_custom_fields(limit)
+    fields = args.get('field')
+    filter_ = args.get('filter')
+    properties = client.get_custom_fields(fields=fields, limit=limit)
     human_readable = tableToMarkdown(
         "QRadar: Custom Properties:",
         properties
     )
     return human_readable, {'QRadar': properties}
+
 
 def main():
     params = demisto.params()
@@ -2208,7 +2218,7 @@ def main():
             demisto.results(reset_fetch_incidents())
         elif command == "get-mapping-fields":
             demisto.results(get_mapping_fields(client))
-        elif command == "qradar-get-custom-attribute"":
+        elif command == "qradar-get-custom-attribute":
             return_outputs()
     except Exception as e:
         error = f"Error has occurred in the QRadar Integration: {str(e)}"
