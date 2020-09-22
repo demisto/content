@@ -93,7 +93,7 @@ configuration:
     This value cannot exceed the maximum allowed query range limit for the Coralogix
     account used.
   defaultvalue: '3'
-  display: Incidents first fetch days
+  display: First fetch timestamp in days
   hidden: false
   name: incidents_first_fetch_range
   required: false
