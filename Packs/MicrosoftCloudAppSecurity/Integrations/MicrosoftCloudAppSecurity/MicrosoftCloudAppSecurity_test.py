@@ -35,17 +35,17 @@ response_users_accounts_data = {"type": "user", "status": 'N/A', "group_id": '12
 
 
 @pytest.mark.parametrize(
-    "response_data, url_suffix, expected",
+    "response_data, expected",
     [
-        (response_alerts_data, '/alerts/', expected_filtered_alerts),
-        (response_activities_data, '/activities/', expected_filtered_activities),
-        (response_files_data, '/files/', expected_filtered_files),
-        (response_users_accounts_data, '/entities/', expected_filtered_users_accounts)
+        (response_alerts_data, expected_filtered_alerts),
+        (response_activities_data, expected_filtered_activities),
+        (response_files_data, expected_filtered_files),
+        (response_users_accounts_data, expected_filtered_users_accounts)
     ]
 )
-def test_args_or_params_to_filter(response_data, url_suffix, expected):
-    from MicrosoftCloudAppSecurity import args_or_params_to_filter
-    res = args_or_params_to_filter(response_data, url_suffix)
+def test_args_or_params_to_filter(response_data, expected):
+    from MicrosoftCloudAppSecurity import args_to_filter
+    res = args_to_filter(response_data)
     assert res == expected
 
 
