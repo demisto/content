@@ -182,8 +182,8 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
     if private_install:
         local_packs = glob.glob("/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
         for local_pack in local_packs:
-            # if any(pack_to_install in local_pack for pack_to_install in packs_to_install):
-            upload_zipped_packs(client=client, host=host, prints_manager=prints_manager, thread_index=thread_index, pack_path=local_pack)
+            if any(pack_to_install['id'] in local_pack for pack_to_install in packs_to_install):
+                upload_zipped_packs(client=client, host=host, prints_manager=prints_manager, thread_index=thread_index, pack_path=local_pack)
     else:
         request_data = {
             'packs': packs_to_install,
