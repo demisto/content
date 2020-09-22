@@ -49,83 +49,96 @@ class Client(BaseClient):
     def list_report(self, url_params) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix='/sma/api/v2.0/reporting' + url_params
+            url_suffix='/sma/api/v2.0/reporting' + url_params,
+            timeout=2000
         )
 
     def list_messages(self, url_params) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix='/sma/api/v2.0/message-tracking/messages' + url_params
+            url_suffix='/sma/api/v2.0/message-tracking/messages' + url_params,
+            timeout=2000
         )
 
     def list_get_message_details(self, url_params):
         return self._http_request(
             method='GET',
-            url_suffix='/sma/api/v2.0/message-tracking/details' + url_params
+            url_suffix='/sma/api/v2.0/message-tracking/details' + url_params,
+            timeout=2000
         )
 
     def list_get_dlp_details(self, url_params):
         return self._http_request(
             method='GET',
-            url_suffix='/sma/api/v2.0/message-tracking/dlp-details' + url_params
+            url_suffix='/sma/api/v2.0/message-tracking/dlp-details' + url_params,
+            timeout=2000
         )
 
     def list_get_amp_details(self, url_params):
         return self._http_request(
             method='GET',
-            url_suffix='/sma/api/v2.0/message-tracking/amp-details' + url_params
+            url_suffix='/sma/api/v2.0/message-tracking/amp-details' + url_params,
+            timeout=2000
         )
 
     def list_get_url_details(self, url_params):
         return self._http_request(
             method='GET',
-            url_suffix='/sma/api/v2.0/message-tracking/url-details' + url_params
+            url_suffix='/sma/api/v2.0/message-tracking/url-details' + url_params,
+            timeout=2000
         )
 
     def list_spam_quarantine(self, url_params):
         return self._http_request(
             method='GET',
-            url_suffix='/sma/api/v2.0/quarantine/messages' + url_params
+            url_suffix='/sma/api/v2.0/quarantine/messages' + url_params,
+            timeout=2000
         )
 
     def list_quarantine_get_details(self, message_id):
         return self._http_request(
             method='GET',
-            url_suffix=f'/sma/api/v2.0/quarantine/messages?mid={message_id}&quarantineType=spam'
+            url_suffix=f'/sma/api/v2.0/quarantine/messages?mid={message_id}&quarantineType=spam',
+            timeout=2000
         )
 
     def list_delete_quarantine_messages(self, request_body):
         return self._http_request(
             method='DELETE',
             url_suffix='/sma/api/v2.0/quarantine/messages',
-            json_data=request_body
+            json_data=request_body,
+            timeout=2000
         )
 
     def list_release_quarantine_messages(self, request_body):
         return self._http_request(
             method='POST',
             url_suffix='/sma/api/v2.0/quarantine/messages',
-            json_data=request_body
+            json_data=request_body,
+            timeout=2000
         )
 
     def list_entries_get(self, url_params, list_type):
         return self._http_request(
             method='GET',
-            url_suffix=f"/sma/api/v2.0/quarantine/{list_type}" + url_params
+            url_suffix=f"/sma/api/v2.0/quarantine/{list_type}" + url_params,
+            timeout=2000
         )
 
     def list_entries_add(self, list_type, request_body):
         return self._http_request(
             method='POST',
             url_suffix=f"/sma/api/v2.0/quarantine/{list_type}",
-            json_data=request_body
+            json_data=request_body,
+            timeout=2000
         )
 
     def list_entries_delete(self, list_type, request_body):
         return self._http_request(
             method='DELETE',
             url_suffix=f"/sma/api/v2.0/quarantine/{list_type}",
-            json_data=request_body
+            json_data=request_body,
+            timeout=2000
         )
 
 
