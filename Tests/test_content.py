@@ -430,11 +430,11 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
     prints_manager.add_print_job(test_end_message, print, thread_index, include_timestamp=True)
 
 
-def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_api_key, proxy, failed_playbooks,
+def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, demisto_pass, proxy, failed_playbooks,
              integrations, unmockable_integrations, playbook_id, succeed_playbooks, test_message, test_options,
              slack, circle_ci, build_number, server_url, build_name, prints_manager, is_ami=True, thread_index=0):
     start_message = f'------ Test {test_message} start ------'
-    client = demisto_client.configure(base_url=server_url, api_key=demisto_api_key, verify_ssl=False)
+    client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
         prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
@@ -707,7 +707,7 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
         text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
-    run_test(t, tests_queue, tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations,
+    run_test(t, tests_queue, tests_settings, demisto_user, demisto_pass, proxy, failed_playbooks, integrations, unmockable_integrations,
              playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
              build_number, server, build_name, prints_manager, is_ami, thread_index=thread_index)
 
@@ -851,7 +851,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     try:
         # first run the mock tests to avoid mockless side effects in container
         if is_ami and mockable_tests:
-            configure_proxy_in_demisto(xsoar_client, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
+            proxy.configure_proxy_in_demisto(xsoar_client, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
             executed_in_current_round, mockable_tests_queue = initialize_queue_and_executed_tests_set(mockable_tests)
             while not mockable_tests_queue.empty():
                 t = mockable_tests_queue.get()
@@ -867,7 +867,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                   unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                                   build_name, server_numeric_version, demisto_user, demisto_pass, prints_manager,
                                   thread_index=thread_index)
-            configure_proxy_in_demisto(xsoar_client, '')
+            proxy.configure_proxy_in_demisto(xsoar_client, '')
 
             # reset containers after clearing the proxy server configuration
             reset_containers(server, demisto_user, demisto_pass, prints_manager, thread_index)
