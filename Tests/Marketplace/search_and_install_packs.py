@@ -5,6 +5,7 @@ import ast
 import json
 import glob
 import demisto_client
+from demisto_client.demisto_api.rest import ApiException
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import print_color, LOG_COLORS, run_threads_list, print_error
 from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES
@@ -198,7 +199,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 method='POST',
                 header_params=header_params, files=files)
             if 200 <= status_code < 300:
-                message = 'Liceense was successfully updated!\n'
+                message = 'License was successfully updated!\n'
                 prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
             else:
                 result_object = ast.literal_eval(response_data)
@@ -206,8 +207,8 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                 err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
                 prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
                 raise Exception(err_msg)
-        except:
-            print("Everything is broken")
+        except ApiException:
+            print("Failed to upload license.")
 
         local_packs = glob.glob("/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
         for local_pack in local_packs:
