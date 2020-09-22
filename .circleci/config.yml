@@ -1,11 +1,8 @@
 version: 2.1
-references:
-  container_config: &container_config
-    docker:
-      - image: devdemisto/content-build:3.0.0.7332  # disable-secrets-detection
 jobs:
   Level1-1:
-    <<: *container_config
+    docker:
+      - image: devdemisto/content-build:3.0.0.7332
     steps:
       - run:
           name: level1-1-step1
@@ -14,7 +11,8 @@ jobs:
             exit 0
           when: always
   Level2-1:
-    <<: *container_config
+    docker:
+      - image: devdemisto/content-build:3.0.0.7332
       steps:
         - run:
             name: level2-1-step1
