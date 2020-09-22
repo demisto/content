@@ -9,7 +9,7 @@ import time
 import unicodedata
 import urllib3
 import demisto_client.demisto_api
-from subprocess import call, Popen, PIPE, check_call, check_output, CalledProcessError
+from subprocess import call, Popen, PIPE, check_call, check_output, CalledProcessError, STDOUT
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
     LOG_COLORS
 
@@ -154,35 +154,8 @@ class AMIConnection:
         self.run_script(self.UPLOAD_MOCKS_SCRIPT, build_name, build_number)
 
     def clone_mock_data(self):
-        remote_key_filepath = self.copy_file(os.path.join('~/.ssh/', self.MOCK_KEY_FILE))
+        remote_key_filepath = self.copy_file(os.path.join('/home/circleci/.ssh/', self.MOCK_KEY_FILE))
         self.run_script(self.CLONE_MOCKS_SCRIPT, remote_key_filepath)
-
-
-def configure_proxy_in_demisto(client, proxy=''):
-    system_conf_response = demisto_client.generic_request_func(
-        self=client,
-        path='/system/config',
-        method='GET'
-    )
-
-    system_conf = ast.literal_eval(system_conf_response[0]).get('sysConf', {})
-
-    http_proxy = https_proxy = proxy
-    if proxy:
-        http_proxy = 'http://' + proxy
-        https_proxy = 'http://' + proxy
-    system_conf.update({
-        'http_proxy': http_proxy,
-        'https_proxy': https_proxy
-    })
-    data = {
-        'data': system_conf,
-        'version': -1
-    }
-    response = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                   method='POST', body=data)
-    # client.api_client.pool.close()
-    return response
 
 
 class MITMProxy:
@@ -329,12 +302,14 @@ class MITMProxy:
             split_command = command.split()
             prints_manager.add_print_job('Let\'s try and clean the mockfile from timestamp data!', print, thread_index)
             try:
-                check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
+                check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'), stderr=STDOUT)
             except CalledProcessError as e:
                 cleaning_err_msg = 'There may have been a problem when filtering timestamp data from the mock file.'
                 prints_manager.add_print_job(cleaning_err_msg, print_error, thread_index)
                 err_msg = f'command `{command}` exited with return code [{e.returncode}]'
                 err_msg = f'{err_msg} and the output of "{e.output}"' if e.output else err_msg
+                if e.stderr:
+                    err_msg += f'STDERR: {e.stderr}'
                 prints_manager.add_print_job(err_msg, print_error, thread_index)
             else:
                 prints_manager.add_print_job('Success!', print_color, thread_index, LOG_COLORS.GREEN)

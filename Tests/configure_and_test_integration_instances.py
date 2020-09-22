@@ -799,6 +799,7 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
     prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
 
     # make request to update server configs
+    # disable-secrets-detection-start
     server_configuration = {
         'content.pack.verify': 'false',
         'marketplace.initial.sync.delay': '0',
@@ -816,6 +817,7 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
             'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
                 branch_name, ci_build_number)
     error_msg = "Failed to set GCP bucket server config - with status code "
+    # disable-secrets-detection-end
     return update_server_configuration(client, server_configuration, error_msg)
 
 
@@ -1266,14 +1268,16 @@ def main():
     prints_manager = ParallelPrintsManager(1)
 
     configure_servers_and_restart(build, prints_manager)
+    installed_content_packs_successfully = False
 
     if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
         if build.is_nightly:
             install_nightly_pack(build, prints_manager)
             installed_content_packs_successfully = True
         else:
-            pack_ids = get_non_added_packs_ids(build)
-            installed_content_packs_successfully = install_packs(build, prints_manager, pack_ids=pack_ids)
+            if not build.is_private:
+                pack_ids = get_non_added_packs_ids(build)
+                installed_content_packs_successfully = install_packs(build, prints_manager, pack_ids=pack_ids)
     else:
         installed_content_packs_successfully = True
 

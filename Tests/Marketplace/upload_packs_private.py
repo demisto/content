@@ -8,7 +8,6 @@ import prettytable
 import glob
 import git
 import requests
-import subprocess
 from datetime import datetime
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
@@ -402,7 +401,6 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
-            path_to_pack_in_artifacts = os.path.join(extract_destination_path, pack_id)
             is_changed_private_pack = is_private_build and pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
@@ -434,8 +432,8 @@ def add_private_packs_to_index(index_folder_path, private_index_path):
             update_index_folder(index_folder_path, d.name, d.path)
 
 
-def update_index_with_priced_packs(private_storage_bucket, extract_destination_path, index_folder_path, pack_names,
-                                   is_private_build):
+def update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
+                                   index_folder_path, pack_names, is_private_build):
     """ Updates index with priced packs and returns list of priced packs data.
 
     Args:
@@ -451,11 +449,13 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
     private_packs = []
 
     try:
-        private_index_path, private_index_blob, _ = download_and_extract_index(private_storage_bucket,
-                                                                               os.path.join(extract_destination_path,
-                                                                                            'private'))
+        (private_index_path, private_index_blob, _) = \
+            download_and_extract_index(private_storage_bucket,
+                                       os.path.join(extract_destination_path,
+                                                    'private'))
         print("get_private_packs")
-        private_packs = get_private_packs(private_index_path, pack_names, is_private_build, extract_destination_path)
+        private_packs = get_private_packs(private_index_path, pack_names, is_private_build,
+                                          extract_destination_path)
         print("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
         print("Finished updating index with priced packs")
@@ -476,14 +476,16 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status", "Pack Bucket URL"] if include_pack_status \
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status",
+                    "Pack Bucket URL"] if include_pack_status \
         else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message, pack.bucket_url] if include_pack_status \
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message,
+               pack.bucket_url] if include_pack_status \
             else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
         table.add_row(row)
 
@@ -501,7 +503,8 @@ def build_summary_table_md(packs_input_list, include_pack_status=False):
         Markdown table: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status", "Pack Bucket URL"] if include_pack_status \
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status",
+                    "Pack Bucket URL"] if include_pack_status \
         else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
 
     table = ['|', '|']
@@ -513,7 +516,8 @@ def build_summary_table_md(packs_input_list, include_pack_status=False):
     for index, pack in enumerate(packs_input_list):
         pack_status_message = PackStatus[pack.status].value if include_pack_status else ''
 
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message, pack.bucket_url] if include_pack_status \
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message,
+               pack.bucket_url] if include_pack_status \
             else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
 
         row_hr = '|'
@@ -731,7 +735,6 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
                                        private_storage_bucket=None, content_repo=None, current_commit_hash='',
                                        remote_previous_commit_hash='', packs_statistic_df=None):
     build_number = upload_config.ci_build_number
-    branch_name = upload_config.branch_name
     remove_test_playbooks = upload_config.remove_test_playbooks
     signature_key = upload_config.key_string
     extract_destination_path = upload_config.extract_path
@@ -816,9 +819,10 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
         pack_was_modified = False
 
     bucket_for_uploading = private_storage_bucket if private_storage_bucket else storage_bucket
-    task_status, skipped_pack_uploading, full_pack_path = pack.upload_to_storage(zip_pack_path, pack.latest_version,
-                                                                 bucket_for_uploading,
-                                                                 override_all_packs or pack_was_modified)
+    (task_status, skipped_pack_uploading, full_pack_path) = \
+        pack.upload_to_storage(zip_pack_path, pack.latest_version,
+                               bucket_for_uploading, override_all_packs
+                               or pack_was_modified, private_content=True)
     if full_pack_path is not None:
         bucket_path = 'https://console.cloud.google.com/storage/browser/marketplace-ci-build-private/'
         bucket_url = bucket_path + full_pack_path
@@ -849,8 +853,9 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
         pack.cleanup()
         return
 
-    task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
-                                      pack_version=pack.latest_version, hidden_pack=pack.hidden)
+    task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name,
+                                      pack_path=pack.path, pack_version=pack.latest_version,
+                                      hidden_pack=pack.hidden)
     if not task_status:
         pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
         pack.cleanup()
@@ -907,7 +912,7 @@ def option_handler():
     return parser.parse_args()
 
 
-def main():
+def prepare_test_directories():
     packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
     zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
     if not os.path.exists(packs_dir):
@@ -916,6 +921,10 @@ def main():
     if not os.path.exists(zip_path):
         print("Temp dir not found. Creating.")
         os.mkdir(zip_path)
+
+
+def main():
+    prepare_test_directories()
     upload_config = option_handler()
     packs_artifacts_path = upload_config.artifacts_path
     extract_destination_path = upload_config.extract_path

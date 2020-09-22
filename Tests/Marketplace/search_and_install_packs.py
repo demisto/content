@@ -180,10 +180,40 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
     """
 
     if private_install:
+        license_path = '/home/runner/work/content-private/content-private/content-test-conf/demisto.lic'
+        header_params = {
+            'Content-Type': 'multipart/form-data'
+        }
+        file_path = os.path.abspath(license_path)
+        files = {'file': file_path}
+
+        message = 'Making "POST" request to server {} - to update the license {}'.format(
+            host, license_path)
+        prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                     include_timestamp=True)
+        prints_manager.execute_thread_prints(thread_index)
+        try:
+            response_data, status_code, _ = client.api_client.call_api(
+                resource_path='/license/upload',
+                method='POST',
+                header_params=header_params, files=files)
+            if 200 <= status_code < 300:
+                message = 'Liceense was successfully updated!\n'
+                prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
+            else:
+                result_object = ast.literal_eval(response_data)
+                message = result_object.get('message', '')
+                err_msg = f'Failed to install packs - with status code {status_code}\n{message}\n'
+                prints_manager.add_print_job(err_msg, print_error, thread_index, include_timestamp=True)
+                raise Exception(err_msg)
+        except:
+            print("Everything is broken")
+
         local_packs = glob.glob("/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
         for local_pack in local_packs:
-            # if any(pack_to_install in local_pack for pack_to_install in packs_to_install):
-            upload_zipped_packs(client=client, host=host, prints_manager=prints_manager, thread_index=thread_index, pack_path=local_pack)
+            if any(pack_to_install['id'] in local_pack for pack_to_install in packs_to_install):
+                upload_zipped_packs(client=client, host=host, prints_manager=prints_manager,
+                                    thread_index=thread_index, pack_path=local_pack)
     else:
         request_data = {
             'packs': packs_to_install,

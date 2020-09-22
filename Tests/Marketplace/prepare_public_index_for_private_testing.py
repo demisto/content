@@ -67,7 +67,7 @@ def upload_modified_index(public_index_folder_path, extract_destination_path, pu
         public_ci_dummy_index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
         public_ci_dummy_index_blob.upload_from_filename(index_zip_path)
 
-        print_color(f"Finished uploading index.zip to storage.", LOG_COLORS.GREEN)
+        print_color("Finished uploading index.zip to storage.", LOG_COLORS.GREEN)
     except Exception as e:
         print_error(f"Failed in uploading index. "
                     f"Mismatch in index file generation, additional info: {e}\n")
