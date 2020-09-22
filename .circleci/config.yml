@@ -13,13 +13,13 @@ jobs:
   Level2-1:
     docker:
       - image: devdemisto/content-build:3.0.0.7332
-      steps:
-        - run:
-            name: level2-1-step1
-            shell: /bin/bash
-            command: |
-              exit 0
-            when: always
+    steps:
+      - run:
+          name: level2-1-step1
+          shell: /bin/bash
+          command: |
+            exit 0
+          when: always
 
 
 workflows:
