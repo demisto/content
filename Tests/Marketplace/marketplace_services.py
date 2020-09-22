@@ -1144,7 +1144,8 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df):
+                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df,
+                        is_private_build=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1180,7 +1181,7 @@ class Pack(object):
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []))
 
-            if packs_statistic_df:
+            if packs_statistic_df and not is_private_build:
                 self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
