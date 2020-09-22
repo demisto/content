@@ -98,7 +98,7 @@ class Client(BaseClient):
     def list_quarantine_get_details(self, message_id):
         return self._http_request(
             method='GET',
-            url_suffix=f'/sma/api/v2.0/quarantine/messages?mid={message_id}&quarantineType=spam',
+            url_suffix=f'/sma/api/v2.0/quarantine/messages/details?mid={message_id}&quarantineType=spam',
             timeout=2000
         )
 
