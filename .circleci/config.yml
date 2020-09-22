@@ -19,7 +19,7 @@ jobs:
           shell: /bin/bash
           command: |
             echo "running level1-2-step1"
-            exit 1
+            exit 1 || true
           when: always
       - run:
           name: level1-2-step2
@@ -45,7 +45,7 @@ workflows:
   commit:
     jobs:
       - Level1-1
-      - Level1-2 || true
+      - Level1-2
       - Level2-1:
           requires:
             - Level1-1
