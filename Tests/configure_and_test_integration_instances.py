@@ -1272,8 +1272,9 @@ def main():
             install_nightly_pack(build, prints_manager)
             installed_content_packs_successfully = True
         else:
-            pack_ids = get_non_added_packs_ids(build)
-            installed_content_packs_successfully = install_packs(build, prints_manager, pack_ids=pack_ids)
+            if not build.is_private:
+                pack_ids = get_non_added_packs_ids(build)
+                installed_content_packs_successfully = install_packs(build, prints_manager, pack_ids=pack_ids)
     else:
         installed_content_packs_successfully = True
 
