@@ -950,10 +950,9 @@ def disable_all_integrations(dem_client, prints_manager, thread_index=0):
     Arguments:
         client -- demisto py client
     """
-    client = dem_client
     try:
         body = {'size': 1000}
-        int_resp = demisto_client.generic_request_func(self=client, method='POST',
+        int_resp = demisto_client.generic_request_func(self=dem_client, method='POST',
                                                        path='/settings/integration/search',
                                                        body=body)
         int_instances = ast.literal_eval(int_resp[0])
@@ -977,4 +976,4 @@ def disable_all_integrations(dem_client, prints_manager, thread_index=0):
             prints_manager.add_print_job(add_to_disable_message, print, thread_index)
             to_disable.append(instance)
     if len(to_disable) > 0:
-        __disable_integrations_instances(client, to_disable, prints_manager, thread_index=thread_index)
+        __disable_integrations_instances(dem_client, to_disable, prints_manager, thread_index=thread_index)
