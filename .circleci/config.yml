@@ -19,15 +19,22 @@ jobs:
           shell: /bin/bash
           command: |
             echo "running level1-2-step1"
-            exit 1 || true
+            exit 1
           when: always
       - run:
           name: level1-2-step2
           shell: /bin/bash
           command: |
-            echo "running level1-2-step1"
+            echo "running level1-2-step2"
             exit 0
-          when: always
+      - run:
+          name: level1-2-step3
+          shell: /bin/bash
+          command: |
+            echo "running level1-2-step3"
+            echo "should run even when a previous step failed"
+            exit 0
+          when: on_fail
   Level2-1:
     docker:
       - image: devdemisto/content-build:3.0.0.7332
