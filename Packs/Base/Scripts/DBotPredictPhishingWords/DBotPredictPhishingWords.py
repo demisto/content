@@ -37,7 +37,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     model = demisto_ml.decode_model(model_data)
     text = "%s %s" % (email_subject, email_body)
     language = demisto.args().get('language', 'English')
-    tokenization = demisto.args().get('tokenizationMethod', 'English')
+    tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
     res = demisto.executeCommand('WordTokenizerNLP', {'value': text,
                                                       'hashWordWithSeed': demisto.args().get('hashSeed'),
                                                       'language': language,
