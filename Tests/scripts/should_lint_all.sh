@@ -15,12 +15,13 @@ fi
 if [ -z "$CIRCLE_BRANCH" ]; then
     # simply compare against origin/master. Local testing case..
     DIFF_COMPARE=origin/$FEATURE_BRANCH
-elif [ "$CIRCLE_BRANCH" == $FEATURE_BRANCH ]; then
+elif [ $CIRCLE_BRANCH == $FEATURE_BRANCH ]; then
     # on master we use the range obtained from CIRCLE_COMPARE_URL
     # example of comapre url: https://github.com/demisto/content/compare/62f0bd03be73...1451bf0f3c2a
     # if CIRCLE_COMPARE_URL is not set we use last commit
     if [ -z "$CIRCLE_COMPARE_URL" ]; then
         DIFF_COMPARE="HEAD^1...HEAD"
+        echo "Feature branch $FEATURE_BRANCH - run all"
     else
         DIFF_COMPARE=$(echo "$CIRCLE_COMPARE_URL" | sed 's:^.*/compare/::g')    
         if [ -z "${DIFF_COMPARE}" ]; then
