@@ -725,23 +725,16 @@ def get_poll_minutes(current_time: datetime, sent: Optional[str]) -> float:
     return poll_time_minutes
 
 
-def add_info_headers(headers, expiry):
+def add_info_headers(headers: dict, expiry):
     # pylint: disable=no-member
     try:
-        calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
-        brand_name = calling_context.get('IntegrationBrand', '')
-        instance_name = calling_context.get('IntegrationInstance', '')
         auth = send_slack_request_sync(CLIENT, 'auth.test')
         team_name = auth.get('team', '')
         team_id = auth.get('team_id', '')
-        headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
-        headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
         headers['X-Content-TeamName'] = team_name
         headers['X-Content-TeamID'] = team_id
-        headers['X-Content-LicenseID'] = demisto.getLicenseID()  # type: ignore[attr-defined]
         headers['X-Content-Expiry'] = expiry if expiry else 'No expiry'
-        if hasattr(demisto, 'demistoVersion'):
-            headers['X-Content-Server-Version'] = demisto.demistoVersion().get('version')
+        headers.update(get_x_content_info_headers())
     except Exception as e:
         demisto.error(f'Failed getting integration info: {str(e)}')
 
