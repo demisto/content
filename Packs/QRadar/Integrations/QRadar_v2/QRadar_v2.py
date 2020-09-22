@@ -18,7 +18,7 @@ from requests.exceptions import HTTPError
 urllib3.disable_warnings()
 
 """ ADVANCED GLOBAL PARAMETERS """
-EVENTS_INTERVAL_SECS = 155           # interval between events polling
+EVENTS_INTERVAL_SECS = 15           # interval between events polling
 EVENTS_FAILURE_LIMIT = 3            # amount of consecutive failures events fetch will tolerate
 FETCH_SLEEP = 60                    # sleep between fetches
 BATCH_SIZE = 100                    # batch size used for offense ip enrichment
