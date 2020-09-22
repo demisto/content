@@ -3,46 +3,41 @@ commonfields:
   id: Google Resource Manager
   version: -1
 configuration:
-- defaultvalue: ''
-  display: Project ID
+- display: Project ID
   name: project_id
-  options: []
   required: true
   type: 0
-- defaultvalue: ''
-  display: Private Key ID
+- display: Private Key ID
   name: private_key_id
-  options: []
   required: true
   type: 4
 - defaultvalue: ''
   display: Private Key
   name: private_key
-  options: []
   required: true
   type: 4
 - defaultvalue: ''
   display: Client Email
   name: client_email
-  options: []
   required: true
   type: 0
 - defaultvalue: ''
   display: Client ID
   name: client_id
-  options: []
   required: true
   type: 4
 - defaultvalue: ''
   display: Client X509 Cert URL
   name: client_x509_cert_url
-  options: []
   required: true
   type: 0
 - defaultvalue: ''
   display: Use system proxy settings
   name: proxy
-  options: []
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
   type: 8
 description: Google Cloud Platform Resource Manager

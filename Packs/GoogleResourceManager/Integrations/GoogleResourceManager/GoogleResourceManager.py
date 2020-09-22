@@ -1,9 +1,10 @@
 import json
 import time
+import urlparse
+import httplib2
 
 import googleapiclient
 from google.oauth2 import service_account
-from googleapiclient._auth import authorized_http
 from googleapiclient import discovery
 
 import demistomock as demisto  # noqa: F401
@@ -23,7 +24,7 @@ CLIENT_EMAIL = PARAMS.get('client_email').encode('utf-8')
 CLIENT_ID = PARAMS.get('client_id').encode('utf-8')
 CLIENT_X509_CERT_URL = PARAMS.get('client_x509_cert_url').encode('utf-8')
 PROXY = PARAMS.get('proxy')
-DISABLE_SSL = True
+DISABLE_SSL = PARAMS.get('insecure')
 
 AUTH_JSON = {
     'type': 'service_account',  # guardrails-disable-line
@@ -42,10 +43,30 @@ AUTH_JSON = {
 API_VERSION = 'v1'
 GRM = 'cloudresourcemanager'
 SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
-SERVICE = None      # variable set by build_and_authenticate() function
 
 
 ''' HELPER FUNCTIONS '''
+
+
+# disable-secrets-detection-start
+def get_http_client_with_proxy():
+    proxies = handle_proxy()
+    if not proxies or not proxies['https']:
+        raise Exception('https proxy value is empty. Check Demisto server configuration')
+    https_proxy = proxies['https']
+    if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+        https_proxy = 'https://' + https_proxy
+    parsed_proxy = urlparse.urlparse(https_proxy)
+    proxy_info = httplib2.ProxyInfo(
+        proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
+        proxy_host=parsed_proxy.hostname,
+        proxy_port=parsed_proxy.port,
+        proxy_user=parsed_proxy.username,
+        proxy_pass=parsed_proxy.password)
+    return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
+
+
+# disable-secrets-detection-end
 
 
 def build_and_authenticate():
@@ -61,15 +82,8 @@ def build_and_authenticate():
     """
     service_credentials = service_account.Credentials.from_service_account_info(AUTH_JSON, scopes=SCOPE)
 
-    # service_credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_info,
-    #                                                                                        scopes=SCOPE)
-    if PROXY:
-        http_client = authorized_http(service_credentials)
-        http_client.disable_ssl_certificate_validation = DISABLE_SSL
-        return discovery.build(GRM, API_VERSION, http=http_client)
-
-        # http_client = service_credentials.authorize(get_http_client_with_proxy())
-        # return discovery.build(GRM, API_VERSION, http=http_client)
+    if PROXY or DISABLE_SSL:
+        return discovery.build(GRM, API_VERSION, http=get_http_client_with_proxy())
 
     service = discovery.build(GRM, API_VERSION, credentials=service_credentials)
     return service
@@ -135,9 +149,9 @@ def poll_operation(operation):
     if not operation.get('error'):
         return operation.get('response')
     else:
-        ex = operation.get('error')
-        err_code = ex.get('code')
-        err_msg = ex.get('message')
+        exc = operation.get('error')
+        err_code = exc.get('code')
+        err_msg = exc.get('message')
         full_err_msg = "error code: {}\nerror message: {}".format(err_code, err_msg)
         return_error(full_err_msg)
 
@@ -151,16 +165,16 @@ def test_module():
     demisto.results('ok')
 
 
-def create_project(project_body):
+def create_project(service, project_body):
     """Build service object and return the result of calling the API 'create' function for the projects resource."""
     body = make_project_body(project_body)
-    operation = SERVICE.projects().create(body=body).execute()
+    operation = service.projects().create(body=body).execute()
     # Get back result of long-running operation
     response = poll_operation(operation)
     return response
 
 
-def create_project_command():
+def create_project_command(service):
     """
     Create a project in the Google Cloud Platform.
 
@@ -187,7 +201,7 @@ def create_project_command():
         The new Project resource object
     """
     args = demisto.args()
-    response = create_project(args)
+    response = create_project(service, args)
     # Parse response into context
     context = {
         'Name': response.get('name'),
@@ -214,13 +228,13 @@ def create_project_command():
     })
 
 
-def delete_project(project_id):
+def delete_project(service, project_id):
     """Build service object and return the result of calling the API 'delete' function for the projects resource."""
-    operation = SERVICE.projects().delete(projectId=project_id).execute()
+    operation = service.projects().delete(projectId=project_id).execute()
     return operation
 
 
-def delete_project_command():
+def delete_project_command(service):
     """
     Deletes the specified project.
 
@@ -233,9 +247,9 @@ def delete_project_command():
         Deleted project resource object
     """
     project_id = demisto.args()['project_id']
-    response = delete_project(project_id)
+    response = delete_project(service, project_id)
     if not response:
-        response = get_project(project_id)
+        response = get_project(service, project_id)
         # Parse response into context
         context = {
             'Name': response.get('name'),
@@ -264,13 +278,13 @@ def delete_project_command():
         return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
 
 
-def undelete_project(project_id):
+def undelete_project(service, project_id):
     """Build service object and return the result of calling the API 'undelete' function for the projects resource."""
-    operation = SERVICE.projects().undelete(projectId=project_id).execute()
+    operation = service.projects().undelete(projectId=project_id).execute()
     return operation
 
 
-def undelete_project_command():
+def undelete_project_command(service):
     """
     Restores the specified project.
 
@@ -283,9 +297,9 @@ def undelete_project_command():
         Restored project resource object
     """
     project_id = demisto.args()['project_id']
-    response = undelete_project(project_id)
+    response = undelete_project(service, project_id)
     if not response:
-        response = get_project(project_id)
+        response = get_project(service, project_id)
         # Parse response into context
         context = {
             'Name': response.get('name'),
@@ -314,13 +328,13 @@ def undelete_project_command():
         return_error('Unexpected return object from {} execution. Results uncertain.'.format(demisto.command()))
 
 
-def get_project(project_id):
+def get_project(service, project_id):
     """Build service object and return the result of calling the API 'get' function for the projects resource."""
-    operation = SERVICE.projects().get(projectId=project_id).execute()
+    operation = service.projects().get(projectId=project_id).execute()
     return operation
 
 
-def get_project_command():
+def get_project_command(service):
     """
     Retrieves the Project identified by the specified project_id.
 
@@ -331,7 +345,7 @@ def get_project_command():
         The project resource object specified by the project_id
     """
     project_id = demisto.args().get('project_id')
-    response = get_project(project_id)
+    response = get_project(service, project_id)
     # Parse response into context
     context = {
         'Name': response.get('name'),
@@ -358,13 +372,13 @@ def get_project_command():
     })
 
 
-def list_projects(filter_list):
+def list_projects(service, filter_list):
     """Build service object and return the result of calling the API 'list' function for the projects resource."""
-    operation = SERVICE.projects().list(filter=filter_list).execute()
+    operation = service.projects().list(filter=filter_list).execute()
     return operation
 
 
-def list_projects_command():
+def list_projects_command(service):
     """
     Lists Projects that are visible to the user and satisfy the specified
     filter if one is provided.
@@ -376,7 +390,7 @@ def list_projects_command():
         Project resource objects that are visible to the user and satisfy the specified filter
     """
     filter_list = demisto.args().get('filter') if 'filter' in demisto.args() else None
-    response = list_projects(filter_list)
+    response = list_projects(service, filter_list)
     contexts = []
     for project in response.get('projects', []):
         # Parse project into context
@@ -408,13 +422,13 @@ def list_projects_command():
     demisto.results(entry)
 
 
-def update_project(project_id, project_body):
+def update_project(service, project_id, project_body):
     """Build service object and return the result of calling the API 'update' function for the projects resource."""
-    operation = SERVICE.projects().update(projectId=project_id, body=project_body).execute()
+    operation = service.projects().update(projectId=project_id, body=project_body).execute()
     return operation
 
 
-def update_project_command():
+def update_project_command(service):
     """
     Updates the attributes of the Project identified by the specified project_id.
 
@@ -443,7 +457,7 @@ def update_project_command():
     project_id = demisto.args().get('project_id')
     project_body = demisto.args()
     project_body = make_project_body(project_body)
-    response = update_project(project_id, project_body)
+    response = update_project(service, project_id, project_body)
     # Parse response into context
     context = {
         'Name': response.get('name'),
@@ -470,15 +484,15 @@ def update_project_command():
     })
 
 
-def search_organizations(req_body):
+def search_organizations(service, req_body):
     """
     Build service object and return the result of calling the API 'search' function for the organizations resource.
     """
-    operation = SERVICE.organizations().search(body=req_body).execute()
+    operation = service.organizations().search(body=req_body).execute()
     return operation
 
 
-def search_organizations_command():
+def search_organizations_command(service):
     """
     Searches Organization resources that are visible to the user and satisfy
     the specified filter (if provided).
@@ -511,7 +525,7 @@ def search_organizations_command():
     # from the search organizations API call - this is useful in the case that a pageSize argument was given in this
     # command that was less than the total amount of results returned from the original call to the API
     while next_page:
-        response = search_organizations(req_body)
+        response = search_organizations(service, req_body)
         contents.append(response)
         for organization in response.get('organizations', []):
             # Parse organization into context
@@ -542,7 +556,7 @@ def search_organizations_command():
     demisto.results(entry)
 
 
-def get_organization(name):
+def get_organization(service, name):
     """
     Build service object and return the result of calling the API 'get' function for the organizations resource.
 
@@ -552,11 +566,11 @@ def get_organization(name):
     returns: (Organization) operation
         The response from calling the API that takes the form of a Organization object
     """
-    operation = SERVICE.organizations().get(name=name).execute()
+    operation = service.organizations().get(name=name).execute()
     return operation
 
 
-def get_organization_command():
+def get_organization_command(service):
     """
     Fetches an Organization resource identified by the specified resource name.
 
@@ -567,7 +581,7 @@ def get_organization_command():
         The organization object with its associated fields
     """
     name = demisto.args().get('name')
-    response = get_organization(name)
+    response = get_organization(service, name)
     # Parse response into context
     context = {
         'Name': response.get('name'),
@@ -592,40 +606,47 @@ def get_organization_command():
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-# Command Switch Panel
-commands = {
-    "grm-create-project": create_project_command,
-    "grm-delete-project": delete_project_command,
-    "grm-get-project": get_project_command,
-    "grm-list-projects": list_projects_command,
-    "grm-update-project": update_project_command,
-    "grm-search-organizations": search_organizations_command,
-    "grm-get-organization": get_organization_command,
-    "grm-undelete-project": undelete_project_command,
-}
 
-LOG('Command being called is %s' % (demisto.command()))
+def main():
+    # Command Switch Panel
+    commands = {
+        "grm-create-project": create_project_command,
+        "grm-delete-project": delete_project_command,
+        "grm-get-project": get_project_command,
+        "grm-list-projects": list_projects_command,
+        "grm-update-project": update_project_command,
+        "grm-search-organizations": search_organizations_command,
+        "grm-get-organization": get_organization_command,
+        "grm-undelete-project": undelete_project_command,
+    }
 
-try:
-    handle_proxy()
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-    elif demisto.command() in commands.keys():
-        SERVICE = build_and_authenticate()
-        commands[demisto.command()]()
+    LOG('Command being called is %s' % (demisto.command()))
 
-except Exception as e:
-    # Output HttpError errors from googleapiclient to the warroom nicely
-    if type(e) is googleapiclient.errors.HttpError:
-        if e.resp.get('content-type').startswith('application/json'):
-            err_json = json.loads((e.content).decode('utf-8'))
-            error_code = (err_json.get('error').get('code'))
-            error_msg = (err_json.get('error').get('message'))
-            error_reason = (err_json.get('error').get('errors')[0].get('reason'))
-            error_status = (err_json.get('error').get('status'))
-            full_err_msg = "error code: {}\n{}\nreason: {}\nstatus: {}".format(error_code, error_msg,
-                                                                               error_reason, error_status)
-            return_error(full_err_msg)
-    else:
-        return_error(str(e))
+    try:
+        handle_proxy()
+
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+        elif demisto.command() in commands.keys():
+            service = build_and_authenticate()
+            commands[demisto.command()](service)
+
+    except Exception as exc:
+        # Output HttpError errors from googleapiclient to the warroom nicely
+        if isinstance(exc, googleapiclient.errors.HttpError):
+            if exc.resp.get('content-type').startswith('application/json'):  # pylint: disable=no-member
+                err_json = json.loads(exc.content.decode('utf-8'))  # pylint: disable=no-member
+                error_code = (err_json.get('error').get('code'))
+                error_msg = (err_json.get('error').get('message'))
+                error_reason = (err_json.get('error').get('errors')[0].get('reason'))
+                error_status = (err_json.get('error').get('status'))
+                full_err_msg = "error code: {}\n{}\nreason: {}\nstatus: {}".format(error_code, error_msg,
+                                                                                   error_reason, error_status)
+                return_error(full_err_msg)
+        else:
+            return_error(str(exc))
+
+
+if __name__ in ("__builtin__", "builtins"):
+    main()
