@@ -145,7 +145,7 @@ tasks:
     task:
       id: d7f93aaa-8ac9-4955-82c6-77898460f93c
       version: -1
-      name: 'Detonate URL - CrowdStrike'
+      name: Detonate URL - CrowdStrike
       description: Detonate one or more files using the CrowdStrike Falcon Sandbox
         integration. This playbook returns relevant reports to the War Room and file
         reputations to the context data.
