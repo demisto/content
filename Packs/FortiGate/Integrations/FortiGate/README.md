@@ -2,6 +2,7 @@
 <h2>Overview</h2>
 <p>Use the Fortinet FortiGate integration to manage firewall settings and groups.</p>
 <p>We recommend that users have an API account that is set to root vdom in order to access all commands.</p>
+<p>This integration was integrated and tested with FortiOS 5.6.8</p>
 <h2>Configure FortiGate on Demisto</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
