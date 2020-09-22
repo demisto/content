@@ -225,6 +225,7 @@ script:
     arguments:
     - name: ids
       description: A comma separated list of one or more IDs to resolve.
+      required: true
     - name: status
       auto: PREDEFINED
       predefined:
@@ -236,6 +237,8 @@ script:
       description: The status to which you want to transition a detection.
     - name: assigned_to_uuid
       description: ' A user ID, for example: 1234567891234567891. '
+    - name: comment
+      description: Optional comment to add to the detection. Comments are displayed with the detection in Falcon and usually used to provide context or notes for other Falcon users.
     - name: show_in_ui
       auto: PREDEFINED
       predefined:
@@ -243,7 +246,7 @@ script:
       - "false"
       description: If set to true, will display the dectection in the UI.
     - name: username
-      description: Username to resolve resolve detections of (This is usually the
+      description: Username to assign the detections to (This is usually the
         user’s email address, but may vary based on your configuration).
     description: Resolves and updates a detection.
   - name: cs-falcon-contain-host
