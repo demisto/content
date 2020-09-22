@@ -3074,7 +3074,8 @@
         "Cherwell - test": "Issue 26780",
         "MISP V2 Test": "Issue 26905",
         "Logzio - Test": "Issue 26729",
-        "pyEWS_Test": "Issue 28339"
+        "pyEWS_Test": "Issue 28339",
+        "DuoAdmin API test playbook": "Issue 24937"
     },
     "skipped_integrations": {
 
