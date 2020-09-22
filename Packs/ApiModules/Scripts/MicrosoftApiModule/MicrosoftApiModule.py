@@ -458,15 +458,7 @@ class MicrosoftClient(BaseClient):
         # pylint: disable=no-member
         headers = {}
         try:
-            calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
-            brand_name = calling_context.get('IntegrationBrand', '')
-            instance_name = calling_context.get('IntegrationInstance', '')
-            headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
-            headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
-            if hasattr(demisto, 'demistoVersion'):
-                demisto_version = demisto.demistoVersion()
-                headers['X-Content-Server-Version'] = '{}-{}'.format(demisto_version.get('version'),
-                                                                     demisto_version.get("buildNumber"))
+            headers = get_x_content_info_headers()
         except Exception as e:
             demisto.error('Failed getting integration info: {}'.format(str(e)))
 
