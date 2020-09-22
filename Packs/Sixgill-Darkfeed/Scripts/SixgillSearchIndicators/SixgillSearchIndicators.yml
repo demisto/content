@@ -1,12 +1,11 @@
 commonfields:
-  id: SearchIndicators
+  id: SixgillSearchIndicators
   version: -1
-name: SearchIndicators
-deprecated: true
+name: SixgillSearchIndicators
 script: ''
 type: python
 tags: []
-comment: Deprecated. Use the ***SixgillSearchIndicators*** script instead.
+comment: Search for Indicators
 enabled: true
 args:
 - name: query
@@ -25,4 +24,3 @@ runonce: false
 dockerimage: demisto/python3:3.8.5.10845
 runas: DBotWeakRole
 fromversion: 5.5.0
-toversion: 6.4.9
