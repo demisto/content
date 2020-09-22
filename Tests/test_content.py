@@ -258,7 +258,7 @@ def turn_off_telemetry(xsoar_client):
     """
 
     body, status_code, _ = demisto_client.generic_request_func(self=xsoar_client, method='POST',
-                                                             path='/telemetry?status=notelemetry')
+                                                               path='/telemetry?status=notelemetry')
 
     if status_code != 200:
         print_error('Request to turn off telemetry failed with status code "{}"\n{}'.format(status_code, body))
@@ -624,7 +624,7 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
                       filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                      server_numeric_version, demisto_user, demisto_pass, prints_manager, thread_index=0, is_ami=True):
+                      server_numeric_version, demisto_user, demisto_pass, demisto_api_key, prints_manager, thread_index=0, is_ami=True):
     playbook_id = t['playbookID']
     nightly_test = t.get('nightly', False)
     integrations_conf = t.get('integrations', [])
@@ -865,8 +865,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                   run_all_tests, is_filter_configured, filtered_tests,
                                   skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                                   unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                                  build_name, server_numeric_version, demisto_user, demisto_pass, prints_manager,
-                                  thread_index=thread_index)
+                                  build_name, server_numeric_version, demisto_user, demisto_pass,
+                                  demisto_api_key, prints_manager, thread_index=thread_index)
             proxy.configure_proxy_in_demisto(xsoar_client, '')
 
             # reset containers after clearing the proxy server configuration
@@ -886,7 +886,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                               is_nightly, run_all_tests, is_filter_configured, filtered_tests, skipped_tests,
                               secret_params, failed_playbooks, playbook_skipped_integration, unmockable_integrations,
                               succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                              server_numeric_version, demisto_user, demisto_pass, prints_manager, thread_index, is_ami)
+                              server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
+                              prints_manager, thread_index, is_ami)
             prints_manager.execute_thread_prints(thread_index)
 
     except Exception as exc:

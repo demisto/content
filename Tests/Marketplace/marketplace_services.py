@@ -166,7 +166,7 @@ class Pack(object):
         self._display_name = None  # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
-        self._bucket_url = None # URL of where the pack was uploaded.
+        self._bucket_url = None  # URL of where the pack was uploaded.
 
     @property
     def name(self):
@@ -828,7 +828,8 @@ class Pack(object):
                 blob.upload_from_file(pack_zip)
             if private_content:
                 try:
-                    shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip')
+                    shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content'
+                                               f'-private/content/artifacts/packs/{self._pack_name}.zip')
                 except FileExistsError:
                     shutil.copy(zip_pack_path,
                                 f'/artifacts/packs/{self._pack_name}.zip')

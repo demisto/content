@@ -434,8 +434,8 @@ def add_private_packs_to_index(index_folder_path, private_index_path):
             update_index_folder(index_folder_path, d.name, d.path)
 
 
-def update_index_with_priced_packs(private_storage_bucket, extract_destination_path, index_folder_path, pack_names,
-                                   is_private_build):
+def update_index_with_priced_packs(private_storage_bucket, extract_destination_path,
+                                   index_folder_path, pack_names, is_private_build):
     """ Updates index with priced packs and returns list of priced packs data.
 
     Args:
@@ -451,11 +451,13 @@ def update_index_with_priced_packs(private_storage_bucket, extract_destination_p
     private_packs = []
 
     try:
-        private_index_path, private_index_blob, _ = download_and_extract_index(private_storage_bucket,
-                                                                               os.path.join(extract_destination_path,
-                                                                                            'private'))
+        (private_index_path, private_index_blob, _) = \
+            download_and_extract_index(private_storage_bucket,
+                                       os.path.join(extract_destination_path,
+                                                    'private'))
         print("get_private_packs")
-        private_packs = get_private_packs(private_index_path, pack_names, is_private_build, extract_destination_path)
+        private_packs = get_private_packs(private_index_path, pack_names, is_private_build,
+                                          extract_destination_path)
         print("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
         print("Finished updating index with priced packs")
@@ -848,8 +850,9 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
         pack.cleanup()
         return
 
-    task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
-                                      pack_version=pack.latest_version, hidden_pack=pack.hidden)
+    task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name,
+                                      pack_path=pack.path, pack_version=pack.latest_version,
+                                      hidden_pack=pack.hidden)
     if not task_status:
         pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
         pack.cleanup()

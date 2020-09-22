@@ -14,7 +14,7 @@ def upload_git_snapshot(git_snapshot_path, pack_name, branch_name, pack_version,
         with open(git_snapshot_path, "rb") as git_snapshot:
             git_snapshot_blob.upload_from_file(git_snapshot)
     except Exception as e:
-        print_error("Error: failed uploading git snapshot.")
+        print_error(f"Error: failed uploading git snapshot. \n{e}")
 
 
 def option_handler():
