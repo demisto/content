@@ -2183,6 +2183,7 @@ script:
       description: The last update date of the adversary.
       type: date
   - name: threatq-advanced-search
+    deprecated: true
     arguments:
     - name: query
       required: true
