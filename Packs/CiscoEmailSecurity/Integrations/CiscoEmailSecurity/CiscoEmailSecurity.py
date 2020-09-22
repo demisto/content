@@ -142,6 +142,17 @@ class Client(BaseClient):
         )
 
 
+def parse_dates_to_ces_format(date_str):
+    splitted_date = date_str.split('T')
+    date_day = splitted_date[0]
+    full_date_time = splitted_date[1]
+    date_time_without_ms = full_date_time.split('.')[0]
+    date_time_without_seconds = date_time_without_ms[:-3]
+    date_time_with_zero_seconds = f'{date_time_without_seconds}:00.000'
+
+    return f'{date_day}T{date_time_with_zero_seconds}'
+
+
 def get_dates_for_test_module():
     now = datetime.now()
     start = now - timedelta(days=2)
@@ -149,12 +160,15 @@ def get_dates_for_test_module():
 
     start_date = start.isoformat()
     end_date = end.isoformat()
+
+    start_date = parse_dates_to_ces_format(start_date)
+    end_date = parse_dates_to_ces_format(end_date)
     return start_date, end_date
 
 
 def test_module(client: Client) -> str:
     start_date, end_date = get_dates_for_test_module()
-    suffix_url = f"/sma/api/v2.0/message-tracking/messages?startDate={start_date}&" \
+    suffix_url = f"?startDate={start_date}&" \
                  f"endDate={end_date}&ciscoHost=All_Hosts&searchOption=messages&offset=0&limit=20"
     try:
         client.list_messages(suffix_url)
@@ -463,7 +477,8 @@ def list_get_quarantine_message_details_command(client, args):
 
 
 def list_delete_quarantine_messages_command(client, args):
-    messages_ids = args.get('messages_ids')
+    messages_ids = args.get('messages_ids').split(',')
+    messages_ids = [int(message_id) for message_id in messages_ids]
     request_body = {
         "quarantineType": "spam",
         "mids": messages_ids
@@ -477,7 +492,8 @@ def list_delete_quarantine_messages_command(client, args):
 
 
 def list_release_quarantine_messages_command(client, args):
-    messages_ids = args.get('messages_ids')
+    messages_ids = args.get('messages_ids').split(',')
+    messages_ids = [int(message_id) for message_id in messages_ids]
     request_body = {
         "action": "release",
         "quarantineType": "spam",
@@ -495,10 +511,9 @@ def build_url_filter_for_get_list_entries(args):
     limit = set_limit(args.get('limit'))
     offset = int(args.get('offset', '0'))
     view_by = args.get('view_by')
-    url_params = f"?action=view&limit={limit}&offset={offset}&quarantineType=spam&orderDir=desc&viewBy={view_by}"
     order_by = args.get('order_by')
-    if order_by:
-        url_params += f"&orderBy={order_by}"
+    url_params = f"?action=view&limit={limit}&offset={offset}&quarantineType=spam&orderDir=desc&viewBy={view_by}" \
+                 f"&orderBy={order_by}"
     return url_params
 
 
@@ -523,13 +538,13 @@ def build_request_body_for_add_list_entries(args):
     }
 
     if args.get('recipient_addresses'):
-        request_body["recipientAddresses"] = args.get('recipient_addresses')
+        request_body["recipientAddresses"] = args.get('recipient_addresses').split(',')
     if args.get('recipient_list'):
-        request_body["recipientList"] = args.get('recipient_list')
+        request_body["recipientList"] = args.get('recipient_list').split(',')
     if args.get('sender_addresses'):
-        request_body["senderAddresses"] = args.get('sender_addresses')
+        request_body["senderAddresses"] = args.get('sender_addresses').split(',')
     if args.get('sender_list'):
-        request_body["senderList"] = args.get('sender_list')
+        request_body["senderList"] = args.get('sender_list').split(',')
     return request_body
 
 
@@ -551,9 +566,9 @@ def build_request_body_for_delete_list_entries(args):
         "viewBy": args.get('view_by')
     }
     if args.get('recipient_list'):
-        request_body["recipientList"] = args.get('recipient_list')
+        request_body["recipientList"] = args.get('recipient_list').split(',')
     if args.get('sender_list'):
-        request_body["senderList"] = args.get('sender_list')
+        request_body["senderList"] = args.get('sender_list').split(',')
     return request_body
 
 

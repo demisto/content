@@ -1024,7 +1024,7 @@ script:
       predefined:
       - sender
       - recipient
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Cisco email security get list entries
