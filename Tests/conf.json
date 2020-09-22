@@ -638,7 +638,7 @@
         {
             "integrations": "QRadar",
             "playbookID": "test playbook - QRadarCorrelations",
-            "timeout": 600,
+            "timeout": 1000,
             "fromversion": "5.0.0"
         },
         {
@@ -1198,6 +1198,24 @@
             "integrations": "McAfee ESM v2",
             "instance_names": "v11.3",
             "playbookID": "McAfee ESM v2 (v11.3) - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "McAfee ESM v2",
+            "instance_names": "v10.2.0",
+            "playbookID": "McAfee ESM Watchlists - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "McAfee ESM v2",
+            "instance_names": "v10.3.0",
+            "playbookID": "McAfee ESM Watchlists - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "McAfee ESM v2",
+            "instance_names": "v11.3",
+            "playbookID": "McAfee ESM Watchlists - Test",
             "fromversion": "5.0.0"
         },
         {
@@ -3009,6 +3027,11 @@
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Talos Feed",
+            "playbookID": "FeedTalosTestPlaybook",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
