@@ -22,13 +22,15 @@ DEFAULT_INCIDENT_TO_FETCH = 50
 SEVERITY_OPTIONS = {
     'Low': 0,
     'Medium': 1,
-    'High': 2
+    'High': 2,
+    'All': [0, 1, 2]
 }
 
 RESOLUTION_STATUS_OPTIONS = {
     'Open': 0,
     'Dismissed': 1,
-    'Resolved': 2
+    'Resolved': 2,
+    'All': [0, 1, 2]
 }
 
 # Note that number 4 is missing
@@ -150,7 +152,7 @@ class Client(BaseClient):
         )
 
 
-def args_or_params_to_filter(arguments, args_or_params='args'):
+def args_to_filter(arguments):
     request_data: Dict[str, Any] = {}
     filters: Dict[str, Any] = {}
     for key, value in arguments.items():
@@ -186,8 +188,6 @@ def args_or_params_to_filter(arguments, args_or_params='args'):
             filters['isExternal'] = {'eq': IS_EXTERNAL_OPTIONS[value]}
         if key == 'status':
             filters[key] = {'eq': STATUS_OPTIONS[value]}
-    if args_or_params == 'params':
-        return filters
     request_data['filters'] = filters
     return request_data
 
@@ -211,7 +211,7 @@ def build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, sp
     elif custom_filter:
         request_data = json.loads(custom_filter)
     else:
-        request_data = args_or_params_to_filter(arguments)
+        request_data = args_to_filter(arguments)
     return request_data, url_suffix
 
 
@@ -543,16 +543,39 @@ def fetch_incidents(client, max_results, last_run, first_fetch, filters):
     return next_run, incidents
 
 
+def params_to_filter(severity, resolution_status):
+    filters: Dict[str, Any] = {}
+    if len(severity) == 1:
+        filters['severity'] = {'eq': SEVERITY_OPTIONS[severity[0]]}
+    else:
+        severities = []
+        for severity_option in severity:
+            severities.append(SEVERITY_OPTIONS[severity_option])
+        filters['severity'] = {'eq': severities}
+    if len(resolution_status) == 1:
+        filters['resolutionStatus'] = {'eq': RESOLUTION_STATUS_OPTIONS[resolution_status[0]]}
+    else:
+        severities = []
+        for resolution in resolution_status:
+            severities.append(RESOLUTION_STATUS_OPTIONS[resolution])
+        filters['resolutionStatus'] = {'eq': severities}
+    return filters
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
+
+    params = demisto.params()
     token = demisto.params().get('token')
     base_url = f'{demisto.params().get("url")}/api/v1'
     verify_certificate = not demisto.params().get('insecure', False)
     first_fetch = demisto.params().get('first_fetch')
     max_results = demisto.params().get('max_fetch')
     proxy = demisto.params().get('proxy', False)
+    severity = params.get('severity')
+    resolution_status = params.get('resolution_status')
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
@@ -566,13 +589,10 @@ def main():
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            params = demisto.params()
             if params.get('custom_filter'):
                 filters = json.loads(params.get('custom_filter'))
             else:
-                parameters = assign_params(severity=params.get('severity'),
-                                           resolution_status=params.get('resolution_status'))
-                filters = args_or_params_to_filter(parameters, args_or_params="params")
+                filters = params_to_filter(severity, resolution_status)
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,
