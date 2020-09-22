@@ -10,8 +10,8 @@ class CrowdStrikeClient(BaseClient):
         Args:
             params: Demisto params
         """
-        self._username = params.get('credentials', {}).get('identifier')
-        self._password = params.get('credentials', {}).get('password')
+        self._client_id = params.get('client_id')
+        self._client_secret = params.get('client_secret')
         super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))  # type: ignore[misc]
         self._token = self._generate_token()
@@ -94,10 +94,10 @@ class CrowdStrikeClient(BaseClient):
         :return: valid token
         """
         body = {
-            'client_id': self._username,
-            'client_secret': self._password
+            'client_id': self._client_id,
+            'client_secret': self._client_secret
         }
-        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._username, self._password))
+        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
         return token_res.get('access_token')
 
     def check_quota_status(self) -> dict:
