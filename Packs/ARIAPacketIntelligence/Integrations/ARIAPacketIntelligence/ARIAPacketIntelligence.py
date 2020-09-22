@@ -267,6 +267,7 @@ class ARIA(object):
                         return True
                     elif 'FAILURE' in tcl_entry['status']:
                         return False
+            time.sleep(0.1)  # pylint: disable=sleep-exists
 
         return False
 

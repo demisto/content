@@ -7,7 +7,7 @@ import httplib2
 import urllib.parse
 from oauth2client import service_account
 
-# A request will be tried 3 times if it fails at the socket/connection level
+# A request will be tried 3 times if it fails at    the socket/connection level
 httplib2.RETRIES = 3
 
 ''' CONSTANTS '''
@@ -160,6 +160,7 @@ def validate_response(client, url, method='GET'):
             raise ValueError('Internal server error occurred, please try again later')
         if raw_response[0].status == 429:
             demisto.debug('API Rate limit exceeded. Retrying in {} seconds...'.format(1))
+            time.sleep(1)  # pylint: disable=sleep-exists
             continue
         if raw_response[0].status != 200:
             return_error(
