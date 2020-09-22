@@ -7,15 +7,23 @@ category: Data Enrichment & Threat Intelligence
 description: CrowdStrike Threat intelligence service integration helps organizations defend themselves against adversary activity by investigating incidents, and accelerating alert triage and response.
 configuration:
 - display: Client ID
-  name: credentials
+  name: client_id
+  type: 0
   required: true
-  type: 9
+- display: Client Secret
+  name: client_secret
+  type: 4
+  required: true
 - display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to
-    consider the indicator malicious.(low, medium, high)
+    consider the indicator malicious.
   name: threshold
   defaultvalue: high
-  type: 0
+  type: 15
   required: false
+  options:
+  - low
+  - medium
+  - high
 - display: Use system proxy settings
   name: proxy
   type: 8

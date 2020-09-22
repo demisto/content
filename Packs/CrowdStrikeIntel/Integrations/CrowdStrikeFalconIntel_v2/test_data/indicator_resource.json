@@ -50,15 +50,15 @@
         },
         {
             "created_date": 1600081757,
-            "id": "ip_address_8.8.8.8",
+            "id": "ip_address_id",
             "indicator": "8.8.8.8",
             "last_valid_date": 1600081757,
             "type": "ip_address"
         },
         {
             "created_date": 1600081757,
-            "id": "hash_sha1_id_2",
-            "indicator": "hash_sha1_value_2",
+            "id": "hash_sha1_id",
+            "indicator": "hash_sha1_value",
             "last_valid_date": 1600081757,
             "type": "hash_sha1"
         },
@@ -71,15 +71,15 @@
         },
         {
             "created_date": 1600081754,
-            "id": "hash_sha256_id_2",
-            "indicator": "hash_sha256_id_2",
+            "id": "hash_sha256_id",
+            "indicator": "hash_sha256_value",
             "last_valid_date": 1600081754,
             "type": "hash_sha256"
         },
         {
             "created_date": 1600081754,
-            "id": "hash_m5_id_2",
-            "indicator": "hash_m5_value_2",
+            "id": "hash_m5_id",
+            "indicator": "hash_m5_value",
             "last_valid_date": 1600081754,
             "type": "hash_md5"
         }

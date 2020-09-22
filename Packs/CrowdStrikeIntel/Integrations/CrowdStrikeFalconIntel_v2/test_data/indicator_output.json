@@ -11,10 +11,10 @@
     ],
     "Relations": ["hash_md5: hash_md5_value",
                   "ip_address: 8.8.8.8",
-                  "hash_sha1: hash_sha1_value_2",
-                  "hash_sha256: hash_sha256_id",
-                  "hash_sha256: hash_sha256_id_2",
-                  "hash_md5: hash_m5_value_2"
+                  "hash_sha1: hash_sha1_value",
+                  "hash_sha256: hash_sha256_value",
+                  "hash_sha256: hash_sha256_value",
+                  "hash_md5: hash_m5_value"
                   ],
     "Labels": [
         "ThreatType/Criminal",
