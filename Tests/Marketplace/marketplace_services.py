@@ -604,10 +604,8 @@ class Pack(object):
         downloads_count = 0
 
         if self._pack_name in packs_statistic_df.index.values:
-            try:
+            if packs_statistic_df.loc[self._pack_name]['num_count'] is not None:
                 downloads_count = int(packs_statistic_df.loc[self._pack_name]['num_count'].astype('int32', errors='ignore'))
-            except ValueError:
-                print_warning(f"Unable to retrieve statistics for {self._pack_name}.")
 
         return downloads_count
 
@@ -1183,7 +1181,7 @@ class Pack(object):
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []))
 
-            if packs_statistic_df:
+            if packs_statistic_df is not None:
                 self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
