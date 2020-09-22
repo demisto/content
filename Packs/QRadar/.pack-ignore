@@ -6,6 +6,3 @@ ignore=PA116
 
 [file:QRadar.yml]
 ignore=IN126
-
-[file:playbook-QRadar_Indicator_Hunting_Test.yml]
-ignore=auto-test
