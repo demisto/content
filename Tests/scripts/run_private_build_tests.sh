@@ -4,11 +4,7 @@ echo "start content tests"
 
 SECRET_CONF_PATH=$(cat secret_conf_path)
 CONF_PATH="./Tests/conf.json"
-DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq '.temp_apikey')
-
-temp="${DEMISTO_API_KEY%\"}"
-temp="${temp#\"}"
-DEMISTO_API_KEY=$temp
+DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
 
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 [ -n "${MEM_CHECK}" ] && MEM_CHECK=true || MEM_CHECK=false
@@ -38,6 +34,12 @@ if [ $code_1 -ne 1 ] ; then
 fi
 
 code_2=$?
+
+if [ $code_1 -eq 0 ] && [ $code_2 -eq 0 ] ; then
+  role="$(echo -e "${INSTANCE_ROLE}" | tr -d '[:space:]')"
+  filepath="./Tests/is_build_passed_${role}.txt"
+  touch "$filepath"
+fi
 let "exit_code = $code_1 + $code_2"
 rm $GOOGLE_APPLICATION_CREDENTIALS
 
