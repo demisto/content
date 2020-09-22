@@ -637,10 +637,10 @@ def main():
         if isinstance(exc, googleapiclient.errors.HttpError):
             if exc.resp.get('content-type').startswith('application/json'):  # pylint: disable=no-member
                 err_json = json.loads(exc.content.decode('utf-8'))  # pylint: disable=no-member
-                error_code = (err_json.get('error').get('code'))
-                error_msg = (err_json.get('error').get('message'))
-                error_reason = (err_json.get('error').get('errors')[0].get('reason'))
-                error_status = (err_json.get('error').get('status'))
+                error_code = dict_safe_get(err_json, ['error', 'code'])
+                error_msg = dict_safe_get(err_json, ['error', 'message'])
+                error_reason = dict_safe_get(err_json, ['error', 'errors', 0, 'reason'])
+                error_status = dict_safe_get(err_json, ['error', 'status'])
                 full_err_msg = "error code: {}\n{}\nreason: {}\nstatus: {}".format(error_code, error_msg,
                                                                                    error_reason, error_status)
                 return_error(full_err_msg)
