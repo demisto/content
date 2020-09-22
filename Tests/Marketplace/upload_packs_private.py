@@ -402,7 +402,6 @@ def get_private_packs(private_index_path, pack_names, is_private_build, extract_
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
-            path_to_pack_in_artifacts = os.path.join(extract_destination_path, pack_id)
             is_changed_private_pack = is_private_build and pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
@@ -478,14 +477,16 @@ def _build_summary_table(packs_input_list, include_pack_status=False):
         PrettyTable: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status", "Pack Bucket URL"] if include_pack_status \
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status",
+                    "Pack Bucket URL"] if include_pack_status \
         else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
     table = prettytable.PrettyTable()
     table.field_names = table_fields
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message, pack.bucket_url] if include_pack_status \
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message,
+               pack.bucket_url] if include_pack_status \
             else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
         table.add_row(row)
 
@@ -503,7 +504,8 @@ def build_summary_table_md(packs_input_list, include_pack_status=False):
         Markdown table: table with upload result of packs.
 
     """
-    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status", "Pack Bucket URL"] if include_pack_status \
+    table_fields = ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Status",
+                    "Pack Bucket URL"] if include_pack_status \
         else ["Index", "Pack ID", "Pack Display Name", "Latest Version", "Pack Bucket URL"]
 
     table = ['|', '|']
@@ -515,7 +517,8 @@ def build_summary_table_md(packs_input_list, include_pack_status=False):
     for index, pack in enumerate(packs_input_list):
         pack_status_message = PackStatus[pack.status].value if include_pack_status else ''
 
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message, pack.bucket_url] if include_pack_status \
+        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message,
+               pack.bucket_url] if include_pack_status \
             else [index, pack.name, pack.display_name, pack.latest_version, pack.bucket_url]
 
         row_hr = '|'
@@ -817,9 +820,10 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
         pack_was_modified = False
 
     bucket_for_uploading = private_storage_bucket if private_storage_bucket else storage_bucket
-    task_status, skipped_pack_uploading, full_pack_path = pack.upload_to_storage(zip_pack_path, pack.latest_version,
-                                                                 bucket_for_uploading,
-                                                                 override_all_packs or pack_was_modified, private_content=True)
+    (task_status, skipped_pack_uploading, full_pack_path) = \
+        pack.upload_to_storage(zip_pack_path, pack.latest_version,
+                               bucket_for_uploading, override_all_packs
+                               or pack_was_modified, private_content=True)
     if full_pack_path is not None:
         bucket_path = 'https://console.cloud.google.com/storage/browser/marketplace-ci-build-private/'
         bucket_url = bucket_path + full_pack_path

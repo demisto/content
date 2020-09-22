@@ -620,11 +620,13 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-                      skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
-                      filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
-                      unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                      server_numeric_version, demisto_user, demisto_pass, demisto_api_key, prints_manager, thread_index=0, is_ami=True):
+def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeout, skipped_tests_conf,
+                      nightly_integrations, skipped_integrations_conf, skipped_integration, is_nightly,
+                      run_all_tests, is_filter_configured, filtered_tests, skipped_tests, secret_params,
+                      failed_playbooks, playbook_skipped_integration, unmockable_integrations,
+                      succeed_playbooks, slack, circle_ci, build_number, server, build_name,
+                      server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
+                      prints_manager, thread_index=0, is_ami=True):
     playbook_id = t['playbookID']
     nightly_test = t.get('nightly', False)
     integrations_conf = t.get('integrations', [])
@@ -707,9 +709,10 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
         text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
-    run_test(t, tests_queue, tests_settings, demisto_user, demisto_pass, proxy, failed_playbooks, integrations, unmockable_integrations,
-             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
-             build_number, server, build_name, prints_manager, is_ami, thread_index=thread_index)
+    run_test(t, tests_queue, tests_settings, demisto_user, demisto_pass, proxy, failed_playbooks,
+             integrations, unmockable_integrations, playbook_id, succeed_playbooks, test_message,
+             test_options, slack, circle_ci, build_number, server, build_name, prints_manager,
+             is_ami, thread_index=thread_index)
 
 
 def get_server_numeric_version(ami_env, is_local_run=False):
