@@ -567,7 +567,7 @@ tasks:
     task:
       id: b656510c-0b93-4d02-8b86-5af49b08d759
       version: -1
-      name: Verify Outputs (file command)
+      name: Verify Outputs (ip command)
       type: condition
       iscommand: false
       brand: ""
