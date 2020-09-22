@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple, Optional
 
 import urllib3
 from bs4 import BeautifulSoup
@@ -61,11 +61,13 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}
 
 
-def fetch_indicators(client: Client, feed_tags: List = [], limit: int = -1) -> List[Dict]:
+def fetch_indicators(client: Client, feed_tags: List = [], tlp_color: Optional[str] = '', limit: int = -1) \
+        -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
         feed_tags (list): tags to assign fetched indicators
+        tlp_color (str): Traffic Light Protocol color
         limit (int): limit the results
     Returns:
         Indicators.
@@ -88,11 +90,13 @@ def fetch_indicators(client: Client, feed_tags: List = [], limit: int = -1) -> L
             'type': type_,
             'service': 'Azure AD Connect Health Feed',
             'rawJSON': raw_data,
+            'fields': {}
         }
         if feed_tags:
-            indicator_obj['fields'] = {
-                'tags': feed_tags
-            }
+            indicator_obj['fields']['tags'] = feed_tags
+        if tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = feed_tags
+
         indicators.append(indicator_obj)
     return indicators
 
@@ -110,8 +114,9 @@ def get_indicators_command(client: Client,
         Outputs.
     """
     feed_tags = argToList(params.get('feedTags', ''))
+    tlp_color = demisto.params().get('tlp_color')
     limit = int(args.get('limit', '10'))
-    indicators = fetch_indicators(client, feed_tags, limit)
+    indicators = fetch_indicators(client, feed_tags, tlp_color, limit)
     human_readable = tableToMarkdown('Indicators from Microsoft Azure Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
 
@@ -127,7 +132,8 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
         Indicators.
     """
     feed_tags = argToList(params.get('feedTags', ''))
-    indicators = fetch_indicators(client, feed_tags)
+    tlp_color = demisto.params().get('tlp_color')
+    indicators = fetch_indicators(client, feed_tags, tlp_color)
     return indicators
 
 
