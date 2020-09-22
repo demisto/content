@@ -1,0 +1,22 @@
+{
+ "autorun": false,
+ "color": "#fa99d0",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Integrations and Incidents Health",
+ "layout": "3caa356e-d99d-438b-844d-180f68b59b14",
+ "locked": false,
+ "name": "Integrations and Incidents Health",
+ "playbookId": "JOB - Integrations and Playbooks Checkup",
+ "readonly": false,
+ "reputationCalc": 1,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

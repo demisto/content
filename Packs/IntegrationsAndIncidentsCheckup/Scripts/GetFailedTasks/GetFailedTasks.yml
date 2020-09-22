@@ -1,0 +1,21 @@
+args:
+- defaultValue: -status:closed -category:job
+  description: optional, default value is "-status:closed and runStatus:error"
+  name: query
+comment: Gets failed tasks details for incidents based on a query. if rerun = true
+  is provided, the automation will also re-run the failed tasks.
+commonfields:
+  id: GetFailedTasks
+  version: -1
+enabled: true
+name: GetFailedTasks
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
