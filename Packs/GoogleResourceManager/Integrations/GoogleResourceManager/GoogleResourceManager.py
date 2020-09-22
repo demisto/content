@@ -3,6 +3,7 @@ import time
 
 import googleapiclient
 from google.oauth2 import service_account
+from googleapiclient._auth import authorized_http
 from googleapiclient import discovery
 
 import demistomock as demisto  # noqa: F401
@@ -14,18 +15,21 @@ from CommonServerPython import *  # noqa: F401
 ''' GLOBALS/PARAMS '''
 
 # Params for assembling object of the Service Account Credentials File Contents
-SERVICE_ACT_PROJECT_ID = demisto.params().get('project_id').encode('utf-8')
-PRIVATE_KEY_ID = demisto.params().get('private_key_id').encode('utf-8')
-PRIVATE_KEY = demisto.params().get('private_key').encode('utf-8')
-CLIENT_EMAIL = demisto.params().get('client_email').encode('utf-8')
-CLIENT_ID = demisto.params().get('client_id').encode('utf-8')
-CLIENT_X509_CERT_URL = demisto.params().get('client_x509_cert_url').encode('utf-8')
+PARAMS = demisto.params()
+SERVICE_ACT_PROJECT_ID = PARAMS.get('project_id').encode('utf-8')
+PRIVATE_KEY_ID = PARAMS.get('private_key_id').encode('utf-8')
+PRIVATE_KEY = PARAMS.get('private_key').encode('utf-8')
+CLIENT_EMAIL = PARAMS.get('client_email').encode('utf-8')
+CLIENT_ID = PARAMS.get('client_id').encode('utf-8')
+CLIENT_X509_CERT_URL = PARAMS.get('client_x509_cert_url').encode('utf-8')
+PROXY = PARAMS.get('proxy')
+DISABLE_SSL = True
 
 AUTH_JSON = {
     'type': 'service_account',  # guardrails-disable-line
     'project_id': SERVICE_ACT_PROJECT_ID,
     'private_key_id': PRIVATE_KEY_ID,
-    'private_key': PRIVATE_KEY,
+    'private_key': PRIVATE_KEY.replace('\\n', '\n'),
     'client_email': CLIENT_EMAIL,
     'client_id': CLIENT_ID,
     'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
@@ -39,13 +43,6 @@ API_VERSION = 'v1'
 GRM = 'cloudresourcemanager'
 SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
 SERVICE = None      # variable set by build_and_authenticate() function
-
-# Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 
 ''' HELPER FUNCTIONS '''
@@ -62,9 +59,18 @@ def build_and_authenticate():
         Google Resource Manager API Service object via which commands in the
         integration will make API calls
     """
-    auth_json_string = str(AUTH_JSON).replace("\'", "\"").replace("\\\\", "\\")
-    service_account_info = json.loads(auth_json_string)
-    service_credentials = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPE)
+    service_credentials = service_account.Credentials.from_service_account_info(AUTH_JSON, scopes=SCOPE)
+
+    # service_credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_info,
+    #                                                                                        scopes=SCOPE)
+    if PROXY:
+        http_client = authorized_http(service_credentials)
+        http_client.disable_ssl_certificate_validation = DISABLE_SSL
+        return discovery.build(GRM, API_VERSION, http=http_client)
+
+        # http_client = service_credentials.authorize(get_http_client_with_proxy())
+        # return discovery.build(GRM, API_VERSION, http=http_client)
+
     service = discovery.build(GRM, API_VERSION, credentials=service_credentials)
     return service
 
@@ -601,6 +607,7 @@ commands = {
 LOG('Command being called is %s' % (demisto.command()))
 
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         test_module()
@@ -620,9 +627,5 @@ except Exception as e:
             full_err_msg = "error code: {}\n{}\nreason: {}\nstatus: {}".format(error_code, error_msg,
                                                                                error_reason, error_status)
             return_error(full_err_msg)
-    # If there is an Exception message return it to the warroom
-    elif hasattr(e, 'message'):
-        return_error(e.message)
-    # Otherwise output the exception itself to the warroom
     else:
         return_error(str(e))
