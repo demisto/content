@@ -1548,12 +1548,12 @@
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Test",
+            "playbookID": "Microsoft Graph Security Test",
             "instance_names": "ms_graph_security_dev"
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Test",
+            "playbookID": "Microsoft Graph Security Test",
             "instance_names": "ms_graph_security_prod"
         },
         {
