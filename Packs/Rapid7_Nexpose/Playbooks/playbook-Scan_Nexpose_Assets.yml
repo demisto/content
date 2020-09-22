@@ -139,8 +139,7 @@ tasks:
       Timeout:
         simple: "60"
       dt:
-        simple: Nexpose.Scan(val.Status != 'finished' && val.Status != 'error' &&
-          val.Status != 'aborted' && val.Status != 'stopped').Id
+        simple: Nexpose.Scan(val.Status != 'finished' && val.Status != 'error' && val.Status != 'aborted' && val.Status != 'stopped').Id
     separatecontext: true
     loop:
       iscommand: false
@@ -321,8 +320,7 @@ outputs:
 - contextPath: Nexpose.Scan.Id
   description: The identifier of the scan.
 - contextPath: Nexpose.Scan.Status
-  description: The scan status. Valid values are aborted, unknown, running, finished,
-    stopped, error, paused, dispatched, integrating
+  description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating
 - contextPath: Nexpose.Scan.Vulnerabilities.Critical
   description: The number of critical vulnerabilities.
 - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
@@ -331,6 +329,6 @@ outputs:
   description: The number of severe vulnerabilities.
 - contextPath: Nexpose.Scan.Vulnerabilities.Total
   description: The total number of vulnerabilities.
-fromversion: 4.0.0
+fromversion: 5.0.0
 tests:
 - No test

@@ -1,7 +1,7 @@
 id: url_enrichment_-_generic
 version: -1
 name: URL Enrichment - Generic
-fromversion: 3.6.0
+fromversion: 5.0.0
 description: |-
   Deprecated. Use "URL Enrichment - Generic v2" playbook instead. Enrich URL using one or more integrations.
 
@@ -418,8 +418,7 @@ tasks:
       id: a283aea5-6246-483c-893e-5ade81c0d073
       version: -1
       name: Should the system get the URL Reputation?
-      description: "Should the system retrieve the url reputation from all of the
-        relevant integration?\nDefault: True\n "
+      description: "Should the system retrieve the url reputation from all of the relevant integration?\nDefault: True\n "
       type: condition
       iscommand: false
       brand: ""
@@ -482,8 +481,7 @@ tasks:
       id: d28f230f-511e-490f-821c-387389336800
       version: -1
       name: Is Virus Total Private API enabled?
-      description: Checks if there is an active instance of the Virus Total Private
-        API enabled.
+      description: Checks if there is an active instance of the Virus Total Private API enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -619,4 +617,4 @@ outputs:
   description: additional info on the url
   type: string
 tests:
-  - No test (provided a test for URL enrichment v2)
+- No test (provided a test for URL enrichment v2)

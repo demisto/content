@@ -2,16 +2,22 @@ commonfields:
   id: StixCreator
   version: -1
 name: StixCreator
-script: |-
+script: >-
   ''' IMPORTS '''
+
   import json
+
 
   from stix2 import Indicator, Bundle, Vulnerability, ExternalReference
 
+
   indicators = []
 
+
   userArgs = demisto.args().get('indicators','Unknown')
+
   doubleBackslash = demisto.args().get('doubleBackslash',True)
+
   if isinstance(userArgs, dict) == True:
       all_args = json.loads(json.dumps(userArgs))
   else:
@@ -21,6 +27,7 @@ script: |-
           return_error('indicators argument is invalid json object')
 
   counter = 0
+
   for indicator_fields in all_args:
       isIndicator = True
       demisto_indicator_type = all_args[indicator_fields].get('indicator_type','Unknown')
@@ -129,8 +136,7 @@ enabled: true
 args:
 - name: indicators
   required: true
-  description: A JSON object of all indicators and their fields, indicator index mapped
-    to Demisto indicator fields.
+  description: A JSON object of all indicators and their fields, indicator index mapped to Demisto indicator fields.
 - name: doubleBackslash
   default: true
   description: Adds a second backslash to all existing backslashes in the value field.
@@ -164,3 +170,4 @@ subtype: python3
 runas: DBotWeakRole
 tests:
 - StixCreator-Test
+fromversion: 5.0.0

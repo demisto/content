@@ -1,7 +1,7 @@
 id: Traps Scan Endpoint
 version: -1
 name: Traps Scan Endpoint
-fromversion: ""
+fromversion: "5.0.0"
 description: Use this playbook to initiate an endpoint scan and retrieve the scan results.
 starttaskid: "0"
 tasks:
@@ -188,4 +188,4 @@ inputs:
   description: The ID of the endpoint.
 outputs: []
 tests:
-  - No test - Is be tested in Traps test playbook
+- No test - Is be tested in Traps test playbook
