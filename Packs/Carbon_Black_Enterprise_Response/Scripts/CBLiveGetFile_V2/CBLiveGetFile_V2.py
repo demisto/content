@@ -81,7 +81,6 @@ def create_active_session(sensor_id: str, timeout: str) -> str:
             # Session could be failing due to Carbon Response bug, We retry to get session 3 times, Before failing.
             if trial == 2:
                 raise Exception("Unable to parse entry context while creating session, try to raise timeout argument.")
-            time.sleep(2)
 
     return str(session_id)
 

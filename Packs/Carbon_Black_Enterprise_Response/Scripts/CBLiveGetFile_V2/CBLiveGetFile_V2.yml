@@ -18,11 +18,12 @@ args:
   isArray: false
   name: timeout
   predefined:
-  - Session timeout (If a command is not issued after this time the session will
-    be closed)
+  - Session timeout (If a command is not issued after this time the session will be closed)
   required: false
   secret: false
-comment: 'This automation translates an endpoint's hostname/IP to the Carbon Black sensor ID. It then opens a session to the endpoint to download the given file paths and closes the session.  '
+comment: |
+  This automation translates an endpoints hostname/IP to the Carbon Black sensor ID.
+  It then opens a session to the endpoint to download the given file paths and closes the session.
 commonfields:
   id: CBLiveGetFile_V2
   version: -1
@@ -36,8 +37,7 @@ outputs:
   description: The command name.
   type: String
 - contextPath: CbLiveResponse.Commands.Status
-  description: The command status ('pending', 'in progress', 'complete', 'error', or
-    'canceled').
+  description: The command status ('pending', 'in progress', 'complete', 'error', or 'canceled').
   type: String
 - contextPath: CbLiveResponse.Commands.CommandCompletionTime
   description: The command completion time (0 if not complete).
