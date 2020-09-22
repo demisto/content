@@ -1195,13 +1195,13 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
     ignored_tests_set = set()
     for pack in packs_to_install:
-        ignored_tests_set.update(get_test_ignore_set(pack))
-    tests.symmetric_difference_update(ignored_tests_set)
+        ignored_tests_set.update(get_ignore_pack_skipped_tests(pack))
+    tests.difference_update(ignored_tests_set)
 
     return tests, packs_to_install
 
 
-def get_test_ignore_set(pack_name: str):  # TODO: remove and use sdk tools when available
+def get_ignore_pack_skipped_tests(pack_name: str) -> set:  # TODO: remove and use sdk tools when available
     ignored_tests_set = set()
     if pack_name:
         pack_ignore_path = get_pack_ignore_file_path(pack_name)
