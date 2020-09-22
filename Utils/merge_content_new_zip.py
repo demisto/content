@@ -147,7 +147,7 @@ def merge_zip_files(feature_branch_content_zip_file_path):
 
     """
     os.rename(CONTENT_ZIP_PATH, ORIGINAL_CONTENT_ZIP_PATH)
-    unified_zip = z.ZipFile(CONTENT_ZIP_PATH, 'a')
+    unified_zip = z.ZipFile(CONTENT_ZIP_PATH, 'a', z.ZIP_DEFLATED)
     with z.ZipFile(ORIGINAL_CONTENT_ZIP_PATH, 'r') as master_zip:
         feature_zip = z.ZipFile(feature_branch_content_zip_file_path, 'r')
         for name in feature_zip.namelist():
