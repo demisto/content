@@ -1201,6 +1201,24 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "McAfee ESM v2",
+            "instance_names": "v10.2.0",
+            "playbookID": "McAfee ESM Watchlists - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "McAfee ESM v2",
+            "instance_names": "v10.3.0",
+            "playbookID": "McAfee ESM Watchlists - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "McAfee ESM v2",
+            "instance_names": "v11.3",
+            "playbookID": "McAfee ESM Watchlists - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240,
