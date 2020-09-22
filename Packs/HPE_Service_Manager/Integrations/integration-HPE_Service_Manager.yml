@@ -42,6 +42,7 @@ script:
     // The command input arg holds the command sent from the user.
     switch (command) {
         case 'test-module':
+            listDevices();
             result = 'ok';
             break;
         case 'hpsm-create-incident':
