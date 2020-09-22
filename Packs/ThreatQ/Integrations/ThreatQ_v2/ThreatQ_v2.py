@@ -617,6 +617,25 @@ def test_module():
         demisto.results('ok')
 
 
+def get_indicator_type_id(indicator_name: str) -> str:
+    indicator_types_res = tq_request(
+        method='GET',
+        url_suffix='/indicator/types',
+        retrieve_entire_response=True
+    )
+    try:
+        indicator_types = indicator_types_res.json().get('data')
+    except ValueError:
+        raise ValueError(f'Could not parse data from ThreatQ [Status code: {indicator_types_res.status_code}]'
+                         f'\n[Error Message: {indicator_types_res.text}]')
+
+    for indicator in indicator_types:
+        if indicator.get('name', '').lower() == indicator_name.lower():
+            return indicator.get('id')
+
+    raise ValueError('Could not find indicator')
+
+
 def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
     entry_context = []
     for i in indicators:
@@ -635,6 +654,70 @@ def aggregate_search_results(indicators, default_indicator_type, generic_context
                 aggregated[key] = [value]
 
     return aggregated
+
+
+def get_search_body(query, indicator_type):
+    search_body = {
+        "indicators": [
+            [
+                {
+                    'field': 'indicator_type',
+                    'operator': 'is',
+                    'value': indicator_type if indicator_type.isdigit() else get_indicator_type_id(indicator_type)
+                },
+                {
+                    'field': 'indicator_value',
+                    'operator': 'like',
+                    'value': str(query)
+                }
+            ]
+        ]
+    }
+    return search_body
+
+
+def advance_search_command():
+    args = demisto.args()
+    limit = args.get('limit', 10)
+    query = args.get('query')
+    indicator_type = args.get('indicator_type')
+
+    search_body = get_search_body(query, indicator_type)
+    if limit and isinstance(limit, str) and not limit.isdigit():
+        return_error('limit argument must be an integer.')
+
+    res = tq_request(
+        method='POST',
+        url_suffix=f'/search/advanced?limit={limit}',
+        params=search_body,
+        retrieve_entire_response=True
+    )
+    try:
+        search_results = res.json().get('data')
+    except ValueError:
+        raise ValueError(f'Could not parse data from ThreatQ [Status code: {res.status_code}]'
+                         f'\n[Error Message: {res.text}]')
+
+    if not isinstance(search_results, list):
+        search_results = [search_results]
+
+    indicators: List[Dict] = []
+    for obj in search_results:
+        # Search for detailed information about the indicator
+        url_suffix = f"/indicators/{obj.get('id')}?with=attributes,sources,score,type"
+        search_results = res = tq_request('GET', url_suffix)
+        indicators.append(indicator_data_to_demisto_format(res.get('data')))
+
+    indicators = indicators or [{'Value': query, 'TQScore': -1}]
+    entry_context = aggregate_search_results(indicators=indicators, default_indicator_type=indicator_type)
+
+    readable = build_readable(
+        readable_title=f'Search results for "{query}":',
+        obj_type='indicator',
+        data=indicators
+    )
+
+    return_outputs(readable, entry_context, search_results)
 
 
 def search_by_name_command():
@@ -1205,6 +1288,8 @@ try:
     handle_proxy()
     if command == 'test-module':
         test_module()
+    elif command == 'threatq-advanced-search':
+        advance_search_command()
     elif command == 'threatq-search-by-name':
         search_by_name_command()
     elif command == 'threatq-search-by-id':
