@@ -245,8 +245,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  subtype: python3
-  dockerimage45: demisto/pyjwt3:1.0.0.8871
 tests:
 - No test
 fromversion: 4.1.0
