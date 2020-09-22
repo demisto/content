@@ -201,9 +201,7 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
                                                                             _request_timeout=request_timeout)
 
         if 200 <= status_code < 300:
-            result_object = ast.literal_eval(response_data)
-            res_msg = result_object.get('message', '')
-            message = 'Packs were successfully installed!\n with status code {status_code}\n{res_msg}\n'
+            message = 'Packs were successfully installed!\n with status code {status_code}\n'
             prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN, include_timestamp=True)
         else:
             result_object = ast.literal_eval(response_data)
