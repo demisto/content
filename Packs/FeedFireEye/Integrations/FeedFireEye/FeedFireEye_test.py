@@ -3,16 +3,16 @@ from typing import Optional
 
 import pytest
 import requests_mock
-from FeedFireEye import Client, STIX21Processor
+from FeedFireEye import Client, STIX21Processor, FE_CONFIDENCE_TO_REPUTATION
 from freezegun import freeze_time
 
 import demistomock as demisto
 
 
-def create_client(public_key: str = 'public_key', private_key: str = 'secret_key', threshold=70, reputation_interval=30,
-                  polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
+def create_client(public_key: str = 'public_key', private_key: str = 'secret_key', threshold: int = 70,
+                  reputation_interval: int = 30, polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
                   tags: list = [], tlp_color: Optional[str] = 'AMBER'):
-    return Client(public_key, private_key, polling_timeout, insecure, proxy)
+    return Client(public_key, private_key, threshold, reputation_interval, polling_timeout, insecure, proxy)
 
 
 def test_get_access_token_with_valid_token_in_context():
@@ -275,3 +275,33 @@ def test_process_indicator_value(pattern_value, expected_result):
 
     for i in range(2):
         assert process_result[i] == expected_result[i]
+
+
+REPUTATION_CALCULATION_PACKAGE = [
+    (100, '1993-05-27T17:43:41.000Z', 70, 30, 3),
+    (100, '1992-05-27T17:43:41.000Z', 0, 30, 2),
+    (100, '1993-04-27T17:43:41.000Z', 0, 100, 3),
+    (51, '1993-04-27T17:43:41.000Z', 50, 100, 3),
+    (1, '1993-04-27T17:43:41.000Z', 50, 100, 0),
+    (100, '1993-04-27T17:43:41.000Z', 50, 20, 2),
+]
+
+
+@pytest.mark.parametrize('confidence, date, threshold, reputation_interval, expected', REPUTATION_CALCULATION_PACKAGE)
+@freeze_time("1993-06-17 11:00:00 GMT")
+def test_reputation_calculation(confidence, date, threshold, reputation_interval, expected):
+    """
+
+    Given:
+        - Confidence level according to FE
+        - Indicator publish date
+
+    When:
+        - Processing raw indicators to real indicators
+
+    Then:
+        - Returns DBot Score
+
+    """
+    FE_CONFIDENCE_TO_REPUTATION[3] = threshold
+    assert STIX21Processor.calculate_indicator_reputation(confidence, date, reputation_interval) == expected

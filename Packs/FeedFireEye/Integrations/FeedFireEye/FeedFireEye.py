@@ -35,13 +35,14 @@ class STIX21Processor:
         self.entities = entities
         self.reports = reports
         self.reputation_interval = reputation_interval
-        self.malicious_threshold = malicious_threshold
 
         self.type_to_processor = {
             'report': self.process_report,
             'malware': self.process_malware,
             'threat-actor': self.process_threat_actor,
         }
+
+        FE_CONFIDENCE_TO_REPUTATION[Common.DBotScore.BAD] = malicious_threshold
 
     def process_indicators(self) -> List:
         processed_indicators = list()  # type: List
@@ -97,12 +98,15 @@ class STIX21Processor:
         except Exception:
             return [], [], {}
 
-    def calculate_indicator_reputation(self, confidence: int, date: str):
+    @staticmethod
+    def calculate_indicator_reputation(confidence: int, date: str, reputation_interval: int):
         """Calculates indicator reputation according to the threshold levels and dates.
 
         Args:
             confidence (int): FireEye feed confidence.
             date (str): Date in which the indicator was published.
+            reputation_interval (int): If this amount of days passed since the indicator was created,
+                                        then its reputation can be at most "Suspicious"
 
         Returns:
             int. DBot Score value
@@ -114,7 +118,7 @@ class STIX21Processor:
         current_date = datetime.now()
         published_date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
 
-        if current_date - published_date < timedelta(days=self.reputation_interval):
+        if current_date - published_date < timedelta(days=reputation_interval):
             for score, threshold in FE_CONFIDENCE_TO_REPUTATION.items():
                 if confidence > threshold:
                     return score
@@ -137,7 +141,8 @@ class STIX21Processor:
 
                 indicator['score'] = self.calculate_indicator_reputation(
                     raw_data.get('confidence'),
-                    raw_data.get('created')
+                    raw_data.get('created'),
+                    self.reputation_interval
                 )
 
                 indicator['rawJSON'] = {
@@ -592,7 +597,6 @@ def main():
     threshold = demisto.params().get('threshold', '70')
     reputation_interval = demisto.params().get('reputation_interval', '30')
     verify_threshold_reputation_interval_types(threshold, reputation_interval)
-    FE_CONFIDENCE_TO_REPUTATION[Common.DBotScore.BAD] = int(threshold)
 
     feedTags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
