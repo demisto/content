@@ -1,5 +1,6 @@
 <!-- HTML_DOC -->
 <p>Use the Kafka integration to manage messages and partitions.</p>
+<p>This integration was integrated and tested with version 2.6 of Kafka.</p>
 <h2>Configure Kafka v2 on Demisto</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>

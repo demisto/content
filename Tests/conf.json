@@ -707,6 +707,7 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "Panorama Query Logs - Test",
+            "fromversion": "5.5.0",
             "timeout": 1500,
             "nightly": true
         },
@@ -1662,10 +1663,6 @@
             "playbookID": "Anomali_ThreatStream_Test"
         },
         {
-            "integrations": "Farsight DNSDB",
-            "playbookID": "DNSDBTest"
-        },
-        {
             "integrations": "carbonblack-v2",
             "playbookID": "Carbon Black Response Test",
             "fromversion": "5.0.0"
@@ -1800,7 +1797,7 @@
             "playbookID": "Sandblast_malicious_test"
         },
         {
-            "playbookID": "TestMatchRegex"
+            "playbookID": "TestMatchRegexV2"
         },
         {
             "integrations": "ActiveMQ",
@@ -2474,7 +2471,7 @@
         },
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
-            "fromversion": "4.5.0",
+            "fromversion": "5.5.0",
             "timeout": 1500,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
@@ -2828,6 +2825,10 @@
             "playbookID": "MongoDB - Test"
         },
         {
+            "integrations": "DNSDB_v2",
+            "playbookID": "DNSDB-Test"
+        },
+        {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout": 60000,
             "fromversion": "4.5.0"
@@ -2992,6 +2993,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "TrendMicro Cloud App Security",
+            "playbookID": "playbook_TrendmicroCAS_Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
         },
@@ -3043,8 +3049,6 @@
         "Phishing - Core - Test - Actual Incident": "Should never run as standalone. Issue #25947",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "PAN-OS Query Logs For Indicators Test": "Issue #23505",
-        "Panorama Query Logs - Test": "Issue #23505",
         "palo_alto_panorama_test_pb": "Issue #22835",
         "GCS Bucket Management - Test": "used in GCS - Test as sub playbook",
         "GCS Object Operations - Test": "used in GCS - Test as sub playbook",
@@ -3075,7 +3079,8 @@
         "Cherwell - test": "Issue 26780",
         "MISP V2 Test": "Issue 26905",
         "Logzio - Test": "Issue 26729",
-        "pyEWS_Test": "Issue 28339"
+        "pyEWS_Test": "Issue 28339",
+        "DuoAdmin API test playbook": "Issue 24937"
     },
     "skipped_integrations": {
 
@@ -3145,7 +3150,6 @@
         "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "Netskope": "instance is down",
-        "Farsight DNSDB": "Issue 15512",
         "Service Manager": "Expired license",
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
@@ -3216,6 +3220,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
         "BPA": "Playbook using GenericPolling which is inconsistent",
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
