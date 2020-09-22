@@ -341,7 +341,7 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
-  dockerimage: demisto/crypto:1.0.0.10743
+  dockerimage: demisto/crypto:1.0.0.11412
   feed: false
   isfetch: true
   longRunning: false
@@ -350,5 +350,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  dockerimage45: demisto/crypto:1.0.0.7634
 tests:
 - Microsoft Graph Test
+fromversion: 4.1.0
