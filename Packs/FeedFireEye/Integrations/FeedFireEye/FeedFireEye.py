@@ -11,6 +11,12 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'FireEye Feed'
 API_URL = 'https://api.intelligence.fireeye.com'
 
+FE_CONFIDENCE_TO_REPUTATION = {
+    Common.DBotScore.BAD: 70,
+    Common.DBotScore.SUSPICIOUS: 30,
+    Common.DBotScore.NONE: 0
+}
+
 
 class STIX21Processor:
     """Processing class for STIX 2.1 objects.
@@ -22,11 +28,14 @@ class STIX21Processor:
         reports (List): List of STIX 2.1 reports objects.
     """
 
-    def __init__(self, raw_indicators: List, relationships: Dict, entities: Dict, reports: List):
+    def __init__(self, raw_indicators: List, relationships: Dict, entities: Dict, reports: List,
+                 malicious_threshold: int, reputation_interval: int):
         self.raw_indicators = raw_indicators
         self.relationships = relationships
         self.entities = entities
         self.reports = reports
+        self.reputation_interval = reputation_interval
+        self.malicious_threshold = malicious_threshold
 
         self.type_to_processor = {
             'report': self.process_report,
@@ -88,6 +97,33 @@ class STIX21Processor:
         except Exception:
             return [], [], {}
 
+    def calculate_indicator_reputation(self, confidence: int, date: str):
+        """Calculates indicator reputation according to the threshold levels and dates.
+
+        Args:
+            confidence (int): FireEye feed confidence.
+            date (str): Date in which the indicator was published.
+
+        Returns:
+            int. DBot Score value
+
+        Notes:
+            In case the (current_date - publishing date of the indicator) < reputation_interval, the highest score the
+            indicator can get is SUSPICIOUS.
+        """
+        current_date = datetime.now()
+        published_date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+
+        if current_date - published_date < timedelta(days=self.reputation_interval):
+            for score, threshold in FE_CONFIDENCE_TO_REPUTATION.items():
+                if confidence > threshold:
+                    return score
+
+        else:
+            for score, threshold in FE_CONFIDENCE_TO_REPUTATION.items():
+                if confidence > threshold:
+                    return min(score, Common.DBotScore.SUSPICIOUS)
+
     def process_indicator(self, raw_data):
         indicators = list()
 
@@ -98,6 +134,12 @@ class STIX21Processor:
             indicator['type'] = auto_detect_indicator_type(value)
             if indicator['type']:
                 indicator['value'] = value
+
+                indicator['score'] = self.calculate_indicator_reputation(
+                    raw_data.get('confidence'),
+                    raw_data.get('created')
+                )
+
                 indicator['rawJSON'] = {
                     'fireeye_id': raw_data.get('id'),
                     'fireeye_labels': raw_data.get('labels'),
@@ -246,12 +288,14 @@ class Client(BaseClient):
         tlp_color (str): Traffic Light Protocol color.
     """
 
-    def __init__(self, public_key: str, private_key: str,
+    def __init__(self, public_key: str, private_key: str, malicious_threshold: int, reputation_interval: int,
                  polling_timeout: int = 20, insecure: bool = False, proxy: bool = False,
                  tags: list = [], tlp_color: Optional[str] = None):
         super().__init__(base_url=API_URL, verify=not insecure, proxy=proxy)
         self.public_key = public_key
         self.private_key = private_key
+        self.reputation_interval = reputation_interval
+        self.malicious_threshold = malicious_threshold
         self._polling_timeout = polling_timeout
         self.tags = tags
         self.tlp_color = tlp_color
@@ -439,7 +483,8 @@ class Client(BaseClient):
         raw_indicators, relationships, stix_entities = self.fetch_all_indicators_from_api(limit)
         raw_reports = self.fetch_all_reports_from_api(limit)
 
-        stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports)
+        stix_processor = STIX21Processor(raw_indicators, relationships, stix_entities, raw_reports,
+                                         self.malicious_threshold, self.reputation_interval)
 
         indicators = stix_processor.process_indicators()
         stix_indicators = stix_processor.process_stix_entities()
@@ -527,6 +572,16 @@ def fetch_indicators_command(client: Client, limit: int = -1):
     return indicators, raw_response
 
 
+def verify_threshold_reputation_interval_types(threshold: str, reputation_interval: str):
+    if not str.isdigit(threshold):
+        return_error(f'{INTEGRATION_NAME} wrong parameter value - '
+                     f'Parameter "Malicious Threshold" has to be a number')
+
+    if not str.isdigit(reputation_interval):
+        return_error(f'{INTEGRATION_NAME} wrong parameter value - '
+                     f'Parameter "Reputation Interval" has to be a number')
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -534,6 +589,10 @@ def main():
 
     public_key = demisto.params().get('credentials').get('identifier')
     private_key = demisto.params().get('credentials').get('password')
+    threshold = demisto.params().get('threshold', '70')
+    reputation_interval = demisto.params().get('reputation_interval', '30')
+    verify_threshold_reputation_interval_types(threshold, reputation_interval)
+    FE_CONFIDENCE_TO_REPUTATION[Common.DBotScore.BAD] = int(threshold)
 
     feedTags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
@@ -547,7 +606,8 @@ def main():
     demisto.info(f'Command being called is {command}')
     command = demisto.command()
     try:
-        client = Client(public_key, private_key, polling_timeout, insecure, proxy, feedTags, tlp_color)
+        client = Client(public_key, private_key, int(threshold), int(reputation_interval),
+                        polling_timeout, insecure, proxy, feedTags, tlp_color)
         if command == 'test-module':
             return_outputs(*test_module(client))
         elif command == 'fireeye-get-indicators':

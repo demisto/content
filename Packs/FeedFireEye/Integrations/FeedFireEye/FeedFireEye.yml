@@ -74,6 +74,21 @@ configuration:
   name: credentials
   required: true
   type: 9
+- additionalinfo: |-
+    The minimum score from the feed in order to to determine whether the indicator is malicious. Default is "70".
+  defaultvalue: '70'
+  display: Malicious Threshold
+  name: threshold
+  required: false
+  type: 0
+- additionalinfo: |-
+    If this amount of days passed since the indicator was created, then its reputation can be at most "Suspicious".
+    Default is "30".
+  defaultvalue: '30'
+  display: Reputation Interval
+  name: reputation_interval
+  required: false
+  type: 0
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
