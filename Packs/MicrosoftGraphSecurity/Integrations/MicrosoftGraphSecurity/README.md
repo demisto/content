@@ -6,7 +6,7 @@
 <li>Manage users</li>
 </ol>
 
-<h2>Authentication</h2>
+<h2>Authentication todo: remove me</h2>
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
 <h3>Required Permissions</h3>
