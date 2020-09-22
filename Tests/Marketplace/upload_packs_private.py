@@ -771,7 +771,7 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
                                        index_folder_path=index_folder_path,
                                        packs_dependencies_mapping=packs_dependencies_mapping,
                                        build_number=build_number, commit_hash=current_commit_hash,
-                                       packs_statistic_df=packs_statistic_df, is_private=is_private_build)
+                                       packs_statistic_df=packs_statistic_df)
 
     if not task_status:
         pack.status = PackStatus.FAILED_METADATA_PARSING.name

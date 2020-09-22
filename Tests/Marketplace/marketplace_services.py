@@ -604,7 +604,10 @@ class Pack(object):
         downloads_count = 0
 
         if self._pack_name in packs_statistic_df.index.values:
-            downloads_count = int(packs_statistic_df.loc[self._pack_name]['num_count'].astype('int32', errors='ignore'))
+            try:
+                downloads_count = int(packs_statistic_df.loc[self._pack_name]['num_count'].astype('int32', errors='ignore'))
+            except ValueError:
+                print_warning(f"Unable to retrieve statistics for {self._pack_name}.")
 
         return downloads_count
 
@@ -1144,8 +1147,7 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df,
-                        is_private_build=False):
+                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1181,7 +1183,7 @@ class Pack(object):
                                                              user_metadata.get('dependencies', {}),
                                                              user_metadata.get('displayedImages', []))
 
-            if packs_statistic_df and not is_private_build:
+            if packs_statistic_df:
                 self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
