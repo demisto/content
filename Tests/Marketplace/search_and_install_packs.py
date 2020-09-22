@@ -180,6 +180,26 @@ def install_packs(client, host, prints_manager, thread_index, packs_to_install, 
     """
 
     if private_install:
+        license_path = '/home/runner/work/content-private/content-private/content-test-conf/demisto.lic'
+        header_params = {
+            'Content-Type': 'multipart/form-data'
+        }
+        file_path = os.path.abspath(license_path)
+        files = {'file': file_path}
+
+        message = 'Making "POST" request to server {} - to update the license {}'.format(
+            host, license_path)
+        prints_manager.add_print_job(message, print_color, thread_index, LOG_COLORS.GREEN,
+                                     include_timestamp=True)
+        prints_manager.execute_thread_prints(thread_index)
+        try:
+            response_data, status_code, _ = client.api_client.call_api(
+                resource_path='/license/upload',
+                method='POST',
+                header_params=header_params, files=files)
+        except:
+            print("Everything is broken")
+
         local_packs = glob.glob("/home/runner/work/content-private/content-private/content/artifacts/packs/*.zip")
         for local_pack in local_packs:
             if any(pack_to_install['id'] in local_pack for pack_to_install in packs_to_install):
