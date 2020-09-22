@@ -37,3 +37,6 @@ comment: |
   Will add entry to duplicate(older) incident notifying a duplicate incident was ignored.
 enabled: true
 scripttarget: 0
+runas: DBotRole
+tests:
+  - No test - this is a preprocessing script
