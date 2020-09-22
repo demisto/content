@@ -710,7 +710,7 @@ class Pack(object):
         subprocess.call(full_command, shell=True)
         os.chdir(current_working_dir)
 
-    def zip_pack(self, extract_destination_path, pack_name, encryption_key=""):
+    def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
         """ Zips pack folder.
 
         Returns:
