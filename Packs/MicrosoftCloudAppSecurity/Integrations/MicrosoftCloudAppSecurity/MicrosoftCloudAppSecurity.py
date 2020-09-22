@@ -1,5 +1,9 @@
 import json
 from typing import Dict, Any
+
+from dateparser import parse
+from pytz import utc
+
 import demistomock as demisto
 import requests
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -488,7 +492,8 @@ def calculate_fetch_start_time(last_fetch, first_fetch):
     if last_fetch is None:
         if not first_fetch:
             first_fetch = '3 days'
-        first_fetch_time = date_to_timestamp(first_fetch)
+        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)
+        first_fetch_time = int(time.mktime(first_fetch_dt.timetuple()))
         return first_fetch_time
     else:
         last_fetch = int(last_fetch)
