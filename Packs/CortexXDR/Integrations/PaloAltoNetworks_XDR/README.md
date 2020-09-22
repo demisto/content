@@ -35,7 +35,7 @@ To sync incidents between Demisto and Cortex XDR, you should use the **XDRSyncSc
 
 ## Configuration
 ---
-You need to collect several pieces of information in order to configure the integration on Demisto.
+You need to collect several pieces of information in order to configure the integration on Cortex XSOAR.
 
 #### Generate an API Key and API Key ID
 1. In your Cortex XDR platform, go to **Settings**.
@@ -98,15 +98,15 @@ xdr_url:https://1111.paloaltonetworks.com/incident-view/31
 ## XDR Incident Mirroring
 **Note this feature is available from Cortex XSOAR version 6.0.0**
 
-You can enable incident mirroring between Cortex XSOAR incidents to Cortex XDR incidents.
+You can enable incident mirroring between Cortex XSOAR incidents and Cortex XDR incidents.
 To setup the mirroring follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Cortex XDR - IR and select your integration instance.
 3. Enable `Fetches incidents`.
-4. In the `Incident Mirroring Direction` integration parameter - choose in which direction should incidents be mirrored:
+4. In the `Incident Mirroring Direction` integration parameter, select in which direction should incidents be mirrored:
   * Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
   * Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
-  * Incoming And Outgoing - Changes in XSOAR and XDR incidents will be reflected in both directions.
+  * Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
   * None - Choose this to turn off incident mirroring.
 5. Optional: Check the `Sync Incident Owners` integration parameter to sync the incident owners in both XDR and XSOAR.
   * Note: This feature will only work if the same users are registered both in Cortex XSOAR and Cortex XDR.
@@ -115,17 +115,16 @@ To setup the mirroring follow these instructions:
 
 ### XDR Mirroring Notes, limitations and Troubleshooting
 
-* While you can mirror changes in incident fields both in and out in each incident - 
-  it should be noted that an incident field can only be mirrored in a single direction at a time. For example:
+* While you can mirror changes in incident fields both in and out in each incident, you can only mirror in a single direction at a time. For example:
   If we have an incident with two fields (A and B) in XDR and XSOAR while *Incoming And Outgoing* mirroring is selected: 
    * I can mirror field A from XDR to XSOAR and field B from XSOAR to XDR.
    * I cannot mirror changes from field A in both directions.
    
-  Initially all fields are mirrored in from XDR to XSOAR, once they are changed in XSOAR they can only be mirrored out.
+  Initially all fields are mirrored in from XDR to XSOAR. Once they are changed in XSOAR, they can only be mirrored out.
 * **Do not use the `XDRSyncScript` automation nor any playbook that uses this automation** 
   (e.g `Cortex XDR Incident Sync` or `Cortex XDR incident handling v2`), as it impairs the mirroring functionality.
 
-* When migrating an existing instance to the mirroring feature or in case the mirroring does not work as expected make sure that:
+* When migrating an existing instance to the mirroring feature, or in case the mirroring does not work as expected, make sure that:
    * The default playbook of the `Cortex XDR Incident` incident type is not `Cortex XDR Incident Sync`, change it to a 
      different playbook that does not use `XDRSyncScript`.
    * The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
