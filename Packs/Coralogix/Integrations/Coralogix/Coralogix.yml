@@ -3,6 +3,14 @@ commonfields:
   id: Coralogix
   version: -1
 configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 - additionalinfo: The Coralogix WebAPI endpoint for your account - Do not modify unless
     instructed to by Coralogix Customer Success
   defaultvalue: https://webapi.coralogix.com
@@ -178,7 +186,7 @@ script:
     description: Query Coralogix for information
     execution: false
     name: coralogix-search
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: true
   longRunning: false
@@ -187,3 +195,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- No tests
