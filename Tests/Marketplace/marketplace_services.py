@@ -602,10 +602,8 @@ class Pack(object):
             int: number of packs downloads.
         """
         downloads_count = 0
-
         if self._pack_name in packs_statistic_df.index.values:
-            if packs_statistic_df.loc[self._pack_name]['num_count'] is not None:
-                downloads_count = int(packs_statistic_df.loc[self._pack_name]['num_count'].astype('int32', errors='ignore'))
+            downloads_count = int(packs_statistic_df.loc[self._pack_name]['num_count'].astype('int32'))
 
         return downloads_count
 
