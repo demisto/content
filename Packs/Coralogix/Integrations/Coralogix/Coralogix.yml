@@ -114,13 +114,13 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The name of whom you want to say hello to.
+      description: The name of the tag.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: The point in time to tag in Coralogix
+      description: The point in time to tag in Coralogix.
       isArray: false
       name: timestamp
       required: false
