@@ -50,3 +50,4 @@ workflows:
           requires:
             - Level1-1
             - Level1-2
+          when: always
