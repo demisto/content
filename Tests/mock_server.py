@@ -9,7 +9,7 @@ import time
 import unicodedata
 import urllib3
 import demisto_client.demisto_api
-from subprocess import call, Popen, PIPE, check_call, check_output, CalledProcessError
+from subprocess import call, Popen, PIPE, check_call, check_output, CalledProcessError, STDOUT
 from demisto_sdk.commands.common.tools import print_color, print_error, print_warning, \
     LOG_COLORS
 
@@ -303,12 +303,14 @@ class MITMProxy:
             split_command = command.split()
             prints_manager.add_print_job('Let\'s try and clean the mockfile from timestamp data!', print, thread_index)
             try:
-                check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'))
+                check_output(self.ami.add_ssh_prefix(split_command, ssh_options='-t'), stderr=STDOUT)
             except CalledProcessError as e:
                 cleaning_err_msg = 'There may have been a problem when filtering timestamp data from the mock file.'
                 prints_manager.add_print_job(cleaning_err_msg, print_error, thread_index)
                 err_msg = f'command `{command}` exited with return code [{e.returncode}]'
                 err_msg = f'{err_msg} and the output of "{e.output}"' if e.output else err_msg
+                if e.stderr:
+                    err_msg += f'STDERR: {e.stderr}'
                 prints_manager.add_print_job(err_msg, print_error, thread_index)
             else:
                 prints_manager.add_print_job('Success!', print_color, thread_index, LOG_COLORS.GREEN)
