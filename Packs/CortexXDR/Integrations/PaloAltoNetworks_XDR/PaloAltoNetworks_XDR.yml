@@ -62,8 +62,8 @@ configuration:
   required: false
   type: 0
 - additionalinfo: From XSOAR version 6.0.0. If selected, for every incident fetched from Cortex XDR to XSOAR
-    - the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. 
-    For example, if you change the onwer in Cortex XSOAR, the new owner will also be applied in Cortex XDR. However, if you now change the owner back in Cortex XDR, 
+    - the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected.
+    For example, if you change the onwer in Cortex XSOAR, the new owner will also be applied in Cortex XDR. However, if you now change the owner back in Cortex XDR,
     it will not be reflected back to Cortex XSOAR. In addition, for this change to be reflected, the users must exist in both Cortex XSOAR and Cortex XDR.
   display: Sync Incident Owners
   hidden: false
@@ -278,7 +278,7 @@ script:
         "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.severity
-      description: Calculated severity of the incident. Valid values are: "low","medium","high"
+      description: 'Calculated severity of the incident. Valid values are: "low","medium","high"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
       description: Dynamic calculated description of the incident.
@@ -336,7 +336,7 @@ script:
       description: Source of the alert. The product/vendor this alert came from.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.severity
-      description: Severity of the alert.Valid values are: "low","medium","high"""
+      description: 'Severity of the alert.Valid values are: "low","medium","high"""'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.name
       description: Calculated name of the alert.
@@ -358,20 +358,20 @@ script:
       description: User name involved with the alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.event_type
-      description: Event type. Valid values are: "Process Execution","Network Event","File Event","Registry
-        Event","Injection Event","Load Image Event","Windows Event Log"
+      description: 'Event type. Valid values are: "Process Execution","Network Event","File Event","Registry
+        Event","Injection Event","Load Image Event","Windows Event Log"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action
-      description: The action that triggered the alert. Valid values are: "REPORTED", "BLOCKED", "POST_DETECTED",
+      description: 'The action that triggered the alert. Valid values are: "REPORTED", "BLOCKED", "POST_DETECTED",
         "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1",
         "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8",
         "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15",
         "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4",
         "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22",
-        "DETECTED_23"
+        "DETECTED_23"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
-      description: The action that triggered the alert. Valid values are: "Detected (Reported)" "Prevented
+      description: 'The action that triggered the alert. Valid values are: "Detected (Reported)" "Prevented
         (Blocked)" "Detected (Post Detected)" "Detected (Scanned)" "Detected (Download)"
         "Detected (Prompt Allow)" "Prevented (Prompt Block)" "Detected" "Prevented
         (Denied The Session)" "Prevented (Dropped The Session)" "Prevented (Dropped
@@ -386,7 +386,7 @@ script:
         Or Application)" "Prevented (Block)" "Detected (Allowed The Session)" "Detected
         (Raised An Alert)" "Detected (Syncookie Sent)" "Detected (Forward)" "Detected
         (Wildfire Upload Success)" "Detected (Wildfire Upload Failure)" "Detected
-        (Wildfire Upload Skip)" "Detected (Sinkhole)"
+        (Wildfire Upload Skip)" "Detected (Sinkhole)"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_image_name
       description: Image name.
@@ -395,8 +395,8 @@ script:
       description: Command line.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_status
-      description: Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked"
-        "Signature Fail" "N/A" "Weak Hash".
+      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked"
+        "Signature Fail" "N/A" "Weak Hash".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_vendor
       description: Singature vendor name.
@@ -408,8 +408,8 @@ script:
       description: Command line.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_status
-      description: Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked"
-        "Signature Fail" "N/A" "Weak Hash"
+      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked"
+        "Signature Fail" "N/A" "Weak Hash"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_vendor
       description: Signature vendor.
@@ -427,8 +427,8 @@ script:
       description: Image SHA256.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_signature_status
-      description: Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked"
-        "Signature Fail" "N/A" "Weak Hash"
+      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked"
+        "Signature Fail" "N/A" "Weak Hash"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_signature_vendor
       description: Signature vendor name.
@@ -467,7 +467,7 @@ script:
       description: Firewall app id.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.is_whitelisted
-      description: Is the alert whitelisted. Valid values are: "Yes" "No"
+      description: 'Is the alert whitelisted. Valid values are: "Yes" "No"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.starred
       description: Alert starred.
@@ -491,15 +491,15 @@ script:
       description: The domain related to the artifact.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
-      description: The artifact type. Valid values are: "META", "GID", "CID", "HASH", "IP", "DOMAIN",
-        "REGISTRY", "HOSTNAME"
+      description: 'The artifact type. Valid values are: "META", "GID", "CID", "HASH", "IP", "DOMAIN",
+        "REGISTRY", "HOSTNAME"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_country
       description: The country related to the artifact.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status
-      description: Digital signature status of the file. Valid values are: "SIGNATURE_UNAVAILABLE" "SIGNATURE_SIGNED"
-        "SIGNATURE_INVALID" "SIGNATURE_UNSIGNED" "SIGNATURE_WEAK_HASH"
+      description: 'Digital signature status of the file. Valid values are: "SIGNATURE_UNAVAILABLE" "SIGNATURE_SIGNED"
+        "SIGNATURE_INVALID" "SIGNATURE_UNSIGNED" "SIGNATURE_WEAK_HASH"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_process
       description: Whether the file artifact is related to a process execution.
@@ -508,8 +508,8 @@ script:
       description: Name of the file.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_wildfire_verdict
-      description: The file verdict, calculated by Wildfire. Valid values are: "BENIGN" "MALWARE" "GRAYWARE"
-        "PHISING" "UNKNOWN".
+      description: 'The file verdict, calculated by Wildfire. Valid values are: "BENIGN" "MALWARE" "GRAYWARE"
+        "PHISING" "UNKNOWN".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.alert_count
       description: Number of alerts related to the artifact.
@@ -521,8 +521,8 @@ script:
       description: Whether the artifact was created by the user (manually).
       type: boolean
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.type
-      description: The artifact type. Valid values are: "META" "GID" "CID" "HASH" "IP" "DOMAIN" "REGISTRY"
-        "HOSTNAME"
+      description: 'The artifact type. Valid values are: "META" "GID" "CID" "HASH" "IP" "DOMAIN" "REGISTRY"
+        "HOSTNAME"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
       description: SHA-256 hash of the file.
@@ -569,8 +569,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED,
-        RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER.
+      description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED,
+        RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER.'
       isArray: false
       name: status
       predefined:
@@ -742,8 +742,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "A comma-separated list of distribution package names or installation\
-        \ package names. \nExample: dist_name1,dist_name2"
+      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
       isArray: true
       name: dist_name
       required: false
@@ -766,8 +765,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The endpoint platform. Valid values are: "windows", "linux", "macos", or
-        "android". '
+      description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
       isArray: true
       name: platform
       predefined:
@@ -1216,8 +1214,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: desc
-      description: 'The sort order. Can be "asc" (ascending) or "desc" (descending).
-        Default set to "desc". '
+      description: The sort order. Can be "asc" (ascending) or "desc" (descending). Default set to "desc".
       isArray: false
       name: sort_order
       predefined:
@@ -1406,8 +1403,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: 'The sort order. Can be "asc" (ascending) or "desc" (descending).
-        Default is "asc". '
+      description: The sort order. Can be "asc" (ascending) or "desc" (descending). Default is "asc".
       isArray: false
       name: sort_order
       predefined:
