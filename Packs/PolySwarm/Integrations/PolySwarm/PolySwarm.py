@@ -136,12 +136,12 @@ class PolyswarmAPI:
 
         # we dont have any results already - wait for the bounty to complete
         # and try again
-        time.sleep(30)
+        time.sleep(30)  # pylint: disable=sleep-exists
 
         while not window_closed:
             status_code, response = self._http_request('get', path_url)
             window_closed = json.loads(response)['result']['files'][0]['window_closed']
-            time.sleep(1)
+            time.sleep(1)  # pylint: disable=sleep-exists
 
         return (status_code, response)
 

@@ -172,7 +172,7 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
         driver.get(path)
         driver.implicitly_wait(5)
         if wait_time > 0 or DEFAULT_WAIT_TIME > 0:
-            time.sleep(wait_time or DEFAULT_WAIT_TIME)
+            time.sleep(wait_time or DEFAULT_WAIT_TIME)  # pylint: disable=sleep-exists
         check_response(driver)
         demisto.debug('Navigating to path - COMPLETED')
 

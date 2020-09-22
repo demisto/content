@@ -131,7 +131,7 @@ def poll_webid(web_id):
         if result['data']['status'] != 'pending':
             LOG('error while polling: result is %s' % (result, ))
         result = info_request(web_id)
-        time.sleep(1)
+        time.sleep(1)  # pylint: disable=sleep-exists
         max_polls -= 1
 
     LOG('reached max_polls #%d' % (max_polls, ))

@@ -67,7 +67,7 @@ def http_request(method, url_suffix, params=None, data=None):
             wait_amount = 5
         if datetime.now() + timedelta(seconds=int(wait_amount)) > RETRIES_END_TIME:
             return_error('Max retry time has exceeded.')
-        time.sleep(int(wait_amount))
+        time.sleep(int(wait_amount))  # pylint: disable=sleep-exists
 
     if res.status_code == 404:
         return None

@@ -67,7 +67,7 @@ def check_pids(pid_num: int) -> str:
     try:
         for p in processes:
             p.start()
-        time.sleep(0.5)
+        time.sleep(0.5)  # pylint: disable=sleep-exists
         alive = 0
         for p in processes:
             if p.is_alive():

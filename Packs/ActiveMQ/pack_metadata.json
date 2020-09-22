@@ -1,18 +1,18 @@
 {
-  "name": "ActiveMQ",
-  "description": "Uses Durable Topic Subscribers to fetch messages and ingest them as incidents in Demisto.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-03-11T12:58:02Z",
-  "categories": [
-    "Messaging"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": [
-    "ActiveMQ"
-  ]
+    "name": "ActiveMQ",
+    "description": "Uses Durable Topic Subscribers to fetch messages and ingest them as incidents in Demisto.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-03-11T12:58:02Z",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "ActiveMQ"
+    ]
 }

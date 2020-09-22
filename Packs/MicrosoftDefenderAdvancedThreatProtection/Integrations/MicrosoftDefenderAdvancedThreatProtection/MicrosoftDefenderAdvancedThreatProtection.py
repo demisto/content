@@ -1317,7 +1317,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
                     break
             except Exception as e:
                 if 'ResourceNotFound' in str(e) and index < 3:
-                    time.sleep(1)
+                    time.sleep(1)  # pylint: disable=sleep-exists
                 else:
                     raise Exception(f'Machine action {action_id} was not found')
         response = client.get_machine_action_by_id(action_id)

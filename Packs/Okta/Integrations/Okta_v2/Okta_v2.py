@@ -263,7 +263,7 @@ class Client(BaseClient):
             if not response.get('factorResult') == 'WAITING':
                 return response
             counter += 1
-            time.sleep(5)
+            time.sleep(5)  # pylint: disable=sleep-exists
         response['factorResult'] = "TIMEOUT"
         return response
 

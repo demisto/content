@@ -1194,7 +1194,7 @@ def parse_incident_from_item(item, is_fetch):
         try:
             item.save()
         except ErrorIrresolvableConflict:
-            time.sleep(0.5)
+            time.sleep(0.5)  # pylint: disable=sleep-exists
             item.save()
 
     incident['labels'] = labels
@@ -2081,7 +2081,7 @@ def sub_main():
     except Exception as e:
         import time
 
-        time.sleep(2)
+        time.sleep(2)  # pylint: disable=sleep-exists
         start_logging()
         debug_log = log_stream.getvalue()  # type: ignore
         error_message_simple = ""

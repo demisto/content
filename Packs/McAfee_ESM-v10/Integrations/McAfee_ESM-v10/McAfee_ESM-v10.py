@@ -220,7 +220,7 @@ class NitroESM(object):
             if ready:
                 return
             else:
-                time.sleep(3)
+                time.sleep(3)  # pylint: disable=sleep-exists
 
         # wait for response - 1 min between each try
         for i in range(max_wait):
@@ -228,7 +228,7 @@ class NitroESM(object):
             if ready:
                 return
             else:
-                time.sleep(60)
+                time.sleep(60)  # pylint: disable=sleep-exists
 
         raise ValueError('Waited more than {} min for query results : {}'.format(max_wait, result_id))
 

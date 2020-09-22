@@ -444,7 +444,7 @@ script:
     - contextPath: Endace.ArchivedFile.Delete.Error
       description: Delete Error
       type: String
-  dockerimage: demisto/python3:3.8.5.10455
+  dockerimage: demisto/python3:3.8.5.10845
   feed: false
   isfetch: false
   longRunning: false

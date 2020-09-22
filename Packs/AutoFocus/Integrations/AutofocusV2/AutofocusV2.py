@@ -430,7 +430,7 @@ def get_search_results(search_object, af_cookie):
     # In this case, the complete percentage would be 0 (or lower than 100).
     # In a case where there really aren't results (hits), the af_complete_percentage would be 100.
     while (not results.get('hits') and (results.get('af_complete_percentage', 0) != 100)) and retry_count < 10:
-        time.sleep(5)
+        time.sleep(5)  # pylint: disable=sleep-exists
         results = run_get_search_results(search_object, af_cookie)
         retry_count += 1
     parsed_results = parse_hits_response(results.get('hits'), 'search_results')

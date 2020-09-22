@@ -634,7 +634,7 @@ class EndaceApp(object):
                             result['Status'] = rj.status_code
                             result['Error'] = f"ServerError - HTTP {rj.status_code} to /{path}"
                     #   wait time before next run
-                    time.sleep(self.wait_time)
+                    time.sleep(self.wait_time)  # pylint: disable=sleep-exists
             else:
                 result['Status'] = "Failed"
                 result['Error'] = f"ServerError - HTTP {rd.status_code} to /{path}"
@@ -827,7 +827,7 @@ class EndaceApp(object):
 
             while progress_status:
                 #   wait time before next run
-                time.sleep(self.wait_time)
+                time.sleep(self.wait_time)  # pylint: disable=sleep-exists
                 current_time = calendar.timegm(time.gmtime())
                 if current_time - query_time > self.delta_time:
                     progress_status = False

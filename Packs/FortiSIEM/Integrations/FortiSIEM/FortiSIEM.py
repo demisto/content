@@ -183,7 +183,7 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
     while response.text != "100" and max_wait_time > 0:
         response = session.post(REST_ADDRESS + '/report/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
         max_wait_time = int(max_wait_time) - 1
-        time.sleep(1)
+        time.sleep(1)  # pylint: disable=sleep-exists
 
     params = {
         'start': 0,

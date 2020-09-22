@@ -12835,7 +12835,7 @@ script:
       description: Type of the resource. Always compute#operation.
       type: String
   dockerimage45: demisto/google-api:1.0.0.235
-  dockerimage: demisto/google-api:1.0.0.7874
+  dockerimage: demisto/google-api:1.0.0.11524
   feed: false
   isfetch: false
   longRunning: false

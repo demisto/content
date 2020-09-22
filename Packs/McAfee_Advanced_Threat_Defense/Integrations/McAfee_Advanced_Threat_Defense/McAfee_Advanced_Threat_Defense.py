@@ -675,7 +675,7 @@ def detonate(submit_type, sample, timeout, report_type, threshold, file_name):
             uri_suffix = 'iTaskId=' + str(task_id)
             return_report(uri_suffix, task_id, report_type, upload_data, status, threshold)
             sys.exit(0)
-        time.sleep(1)
+        time.sleep(1)  # pylint: disable=sleep-exists
         timeout -= 1
 
     return_error("Timeout due to no answer after " + demisto.args()['timeout']

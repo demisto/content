@@ -130,7 +130,7 @@ def subscribe(client, conn, subscription_id, topic_name, queue_name):
             headers={'activemq.subscriptionName': client}
         )
 
-    time.sleep(1)
+    time.sleep(1)  # pylint: disable=sleep-exists
 
     for msg in listener.result_arr:
         demisto.results(msg)
@@ -161,7 +161,7 @@ def fetch_incidents(client, conn, subscription_id, queue_name, topic_name):
         )
 
     incidents = []
-    time.sleep(10)
+    time.sleep(10)  # pylint: disable=sleep-exists
     for i in range(len(listener.result_arr)):
         msg = listener.result_arr[i]
         msg_id = listener.msg_ids[i]

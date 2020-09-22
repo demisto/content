@@ -160,7 +160,6 @@ def validate_response(client, url, method='GET'):
             raise ValueError('Internal server error occurred, please try again later')
         if raw_response[0].status == 429:
             demisto.debug('API Rate limit exceeded. Retrying in {} seconds...'.format(1))
-            time.sleep(1)
             continue
         if raw_response[0].status != 200:
             return_error(

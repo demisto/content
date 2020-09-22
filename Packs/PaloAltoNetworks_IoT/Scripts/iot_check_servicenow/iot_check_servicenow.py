@@ -55,7 +55,7 @@ def check_servicenow_and_close():
                     demisto.debug(f"keep incident {incident['id']} {incident['status']}: {incident_state}")
 
                 # not going to spam the ServiceNow server
-                time.sleep(1)
+                time.sleep(1)  # pylint: disable=sleep-exists
         return f'found {len(incidents)} incidents, closed {closed_count} incidents'
     return 'no incidents found'
 

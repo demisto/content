@@ -161,7 +161,7 @@ def poll_analysis_id(analysis_id):
         if extract_status(result['status']) != 'pending':
             LOG('error while polling: result is %s' % (result,))
         result = info_request(analysis_id)
-        time.sleep(10)
+        time.sleep(10)  # pylint: disable=sleep-exists
         max_polls -= 1
 
     LOG('reached max_polls #%d' % (max_polls,))

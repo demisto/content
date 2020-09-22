@@ -195,7 +195,7 @@ def wait_for_zone_operation(args):
             )
             break
 
-        time.sleep(2)
+        time.sleep(2)  # pylint: disable=sleep-exists
 
 
 def wait_for_region_operation(args):
@@ -238,7 +238,7 @@ def wait_for_region_operation(args):
             )
             break
 
-        time.sleep(2)
+        time.sleep(2)  # pylint: disable=sleep-exists
 
 
 def wait_for_global_operation(args):
@@ -278,7 +278,7 @@ def wait_for_global_operation(args):
             )
             break
 
-        time.sleep(2)
+        time.sleep(2)  # pylint: disable=sleep-exists
 
 
 def test_module():

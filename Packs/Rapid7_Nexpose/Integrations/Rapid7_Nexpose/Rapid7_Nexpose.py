@@ -1128,7 +1128,7 @@ def download_report(report_id, name, report_format):
     }
 
     # Wait for the report to be completed
-    time.sleep(10)
+    time.sleep(10)  # pylint: disable=sleep-exists
 
     # Download
     path = 'reports/' + str(report_id) + '/history/' + str(instance['id']) + '/output'

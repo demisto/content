@@ -267,7 +267,6 @@ class ARIA(object):
                         return True
                     elif 'FAILURE' in tcl_entry['status']:
                         return False
-            time.sleep(0.1)
 
         return False
 

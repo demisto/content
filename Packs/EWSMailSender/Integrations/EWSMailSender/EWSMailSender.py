@@ -302,7 +302,7 @@ def main():
     except Exception as e:
         import time
 
-        time.sleep(2)
+        time.sleep(2)  # pylint: disable=sleep-exists
         debug_log = "=== DEBUG LOG ===\n" + (log_stream.getvalue() if log_stream else "")
         error_message = ""
         if "Status code: 401" in debug_log:
