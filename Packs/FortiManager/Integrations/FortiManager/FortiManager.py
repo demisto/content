@@ -38,7 +38,7 @@ class Client(BaseClient):
             current_token = demisto.getIntegrationContext().get('session')
             return current_token if current_token else self.get_session_token(get_new_token=True)
 
-    def fortimanager_http_request(self, method, url, data_in_list=None, json_data=None):
+    def fortimanager_http_request(self, method, url, data_in_list=None, json_data=None, range_info=None):
         body = {
             "id": 1,
             "method": method,
@@ -54,6 +54,9 @@ class Client(BaseClient):
         if json_data:
             body['params'][0]['data'] = json_data
 
+        if range_info:
+            body['params'][0]['range'] = range_info
+
         response = self._http_request(
             method='POST',
             url_suffix='jsonrpc',
@@ -61,13 +64,13 @@ class Client(BaseClient):
         )
         return response
 
-    def fortimanager_api_call(self, method, url, data=None):
+    def fortimanager_api_call(self, method, url, data=None, range_info=None):
         response = self.fortimanager_http_request(method, url, data)
 
         # catch session token expiration - fetch new token and retry
         if response.get('result')[0].get('status').get('code') != -11:
             self.session_token = self.get_session_token(get_new_token=True)
-            response = self.fortimanager_http_request(method, url, data)
+            response = self.fortimanager_http_request(method, url, data_in_list=data, range_info=range_info)
 
         if response.get('result')[0].get('status').get('code') != 0:
             raise DemistoException(response.get('result')[0].get('status').get('message'))
@@ -106,7 +109,7 @@ def get_range_for_list_command(args):
         list_range.append(list_range)
 
     if list_range:
-        return {"range": [list_range]}
+        return [list_range]
     else:
         return None
 
@@ -141,9 +144,9 @@ def list_adom_devices_groups_command(client, args):
 
 def list_firewall_addresses_command(client, args):
     firewall_addresses = client.fortimanager_api_call("get", f"/pm/config/{get_global_or_adom(client, args)}"
-                                                                 f"/obj/firewall/address"
-                                                                 f"{get_specific_entity(args.get('address'))}",
-                                                      data=get_range_for_list_command(args))
+                                                             f"/obj/firewall/address"
+                                                             f"{get_specific_entity(args.get('address'))}",
+                                                      range_info=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.Address',
@@ -158,9 +161,9 @@ def list_firewall_addresses_command(client, args):
 def list_firewall_address_groups_command(client, args):
     address_group = get_specific_entity(args.get('address_group'))
     firewall_address_groups = client.fortimanager_api_call("get", f"/pm/config/"
-                                                                      f"{get_global_or_adom(client, args)}"
-                                                                      f"/obj/firewall/addrgrp{address_group}",
-                                                           data=get_range_for_list_command(args))
+                                                                  f"{get_global_or_adom(client, args)}"
+                                                                  f"/obj/firewall/addrgrp{address_group}",
+                                                           range_info=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.AddressGroup',
@@ -174,10 +177,10 @@ def list_firewall_address_groups_command(client, args):
 
 def list_service_categories_command(client, args):
     service_categories = client.fortimanager_api_call("get", f"/pm/config/"
-                                                                 f"{get_global_or_adom(client, args)}/"
-                                                                 f"obj/firewall/service/category"
-                                                                 f"{get_specific_entity(args.get('service_category'))}",
-                                                      data=get_range_for_list_command(args))
+                                                             f"{get_global_or_adom(client, args)}/"
+                                                             f"obj/firewall/service/category"
+                                                             f"{get_specific_entity(args.get('service_category'))}",
+                                                      range_info=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.ServiceCategory',
@@ -191,10 +194,10 @@ def list_service_categories_command(client, args):
 
 def list_service_groups_command(client, args):
     service_groups = client.fortimanager_api_call("get", f"/pm/config/"
-                                                             f"{get_global_or_adom(client, args)}"
-                                                             f"/obj/firewall/service/group"
-                                                             f"{get_specific_entity(args.get('service_group'))}",
-                                                  data=get_range_for_list_command(args))
+                                                         f"{get_global_or_adom(client, args)}"
+                                                         f"/obj/firewall/service/group"
+                                                         f"{get_specific_entity(args.get('service_group'))}",
+                                                  range_info=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.ServiceGroup',
@@ -208,10 +211,10 @@ def list_service_groups_command(client, args):
 
 def list_custom_service_command(client, args):
     custom_services = client.fortimanager_api_call("get", f"/pm/config/"
-                                                              f"{get_global_or_adom(client, args)}"
-                                                              f"/obj/firewall/service/custom"
-                                                              f"{get_specific_entity(args.get('custom_service'))}",
-                                                   data=get_range_for_list_command(args))
+                                                          f"{get_global_or_adom(client, args)}"
+                                                          f"/obj/firewall/service/custom"
+                                                          f"{get_specific_entity(args.get('custom_service'))}",
+                                                   range_info=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.CustomServices',
@@ -225,8 +228,8 @@ def list_custom_service_command(client, args):
 
 def list_policy_packages_command(client, args):
     policy_packages = client.fortimanager_api_call("get", f"pm/pkg/{get_global_or_adom(client, args)}"
-                                                              f"{get_specific_entity(args.get('policy_package'))}",
-                                                   data=get_range_for_list_command(args))
+                                                          f"{get_specific_entity(args.get('policy_package'))}",
+                                                   range_info=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.PolicyPackage',
@@ -240,9 +243,9 @@ def list_policy_packages_command(client, args):
 
 def list_policies_command(client, args):
     policies = client.fortimanager_api_call("get", f"/pm/config/"
-                                                       f"{get_global_or_adom(client, args)}"
-                                                       f"/pkg/{args.get('package')}/firewall/policy",
-                                            data=get_range_for_list_command(args))
+                                                   f"{get_global_or_adom(client, args)}"
+                                                   f"/pkg/{args.get('package')}/firewall/policy",
+                                            range_info=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.PolicyPackage.Policy',
@@ -256,7 +259,7 @@ def list_policies_command(client, args):
 
 def create_address_command(client, args):
     firewall_addresses = client.fortimanager_api_call("add", f"/pm/config/{get_global_or_adom(client, args)}"
-                                                                 f"/obj/firewall/address",
+                                                             f"/obj/firewall/address",
                                                       data=setup_request_data(args, ['adom']))
 
     return f"Created new Address {firewall_addresses.get('name')}"
@@ -264,7 +267,7 @@ def create_address_command(client, args):
 
 def update_address_command(client, args):
     firewall_addresses = client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}"
-                                                                    f"/obj/firewall/address/{args.get('name')}",
+                                                                f"/obj/firewall/address/{args.get('name')}",
                                                       data=setup_request_data(args, ['adom']))
 
     return f"Updated Address {firewall_addresses.get('name')}"
@@ -272,8 +275,8 @@ def update_address_command(client, args):
 
 def create_firewall_address_groups_command(client, args):
     firewall_address_groups = client.fortimanager_api_call("add", f"/pm/config/"
-                                                                      f"{get_global_or_adom(client, args)}"
-                                                                      f"/obj/firewall/addrgrp",
+                                                                  f"{get_global_or_adom(client, args)}"
+                                                                  f"/obj/firewall/addrgrp",
                                                            data=setup_request_data(args, ['adom']))
 
     return f"Created new Address Group {firewall_address_groups.get('name')}"
@@ -281,8 +284,8 @@ def create_firewall_address_groups_command(client, args):
 
 def update_firewall_address_groups_command(client, args):
     firewall_address_groups = client.fortimanager_api_call("update", f"/pm/config/"
-                                                                         f"{get_global_or_adom(client, args)}"
-                                                                         f"/obj/firewall/addrgrp/{args.get('name')}",
+                                                                     f"{get_global_or_adom(client, args)}"
+                                                                     f"/obj/firewall/addrgrp/{args.get('name')}",
                                                            data=setup_request_data(args, ['adom']))
 
     return f"Updated Address Group {firewall_address_groups.get('name')}"
@@ -290,8 +293,8 @@ def update_firewall_address_groups_command(client, args):
 
 def create_service_groups_command(client, args):
     service_groups = client.fortimanager_api_call("add", f"/pm/config/"
-                                                             f"{get_global_or_adom(client, args)}"
-                                                             f"/obj/firewall/service/group",
+                                                         f"{get_global_or_adom(client, args)}"
+                                                         f"/obj/firewall/service/group",
                                                   data=setup_request_data(args, ['adom']))
 
     return f"Created new Service Group {service_groups.get('name')}"
@@ -299,8 +302,8 @@ def create_service_groups_command(client, args):
 
 def update_service_groups_command(client, args):
     service_groups = client.fortimanager_api_call("update", f"/pm/config/"
-                                                                f"{get_global_or_adom(client, args)}"
-                                                                f"/obj/firewall/service/group/{args.get('name')}",
+                                                            f"{get_global_or_adom(client, args)}"
+                                                            f"/obj/firewall/service/group/{args.get('name')}",
                                                   data=setup_request_data(args, ['adom']))
 
     return f"Updated Service Group {service_groups.get('name')}"
@@ -320,9 +323,9 @@ def create_policy_packages_command(client, args):
     args['package settings'] = package_settings
     client.fortimanager_api_call("add", f"pm/pkg/{get_global_or_adom(client, args)}",
                                  data=setup_request_data(args, ['adom', 'central_nat', 'consolidated_firewall',
-                                                                    'fwpolicy_implicit_log',
-                                                                    'fwpolicy6_implicit_log', 'inspection_mode',
-                                                                    'ngfw_mode', 'ssl_ssh_profile']))
+                                                                'fwpolicy_implicit_log',
+                                                                'fwpolicy6_implicit_log', 'inspection_mode',
+                                                                'ngfw_mode', 'ssl_ssh_profile']))
 
     return f"Created new Policy Package {args.get('name')}"
 
@@ -341,9 +344,9 @@ def update_policy_packages_command(client, args):
     args['package settings'] = package_settings
     client.fortimanager_api_call("update", f"pm/pkg/{get_global_or_adom(client, args)}/{args.get('name')}",
                                  data=setup_request_data(args, ['adom', 'central_nat', 'consolidated_firewall',
-                                                                    'fwpolicy_implicit_log',
-                                                                    'fwpolicy6_implicit_log', 'inspection_mode',
-                                                                    'ngfw_mode', 'ssl_ssh_profile']))
+                                                                'fwpolicy_implicit_log',
+                                                                'fwpolicy6_implicit_log', 'inspection_mode',
+                                                                'ngfw_mode', 'ssl_ssh_profile']))
 
     return f"Update Policy Package {args.get('name')}"
 
@@ -354,8 +357,8 @@ def create_policy_command(client, args):
         args[field_and_value[0]] = field_and_value[1]
 
     policies = client.fortimanager_api_call("add", f"/pm/config/"
-                                                       f"{get_global_or_adom(client, args)}"
-                                                       f"/pkg/{args.get('package')}/firewall/policy/{args.get('name')}",
+                                                   f"{get_global_or_adom(client, args)}"
+                                                   f"/pkg/{args.get('package')}/firewall/policy/{args.get('name')}",
                                             data=setup_request_data(args, ['adom', 'package', 'additional_params']))
 
     return f"Created policy with ID {policies.get('id')}"
@@ -363,15 +366,15 @@ def create_policy_command(client, args):
 
 def create_custom_service_command(client, args):
     custom_services = client.fortimanager_api_call("add", f"/pm/config/"
-                                                              f"{get_global_or_adom(client, args)}"
-                                                              f"/obj/firewall/service/custom",
+                                                          f"{get_global_or_adom(client, args)}"
+                                                          f"/obj/firewall/service/custom",
                                                    data=setup_request_data(args, ['adom']))
     return f"Created new Custom Service {custom_services.get('name')}"
 
 
 def update_custom_service_command(client, args):
     custom_services = client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}"
-                                                                 f"/obj/firewall/service/custom/{args.get('name')}",
+                                                             f"/obj/firewall/service/custom/{args.get('name')}",
                                                    data=setup_request_data(args, ['adom']))
     return f"Updated Custom Service {custom_services.get('name')}"
 
@@ -382,9 +385,9 @@ def update_policy_command(client, args):
         args[field_and_value[0]] = field_and_value[1]
 
     policies = client.fortimanager_api_call("update", f"/pm/config/"
-                                                          f"{get_global_or_adom(client, args)}"
-                                                          f"/pkg/{args.get('package')}/firewall/policy/"
-                                                          f"{args.get('name')}",
+                                                      f"{get_global_or_adom(client, args)}"
+                                                      f"/pkg/{args.get('package')}/firewall/policy/"
+                                                      f"{args.get('name')}",
                                             data=setup_request_data(args, ['adom', 'package', 'additional_params']))
 
     return f"Created policy with ID {policies.get('id')}"
@@ -392,19 +395,19 @@ def update_policy_command(client, args):
 
 def delete_address_command(client, args):
     client.fortimanager_api_call("delete", f"/pm/config/{get_global_or_adom(client, args)}"
-                                               f"/obj/firewall/address/{args.get('address')}")
+                                           f"/obj/firewall/address/{args.get('address')}")
     return f"Deleted Address {args.get('address')}"
 
 
 def delete_address_group_command(client, args):
     client.fortimanager_api_call("delete", f"/pm/config/{get_global_or_adom(client, args)}"
-                                               f"/obj/firewall/addrgrp/{args.get('address_group')}")
+                                           f"/obj/firewall/addrgrp/{args.get('address_group')}")
     return f"Deleted Address Group {args.get('address_group')}"
 
 
 def delete_service_group_command(client, args):
     client.fortimanager_api_call("delete", f"/pm/config/{get_global_or_adom(client, args)}"
-                                               f"/obj/firewall/service/group/{args.get('service_group')}")
+                                           f"/obj/firewall/service/group/{args.get('service_group')}")
     return f"Deleted Address Group {args.get('service_group')}"
 
 
@@ -415,19 +418,19 @@ def delete_policy_package_command(client, args):
 
 def delete_policy_command(client, args):
     client.fortimanager_api_call("delete", f"/pm/config/{get_global_or_adom(client, args)}/pkg/"
-                                               f"{args.get('package')}/firewall/policy{args.get('policy')}")
+                                           f"{args.get('package')}/firewall/policy{args.get('policy')}")
     return f"Deleted Policy {args.get('policy')}"
 
 
 def delete_custom_service_command(client, args):
     client.fortimanager_api_call("delete", f"/pm/config/{get_global_or_adom(client, args)}"
-                                               f"/obj/firewall/service/custom/{args.get('custom')}")
+                                           f"/obj/firewall/service/custom/{args.get('custom')}")
     return f"Deleted Custom Service {args.get('custom')}"
 
 
 def move_policy_command(client, args):
     client.fortimanager_api_call("move", f"/pm/config/{get_global_or_adom(client, args)}"
-                                             f"/pkg/{args.get('package')}/firewall/policy/{args.get('policy')}",
+                                         f"/pkg/{args.get('package')}/firewall/policy/{args.get('policy')}",
                                  data=setup_request_data(args, ['adom', 'package', 'policy']))
 
     return f"Created policy with ID {args.get('policy')}"
@@ -435,9 +438,9 @@ def move_policy_command(client, args):
 
 def list_dynamic_interface_command(client, args):
     dynamic_interfaces = client.fortimanager_api_call("get", f"/pm/config/"
-                                                                 f"{get_global_or_adom(client, args)}"
-                                                                 f"/obj/dynamic/interface",
-                                                      data=get_range_for_list_command(args))
+                                                             f"{get_global_or_adom(client, args)}"
+                                                             f"/obj/dynamic/interface",
+                                                      range_info=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.DynamicInterface',
@@ -451,10 +454,10 @@ def list_dynamic_interface_command(client, args):
 
 def list_dynamic_address_mapping_command(client, args):
     dynamic_mapping = client.fortimanager_api_call("get", f"/pm/config/{get_global_or_adom(client, args)}"
-                                                              f"/obj/firewall/address"
-                                                              f"/{args.get('address')}/dynamic_mapping"
-                                                              f"{get_specific_entity(args.get('dynamic_mapping'))}",
-                                                   data=get_range_for_list_command(args))
+                                                          f"/obj/firewall/address"
+                                                          f"/{args.get('address')}/dynamic_mapping"
+                                                          f"{get_specific_entity(args.get('dynamic_mapping'))}",
+                                                   range_info=get_range_for_list_command(args))
 
     return CommandResults(
         outputs_prefix='FortiManager.Address.DynamicMapping',
@@ -468,7 +471,7 @@ def list_dynamic_address_mapping_command(client, args):
 
 def create_dynamic_address_mapping_command(client, args):
     client.fortimanager_api_call("add", f"/pm/config/{get_global_or_adom(client, args)}"
-                                            f"/obj/firewall/address/{args.get('address')}/dynamic_mapping",
+                                        f"/obj/firewall/address/{args.get('address')}/dynamic_mapping",
                                  data=setup_request_data(args, ['adom', 'address']))
 
     return f"Created new dynamic mapping in address {args.get('address')}"
@@ -476,7 +479,7 @@ def create_dynamic_address_mapping_command(client, args):
 
 def update_dynamic_address_mapping_command(client, args):
     client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}"
-                                               f"/obj/firewall/address/{args.get('address')}/dynamic_mapping",
+                                           f"/obj/firewall/address/{args.get('address')}/dynamic_mapping",
                                  data=setup_request_data(args, ['adom', 'address']))
 
     return f"Updated dynamic mapping in address {args.get('address')}"
@@ -484,8 +487,8 @@ def update_dynamic_address_mapping_command(client, args):
 
 def delete_dynamic_address_mapping_command(client, args):
     client.fortimanager_api_call("update", f"/pm/config/{get_global_or_adom(client, args)}"
-                                               f"/obj/firewall/address/{args.get('address')}/dynamic_mapping/"
-                                               f"{args.get('dynamic_mapping')}",
+                                           f"/obj/firewall/address/{args.get('address')}/dynamic_mapping/"
+                                           f"{args.get('dynamic_mapping')}",
                                  data=setup_request_data(args, ['adom', 'address']))
 
     return f"Deleted dynamic mapping {args.get('dynamic_mapping')} in address {args.get('address')}"
@@ -506,14 +509,14 @@ def commit_device_command(client, args):
 
 def install_policy_package_command(client, args):
     client.fortimanager_api_call('add', f"/pm​/pkg​/{get_global_or_adom(client, args)}"
-                                            f"/{args.get('package')}​/schedule",
+                                        f"/{args.get('package')}​/schedule",
                                  data={
-                                         'adom_rev_comment': args.get('adom_rev_comment'),
-                                         'adom_rev_name': args.get('adom_rev_name'),
-                                         'dev_rev_comment': args.get('dev_rev_comment'),
-                                         'scope': args.get('scope'),
-                                         'datetime': args.get('datetime')
-                                     })
+                                     'adom_rev_comment': args.get('adom_rev_comment'),
+                                     'adom_rev_name': args.get('adom_rev_name'),
+                                     'dev_rev_comment': args.get('dev_rev_comment'),
+                                     'scope': args.get('scope'),
+                                     'datetime': args.get('datetime')
+                                 })
     return f"Installed a policy package {args.get('get')} in ADOM: {get_global_or_adom(client, args)}"
 
 
