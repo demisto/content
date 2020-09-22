@@ -790,7 +790,8 @@ class Pack(object):
         finally:
             return task_status, pack_was_modified
 
-    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack):
+    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack,
+                          private_content=False):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
@@ -801,6 +802,7 @@ class Pack(object):
             latest_version (str): pack latest version.
             storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
             override_pack (bool): whether to override existing pack.
+            private_content (bool): Is being used in a private content build.
 
         Returns:
             bool: whether the operation succeeded.
@@ -824,22 +826,12 @@ class Pack(object):
 
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
-
-            print(f'Showing LS of current dir: {subprocess.check_output("ls")}')
-            print(f'Showing PWD of current dir: {subprocess.check_output("pwd")}')
-            # print(f'CD to dest_dir dir: {subprocess.check_output(f"cd {destination_path}")}')
-            # print(f'Showing LS of dest_dir dir: {subprocess.check_output("ls")}')
-
-            print(f"Copying from {zip_pack_path} to /home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip")
-            try:
-                print("trying with absolute path")
-                print("Path exists? - " + str(os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/packs')))
-                shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip')
-            except:
-                print("trying with relative path")
-                print("Path exists? - " + str(os.path.exists('/artifacts/packs')))
-                shutil.copy(zip_pack_path,
-                            f'/artifacts/packs/{self._pack_name}.zip')
+            if private_content:
+                try:
+                    shutil.copy(zip_pack_path, f'/home/runner/work/content-private/content-private/content/artifacts/packs/{self._pack_name}.zip')
+                except FileExistsError:
+                    shutil.copy(zip_pack_path,
+                                f'/artifacts/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)

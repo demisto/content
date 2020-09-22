@@ -819,7 +819,7 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
     bucket_for_uploading = private_storage_bucket if private_storage_bucket else storage_bucket
     task_status, skipped_pack_uploading, full_pack_path = pack.upload_to_storage(zip_pack_path, pack.latest_version,
                                                                  bucket_for_uploading,
-                                                                 override_all_packs or pack_was_modified)
+                                                                 override_all_packs or pack_was_modified, private_content=True)
     if full_pack_path is not None:
         bucket_path = 'https://console.cloud.google.com/storage/browser/marketplace-ci-build-private/'
         bucket_url = bucket_path + full_pack_path

@@ -50,19 +50,15 @@ def option_handler():
 
 def upload_premium_pack_to_private_testing_bucket(premium_pack, private_testing_repo_client, extract_destination_path):
     _, zip_pack_path = premium_pack.zip_pack(extract_destination_path, premium_pack._pack_name, False, '')
-    premium_pack.upload_to_storage(zip_pack_path, premium_pack.latest_version, private_testing_repo_client, True)
+    premium_pack.upload_to_storage(zip_pack_path, premium_pack.latest_version, private_testing_repo_client, True, True)
 
 
 def main():
     packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
     temp_dir = '/home/runner/work/content-private/content-private/content/temp-dir'
     if not os.path.exists(packs_dir):
-        print("Could not locate packs dir.")
-        print(str(os.getcwd()))
         os.mkdir(packs_dir)
     if not os.path.exists(temp_dir):
-        print("Could not locate temp dir.")
-        print(str(os.getcwd()))
         os.mkdir(temp_dir)
     upload_config = option_handler()
     path_to_artifacts = upload_config.artifacts_path
