@@ -3,7 +3,6 @@ import json
 import os
 from concurrent.futures import ThreadPoolExecutor
 import shutil
-import subprocess
 import sys
 from time import sleep
 from zipfile import ZipFile
@@ -41,6 +40,9 @@ def option_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
+    parser.add_argument('-pvt', '--private', type=str2bool, help='Indicates if the tools is running '
+                                                                 'on a private build.',
+                        required=False, default=False)
     parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
                         help='Whether to remove test playbooks from content packs or not.', default=True)
 
@@ -206,15 +208,17 @@ def main():
     branch_name = option.branch_name
     gcp_path = option.gcp_path
     remove_test_playbooks = option.remove_test_playbooks
-    packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
-    zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
-    if not os.path.exists(packs_dir):
-        print("Packs dir not found. Creating.")
-        os.mkdir(packs_dir)
-    if not os.path.exists(zip_path):
-        print("Temp dir not found. Creating.")
-        os.mkdir(zip_path)
-    artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
+    private_build = option.private
+    if private_build:
+        packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
+        zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
+        if not os.path.exists(packs_dir):
+            print("Packs dir not found. Creating.")
+            os.mkdir(packs_dir)
+        if not os.path.exists(zip_path):
+            print("Temp dir not found. Creating.")
+            os.mkdir(zip_path)
+        artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)

@@ -8,7 +8,6 @@ import prettytable
 import glob
 import git
 import requests
-import subprocess
 from datetime import datetime
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
@@ -732,7 +731,6 @@ def create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, inde
                                        private_storage_bucket=None, content_repo=None, current_commit_hash='',
                                        remote_previous_commit_hash='', packs_statistic_df=None):
     build_number = upload_config.ci_build_number
-    branch_name = upload_config.branch_name
     remove_test_playbooks = upload_config.remove_test_playbooks
     signature_key = upload_config.key_string
     extract_destination_path = upload_config.extract_path
