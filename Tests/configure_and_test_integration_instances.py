@@ -799,6 +799,7 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
     prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
 
     # make request to update server configs
+    # disable-secrets-detection-start
     server_configuration = {
         'content.pack.verify': 'false',
         'marketplace.initial.sync.delay': '0',
@@ -816,6 +817,7 @@ def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci
             'https://storage.googleapis.com/marketplace-ci-build/content/builds/{}/{}'.format(
                 branch_name, ci_build_number)
     error_msg = "Failed to set GCP bucket server config - with status code "
+    # disable-secrets-detection-end
     return update_server_configuration(client, server_configuration, error_msg)
 
 
