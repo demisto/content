@@ -317,6 +317,9 @@ def auto_detect_indicator_type(indicator_value):
     if re.match(cveRegex, indicator_value):
         return FeedIndicatorType.CVE
 
+    if re.match(sha512Regex, indicator_value):
+        return FeedIndicatorType.File
+
     try:
         no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
         if no_cache_extract(indicator_value).suffix:
@@ -961,6 +964,19 @@ def aws_table_to_markdown(response, table_header):
     return human_readable
 
 
+def stringUnEscape(st):
+    """
+       Unescape newline chars in the given string.
+
+       :type st: ``str``
+       :param st: The string to be modified (required).
+
+       :return: A modified string.
+       :rtype: ``str``
+    """
+    return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -1001,6 +1017,7 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
+            res = stringUnEscape(res)
         except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
@@ -1814,6 +1831,8 @@ def get_hash_type(hash_file):
         return 'sha1'
     elif (hash_len == 64):
         return 'sha256'
+    elif (hash_len == 128):
+        return 'sha512'
     else:
         return 'Unknown'
 
@@ -2993,6 +3012,7 @@ cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
+sha512Regex = re.compile(r'\b[0-9a-fA-F]{128}\b', regexFlags)
 
 pascalRegex = re.compile('([A-Z]?[a-z]+)')
 
@@ -3295,6 +3315,22 @@ class GetDemistoVersion:
 
 
 get_demisto_version = GetDemistoVersion()
+
+
+def get_demisto_version_as_str():
+    """Get the Demisto Server version as a string <version>-<build>. If unknown will return: 'Unknown'.
+    Meant to be use in places where we want to display the version. If you want to perform logic based upon vesrion
+    use: is_demisto_version_ge.
+
+    :return: Demisto version as string
+    :rtype: ``dict``
+    """
+    try:
+        ver_obj = get_demisto_version()
+        return '{}-{}'.format(ver_obj.get('version', 'Unknown'),
+                              ver_obj.get("buildNumber", 'Unknown'))
+    except AttributeError:
+        return "Unknown"
 
 
 def is_demisto_version_ge(version, build_number=''):
@@ -4330,6 +4366,151 @@ class GetMappingFieldsResponse:
             all_mappings.append(scheme_types_mapping.extract_mapping())
 
         return all_mappings
+
+
+def handle_incoming_error_in_mirror(incident_data, error):
+    """Handle incoming mirror error.
+
+    :type incident_data: ``dict``
+    :param incident_data: the incoming incident info.
+
+    :type error: ``str``
+    :param error: The incoming mirror error message.
+
+    :return: GetRemoteDataResponse that will include the incoming error information.
+    :rtype: ``GetRemoteDataResponse``
+    """
+    error_entries = []
+    integration_cache = demisto.getIntegrationContext()
+
+    # setup new error if needed
+    if integration_cache.get('in_mirror_error') is None or integration_cache.get('in_mirror_error') != error:
+        demisto.debug("Error in incoming mirror for incident {0}: {1}".format(incident_data.get('id'), error))
+        integration_cache['in_mirror_error'] = error
+        integration_cache['in_error_printed'] = False
+
+    # handle incoming error
+    if integration_cache.get('in_mirror_error'):
+        incident_data['in_mirror_error'] = integration_cache.get('in_mirror_error')
+
+        # check if error was printed
+        if not integration_cache.get('in_error_printed'):
+            # TODO: change this to an error type
+            error_entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': "",
+                'HumanReadable': "An error occurred while mirroring incoming data: {0}".format(
+                    integration_cache.get('in_mirror_error')),
+                'ReadableContentsFormat': EntryFormat.TEXT,
+                'ContentsFormat': EntryFormat.TEXT,
+            })
+            integration_cache['in_error_printed'] = True
+
+    demisto.setIntegrationContext(integration_cache)
+
+    # check for outgoing error
+    out_error_entry = handle_outgoing_error_in_mirror(incident_data)
+    if out_error_entry:
+        error_entries.append(out_error_entry)
+
+    return GetRemoteDataResponse(
+        mirrored_object=incident_data,
+        entries=error_entries
+    )
+
+
+def handle_outgoing_error_in_mirror(incident_data):
+    """Handle outgoing mirror error.
+
+    :type incident_data: ``dict``
+    :param incident_data: the incident info.
+
+    :return: An error entry if the current outgoing error was not printed, an empty dict otherwise.
+    :rtype: ``dict``
+    """
+    out_error_entry = {}
+    integration_cache = demisto.getIntegrationContext()
+
+    # handle incoming error
+    if integration_cache.get('out_mirror_error'):
+        incident_data['out_mirror_error'] = integration_cache.get('out_mirror_error')
+
+        # check if error was printed
+        if not integration_cache.get('out_error_printed'):
+            # TODO: change this to an error type
+            out_error_entry = {
+                'Type': EntryType.NOTE,
+                'Contents': "",
+                'HumanReadable': "An error occurred while mirroring outgoing data: {0}".format(
+                    integration_cache.get('out_mirror_error')),
+                'ReadableContentsFormat': EntryFormat.TEXT,
+                'ContentsFormat': EntryFormat.TEXT,
+            }
+            integration_cache['out_error_printed'] = integration_cache.get('out_mirror_error')
+            demisto.setIntegrationContext(integration_cache)
+
+    return out_error_entry
+
+
+def reset_incoming_and_outgoing_mirror_errors(incident_data):
+    """Handle incoming and outgoing mirror error reset.
+
+    :type incident_data: ``dict``
+    :param incident_data: the incident info.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    integration_cache = demisto.getIntegrationContext()
+    integration_cache['in_mirror_error'] = None
+    incident_data['in_mirror_error'] = ''
+
+    if integration_cache.get('out_mirror_error') is None:
+        incident_data['out_mirror_error'] = ''
+
+    demisto.setIntegrationContext(integration_cache)
+
+
+def setup_outgoing_mirror_error(incident_id, error):
+    """Setup outgoing mirror error to be printed in handle outgoing error method.
+
+    :type incident_id: ``str``
+    :param incident_id: the mirrored incident id that had an outgoing error.
+
+    :type error: ``str``
+    :param error: the outgoing error message.
+
+    :return: the mirrored incident id that had an outgoing error.
+    :rtype: ``str``
+    """
+    integration_cache = demisto.getIntegrationContext()
+    if integration_cache.get('out_mirror_error') is None or integration_cache.get('out_mirror_error') != error:
+        demisto.debug("Error in outgoing mirror for incident {0}: {1}".format(incident_id, error))
+        integration_cache['out_mirror_error'] = error
+        integration_cache['out_error_printed'] = False
+
+    demisto.setIntegrationContext(integration_cache)
+    return incident_id
+
+
+def get_x_content_info_headers():
+    """Get X-Content-* headers to send in outgoing requests to use when performing requests to
+    external services such as oproxy.
+
+    :return: headers dict
+    :rtype: ``dict``
+    """
+    calling_context = demisto.callingContext.get('context', {})
+    brand_name = calling_context.get('IntegrationBrand', '')
+    instance_name = calling_context.get('IntegrationInstance', '')
+    headers = {
+        'X-Content-Version': CONTENT_RELEASE_VERSION,
+        'X-Content-Name': brand_name or instance_name or 'Name not found',
+        'X-Content-LicenseID': demisto.getLicenseID(),
+        'X-Content-Branch': CONTENT_BRANCH_NAME,
+        'X-Content-Server-Version': get_demisto_version_as_str(),
+    }
+    return headers
 
 
 class BaseWidget:
