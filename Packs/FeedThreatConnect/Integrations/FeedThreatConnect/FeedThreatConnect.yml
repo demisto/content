@@ -54,6 +54,16 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - display: ''
   name: feedExpirationPolicy
   options:
@@ -122,7 +132,7 @@ script:
     description: Get availble indicators owners.
     execution: false
     name: tc-get-owners
-  dockerimage: demisto/threatconnect-tcex:1.0.0.10664
+  dockerimage: demisto/threatconnect-tcex:1.0.0.11353
   feed: true
   isfetch: false
   longRunning: false
