@@ -89,23 +89,5 @@ Allows you to tag an interesting point in time in Coralogix from Cortex XSOAR
 
 ##### Output
 ```
-{
-    "application_name": "Demisto",
-    "avatar": "/assets/deployment-icons/event.png",
-    "company_id": 6665,
-    "created_at": "2020-09-09T09:48:43.511Z",
-    "id": 1206745,
-    "subsystem_name": "Demisto",
-    "tagTypeId": 4,
-    "tag_status": "SUCCESSFUL",
-    "tag_timestamp": 1599644923510,
-    "tag_type": {
-        "id": 4,
-        "type": "CUSTOM_EVENT"
-    },
-    "tag_type_id": 4,
-    "text_key": "Custom tag",
-    "text_value": "Data leak started",
-    "updated_at": "2020-09-09T09:48:43.511Z"
-}
+Tag added successfully
 ```
