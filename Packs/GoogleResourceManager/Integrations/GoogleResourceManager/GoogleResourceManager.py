@@ -4,7 +4,7 @@ import urlparse
 import httplib2
 
 import googleapiclient
-from google.oauth2 import service_account
+from oauth2client import service_account
 from googleapiclient import discovery
 
 import demistomock as demisto  # noqa: F401
@@ -69,6 +69,18 @@ def get_http_client_with_proxy():
 # disable-secrets-detection-end
 
 
+def get_credentials_obj():
+    """Gets valid user credentials from storage.
+
+    Returns:
+        Credentials, the obtained credential.
+    """
+    cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(AUTH_JSON,
+                                                                            scopes=SCOPE)  # type: ignore
+
+    return cred.create_delegated(CLIENT_EMAIL)
+
+
 def build_and_authenticate():
     """
     Return a service object via which can call GRM API.
@@ -80,13 +92,15 @@ def build_and_authenticate():
         Google Resource Manager API Service object via which commands in the
         integration will make API calls
     """
-    service_credentials = service_account.Credentials.from_service_account_info(AUTH_JSON, scopes=SCOPE)
+    service_credentials = get_credentials_obj()
 
     if PROXY or DISABLE_SSL:
-        return discovery.build(GRM, API_VERSION, http=get_http_client_with_proxy())
+        http_client = service_credentials.authorize(get_http_client_with_proxy())
+        return discovery.build(GRM, API_VERSION, http=http_client)
+    else:
+        handle_proxy()
 
-    service = discovery.build(GRM, API_VERSION, credentials=service_credentials)
-    return service
+    return discovery.build(GRM, API_VERSION, credentials=service_credentials)
 
 
 def make_project_body(project_body):
@@ -623,7 +637,6 @@ def main():
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
-        handle_proxy()
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
