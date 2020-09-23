@@ -1,5 +1,5 @@
 {
-    "name": "FeedOpenCTI",
+    "name": "Feed OpenCTI",
     "description": "Ingest indicator feeds from OpenCTI.",
     "support": "xsoar",
     "currentVersion": "1.0.0",

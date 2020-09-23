@@ -13,15 +13,31 @@ XSOHR_TYPES = {
     'user-account': "Account",
     'domain': "Domain",
     'email-address': "Email",
-    'file-md5': "File MD5",
-    'file-sha1': "File SHA-1",
-    'file-sha256': "File SHA-256",
+    'file-md5': "File",
+    'file-sha1': "File",
+    'file-sha256': "File",
     'hostname': "Host",
     'ipv4-addr': "IP",
     'ipv6-addr': "IPv6",
     'registry-key-value': "Registry Key",
     'url': "URL"
 }
+
+
+def build_indicator_list(indicator_list: List[str]) -> List[str]:
+    """Builds an indicator list for the query"""
+    result = []
+    if 'ALL' in indicator_list:
+        # Replaces "ALL" for all types supported on XSOAR.
+        result = ['user-account', 'domain', 'email-address', 'file-md5', 'file-sha1', 'file-sha256', 'hostname',
+                          'ipv4-addr', 'ipv6-addr', 'registry-key-value', 'url']
+        # Checks for additional types not supported by XSOAR, and adds them.
+        for indicator in indicator_list:
+            if not XSOHR_TYPES[indicator.lower()]:
+                result.append()
+    else:
+        result = [indicator.lower() for indicator in indicator_list]
+    return result
 
 
 def reset_last_run():
@@ -46,16 +62,14 @@ def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: O
         new_last_run: the id of the last indicator
         indicators: list of indicators
     """
-    if 'all' in indicator_type:
-        indicator_type = ['user-account', 'domain', 'email-address', 'file-md5', 'file-sha1', 'file-sha256', 'hostname',
-                          'ipv4-addr', 'ipv6-addr', 'registry-key-value', 'url']
+    indicator_type = build_indicator_list(indicator_type)
 
     observables = client.stix_observable.list(types=indicator_type, first=limit, after=last_run_id, withPagination=True)
     new_last_run = observables.get('pagination').get('endCursor')
     indicators = [
         {
             "value": item['observable_value'],
-            "type": XSOHR_TYPES.get(item['entity_type']),
+            "type": XSOHR_TYPES.get(item['entity_type'], item['entity_type']),
             "rawJSON": item,
             "fields": {
                 "tags": [tag.get('value') for tag in item.get('tags')],
