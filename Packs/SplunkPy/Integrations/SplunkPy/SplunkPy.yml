@@ -652,6 +652,7 @@ script:
   isfetch: true
   longRunning: false
   longRunningPort: false
+  ismappable: true
   runonce: false
   script: '-'
   subtype: python2
