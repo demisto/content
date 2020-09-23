@@ -165,7 +165,7 @@ def main():
     extract_destination_path = upload_config.extract_artifacts_path
     packs_artifacts_path = upload_config.artifacts_path
     dummy_index_dir_path = upload_config.dummy_index_dir_path
-    dummy_index_path = os.path.join(dummy_index_dir_path, 'index.json')
+    dummy_index_path = os.path.join(dummy_index_dir_path, 'index.zip')
     dummy_index_lock_path = os.path.join(dummy_index_dir_path, 'lock.txt')
 
     data_msg = f'dummy_index_dir_path:{dummy_index_dir_path}'
