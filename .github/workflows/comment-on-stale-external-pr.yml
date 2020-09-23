@@ -29,7 +29,7 @@ jobs:
       - name: Comment on External PRs (where applicable)
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
-          EVENT_PAYLOAD: ${{ toJson(github.event) }}
+          SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
         run: |
           echo "Starting automation to comment on external PRs that need reminders"
           cd Utils/github_workflow_scripts
