@@ -422,3 +422,4 @@ script:
   type: python
 tests:
 - Perch-Test
+fromversion: 5.0.0

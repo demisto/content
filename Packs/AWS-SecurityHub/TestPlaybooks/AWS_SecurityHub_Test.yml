@@ -224,15 +224,7 @@ tasks:
       id: bc61a68e-f765-465d-8a44-5e984c689937
       version: -1
       name: Update findings
-      description: Used by Security Hub customers to update information about their
-        investigation into a finding. Requested by master accounts or member accounts.
-        Master accounts can update findings for their account and their member accounts.
-        Member accounts can update findings for their account. Updates from BatchUpdateFindings
-        do not affect the value of UpdatedAt for a finding. Master accounts can use
-        BatchUpdateFindings to update the following finding fields and objects. *   Confidence
-        *   Criticality *   Note *   RelatedFindings *   Severity *   Types *   UserDefinedFields
-        *   VerificationState *   Workflow Member accounts can only use BatchUpdateFindings
-        to update the Note object.
+      description: Used by Security Hub customers to update information about their investigation into a finding. Requested by master accounts or member accounts. Master accounts can update findings for their account and their member accounts. Member accounts can update findings for their account. Updates from BatchUpdateFindings do not affect the value of UpdatedAt for a finding. Master accounts can use BatchUpdateFindings to update the following finding fields and objects. *   Confidence *   Criticality *   Note *   RelatedFindings *   Severity *   Types *   UserDefinedFields *   VerificationState *   Workflow Member accounts can only use BatchUpdateFindings to update the Note object.
       script: '|||aws-securityhub-batch-update-findings'
       type: regular
       iscommand: true
@@ -610,3 +602,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

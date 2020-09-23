@@ -2,10 +2,13 @@ commonfields:
   id: IsListExist
   version: -1
 name: IsListExist
-script: |-
+script: >-
   list_name = demisto.args()['listName']
+
   res = demisto.executeCommand("getList", {"listName": list_name})
+
   res = res[0]
+
   if res['Type'] == entryTypes['error'] and "Item not found" in res['Contents']:
       demisto.results('no')
   else:
@@ -22,4 +25,5 @@ args:
 scripttarget: 0
 runonce: false
 tests:
-  - No test
+- No test
+fromversion: 5.0.0
