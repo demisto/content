@@ -33,20 +33,28 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: >
     import requests
+
     from requests.auth import HTTPBasicAuth
+
     import re
+
     import os
 
+
     BASE_URL = demisto.params()['base']
+
     if BASE_URL[-1] == '/':
         BASE_URL = BASE_URL[0:-1]
     BASE_RL = demisto.params()['baserl']
+
     if BASE_RL[-1] == '/':
         BASE_RL = BASE_RL[0:-1]
     AUTH = HTTPBasicAuth(demisto.params()['credentials']['identifier'], demisto.params()['credentials']['password'])
+
     EXTENDED = demisto.params()['extended']
+
 
 
     if not demisto.params()['proxy']:
@@ -286,4 +294,5 @@ script:
     description: Retrieve Malware Presence Status from ReversingLabs
   runonce: false
 tests:
- -  ReversingLabsTCTest
+- ReversingLabsTCTest
+fromversion: 5.0.0

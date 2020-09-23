@@ -13,6 +13,7 @@ For more information click [here](https://docs.paloaltonetworks.com/autofocus/au
 | api_key | The AutoFocus API key. | True |
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy | The feed's expiration policy. | False |
 | feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | The feed fetch interval. | False |
