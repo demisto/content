@@ -55,4 +55,5 @@ script:
     description: Queries an IP address in ipstack.
   runonce: false
 tests:
-  - Ipstack_Test
+- Ipstack_Test
+fromversion: 5.0.0

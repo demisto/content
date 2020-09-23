@@ -2,9 +2,10 @@ commonfields:
   id: MimecastQuery
   version: -1
 name: MimecastQuery
-script: |2
+script: >2
 
   resp = demisto.executeCommand("mimecast-query", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -24,9 +25,7 @@ comment: query mimecast emails
 system: true
 args:
 - default: true
-  description: The query string xml for the search using Mimecast Unified Search Experience
-    (MUSE) - read more on https://community.mimecast.com/docs/DOC-2262, using this
-    will override other query arguments
+  description: The query string xml for the search using Mimecast Unified Search Experience (MUSE) - read more on https://community.mimecast.com/docs/DOC-2262, using this will override other query arguments
   name: queryXml
 - auto: PREDEFINED
   description: search for this text in api messages
@@ -57,15 +56,7 @@ args:
 - description: search email by subject, will override the text argument
   name: subject
 - auto: PREDEFINED
-  description: optional - messages with and without attachments any - messages with
-    any attachment documents - messages with doc, dot, docx, docm, dotx, dotm, pdf,
-    rtf, html attachments spreadsheets - messages with xls, xlt, xlsx, xlsm, xltx,
-    xltm, xlsb, xlam, csv attachments presentations - messages with ppt, pptx, pptm,
-    potx, potm, ppam, ppsx, ppsm, sldx, sldm, thms, pps attachments text - messages
-    with txt, text, html, log attachments images - messages with jpg, jpeg, png, bmp,
-    gif, psd, tif, tiff attachments media - messages with mp3, mp4, m4a, mpg, mpeg,
-    avi, wav, aac, wma, mov attachments zips - messages with zip, rar, cab, gz, gzip,
-    7z attachments none - No attachments are to be present in the results
+  description: optional - messages with and without attachments any - messages with any attachment documents - messages with doc, dot, docx, docm, dotx, dotm, pdf, rtf, html attachments spreadsheets - messages with xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam, csv attachments presentations - messages with ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm, sldx, sldm, thms, pps attachments text - messages with txt, text, html, log attachments images - messages with jpg, jpeg, png, bmp, gif, psd, tif, tiff attachments media - messages with mp3, mp4, m4a, mpg, mpeg, avi, wav, aac, wma, mov attachments zips - messages with zip, rar, cab, gz, gzip, 7z attachments none - No attachments are to be present in the results
   name: attachmentType
   predefined:
   - optional
@@ -87,9 +78,7 @@ args:
 - description: Sets the result to start returning results (default 0)
   name: startRow
 - auto: PREDEFINED
-  description: Defines if the search should query recently received messages that
-    are not fully indexed yet (default false). You can search by mailbox and date
-    time across active messages
+  description: Defines if the search should query recently received messages that are not fully indexed yet (default false). You can search by mailbox and date time across active messages
   name: active
   predefined:
   - 'true'
@@ -99,3 +88,4 @@ timeout: 0s
 dependson:
   must:
   - mimecast-query
+fromversion: 5.0.0

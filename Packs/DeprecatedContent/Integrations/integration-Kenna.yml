@@ -28,9 +28,11 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: >
     var API_KEY = params.key;
+
     var URL = params.url.replace(/[\/]+$/, '');
+
 
     function searchVulnerabilities(args) {
         var urlQuery = {};
@@ -101,6 +103,7 @@ script:
         };
     }
 
+
     function searchVulnerabilitiesRequest(urlQuery) {
         var requestUrl = URL + '/vulnerabilities/search' + encodeToURLQuery(urlQuery);
         var res = http(
@@ -122,6 +125,7 @@ script:
         var response = JSON.parse(res.Body);
         return response.vulnerabilities;
     }
+
 
 
     function getConnectors() {
@@ -152,6 +156,7 @@ script:
         };
     }
 
+
     function getConnectorsRequest() {
         var requestUrl = URL + '/connectors';
         var res = http(
@@ -174,6 +179,7 @@ script:
         return response.connectors;
     }
 
+
     function runConnector(id) {
         var response = runConnectorRequest(id);
         if (response.success === 'true') {
@@ -182,6 +188,7 @@ script:
             return 'Could not run connector.';
         }
     }
+
 
     function runConnectorRequest(id) {
         var requestUrl = URL + '/connectors/' + id + '/run';
@@ -203,6 +210,7 @@ script:
         }
         return JSON.parse(res.Body);
     }
+
 
     function searchFixes(args) {
         var urlSuffix;
@@ -240,6 +248,7 @@ script:
         };
     }
 
+
     function searchFixesRequest(urlSuffix) {
         var requestUrl = URL + '/fixes' + urlSuffix;
         var res = http(
@@ -268,6 +277,7 @@ script:
         return fixes;
     }
 
+
     function updateAsset(id, notes) {
         var body = {
             'asset': {
@@ -281,6 +291,7 @@ script:
             return 'Could not update asset.';
         }
     }
+
 
     function updateAssetRequest(id, body) {
         var requestUrl = URL + '/assets/' + id;
@@ -304,6 +315,7 @@ script:
         return res.StatusCode;
     }
 
+
     function updateVulnerability(id, notes, status) {
         if (!status && !notes) {
             throw 'Please insert arguments to update.'
@@ -323,6 +335,7 @@ script:
             return 'Could not update vulnerability.';
         }
     }
+
 
     function updateVulnerabilityRequest(id, body) {
         var requestUrl = URL + '/vulnerabilities/' + id;
@@ -346,6 +359,7 @@ script:
         return res.StatusCode;
     }
 
+
     function testRequest() {
         var requestUrl = URL + '/assets';
         var res = http(
@@ -365,6 +379,7 @@ script:
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
     }
+
 
     switch (command) {
         case 'test-module':
@@ -396,8 +411,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Filtering vulnerabilities by those that Kenna recommends should
-        be a top priority to fix
+      description: Filtering vulnerabilities by those that Kenna recommends should be a top priority to fix
     - name: min-score
       description: Find all vulnerabilities with scores greater than this value
     - name: status
@@ -451,8 +465,7 @@ script:
       description: Vulnerability threat
     - contextPath: Kenna.TopPriority
       description: Vulnerability is top priority
-    description: Filters vulnerabilities by a given set of parameters and returns
-      the filtered vulnerabilities
+    description: Filters vulnerabilities by a given set of parameters and returns the filtered vulnerabilities
   - name: kenna-get-connectors
     arguments: []
     outputs:
@@ -464,8 +477,7 @@ script:
     - name: id
       required: true
       description: Connector ID to run
-    description: Schedules a run of a connector. If file based, it will use most recently
-      uploaded data file
+    description: Schedules a run of a connector. If file based, it will use most recently uploaded data file
   - name: kenna-search-fixes
     arguments:
     - name: id
@@ -475,8 +487,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Filtering vulnerabilities by those that Kenna recommends should
-        be a top priority to fix
+      description: Filtering vulnerabilities by those that Kenna recommends should be a top priority to fix
     - name: min-score
       description: Find all vulnerabilities with scores greater than this value
     - name: status
@@ -487,8 +498,7 @@ script:
       - risk_accepted
       - false_positive
       description: Status of the vulnerability
-    description: Filters fixes by a given set of vulnerability and asset parameters
-      and returns the filtered fixes
+    description: Filters fixes by a given set of vulnerability and asset parameters and returns the filtered fixes
   - name: kenna-update-asset
     arguments:
     - name: id
@@ -514,6 +524,6 @@ script:
     - name: notes
       description: Notes about a vulnerability
     description: Update a single vulnerability's attributes by ID
-fromversion: 4.1.0
+fromversion: 5.0.0
 tests:
 - No tests

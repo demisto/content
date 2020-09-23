@@ -162,9 +162,7 @@ tasks:
     skipunavailable: false
     task:
       brand: SlackV2
-      description: Sends a file in Slack to a user, channel, or group. If a user,
-        channel, or group is not specified, the file is sent to the mirrored investigation
-        channel (if it exists).
+      description: Sends a file in Slack to a user, channel, or group. If a user, channel, or group is not specified, the file is sent to the mirrored investigation channel (if it exists).
       id: 220e18f2-753e-486f-8362-21eda1347743
       iscommand: true
       name: Send a file
@@ -724,11 +722,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       blocks:
-        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
-          \"mrkdwn\",\n\t\t\t\t\"text\": \"This is a test. \"\n\t\t\t},\n\t\t\t\"accessory\":
-          {\n\t\t\t\t\"type\": \"button\",\n\t\t\t\t\"text\": {\n\t\t\t\t\t\"type\":
-          \"plain_text\",\n\t\t\t\t\t\"text\": \"Button\",\n\t\t\t\t\t\"emoji\": true\n\t\t\t\t},\n\t\t\t\t\"value\":
-          \"testing\"\n\t\t\t}\n\t\t}\n\t]"
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"This is a test. \"\n\t\t\t},\n\t\t\t\"accessory\": {\n\t\t\t\t\"type\": \"button\",\n\t\t\t\t\"text\": {\n\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\"text\": \"Button\",\n\t\t\t\t\t\"emoji\": true\n\t\t\t\t},\n\t\t\t\t\"value\": \"testing\"\n\t\t\t}\n\t\t}\n\t]"
       channel:
         simple: incident-${incident.id}
       entry: {}
@@ -770,3 +764,4 @@ view: |-
       }
     }
   }
+fromversion: 5.0.0

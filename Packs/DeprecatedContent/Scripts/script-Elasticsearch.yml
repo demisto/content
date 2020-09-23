@@ -2,10 +2,13 @@ commonfields:
   id: Elasticsearch
   version: -1
 name: Elasticsearch
-script: |+
+script: >+
   dArgs = demisto.args()
+
   dArgs['using-brand'] = 'elasticsearch'
+
   res = demisto.executeCommand('search', dArgs)
+
   if isError(res[0]):
       demisto.results(res)
   else:
@@ -31,8 +34,7 @@ comment: |-
 enabled: true
 args:
 - name: explain
-  description: Computes a score explanation for a query and a specific document, default
-    false
+  description: Computes a score explanation for a query and a specific document, default false
 - name: fields
   description: Fields to fetch, leave empty to bring the entire document
 - name: index
@@ -55,4 +57,5 @@ dependson:
   - elasticsearch|||search
 timeout: 0s
 tests:
-  - No test - deprecated
+- No test - deprecated
+fromversion: 5.0.0
