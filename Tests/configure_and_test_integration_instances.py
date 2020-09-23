@@ -292,7 +292,7 @@ def get_new_and_modified_integration_files(build):
     # get changed yaml files (filter only added and modified files)
     file_validator = ValidateManager()
     file_validator.branch_name = build.branch_name
-    modified_files, added_files, _, _, _ = file_validator.get_modified_and_added_files('...', '4.5.0')
+    modified_files, added_files, _, _, _ = file_validator.get_modified_and_added_files('...', 'v4.5.0')
 
     new_integration_files = [
         file_path for file_path in added_files if
