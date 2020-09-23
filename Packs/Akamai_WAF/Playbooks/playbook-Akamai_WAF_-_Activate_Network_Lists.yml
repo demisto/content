@@ -4,9 +4,7 @@ contentitemfields:
   propagationLabels:
   - all
 name: Akamai WAF - Activate Network Lists
-description: Activates network lists in Staging or Production on Akamai
-  WAF. The playbook finishes running when the network list is active on the requested
-  enviorment.
+description: Activates network lists in Staging or Production on Akamai WAF. The playbook finishes running when the network list is active on the requested enviorment.
 starttaskid: '0'
 tasks:
   '0':
@@ -193,8 +191,7 @@ tasks:
       Timeout:
         simple: '30'
       dt:
-        simple: Akamai.NetworkLists.ActivationStatus(val.StagingStatus != 'ACTIVE'
-          ).UniqueID
+        simple: Akamai.NetworkLists.ActivationStatus(val.StagingStatus != 'ACTIVE' ).UniqueID
     separatecontext: true
     loop:
       iscommand: false
@@ -226,8 +223,7 @@ tasks:
       brand: ''
     scriptarguments:
       value:
-        simple: Akamai networklists - activation **${inputs.network_list_ids}** in
-          **${inputs.env}** finished **succefully**
+        simple: Akamai networklists - activation **${inputs.network_list_ids}** in **${inputs.env}** finished **succefully**
     separatecontext: false
     view: |-
       {
@@ -271,4 +267,4 @@ inputs:
   description: A comma-separated list of email addresses to notify when the network lists are activated.
 tests:
 - No test
-fromversion: 4.1.0
+fromversion: 5.0.0

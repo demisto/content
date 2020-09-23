@@ -1,8 +1,7 @@
 id: Process Email - Core
 version: -1
 name: Process Email - Core
-description: Add email details to the relevant context entities and handle the case
-  where original emails are attached.
+description: Add email details to the relevant context entities and handle the case where original emails are attached.
 starttaskid: "0"
 tasks:
   "0":
@@ -38,11 +37,7 @@ tasks:
       id: 64fb00a1-ae02-41d5-8dc0-7659d01f90cc
       version: -1
       name: Is there an email file attached?
-      description: Identifies whether the incident includes an email message attached
-        as an eml or msg file, and returns the answer to the playbook. Also saves
-        the identified entry ID to context for later use. Commonly used in automated
-        playbooks that handle phishing reports sent to a special phishing mailbox
-        set up by the security team.
+      description: Identifies whether the incident includes an email message attached as an eml or msg file, and returns the answer to the playbook. Also saves the identified entry ID to context for later use. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
       scriptName: IdentifyAttachedEmail
       type: condition
       iscommand: false
@@ -81,8 +76,7 @@ tasks:
       id: 523c57ff-ad78-4aa1-8d24-6ee2518d84ef
       version: -1
       name: Save email details
-      description: Saves the email data extracted by the configured email listener
-        integration to the context. Also extracts indicators from the email message.
+      description: Saves the email data extracted by the configured email listener integration to the context. Also extracts indicators from the email message.
       scriptName: Set
       type: regular
       iscommand: false
@@ -95,9 +89,7 @@ tasks:
       key:
         simple: Email
       value:
-        simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''],
-          Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''],
-          Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
+        simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''], Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''], Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -118,9 +110,7 @@ tasks:
       id: aad80f9a-e552-43ae-88fc-81ab3ef53c11
       version: -1
       name: Extract and save email details
-      description: Parses an email from an EML or MSG file and populates all relevant
-        context data to investigate the email. Also extracts indicators from the email
-        messages.
+      description: Parses an email from an EML or MSG file and populates all relevant context data to investigate the email. Also extracts indicators from the email messages.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
@@ -586,8 +576,7 @@ tasks:
       id: c5bbf8a9-443c-4f8c-8956-536f0db06c6f
       version: -1
       name: Were email headers extracted successfully?
-      description: Checks whether the email headers were extracted from the original
-        email that was either attached or retrieved using available email integrations.
+      description: Checks whether the email headers were extracted from the original email that was either attached or retrieved using available email integrations.
       type: condition
       iscommand: false
       brand: ""
@@ -625,8 +614,7 @@ tasks:
       id: 7d54a7f8-9ca8-41d2-85f1-7ac15a293e3f
       version: -1
       name: Display email headers in layout
-      description: Fills the "Email Headers" grid field in the incident layout with
-        the email attachment's headers.
+      description: Fills the "Email Headers" grid field in the incident layout with the email attachment's headers.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -733,9 +721,7 @@ tasks:
       id: 2fad5bba-f024-46cc-8522-1b2cff26af2a
       version: -1
       name: Save incident files separately from email attachments
-      description: Saves the files that were initially involved with the incident
-        in a separate context key so that they are available separate from email
-        attachment files.
+      description: Saves the files that were initially involved with the incident in a separate context key so that they are available separate from email attachment files.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1221,6 +1207,6 @@ outputs:
 - contextPath: File
   description: The File object.
   type: unknown
-fromversion: 4.5.0
+fromversion: 5.0.0
 tests:
 - Phishing - Core - Test - Incident Starter
