@@ -193,6 +193,9 @@ script:
     - contextPath: AlienVault.Alarm.RuleAttackTechnique
       description: The rule attack technique.
       type: String
+    - contextPath: AlienVault.Alarm.Status
+      description: The alarm status.
+      type: String
   - arguments:
     - default: true
       description: The alarm ID. Can be obtained by running the `alienvault-search-alarms`
@@ -259,6 +262,9 @@ script:
       type: Unknown
     - contextPath: AlienVault.Alarm.RuleAttackTechnique
       description: The rule attack technique.
+      type: String
+    - contextPath: AlienVault.Alarm.Status
+      description: The alarm status.
       type: String
   - arguments:
     - default: false
@@ -412,7 +418,7 @@ script:
     - contextPath: AlienVault.Event.Subcategory
       description: The event subcategory.
       type: String
-  dockerimage: demisto/python3:3.7.3.286
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
   longRunningPort: false

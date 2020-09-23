@@ -630,7 +630,7 @@ script:
     execution: false
     name: splunk-kv-store-collection-delete-entry
   dockerimage45: demisto/splunksdk:1.0
-  dockerimage: demisto/splunksdk:1.0.0.10663
+  dockerimage: demisto/splunksdk:1.0.0.11270
   feed: false
   isfetch: true
   longRunning: false
