@@ -548,8 +548,8 @@ Search known actors based on the given parameters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search based on a query written in FQL (Falcon Query Language). | Optional | 
-| q | Search across all fields in an Actor object. | Optional | 
+| query | Search based on a query written in FQL (Falcon Query Language, [See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql](See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql) for more information). | Optional | 
+| free_search | Search across all fields in an Actor object. | Optional | 
 | name | Search based on actor name. | Optional | 
 | description | Search based on description. | Optional | 
 | created_date | Search range from created date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours). | Optional | 
@@ -716,7 +716,7 @@ Search known indicators based on the given parameters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search based on a query written in FQL (Falcon Query Language). | Optional | 
+| query | Search based on a query written in FQL (Falcon Query Language, See [https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql](See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql) for more information). | Optional | 
 | type | The indicator type. | Optional | 
 | malicious_confidence | Indicates a confidence level by which an indicator is considered to be malicious. | Optional | 
 | offset | Used to paginate the response. You can then use limit to set the number of results for the next page. | Optional | 
@@ -878,8 +878,8 @@ The Falcon Intel Reports API allows to query CrowdStrike intelligence publicatio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search based on a query written in FQL (Falcon Query Language). | Optional | 
-| q | Search across all fields in an Report object. | Optional | 
+| query | Search based on a query written in FQL (Falcon Query Language, See [https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql](See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql) for more information). | Optional | 
+| free_search | Search across all fields in an Report object. | Optional | 
 | name | Search for keywords across report names (i.e. the report’s title). | Optional | 
 | actors | Search for a report related to a particular actors. Actors should be comma separated. - For example - actor1,actor2,... | Optional | 
 | target_countries | Search reports by targeted country/countries | Optional | 

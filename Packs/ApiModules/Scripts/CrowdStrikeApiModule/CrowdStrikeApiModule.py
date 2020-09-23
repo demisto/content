@@ -10,14 +10,16 @@ class CrowdStrikeClient(BaseClient):
         Args:
             params: Demisto params
         """
-        self._client_id = params.get('client_id')
-        self._client_secret = params.get('client_secret')
+        credentials = params.get('credentials', {})
+        self._client_id = credentials.get('identifier')
+        self._client_secret = credentials.get('password')
         super().__init__(base_url="https://api.crowdstrike.com/", verify=not params.get('insecure', False),
                          ok_codes=tuple(), proxy=params.get('proxy', False))  # type: ignore[misc]
         self._token = self._generate_token()
         self._headers = {'Authorization': 'bearer ' + self._token}
 
-    def _error_handler(self, res: requests.Response):
+    @staticmethod
+    def _error_handler(res: requests.Response):
         """
         Converting the errors of the API to a string, in case there are no error, return an empty string
         :param res: the request's response

@@ -7,13 +7,10 @@ category: Data Enrichment & Threat Intelligence
 description: CrowdStrike Threat intelligence service integration helps organizations defend themselves against adversary activity by investigating incidents, and accelerating alert triage and response.
 configuration:
 - display: Client ID
-  name: client_id
-  type: 0
+  name: credentials
+  displaypassword: Client Secret
   required: true
-- display: Client Secret
-  name: client_secret
-  type: 4
-  required: true
+  type: 9
 - display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to
     consider the indicator malicious.
   name: threshold
@@ -351,8 +348,8 @@ script:
   - name: cs-actors
     arguments:
     - name: query
-      description: Search based on a query written in FQL (Falcon Query Language).
-    - name: q
+      description: Search based on a query written in FQL (Falcon Query Language, See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql for more information)..
+    - name: free_search
       description: Search across all fields in an actor object.
     - name: name
       description: Search based on an actor's name.
@@ -468,7 +465,7 @@ script:
   - name: cs-indicators
     arguments:
     - name: query
-      description: Search based on a query written in FQL (Falcon Query Language).
+      description: Search based on a query written in FQL (Falcon Query Language, See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql for more information)..
     - name: type
       required: false
       description: The indicator type. Add a pre-defined value, such as email_address, hash_ion, password, etc.
@@ -516,7 +513,7 @@ script:
     - name: offset
       description: Used to paginate the response. You can then use limit to set the
         number of results for the next page.
-    - name: last_updated
+    - name: last_updated_date
       description: 'The date the indicator was last updated. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
                      and time period (for example, 24 hours).'
     - name: indicator
@@ -699,8 +696,8 @@ script:
   - name: cs-reports
     arguments:
     - name: query
-      description: Search based on a query written in FQL (Falcon Query Language).
-    - name: q
+      description: Search based on a query written in FQL (Falcon Query Language, See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql for more information).
+    - name: free_search
       description: Search across all fields in a report object.
     - name: name
       description: Search for keywords across report names (for example, the report’s title).

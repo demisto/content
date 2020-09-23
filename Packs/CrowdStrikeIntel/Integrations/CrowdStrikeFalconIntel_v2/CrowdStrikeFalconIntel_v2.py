@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from datetime import datetime, timezone
-from typing import Union, Any, Dict
+from typing import Union, Any, Dict, Tuple
 from dateparser import parse
 
 import urllib3
@@ -31,12 +31,13 @@ class Client:
 
     def __init__(self, params: Dict[str, str]):
         self._cs_client: CrowdStrikeClient = CrowdStrikeClient(params=params)
-        self.query_params: List[str] = ['offset', 'limit', 'sort', 'q']
+        self.query_params: Dict[str, str] = {'offset': 'offset', 'limit': 'limit', 'sort': 'sort', 'free_search': 'q'}
         self.date_params: Dict[str, Dict[str, str]] = {
             'created_date': {'operator': '', 'api_key': 'created_date'},
+            'last_updated_date': {'operator': '', 'api_key': 'last_updated'},
             'max_last_modified_date': {'operator': '<=', 'api_key': 'last_modified_date'},
             'min_last_activity_date': {'operator': '>=', 'api_key': 'first_activity_date'},
-            'max_last_activity_date': {'operator': '<=', 'api_key': 'last_activity_date'}
+            'max_last_activity_date': {'operator': '<=', 'api_key': 'last_activity_date'},
         }
 
     def build_request_params(self, args: Dict[str, Any]) -> Dict[str, Any]:
@@ -45,7 +46,7 @@ class Client:
         :param args: Cortex XSOAR args
         :return: The params dict
         """
-        params: Dict[str, Any] = {key: args.get(key) for key in self.query_params}
+        params: Dict[str, Any] = {key: args.get(arg) for arg, key in self.query_params.items()}
         query = args.get('query')
         params['filter'] = query if query else self.build_filter_query(args)
         return assign_params(**params)
@@ -163,7 +164,7 @@ def get_indicator_hash_type(indicator_value: str) -> Union[str, Exception]:
                                f', SHA1 (40 length) or SHA256 (64 length) hash.')
 
 
-def get_indicator_object(indicator_value: Any, indicator_type: str, dbot_score: Common.DBotScore,) \
+def get_indicator_object(indicator_value: Any, indicator_type: str, dbot_score: Common.DBotScore) \
         -> Union[Common.IP, Common.URL, Common.File, Common.Domain, None]:
     """
     Returns the corresponding indicator common object
@@ -231,7 +232,7 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
             dbot_score = Common.DBotScore(
                 indicator=indicator_value,
                 indicator_type=get_dbot_score_type(indicator_type),
-                integration_name='FalconIntel',
+                integration_name='CrowdStrike Falcon Intel v2',
                 malicious_description='High confidence',
                 score=score
             )
@@ -370,6 +371,7 @@ def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
     res: Dict[str, Any] = client.cs_actors(args)
     resources: List[Any] = res.get('resources', [])
     outputs: List[Dict[str, Any]] = list()
+    md_outputs: List[Dict[str, Any]] = list()
     md: str = str()
     title: str = 'Falcon Intel Actor search:'
 
@@ -417,6 +419,14 @@ def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
                 'KillChains': kill_chain
             })
             outputs.append(output)
+
+            md_output: Dict[str, Any] = output
+            for key in ('URL', 'ImageURL'):
+                if key in md_output:
+                    value = md_output[key]
+                    md_output[key] = f'[{value}]({value})'
+
+            md_outputs.append(md_output)
     else:
         md = 'No actors found.'
 
@@ -424,7 +434,7 @@ def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
         outputs=outputs,
         outputs_key_field='ID',
         outputs_prefix='FalconIntel.Actor',
-        readable_output=md if md else tableToMarkdown(name=title, t=outputs, headerTransform=pascalToSpace),
+        readable_output=md if md else tableToMarkdown(name=title, t=md_outputs, headerTransform=pascalToSpace),
         raw_response=res
     )
 
@@ -455,7 +465,7 @@ def cs_indicators_command(client: Client, args: Dict[str, str]) -> CommandResult
                 dbot_score = Common.DBotScore(
                     indicator=indicator_value,
                     indicator_type=get_dbot_score_type(indicator_type),
-                    integration_name='FalconIntel',
+                    integration_name='CrowdStrike Falcon Intel v2',
                     malicious_description='High confidence',
                     score=score
                 )
@@ -480,6 +490,7 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
     res: Dict[str, Any] = client.cs_reports(args)
     resources: List[Any] = res.get('resources', [])
     outputs: List[Dict[str, Any]] = list()
+    md_outputs: List[Dict[str, Any]] = list()
     md: str = str()
     title: str = 'Falcon Intel Report search:'
 
@@ -498,6 +509,7 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
             target_countries: List[Any] = r.get('target_countries', [])
             motivations: List[Any] = r.get('motivations', [])
             tags: List[Any] = r.get('tags', [])
+            actors: List[Any] = r.get('actors', [])
 
             output: Dict[str, Any] = assign_params(**{
                 'ID': report_id,
@@ -514,9 +526,18 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
                 'TargetIndustries': get_values(target_industries, return_type='list'),
                 'TargetCountries': get_values(target_countries, return_type='list'),
                 'Motivations': get_values(motivations, return_type='list'),
-                'Tags': get_values(tags, return_type='list')
+                'Tags': get_values(tags, return_type='list'),
+                'Actors': get_values(actors, return_type='list', keys='name')
             })
             outputs.append(output)
+
+            md_output: Dict[str, Any] = output
+            if 'URL' in md_output:
+                value = md_output['URL']
+                md_output['URL'] = f'[{value}]({value})'
+
+            md_outputs.append(md_output)
+
     else:
         md = 'No reports found.'
 
