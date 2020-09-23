@@ -1789,7 +1789,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: First log time (<number> <time unit>. For example, 12 minutes,
-        7 days, 3 weeks)c
+        7 days, 3 weeks).
       isArray: false
       name: time_range
       predefined:
@@ -2227,7 +2227,7 @@ script:
       - resource
       - data
       - url-content
-      - ' wildfire'
+      - wildfire
       - extpcap
       - wildfire-virus
       - http-hdr-insert
@@ -2570,6 +2570,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  dockerimage45: demisto/python_pancloud_v2:1.0.0.10828
 tests:
 - Cortex Data Lake Test
 fromversion: 4.5.0

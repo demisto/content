@@ -439,7 +439,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      action: {}
+      action:
+        simple: "alert"
       app: {}
       app_category: {}
       dest_device_host: {}
@@ -469,15 +470,14 @@ tasks:
       source_device_host: {}
       source_dynamic_address_group: {}
       source_edl: {}
-      source_ip:
-        simple: 10.10.10.101
+      source_ip: {}
       source_location: {}
       source_port: {}
       source_user: {}
       start_time: {}
       sub_type: {}
       time_range:
-        simple: 6 months
+        simple: 1 year
       url_category: {}
       url_domain: {}
     separatecontext: false
