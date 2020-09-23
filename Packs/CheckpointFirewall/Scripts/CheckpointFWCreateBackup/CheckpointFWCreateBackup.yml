@@ -32,3 +32,5 @@ dependson:
   must:
   - ssh
 timeout: 0s
+tests:
+  - No tests
