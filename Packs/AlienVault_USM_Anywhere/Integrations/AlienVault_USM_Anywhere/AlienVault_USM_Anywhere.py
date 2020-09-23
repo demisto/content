@@ -178,7 +178,8 @@ def parse_alarms(alarms_data):
             'Destination': {
                 'IPAddress': alarm.get('alarm_destination_names') or alarm.get('destination_name'),
             },
-            'Event': events
+            'Event': events,
+            'Status': alarm.get('status'),
         })
 
     return alarms
@@ -292,10 +293,18 @@ def search_alarms_command():
     end_time = args.get('end_time', 'now')
     show_suppressed = args.get('show_suppressed', 'false')
     limit = int(args.get('limit', 100))
+    status = args.get('status')
+    priority = args.get('priority')
+    rule_intent = args.get('rule_intent')
+    rule_method = args.get('rule_method')
+    rule_strategy = args.get('rule_strategy')
 
     start_time, end_time = get_time_range(time_frame, start_time, end_time)
 
-    result = search_alarms(start_time=start_time, end_time=end_time, show_suppressed=show_suppressed, limit=limit)
+    result = search_alarms(start_time=start_time, end_time=end_time, show_suppressed=show_suppressed, limit=limit,
+                           status=status, priority=priority, rule_intent=rule_intent, rule_method=rule_method,
+                           rule_strategy=rule_strategy)
+
     alarms = parse_alarms(result)
 
     return_outputs(tableToMarkdown('Alarms:', alarms),
