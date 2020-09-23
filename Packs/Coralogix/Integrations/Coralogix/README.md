@@ -35,16 +35,16 @@ Use this integration to pull incidents and supporting information from your Cora
 ---
 You can execute the following commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. `coralogix_search`
-2. `coralogix_tag`
+1. `coralogix-search`
+2. `coralogix-tag`
 
-### 1. coralogix_search
+### 1. coralogix-search
 ---
 Returns logs from your Coralogix account according to the specified Lucene query
 
 ##### Base Command
 
-`coralogix_search`
+`coralogix-search`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** | **Default** |
@@ -58,8 +58,8 @@ Returns logs from your Coralogix account according to the specified Lucene query
 | max_items_to_retrieve | Maximum number of log entries to retrieve from Coralogix | No | 50 |
 
 ##### Command Examples
-```!coralogix_search query="security.rcode_name:\"NXDOMAIN\"" using="Coralogix_instance_1"```  
-```!coralogix_search query="security.rcode_name:\"NXDOMAIN\"" max_items_to_retrieve="100" since_timestamp="2020-12-31T23:59:59" using="Coralogix_instance_1"```
+```!coralogix-search query="security.rcode_name:\"NXDOMAIN\"" using="Coralogix_instance_1"```  
+```!coralogix-search query="security.rcode_name:\"NXDOMAIN\"" max_items_to_retrieve="100" since_timestamp="2020-12-31T23:59:59" using="Coralogix_instance_1"```
 
 ##### Output
 
@@ -69,13 +69,13 @@ Returns logs from your Coralogix account according to the specified Lucene query
 | 2020-08-27T02:52:35.699Z | test-sta | test-sta | 172.31.7.153 | 172.31.0.2 | bro_dns | 44618 | 53 | udp | www.googgle.com | AAAA | ... |
 
 
-### 2. coralogix_tag
+### 2. coralogix-tag
 ---
 Allows you to tag an interesting point in time in Coralogix from Cortex XSOAR
 
 ##### Base Command
 
-`coralogix_tag`
+`coralogix-tag`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** | **Default** |
@@ -85,7 +85,7 @@ Allows you to tag an interesting point in time in Coralogix from Cortex XSOAR
 | icon_url | A URL to an icon file (JPG or PNG) that will be displayed as the tag at Coralogix. Can be up to 50KB in size | No | Defaults to a lightning icon | 
 
 ##### Command Example
-```!coralogix_tag name="Data leak started"```
+```!coralogix-tag name="Data leak started"```
 
 ##### Output
 ```
