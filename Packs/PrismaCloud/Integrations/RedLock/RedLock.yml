@@ -61,7 +61,7 @@ script:
       required: true
       default: false
       isArray: false
-      description: the RQL query to run
+      description: "the RQL query to run. Example RQL queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples"
   - name: redlock-remediate-alerts
     description: Remediate alerts in Prisma Cloud
     arguments:
@@ -69,7 +69,7 @@ script:
       required: true
       default: false
       isArray: true
-      description: The alert id to remediate
+      description: The alert id to remediate. You can retrieve alerts using the redlock-search-alerts command
   - name: redlock-search-alerts
     arguments:
     - name: time-range-date-from
