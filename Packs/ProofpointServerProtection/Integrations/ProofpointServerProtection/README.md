@@ -6,7 +6,7 @@ This integration was integrated and tested with version 8.11.12 of Proofpoint Pr
 
 Users must be assigned to the admin role to use this integration.
 
-This integration does not supports SAML protocol for authentication.
+This integration does not support SAML protocol for authentication.
 
 ## Use Cases
 ---
