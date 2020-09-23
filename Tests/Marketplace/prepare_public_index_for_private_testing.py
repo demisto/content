@@ -11,6 +11,8 @@ import argparse
 from datetime import datetime
 from demisto_sdk.commands.common.tools import print_error, print_color, LOG_COLORS
 
+MAX_SECONDS_TO_WAIT_FOR_LOCK = 600
+
 
 def change_pack_price_to_zero(path_to_pack_metadata):
     with open(path_to_pack_metadata, 'r') as pack_metadata_file:
@@ -128,11 +130,15 @@ def lock_dummy_index(public_storage_bucket, dummy_index_lock_path):
         dummy_index_lock_blob.upload_from_file(lock_file)
 
 
-
 def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
     print_error(f"Verifying if dummy index is locked before "
                 f"acquiring: {is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path)}")
+    total_seconds_waited = 0
     while is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
+        if total_seconds_waited >= MAX_SECONDS_TO_WAIT_FOR_LOCK:
+            print_error("Error: was not able to acquire dummy index lock.")
+            exit(1)
+        total_seconds_waited += 10
         time.sleep(10)
 
     lock_dummy_index(public_storage_bucket, dummy_index_lock_path)
@@ -143,8 +149,10 @@ def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
                 f"acquiring: {is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path)}")
 
 
-
 def release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
+    print_error(f"Verifying if dummy index is locked before "
+                f"deleting: {is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path)}")
+
     dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
     dummy_index_lock_blob.delete()
 
@@ -180,24 +188,26 @@ def main():
 
     acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
 
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
+    try:
+        if storage_base_path:
+            GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
-    extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    public_index_folder_path, public_index_blob, _ = download_and_extract_index(public_storage_bucket,
-                                                                                extract_public_index_path)
+        extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
+        public_index_folder_path, public_index_blob, _ = download_and_extract_index(public_storage_bucket,
+                                                                                    extract_public_index_path)
 
-    # In order for the packs to be downloaded successfully, their price has to be 0
-    change_packs_price_to_zero(public_index_folder_path)
+        # In order for the packs to be downloaded successfully, their price has to be 0
+        change_packs_price_to_zero(public_index_folder_path)
 
-    private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
-                                                                                           extract_destination_path,
-                                                                                           public_index_folder_path,
-                                                                                           changed_pack, True)
+        private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
+                                                                                               extract_destination_path,
+                                                                                               public_index_folder_path,
+                                                                                               changed_pack, True)
 
-    upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
-                          private_packs)
-    release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
+        upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
+                              private_packs)
+    finally:
+        release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
 
 
 if __name__ == '__main__':
