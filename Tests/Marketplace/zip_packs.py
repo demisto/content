@@ -133,9 +133,13 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
                 continue
 
             if gcp_path == BUILD_GCP_PATH:
+                # This is the right path for marketplace-ci-build
                 pack_prefix = os.path.join(gcp_path, branch_name, circle_build, 'content', 'packs', pack.name)
             else:
                 pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
+
+            if not branch_name or not circle_build:
+                pack_prefix = pack_prefix.replace('/builds/content', '')
 
             # Search for the pack in the bucket
             blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
