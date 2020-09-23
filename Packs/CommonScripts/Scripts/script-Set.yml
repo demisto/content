@@ -60,7 +60,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: If false then then the context key will be overwritten. If set to true
+  description: If false then the context key will be overwritten. If set to true
     then the script will append to existing context key.
 - name: stringify
   auto: PREDEFINED
