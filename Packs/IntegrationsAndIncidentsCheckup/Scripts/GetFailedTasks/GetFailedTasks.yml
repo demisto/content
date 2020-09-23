@@ -4,6 +4,7 @@ args:
   name: query
 comment: Gets failed tasks details for incidents based on a query. if rerun = true
   is provided, the automation will also re-run the failed tasks.
+dockerimage: demisto/python3:3.8.5.10845
 commonfields:
   id: GetFailedTasks
   version: -1
@@ -18,4 +19,4 @@ tags: []
 type: python
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- No tests
