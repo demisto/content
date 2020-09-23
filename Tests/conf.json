@@ -3000,6 +3000,12 @@
             "playbookID": "Imperva WAF - Test"
         },
         {
+            "integrations": "CheckPointFirewall",
+      			"playbookID": "checkpoint-testplaybook",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
