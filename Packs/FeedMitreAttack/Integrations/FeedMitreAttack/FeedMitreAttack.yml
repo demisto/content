@@ -132,7 +132,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-      description: Whether the search case sensitive. Can be "True" or "False". The
+      description: Whether the search is case sensitive. Can be "True" or "False". The
         default is "False".
       defaultValue: 'False'
     outputs:
