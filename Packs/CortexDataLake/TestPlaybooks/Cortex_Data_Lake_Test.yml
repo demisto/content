@@ -1,7 +1,8 @@
 id: Cortex Data Lake Test
 version: -1
 name: Cortex Data Lake Test
-description: The Palo Alto Networks Cortex Test playbook tests Cortex Data Lake main usecases
+description: The Palo Alto Networks Cortex Test playbook tests Cortex Data Lake main
+  usecases
 starttaskid: "0"
 tasks:
   "0":
@@ -424,10 +425,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: d026b622-e985-4b7e-844a-30b183a4e48d
+    taskid: 1ee0cb39-9fe3-48fc-84da-1d0521ad06fb
     type: regular
     task:
-      id: d026b622-e985-4b7e-844a-30b183a4e48d
+      id: 1ee0cb39-9fe3-48fc-84da-1d0521ad06fb
       version: -1
       name: cdl-query-file-data
       description: Searches the Cortex firewall.file_data table.
@@ -439,9 +440,9 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      action:
-        simple: "alert"
-      app: {}
+      action: {}
+      app:
+        simple: web-browsing
       app_category: {}
       dest_device_host: {}
       dest_dynamic_address_group: {}
@@ -495,10 +496,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 14b3165c-182a-4c7a-8a32-660e0fed4c07
+    taskid: 4881978e-2bd7-4058-87cc-9ac964e173eb
     type: condition
     task:
-      id: 14b3165c-182a-4c7a-8a32-660e0fed4c07
+      id: 4881978e-2bd7-4058-87cc-9ac964e173eb
       version: -1
       name: Verify outputs
       type: condition
@@ -519,14 +520,11 @@ tasks:
           right:
             value:
               simple: web-browsing
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: CDL.Logging.File.SourceIP
             iscontext: true
-          right:
-            value:
-              simple: 10.10.10.101
     view: |-
       {
         "position": {
