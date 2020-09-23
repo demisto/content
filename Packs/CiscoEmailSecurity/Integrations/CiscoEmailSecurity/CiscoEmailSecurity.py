@@ -188,38 +188,31 @@ def set_limit(limit):
     return int(limit) if limit and int(limit) <= MAX_MESSAGES_TO_GET else MAX_MESSAGES_TO_GET
 
 
-def build_url_params_for_list_report(args):
+def build_url_params_for_list_report(args, report_counter):
     start_date = date_to_cisco_date(args.get('start_date'))
     end_date = date_to_cisco_date(args.get('end_date'))
-    device_type = args.get('device_type')
-    url_params = f'?startDate={start_date}&endDate={end_date}&device_type={device_type}'
-
-    arguments = assign_params(**args)
-
-    for key, value in arguments.items():
-        if key == 'offset':
-            limit = arguments.get('limit')
-            url_params += f'&{key}={int(value)}&limit={int(limit)}'
-
-        elif key == 'filter_key':
-            filter_operator = arguments.get('filter_operator', 'is')
-            filter_value = arguments.get('filter_value')
-            url_params += f'&filterBy={value}&filter_operator={filter_operator}&filter_value={filter_value}'
-
-        elif key == 'device_group':
-            url_params += f'&{key}={value}'
-        elif key == 'device_name':
-            url_params += f'&{key}={value}'
-
+    url_params = f'/{report_counter}?startDate={start_date}&endDate={end_date}&device_type=esa'
     return url_params
 
 
+def set_counter_to_output_prefix(report_counter):
+    list_counter_words = report_counter.split('_')
+    counter_words = ''
+    for word in list_counter_words:
+        counter_words += word + ' '
+    counter_words_capital_letter = counter_words.title()
+    counter_output_prefix = counter_words_capital_letter.replace(' ', '')
+    return counter_output_prefix
+
+
 def list_report_command(client: Client, args: Dict[str, Any]):
-    url_params = build_url_params_for_list_report(args)
+    report_counter = args.get('report_counter')
+    url_params = build_url_params_for_list_report(args, report_counter)
     report_response_data = client.list_report(url_params)
+    counter_output_prefix = set_counter_to_output_prefix(report_counter)
     return CommandResults(
         readable_output=f'{report_response_data}',
-        outputs_prefix='CiscoEmailSecurity.report',
+        outputs_prefix=f'CiscoEmailSecurity.Report.{counter_output_prefix}',
         outputs_key_field='',
         outputs=report_response_data
     )
@@ -428,15 +421,16 @@ def build_url_params_for_spam_quarantine(args):
 def spam_quarantine_to_human_readable(spam_quarantine):
     spam_quarantine_readable_outputs = []
     for message in spam_quarantine:
-        readable_output = assign_params(recipient=dict_safe_get(message, ['attributes', 'envelopeRecipient'], None),
+        readable_output = assign_params(message_id=message.get('mid'),
+                                        recipient=dict_safe_get(message, ['attributes', 'envelopeRecipient'], None),
                                         to_address=dict_safe_get(message, ['attributes', 'toAddress'], None),
                                         subject=dict_safe_get(message, ['attributes', 'subject'], None),
                                         date=dict_safe_get(message, ['attributes', 'date'], None),
                                         from_address=dict_safe_get(message, ['attributes', 'fromAddress'], None))
         spam_quarantine_readable_outputs.append(readable_output)
-    headers = ['recipient', 'to_address', 'from_address', 'subject', 'date']
-    human_readable = tableToMarkdown('CiscoEmailSecurity SpamQuarantine', spam_quarantine_readable_outputs, headers,
-                                     removeNull=True)
+    headers = ['message_id', 'recipient', 'to_address', 'from_address', 'subject', 'date']
+    human_readable = tableToMarkdown('CiscoEmailSecurity The Quarantine Messages', spam_quarantine_readable_outputs,
+                                     headers, removeNull=True)
     return human_readable
 
 
@@ -484,8 +478,9 @@ def list_delete_quarantine_messages_command(client, args):
         "mids": messages_ids
     }
     delete_quarantine_messages_response = client.list_delete_quarantine_messages(request_body)
+    total_count = dict_safe_get(delete_quarantine_messages_response, ['data', 'totalCount'], None)
     return CommandResults(
-        readable_output=delete_quarantine_messages_response,
+        readable_output=f'{total_count} messages successfully deleted from quarantine list',
         outputs_prefix='CiscoEmailSecurity.QuarantineDeleteMessages',
         outputs_key_field='mid'
     )
@@ -500,8 +495,9 @@ def list_release_quarantine_messages_command(client, args):
         "mids": messages_ids
     }
     release_quarantine_messages_response = client.list_release_quarantine_messages(request_body)
+    total_count = dict_safe_get(release_quarantine_messages_response, ['data', 'totalCount'], None)
     return CommandResults(
-        readable_output=release_quarantine_messages_response,
+        readable_output=f'{total_count} messages successfully released from quarantine list',
         outputs_prefix='CiscoEmailSecurity.QuarantineDeleteMessages',
         outputs_key_field='mid'
     )
