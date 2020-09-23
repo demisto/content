@@ -523,7 +523,7 @@ def get_indicators_command(client: Client):
     return human_readable, {}, indicators
 
 
-def add_fields_if_exists(client: Client, fields_dict: Dict = {}):
+def add_fields_if_exists(client: Client, fields_dict: Dict):
     """Adds field mapping if they hold actual values
 
     Args:
