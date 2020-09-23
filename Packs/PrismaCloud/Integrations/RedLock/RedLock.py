@@ -315,9 +315,9 @@ def dismiss_alerts():
     policies = argToList(demisto.getArg('policy-id'))
     payload = {'alerts': ids, 'policies': policies, 'dismissalNote': demisto.getArg('dismissal-note'), 'filter': {}}
     demisto.args().pop('alert-id', None)
-    snooze_value = demisto.args()['snooze-value'] if 'snooze-value' in demisto.args() else None
-    snooze_unit = demisto.args()['snooze-unit'] if 'snooze-unit' in demisto.args() else None
-
+    args = demisto.args()
+    snooze_value = args.get('snooze-value', None)
+    snooze_unit = args.get('snooze-unit', None)
     msg_notes = ['dismissed', 'Dismissal']
 
     if snooze_value and snooze_unit:
