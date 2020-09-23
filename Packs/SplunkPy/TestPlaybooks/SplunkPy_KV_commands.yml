@@ -86,7 +86,7 @@ tasks:
       kv_store_collection_name:
         simple: test_playbook
       kv_store_fields:
-        simple: field.src=cidr,field.t=number
+        simple: field.src=cidr,field.t=number,field.description=string
     separatecontext: false
     view: |-
       {
@@ -121,7 +121,7 @@ tasks:
       kv_store_collection_name:
         simple: test_playbook
       kv_store_data:
-        simple: '{"src": "88.88.88.88", "t": 9}'
+        simple: '{"src": "88.88.88.88", "t": 9, "description": "description with speciàl טסט. 你好"}'
       indicator_path:
         simple: 'src'
     separatecontext: false

@@ -137,7 +137,7 @@ class MsGraphClient:
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
         #  Using resp_type="text" to avoid parsing error in the calling method.
-        self.ms_client.http_request(method='DELETE ', url_suffix=f'groups/{group_id}', resp_type="text")
+        self.ms_client.http_request(method='DELETE', url_suffix=f'groups/{group_id}', resp_type="text")
 
     def list_members(self, group_id: str, next_link: str = None, top: int = None, filter_: str = None):
         """List all group members by sending a GET request.

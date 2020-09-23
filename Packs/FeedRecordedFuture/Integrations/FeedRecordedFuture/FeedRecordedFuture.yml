@@ -32,6 +32,16 @@ configuration:
   required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
@@ -188,7 +198,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.8.5.10289
+  dockerimage: demisto/python3:3.8.5.10845
   feed: true
   isfetch: false
   longRunning: false
