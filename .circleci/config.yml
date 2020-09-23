@@ -950,10 +950,10 @@ workflows:
             - Server Master
       - Server 6_0 Test Playbooks:
           requires:
-            -Server 6_0
+            - Server 6_0
       - Server Master Test Playbooks:
           requires:
-            -Server Master
+            - Server Master
   force_pack_upload:
     when: << pipeline.parameters.force_pack_upload >>
     jobs:
