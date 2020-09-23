@@ -4,15 +4,16 @@ import time
 import traceback
 from copy import deepcopy
 from threading import Lock
-from typing import Optional, List, Callable, Dict
+from typing import Callable, Dict, List, Optional
 from urllib import parse
 
-import demistomock as demisto
 import requests
 import urllib3
+from requests.exceptions import HTTPError
+
+import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from requests.exceptions import HTTPError
 
 # disable insecure warnings
 urllib3.disable_warnings()
