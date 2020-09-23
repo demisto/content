@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a42042b7-fa12-4606-8a60-178d5bbecb18
+    taskid: 1a4d5f8e-fb36-4f84-8182-ad014e2578ae
     type: start
     task:
-      id: a42042b7-fa12-4606-8a60-178d5bbecb18
+      id: 1a4d5f8e-fb36-4f84-8182-ad014e2578ae
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: b531c6bd-5441-419c-8b8a-db775361f729
+    taskid: 7bf4c0f4-b1d1-4ffd-8a4c-a1dac605f4d7
     type: regular
     task:
-      id: b531c6bd-5441-419c-8b8a-db775361f729
+      id: 7bf4c0f4-b1d1-4ffd-8a4c-a1dac605f4d7
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -66,10 +66,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: c179a2d5-9b68-44f4-8ada-39a30a384f4e
+    taskid: 6bd2dc1c-5284-401c-843a-3413dfdd0ef1
     type: regular
     task:
-      id: c179a2d5-9b68-44f4-8ada-39a30a384f4e
+      id: 6bd2dc1c-5284-401c-843a-3413dfdd0ef1
       version: -1
       name: Set URL
       scriptName: Set
@@ -100,10 +100,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: ea80fa14-ec9b-4a51-863f-1ab238720d18
+    taskid: c783bce4-e527-4912-8a67-96ee0dbd3f16
     type: playbook
     task:
-      id: ea80fa14-ec9b-4a51-863f-1ab238720d18
+      id: c783bce4-e527-4912-8a67-96ee0dbd3f16
       version: -1
       name: Detonate URL - CrowdStrike
       playbookName: Detonate URL - CrowdStrike
@@ -142,10 +142,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: d7f93aaa-8ac9-4955-82c6-77898460f93c
+    taskid: c758ee4a-1730-4440-8319-cb01206039eb
     type: playbook
     task:
-      id: d7f93aaa-8ac9-4955-82c6-77898460f93c
+      id: c758ee4a-1730-4440-8319-cb01206039eb
       version: -1
       name: Detonate URL - CrowdStrike
       playbookName: Detonate URL - CrowdStrike
@@ -164,6 +164,8 @@ tasks:
         simple: "30"
       URL:
         simple: https://pngriver.com/wp-content/uploads/2018/04/Download-Mario-PNG-File.png
+      dontThrowErrorOnFileDetonation:
+        simple: "true"
     separatecontext: true
     loop:
       iscommand: false
