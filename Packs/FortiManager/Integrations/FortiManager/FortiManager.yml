@@ -2029,7 +2029,8 @@ script:
     name: fortimanager-adom-unlock
   - arguments:
     - default: false
-      description: The ADOM to lock the device on. Leave empty to use the default integration ADOM.
+      description: The ADOM to lock the device on. Leave empty to use the default
+        integration ADOM.
       isArray: false
       name: adom
       required: false
@@ -2046,8 +2047,8 @@ script:
     name: fortimanager-device-lock
   - arguments:
     - default: false
-      description: The ADOM to unlock the device on. Leave empty to use the default integration
-        ADOM.
+      description: The ADOM to unlock the device on. Leave empty to use the default
+        integration ADOM.
       isArray: false
       name: adom
       required: false
@@ -2064,7 +2065,8 @@ script:
     name: fortimanager-device-unlock
   - arguments:
     - default: false
-      description: The ADOM to lock the package on. Leave empty to use the default integration ADOM.
+      description: The ADOM to lock the package on. Leave empty to use the default
+        integration ADOM.
       isArray: false
       name: adom
       required: false
@@ -2081,8 +2083,8 @@ script:
     name: fortimanager-package-lock
   - arguments:
     - default: false
-      description: The ADOM to unlock the package on. Leave empty to use the default integration
-        ADOM.
+      description: The ADOM to unlock the package on. Leave empty to use the default
+        integration ADOM.
       isArray: false
       name: adom
       required: false

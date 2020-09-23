@@ -29,7 +29,8 @@ class Client(BaseClient):
     def get_session_token(self, get_new_token=False):
         if get_new_token:
             response = self.fortimanager_http_request('exec', "/sys/login/user",
-                                                      json_data={'user': self.username, 'passwd': self.password})
+                                                      json_data={'user': self.username, 'passwd': self.password},
+                                                      add_session_token=False)
 
             demisto.setIntegrationContext({'session': response.get('session')})
             return response.get('session')
@@ -39,15 +40,17 @@ class Client(BaseClient):
             return current_token if current_token else self.get_session_token(get_new_token=True)
 
     def fortimanager_http_request(self, method, url, data_in_list=None, json_data=None, range_info=None,
-                                  other_params=None):
+                                  other_params=None, add_session_token=True):
         body = {
             "id": 1,
             "method": method,
             "params": [{
                 "url": url
             }],
-            "session": self.session_token
         }
+
+        if add_session_token:
+            body['session'] = self.session_token
 
         if data_in_list:
             body['params'][0]['data'] = [data_in_list]
@@ -70,7 +73,8 @@ class Client(BaseClient):
         return response
 
     def fortimanager_api_call(self, method, url, data=None, range_info=None, other_params=None):
-        response = self.fortimanager_http_request(method, url, data)
+        response = self.fortimanager_http_request(method, url, data_in_list=data, range_info=range_info,
+                                                  other_params=other_params)
 
         # catch session token expiration - fetch new token and retry
         if response.get('result')[0].get('status').get('code') != -11:
@@ -108,14 +112,15 @@ def get_range_for_list_command(args):
     last_index = args.get('to')
     list_range = []
 
-    if first_index:
-        list_range.append(first_index)
+    if first_index is not None:
+        list_range.append(int(first_index))
 
-    if last_index:
-        list_range.append(list_range)
+    if last_index is not None:
+        list_range.append(int(last_index) + 1)
 
     if list_range:
-        return [list_range]
+        return list_range
+
     else:
         return None
 
@@ -154,12 +159,14 @@ def list_firewall_addresses_command(client, args):
                                                              f"{get_specific_entity(args.get('address'))}",
                                                       range_info=get_range_for_list_command(args))
 
+    headers = ['name', 'type', 'subnet', 'start-ip', 'end-ip', 'fqdn', 'wildcard', 'country', 'wildcard-fqdn']
+
     return CommandResults(
         outputs_prefix='FortiManager.Address',
         outputs_key_field='name',
         outputs=firewall_addresses,
         readable_output=tableToMarkdown("Firewall IPv4 Addresses", firewall_addresses,
-                                        removeNull=True, headerTransform=string_to_table_header),
+                                        removeNull=True, headerTransform=string_to_table_header, headers=headers),
         raw_response=firewall_addresses,
     )
 
