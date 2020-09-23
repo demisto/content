@@ -21,7 +21,8 @@ configuration:
   name: apiKey
   required: true
   type: 4
-- display: Insight Category
+- defaultvalue: Network Access,Network Inspection,Endpoint,Email,Web,Data Leak
+  display: Insight Category
   hidden: false
   name: insightCategory
   options:
@@ -33,7 +34,8 @@ configuration:
   - Data Leak
   required: false
   type: 16
-- display: Insight Data Type
+- defaultvalue: Hash,Domain,URI,Command,Port,Protocol
+  display: Insight Data Type
   hidden: false
   name: insightDataType
   options:
@@ -45,6 +47,30 @@ configuration:
   - Protocol
   required: false
   type: 16
+- additionalinfo: Non-Behavioral Indicator from this integration instance will be marked with this reputation
+  display: Non Behavioral Indicator Reputation
+  name: nonBehavioralReputation
+  hidden: false
+  defaultvalue: Bad
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 15
+- additionalinfo: Behavioral Indicator from this integration instance will be marked with this reputation
+  display: Behavioral Reputation
+  hidden: false
+  name: behavioralReputation
+  defaultvalue: Suspicious
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 15
 - additionalinfo: The maximum number of indicators to generate. The default is 1000.
   display: Indicators Limit
   hidden: false
@@ -55,28 +81,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
-  display: Indicator Reputation
-  name: feedReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
-- additionalinfo: Behavioral Indicators from this integration instance will be marked
-    with this reputation
-  display: Behavioral Indicator Reputation
-  name: behavioralReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 15
+  defaultvalue: 'true'
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability
@@ -88,6 +93,16 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
   type: 15
 - name: feedExpirationPolicy
   options:
@@ -121,6 +136,23 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  display: Indicator Reputation
+  hidden: true
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 description: SafeBreach automatically executes thousands of breach methods from its
   extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations
   are automatically correlated with network, endpoint, and SIEM solutions providing
@@ -545,7 +577,7 @@ script:
     - contextPath: SafeBreach.Test.ScheduledTime
       description: Time when the test was triggered.
       type: Datetime
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   feed: true
   isfetch: false
   longRunning: false

@@ -12,7 +12,7 @@
             "isMailAttacker": false,
             "isPreExecutor": true,
             "useSystemUser": true,
-            "externalIp": "3.11.68.242",
+            "externalIp": "8.8.8.8",
             "internalIp": "172.31.42.76",
             "hostname": "Cylance-Win10-Demisto",
             "labels": null,
@@ -141,8 +141,8 @@
             "isMailAttacker": false,
             "isPreExecutor": false,
             "useSystemUser": true,
-            "externalIp": "172.31.11.96",
-            "internalIp": "172.31.11.96",
+            "externalIp": "8.8.8.8",
+            "internalIp": "8.8.8.8",
             "hostname": "Network-Simulator",
             "labels": null,
             "connectionType": "MANUAL",
@@ -233,7 +233,7 @@
                             "MAC": "02:39:1b:d9:38:d4",
                             "IPv4": [
                                 {
-                                    "IP": "172.31.11.96",
+                                    "IP": "8.8.8.8",
                                     "NETMASK": "255.255.240.0"
                                 }
                             ],
@@ -254,7 +254,7 @@
                         "MAC": "02:39:1b:d9:38:d4",
                         "IPv4": [
                             {
-                                "IP": "172.31.11.96",
+                                "IP": "8.8.8.8",
                                 "NETMASK": "255.255.240.0"
                             }
                         ],
@@ -294,8 +294,8 @@
             "isMailAttacker": false,
             "isPreExecutor": false,
             "useSystemUser": true,
-            "externalIp": "172.31.41.151",
-            "internalIp": "172.31.41.151",
+            "externalIp": "8.8.8.8",
+            "internalIp": "8.8.8.8",
             "hostname": "ubuntu18-num1",
             "labels": null,
             "connectionType": "AUTOMATIC",
@@ -386,7 +386,7 @@
                             "MAC": "0a:1b:8e:c9:d6:a2",
                             "IPv4": [
                                 {
-                                    "IP": "172.31.41.151",
+                                    "IP": "8.8.8.8",
                                     "NETMASK": "255.255.240.0"
                                 }
                             ],
@@ -407,7 +407,7 @@
                         "MAC": "0a:1b:8e:c9:d6:a2",
                         "IPv4": [
                             {
-                                "IP": "172.31.41.151",
+                                "IP": "8.8.8.8",
                                 "NETMASK": "255.255.240.0"
                             }
                         ],
@@ -449,8 +449,8 @@
             "isMailAttacker": false,
             "isPreExecutor": false,
             "useSystemUser": true,
-            "externalIp": "172.31.33.187",
-            "internalIp": "172.31.33.187",
+            "externalIp": "8.8.8.8",
+            "internalIp": "8.8.8.8",
             "hostname": "ubuntu18-num2",
             "labels": null,
             "connectionType": "AUTOMATIC",
@@ -541,7 +541,7 @@
                             "MAC": "0a:ba:89:10:78:f8",
                             "IPv4": [
                                 {
-                                    "IP": "172.31.33.187",
+                                    "IP": "8.8.8.8",
                                     "NETMASK": "255.255.240.0"
                                 }
                             ],
@@ -562,7 +562,7 @@
                         "MAC": "0a:ba:89:10:78:f8",
                         "IPv4": [
                             {
-                                "IP": "172.31.33.187",
+                                "IP": "8.8.8.8",
                                 "NETMASK": "255.255.240.0"
                             }
                         ],
