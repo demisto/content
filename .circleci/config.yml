@@ -334,7 +334,10 @@ references:
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 jobs:
   Setup Environment:
-    - steps:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
       - run:
           name: Setting Up Environment
           shell: /bin/bash
