@@ -4,7 +4,7 @@ Use this integration to pull incidents and supporting information from your Cora
 
 ## Use Cases
 ---
-1. Configure your Coralogix account as a full fledged SIEM solution by using any of its available integrations and tools and streamline the process of security incidents handling by using Cortex XSOAR's playbooks to automatically pull the incidents from Coralogix and handle them by any of the other Cortex XSOAR integrations.
+1. Configure your Coralogix account as a full fledged SIEM solution by using any of its available integrations and tools and streamline the process of security incident handling by using Cortex XSOAR's playbooks to automatically pull the incidents from Coralogix and handle them by any of the other Cortex XSOAR integrations.
 2. Use supporting data from Coralogix while you prepare the security incident report directly from the war room in Cortex XSOAR.
 3. Automatically tag the timestamps in Coralogix at which point a security incident was detected by any of the other Cortex XSOAR integrations.
 
@@ -28,22 +28,23 @@ Use this integration to pull incidents and supporting information from your Cora
 | Incidents Application Name | Limits the incidents query to only return incidents of a specific application name | No | N/A |
 | Incidents Severity | Limits the incidents query to only return incidents of a specific severity | No | N/A |
 | incidents Name Field | The Coralogix field value that should be used as the incident's name. If not specified, the integration will use the "alert_name" field | No | N/A |
-
+| Incidents first fetch days | The number of days to look back for incidents | No | 3 |
+| Maximum number of incidents to fetch at a single call | Maximum number of incidents to retrieve at each call to Coralogix | No | 50 |
 
 ## Commands
 ---
 You can execute the following commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. `clx_search`
-2. `clx_tag`
+1. `coralogix_search`
+2. `coralogix_tag`
 
-### 1. clx_search
+### 1. coralogix_search
 ---
-Returns logs from your Coralogix account by the specified Lucene query
+Returns logs from your Coralogix account according to the specified Lucene query
 
 ##### Base Command
 
-`clx_search`
+`coralogix_search`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** | **Default** |
@@ -52,27 +53,29 @@ Returns logs from your Coralogix account by the specified Lucene query
 | app_name | A Coralogix application name to filter results by | No | `empty` |
 | subsystem_name | A Coralogix subsystem name to filte results by | No | `empty` |
 | severity | A Coralogix severity name to filter results by | No | `empty` |
-| as_table | A true/false value indicating whether or not to return the search results as a table or as a JSON | No | false |
-| exclude | A list of columns (comma separated) to exclude from the results table | No | `empty` | 
+| since_timestamp | The timestamp in the format of YYYY-MM-DD (e.g 1978-03-31T23:59:59) from which you would like to start the search | No | `empty` |
+| to_timestamp | The timestamp in the format of YYYY-MM-DD (e.g 1978-03-31T23:59:59) that will be the upper boundary of the search timespan | No | 'now' | 
+| max_items_to_retrieve | Maximum number of log entries to retrieve from Coralogix | No | 50 |
 
-##### Command Example
-```!cgx_search query="security.rcode_name:\"NXDOMAIN\"" exclude="security.message" as_table="true" using="Coralogix_instance_1"```
+##### Command Examples
+```!coralogix_search query="security.rcode_name:\"NXDOMAIN\"" using="Coralogix_instance_1"```  
+```!coralogix_search query="security.rcode_name:\"NXDOMAIN\"" max_items_to_retrieve="100" since_timestamp="2020-12-31T23:59:59" using="Coralogix_instance_1"```
 
-##### Context Example
+##### Output
 
-| **@timestamp** | **@version** | **coralogix.branchId** | **coralogix.jsonUuid** | **coralogix.logId** | **coralogix.metadata.applicationName** | **coralogix.metadata.category** | **coralogix.metadata.className** | **coralogix.metadata.companyId** | **coralogix.metadata.computerName** | ... |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2020-08-27T02:39:35.886Z | 1 | 96225e09-a943-cf51-a6e1-4a4784052280 | 11993062-5fce-fbfd-b01a-7d93d3e14c65 | de998f70-0c34-48a8-90f9-f90cb36f30f0 | SchalotteTest | CORALOGIX |  | 6665 | ba3c90e19695 | ... |
-| 2020-08-27T02:52:35.699Z | 1 | 96225e09-a943-cf51-a6e1-4a4784052280 | 11993062-5fce-fbfd-b01a-7d93d3e14c65 | 680fedc8-b24a-4a5d-a83a-87edd331c4b6 | SchalotteTest | CORALOGIX |  | 6665 | ba3c90e19695 | ... |
+| **coralogix.timestamp** | **coralogix.metadata.applicationName** | **coralogix.metadata.subsystemName** | **security.source_ip** | **security.destination_ip** | **security.event_type** | **security.source_port** | **security.destination_port** | **security.protocol** | **security.query** | **security.query_type_name** | ... |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 2020-08-27T02:39:35.886Z | test-sta | test-sta | 172.31.7.153 | 172.31.0.2 | bro_dns | 33161 | 53 | udp | upload.wikimedia.org.ncsa.uiuc.edu | A | ... |
+| 2020-08-27T02:52:35.699Z | test-sta | test-sta | 172.31.7.153 | 172.31.0.2 | bro_dns | 44618 | 53 | udp | www.googgle.com | AAAA | ... |
 
 
-### 2. clx_tag
+### 2. coralogix_tag
 ---
 Allows you to tag an interesting point in time in Coralogix from Cortex XSOAR
 
 ##### Base Command
 
-`clx_tag`
+`coralogix_tag`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** | **Default** |
@@ -82,7 +85,7 @@ Allows you to tag an interesting point in time in Coralogix from Cortex XSOAR
 | icon_url | A URL to an icon file (JPG or PNG) that will be displayed as the tag at Coralogix. Can be up to 50KB in size | No | Defaults to a lightning icon | 
 
 ##### Command Example
-```!clx_tag name="Data leak started"```
+```!coralogix_tag name="Data leak started"```
 
 ##### Output
 ```
