@@ -1,4 +1,4 @@
-This Integrations and Incidents Checkup content pack enables system users to view all the failed enabled integrations and open incidents details. 
+This Integrations and Incidents Health Check content pack enables system users to view all the failed enabled integrations and open incidents details. 
  
 With this Content Pack, you can run a job on an hourly/daily/weekly basis. The job will run the checkup playbook that tests all enabled integrations and search for open incidents with errors to get their status and retrieve the error information. Additionally, the job will update the dashboards using XOSAR lists.
 
