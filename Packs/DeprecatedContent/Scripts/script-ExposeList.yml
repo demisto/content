@@ -2,8 +2,9 @@ commonfields:
   id: ExposeList
   version: -1
 name: ExposeList
-script: |
+script: >
   var list = getJSONListAsObject(args.listName);
+
   if (list) {
       var key = args.contextKey ? args.contextKey : 'lists.' + args.listName;
       key = key.replace(/[ \\()?]/g, '_');
@@ -16,6 +17,7 @@ script: |
       return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json,
           HumanReadable: 'Exposed list [' + args.listName + '] to [' + key + ']', EntryContext: ec};
   }
+
   return {Type: entryTypes.error, Contents: 'Error retrieving list ' + args.listName, ContentsFormat: formats.text};
 type: javascript
 comment: Deprecated. Retruns Demisto list
@@ -39,3 +41,4 @@ scripttarget: 0
 dependson: {}
 deprecated: true
 timeout: 0s
+fromversion: 5.0.0

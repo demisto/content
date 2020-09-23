@@ -2,9 +2,10 @@ commonfields:
   id: VectraGetDetetctionsById
   version: -1
 name: VectraGetDetetctionsById
-script: |2
+script: >2
 
   resp = demisto.executeCommand("vec-get-detetctions-by-id", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -31,3 +32,4 @@ dependson:
   must:
   - vec-get-detetctions-by-id
 deprecated: true
+fromversion: 5.0.0

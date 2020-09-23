@@ -2,19 +2,26 @@ commonfields:
   id: Cut
   version: -1
 name: Cut
-script: |-
+script: >-
   args = demisto.args()
 
+
   value = args.get("value")
+
   fields = args.get("fields")
+
   delim = args.get("delimiter")
+
   if delim == "''":
       delim = ""
 
   data = value.split(delim)
+
   fields = [int(_) for _ in fields.split(",")]
 
+
   max_index = max(fields)
+
   if len(data) < max_index:
       return_error("Invalid field index {}, should be between 1 to {}.".format(max_index, len(data)))
 
@@ -40,8 +47,7 @@ args:
   description: Value to split
 - name: delimiter
   required: true
-  description: Delimiter to cut the string by. Pass '' to set delimiter to be empty
-    string
+  description: Delimiter to cut the string by. Pass '' to set delimiter to be empty string
 - name: fields
   required: true
   description: 'Comma separated field numbers (e.g.: 1,5,7)'
@@ -50,4 +56,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - CutTransformerTest
+- CutTransformerTest
+fromversion: 5.0.0
