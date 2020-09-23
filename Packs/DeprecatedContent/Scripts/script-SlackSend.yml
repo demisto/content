@@ -2,8 +2,9 @@ commonfields:
   id: SlackSend
   version: -1
 name: SlackSend
-script: |-
+script: >-
   dArgs = {}
+
   for argName in ['message', 'to', 'channel', 'group', 'entry']:
       if demisto.get(demisto.args(), argName):
           dArgs[argName] = demisto.args()[argName]
@@ -32,3 +33,4 @@ dependson:
   must:
   - slack-send
 timeout: 0s
+fromversion: 5.0.0

@@ -2,8 +2,9 @@ commonfields:
   id: D2Drop
   version: -1
 name: D2Drop
-script: |-
+script: >-
   var tempDir = '';
+
   if( env.TEMP ) {
       tempDir = env.TEMP;
   } else if ( env.TMPDIR ) {
@@ -14,7 +15,9 @@ script: |-
       tempDir = '/tmp';
   }
 
+
   var filesRes = files( tempDir, true, false, args.files );
+
   if ( filesRes && filesRes.length > 0 ) {
       if ( 1 != copy( filesRes[0].Path, args.destpath, args.force === 'true') )
           throw "Error copying file " + filesRes[0].Path + " to " + filesRes[0].destpath + ".";
@@ -49,4 +52,5 @@ scripttarget: 1
 runonce: false
 runas: DBotWeakRole
 tests:
-  - No test - D2 tests are not supported yet in content tests
+- No test - D2 tests are not supported yet in content tests
+fromversion: 5.0.0

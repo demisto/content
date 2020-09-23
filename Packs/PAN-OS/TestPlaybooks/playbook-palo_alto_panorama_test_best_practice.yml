@@ -200,8 +200,7 @@ tasks:
       id: 91b67ba8-19a2-474b-83d7-5f390b3a3283
       version: -1
       name: enforce-wildfire-best-practice
-      description: Enforce wildfire file upload to the maximum size + all file types
-        are forwarded and update schedule.
+      description: Enforce wildfire file upload to the maximum size + all file types are forwarded and update schedule.
       script: '|||panorama-enforce-wildfire-best-practice'
       type: regular
       iscommand: true
@@ -570,10 +569,7 @@ tasks:
       id: e1303709-d709-4f6b-8fe6-6e0d7fdc8e49
       version: -1
       name: Panorama-commit
-      description: Commits a configuration to Palo Alto Firewall or Panorama, but
-        does not validate if the commit was successful. Committing to Panorama does
-        not push the configuration to the Firewalls. To push the configuration, run
-        the panorama-push-to-device-group command.
+      description: Commits a configuration to Palo Alto Firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push the configuration to the Firewalls. To push the configuration, run the panorama-push-to-device-group command.
       script: '|||panorama-commit'
       type: regular
       iscommand: true
@@ -1611,3 +1607,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

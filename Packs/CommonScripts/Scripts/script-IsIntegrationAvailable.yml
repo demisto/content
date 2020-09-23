@@ -2,10 +2,13 @@ commonfields:
   id: IsIntegrationAvailable
   version: -1
 name: IsIntegrationAvailable
-script: |
+script: >
   brandName = demisto.get(demisto.args(), 'brandname')
+
   allInstances = demisto.getModules()
+
   brandInstances = [instanceName for instanceName in allInstances if allInstances[instanceName]['brand'].lower() == brandName.lower() and demisto.get(allInstances[instanceName], 'state') and allInstances[instanceName]['state'] == 'active']
+
   if brandInstances:
       demisto.setContext('brandInstances', brandInstances)
       demisto.results('yes')
@@ -31,3 +34,4 @@ outputs:
   description: if integration is available
 - contextPath: no
   description: if there is no instance for the given brand
+fromversion: 5.0.0

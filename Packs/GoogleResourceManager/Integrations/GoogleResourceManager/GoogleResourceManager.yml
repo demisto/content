@@ -472,5 +472,6 @@ script:
   script: ''
   type: python
   subtype: python2
+fromversion: 5.0.0
 tests:
   - GoogleResourceManager-Test
