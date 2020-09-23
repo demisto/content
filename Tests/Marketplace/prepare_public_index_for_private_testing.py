@@ -1,3 +1,5 @@
+import time
+
 from Tests.Marketplace.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
     extract_packs_artifacts
 from Tests.Marketplace.marketplace_services import init_storage_client, GCPConfig
@@ -105,11 +107,31 @@ def option_handler():
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
     parser.add_argument('-ea', '--extract_artifacts_path', help="Full path of folder to extract wanted packs",
                         required=True)
-    parser.add_argument('-di', '--dummy_index_path', help="Full path to the dummy index in the private CI bucket",
+    parser.add_argument('-di', '--dummy_index_dir_path', help="Full path to the dummy index in the private CI bucket",
                         required=True)
 
     # disable-secrets-detection-end
     return parser.parse_args()
+
+
+def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
+    lock_file_exists = True
+    while lock_file_exists:
+        dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
+        lock_file_exists = dummy_index_lock_blob.exists()
+        if lock_file_exists:
+            time.sleep(10)
+        else:
+            with open('lock.txt', 'w') as lock_file:
+                lock_file.write('locked')
+
+            with open('lock.txt', 'rb') as lock_file:
+                dummy_index_lock_blob.upload_from_file(lock_file)
+
+
+def release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
+    dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
+    dummy_index_lock_blob.delete()
 
 
 def main():
@@ -124,13 +146,18 @@ def main():
     changed_pack = upload_config.pack_name
     extract_destination_path = upload_config.extract_artifacts_path
     packs_artifacts_path = upload_config.artifacts_path
-    dummy_index_path = upload_config.dummy_index_path
+    dummy_index_dir_path = upload_config.dummy_index_dir_path
+    dummy_index_path = os.path.join(dummy_index_dir_path, 'index.json')
+    dummy_index_lock_path = os.path.join(dummy_index_dir_path, 'lock.txt')
 
     storage_client = init_storage_client(service_account)
     public_storage_bucket = storage_client.bucket(public_bucket_name)
     private_storage_bucket = storage_client.bucket(private_bucket_name)
 
+    dummy_index_dir_blob = public_storage_bucket.blob(dummy_index_dir_path)
     dummy_index_blob = public_storage_bucket.blob(dummy_index_path)
+
+    acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
 
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
@@ -149,6 +176,7 @@ def main():
 
     upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
                           private_packs)
+    release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path)
 
 
 if __name__ == '__main__':
