@@ -909,7 +909,11 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
-      echo "execute upload packs logic"
+      - run:
+          name: Upload logic
+          shell: /bin/bash
+          command: |
+            echo "Execute upload logic"
   Force Pack Upload:
     <<: *container_config
     resource_class: medium
