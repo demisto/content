@@ -118,13 +118,15 @@ class STIX21Processor:
         current_date = datetime.now()
         published_date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
 
+        sorted_reputation_map = sorted(FE_CONFIDENCE_TO_REPUTATION.items(), reverse=True)
+
         if current_date - published_date < timedelta(days=reputation_interval):
-            for score, threshold in FE_CONFIDENCE_TO_REPUTATION.items():
+            for score, threshold in sorted_reputation_map:
                 if confidence > threshold:
                     return score
 
         else:
-            for score, threshold in FE_CONFIDENCE_TO_REPUTATION.items():
+            for score, threshold in sorted_reputation_map:
                 if confidence > threshold:
                     return min(score, Common.DBotScore.SUSPICIOUS)
 
