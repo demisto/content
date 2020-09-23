@@ -1,5 +1,8 @@
+from typing import List
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 
 args = demisto.args()
 query = args["query"]
@@ -8,17 +11,17 @@ totalIncidents = []
 incidentsOutput = []
 totalFailedIncidents = []
 pager = 0
-getIncidents = True
+incidents_to_fetch = True
 numberofFailed = 0
 numberofErrors = 0
-totalNumbers = []
-while getIncidents:
+totalNumbers: List = []
+while incidents_to_fetch:
     getIncidents = demisto.executeCommand("getIncidents", {"query": query, "page": pager})
     incidents = getIncidents[0]["Contents"]["data"]
     totalIncidents.extend(incidents)
     pager += 1
     if len(incidents) < 100:
-        getIncidents = False
+        incidents_to_fetch = False
 
 for incident in totalIncidents:
     tasks = demisto.executeCommand("demisto-api-post", {"uri": "investigation/" + str(incident["id"]) + "/workplan/tasks", "body": {

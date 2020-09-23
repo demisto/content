@@ -1,5 +1,6 @@
 import collections
 import random
+from typing import Counter
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -9,7 +10,7 @@ failedCommands = incident[0].get('CustomFields', {}).get('playbooksfailedcommand
 commandsData = []
 
 if failedCommands:
-    commandsscollections = collections.Counter(failedCommands)
+    commandsscollections: Counter = collections.Counter(failedCommands)
     topCommands = commandsscollections.most_common(10)
     commands_count = len(topCommands)
     commandnumber = 0

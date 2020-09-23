@@ -1,5 +1,6 @@
 import collections
 import random
+from typing import Counter
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -8,7 +9,7 @@ incident = demisto.incidents()
 instancesCategory = incident[0].get('CustomFields', {}).get('integrationsfailedcategories', "0")
 instancesCategoryData = []
 if instancesCategory:
-    instancescollections = collections.Counter(instancesCategory)
+    instancescollections: Counter = collections.Counter(instancesCategory)
     topInstances = instancescollections.most_common(10)
     for instance in topInstances:
         random_number = random.randint(0, 16777215)

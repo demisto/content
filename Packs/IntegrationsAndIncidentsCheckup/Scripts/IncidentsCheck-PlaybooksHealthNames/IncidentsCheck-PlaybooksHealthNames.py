@@ -1,5 +1,6 @@
 import collections
 import random
+from typing import Counter
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -8,7 +9,7 @@ incident = demisto.incidents()
 playbookNames = incident[0].get('CustomFields', {}).get('playbooknameswithfailedtasks', 0)
 playbooksData = []
 if playbookNames:
-    playbookscollections = collections.Counter(playbookNames)
+    playbookscollections: Counter = collections.Counter(playbookNames)
     topPlaybooks = playbookscollections.most_common(10)
     playbooksnumber = len(topPlaybooks)
     playbooknumber = 0
