@@ -641,12 +641,12 @@ script:
     description: Deletes the specified object in store. Search can be basic key value or a full query.
     execution: false
     name: splunk-kv-store-collection-delete-entry
-  dockerimage45: demisto/splunksdk:1.0
   - deprecated: false
     description: Query Splunk to retrieve a list of sample alerts by alert type. Used
       for Mapping fetched incidents through the Get Schema option.
     execution: false
     name: get-mapping-fields
+  dockerimage45: demisto/splunksdk:1.0
   dockerimage: demisto/splunksdk:1.0.0.10663
   feed: false
   isfetch: true

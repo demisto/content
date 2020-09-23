@@ -877,6 +877,25 @@ def get_store_data(service):
         yield store.data.query(**query)
 
 
+def create_mapping_dict(total_parsed_results, type_field):
+    """
+    Create a {'field_name': 'fields_properties'} dict to be used as mapping schemas.
+    Args:
+        total_parsed_results: list. the results from the splunk search query
+        type_field: str. the field that represents the type of the event or alert.
+
+    Returns:
+
+    """
+    types_map = {}
+    for result in total_parsed_results:
+        event_type_name = result.get(type_field, '')
+        if event_type_name:
+            types_map[event_type_name] = result
+
+    return types_map
+
+
 def get_mapping_fields_command(service):
     # Create the query to get unique objects
     type_field = demisto.params().get('type_field', 'source')
@@ -917,11 +936,7 @@ def get_mapping_fields_command(service):
 
         results_offset += batch_size
 
-    types_map = {}
-    for obj in total_parsed_results:
-        type_field_value = obj.get(type_field, '')
-        if type_field_value:
-            types_map[type_field_value] = obj
+    types_map = create_mapping_dict(total_parsed_results, type_field)
     demisto.results(types_map)
 
 
