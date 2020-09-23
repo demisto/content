@@ -1,4 +1,11 @@
-This automation will export all Certificates related information from the python docker container and decode it by RFC. In addition, it will get the certificate located in endpoint.
+This automation will export all Custom Certificates related information from the python docker container and decode it by RFC. In addition, it will get the certificate located in endpoint.
+
+## Notes
+---
+
+After using the following [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/configure-python-docker-integrations-to-trust-custom-certificates) to update custom certificate in `Demisto Server`/ `Demisto Engine`.
+Validate the configuration applied using using this script.
+
 ## Script Data
 ---
 
@@ -6,7 +13,6 @@ This automation will export all Certificates related information from the python
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility |
-| Demisto Version | 0.0.0 |
 
 ## Inputs
 ---
