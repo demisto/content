@@ -23,13 +23,19 @@ configuration:
   type: 8
   required: false
 script:
-  script: |
+  script: >
     import datetime
+
     import jwt
+
     import requests
+
     import json
+
     import shutil
+
     from zipfile import ZipFile
+
 
     if not demisto.getParam('proxy'):
         del os.environ['HTTP_PROXY']
@@ -53,9 +59,13 @@ script:
 
 
     URL = 'https://api.zoom.us/v2/'
+
     ACCESS_TOKEN = get_jwt(demisto.getParam('apiKey'), demisto.getParam('apiSecret'))
+
     PARAMS = {'access_token': ACCESS_TOKEN}
+
     HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+
 
 
     def return_error(data):
@@ -273,13 +283,9 @@ script:
       description: 'Record zoom meeting? '
       defaultValue: "no"
     - name: start-time
-      description: Meeting start time. When using a format like “yyyy-MM-dd’T'HH:mm:ss'Z’”,
-        always use GMT time. When using a format like “yyyy-MM-dd’T'HH:mm:ss”, you
-        should use local time and you will need to specify the time zone. Only used
-        for scheduled meetings and recurring meetings with fixed time.
+      description: Meeting start time. When using a format like “yyyy-MM-dd’T'HH:mm:ss'Z’”, always use GMT time. When using a format like “yyyy-MM-dd’T'HH:mm:ss”, you should use local time and you will need to specify the time zone. Only used for scheduled meetings and recurring meetings with fixed time.
     - name: timezone
-      description: 'Timezone to format start_time. For example, “America/Los_Angeles”.
-        For scheduled meetings only. '
+      description: 'Timezone to format start_time. For example, “America/Los_Angeles”. For scheduled meetings only. '
     outputs:
     - contextPath: Zoom.Meeting.join_url
       description: Join url for the meeting
@@ -402,3 +408,4 @@ script:
     execution: true
   dockerimage: demisto/pyjwt:1.0
   runonce: false
+fromversion: 5.0.0

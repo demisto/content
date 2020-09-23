@@ -15,8 +15,7 @@ configuration:
   name: blacklist
   required: false
   type: 0
-- additionalinfo: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing
-    an indicator, the update time for all indicators will be changed.
+- additionalinfo: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing an indicator, the update time for all indicators will be changed.
   defaultvalue: 'False'
   display: Stateless
   name: stateless
@@ -33,8 +32,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Deprecated. MineMeld streamlines the aggregation, enforcement and sharing of threat
-  intelligence.
+description: Deprecated. MineMeld streamlines the aggregation, enforcement and sharing of threat intelligence.
 deprecated: true
 display: Palo Alto Networks MineMeld (Deprecated)
 name: Palo Alto Minemeld
@@ -42,8 +40,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes
-        of type "miner").
+      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes of type "miner").
       isArray: false
       name: miner
       required: true
@@ -68,8 +65,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing
-        an indicator, the update time for all indicators will be changed.
+      description: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing an indicator, the update time for all indicators will be changed.
       isArray: false
       name: stateless
       predefined:
@@ -83,8 +79,7 @@ script:
     name: minemeld-add-to-miner
   - arguments:
     - default: false
-      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes
-        of type "miner").
+      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes of type "miner").
       isArray: false
       name: miner
       required: true
@@ -103,8 +98,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: When set to "True", only updates indicators that are added or removed. When set to "False", when adding
-        or removing an indicator, the update time for all indicators will be changed.
+      description: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing an indicator, the update time for all indicators will be changed.
       isArray: false
       name: stateless
       predefined:
@@ -498,8 +492,7 @@ script:
       description: Miner name.
       type: string
   - deprecated: false
-    description: Returns all miner names (with supported classes of custom indicators
-      lists).
+    description: Returns all miner names (with supported classes of custom indicators lists).
     execution: false
     name: minemeld-get-all-miners-names
     outputs:
@@ -525,3 +518,4 @@ script:
   type: python
 tests:
 - No tests
+fromversion: 5.0.0
