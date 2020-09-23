@@ -17,7 +17,6 @@ Use this integration to pull incidents and supporting information from your Cora
 
 | **Parameter Name** | **Description** | **Required** | **Default Value** |
 | --- | --- | --- | --- |
-| Name | The name of the Coralogix integration instance (Can be any name you like) | **Yes** | N/A |
 | Fetches incidents | Whether or not to fetch incidents via this integration | No | Do not fetch |
 | Coralogix WebAPI Endpoint URL | The Coralogix WebAPI URL | **Yes** (Don't change it unless instructed to do so by Coralogix personnel) | `https://webapi.coralogix.com` |
 | Private Key | Your Coralogix account private key | **Yes** | N/A |
