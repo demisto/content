@@ -2,13 +2,17 @@ commonfields:
   id: AnalyzeOSX
   version: -1
 name: AnalyzeOSX
-script: |-
+script: >-
   var osx_report = executeCommand('Osxcollector', {section: args.section, system: args.system, timeout: args.timeout});
+
   var res = [];
+
   var maxchecks = 10;
+
   if (args.maxchecks) {
     maxchecks = args.maxchecks;
   }
+
   for (var i=0; i<osx_report.length; i++) {
     if (osx_report[i].ContentsFormat == formats.json) {
       var content = osx_report[i].Contents;
@@ -39,16 +43,16 @@ script: |-
       }
     }
   }
+
   if (res.length > 0) {
     return res;
   }
+
   return 'No infected files or malicious urls detected on OSX machine: '+args.system;
 type: javascript
 tags:
 - osx
-comment: "Get file and url reputation for osxcollector result.\n will use VirusTotal
-  for Url checks, and IBM XForce for MD5 checks.\n maxchecks : for \n system  : system
-  name to run agent on.\n section : the type check that OSXCollector should run."
+comment: "Get file and url reputation for osxcollector result.\n will use VirusTotal for Url checks, and IBM XForce for MD5 checks.\n maxchecks : for \n system  : system name to run agent on.\n section : the type check that OSXCollector should run."
 system: true
 args:
 - name: section
@@ -67,4 +71,5 @@ dependson:
   - url
 timeout: 0s
 tests:
-  - No test - need to revisit
+- No test - need to revisit
+fromversion: 5.0.0

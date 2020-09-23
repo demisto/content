@@ -31,8 +31,7 @@ args:
   name: listSeparator
   required: false
   secret: false
-comment: Copy a context key to an incident field of multiple incidents,
-  based on an incident query.
+comment: Copy a context key to an incident field of multiple incidents, based on an incident query.
 commonfields:
   id: CopyContextToField
   version: -1
@@ -47,3 +46,4 @@ type: python
 runas: DBotWeakRole
 runonce: false
 subtype: python2
+fromversion: 5.0.0
