@@ -465,7 +465,7 @@ script:
     - contextPath: GRM.Project.Parent.Type
       description: Type of the parent resource.
       type: String
-  dockerimage: demisto/gvault:1.0.0.7608
+  dockerimage: demisto/gvault:1.0.0.11525
   dockerimage45: demisto/gvault
   isfetch: false
   runonce: false
