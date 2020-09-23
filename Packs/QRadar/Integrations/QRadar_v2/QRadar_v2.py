@@ -622,7 +622,7 @@ def epoch_to_iso(ms_passed_since_epoch):
     """
     Converts epoch (miliseconds) to ISO string
     """
-    if int(ms_passed_since_epoch) >= 0:
+    if isinstance(ms_passed_since_epoch, int) and ms_passed_since_epoch >= 0:
         return datetime.utcfromtimestamp(ms_passed_since_epoch / 1000.0).strftime(
             "%Y-%m-%dT%H:%M:%S.%fZ"
         )
@@ -633,13 +633,13 @@ def print_debug_msg(msg, lock: Lock = None):
     """
     Prints a debug message with QRadarMsg prefix, while handling lock.acquire (if available)
     """
-    err_msg = f"QRadarMsg - {msg}"
+    debug_msg = f"QRadarMsg - {msg}"
     if lock:
         if lock.acquire(timeout=LOCK_WAIT_TIME):
-            demisto.debug(err_msg)
+            demisto.debug(debug_msg)
             lock.release()
     else:
-        demisto.debug(err_msg)
+        demisto.debug(debug_msg)
 
 
 def filter_dict_null(d):
@@ -915,7 +915,7 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
                         "No offenses could be fetched, please make sure there are offenses available for this user."
                     )
                 lim_id = lim_offense[0]["id"]  # if there's no id, raise exception
-            if int(lim_id) >= end_offense_id:  # increment the search until we reach limit
+            if lim_id >= end_offense_id:  # increment the search until we reach limit
                 start_offense_id += client.offenses_per_fetch
             else:
                 latest_offense_fnd = True
@@ -980,8 +980,8 @@ def fetch_incidents_long_running_events(
                 events_limit=events_limit,
             )
         )
-        for future in concurrent.futures.as_completed(futures):
-            enriched_offenses.append(future.result())
+    for future in concurrent.futures.as_completed(futures):
+        enriched_offenses.append(future.result())
 
     if is_reset_triggered(client.lock, handle_reset=True):
         return
@@ -1284,18 +1284,16 @@ def enrich_single_offense_res_with_source_and_destination_address(
     asset_ips = set()
     if isinstance(offense.get("source_address_ids"), list):
         for i in range(len(offense["source_address_ids"])):
+            source_address = src_adrs[offense["source_address_ids"][i]]
             if not skip_enrichment:
-                offense["source_address_ids"][i] = src_adrs[
-                    offense["source_address_ids"][i]
-                ]
-            asset_ips.add(src_adrs[offense["source_address_ids"][i]])
+                offense["source_address_ids"][i] = source_address
+            asset_ips.add(source_address)
     if isinstance(offense.get("local_destination_address_ids"), list):
         for i in range(len(offense["local_destination_address_ids"])):
+            destination_address = dst_adrs[offense["local_destination_address_ids"][i]]
             if not skip_enrichment:
-                offense["local_destination_address_ids"][i] = dst_adrs[
-                    offense["local_destination_address_ids"][i]
-                ]
-            asset_ips.add(dst_adrs[offense["local_destination_address_ids"][i]])
+                offense["local_destination_address_ids"][i] = destination_address
+            asset_ips.add(destination_address)
 
     return asset_ips
 
@@ -2095,7 +2093,7 @@ def get_mapping_fields(client: QRadarClient) -> dict:
     }
     custom_fields = {
         'events': {field['name']: field['property_type'] for field in client.get_custom_fields()}
-        }
+    }
     fields = {
         'offense': offense,
         'events: builtin fields': events,
@@ -2174,11 +2172,11 @@ def main():
             "qradar-delete-reference-set-value": delete_reference_set_value_command,
             "qradar-get-domains": get_domains_command,
             "qradar-get-domain-by-id": get_domains_by_id_command,
-            "qradar-upload-indicators": upload_indicators_command
+            "qradar-upload-indicators": upload_indicators_command,
         }
         if command in normal_commands:
             args = demisto.args()
-            demisto.results(normal_commands[command](client, **args))  # type: ignore[operator]
+            demisto.results(normal_commands[command](client, **args))
         elif command == "fetch-incidents":
             demisto.incidents(fetch_incidents_long_running_samples())
         elif command == "long-running-execution":
