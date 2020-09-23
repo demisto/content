@@ -225,6 +225,7 @@ script:
       default: true
       description: List of IPs.
       isArray: true
+      required: true
     - name: threshold
       description: If the IP has reputation above the threshold then the IP defined
         as malicious. If threshold not set, then threshold from instance configuration
@@ -353,6 +354,7 @@ script:
       default: true
       description: List of Domains.
       isArray: true
+      required: true
     - name: threshold
       description: If the domain has reputation above the threshold then the domain
         defined as malicious. If threshold not set, then threshold from instance configuration
@@ -587,7 +589,7 @@ script:
     - contextPath: CVE.ID
       description: The ID of the CVE.
       type: string
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -597,3 +599,4 @@ script:
   type: python
 defaultclassifier: HelloWorld
 defaultmapperin: HelloWorld-mapper
+fromversion: 5.0.0
