@@ -166,7 +166,7 @@ subtype: python2
 tags:
 - ml
 - phishing
-comment: This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
+comment: Deprecated. This script is deprecated. See https://xsoar.pan.dev/docs/reference/playbooks/d-bot-create-phishing-classifier-v2 for more information.
 enabled: true
 args:
 - name: incidentsQuery
@@ -218,6 +218,7 @@ outputs:
 scripttarget: 0
 timeout: 12µs
 runonce: true
+runas: DBotWeakRole
 dockerimage: demisto/dl:1.1
 deprecated: true
 fromversion: 4.1.0

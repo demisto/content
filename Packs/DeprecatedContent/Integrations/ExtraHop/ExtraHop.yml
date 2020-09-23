@@ -24,13 +24,13 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-description: Deprecated - We recommend using ExtraHop Reveal(x) instead.
+description: Deprecated. We recommend using ExtraHop Reveal(x) instead.
   ExtraHop performs real-time stream analysis of the packets that carry data across a network.
 display: ExtraHop (Deprecated)
 name: ExtraHop
 script:
   commands:
-  - deprecated: false
+  - deprecated: true
     description: Get alerts from ExtraHop
     execution: false
     name: extrahop-get-alert-rules
@@ -133,7 +133,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Queries records from ExtraHop.
     execution: false
     name: extrahop-query
@@ -326,7 +326,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: View Devices from ExtraHop
     execution: false
     name: extrahop-devices
@@ -406,11 +406,11 @@ script:
       name: remove
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Modifies a whitelist from ExtraHop.
     execution: false
     name: extrahop-whitelist-modify
-  - deprecated: false
+  - deprecated: true
     description: Retrieves the whitelist from ExtraHop.
     execution: false
     name: extrahop-whitelist-retrieve
@@ -673,7 +673,7 @@ script:
       name: param2
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Adds an alert to ExtraHop.
     execution: false
     name: extrahop-add-alert-rule
@@ -879,7 +879,7 @@ script:
       name: param2
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Modifies an alert in ExtraHop.
     execution: false
     name: extrahop-modify-alert-rule
