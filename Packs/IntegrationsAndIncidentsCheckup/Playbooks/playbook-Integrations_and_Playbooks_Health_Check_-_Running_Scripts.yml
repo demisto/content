@@ -1,9 +1,10 @@
-id: JOB - Integrations and Playbooks Checkup - Running Scripts
+id: Integrations and Playbooks Health Check - Running Scripts
 version: -1
-name: JOB - Integrations and Playbooks Checkup - Running Scripts
+name: Integrations and Playbooks Health Check - Running Scripts
 description: This playbook is triggered by a 'JOB - Integrations and Playbooks Health'
   playbook and is responsible for running failed integrations and failed incidents
-  scripts.
+  scripts. The playbook may run separately from the main playbook to run health tests
+  on enabled integrations and open incidents.
 starttaskid: "0"
 tasks:
   "0":
@@ -968,7 +969,7 @@ tasks:
       id: fe0b8794-3589-4c5f-867b-ff1830879b94
       version: -1
       name: Checks if found failed incidents
-      description: Checks if found failed incidents from the previous task.
+      description: Checks if found failed incidents.
       type: condition
       iscommand: false
       brand: ""

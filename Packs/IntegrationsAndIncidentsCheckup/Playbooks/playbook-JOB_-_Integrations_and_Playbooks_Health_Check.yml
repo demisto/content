@@ -1,6 +1,6 @@
-id: JOB - Integrations and Playbooks Checkup
+id: JOB - Integrations and Playbooks Health Check
 version: -1
-name: JOB - Integrations and Playbooks Checkup
+name: JOB - Integrations and Playbooks Health Check
 description: You should run this playbook as a scheduled job.  The playbook will check
   the health of all enabled integrations and open incidents.
 starttaskid: "0"
@@ -46,7 +46,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - "33"
     separatecontext: false
     view: |-
       {
@@ -95,8 +95,8 @@ tasks:
     task:
       id: d6aad6e0-da66-4783-8ea4-aaf8c17814a7
       version: -1
-      name: JOB - Integrations and Playbooks Checkup - Lists handling
-      playbookName: JOB - Integrations and Playbooks Checkup - Lists handling
+      name: JOB - Integrations and Playbooks Health Check - Lists handling
+      playbookName: JOB - Integrations and Playbooks Health Check - Lists handling
       type: playbook
       iscommand: false
       brand: ""
@@ -116,40 +116,6 @@ tasks:
         "position": {
           "x": 220,
           "y": 680
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: 81a2a9b4-2ba0-4519-87b9-031e4c51b5b7
-    type: playbook
-    task:
-      id: 81a2a9b4-2ba0-4519-87b9-031e4c51b5b7
-      version: -1
-      name: JOB - Integrations and Playbooks Checkup - Running Scripts
-      playbookName: JOB - Integrations and Playbooks Checkup - Running Scripts
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 220,
-          "y": 330
         }
       }
     note: false
@@ -423,7 +389,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "34"
     scriptarguments:
       all:
         simple: "yes"
@@ -476,11 +442,11 @@ tasks:
     task:
       id: 9cfc6261-df5e-4d50-8c78-3312d389903d
       version: -1
-      name: JOB - Integrations and Playbooks Checkup - Lists handling
+      name: JOB - Integrations and Playbooks Health Check - Lists handling
       description: This playbook is triggered by a 'JOB - Integrations and Playbooks
         Health' playbook and is responsible for creating nor updating related XSOAR
         lists.
-      playbookName: JOB - Integrations and Playbooks Checkup - Lists handling
+      playbookName: JOB - Integrations and Playbooks Health Check - Lists handling
       type: playbook
       iscommand: false
       brand: ""
@@ -505,42 +471,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "27":
-    id: "27"
-    taskid: 8aa4fb35-8c7d-44d8-8245-588952b30b27
-    type: playbook
-    task:
-      id: 8aa4fb35-8c7d-44d8-8245-588952b30b27
-      version: -1
-      name: JOB - Integrations and Playbooks Checkup - Running Scripts
-      description: This playbook is triggered by a 'JOB - Integrations and Playbooks
-        Health' playbook and is responsible for running failed integrations and failed
-        incidents scripts.
-      playbookName: JOB - Integrations and Playbooks Checkup - Running Scripts
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 620,
-          "y": 2170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "28":
     id: "28"
     taskid: ba84ed65-4370-4285-88b4-53047109ead0
@@ -555,7 +485,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "29"
+      - "35"
     separatecontext: false
     view: |-
       {
@@ -569,68 +499,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "29":
-    id: "29"
-    taskid: dbe39511-f791-4db6-8b5c-7ddc21b593be
-    type: playbook
-    task:
-      id: dbe39511-f791-4db6-8b5c-7ddc21b593be
-      version: -1
-      name: Dedup - Generic v2
-      description: This playbook identifies duplicate incidents using one of the supported
-        methods.
-      playbookName: Dedup - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      CloseAsDuplicate:
-        simple: "false"
-      DuplicateMethod:
-        simple: rules
-      DuplicateThreshold:
-        simple: "0.9"
-      IgnoreCloseIncidents:
-        simple: "yes"
-      MaxNumberOfCandidates:
-        simple: "1000"
-      TimeField:
-        simple: created
-      TimeFrameHours:
-        simple: "72"
-      similarIncidentFields:
-        simple: type
-      similarLabelsKeys: {}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -310,
-          "y": 1010
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "30":
     id: "30"
-    taskid: 456f23a4-c2e2-40cc-8eaa-993b8764609e
+    taskid: 652ce27c-01e5-4f26-83eb-b20eb186ee5a
     type: regular
     task:
-      id: 456f23a4-c2e2-40cc-8eaa-993b8764609e
+      id: 652ce27c-01e5-4f26-83eb-b20eb186ee5a
       version: -1
       name: Set linked incident to incident data
-      description: commands.local.cmd.set.incident
+      description: Adds the similar incident to incident context.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -878,6 +755,12 @@ tasks:
         complex:
           root: similarIncident
           accessor: rawId
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
       sizenumberofemployees: {}
       sizeturnover: {}
       skuname: {}
@@ -939,13 +822,13 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 73ced6d8-0f12-4eef-8909-b0b2da270545
+    taskid: a9384f14-39dc-48a7-8a99-420d4e4c277b
     type: regular
     task:
-      id: 73ced6d8-0f12-4eef-8909-b0b2da270545
+      id: a9384f14-39dc-48a7-8a99-420d4e4c277b
       version: -1
       name: Close linked incident
-      description: Closes linked incident
+      description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -955,7 +838,8 @@ tasks:
       - "21"
     scriptarguments:
       assetid: {}
-      closeNotes: {}
+      closeNotes:
+        simple: Created a new incident type.
       closeReason: {}
       emailclassification: {}
       id:
@@ -978,13 +862,13 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 5e8e07e5-4c0e-4365-8e3b-c564d0eab21c
+    taskid: eac1a104-08c2-482d-8743-ff9c2164c3f8
     type: regular
     task:
-      id: 5e8e07e5-4c0e-4365-8e3b-c564d0eab21c
+      id: eac1a104-08c2-482d-8743-ff9c2164c3f8
       version: -1
       name: Copies analyst notes from linked incident
-      description: Copies analyst notes from linked incident
+      description: Copies the anaylst notes from the integrations and incidents grid.
       scriptName: CopyLinkedAnalystNotes
       type: regular
       iscommand: false
@@ -998,6 +882,109 @@ tasks:
         "position": {
           "x": -310,
           "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: c89b58a3-8c92-45a0-8df3-8777d73d4b9a
+    type: playbook
+    task:
+      id: c89b58a3-8c92-45a0-8df3-8777d73d4b9a
+      version: -1
+      name: Integrations and Playbooks Health Check - Running Scripts
+      playbookName: Integrations and Playbooks Health Check - Running Scripts
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: f3bc2ed4-ec1c-4255-8ba6-fd36a7be2a41
+    type: playbook
+    task:
+      id: f3bc2ed4-ec1c-4255-8ba6-fd36a7be2a41
+      version: -1
+      name: Integrations and Playbooks Health Check - Running Scripts
+      playbookName: Integrations and Playbooks Health Check - Running Scripts
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 415e6498-709e-4cba-8766-e4167e6adc93
+    type: regular
+    task:
+      id: 415e6498-709e-4cba-8766-e4167e6adc93
+      version: -1
+      name: Find similar incidents
+      description: Finds similar incidents by the type of the incident.
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      filterQuery: {}
+      hoursBack: {}
+      ignoreClosedIncidents:
+        simple: "yes"
+      incidentFieldsAppliedCondition: {}
+      maxNumberOfIncidents: {}
+      maxResults: {}
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentFields:
+        simple: type,details
+      similarIncidentKeys: {}
+      similarLabelsKeys: {}
+      skipMissingValues: {}
+      timeField: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 990
         }
       }
     note: false
