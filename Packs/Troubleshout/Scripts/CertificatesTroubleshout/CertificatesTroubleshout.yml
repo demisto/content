@@ -356,7 +356,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: devdemisto/ssl_analyze:1.0.0.11599
+dockerimage: demisto/ssl-analyze:1.0.0.11644
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
