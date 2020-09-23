@@ -25,21 +25,25 @@ CRITICAL_ASSET_LABEL = 'Demisto Critical Asset'
 class Client(BaseClient):
     """Client class to interact with XM Cyber API"""
 
-    def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
-        """Gets the IP reputation using the '/ip' API endpoint
+    def get_version(self) -> Dict[str, Any]:
+        """Get version
 
-        :type ip: ``str``
-        :param ip: IP address to get the reputation for
-
-        :return: dict containing the IP reputation as returned from the API
+        :return: dict containing the version
         :rtype: ``Dict[str, Any]``
         """
 
         return self._http_request(
             method='GET',
-            url_suffix='/ip',
+            url_suffix='/version'
+        )
+
+    def get_entity_report(self, entity_id: str, time_id: str):
+        return self._http_request(
+            method='GET',
+            url_suffix='/systemReport/entity',
             params={
-                'ip': ip
+                'entityId': entity_id,
+                'timeId': time_id
             }
         )
 
@@ -66,7 +70,6 @@ class Client(BaseClient):
         )
 
     def get_critical_assets(self, time_id):
-        demisto.info('Matans first debug log!')
         page = 1
         total_pages = 1
         critical_assets = []
@@ -82,14 +85,22 @@ class Client(BaseClient):
         return critical_assets
 
     def get_top_techniques(self, time_id):
-        # /api/systemReport/techniques
-        return self._http_request(
-            method='GET',
-            url_suffix='/systemReport/techniques',
-            params={
-                'timeId': time_id
-            }
-        )
+        page = 1
+        total_pages = 1
+        techniques = []
+        while page <= total_pages:
+            demisto.info(f'in while loop {page} {total_pages}')
+            res = self._http_request(
+                method='GET',
+                url_suffix='/systemReport/techniques',
+                params={
+                    'timeId': time_id
+                }
+            )
+            techniques.extend(res['data'])
+            total_pages = res['paging']['totalPages']
+            page += 1
+        return techniques
 
     def get_entities_by_label(self, label: str):
         #is this the right API?
@@ -104,12 +115,35 @@ class Client(BaseClient):
         # api does not exist
         raise NotImplemented()
 
-    def lookup_entities_by_ip(self, ips):
-        # need to find API
-        raise NotImplemented()
+    def lookup_entities_by_ip(self, ip):
+        page = 1
+        total_pages = 1
+        entities = []
+        escaped_ip = escape_ip(ip)
+        while page <= total_pages:
+            demisto.info(f'in while loop {page} {total_pages}')
+            res = self._http_request(
+                method='GET',
+                url_suffix='/sensors',
+                params={
+                    'search': escaped_ip
+                }
+            )
+            entities.extend(res['data'])
+            total_pages = res['paging']['totalPages']
+            page += 1
+        return entities
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def escape_ip(ip):
+    try:
+        address = ip['Address']
+        return '/' + address.replace('.', '\\.') + '/'
+    except (AttributeError, TypeError):
+        return '/' + ip.replace('.', '\\.') + '/'
 
 
 def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
@@ -256,7 +290,7 @@ def raw_path_to_incident_path(path: Any) -> Any:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, first_fetch_time: int) -> str:
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -266,29 +300,26 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     :type client: ``Client``
     :param Client: HelloWorld client to use
 
-    :type name: ``str``
-    :param name: name to append to the 'Hello' string
-
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
-    # INTEGRATION DEVELOPER TIP
-    # Client class should raise the exceptions, but if the test fails
-    # the exception text is printed to the Cortex XSOAR UI.
-    # If you have some specific errors you want to capture (i.e. auth failure)
-    # you should catch the exception here and return a string with a more
-    # readable output (for example return 'Authentication Error, API Key
-    # invalid').
-    # Cortex XSOAR will print everything you return different than 'ok' as
-    # an error
     try:
-        client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None, severity=None)
+        version = client.get_version()
+        system_version = version['system']
+        s_version = system_version.split('.')
+        major = int(s_version[0])
+        minor = int(s_version[1])
+        if major < 1 or (major == 1 and minor < 37):
+            return f'Instance version not compatible. {system_version} (found) < 1.37 (required).'
+
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
+    except Exception as e:
+        return f'Verification Error: could not load XM Cyber version.\n{e}'
+
     return 'ok'
 
 
@@ -299,16 +330,15 @@ def asset_attack_path_list_command(client: Client, args: Dict[str, Any]) -> Comm
     critical_assets = client.get_critical_assets(time_id)
     attack_paths = []
     for critical_asset in critical_assets:
-        paths = client.get_inbound_paths(critical_asset, time_id)
+        paths = client.get_inbound_paths(critical_asset['entityId'], time_id)
         for path in paths:
-            attack_paths.append(raw_path_to_incident_path(path))
+            attack_paths.append(path)
     readable_output = 'loaded list of {0} asset attack paths'.format(len(attack_paths))
     return CommandResults(
         outputs_prefix='XMCyber.AttackPath',
         outputs_key_field='pathId',
-        outputs= attack_paths,
-        indicators= attack_paths,
-        readable_output= readable_output
+        outputs=attack_paths,
+        readable_output=readable_output
     )
 
 
@@ -317,12 +347,11 @@ def techniques_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     if not time_id:
         time_id = 'timeAgo_days_7'
     techniques = client.get_top_techniques(time_id)
-    readable_output = 'loaded list of {0} top techniques'.format(len(techniques))
+    readable_output = f'loaded list of {len(techniques)} top techniques'
     return CommandResults(
         outputs_prefix='XMCyber.Technique',
         outputs_key_field='technique',
         outputs=techniques,
-        indicators=techniques,
         readable_output=readable_output
     )
 
@@ -340,7 +369,6 @@ def breachpoint_update_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs_prefix='XMCyber.Entity',
         outputs_key_field='entityId',
         outputs=labeled_entities,
-        indicators=labeled_entities,
         readable_output=readable_output
     )
 
@@ -358,7 +386,6 @@ def critical_asset_add_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs_prefix='XMCyber.Entity',
         outputs_key_field='entityId',
         outputs=labeled_entities,
-        indicators=labeled_entities,
         readable_output=readable_output
     )
 
@@ -370,10 +397,10 @@ def attack_paths_to_entity_command(client: Client, args: Dict[str, Any]) -> Comm
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
-    entities = client.lookup_entities_by_ip(ips)
+    entities = client.lookup_entities_by_ip(ips[0])
     attack_paths = []
     for entity in entities:
-        paths = client.get_inbound_paths(entity, time_id)
+        paths = client.get_inbound_paths(entity['agentId'], time_id)
         for path in paths:
             attack_paths.append(raw_path_to_incident_path(path))
     readable_output = 'found {0} attack paths to {1} entities'.format(len(attack_paths), len(entities))
@@ -381,8 +408,48 @@ def attack_paths_to_entity_command(client: Client, args: Dict[str, Any]) -> Comm
         outputs_prefix='XMCyber.AttackPath',
         outputs_key_field='pathId',
         outputs=attack_paths,
-        indicators=attack_paths,
-        readable_output=readable_output
+        readable_output=readable_output,
+
+    )
+
+
+def attack_complexity_to_ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    time_id = args.get('time_id')
+    if not time_id:
+        time_id = 'timeAgo_days_7'
+    ips = argToList(args.get('ip'))
+    if len(ips) == 0:
+        raise ValueError('IP(s) not specified')
+    try:
+        address = ips[0]['Address']
+    except (AttributeError, TypeError):
+        address = ips[0]
+    entities = client.lookup_entities_by_ip(address)
+    if len(entities) == 0:
+        outputs = {
+            'EntityIpAddress': address,
+            'AverageAttackComplexity': -1,
+            'EntityId': 'N/A'
+        }
+        readable_output = f'Could not find entity with the IP {address}'
+    else:
+        entity_id = entities[0]['agentId']
+        report = client.get_entity_report(entity_id, time_id)
+        attack_complexity = report['attackComplexity']
+        average = attack_complexity['avg']['value']
+        level = attack_complexity['avg']['level']
+        entity_name = entities[0]['name']
+        readable_output = f'Entity {entity_name} has average {average} which is {level}'
+        outputs = {
+            'EntityIpAddress': address,
+            'AverageAttackComplexity': average,
+            'EntityId': entity_id
+        }
+    return CommandResults(
+        outputs_prefix='XMCyber',
+        outputs_key_field='EntityId',
+        outputs=outputs,
+        readable_output=readable_output,
     )
 
 
@@ -404,7 +471,6 @@ def attack_paths_from_entity_command(client: Client, args: Dict[str, Any]) -> Co
         outputs_prefix='XMCyber.AttackPath',
         outputs_key_field='pathId',
         outputs=attack_paths,
-        indicators=attack_paths,
         readable_output=readable_output
     )
 
@@ -433,9 +499,8 @@ def main() -> None:
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
-    demisto.debug('Matans first debug log!')
-
-    demisto.debug(f'Command being called is {demisto.command()}')
+    msg = f'Command being called is {demisto.command()}'
+    demisto.log(msg)
     try:
         headers = {
             'X-Api-Key': api_key,
@@ -451,6 +516,9 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
+
+        elif demisto.command() == 'xmcyber-attack-complexity-to-ip':
+            return_results(attack_complexity_to_ip_command(client, demisto.args()))
 
         elif demisto.command() == 'xmcyber-asset-attack-path-list':
             return_results(asset_attack_path_list_command(client, demisto.args()))
@@ -473,7 +541,8 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}\n'
+                     f'Traceback:\n{traceback.format_exc()}')
 
 
 ''' ENTRY POINT '''

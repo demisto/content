@@ -26,8 +26,8 @@
 				"targetClusters": {
 					"subnetInfo": [
 						{
-							"id": "172.0.200.0/24",
-							"displayName": "172.0.200.0/24"
+							"id": "1",
+							"displayName": "1"
 						}
 					],
 					"domainWorkgroup": [
@@ -60,8 +60,8 @@
 				"sourceClusters": {
 					"subnetInfo": [
 						{
-							"id": "172.0.100.0/24",
-							"displayName": "172.0.100.0/24"
+							"id": "1/24",
+							"displayName": "1/24"
 						}
 					],
 					"domainWorkgroup": [
@@ -195,7 +195,7 @@
 									200,
 									4
 								],
-								"displayValue": "172.0.200.4"
+								"displayValue": "1"
 							}
 						]
 					},
@@ -222,7 +222,7 @@
 								200,
 								4
 							],
-							"displayValue": "172.0.200.4"
+							"displayValue": "1"
 						}
 					]
 				},
@@ -258,7 +258,7 @@
 									100,
 									5
 								],
-								"displayValue": "172.0.100.5"
+								"displayValue": "1"
 							}
 						]
 					},
@@ -284,7 +284,7 @@
 								100,
 								5
 							],
-							"displayValue": "172.0.100.5"
+							"displayValue": "1"
 						}
 					]
 				},

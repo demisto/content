@@ -54,7 +54,7 @@
     "status": "active",
     "lastStatusChange": "2020-08-27T11:47:33.786Z",
     "lastDisconnectionReason": "DisconnectionReason_NetworkDisconnected",
-    "remoteAddress": "163.172.231.216",
+    "remoteAddress": "1",
     "notReportedBySouthAt": null,
     "firstSeen": "2018-08-06T09:31:44.645Z",
     "disabled": false,
@@ -68,7 +68,7 @@
             "type": "workgroup",
             "data": "Linux"
         },
-        "subnetInfo": "192.168.170.0/24",
+        "subnetInfo": "1/24",
         "snifferStatusChangeable": true,
         "snifferStatus": "Active",
         "ouComputer": "Linux",
@@ -86,7 +86,7 @@
     "agentVersionStr": "1.5.798",
     "latestPossibleAgentVersionStr": "1.5.798",
     "ipv4Str": [
-        "192.168.170.146"
+        "1"
     ],
     "ipv6Str": [
         "fe80::6ac6:5468:1b08:c090"
@@ -136,7 +136,7 @@
                     170,
                     146
                 ],
-                "displayValue": "192.168.170.146"
+                "displayValue": "1"
             }
         ]
     },
@@ -150,7 +150,7 @@
                 231,
                 216
             ],
-            "displayValue": "163.172.231.216"
+            "displayValue": "1"
         }
     ],
     "displayName": "CentOSbb01",

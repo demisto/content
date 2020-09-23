@@ -29,6 +29,29 @@ configuration:
   type: 8
 script:
   commands:
+  - name: xmcyber-attack-complexity-to-ip
+    description: Set attack complexity on IP of the incident
+    arguments:
+      - name: time_id
+        default: false
+        description: time_id for example timeAgo_days_7
+        isArray: false
+        required: false
+        secret: false
+      - name: ip
+        default: true
+        description: List of IPs.
+        isArray: true
+    outputs:
+      - contextPath: EntityId
+        description: 'XMCyber.Entity ID'
+        type: String
+      - contextPath: AttackComplexity
+        description: 'XMCyber.Attack Complexity'
+        type: Number
+      - contextPath: EntityIpAddress
+        description: 'IP Address of Entity'
+        type: String
   - name: xmcyber-asset-attack-path-list
     description: Get Paths to the Critical Assets
     arguments:
@@ -913,7 +936,7 @@ script:
       description: ''
       type: String
   - name: xmcyber-critical-asset-add
-    description: Add Crotical Asset
+    description: Add Critical Asset
     arguments:
     - name: ip
       default: true
