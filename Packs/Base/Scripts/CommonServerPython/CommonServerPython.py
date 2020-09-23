@@ -317,6 +317,9 @@ def auto_detect_indicator_type(indicator_value):
     if re.match(cveRegex, indicator_value):
         return FeedIndicatorType.CVE
 
+    if re.match(sha512Regex, indicator_value):
+        return FeedIndicatorType.File
+
     try:
         no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
         if no_cache_extract(indicator_value).suffix:
@@ -961,6 +964,19 @@ def aws_table_to_markdown(response, table_header):
     return human_readable
 
 
+def stringUnEscape(st):
+    """
+       Unescape newline chars in the given string.
+
+       :type st: ``str``
+       :param st: The string to be modified (required).
+
+       :return: A modified string.
+       :rtype: ``str``
+    """
+    return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -1001,6 +1017,7 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
+            res = stringUnEscape(res)
         except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
@@ -1814,6 +1831,8 @@ def get_hash_type(hash_file):
         return 'sha1'
     elif (hash_len == 64):
         return 'sha256'
+    elif (hash_len == 128):
+        return 'sha512'
     else:
         return 'Unknown'
 
@@ -2993,6 +3012,7 @@ cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
+sha512Regex = re.compile(r'\b[0-9a-fA-F]{128}\b', regexFlags)
 
 pascalRegex = re.compile('([A-Z]?[a-z]+)')
 
@@ -3295,6 +3315,22 @@ class GetDemistoVersion:
 
 
 get_demisto_version = GetDemistoVersion()
+
+
+def get_demisto_version_as_str():
+    """Get the Demisto Server version as a string <version>-<build>. If unknown will return: 'Unknown'.
+    Meant to be use in places where we want to display the version. If you want to perform logic based upon vesrion
+    use: is_demisto_version_ge.
+
+    :return: Demisto version as string
+    :rtype: ``dict``
+    """
+    try:
+        ver_obj = get_demisto_version()
+        return '{}-{}'.format(ver_obj.get('version', 'Unknown'),
+                              ver_obj.get("buildNumber", 'Unknown'))
+    except AttributeError:
+        return "Unknown"
 
 
 def is_demisto_version_ge(version, build_number=''):
@@ -4455,6 +4491,26 @@ def setup_outgoing_mirror_error(incident_id, error):
 
     demisto.setIntegrationContext(integration_cache)
     return incident_id
+
+
+def get_x_content_info_headers():
+    """Get X-Content-* headers to send in outgoing requests to use when performing requests to
+    external services such as oproxy.
+
+    :return: headers dict
+    :rtype: ``dict``
+    """
+    calling_context = demisto.callingContext.get('context', {})
+    brand_name = calling_context.get('IntegrationBrand', '')
+    instance_name = calling_context.get('IntegrationInstance', '')
+    headers = {
+        'X-Content-Version': CONTENT_RELEASE_VERSION,
+        'X-Content-Name': brand_name or instance_name or 'Name not found',
+        'X-Content-LicenseID': demisto.getLicenseID(),
+        'X-Content-Branch': CONTENT_BRANCH_NAME,
+        'X-Content-Server-Version': get_demisto_version_as_str(),
+    }
+    return headers
 
 
 class BaseWidget:
