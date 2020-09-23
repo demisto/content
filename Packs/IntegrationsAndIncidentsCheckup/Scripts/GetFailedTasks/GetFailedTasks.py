@@ -3,7 +3,6 @@ from typing import List
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 args = demisto.args()
 query = args["query"]
 
@@ -14,7 +13,7 @@ pager = 0
 incidents_to_fetch = True
 numberofFailed = 0
 numberofErrors = 0
-totalNumbers: List = []
+totalNumbers = []  # type: List
 while incidents_to_fetch:
     getIncidents = demisto.executeCommand("getIncidents", {"query": query, "page": pager})
     incidents = getIncidents[0]["Contents"]["data"]
@@ -24,8 +23,10 @@ while incidents_to_fetch:
         incidents_to_fetch = False
 
 for incident in totalIncidents:
-    tasks = demisto.executeCommand("demisto-api-post", {"uri": "investigation/" + str(incident["id"]) + "/workplan/tasks", "body": {
-                                   "states": ["Error"], "types": ["regular", "condition", "collection"]}})[0]["Contents"]["response"]
+    tasks = demisto.executeCommand("demisto-api-post",
+                                   {"uri": "investigation/" + str(incident["id"]) + "/workplan/tasks", "body": {
+                                       "states": ["Error"], "types": ["regular", "condition", "collection"]}})[0][
+        "Contents"]["response"]
     if tasks:
         for task in tasks:
             entries = {}
@@ -36,7 +37,7 @@ for incident in totalIncidents:
             entries["Number of Errors"] = len(task["entries"])
             entries["Task ID"] = task["id"]
             entries["Incident Created Date"] = incident["created"].replace("T", " ")
-            #entries["Incident Created Date"] = incident["created"].split("T")[0]
+            # entries["Incident Created Date"] = incident["created"].split("T")[0]
             entries["Command Name"] = task["task"]["scriptId"].replace('|||', '')
             entries["Incident Owner"] = incident["owner"]
             if task["task"]["description"]:
@@ -54,7 +55,9 @@ demisto.results({
     'Contents': incidentsOutput,
     'ContentsFormat': formats['json'],
     'ReadableContentsFormat': formats['markdown'],
-    'HumanReadable': tableToMarkdown("GetFailedTasks:", incidentsOutput, ["Incident Created Date", "Incident ID", "Task Name", "Task ID", "Playbook Name", "Command Name", "Error Entry ID"]),
+    'HumanReadable': tableToMarkdown("GetFailedTasks:", incidentsOutput,
+                                     ["Incident Created Date", "Incident ID", "Task Name", "Task ID", "Playbook Name",
+                                      "Command Name", "Error Entry ID"]),
     'EntryContext': {
         "GetFailedTasks": incidentsOutput,
         "NumberofFailedIncidents": totalFailedIncidents
