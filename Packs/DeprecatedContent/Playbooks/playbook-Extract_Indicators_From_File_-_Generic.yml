@@ -1,7 +1,7 @@
 id: extract_indicators_from_file_-_generic
 version: -1
 name: Extract Indicators From File - Generic
-fromversion: 4.1.0
+fromversion: 5.0.0
 description: |-
   Deprecated. Extracts indicators from a file.
   Supported file types:
@@ -165,8 +165,7 @@ tasks:
       id: 5e2997db-65a5-49a7-8f9a-87892701e8fe
       version: -1
       name: Is there a text-based file?
-      description: Checks if there is a text-based file in context. Skips MSG and
-        EML files.
+      description: Checks if there is a text-based file in context. Skips MSG and EML files.
       type: condition
       iscommand: false
       brand: ""
@@ -749,5 +748,5 @@ outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
   type: unknown
-tests: 
-  - No test - deprecated playbook
+tests:
+- No test - deprecated playbook

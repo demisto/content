@@ -2,22 +2,31 @@ commonfields:
   id: ShowScheduledEntries
   version: -1
 name: ShowScheduledEntries
-script: |
+script: >
   var incidentId = args.incidentId;
+
 
   var entries = executeCommand("getEntries", { id: incidentId });
 
+
   var header = 'Scheduled entries for current incident:';
+
   if (incidentId) {
       header = 'Scheduled entries for incident #' + incidentId + ':';
   }
 
+
   var warRoomUrl = demistoUrls().warRoom;
+
   var md = '### ' + header + '\n';
+
   md += 'Entry ID|Command\n';
+
   md += '-|-\n';
 
+
   var scheduledEntries = [];
+
   entries.forEach(function (entry) {
       if (entry.Metadata.Recurrent && entry.Metadata.Schedule.Scheduled) {
           md += '['+ entry.ID + '](' + warRoomUrl + '/' + entry.ID + ')' + '|' + entry.Contents + '\n';
@@ -36,12 +45,14 @@ script: |
       }
   });
 
+
   if (!scheduledEntries || scheduledEntries.length === 0) {
       if (incidentId) {
           return 'There are no scheduled entries for incident #' + incidentId + '.';
       }
       return 'There are no scheduled entries for current incident.';
   }
+
 
   entryResult = {
       Type: entryTypes.note,
@@ -53,6 +64,7 @@ script: |
           ScheduledEntries: scheduledEntries
       }
   };
+
 
   return entryResult;
 type: javascript
@@ -96,3 +108,4 @@ outputs:
 scripttarget: 0
 runonce: false
 sensitive: true
+fromversion: 5.0.0

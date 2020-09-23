@@ -1,8 +1,7 @@
 id: DBotCreatePhishingClassifierJob
 version: -1
 name: DBot Create Phishing Classifier Job
-description:  Deprecated. Use "DBot Create Phishing Classifier V2" playbook instead. Train the phishing machine learning model. This playbook should be used
-  as job, to run repeatedly, for example every week.
+description: Deprecated. Use "DBot Create Phishing Classifier V2" playbook instead. Train the phishing machine learning model. This playbook should be used as job, to run repeatedly, for example every week.
 starttaskid: "0"
 hidden: true
 tasks:
@@ -38,8 +37,7 @@ tasks:
       id: 831b0954-1008-49f0-84e1-43dc7c585ec0
       version: -1
       name: DBotCreatePhishingClassifier
-      description: Create a phishing classifier using machine learning technique,
-        based on email content
+      description: Create a phishing classifier using machine learning technique, based on email content
       playbookName: DBot Create Phishing Classifier
       type: playbook
       iscommand: false
@@ -113,8 +111,7 @@ tasks:
       id: a0577456-3576-460d-8ede-15c6569f611a
       version: -1
       name: Close incident
-      description: Close the investigation - we want to close the incident if the
-        playbook successfully finished.
+      description: Close the investigation - we want to close the incident if the playbook successfully finished.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -184,6 +181,6 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 4.1.0
+fromversion: 5.0.0
 tests:
-  - No tests
+- No tests
