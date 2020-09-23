@@ -1067,7 +1067,7 @@ workflows:
           requires:
             - Run Validations
             - Run Unit Testing And Lint
-            - Server 6.0
+            - Server 6_0
             - Server Master
   force_pack_upload:
     when: << pipeline.parameters.force_pack_upload >>
