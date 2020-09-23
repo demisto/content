@@ -2,9 +2,11 @@ commonfields:
   id: Set
   version: -1
 name: Set
-script: |-
+script: >-
   var ec = {};
+
   var value;
+
   try {
       if (args.stringify === 'true') {
           if (typeof args.value === 'string') {
@@ -19,7 +21,9 @@ script: |-
       value = args.value;
   }
 
+
   ec[args.key] = value;
+
   var result = {
       Type: entryTypes.note,
       Contents: ec,
@@ -27,11 +31,13 @@ script: |-
       HumanReadable: 'Key ' + args.key + ' set'
   };
 
+
   if (!args.append || args.append === 'false') {
       setContext(args.key, value);
   } else {
       result.EntryContext = ec;
   }
+
 
   return result;
 type: javascript
@@ -67,4 +73,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - Set - Test
+- Set - Test
+fromversion: 5.0.0

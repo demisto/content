@@ -1,9 +1,7 @@
-description: A test for the Set command. Tests the Stringify parameter too. Don't
-  know why nobody ever made a test for this before.
 id: Set - Test
-inputs: []
+version: -1
 name: Set - Test
-outputs: []
+description: A test for the Set command. Tests the Stringify parameter too. Don't know why nobody ever made a test for this before.
 starttaskid: "0"
 tasks:
   "0":
@@ -539,4 +537,6 @@ view: |-
       }
     }
   }
-fromversion: 4.1.0
+inputs: []
+outputs: []
+fromversion: 5.0.0

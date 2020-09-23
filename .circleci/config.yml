@@ -158,7 +158,9 @@ references:
     run:
       name: Create Content Artifacts
       when: always
-      command: demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
+      command: |
+        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
+        python3 Utils/merge_content_new_zip.py -f "v4.5.0"
 
   restore_cache: &restore_cache
     restore_cache:

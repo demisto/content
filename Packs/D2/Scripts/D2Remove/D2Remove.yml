@@ -17,4 +17,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 tests:
-  - no test (impossible to mock)
+- no test (impossible to mock)
+fromversion: 5.0.0
