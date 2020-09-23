@@ -741,16 +741,6 @@ def incidents(incidents=None):
         )
 
 
-def incident():
-    """Retrieves the current incident
-
-    Returns:
-      dict: dict representing an incident object
-
-    """
-    return incidents()[0]
-
-
 def setContext(contextPath, value):
     """(Script only)
     Sets given value in path in the context data
