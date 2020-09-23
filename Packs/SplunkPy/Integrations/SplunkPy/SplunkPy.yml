@@ -588,7 +588,8 @@ script:
     description: Deletes the specified object in store. Search can be basic key value or a full query.
     execution: false
     name: splunk-kv-store-collection-delete-entry
-  dockerimage: demisto/splunksdk:1.0.0.10663
+  dockerimage45: demisto/splunksdk:1.0
+  dockerimage: demisto/splunksdk:1.0.0.11270
   feed: false
   isfetch: true
   longRunning: false

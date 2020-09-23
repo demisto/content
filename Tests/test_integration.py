@@ -943,17 +943,16 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
     return playbook_state, inc_id
 
 
-def disable_all_integrations(demisto_api_key, server, prints_manager, thread_index=0):
+def disable_all_integrations(dem_client, prints_manager, thread_index=0):
     """
     Disable all enabled integrations. Should be called at start of test loop to start out clean
 
     Arguments:
         client -- demisto py client
     """
-    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
     try:
         body = {'size': 1000}
-        int_resp = demisto_client.generic_request_func(self=client, method='POST',
+        int_resp = demisto_client.generic_request_func(self=dem_client, method='POST',
                                                        path='/settings/integration/search',
                                                        body=body)
         int_instances = ast.literal_eval(int_resp[0])
@@ -977,4 +976,4 @@ def disable_all_integrations(demisto_api_key, server, prints_manager, thread_ind
             prints_manager.add_print_job(add_to_disable_message, print, thread_index)
             to_disable.append(instance)
     if len(to_disable) > 0:
-        __disable_integrations_instances(client, to_disable, prints_manager, thread_index=thread_index)
+        __disable_integrations_instances(dem_client, to_disable, prints_manager, thread_index=thread_index)
