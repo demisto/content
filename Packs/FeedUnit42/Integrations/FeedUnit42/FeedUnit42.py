@@ -159,6 +159,99 @@ def parse_relationships(indicators: list, relationships: list = [], pivots: list
     return indicators
 
 
+def get_playbooks_urls():
+    return [
+        'chafer.json',
+        'cozyduke.json',
+        'darkhydrus.json',
+        'dragonok.json',
+        'hangover.json',
+        'inception.json',
+        'konni.json',
+        'menupass.json',
+        'oilrig.json',
+        'patchwork.json',
+        'pickaxe.json',
+        'pkplug.json',
+        'rancor.json',
+        'reaper.json',
+        'sofacy.json',
+        'th3bug.json',
+        'tick.json',
+        'windshift.json',
+    ]
+
+
+def get_playbook_data(url):
+    json_url = 'https://pan-unit42.github.io/playbook_viewer/playbook_json/' + url
+    raw_json = requests.get(json_url)
+
+    try:
+        bundle = raw_json.json()
+
+        if bundle.get('type', '') == 'bundle' and bundle.get('spec_version', '') == '2.0':
+            return bundle
+        else:
+            return_error('{} - no valid stix 2.0 bundle found'.format(url))
+    except Exception as e:
+        return_error('{} - could not parse json from file\n{}'.format(url, e))
+
+    return {}
+
+
+def sort_objects(all_objects):
+    report = {}
+    malware_objects = []
+    indicator_objects = []
+    relationship_objects = []
+    attack_pattern_objects = []
+
+    for obj in all_objects:
+        if obj['type'] == 'report':
+            report = obj
+
+        elif obj['type'] == 'indicator':
+            indicator_objects.append(obj)
+
+        elif obj['type'] == 'malware':
+            malware_objects.append(obj)
+
+        elif obj['type'] == 'relationship':
+            relationship_objects.append(obj)
+
+        elif obj['type'] == 'attack-pattern':
+            attack_pattern_objects.append(obj)
+
+    return report, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects
+
+
+def process_playbook(bundle):
+    objects = bundle.get('objects', [])
+
+    report, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects = sort_objects(objects)
+
+    # parse the report
+    # parse the malwares
+    if report:
+        report = parse_relationships([report], relationship_objects, malware_objects + attack_pattern_objects)
+
+    return report
+
+
+def process_playbooks():
+    reports = []
+
+    suffixes = get_playbooks_urls()
+    for suffix in suffixes:
+        bundle = get_playbook_data(suffix)
+        report = process_playbook(bundle)
+
+        if report:
+            reports.append(report)
+
+    return reports
+
+
 def test_module(client: Client) -> str:
     """Builds the iterator to check that the feed is accessible.
     Args:
