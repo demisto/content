@@ -35,11 +35,13 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
 
 
 class Client:
+    @logger
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
                  subscription_id, resource_group_name, workspace_name, verify, proxy):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+        LOG(f'Integration Context: {demisto.getIntegrationContext()}')
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
             f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
             f'{workspace_name}/providers/Microsoft.SecurityInsights'
@@ -62,6 +64,7 @@ class Client:
             ok_codes=(200, 201, 202, 204, 400, 401, 403, 404)
         )
 
+    @logger
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, is_get_entity_cmd=False):
         if not params:
             params = {}
@@ -91,12 +94,14 @@ class Client:
 ''' INTEGRATION HELPER METHODS '''
 
 
+@logger
 def format_date(date):
     if not date:
         return None
     return dateparser.parse(date).strftime(DATE_FORMAT)
 
 
+@logger
 def incident_data_to_demisto_format(inc_data):
     properties = inc_data.get('properties', {})
 
@@ -130,6 +135,7 @@ def incident_data_to_demisto_format(inc_data):
     return formatted_data
 
 
+@logger
 def get_update_incident_request_data(client, args):
     # Get Etag and other mandatory properties (title, severity, status) for update_incident command
     _, _, result = get_incident_by_id_command(client, args)
@@ -162,6 +168,7 @@ def get_update_incident_request_data(client, args):
     return inc_data
 
 
+@logger
 def comment_data_to_demisto_format(comment_data, inc_id):
     properties = comment_data.get('properties', {})
 
@@ -176,6 +183,7 @@ def comment_data_to_demisto_format(comment_data, inc_id):
     return formatted_data
 
 
+@logger
 def incident_related_resource_data_to_demisto_format(resource_data, incident_id):
     properties = resource_data.get('properties', {})
 
@@ -187,6 +195,7 @@ def incident_related_resource_data_to_demisto_format(resource_data, incident_id)
     return formatted_data
 
 
+@logger
 def entity_related_resource_data_to_demisto_format(resource_data, entity_id):
     properties = resource_data.get('properties', {})
 
@@ -198,6 +207,7 @@ def entity_related_resource_data_to_demisto_format(resource_data, entity_id):
     return formatted_data
 
 
+@logger
 def flatten_entity_attributes(attributes):
     # This method flattens a GET entity response json.
     flattened_results = attributes.get('properties', {})
@@ -206,6 +216,7 @@ def flatten_entity_attributes(attributes):
     return flattened_results
 
 
+@logger
 def severity_to_level(severity):
     if severity == 'Informational':
         return 0.5
@@ -221,6 +232,7 @@ def severity_to_level(severity):
 ''' INTEGRATION COMMANDS '''
 
 
+@logger
 def test_connection(client, params):
     if params.get('self_deployed', False) and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
@@ -228,6 +240,7 @@ def test_connection(client, params):
     return_outputs('```✅ Success!```')
 
 
+@logger
 def get_incident_by_id_command(client, args):
     inc_id = args.get('incident_id')
     url_suffix = f'incidents/{inc_id}'
@@ -249,6 +262,7 @@ def get_incident_by_id_command(client, args):
     )
 
 
+@logger
 def list_incidents_command(client, args, is_fetch_incidents=False):
     filter_expression = args.get('filter')
     limit = None if is_fetch_incidents else min(50, int(args.get('limit')))
@@ -296,6 +310,7 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
     )
 
 
+@logger
 def update_incident_command(client, args):
     inc_id = args.get('incident_id')
 
@@ -319,6 +334,7 @@ def update_incident_command(client, args):
     )
 
 
+@logger
 def delete_incident_command(client, args):
     inc_id = args.get('incident_id')
     url_suffix = f'incidents/{inc_id}'
@@ -333,6 +349,7 @@ def delete_incident_command(client, args):
     return f'Incident {inc_id} was deleted successfully.', outputs, {}
 
 
+@logger
 def list_incident_comments_command(client, args):
     inc_id = args.get('incident_id')
     limit = min(50, int(args.get('limit')))
@@ -373,6 +390,7 @@ def list_incident_comments_command(client, args):
     )
 
 
+@logger
 def incident_add_comment_command(client, args):
     import random
 
@@ -403,6 +421,7 @@ def incident_add_comment_command(client, args):
     )
 
 
+@logger
 def get_entity_by_id_command(client, args):
     entity_id = args.get('entity_id')
     url_suffix = f'entities/{entity_id}'
@@ -427,6 +446,7 @@ def get_entity_by_id_command(client, args):
     )
 
 
+@logger
 def list_entity_relations_command(client, args):
     entity_id = args.get('entity_id')
     limit = min(50, int(args.get('limit')))
@@ -479,6 +499,7 @@ def list_entity_relations_command(client, args):
     )
 
 
+@logger
 def list_incident_relations_command(client, args):
     inc_id = args.get('incident_id')
     limit = min(50, int(args.get('limit')))
@@ -531,6 +552,7 @@ def list_incident_relations_command(client, args):
     )
 
 
+@logger
 def fetch_incidents(client, last_run, first_fetch_time, min_severity):
     # Get the last fetch details, if exist
     last_fetch_time = last_run.get('last_fetch_time')
@@ -577,6 +599,7 @@ def fetch_incidents(client, last_run, first_fetch_time, min_severity):
     return next_run, incidents
 
 
+@logger
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
