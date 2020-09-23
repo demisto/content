@@ -1149,22 +1149,22 @@ its standard port. |
                         "6",
                         "8"
                     ],
-                    "CloudHostname": "Aristotle",
+                    "CloudHostname": "CloudHostName",
                     "CountOfRepeats": 1,
                     "CustomerID": "117270019",
-                    "DestinationIP": "172.217.131.102",
+                    "DestinationIP": "2.2.2.2",
                     "DestinationLocation": "US",
                     "DestinationPort": 80,
                     "DirectionOfAttack": "server to client",
                     "FileID": 52270,
-                    "FileName": "ANindV94kHC673w9zWXj8TY",
+                    "FileName": "TestFileName",
                     "FileSHA256": null,
-                    "FileType": "Google Chrome Extension CRX File",
+                    "FileType": "Google Chrome Extension File",
                     "Flags": 4202496,
                     "FromZone": "LAN",
                     "Http2Connection": 0,
                     "InboundIf": "ethernet",
-                    "IngestionTime": 1587494865407000,
+                    "IngestionTime": 2020-04-21T18:47:31,
                     "IsCaptivePortal": false,
                     "IsClientToServer": false,
                     "IsContainer": false,
@@ -1193,10 +1193,10 @@ its standard port. |
                     "LogSourceName": "Aristotle",
                     "LogTime": "2020-04-21T18:47:31",
                     "LogType": "threat",
-                    "NatDestination": "172.217.131.102",
+                    "NatDestination": "2.2.2.2",
                     "NatDestinationPort": 80,
-                    "NatSource": "172.16.0.10",
-                    "NatSourcePort": 24361,
+                    "NatSource": "3.3.3.3",
+                    "NatSourcePort": 12345,
                     "OutboundIf": "ethernet",
                     "PcapID": 0,
                     "Protocol": "tcp",
@@ -1204,7 +1204,7 @@ its standard port. |
                     "ReportID": 0,
                     "RiskOfApp": 4,
                     "RuleMatched": "INTERNET",
-                    "RuleMatchedUuid": "912d644f-7691-437a-8f9b-4970c511bac2",
+                    "RuleMatchedUuid": "123d644f-7691-437a-8f9b-4567c511bac2",
                     "SanctionedStateOfApp": false,
                     "SequenceNo": 327,
                     "SessionID": 16753,
@@ -1233,7 +1233,7 @@ its standard port. |
 >### Logs file_data table
 >|Action|Application|Destination Address|FileID|FileName|FileType|RuleMatched|Source Address|TimeGenerated|
 >|---|---|---|---|---|---|---|---|---|
->| alert | web-browsing | 172.217.131.102 | 52270 | ANindV94kHC673w9zWXj8TY | Google Chrome Extension CRX File | INTERNET | 10.10.10.101 | 2020-04-21T18:47:12 |
+>| alert | web-browsing | 2.2.2.2 | 52270 | ANindV94kHC673w9zWXj8TY | Google Chrome Extension File | INTERNET | 10.10.10.101 | 2020-04-21T18:47:12 |
 
 
 ## Additional Information
