@@ -13,13 +13,13 @@
   },
   "toDate": "0001-01-01T00:00:00Z"
  },
- "description": "Showing a number widget of the total unassigned failing incidents",
+ "description": "Showing a number widget of the total unassigned Failed incidents",
  "id": "Number-of-Failing-Unassigned-Incidents-Number",
  "isPredefined": true,
- "name": "Number of Failing Unassigned Incidents",
+ "name": "Number of Failed Unassigned Incidents",
  "query": "IncidentsCheck-Widget-UnassignedFailingIncidents",
  "size": 0,
  "version": -1,
  "widgetType": "number",
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

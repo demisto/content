@@ -525,7 +525,7 @@
  },
  "group": "incident",
  "id": "3caa356e-d99d-438b-844d-180f68b59b14",
- "name": "Integrations and Incidents Health",
+ "name": "Integrations and Incidents Health Check",
  "system": false,
  "version": -1,
  "fromVersion": "6.0.0",

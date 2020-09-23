@@ -16,7 +16,7 @@
  "description": "Showing in a bar chart top failed playbook names",
  "id": "Failing-Playbook-Names-Bar",
  "isPredefined": true,
- "name": "Top Failing Playbook Names",
+ "name": "Top Failed Playbook Names",
  "params": {
   "tableColumns": [
    {
@@ -55,5 +55,5 @@
  "size": 0,
  "version": -1,
  "widgetType": "bar",
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

@@ -8,7 +8,7 @@
  "hours": 0,
  "hoursR": 0,
  "id": "Integrations and Incidents Health Check",
- "layout": "3caa356e-d99d-438b-844d-180f68b59b14",
+ "layout": "Integrations and Incidents Health Check",
  "locked": false,
  "name": "Integrations and Incidents Health Check",
  "playbookId": "JOB - Integrations and Playbooks Health Check",

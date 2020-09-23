@@ -13,13 +13,13 @@
   },
   "toDate": "0001-01-01T00:00:00Z"
  },
- "description": "Showing in a table widget failing incidents information",
+ "description": "Showing in a table widget Failed incidents information",
  "id": "Failing-Incidents-Info-Table",
  "isPredefined": true,
- "name": "Failing Incidents Information",
+ "name": "Failed Incidents Information",
  "query": "IncidentsCheck-Widget-IncidentsErrorsInfo",
  "size": 0,
  "version": -1,
  "widgetType": "table",
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

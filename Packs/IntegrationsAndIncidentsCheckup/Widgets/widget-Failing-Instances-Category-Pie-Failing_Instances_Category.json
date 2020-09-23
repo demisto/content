@@ -13,13 +13,13 @@
   },
   "toDate": "0001-01-01T00:00:00Z"
  },
- "description": "Showing in a pie widget failing instances category",
+ "description": "Showing in a pie widget Failed instances category",
  "id": "Failing-Instances-Category-Pie",
  "isPredefined": true,
- "name": "Failing Instances Category",
+ "name": "Failed Instances Category",
  "query": "IntegrationsCheck-Widget-IntegrationsCategory",
  "size": 0,
  "version": -1,
  "widgetType": "pie",
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

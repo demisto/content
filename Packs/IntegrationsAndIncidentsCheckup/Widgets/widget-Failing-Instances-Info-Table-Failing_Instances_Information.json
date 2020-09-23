@@ -13,13 +13,13 @@
   },
   "toDate": "0001-01-01T00:00:00Z"
  },
- "description": "Showing in a table widget failing instances information",
+ "description": "Showing in a table widget Failed instances information",
  "id": "Failing-Instances-Info-Table",
  "isPredefined": true,
- "name": "Failing Instances Information",
+ "name": "Failed Instances Information",
  "query": "IntegrationsCheck-Widget-IntegrationsErrorsInfo",
  "size": 0,
  "version": -1,
  "widgetType": "table",
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }
