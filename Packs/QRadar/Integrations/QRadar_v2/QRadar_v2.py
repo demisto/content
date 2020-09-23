@@ -2104,10 +2104,10 @@ def get_mapping_fields(client: QRadarClient) -> dict:
         'events': {field['name']: field['property_type'] for field in client.get_custom_fields()}
         }
     fields = {
-        'events: builtin fields': events,
         'offense': offense,
+        'events: builtin fields': events,
+        'events: custom fields': custom_fields,
         'assets': assets,
-        'events: custom fields': custom_fields
     }
     return fields
 
