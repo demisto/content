@@ -351,8 +351,8 @@ jobs:
     steps:
       - run:
           name: Running UT & Lint
-          command: |
           shell: /bin/bash
+          command: |
             echo "All existing steps in this job will remain and an additional step of a slack notifier will be added."
             exit 0
       - run:
@@ -368,8 +368,8 @@ jobs:
     steps:
       - run:
           name: Running Validations
-          command: |
           shell: /bin/bash
+          command: |
             echo "All existing steps in this job will remain and an additional step of a slack notifier will be added."
             exit 0
       - run:
@@ -656,66 +656,69 @@ jobs:
           condition:
             or:
               - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
               - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.nightly >>
+              - << pipeline.parameters.non_ami_run >>
           steps:
             - run:
                 name: Not running this job
                 when: always
                 command: |
-                  echo "Not running this job when triggered with one of instance_tests or demisto_sdk_nightly"
+                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
       - unless:
           condition:
             or:
               - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
               - << pipeline.parameters.demisto_sdk_nightly >>
+              - << pipeline.parameters.nightly >>
+              - << pipeline.parameters.non_ami_run >>
           steps:
-            - *attach_workspace
-            - *add_ssh_keys
-            - *prepare_environment
+            - run:
+                name: Attach Workspace
+                shell: /bin/bash
+                when: always
+                command: |
+                  echo "attach workspace"
+                  exit 0
+            - run:
+                name: Add SSH Keys
+                shell: /bin/bash
+                when: always
+                command: |
+                  echo "add SSH keys"
+                  exit 0
+            - run:
+                name: Prepare Environment
+                shell: /bin/bash
+                when: always
+                command: |
+                  echo "Prepare environment"
+                  exit 0
             - run:
                 name: Wait until server ready
                 shell: /bin/bash
                 when: always
                 command: |
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      python3 ./Tests/scripts/wait_until_server_ready.py "Demisto Marketplace"
-                  else
-                      python3 ./Tests/scripts/wait_until_server_ready.py "master"
-                  fi
+                  echo "Wait untiel server is ready"
+                  exit 0
             - run:
-                name: Run Tests - Demisto Master
+                name: Install And Verify Packs - Demisto Master
                 shell: /bin/bash
                 when: always
                 no_output_timeout: 5h
                 command: |
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Demisto Marketplace"')
-                  echo "Demisto Marketplace filter=$TEMP"
-                  if [[ "$TEMP" == "false" ]];
-                    then
-                      echo "Skipping - instance was not setup"
-                      exit 0
-                  fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      echo 'export INSTANCE_ROLE="Demisto Marketplace"' >> $BASH_ENV
-                  else
-                    echo 'export INSTANCE_ROLE="master"' >> $BASH_ENV
-                  fi
-                  source $BASH_ENV
-                  ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                  export RETVAL=$?
-                  cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
-                  exit $RETVAL
+                  echo "This step will execute the first part of the run_test.sh script in which the packs are installed, and varify that all files were installed successfully."
+                  exit 0
             - run:
                 name: Slack Notifier
                 shell: /bin/bash
                 command: |
-                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
-                when: always
+                  echo "This step will send a slack notification in case one of the previous steps failed."
+                when: on_fail
             - *comment_on_contrib_pr
-            - *destroy_instances
-            - *store_artifacts
+
   Upload Packs:
     <<: *container_config
     resource_class: medium
