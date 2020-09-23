@@ -4,7 +4,7 @@ import time
 import traceback
 from copy import deepcopy
 from threading import Lock
-from typing import Optional, List, Callable, Dict, Tuple
+from typing import Optional, List, Callable, Dict
 from urllib import parse
 
 import demistomock as demisto
@@ -530,19 +530,13 @@ class QRadarClient:
         )
 
     def get_custom_fields(
-            self, fields: Optional[str] = None, like: bool = False,
-            filter_: Optional[str] = None, limit: Optional[int] = None) -> List[dict]:
+            self, limit: Optional[int] = None) -> List[dict]:
         url = urljoin(self._server, "api/config/event_sources/custom_properties/regex_properties")
         headers = self._auth_headers
         fields = []
         # Paging
         start = 0
         stop = 49
-        params = {}
-        if filter_:
-            params['filter'] = filter_
-        elif fields:
-            params['filter'] = f'name = "{fields}"'
         while True:
             headers['Range'] = f"items={start}-{stop}"
             response = self.send_request("GET", url, headers=headers)
@@ -552,7 +546,7 @@ class QRadarClient:
             if limit is not None and len(fields) > limit:
                 fields = fields[:limit]
                 break
-            start, stop = stop, stop*2
+            start, stop = stop, stop * 2
         return fields
 
     def enrich_source_addresses_dict(self, src_adrs):
@@ -587,7 +581,6 @@ class QRadarClient:
             for dst_adr in dst_res:
                 dst_adrs[dst_adr["id"]] = dst_adr["local_destination_ip"]
         return dst_adrs
-
 
 
 """ Utility functions """
@@ -2112,21 +2105,6 @@ def get_mapping_fields(client: QRadarClient) -> dict:
     return fields
 
 
-def get_custom_properties_command(client: QRadarClient, args: dict) -> Tuple[str, dict]:
-    try:
-        limit = int(args.get('limit'))
-    except (TypeError, ValueError):
-        limit = None
-    fields = args.get('field')
-    filter_ = args.get('filter')
-    properties = client.get_custom_fields(fields=fields, limit=limit)
-    human_readable = tableToMarkdown(
-        "QRadar: Custom Properties:",
-        properties
-    )
-    return human_readable, {'QRadar': properties}
-
-
 def main():
     params = demisto.params()
 
@@ -2218,8 +2196,6 @@ def main():
             demisto.results(reset_fetch_incidents())
         elif command == "get-mapping-fields":
             demisto.results(get_mapping_fields(client))
-        elif command == "qradar-get-custom-attribute":
-            return_outputs()
     except Exception as e:
         error = f"Error has occurred in the QRadar Integration: {str(e)}"
         LOG(traceback.format_exc())
