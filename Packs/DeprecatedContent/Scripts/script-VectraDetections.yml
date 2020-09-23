@@ -20,7 +20,7 @@ type: python
 subtype: python2
 tags:
 - Vectra
-comment: Detection objects contain all the information related to security events
+comment: Deprecated. Detection objects contain all the information related to security events
   detected on the network
 system: true
 args:

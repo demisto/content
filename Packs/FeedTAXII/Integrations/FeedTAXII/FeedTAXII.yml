@@ -31,6 +31,16 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 - display: ''
   name: feedExpirationPolicy
   options:
@@ -152,7 +162,7 @@ script:
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/taxii:1.0.0.9263
+  dockerimage: demisto/taxii:1.0.0.9793
   feed: true
   isfetch: false
   longRunning: false

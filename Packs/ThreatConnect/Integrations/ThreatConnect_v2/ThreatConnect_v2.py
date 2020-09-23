@@ -1,4 +1,6 @@
 ''' IMPORTS '''
+import urllib
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -27,6 +29,7 @@ def get_client():
     proxy_port = params.get('proxyPort')
 
     tc = ThreatConnect(access, secret, default_org, url)
+    tc._proxies = handle_proxy()
     if proxy_ip and proxy_port and len(proxy_ip) > 0 and len(proxy_port) > 0:
         tc.set_proxies(proxy_ip, int(proxy_port))
 
@@ -39,6 +42,10 @@ def calculate_freshness_time(freshness):
 
 
 def create_context(indicators, include_dbot_score=False):
+    indicators_dbot_score = {}  # type: dict
+    params = demisto.params()
+    rating_threshold = int(params.get('rating', '3'))
+    confidence_threshold = int(params.get('confidence', '3'))
     context = {
         'DBotScore': [],
         outputPaths['ip']: [],
@@ -77,7 +84,7 @@ def create_context(indicators, include_dbot_score=False):
             # returned in general indicator request - REST API
             rating = int(ind.get('threatAssessRating', 0))
 
-        if confidence >= int(demisto.params()['rating']) and rating >= int(demisto.params()['confidence']):
+        if confidence >= confidence_threshold and rating >= rating_threshold:
             dbot_score = 3
             desc = ''
             if hasattr(ind, 'description'):
@@ -105,19 +112,24 @@ def create_context(indicators, include_dbot_score=False):
             context_path = outputPaths.get(indicator_type)
             if context_path is not None:
                 context[context_path].append(mal)
-
-        elif int(rating) >= 1:
-            dbot_score = 2
+        # if both confidence and rating values are less than the threshold - DBOT score is unknown
+        elif confidence < confidence_threshold and rating < rating_threshold:
+            dbot_score = 0
         else:
-            dbot_score = 1
+            dbot_score = 2
 
+        # if there is more than one indicator results - take the one with the highest score
         if include_dbot_score:
-            context['DBotScore'].append({
-                'Indicator': value,
-                'Score': dbot_score,
-                'Type': indicator_type,
-                'Vendor': 'ThreatConnect'
-            })
+            old_val = indicators_dbot_score.get(value)
+            if old_val and old_val['Score'] < dbot_score:
+                indicators_dbot_score[value]['Score'] = dbot_score
+            else:
+                indicators_dbot_score[value] = {
+                    'Indicator': value,
+                    'Score': dbot_score,
+                    'Type': indicator_type,
+                    'Vendor': 'ThreatConnect'
+                }
 
         context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
             'ID': ind['id'],
@@ -157,6 +169,7 @@ def create_context(indicators, include_dbot_score=False):
                 context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorsObservations'] = ind[
                     'indicator_observations']
 
+    context['DBotScore'] = list(indicators_dbot_score.values())
     context = {k: createContext(v, removeNull=True)[:MAX_CONTEXT] for k, v in context.items() if v}
     return context, context.get('TC.Indicator(val.ID && val.ID === obj.ID)', [])
 
@@ -237,10 +250,9 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
     if owners and owners.find(",") > -1:
         owners = owners.split(",")
         for owner in owners:
-            raw_indicators = get_xindapi(tc, indicator_value, indicator_type, owner)
-            if raw_indicators:
-                owners = owner
-                break
+            indicator = get_xindapi(tc, indicator_value, indicator_type, owner)
+            if indicator:
+                raw_indicators.append(indicator)
     else:
         raw_indicators = get_xindapi(tc, indicator_value, indicator_type, owners)
         if raw_indicators and loopowners is True:
@@ -256,26 +268,31 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
             else:
                 demisto.results("Unable to indentify the owner for the given indicator")
 
-    indicators = raw_indicators
+    indicators = []
     associatedIndicators = []
     indicator_observations = []
 
-    if raw_indicators:
+    for raw_indicator in raw_indicators:
+        if isinstance(raw_indicator, list):
+            indicator_to_add = raw_indicator[0]
+        else:
+            indicator_to_add = raw_indicator
+
         if associated_groups:
-            indicators[0]['group_associations'] = tc_associated_groups(tc, owners, indicator_value, raw_indicators[0]['type'])
+            indicator_to_add['group_associations'] = tc_associated_groups(tc, owners, indicator_value, raw_indicator['type'])
 
         if include_tags:
-            indicators[0]['indicator_tags'] = tc_indicator_get_tags(tc, owners, indicator_value, raw_indicators[0]['type'])
+            indicator_to_add['indicator_tags'] = tc_indicator_get_tags(tc, owners, indicator_value, raw_indicator['type'])
 
         if include_observations:
             try:
                 for indicator in raw_indicators:
                     for observation in indicator.observations:
                         indicator_observations.append({"count": observation.count, "date_observed": observation.date_observed})
-                indicators[0]['indicator_observations'] = indicator_observations
+                indicator_to_add['indicator_observations'] = indicator_observations
             except Exception as error:
                 demisto.error(str(error))
-                indicators[0]['indicator_observations'] = indicator_observations
+                indicator_to_add['indicator_observations'] = indicator_observations
 
         if associated_indicators:
             try:
@@ -291,11 +308,11 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                                                      "date_added": associated_indicator.date_added,
                                                      "last_modified": associated_indicator.last_modified,
                                                      "weblink": associated_indicator.weblink})
-                indicators[0]['indicator_associations'] = associatedIndicators
+                indicator_to_add['indicator_associations'] = associatedIndicators
             except Exception as error:
                 demisto.error(str(error))
-                indicators[0]['indicator_associations'] = associatedIndicators
-
+                indicator_to_add['indicator_associations'] = associatedIndicators
+        indicators.append(indicator_to_add)
     return indicators
 
 
@@ -1530,6 +1547,7 @@ def associate_indicator_request(indicator_type, indicator, group_type, group_id)
     tc = get_client()
     ro = RequestObject()
     ro.set_http_method('POST')
+    indicator = urllib.parse.quote(indicator, safe='')
     ro.set_request_uri('/v2/indicators/{}/{}/groups/{}/{}'.format(indicator_type, indicator, group_type, group_id))
     response = tc.api_request(ro).json()
 
@@ -2065,6 +2083,27 @@ def download_document():
     demisto.results(fileResult(file_name, file_content))
 
 
+def download_report(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri(f'/v2/groups/{group_type}/{group_id}/pdf')
+    return tc.api_request(ro)
+
+
+def tc_download_report():
+    args = demisto.args()
+    group_type = args.get('group_type', '').lower()
+    group_id = args.get('group_id')
+    allowed_types = ['adversaries', 'campaigns', 'emails', 'incidents', 'signatures', 'threats']
+    if group_type not in allowed_types:
+        raise DemistoException(f'{group_type} is not an allowed type for tc-download-report command.')
+
+    response = download_report(group_type, group_id)
+    file_entry = fileResult(filename=f'{group_type}_report_{group_id}.pdf', data=response.content)
+    demisto.results(file_entry)
+
+
 def test_integration():
     tc = get_client()
     owners = tc.owners()
@@ -2116,6 +2155,7 @@ COMMANDS = {
     'tc-get-associated-groups': get_group_associated,
     'tc-associate-group-to-group': associate_group_to_group,
     'tc-get-indicator-owners': tc_get_indicator_owners,
+    'tc-download-report': tc_download_report,
 }
 
 

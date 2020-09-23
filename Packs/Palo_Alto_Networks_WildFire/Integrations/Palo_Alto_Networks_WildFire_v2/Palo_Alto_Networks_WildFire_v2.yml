@@ -3,49 +3,55 @@ commonfields:
   id: WildFire-v2
   version: -1
 configuration:
-- display: Server base URL (e.g. https://192.168.0.1/publicapi)
+- defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
+  display: Server base URL (e.g. https://192.168.0.1/publicapi)
   name: server
-  defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
-  type: 0
   required: true
+  type: 0
 - display: API Key
   name: token
-  defaultvalue: ""
-  type: 4
   required: true
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Return warning entry for unsupported file types
   name: suppress_file_type_error
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 description: Perform malware dynamic analysis
 display: Palo Alto Networks WildFire v2
 name: WildFire-v2
-fromversion: 4.0.0
 script:
   commands:
-  - name: file
-    arguments:
-    - name: file
-      default: true
+  - arguments:
+    - default: true
       description: File hash to check.
       isArray: true
-    - name: md5
+      name: file
+      required: false
+      secret: false
+    - default: false
       description: MD5 hash to check.
       isArray: true
-    - name: sha256
+      name: md5
+      required: false
+      secret: false
+    - default: false
       description: SHA256 hash to check.
       isArray: true
+      name: sha256
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve results for a file hash using WildFire
+    execution: false
+    name: file
     outputs:
     - contextPath: File.Name
       description: Name of the file.
@@ -104,13 +110,17 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
-    description: Retrieve results for a file hash using WildFire
-  - name: wildfire-upload
-    arguments:
-    - name: upload
-      required: true
+  - arguments:
+    - default: false
       description: ID of the entry containing the file to upload
       isArray: true
+      name: upload
+      required: true
+      secret: false
+    deprecated: false
+    description: Uploads a file to WildFire for analysis.
+    execution: false
+    name: wildfire-upload
     outputs:
     - contextPath: WildFire.Report.MD5
       description: MD5 hash of the submission.
@@ -127,12 +137,17 @@ script:
     - contextPath: WildFire.Report.Status
       description: The status of the submission.
       type: string
-    description: Uploads a file to WildFire for analysis.
-  - name: wildfire-upload-file-url
-    arguments:
-    - name: upload
-      required: true
+  - arguments:
+    - default: false
       description: URL of the remote file to upload.
+      isArray: false
+      name: upload
+      required: true
+      secret: false
+    deprecated: false
+    description: Uploads the URL of a remote file to WildFire for analysis.
+    execution: false
+    name: wildfire-upload-file-url
     outputs:
     - contextPath: WildFire.Report.MD5
       description: MD5 hash of the submission.
@@ -146,32 +161,59 @@ script:
     - contextPath: WildFire.Report.URL
       description: URL of the submission.
       type: string
-    description: Uploads the URL of a remote file to WildFire for analysis.
-  - name: wildfire-report
-    arguments:
-    - name: md5
+  - arguments:
+    - default: false
       description: MD5 hash to check.
       isArray: true
-    - name: sha256
+      name: md5
+      required: false
+      secret: false
+    - default: false
       description: SHA256 hash to check
       isArray: true
-    - name: hash
+      name: sha256
+      required: false
+      secret: false
+    - default: false
       description: Deprecated - Use the sha256 argument instead.
       isArray: true
-    - name: format
-      auto: PREDEFINED
+      name: hash
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: pdf
+      description: Request a structured report (XML or PDF).
+      isArray: false
+      name: format
       predefined:
       - xml
       - pdf
-      description: Request a structured report (XML PDF).
-      defaultValue: pdf
-    - name: verbose
-      auto: PREDEFINED
-      predefined:
-        - "true"
-        - "false"
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
       description: Receive extended information from WildFire.
-      defaultValue: "false"
+      isArray: false
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Retrieves results for a URL using WildFire. Currently, this is only supported in US cloud.
+        The report format is in JSON.
+      isArray: true
+      name: url
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves results for a file hash using WildFire.
+    execution: false
+    name: wildfire-report
     outputs:
     - contextPath: File.Name
       description: Name of the file.
@@ -254,13 +296,17 @@ script:
     - contextPath: WildFire.Report.Evidence.Text
       description: Submission evidence text.
       type: string
-    description: Retrieves results for a file hash using WildFire.
-  - name: wildfire-get-verdict
-    arguments:
-    - name: hash
-      required: true
+  - arguments:
+    - default: false
       description: Hash to get the verdict for.
       isArray: true
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a verdict for a hash.
+    execution: false
+    name: wildfire-get-verdict
     outputs:
     - contextPath: WildFire.Verdicts.MD5
       description: MD5 hash of the file.
@@ -286,16 +332,25 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Returns a verdict for a hash.
-  - name: wildfire-get-verdicts
-    arguments:
-    - name: EntryID
+  - arguments:
+    - default: false
       description: EntryID of the text file that contains multiple hashes. Limit is
         500 hashes.
       isArray: true
-    - name: hash_list
+      name: EntryID
+      required: false
+      secret: false
+    - default: false
       description: A list of hashes to get verdicts for.
       isArray: true
+      name: hash_list
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a verdict regarding multiple hashes, stored in a TXT file
+      or given as list.
+    execution: false
+    name: wildfire-get-verdicts
     outputs:
     - contextPath: WildFire.Verdicts.MD5
       description: MD5 hash of the file.
@@ -321,14 +376,17 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Returns a verdict regarding multiple hashes, stored in a TXT file or
-      given as list.
-  - name: wildfire-upload-url
-    arguments:
-    - name: upload
-      required: true
+  - arguments:
+    - default: false
       description: URL to submit to WildFire.
       isArray: true
+      name: upload
+      required: true
+      secret: false
+    deprecated: false
+    description: Uploads a URL of a webpage to WildFire for analysis.
+    execution: false
+    name: wildfire-upload-url
     outputs:
     - contextPath: WildFire.Report.MD5
       description: MD5 of the submission.
@@ -342,20 +400,32 @@ script:
     - contextPath: WildFire.Report.URL
       description: URL of the submission.
       type: string
-    description: Uploads a URL of a webpage to WildFire for analysis.
-  - name: wildfire-get-sample
-    arguments:
-    - name: md5
+  - arguments:
+    - default: false
       description: MD5 hash of the sample.
       isArray: true
-    - name: sha256
+      name: md5
+      required: false
+      secret: false
+    - default: false
       description: SHA256 hash of the sample.
+      isArray: false
+      name: sha256
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves a sample.
-  dockerimage: demisto/python3:3.8.2.6981
+    execution: false
+    name: wildfire-get-sample
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Wildfire Test
+fromversion: 4.0.0

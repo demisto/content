@@ -1647,8 +1647,12 @@ def download_attachment_request(attachment_id):
     }
 
     response = http_request('POST', api_endpoint, str(payload), is_file=True)
-    if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    try:
+        json_response = response.json()
+        if json_response.get('fail'):
+            return_error(json_response.get('fail', [{}])[0].get('errors'))
+    except ValueError:
+        pass
     return response.content
 
 
@@ -1824,6 +1828,8 @@ def add_users_under_group_in_context_dict(users_list, group_id):
     if demisto_context and 'Mimecast' in demisto_context:
         if 'Group' in demisto_context['Mimecast']:
             groups_entry_in_context = demisto_context['Mimecast']['Group']
+            groups_entry_in_context = [groups_entry_in_context] if isinstance(groups_entry_in_context,
+                                                                              dict) else groups_entry_in_context
             for group in groups_entry_in_context:
                 if group['ID'] == group_id:
                     group['Users'] = users_list
@@ -1939,6 +1945,8 @@ def change_user_status_removed_in_context(user_info, group_id):
     if demisto_context and 'Mimecast' in demisto_context:
         if 'Group' in demisto_context['Mimecast']:
             groups_entry_in_context = demisto_context['Mimecast']['Group']
+            groups_entry_in_context = [groups_entry_in_context] if isinstance(groups_entry_in_context,
+                                                                              dict) else groups_entry_in_context
             for group in groups_entry_in_context:
                 if group['ID'] == group_id:
                     for user in group['Users']:

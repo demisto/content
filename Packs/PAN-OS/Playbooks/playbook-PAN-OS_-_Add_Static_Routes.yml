@@ -70,7 +70,7 @@ tasks:
       '#default#':
       - "29"
       "yes":
-      - "28"
+      - "35"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -202,33 +202,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "28":
-    id: "28"
-    taskid: 32ec36e3-fb35-4c3b-8ad5-851e93c7ea39
-    type: playbook
-    task:
-      id: 32ec36e3-fb35-4c3b-8ad5-851e93c7ea39
-      version: -1
-      name: PanoramaCommitConfiguration
-      playbookName: PanoramaCommitConfiguration
-      description: ""
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 650,
-          "y": 450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
     taskid: 5d3ddcff-fac4-4f3b-8b2f-6929ec9d7cdc
@@ -336,35 +311,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "32":
-    id: "32"
-    taskid: be811a79-19ff-4aab-882f-fee9acc5d3f4
-    type: playbook
-    task:
-      id: be811a79-19ff-4aab-882f-fee9acc5d3f4
-      version: -1
-      name: PanoramaCommitConfiguration
-      description: |-
-        DEPRECATED - Use PAN-OS Commit Configuration instead.
-        If specified as Panorama, will also push the Policies to the specified Device Group in the instance. (please use pan-os-commit-configuration instead)
-      playbookName: PanoramaCommitConfiguration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": -410,
-          "y": 450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
     taskid: 2eca67d5-8fb7-4f23-8d90-d72df5cb0a06
@@ -381,7 +329,7 @@ tasks:
       '#default#':
       - "34"
       "yes":
-      - "32"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -433,6 +381,66 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 29837cb1-15ca-46c5-8125-33c1ec5cca38
+    type: playbook
+    task:
+      id: 29837cb1-15ca-46c5-8125-33c1ec5cca38
+      version: -1
+      name: PAN-OS Commit Configuration
+      description: ""
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 1747d07c-17c1-4627-80cd-6f713a149085
+    type: playbook
+    task:
+      id: 1747d07c-17c1-4627-80cd-6f713a149085
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -441,8 +449,7 @@ view: |-
       "27_26_#default#": 0.49,
       "27_31_yes": 0.63,
       "31_33_#default#": 0.44,
-      "31_7_yes": 0.23,
-      "33_32_yes": 0.67
+      "31_7_yes": 0.23
     },
     "paper": {
       "dimensions": {

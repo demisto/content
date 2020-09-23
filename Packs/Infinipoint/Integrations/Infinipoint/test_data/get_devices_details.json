@@ -1,0 +1,47 @@
+{
+  "$device": "37dee181-dd6e-48ce-9591-19e803a41bd9",
+  "$type": "csv",
+  "_key": "23eb50e7ceb907975686ba5cebbd3520",
+  "archive": true,
+  "building": "",
+  "classification": "Computer",
+  "department": "",
+  "email": "",
+  "enroll_date": "2020-06-28T12:20:09.759Z",
+  "first_seen": 1594823833,
+  "hidden": false,
+  "host_name": [
+    {
+      "name": "jamf",
+      "value": "osx-sign-machine"
+    }
+  ],
+  "jamf_tag": "",
+  "last_report_date": 1594791298,
+  "last_seen": 1595098039,
+  "mac_address": [
+    {
+      "name": "jamf",
+      "value": "38:F9:D3:5E:C7:54"
+    }
+  ],
+  "model": "MacBookPro14,1",
+  "name_tag": "",
+  "os_name": [
+    {
+      "name": "jamf",
+      "value": "macOS 10.15.3"
+    }
+  ],
+  "phone_number": "",
+  "position": "",
+  "providers": [
+    "jamf"
+  ],
+  "room": "",
+  "serial": "FVFYC187HV2J",
+  "site": "",
+  "udid": "B007F97C-D191-5EFE-963A-8570138C3CA8",
+  "unique_id": "1",
+  "username": ""
+}

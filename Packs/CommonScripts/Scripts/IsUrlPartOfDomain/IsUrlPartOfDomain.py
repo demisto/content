@@ -29,7 +29,7 @@ def main(domains: str, urls: str) -> CommandResults:
             outputs.append({
                 'URL': url,
                 'Domain': domain_from_url,
-                'IsInternal': domain_from_url in domains
+                'IsInternal': (domain_from_url in domains) or url.startswith(('https://localhost', 'http://localhost'))
             })
     return CommandResults('IsUrlPartOfDomain', outputs=outputs)
 

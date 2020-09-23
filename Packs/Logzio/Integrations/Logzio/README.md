@@ -44,6 +44,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. logzio-search-logs
 ---
 Returns logs from your Logz.io Operations account by Lucene query
+
+**Note**: The search time range can span over 2 calender days at most. If you supply a time range greater than that, 
+the search window will be the **last** 2 calender days within the range you supplied.
 ##### Required Permissions
 Your Logz.io account type should be PRO or above.
 ##### Base Command
@@ -55,8 +58,8 @@ Your Logz.io account type should be PRO or above.
 | --- | --- | --- |
 | query | A string specifying the search query, written in Apache Lucene syntax e.g. 'fname:John AND sname:Smith' . | Required | 
 | size | An integer specifying the maximum number of results to return. | Optional | 
-| from_time | Unix timestamp. Specifies the earliest timestamp to be returned by the query. | Optional | 
-| to_time | Unix timestamp. Specifies the latest timestamp to be returned by the query. | Optional | 
+| from_time | Specifies the earliest timestamp to be returned by the query. | Optional | 
+| to_time | Specifies the latest timestamp to be returned by the query. | Optional | 
 | timeout | Timeout in seconds | Optional | 
 
 

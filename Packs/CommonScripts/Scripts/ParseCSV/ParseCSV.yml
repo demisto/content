@@ -35,7 +35,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'yes'
-  description: parses and converts all the rows in csv into json and puts into context.
+  description: Parses and converts all of the rows in the CSV into JSON and puts them into the context.
   isArray: false
   name: parseAll
   predefined:
@@ -45,7 +45,7 @@ args:
   secret: false
 - default: false
   defaultValue: utf-8
-  description: The codec type used to parse the file (some character sets are not
+  description: The codec type used to parse the file. (some character sets are not
     UTF-8 supported)
   isArray: false
   name: codec
@@ -60,22 +60,22 @@ enabled: true
 name: ParseCSV
 outputs:
 - contextPath: IP.Address
-  description: IP address found in parsed file
+  description: IP address found in the parsed file.
   type: Unknown
 - contextPath: Domain.Name
-  description: Domain found in parsed file
+  description: Domain found in the parsed file.
   type: Unknown
 - contextPath: File.MD5
-  description: MD5 found in parsed file
+  description: MD5 found in the parsed file.
   type: Unknown
 - contextPath: File.SHA1
-  description: SHA1 found in parsed file
+  description: SHA1 found in the parsed file.
   type: Unknown
 - contextPath: File.SHA256
-  description: SHA256 found in parsed file
+  description: SHA256 found in the parsed file.
   type: Unknown
 - contextPath: ParseCSV.ParsedCSV
-  description: Parsed csv in form of JSON array
+  description: Parsed csv in the form of JSON array.
   type: Unknown
 script: '-'
 system: false

@@ -69,7 +69,7 @@ tasks:
       '#default#':
       - "29"
       "yes":
-      - "28"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -136,33 +136,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "28":
-    id: "28"
-    taskid: ceeca235-3ba0-45fe-8022-8c3e50142e1f
-    type: playbook
-    task:
-      id: ceeca235-3ba0-45fe-8022-8c3e50142e1f
-      version: -1
-      name: PanoramaCommitConfiguration
-      playbookName: PanoramaCommitConfiguration
-      description: ""
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 520,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
     taskid: 63fb434d-2d3a-449f-819a-6250dbe667eb
@@ -258,6 +233,37 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: b9c8b2c7-1d39-493c-8fbb-a0dde71c372a
+    type: playbook
+    task:
+      id: b9c8b2c7-1d39-493c-8fbb-a0dde71c372a
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {

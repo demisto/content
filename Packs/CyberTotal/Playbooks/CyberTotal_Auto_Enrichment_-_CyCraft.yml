@@ -1,0 +1,795 @@
+id: CyberTotal Auto Enrichment - CyCraft
+version: -1
+name: CyberTotal Auto Enrichment - CyCraft
+description: 'This playbook automatically enriches indicators (including IPs, URLs,
+  domains; MD5, SHA-1, and SHA-256 file hashes). Playbook input: the indicators you
+  want to enrich.  Playbook output: detection engine results, positive detections,
+  detection ratios; as well as severity, confidence, and threat scores.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7404a02f-b757-4717-8a57-a20b7ea21091
+    type: start
+    task:
+      id: 7404a02f-b757-4717-8a57-a20b7ea21091
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4be584ff-7bfd-4d75-8d10-88a8c5efa673
+    type: condition
+    task:
+      id: 4be584ff-7bfd-4d75-8d10-88a8c5efa673
+      version: -1
+      name: Is CyberTotal enabled?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "2"
+      - "7"
+      - "9"
+      - "11"
+      - "14"
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CyberTotal
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 0622ee13-b69e-4fa9-8d81-4d79c3e2efb2
+    type: condition
+    task:
+      id: 0622ee13-b69e-4fa9-8d81-4d79c3e2efb2
+      version: -1
+      name: Is there any URL?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1750,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 778a0b84-f202-489f-8280-11fdef12178f
+    type: regular
+    task:
+      id: 778a0b84-f202-489f-8280-11fdef12178f
+      version: -1
+      name: Run URL Enrichment
+      description: Return domain information and reputation
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      threshold:
+        complex:
+          root: inputs.threshold
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1750,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b6de8100-c874-49aa-8774-22c10421a37d
+    type: condition
+    task:
+      id: b6de8100-c874-49aa-8774-22c10421a37d
+      version: -1
+      name: Is there any IP?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 87dc0900-7cd1-41a1-833b-a618217b22f1
+    type: regular
+    task:
+      id: 87dc0900-7cd1-41a1-833b-a618217b22f1
+      version: -1
+      name: Run IP Enrichment
+      description: Return IP information and reputation
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+      threshold:
+        complex:
+          root: inputs.threshold
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 5028dfa8-3731-4a22-8f06-7319e7e6a6f3
+    type: condition
+    task:
+      id: 5028dfa8-3731-4a22-8f06-7319e7e6a6f3
+      version: -1
+      name: Is there any Domain?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "10"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 80911205-bc62-4b08-856b-8f52e318d98f
+    type: regular
+    task:
+      id: 80911205-bc62-4b08-856b-8f52e318d98f
+      version: -1
+      name: Run Domain Enrichment
+      description: Return domain information and reputation
+      script: '|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+      threshold:
+        complex:
+          root: inputs.threshold
+    separatecontext: false
+    defaultassigneecomplex: {}
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: abad9fc0-dd8f-42d8-841c-8c409504cf7c
+    type: condition
+    task:
+      id: abad9fc0-dd8f-42d8-841c-8c409504cf7c
+      version: -1
+      name: Is there any MD5?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.MD5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: a44a4f8e-6222-4e38-8505-1e41047e6afb
+    type: regular
+    task:
+      id: a44a4f8e-6222-4e38-8505-1e41047e6afb
+      version: -1
+      name: Run MD5 Enrichment
+      description: Return file's information and reputation
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.MD5
+      threshold:
+        complex:
+          root: inputs.threshold
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 81eacb62-97e7-476d-86af-0386db955aae
+    type: title
+    task:
+      id: 81eacb62-97e7-476d-86af-0386db955aae
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: d37a5528-ce40-473a-8f50-c567aefc3375
+    type: condition
+    task:
+      id: d37a5528-ce40-473a-8f50-c567aefc3375
+      version: -1
+      name: Is there any SHA1?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "15"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.SHA1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 0f912fb2-f393-4faa-8cb4-838d0f9da2a9
+    type: regular
+    task:
+      id: 0f912fb2-f393-4faa-8cb4-838d0f9da2a9
+      version: -1
+      name: Run SHA1 Enrichment
+      description: Return file's information and reputation
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.SHA1
+      threshold:
+        complex:
+          root: inputs.threshold
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: d14a72a3-5280-496a-8494-6c5d405a88cf
+    type: condition
+    task:
+      id: d14a72a3-5280-496a-8494-6c5d405a88cf
+      version: -1
+      name: Is there any SHA256?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "18"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.SHA256
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 12ed018e-59b5-49c6-8bb7-2d1a43ac1252
+    type: regular
+    task:
+      id: 12ed018e-59b5-49c6-8bb7-2d1a43ac1252
+      version: -1
+      name: Run SHA256 Enrichment
+      description: Return file's information and reputation
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.SHA256
+      threshold:
+        complex:
+          root: inputs.threshold
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_yes": 0.41,
+      "11_13_#default#": 0.14,
+      "14_13_#default#": 0.9,
+      "1_13_#default#": 0.34,
+      "1_2_yes": 0.9,
+      "2_13_#default#": 0.14,
+      "2_3_yes": 0.41,
+      "7_13_#default#": 0.28,
+      "7_8_yes": 0.4,
+      "9_10_yes": 0.4,
+      "9_13_#default#": 0.28
+    },
+    "paper": {
+      "dimensions": {
+        "height": 945,
+        "width": 2750,
+        "x": -620,
+        "y": -30
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      accessor: Name
+  required: false
+  description: The input domain will be searched automatically on CyberTotal to retrieve
+    reputation data.
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+  required: false
+  description: The input IP will be searched automatically on CyberTotal and to retrieve
+    reputation data.
+  playbookInputQuery:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: The input URL will be searched automatically on CyberTotal to retrieve
+    reputation data.
+  playbookInputQuery:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: The input MD5 will be searched automatically on CyberTotal to retrieve
+    reputation data.
+  playbookInputQuery:
+- key: SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+  required: false
+  description: The input SHA1 will be searched automatically on CyberTotal to retrieve
+    reputation data.
+  playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: The input SHA256 will be searched automatically on CyberTotal to retrieve
+    reputation data.
+  playbookInputQuery:
+- key: threshold
+  value:
+    simple: "10"
+  required: false
+  description: Threshold for reputation commands. default is 10.
+  playbookInputQuery:
+outputs:
+- contextPath: CyberTotal.URL.scan_date
+  description: 'Scan date format: ISO 8601'
+- contextPath: CyberTotal.URL.resource
+  description: The scan target sent to CyberTotal.
+- contextPath: CyberTotal.URL.task_id
+  description: The unique id of each scan in CyberTotal.
+- contextPath: CyberTotal.URL.permalink
+  description: The link of this URL’s report in CyberTotal.
+- contextPath: CyberTotal.URL.severity
+  description: Severity of this URL. The range is from 0 to 10.
+- contextPath: CyberTotal.URL.confidence
+  description: Confidence of this URL. The range is from 0 to 10.
+- contextPath: CyberTotal.URL.threat
+  description: Threat of this URL, which is a select from ‘High’, ‘Medium’ and ‘Low’.
+- contextPath: CyberTotal.URL.detection_engines
+  description: The number of all antivirus vendors scanned.
+- contextPath: CyberTotal.URL.positive_detections
+  description: The number of antivirus vendors scanned with positive detection.
+- contextPath: CyberTotal.URL.detection_ratio
+  description: The ratio of positive_detections and detection_engines.
+- contextPath: CyberTotal.URL.message
+  description: Message about this search.
+- contextPath: URL.Data
+  description: The URL
+- contextPath: URL.DetectionEngines
+  description: The total number of engines that checked the indicator.
+- contextPath: URL.PositiveDetections
+  description: The number of engines that positively detected the indicator as malicious.
+- contextPath: URL.Malicious.Vendor
+  description: The vendor reporting the URL as malicious.
+- contextPath: URL.Malicious.Description
+  description: A description of the malicious URL.
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+- contextPath: DBotScore.Type
+  description: The indicator type.
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+- contextPath: DBotScore.Score
+  description: The actual score.
+- contextPath: CyberTotal.IP.scan_date
+  description: 'Scan date format: ISO 8601'
+- contextPath: CyberTotal.IP.resource
+  description: ' The scan target sent to CyberTotal.'
+- contextPath: CyberTotal.IP.task_id
+  description: The unique id of each scan in CyberTotal.
+- contextPath: CyberTotal.IP.permalink
+  description: The link of this IP’s report in CyberTotal.
+- contextPath: CyberTotal.IP.severity
+  description: Severity of this IP. The range is from 0 to 10.
+- contextPath: CyberTotal.IP.confidence
+  description: Confidence of this IP. The range is from 0 to 10.
+- contextPath: CyberTotal.IP.threat
+  description: Threat of this IP, which is a select from ‘High’, ‘Medium’ and ‘Low’.
+- contextPath: CyberTotal.IP.detection_engines
+  description: The number of all antivirus vendors scanned.
+- contextPath: CyberTotal.IP.positive_detections
+  description: The number of antivirus vendors scanned with positive detection.
+- contextPath: CyberTotal.IP.detection_ratio
+  description: The ratio of positive_detections and detection_engines.
+- contextPath: CyberTotal.IP.message
+  description: Message about this search.
+- contextPath: IP.Address
+  description: IP address
+- contextPath: IP.DetectionEngines
+  description: The total number of engines that checked the indicator.
+- contextPath: IP.PositiveDetections
+  description: The number of engines that positively detected the indicator as malicious.
+- contextPath: IP.Malicious.Vendor
+  description: The vendor reporting the IP address as malicious.
+- contextPath: IP.Malicious.Description
+  description: A description explaining why the IP address was reported as malicious.
+- contextPath: CyberTotal.Domain.scan_date
+  description: 'Scan date format: ISO 8601'
+- contextPath: CyberTotal.Domain.resource
+  description: The scan target sent to CyberTotal.
+- contextPath: CyberTotal.Domain.permalink
+  description: The link of this domain’s report in CyberTotal.
+- contextPath: CyberTotal.Domain.severity
+  description: Severity of this domain. The range is from 0 to 10.
+- contextPath: CyberTotal.Domain.confidence
+  description: Confidence of this domain. The range is from 0 to 10.
+- contextPath: CyberTotal.Domain.threat
+  description: Threat of this domain, which is a select from ‘High’, ‘Medium’ and
+    ‘Low’.
+- contextPath: CyberTotal.Domain.detection_engines
+  description: The number of all antivirus vendors scanned.
+- contextPath: CyberTotal.Domain.positive_detections
+  description: The number of antivirus vendors scanned with positive detection.
+- contextPath: CyberTotal.Domain.detection_ratio
+  description: The ratio of positive_detections and detection_engines.
+- contextPath: CyberTotal.Domain.message
+  description: Message about this search.
+- contextPath: Domain.Name
+  description: 'The domain name, for example: "google.com".'
+- contextPath: Domain.DetectionEngines
+  description: The total number of engines that checked the indicator.
+- contextPath: Domain.PositiveDetections
+  description: The number of engines that positively detected the indicator as malicious.
+- contextPath: Domain.Malicious.Vendor
+  description: The vendor reporting the domain as malicious.
+- contextPath: Domain.Malicious.Description
+  description: A description explaining why the domain was reported as malicious.
+- contextPath: CyberTotal.File.scan_date
+  description: 'Scan date format: ISO 8601'
+- contextPath: CyberTotal.File.resource
+  description: The scan target sent to CyberTotal.
+- contextPath: CyberTotal.File.task_id
+  description: The unique id of each scan in CyberTotal.
+- contextPath: CyberTotal.File.permalink
+  description: The link of this HASH’s report in CyberTotal.
+- contextPath: CyberTotal.File.severity
+  description: Severity of this HASH. The range is from 0 to 10.
+- contextPath: CyberTotal.File.confidence
+  description: Confidence of this HASH. The range is from 0 to 10.
+- contextPath: CyberTotal.File.threat
+  description: Threat of this HASH, which is a select from ‘High’, ‘Medium’ and ‘Low’.
+- contextPath: CyberTotal.File.detection_engines
+  description: The number of all antivirus vendors scanned.
+- contextPath: CyberTotal.File.positive_detections
+  description: The number of antivirus vendors scanned with positive detection.
+- contextPath: CyberTotal.File.detection_ratio
+  description: The ratio of positive_detections and detection_engines.
+- contextPath: CyberTotal.File.message
+  description: Message about this search.
+- contextPath: CyberTotal.File.size
+  description: Size of this file.
+- contextPath: CyberTotal.File.md5
+  description: This file’s md5 value.
+- contextPath: CyberTotal.File.sha1
+  description: This file’s sha1 value.
+- contextPath: CyberTotal.File.sha256
+  description: This file’s sha256 value.
+- contextPath: CyberTotal.File.extension
+  description: This file’s extension type.
+- contextPath: CyberTotal.File.name
+  description: This file’s name, separated by ‘,’ if more than 2 names.
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+- contextPath: File.SHA256
+  description: The SHA1 hash of the file.
+- contextPath: File.Name
+  description: The full file name (including file extension).
+- contextPath: File.Extension
+  description: 'The file extension, for example: ''xls''.'
+- contextPath: File.Size
+  description: The size of the file in bytes.
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

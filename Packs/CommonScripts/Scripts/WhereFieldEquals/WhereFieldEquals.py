@@ -15,21 +15,21 @@ def where_field_equals(args):
     get_field = args.get('getField')
     found_matches = []
     for dict_item in values_to_search:
-        if dict_item.get(field, None) == equal_to:
+        if dict_item.get(field) == equal_to:
             if get_field:
-                found_matches.append(dict_item[get_field])
+                value = dict_item.get(get_field)
+                if value:
+                    found_matches.append(value)
             else:
                 found_matches.append(dict_item)
     if len(found_matches) == 1:
         return found_matches[0]
-
     return json.dumps(found_matches, separators=(',', ':'), ensure_ascii=False)
 
 
 def main():
     args = demisto.args()
-    hr_string = where_field_equals(args)
-    return_outputs(readable_output=hr_string)
+    demisto.results(where_field_equals(args))
 
 
 # python2 uses __builtin__ python3 uses builtins

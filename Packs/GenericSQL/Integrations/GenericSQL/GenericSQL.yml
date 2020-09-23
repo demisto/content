@@ -55,24 +55,24 @@ configuration:
   required: false
   type: 0
 description: 'Use the Generic SQL integration to run SQL queries on the following
-  databases: MYSQL, PostgreSQL,Microsoft SQL Server, and Oracle.'
+  databases: MySQL, PostgreSQL, Microsoft SQL Server, and Oracle.'
 display: Generic SQL
 name: Generic SQL
 script:
   commands:
   - arguments:
     - default: false
+      description: The SQL query to run.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
       defaultValue: '50'
       description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
-      secret: false
-    - default: false
-      description: The SQL query to run.
-      isArray: false
-      name: query
-      required: true
       secret: false
     - default: false
       defaultValue: '0'
@@ -93,8 +93,45 @@ script:
       name: bind_variables_values
       required: false
       secret: false
-    deprecated: false
-    description: Runs a SQL query.
+    deprecated: true
+    description: Runs a SQL query. Deprecated. Use the generic sql-command instead.
+    execution: false
+    name: pgsql-query
+  - arguments:
+    - default: false
+      description: The SQL query to run.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return. The default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset at which to start the results. The default is 0.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
+      isArray: true
+      name: bind_variables_names
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of value, for example: 7,"foo",3.'
+      isArray: true
+      name: bind_variables_values
+      required: false
+      secret: false
+    deprecated: true
+    description: Runs a SQL query. Deprecated. Use the generic sql-command instead.
     execution: false
     name: query
   - arguments:

@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 INCIDENT_FIELD_NAME = "name"
 INCIDENT_FIELD_MACHINE_NAME = "cliName"
+INCIDENT_FIELD_SYSTEM = "system"
 
 SAMPLES_INCOMING = 'incomingSamples'
 SAMPLES_SCHEME = 'scheme'
@@ -160,7 +161,6 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
                    'aliases': ['devicename', 'device name', 'endpoint name', 'end point name'],
                    'validators': ['validate_alphanumeric_with_common_punct']},
 
-
                'MAC Address': {'aliases': ['macaddress', 'mac address', 'mac', 'src mac', 'source mac'],
                                'validators': ['validate_mac']},
 
@@ -176,8 +176,7 @@ SIEM_FIELDS = {'Account ID': {'aliases': ['accountid', 'account id'],
                'Source IP': {
                    'aliases': ['sourceip', 'source ip', 'src ip', 'src address', 'source address', 'computer ip',
                                'device ip',
-                               'attacker address', 'attacker ip', 'sender ip', 'sender address', 'offense source',
-                               'agent ip'],
+                               'attacker address', 'attacker ip', 'sender ip', 'sender address', 'agent ip'],
                    'validators': ['validate_ip']},
 
                'Source Port': {'aliases': ['sourceport',
@@ -321,7 +320,7 @@ class Validator:
             r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
             r'(?::\d+)?'  # optional port
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-        self.COMMON_NAME_CHARECTERS = re.compile('^[0-9a-zA-Z"\s_\-\'.]+$')
+        self.COMMON_NAME_CHARECTERS = re.compile('^[0-9a-zA-Z"\s_\-\'./]+$')
         self.HOSTNAME_PART_REGEX = re.compile('(?!-)[A-Z\d-]{1,63}(?<!-)$')
         self.FULL_FILE_PATH_REGEX = re.compile('^((?:/[^/\n]+)*|.*(\\\\.*))$')
         self.date_validator = DateValidator()
@@ -508,6 +507,14 @@ def suggest_field(json_field_name, json_field_value=None):
     return suggest_field_with_alias(json_field_name, json_field_value)[0]
 
 
+def generate_aliases(field):
+    aliases = []
+    aliases.append(field.lower())
+    aliases.append(" ".join(normilize(field)))
+    aliases.append("".join(normilize(field)))
+    return aliases
+
+
 def get_aliasing(siem_fields):
     aliasing_map = {}
     aliases_terms_map = {}
@@ -526,8 +533,25 @@ def get_alias_index(field_name, alias):
     return SIEM_FIELDS[field_name]['aliases'].index(alias)  # type: ignore
 
 
-def get_most_relevant(field_name, field_mappings):
-    candidates = sorted(field_mappings, key=lambda x: get_alias_index(field_name, x[1]))
+def get_most_relevant_json_field(field_name, json_field_to_alias):
+    if len(json_field_to_alias) == 0:
+        return
+
+    # calculate jaccard score for each alias, and get the candidates with max score
+    scores = {}
+    for json_field, alias in json_field_to_alias.items():
+        scores[json_field] = jaccard_similarity_for_string_terms(json_field, alias)
+    scores = {k: v for k, v in scores.items() if v == max(scores.values())}
+
+    # calculate jaccard score for each field, and get the candidates with max score
+    for json_field, alias in json_field_to_alias.items():
+        scores[json_field] = jaccard_similarity_for_string_terms(json_field, field_name)
+    scores = {k: v for k, v in scores.items() if v == max(scores.values())}
+
+    # for candidates with the same score with the least alias index
+    candidates = sorted(list(scores.keys()),
+                        key=lambda json_field: get_alias_index(field_name, json_field_to_alias[json_field]))
+
     return candidates[0]
 
 
@@ -542,13 +566,15 @@ def match_for_incident(incident_to_match):
 
     mapping = {}  # type: ignore
     for json_field_name, json_field_value in incident.items():
+        # we try to get suggestion if it's scheme or if the value is not empty
         if SCHEME_ONLY or json_field_value:
-            suggestion, alias = suggest_field_with_alias(json_field_name, json_field_value)
-            if suggestion:
-                if suggestion not in mapping:
-                    mapping[suggestion] = []
-                mapping[suggestion].append((json_field_name, alias))
-    return {k: get_most_relevant(k, v)[0] for k, v in mapping.items()}
+            incident_field_suggestion, alias = suggest_field_with_alias(json_field_name, json_field_value)
+            if incident_field_suggestion:
+                if incident_field_suggestion not in mapping:
+                    mapping[incident_field_suggestion] = {}
+                mapping[incident_field_suggestion][json_field_name] = alias
+    return {incident_field_name: get_most_relevant_json_field(incident_field_name, json_field_to_alias) for
+            incident_field_name, json_field_to_alias in mapping.items()}
 
 
 def jaccard_similarity(list1, list2):
@@ -587,7 +613,8 @@ def match_for_incidents(incidents_to_match):
         for k, v in match_for_incident(flat_incident).items():
             if k not in fields_cnt:
                 fields_cnt[k] = Counter()
-            fields_cnt[k][v] += 1
+            if v:
+                fields_cnt[k][v] += 1
     mapping_result = {field_name: get_most_relevant_match_for_field(field_name, field_cnt) for field_name, field_cnt in
                       fields_cnt.items()}
     return mapping_result
@@ -680,6 +707,9 @@ def init():
     if fields and len(fields) > 0:
         fields_names = map(lambda x: x['name'], fields)
         SIEM_FIELDS = filter_by_dict_by_keys(SIEM_FIELDS, fields_names)
+        for custom_field in filter(lambda x: not x['system'], fields):
+            field_name = custom_field[INCIDENT_FIELD_NAME]
+            SIEM_FIELDS[field_name] = {'aliases': generate_aliases(field_name), 'validators': []}
 
     FIELD_NAME_TO_CLI_NAME = {field[INCIDENT_FIELD_NAME]: field[INCIDENT_FIELD_MACHINE_NAME] for field in fields}
 

@@ -34,7 +34,8 @@ class Client(BaseClient):
             verify: bool = False,
             proxy: bool = False,
             read_time_out: Optional[float] = 120.0,
-            tags: list = []
+            tags: list = [],
+            tlp_color: Optional[str] = None
     ):
         """Constructor of Client and BaseClient
 
@@ -48,6 +49,7 @@ class Client(BaseClient):
             proxy {bool} -- Should use proxy. (default: {False})
             read_time_out {int} -- Read time out in seconds. (default: {30})
             tags {list} -- A list of tags to add to the feed.
+            tlp_color {str} -- Traffic Light Protocol color.
         """
         self.read_time_out = read_time_out
         self.threat_type = (
@@ -57,6 +59,7 @@ class Client(BaseClient):
         # Request related attributes
         self.suffix = "/apiv1/threat/search/"
         self.tags = tags
+        self.tlp_color = tlp_color
 
         super().__init__(url, verify=verify, proxy=proxy, auth=auth)
 
@@ -165,7 +168,7 @@ class Client(BaseClient):
             malware_family: dict = block.get("malwarefamily", {})
             ip_detail: dict = block.get("ipDetail", {})
             if indicator:
-                results.append({
+                indicator_obj = {
                     "value": value,
                     "type": indicator,
                     "rawJSON": block,
@@ -183,7 +186,12 @@ class Client(BaseClient):
                         "geolocation": f'{ip_detail.get("latitude", "")},{ip_detail.get("longitude", "")}' if ip_detail
                         else ""
                     }
-                })
+                }
+
+                if self.tlp_color:
+                    indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color  # type: ignore
+
+                results.append(indicator_obj)
 
         return results
 
@@ -316,7 +324,8 @@ def main():
     proxy = params.get("proxy")
     threat_type = params.get("threat_type")
     tags = argToList(params.get('feedTags'))
-    client = Client(url, auth=auth, verify=verify, proxy=proxy, threat_type=threat_type, tags=tags)
+    tlp_color = params.get('tlp_color')
+    client = Client(url, auth=auth, verify=verify, proxy=proxy, threat_type=threat_type, tags=tags, tlp_color=tlp_color)
 
     demisto.info(f"Command being called is {demisto.command()}")
     try:

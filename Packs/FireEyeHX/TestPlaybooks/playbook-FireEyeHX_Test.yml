@@ -1,29 +1,22 @@
 id: FireEye HX Test
-inputs: []
+version: -1
 name: FireEye HX Test
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 8bee9538-5ce8-4252-86e0-013dae963685
+    type: start
+    task:
+      id: 8bee9538-5ce8-4252-86e0-013dae963685
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 944d22b9-f6b7-4ffd-8c13-32a83f2f5555
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 944d22b9-f6b7-4ffd-8c13-32a83f2f5555
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -31,14 +24,26 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: 0a719e9d-a2fc-4d7e-88cf-b98ef16b8279
+    type: regular
+    task:
+      id: 0a719e9d-a2fc-4d7e-88cf-b98ef16b8279
+      version: -1
+      name: List the last alert
+      script: FireEye HX|||fireeye-hx-get-alerts
+      type: regular
+      iscommand: true
+      brand: FireEye HX
     nexttasks:
       '#none#':
       - "10"
-    note: false
-    quietmode: 0
     scriptarguments:
       EXDsource: {}
       IOCsource: {}
@@ -59,19 +64,6 @@ tasks:
       sortOrder:
         simple: descending
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: FireEye HX
-      id: 6378667e-da84-44bb-89ed-52d061b2b638
-      iscommand: true
-      name: List the last alert
-      script: FireEye HX|||fireeye-hx-get-alerts
-      type: regular
-      version: -1
-      description: ''
-    taskid: 6378667e-da84-44bb-89ed-52d061b2b638
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -79,31 +71,30 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    ignoreworker: false
+    taskid: cb0a1e8a-fa25-4e66-8a56-d992f2d8c9a3
+    type: regular
+    task:
+      id: cb0a1e8a-fa25-4e66-8a56-d992f2d8c9a3
+      version: -1
+      name: Get alert information
+      script: FireEye HX|||fireeye-hx-get-alert
+      type: regular
+      iscommand: true
+      brand: FireEye HX
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       alertId:
         simple: ${FireEyeHX.Alerts._id}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: FireEye HX
-      id: cd5fd854-b4a2-4213-8b5d-3740de7676b0
-      iscommand: true
-      name: Get alert information
-      script: FireEye HX|||fireeye-hx-get-alert
-      type: regular
-      version: -1
-      description: ''
-    taskid: cd5fd854-b4a2-4213-8b5d-3740de7676b0
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -111,29 +102,28 @@ tasks:
           "y": 1040
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    ignoreworker: false
-    note: false
-    quietmode: 0
+    taskid: 82efabbe-4f64-4b1d-8371-5ae50f95003e
+    type: regular
+    task:
+      id: 82efabbe-4f64-4b1d-8371-5ae50f95003e
+      version: -1
+      name: Get information on the host associated with the alert
+      script: FireEye HX|||fireeye-hx-get-host-information
+      type: regular
+      iscommand: true
+      brand: FireEye HX
     scriptarguments:
       agentId:
         simple: ${FireEyeHX.Alerts.agent._id}
       hostName: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: FireEye HX
-      id: b586d67c-e50f-4f1b-8bcd-9102a2771c06
-      iscommand: true
-      name: Get information on the host associated with the alert
-      script: FireEye HX|||fireeye-hx-get-host-information
-      type: regular
-      version: -1
-      description: ''
-    taskid: b586d67c-e50f-4f1b-8bcd-9102a2771c06
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -141,14 +131,26 @@ tasks:
           "y": 1215
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    ignoreworker: false
+    taskid: 55f33045-4813-4eb4-8f39-57521743a997
+    type: regular
+    task:
+      id: 55f33045-4813-4eb4-8f39-57521743a997
+      version: -1
+      name: Get alerted indicators
+      script: FireEye HX|||fireeye-hx-get-indicators
+      type: regular
+      iscommand: true
+      brand: FireEye HX
     nexttasks:
       '#none#':
       - "6"
-    note: false
-    quietmode: 0
     scriptarguments:
       alerted:
         simple: "yes"
@@ -162,19 +164,6 @@ tasks:
       sort:
         simple: activeSince
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: FireEye HX
-      id: 225b026d-69bb-4ee4-8d43-9c12cf9d216c
-      iscommand: true
-      name: Get alerted indicators
-      script: FireEye HX|||fireeye-hx-get-indicators
-      type: regular
-      version: -1
-      description: ''
-    taskid: 225b026d-69bb-4ee4-8d43-9c12cf9d216c
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -182,30 +171,29 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    scriptarguments:
-      category:
-        simple: ${FireEyeHX.Indicators.[0].category.name}
-      name:
-        simple: ${FireEyeHX.Indicators.[0].name}
-    separatecontext: false
-    skipunavailable: false
+    taskid: f7a448ef-cd6d-413c-8951-b32772fe5553
+    type: regular
     task:
-      brand: FireEye HX
-      id: d5413052-07a1-40f8-8e9d-55e369c8c2a4
-      iscommand: true
+      id: f7a448ef-cd6d-413c-8951-b32772fe5553
+      version: -1
       name: 'Get information on a specific indicator '
       script: FireEye HX|||fireeye-hx-get-indicator
       type: regular
-      version: -1
-      description: ''
-    taskid: d5413052-07a1-40f8-8e9d-55e369c8c2a4
-    timertriggers: []
-    type: regular
+      iscommand: true
+      brand: FireEye HX
+    scriptarguments:
+      category:
+        simple: ${FireEyeHX.Indicators.[0].category.uri_name}
+      name:
+        simple: ${FireEyeHX.Indicators.[0].uri_name}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -213,14 +201,26 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    ignoreworker: false
+    taskid: d6de4b50-59c7-4f02-842b-f6e80cfb871a
+    type: regular
+    task:
+      id: d6de4b50-59c7-4f02-842b-f6e80cfb871a
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "17"
-    note: false
-    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
@@ -229,19 +229,6 @@ tasks:
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 43d080b6-0786-4853-88b1-964c72598f73
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-      description: ''
-    taskid: 43d080b6-0786-4853-88b1-964c72598f73
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -249,42 +236,41 @@ tasks:
           "y": 195
         }
       }
-  "10":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: FireEyeHX.Alerts
-          operator: isExists
-      - - left:
-            iscontext: true
-            value:
-              simple: FireEyeHX.Alerts
-          operator: isNotEmpty
-      label: "yes"
-    id: "10"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 23691a1a-02ec-4d5b-85a3-8a93082be5d2
+    type: condition
+    task:
+      id: 23691a1a-02ec-4d5b-85a3-8a93082be5d2
+      version: -1
+      name: Alert exists
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "11"
       "yes":
       - "12"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: ad5857a0-8692-4c31-87d1-297e8b373574
-      iscommand: false
-      name: Alert exists
-      type: condition
-      version: -1
-      description: ''
-    taskid: ad5857a0-8692-4c31-87d1-297e8b373574
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeHX.Alerts
+            iscontext: true
     view: |-
       {
         "position": {
@@ -292,24 +278,23 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 8d285588-42e7-4f08-8309-aca72a24d9df
+    type: title
     task:
-      brand: ""
-      id: 31c1492a-3897-49e8-81e7-621cc5c3b7f8
-      iscommand: false
+      id: 8d285588-42e7-4f08-8309-aca72a24d9df
+      version: -1
       name: 'No alerts found '
       type: title
-      version: -1
-      description: ''
-    taskid: 31c1492a-3897-49e8-81e7-621cc5c3b7f8
-    timertriggers: []
-    type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -317,27 +302,26 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    ignoreworker: false
+    taskid: 7930bc6e-b888-4f4b-89e7-0d286ad2a669
+    type: title
+    task:
+      id: 7930bc6e-b888-4f4b-89e7-0d286ad2a669
+      version: -1
+      name: Alert detected - get more information
+      type: title
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: b347a7d1-4e9d-45ab-8790-8c4ce3e9c857
-      iscommand: false
-      name: Alert detected - get more information
-      type: title
-      version: -1
-      description: ''
-    taskid: b347a7d1-4e9d-45ab-8790-8c4ce3e9c857
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
@@ -345,14 +329,26 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    ignoreworker: false
+    taskid: a77b48a0-566a-430f-85e4-0946dc73a651
+    type: regular
+    task:
+      id: a77b48a0-566a-430f-85e4-0946dc73a651
+      version: -1
+      name: 'Create Indicator '
+      script: FireEye HX|||fireeye-hx-create-indicator
+      type: regular
+      iscommand: true
+      brand: FireEye HX
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
     scriptarguments:
       category:
         simple: Custom
@@ -361,19 +357,6 @@ tasks:
       indicator_name:
         simple: test
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: FireEye HX
-      id: 5b021eec-ee7c-456c-8855-ad638f16e298
-      iscommand: true
-      name: 'Create Indicator '
-      script: FireEye HX|||fireeye-hx-create-indicator
-      type: regular
-      version: -1
-      description: ''
-    taskid: 5b021eec-ee7c-456c-8855-ad638f16e298
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -381,45 +364,44 @@ tasks:
           "y": 545
         }
       }
-  "14":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: FireEyeHX.Indicators.category.name
-          operator: isExists
-      - - left:
-            iscontext: true
-            value:
-              simple: FireEyeHX.Indicators.name
-          operator: isExists
-      - - left:
-            iscontext: true
-            value:
-              simple: FireEyeHX.Indicators._id
-          operator: isExists
-      label: "yes"
-    id: "14"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 415bcc71-4cfd-4c51-85a3-5f2542988959
+    type: condition
+    task:
+      id: 415bcc71-4cfd-4c51-85a3-5f2542988959
+      version: -1
+      name: Verify indicator
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       "yes":
       - "16"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 1070ebca-bb0f-44af-8f42-bdd9818b67f8
-      iscommand: false
-      name: Verify indicator
-      type: condition
-      version: -1
-      description: ''
-    taskid: 1070ebca-bb0f-44af-8f42-bdd9818b67f8
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Indicators.category.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Indicators.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FireEyeHX.Indicators._id
+            iscontext: true
     view: |-
       {
         "position": {
@@ -427,11 +409,23 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    ignoreworker: false
-    note: false
-    quietmode: 0
+    taskid: 49990a57-36de-46d5-8296-7a7466c9906f
+    type: regular
+    task:
+      id: 49990a57-36de-46d5-8296-7a7466c9906f
+      version: -1
+      name: Append conditions
+      script: '|||fireeye-hx-append-conditions'
+      type: regular
+      iscommand: true
+      brand: ""
     scriptarguments:
       category:
         simple: ${FireEyeHX.Indicators.[0].category.name}
@@ -440,19 +434,6 @@ tasks:
       name:
         simple: ${FireEyeHX.Indicators.[0].name}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: c9244b41-8e8b-464d-8bf9-adeb26a141a0
-      iscommand: true
-      name: Append conditions
-      script: '|||fireeye-hx-append-conditions'
-      type: regular
-      version: -1
-      description: ''
-    taskid: c9244b41-8e8b-464d-8bf9-adeb26a141a0
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -460,24 +441,23 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: a3401d4e-97c4-410d-8460-63dc7017cecd
+    type: title
     task:
-      brand: ""
-      id: 0368a6be-3fab-4336-89b2-7062ac3d15da
-      iscommand: false
+      id: a3401d4e-97c4-410d-8460-63dc7017cecd
+      version: -1
       name: Done
       type: title
-      version: -1
-      description: ''
-    taskid: 0368a6be-3fab-4336-89b2-7062ac3d15da
-    timertriggers: []
-    type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -485,17 +465,30 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    ignoreworker: false
+    taskid: 09eb76ed-ec22-4aee-8ada-e657d711e161
+    type: regular
+    task:
+      id: 09eb76ed-ec22-4aee-8ada-e657d711e161
+      version: -1
+      name: Get Indicators
+      description: Get a list of indicators
+      script: '|||fireeye-hx-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "1"
       - "4"
       - "13"
       - "15"
-    note: false
-    quietmode: 0
     scriptarguments:
       alerted: {}
       category: {}
@@ -505,19 +498,6 @@ tasks:
       shareMode: {}
       sort: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Get a list of indicators
-      id: 73c1a945-be0e-47dd-88b0-144633727a54
-      iscommand: true
-      name: Get Indicators
-      script: '|||fireeye-hx-get-indicators'
-      type: regular
-      version: -1
-    taskid: 73c1a945-be0e-47dd-88b0-144633727a54
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -525,7 +505,11 @@ tasks:
           "y": 370
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -540,5 +524,6 @@ view: |-
       }
     }
   }
+inputs: []
+outputs: []
 fromversion: 4.1.0
-description: ''

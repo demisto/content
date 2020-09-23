@@ -485,9 +485,6 @@ def __delete_integration_instance_if_determined_by_name(client, instance_name, p
 # return instance name if succeed, None otherwise
 def __create_integration_instance(client, integration_name, integration_instance_name,
                                   integration_params, is_byoi, prints_manager, validate_test=True, thread_index=0):
-    start_message = 'Configuring instance for {} (instance name: {}, ' \
-                    'validate "Test": {})'.format(integration_name, integration_instance_name, validate_test)
-    prints_manager.add_print_job(start_message, print, thread_index)
 
     # get configuration config (used for later rest api
     configuration = __get_integration_config(client, integration_name, prints_manager,
@@ -504,6 +501,10 @@ def __create_integration_instance(client, integration_name, integration_instance
         __delete_integration_instance_if_determined_by_name(client, instance_name, prints_manager, thread_index)
     else:
         instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
+
+    start_message = 'Configuring instance for {} (instance name: {}, ' \
+                    'validate "Test": {})'.format(integration_name, instance_name, validate_test)
+    prints_manager.add_print_job(start_message, print, thread_index)
 
     # define module instance
     module_instance = {
@@ -942,17 +943,16 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
     return playbook_state, inc_id
 
 
-def disable_all_integrations(demisto_api_key, server, prints_manager, thread_index=0):
+def disable_all_integrations(dem_client, prints_manager, thread_index=0):
     """
     Disable all enabled integrations. Should be called at start of test loop to start out clean
 
     Arguments:
         client -- demisto py client
     """
-    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
     try:
         body = {'size': 1000}
-        int_resp = demisto_client.generic_request_func(self=client, method='POST',
+        int_resp = demisto_client.generic_request_func(self=dem_client, method='POST',
                                                        path='/settings/integration/search',
                                                        body=body)
         int_instances = ast.literal_eval(int_resp[0])
@@ -976,4 +976,4 @@ def disable_all_integrations(demisto_api_key, server, prints_manager, thread_ind
             prints_manager.add_print_job(add_to_disable_message, print, thread_index)
             to_disable.append(instance)
     if len(to_disable) > 0:
-        __disable_integrations_instances(client, to_disable, prints_manager, thread_index=thread_index)
+        __disable_integrations_instances(dem_client, to_disable, prints_manager, thread_index=thread_index)

@@ -496,3 +496,5 @@ script:
   runonce: false
   isfetch: true
 fromversion: 5.5.0
+tests:
+ - No Tests - non-certified partner, test was moved to NonCircleTests directory.

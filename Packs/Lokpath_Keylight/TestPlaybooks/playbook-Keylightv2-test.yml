@@ -786,7 +786,7 @@ tasks:
       - "15"
     scriptarguments:
       project:
-        simple: PCI-DSS 2019
+        simple: ISO 27001 Audit 2020
       task_id:
         simple: Created by Demisto Test Playbook
     separatecontext: false
@@ -820,7 +820,7 @@ tasks:
       - "17"
     scriptarguments:
       project:
-        simple: PCI-DSS 2019
+        simple: ISO 27001 Audit 2020
       task_id:
         simple: Updated by Demisto Test Playbook
     separatecontext: false
