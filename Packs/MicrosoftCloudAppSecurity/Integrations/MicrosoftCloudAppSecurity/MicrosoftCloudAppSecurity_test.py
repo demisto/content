@@ -43,7 +43,7 @@ response_users_accounts_data = {"type": "user", "status": 'N/A', "group_id": '12
         (response_users_accounts_data, expected_filtered_users_accounts)
     ]
 )
-def test_args_or_params_to_filter(response_data, expected):
+def test_args_to_filter(response_data, expected):
     from MicrosoftCloudAppSecurity import args_to_filter
     res = args_to_filter(response_data)
     assert res == expected
@@ -108,3 +108,17 @@ def test_list_users_accounts_command(requests_mock):
                                       {'username': '{ "id": "7e14f6a3-185d-49e3-85e8-40a33d90dc90",'
                                                    ' "saas": 11161, "inst": 0 }'})
     assert users_accounts["ENTITIES_BY_USERNAME_DATA_CONTEXT"] == res.outputs[0]
+
+
+@pytest.mark.parametrize(
+    "severity, resolution_status, expected",
+    [
+        (['All'], ['All'], {'resolutionStatus': {'eq': [0, 1, 2]}, 'severity': {'eq': [0, 1, 2]}}),
+        (['Low'], ['Open', 'Dismissed'], {'resolutionStatus': {'eq': [0, 1]}, 'severity': {'eq': 0}}),
+        ([], [], {'resolutionStatus': {'eq': []}, 'severity': {'eq': []}})
+    ]
+)
+def test_params_to_filter(severity, resolution_status, expected):
+    from MicrosoftCloudAppSecurity import params_to_filter
+    res = params_to_filter(severity, resolution_status)
+    assert res == expected

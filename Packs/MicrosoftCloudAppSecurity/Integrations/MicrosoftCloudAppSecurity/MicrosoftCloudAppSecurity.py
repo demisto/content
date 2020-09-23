@@ -493,12 +493,10 @@ def calculate_fetch_start_time(last_fetch, first_fetch):
         if not first_fetch:
             first_fetch = '3 days'
         first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)
-        first_fetch_time = int(time.mktime(first_fetch_dt.timetuple()))
+        first_fetch_time = int(first_fetch_dt.timestamp())
         return first_fetch_time
     else:
-        last_fetch = int(last_fetch)
-    latest_created_time = last_fetch
-    return latest_created_time
+        return int(last_fetch)
 
 
 def arrange_alerts_by_incident_type(alerts):
@@ -547,18 +545,21 @@ def params_to_filter(severity, resolution_status):
     filters: Dict[str, Any] = {}
     if len(severity) == 1:
         filters['severity'] = {'eq': SEVERITY_OPTIONS[severity[0]]}
+
     else:
         severities = []
         for severity_option in severity:
             severities.append(SEVERITY_OPTIONS[severity_option])
         filters['severity'] = {'eq': severities}
+
     if len(resolution_status) == 1:
         filters['resolutionStatus'] = {'eq': RESOLUTION_STATUS_OPTIONS[resolution_status[0]]}
+
     else:
-        severities = []
+        resolution_statuses = []
         for resolution in resolution_status:
-            severities.append(RESOLUTION_STATUS_OPTIONS[resolution])
-        filters['resolutionStatus'] = {'eq': severities}
+            resolution_statuses.append(RESOLUTION_STATUS_OPTIONS[resolution])
+        filters['resolutionStatus'] = {'eq': resolution_statuses}
     return filters
 
 
