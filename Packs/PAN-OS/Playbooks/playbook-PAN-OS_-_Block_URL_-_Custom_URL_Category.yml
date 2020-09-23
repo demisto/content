@@ -5,7 +5,7 @@ description: |-
   This playbook blocks URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories.
   The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
 starttaskid: "0"
-fromversion: 4.0.0
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
@@ -679,9 +679,7 @@ tasks:
       id: b20b0525-f692-4321-8b43-2e9f18de1073
       version: -1
       name: PAN-OS Commit Configuration
-      description: "Commit PAN-OS Panorama or Firewall Configuration.\nIf specified
-        as Panorama, will also push the Policies to the specified Device Group in
-        the instance. "
+      description: "Commit PAN-OS Panorama or Firewall Configuration.\nIf specified as Panorama, will also push the Policies to the specified Device Group in the instance. "
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -769,4 +767,4 @@ inputs:
   description: Specify pre-rulebase or post-rulebase. (Panorama instances).
 outputs: []
 tests:
-  - PAN-OS - Block URL - Custom URL Category Test
+- PAN-OS - Block URL - Custom URL Category Test
