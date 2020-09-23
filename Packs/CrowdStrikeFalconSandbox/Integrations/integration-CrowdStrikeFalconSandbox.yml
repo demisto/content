@@ -631,7 +631,7 @@ script:
         } catch (exception) {
               var notSupported = 'The provided URL resolves to a file.'
               if (dontThrowErrorOnFileDetonation && exception.contains(notSupported)){
-                  return 'The file format is not supported, use "crowdstrike-submit-file-by-url" instead.';
+                  return 'The file format is not supported, use the command "crowdstrike-submit-file-by-url" instead.';
               } else {
                   throw exception;
               }
