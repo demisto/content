@@ -114,24 +114,42 @@ def option_handler():
     return parser.parse_args()
 
 
-def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
-    lock_file_exists = True
-    while lock_file_exists:
-        dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
-        lock_file_exists = dummy_index_lock_blob.exists()
-        if lock_file_exists:
-            time.sleep(10)
-        else:
-            with open('lock.txt', 'w') as lock_file:
-                lock_file.write('locked')
+def is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
+    dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
+    return dummy_index_lock_blob.exists()
 
-            with open('lock.txt', 'rb') as lock_file:
-                dummy_index_lock_blob.upload_from_file(lock_file)
+
+def lock_dummy_index(public_storage_bucket, dummy_index_lock_path):
+    dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
+    with open('lock.txt', 'w') as lock_file:
+        lock_file.write('locked')
+
+    with open('lock.txt', 'rb') as lock_file:
+        dummy_index_lock_blob.upload_from_file(lock_file)
+
+
+
+def acquire_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
+    print_error(f"Verifying if dummy index is locked before "
+                f"acquiring: {is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path)}")
+    while is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path):
+        time.sleep(10)
+
+    lock_dummy_index(public_storage_bucket, dummy_index_lock_path)
+    print_error("Waiting for 5 minutes so I can see the file in the bucket")
+    time.sleep(300)
+
+    print_error(f"Verifying if dummy index is locked after "
+                f"acquiring: {is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path)}")
+
 
 
 def release_dummy_index_lock(public_storage_bucket, dummy_index_lock_path):
     dummy_index_lock_blob = public_storage_bucket.blob(dummy_index_lock_path)
     dummy_index_lock_blob.delete()
+
+    print_error(f"Verifying if dummy index is locked after "
+                f"deleting: {is_dummy_index_locked(public_storage_bucket, dummy_index_lock_path)}")
 
 
 def main():
@@ -149,6 +167,9 @@ def main():
     dummy_index_dir_path = upload_config.dummy_index_dir_path
     dummy_index_path = os.path.join(dummy_index_dir_path, 'index.json')
     dummy_index_lock_path = os.path.join(dummy_index_dir_path, 'lock.txt')
+
+    data_msg = f'dummy_index_dir_path:{dummy_index_dir_path}'
+    print_error(data_msg)
 
     storage_client = init_storage_client(service_account)
     public_storage_bucket = storage_client.bucket(public_bucket_name)
