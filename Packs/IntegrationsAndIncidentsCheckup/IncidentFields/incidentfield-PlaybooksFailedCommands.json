@@ -1,19 +1,19 @@
 {
  "associatedToAll": false,
  "associatedTypes": [
-  "Integrations and Incidents Health"
+  "Integrations and Incidents Health Check"
  ],
  "caseInsensitive": true,
- "cliName": "similarincident",
+ "cliName": "playbooksfailedcommands",
  "closeForm": false,
  "content": true,
  "editForm": true,
  "group": 0,
  "hidden": false,
- "id": "incident_similarincident",
+ "id": "incident_playbooksfailedcommands",
  "isReadOnly": false,
  "locked": false,
- "name": "similarIncident",
+ "name": "Playbooks Failed Commands",
  "neverSetAsRequired": false,
  "ownerOnly": false,
  "required": false,
@@ -28,5 +28,5 @@
  "unsearchable": false,
  "useAsKpi": false,
  "version": -1,
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

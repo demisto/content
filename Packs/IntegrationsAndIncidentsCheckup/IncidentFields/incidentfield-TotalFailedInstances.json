@@ -1,19 +1,19 @@
 {
  "associatedToAll": false,
  "associatedTypes": [
-  "Integrations and Incidents Health"
+  "Integrations and Incidents Health Check"
  ],
  "caseInsensitive": true,
- "cliName": "numberofentriesiderrors",
+ "cliName": "totalfailedinstances",
  "closeForm": false,
  "content": true,
  "editForm": true,
  "group": 0,
  "hidden": false,
- "id": "incident_numberofentriesiderrors",
+ "id": "incident_totalfailedinstances",
  "isReadOnly": false,
  "locked": false,
- "name": "Number of Entries ID Errors",
+ "name": "Total Failed Instances",
  "neverSetAsRequired": false,
  "ownerOnly": false,
  "required": false,
@@ -23,7 +23,7 @@
  "type": "number",
  "unmapped": false,
  "unsearchable": false,
- "useAsKpi": false,
+ "useAsKpi": true,
  "version": -1,
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

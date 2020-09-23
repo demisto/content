@@ -1,30 +1,18 @@
 {
  "associatedToAll": false,
  "associatedTypes": [
-  "Integrations and Incidents Health"
+  "Integrations and Incidents Health Check"
  ],
  "caseInsensitive": true,
- "cliName": "playbooktaskserrors",
+ "cliName": "integrationstestgrid",
  "closeForm": false,
  "columns": [
   {
-   "displayName": "Creation Date",
+   "displayName": "Brand",
    "fieldCalcScript": "",
    "isDefault": true,
    "isReadOnly": false,
-   "key": "creationdate",
-   "required": false,
-   "script": "",
-   "selectValues": null,
-   "type": "date",
-   "width": 150
-  },
-  {
-   "displayName": "Incident ID",
-   "fieldCalcScript": "",
-   "isDefault": true,
-   "isReadOnly": false,
-   "key": "incidentid",
+   "key": "brand",
    "required": false,
    "script": "",
    "selectValues": null,
@@ -32,11 +20,11 @@
    "width": 150
   },
   {
-   "displayName": "Playbook Name",
+   "displayName": "Instance",
    "fieldCalcScript": "",
    "isDefault": true,
    "isReadOnly": false,
-   "key": "playbookname",
+   "key": "instance",
    "required": false,
    "script": "",
    "selectValues": null,
@@ -44,11 +32,11 @@
    "width": 150
   },
   {
-   "displayName": "Task Name",
+   "displayName": "Category",
    "fieldCalcScript": "",
    "isDefault": true,
    "isReadOnly": false,
-   "key": "taskname",
+   "key": "category",
    "required": false,
    "script": "",
    "selectValues": null,
@@ -56,47 +44,11 @@
    "width": 150
   },
   {
-   "displayName": "Task ID",
+   "displayName": "Information",
    "fieldCalcScript": "",
    "isDefault": true,
    "isReadOnly": false,
-   "key": "taskid",
-   "required": false,
-   "script": "",
-   "selectValues": null,
-   "type": "shortText",
-   "width": 150
-  },
-  {
-   "displayName": "Command Name",
-   "fieldCalcScript": "",
-   "isDefault": true,
-   "isReadOnly": false,
-   "key": "commandname",
-   "required": false,
-   "script": "",
-   "selectValues": null,
-   "type": "shortText",
-   "width": 150
-  },
-  {
-   "displayName": "Number of Errors",
-   "fieldCalcScript": "",
-   "isDefault": true,
-   "isReadOnly": false,
-   "key": "numberoferrors",
-   "required": false,
-   "script": "",
-   "selectValues": null,
-   "type": "shortText",
-   "width": 150
-  },
-  {
-   "displayName": "Owner",
-   "fieldCalcScript": "",
-   "isDefault": true,
-   "isReadOnly": false,
-   "key": "owner",
+   "key": "information",
    "required": false,
    "script": "",
    "selectValues": null,
@@ -131,10 +83,10 @@
  "editForm": true,
  "group": 0,
  "hidden": false,
- "id": "incident_playbooktaskserrors",
+ "id": "incident_integrationstestgrid",
  "isReadOnly": false,
  "locked": false,
- "name": "Playbook Tasks Errors",
+ "name": "Integrations Test Grid",
  "neverSetAsRequired": false,
  "ownerOnly": false,
  "required": false,
@@ -144,7 +96,7 @@
  "type": "grid",
  "unmapped": false,
  "unsearchable": false,
- "useAsKpi": false,
+ "useAsKpi": true,
  "version": -1,
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

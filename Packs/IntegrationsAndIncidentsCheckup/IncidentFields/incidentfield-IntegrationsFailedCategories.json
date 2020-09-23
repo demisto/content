@@ -1,19 +1,19 @@
 {
  "associatedToAll": false,
  "associatedTypes": [
-  "Integrations and Incidents Health"
+  "Integrations and Incidents Health Check"
  ],
  "caseInsensitive": true,
- "cliName": "playbookswithfailedtasks",
+ "cliName": "integrationsfailedcategories",
  "closeForm": false,
  "content": true,
  "editForm": true,
  "group": 0,
  "hidden": false,
- "id": "incident_playbookswithfailedtasks",
+ "id": "incident_integrationsfailedcategories",
  "isReadOnly": false,
  "locked": false,
- "name": "Playbooks With Failed Tasks",
+ "name": "Integrations Failed Categories",
  "neverSetAsRequired": false,
  "ownerOnly": false,
  "required": false,
@@ -29,5 +29,5 @@
  "unsearchable": false,
  "useAsKpi": false,
  "version": -1,
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

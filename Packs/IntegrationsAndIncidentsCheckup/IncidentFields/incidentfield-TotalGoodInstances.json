@@ -1,29 +1,29 @@
 {
  "associatedToAll": false,
  "associatedTypes": [
-  "Integrations and Playbooks Health Check"
+  "Integrations and Incidents Health Check"
  ],
  "caseInsensitive": true,
- "cliName": "failedincidentscreateddate",
+ "cliName": "totalgoodinstances",
  "closeForm": false,
  "content": true,
  "editForm": true,
  "group": 0,
  "hidden": false,
- "id": "incident_failedincidentscreateddate",
+ "id": "incident_totalgoodinstances",
  "isReadOnly": false,
  "locked": false,
- "name": "failed incidents created date",
+ "name": "Total Good Instances",
  "neverSetAsRequired": false,
  "ownerOnly": false,
  "required": false,
  "sla": 0,
  "system": false,
  "threshold": 72,
- "type": "shortText",
+ "type": "number",
  "unmapped": false,
  "unsearchable": false,
- "useAsKpi": false,
+ "useAsKpi": true,
  "version": -1,
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

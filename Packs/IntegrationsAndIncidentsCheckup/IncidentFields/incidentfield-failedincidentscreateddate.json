@@ -1,33 +1,29 @@
 {
  "associatedToAll": false,
  "associatedTypes": [
-  "Integrations and Incidents Health"
+  "Integrations and Incidents Health Check"
  ],
  "caseInsensitive": true,
- "cliName": "playbookswithfailedtasks",
+ "cliName": "failedincidentscreateddate",
  "closeForm": false,
  "content": true,
  "editForm": true,
  "group": 0,
  "hidden": false,
- "id": "incident_playbookswithfailedtasks",
+ "id": "incident_failedincidentscreateddate",
  "isReadOnly": false,
  "locked": false,
- "name": "Playbooks With Failed Tasks",
+ "name": "failed incidents created date",
  "neverSetAsRequired": false,
  "ownerOnly": false,
  "required": false,
- "selectValues": [
-  "",
-  ""
- ],
  "sla": 0,
  "system": false,
  "threshold": 72,
- "type": "multiSelect",
+ "type": "shortText",
  "unmapped": false,
  "unsearchable": false,
  "useAsKpi": false,
  "version": -1,
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

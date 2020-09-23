@@ -1,7 +1,7 @@
 {
  "associatedToAll": false,
  "associatedTypes": [
-  "Integrations and Incidents Health"
+  "Integrations and Incidents Health Check"
  ],
  "caseInsensitive": true,
  "cliName": "playbooktaskserrors",
@@ -146,5 +146,5 @@
  "unsearchable": false,
  "useAsKpi": false,
  "version": -1,
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }

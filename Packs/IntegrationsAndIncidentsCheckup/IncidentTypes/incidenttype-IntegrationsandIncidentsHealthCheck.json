@@ -7,16 +7,16 @@
  "disabled": false,
  "hours": 0,
  "hoursR": 0,
- "id": "Integrations and Incidents Health",
+ "id": "Integrations and Incidents Health Check",
  "layout": "3caa356e-d99d-438b-844d-180f68b59b14",
  "locked": false,
- "name": "Integrations and Incidents Health",
- "playbookId": "JOB - Integrations and Playbooks Checkup",
+ "name": "Integrations and Incidents Health Check",
+ "playbookId": "JOB - Integrations and Playbooks Health Check",
  "readonly": false,
  "reputationCalc": 1,
  "system": false,
  "version": -1,
  "weeks": 0,
  "weeksR": 0,
- "fromVersion": "5.0.0"
+ "fromVersion": "6.0.0"
 }
