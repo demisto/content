@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Set
 
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
@@ -200,7 +200,7 @@ def get_playbook_data(url):
 
 
 def sort_objects(all_objects):
-    report = {}
+    report_object = {}
     malware_objects = []
     indicator_objects = []
     relationship_objects = []
@@ -208,7 +208,7 @@ def sort_objects(all_objects):
 
     for obj in all_objects:
         if obj['type'] == 'report':
-            report = obj
+            report_object = obj
 
         elif obj['type'] == 'indicator':
             indicator_objects.append(obj)
@@ -222,29 +222,73 @@ def sort_objects(all_objects):
         elif obj['type'] == 'attack-pattern':
             attack_pattern_objects.append(obj)
 
-    return report, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects
+    return report_object, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects
 
 
-def process_playbook(bundle):
+def process_report(report_object: Dict, feed_tags: list = [], tlp_color: Optional[str] = None):
+    report = dict()  # type: Dict[str, Any]
+
+    report['type'] = 'STIX Report'
+    report['value'] = report_object.get('name')
+    report['fields'] = {
+        'stixid': report_object.get('id'),
+        'published': report_object.get('published'),
+        'stixdescription': report_object.get('description', ''),
+        "reportedby": 'Unit42',
+        "tags": list((set(report_object.get('labels'))).union(set(feed_tags))),
+    }
+    if tlp_color:
+        report['fields']['trafficlightprotocol'] = tlp_color
+
+    report['rawJSON'] = {
+        'unit42_id': report_object.get('id'),
+        'unit42_labels': report_object.get('labels'),
+        'unit42_published': report_object.get('published'),
+        'unit42_created_date': report_object.get('created'),
+        'unit42_modified_date': report_object.get('modified'),
+        'unit42_description': report_object.get('description'),
+        'unit42_object_refs': report_object.get('object_refs')
+    }
+
+    connected_objects_ids = [obj_id for obj_id in report_object.get('object_refs') if obj_id.startswith('indicator')]
+
+    return report, connected_objects_ids
+
+
+def process_connected_objects(indicator_objects: List, connected_objects_ids: List, feed_tags: list = [],
+                              tlp_color: Optional[str] = None):
+    raw_indicators = []
+
+    for indicator in indicator_objects:
+        if indicator.get('id') in connected_objects_ids:
+            raw_indicators.append(indicator)
+
+    return parse_indicators(raw_indicators, feed_tags, tlp_color)
+
+
+def process_playbook(bundle: Dict, feed_tags: list = [], tlp_color: Optional[str] = None):
     objects = bundle.get('objects', [])
 
-    report, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects = sort_objects(objects)
+    report_object, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects = \
+        sort_objects(objects)
 
-    # parse the report
-    # parse the malwares
+    report, connected_objects_ids = process_report(report_object, feed_tags, tlp_color)
+    related_indicators = process_connected_objects(indicator_objects, connected_objects_ids, feed_tags, tlp_color)
+
     if report:
         report = parse_relationships([report], relationship_objects, malware_objects + attack_pattern_objects)
+        return report
 
-    return report
+    return {}
 
 
-def process_playbooks():
+def process_playbooks(feed_tags: list = [], tlp_color: Optional[str] = None):
     reports = []
 
     suffixes = get_playbooks_urls()
     for suffix in suffixes:
         bundle = get_playbook_data(suffix)
-        report = process_playbook(bundle)
+        report = process_playbook(bundle, feed_tags, tlp_color)
 
         if report:
             reports.append(report)
