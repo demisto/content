@@ -30,16 +30,26 @@ ec["DBotScore"] = []
 for entry in data:
     indicator_type = entry["indicator_type"]
     score = entry["score"]
-    source = entry.get('source', '')
+    sources = entry.get('sourceBrands', [])
     if hasattr(INDICATOR_TYPE_DICTIONARY, indicator_type):
         indicator_type = INDICATOR_TYPE_DICTIONARY[indicator_type]
 
-    ec["DBotScore"].append({
-        "Indicator": indicator,
-        "Type": indicator_type,
-        "Vendor": source,
-        "Score": score
-    })
+    if sources:
+        for source in sources:
+            ec["DBotScore"].append({
+                "Indicator": indicator,
+                "Type": indicator_type,
+                "Vendor": source,
+                "Score": score
+            })
+    else:
+        ec["DBotScore"].append({
+            "Indicator": indicator,
+            "Type": indicator_type,
+            "Vendor": '',
+            "Score": score
+        })
+
 
 md = tableToMarkdown("Indicator DBot Score", ec["DBotScore"])
 
