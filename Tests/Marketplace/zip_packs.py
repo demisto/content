@@ -133,7 +133,6 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
                 continue
 
             if gcp_path == BUILD_GCP_PATH:
-                # This is the right path for marketplace-ci-build
                 pack_prefix = os.path.join(gcp_path, branch_name, circle_build, 'content', 'packs', pack.name)
             else:
                 pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
