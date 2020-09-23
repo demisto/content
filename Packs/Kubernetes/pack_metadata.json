@@ -1,0 +1,17 @@
+{
+    "name": "Kubernetes",
+    "description": "Manages Kubernetes clusters.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Allister Beharry",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "created": "2020-09-22T17:16:26Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
