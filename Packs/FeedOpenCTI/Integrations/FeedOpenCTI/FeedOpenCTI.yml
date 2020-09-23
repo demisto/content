@@ -40,7 +40,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '200'
-  display: Max Indicators Per Fetch (defult is 500)
+  display: Max. indicators per fetch (default is 500)
   hidden: false
   name: max_indicator_to_fetch
   required: false
@@ -51,9 +51,9 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+    reputation.
   defaultvalue: feedInstanceReputationNotSet
-  display: Indicator Reputation
+  display: Indicator reputation
   name: feedReputation
   options:
   - None
@@ -89,7 +89,7 @@ configuration:
   required: false
   type: 1
 - defaultvalue: '240'
-  display: Feed Fetch Interval
+  display: Feed fetch interval
   name: feedFetchInterval
   required: false
   type: 19
@@ -113,7 +113,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return to the output. The default
+      description: The maximum number of indicators to return per fetch. The default
         value is "50".
       isArray: false
       name: limit
@@ -122,7 +122,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: The indicator types to fetch.
+      description: 'The indicator types to fetch. Possible values are: "all", "user-account", "domain", "email-address", "file-md5", "file-sha1", "file-sha256", "hostname", "ipv4-addr", "ipv6-addr", "registry-key-value", or "url". The default is "all".'
       isArray: true
       name: indicator_types
       predefined:
@@ -141,7 +141,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The last id from the previous call to use pagination
+      description: The last ID from the previous call from which to begin pagination for this call.
       isArray: false
       name: last_id
       required: false
