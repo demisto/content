@@ -249,16 +249,15 @@ def update_test_msg(integrations, test_message):
     return test_message
 
 
-def turn_off_telemetry(server, demisto_api_key):
+def turn_off_telemetry(xsoar_client):
     """
     Turn off telemetry on the AMI instance
 
-    :param server: demisto server to connect to
-    :param demisto_api_key: api key to use for connection
+    :param xsoar_client: Preconfigured client for the XSOAR instance
     :return: None
     """
-    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
-    body, status_code, _ = demisto_client.generic_request_func(self=client, method='POST',
+
+    body, status_code, _ = demisto_client.generic_request_func(self=xsoar_client, method='POST',
                                                                path='/telemetry?status=notelemetry')
 
     if status_code != 200:
@@ -266,9 +265,9 @@ def turn_off_telemetry(server, demisto_api_key):
         sys.exit(1)
 
 
-def reset_containers(server, demisto_api_key, prints_manager, thread_index):
+def reset_containers(server, demisto_user, demisto_pass, prints_manager, thread_index):
     prints_manager.add_print_job('Resetting containers', print, thread_index)
-    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
+    client = demisto_client.configure(base_url=server, username=demisto_user, password=demisto_pass, verify_ssl=False)
     body, status_code, _ = demisto_client.generic_request_func(self=client, method='POST',
                                                                path='/containers/reset')
     if status_code != 200:
@@ -431,11 +430,11 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, proxy, fail
     prints_manager.add_print_job(test_end_message, print, thread_index, include_timestamp=True)
 
 
-def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_api_key, proxy, failed_playbooks,
+def run_test(conf_json_test_details, tests_queue, tests_settings, demisto_user, demisto_pass, proxy, failed_playbooks,
              integrations, unmockable_integrations, playbook_id, succeed_playbooks, test_message, test_options,
              slack, circle_ci, build_number, server_url, build_name, prints_manager, is_ami=True, thread_index=0):
     start_message = f'------ Test {test_message} start ------'
-    client = demisto_client.configure(base_url=server_url, api_key=demisto_api_key, verify_ssl=False)
+    client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass, verify_ssl=False)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
         prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index, include_timestamp=True)
@@ -621,11 +620,13 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-                      skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
-                      filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
-                      unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                      server_numeric_version, demisto_api_key, prints_manager, thread_index=0, is_ami=True):
+def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeout, skipped_tests_conf,
+                      nightly_integrations, skipped_integrations_conf, skipped_integration, is_nightly,
+                      run_all_tests, is_filter_configured, filtered_tests, skipped_tests, secret_params,
+                      failed_playbooks, playbook_skipped_integration, unmockable_integrations,
+                      succeed_playbooks, slack, circle_ci, build_number, server, build_name,
+                      server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
+                      prints_manager, thread_index=0, is_ami=True):
     playbook_id = t['playbookID']
     nightly_test = t.get('nightly', False)
     integrations_conf = t.get('integrations', [])
@@ -708,9 +709,10 @@ def run_test_scenario(tests_queue, tests_settings, t, proxy, default_test_timeou
         text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
-    run_test(t, tests_queue, tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations,
-             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
-             build_number, server, build_name, prints_manager, is_ami, thread_index=thread_index)
+    run_test(t, tests_queue, tests_settings, demisto_user, demisto_pass, proxy, failed_playbooks,
+             integrations, unmockable_integrations, playbook_id, succeed_playbooks, test_message,
+             test_options, slack, circle_ci, build_number, server, build_name, prints_manager,
+             is_ami, thread_index=thread_index)
 
 
 def get_server_numeric_version(ami_env, is_local_run=False):
@@ -780,6 +782,11 @@ def get_test_records_of_given_test_names(tests_settings, tests_names_to_search):
     return test_records_with_supplied_names
 
 
+def get_json_file(path):
+    with open(path, 'r') as json_file:
+        return json.loads(json_file.read())
+
+
 def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_tests_names,
                     tests_data_keeper, prints_manager, thread_index=0, is_ami=True):
     server = SERVER_URL.format(server_ip)
@@ -793,8 +800,9 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     build_number = tests_settings.buildNumber
     build_name = tests_settings.buildName
     conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
-
     demisto_api_key = tests_settings.api_key
+    demisto_user = secret_conf['username']
+    demisto_pass = secret_conf['userPassword']
 
     default_test_timeout = conf.get('testTimeout', 30)
 
@@ -814,9 +822,11 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
         prints_manager.execute_thread_prints(thread_index)
         return
+    xsoar_client = demisto_client.configure(base_url=server, username=demisto_user,
+                                            password=demisto_pass, verify_ssl=False)
 
     # turn off telemetry
-    turn_off_telemetry(server, demisto_api_key)
+    turn_off_telemetry(xsoar_client)
 
     proxy = None
     if is_ami:
@@ -830,7 +840,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     skipped_integration = set([])
     playbook_skipped_integration = set([])
 
-    disable_all_integrations(demisto_api_key, server, prints_manager, thread_index=thread_index)
+    disable_all_integrations(xsoar_client, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
@@ -844,7 +854,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     try:
         # first run the mock tests to avoid mockless side effects in container
         if is_ami and mockable_tests:
-            proxy.configure_proxy_in_demisto(demisto_api_key, server, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
+            proxy.configure_proxy_in_demisto(xsoar_client, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
             executed_in_current_round, mockable_tests_queue = initialize_queue_and_executed_tests_set(mockable_tests)
             while not mockable_tests_queue.empty():
                 t = mockable_tests_queue.get()
@@ -858,12 +868,12 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                   run_all_tests, is_filter_configured, filtered_tests,
                                   skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                                   unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                                  build_name, server_numeric_version, demisto_api_key, prints_manager,
-                                  thread_index=thread_index)
-            proxy.configure_proxy_in_demisto(demisto_api_key, server, '')
+                                  build_name, server_numeric_version, demisto_user, demisto_pass,
+                                  demisto_api_key, prints_manager, thread_index=thread_index)
+            proxy.configure_proxy_in_demisto(xsoar_client, '')
 
             # reset containers after clearing the proxy server configuration
-            reset_containers(server, demisto_api_key, prints_manager, thread_index)
+            reset_containers(server, demisto_user, demisto_pass, prints_manager, thread_index)
 
         prints_manager.add_print_job("\nRunning mock-disabled tests", print, thread_index)
         executed_in_current_round, unmockable_tests_queue = initialize_queue_and_executed_tests_set(unmockable_tests)
@@ -879,7 +889,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                               is_nightly, run_all_tests, is_filter_configured, filtered_tests, skipped_tests,
                               secret_params, failed_playbooks, playbook_skipped_integration, unmockable_integrations,
                               succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                              server_numeric_version, demisto_api_key, prints_manager, thread_index, is_ami)
+                              server_numeric_version, demisto_user, demisto_pass, demisto_api_key,
+                              prints_manager, thread_index, is_ami)
             prints_manager.execute_thread_prints(thread_index)
 
     except Exception as exc:
