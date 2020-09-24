@@ -125,7 +125,7 @@ def verify(client: Client, args: Dict):
             with open(signed_message['path'], "rb") as message_file:
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
-            p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
+            p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))  # pylint: disable=E1101
             v = client.smime.verify(p7, flags=SMIME.PKCS7_NOVERIFY)
             return_results(fileResult('unwrapped-' + signed_message.get('name'), v))
             human_readable = 'The signature verified\n\n'
@@ -158,7 +158,7 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
             with open(encrypt_message['path'], "rb") as message_file:
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
-            p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
+            p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))  # pylint: disable=E1101
             out = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY).decode('utf-8')
 
     entry_context = {
