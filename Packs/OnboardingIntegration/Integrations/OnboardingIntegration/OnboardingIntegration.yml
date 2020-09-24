@@ -25,10 +25,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: 'Creates mock email incidents using one of two randomly selected HTML
-  templates. Textual content is randomly generated and defined to include some text
-  (100 random words) and the following data (at least 5 of each data type): IP addresses,
-  URLs, SHA-1 hashes, SHA-256 hashes, MD5 hashes, email addresses, domain names.'
+description: 'Creates mock email incidents using one of two randomly selected HTML templates. Textual content is randomly generated and defined to include some text (100 random words) and the following data (at least 5 of each data type): IP addresses, URLs, SHA-1 hashes, SHA-256 hashes, MD5 hashes, email addresses, domain names.'
 display: OnboardingIntegration
 name: OnboardingIntegration
 script:
@@ -195,8 +192,7 @@ script:
       description: For malicious email addresses, the vendor that made the decision
       type: String
     - contextPath: Account.Email.Malicious.Description
-      description: For malicious email addresses, the reason that the vendor made
-        the decision
+      description: For malicious email addresses, the reason that the vendor made the decision
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type
@@ -210,11 +206,12 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested
       type: String
-  dockerimage: demisto/faker:0.1  
+  dockerimage: demisto/faker:0.1
   isfetch: true
   runonce: false
   subtype: python2
 tests:
-  - No Tests
+- No Tests
 defaultclassifier: OnboardingIntegration
 defaultmapperin: OnboardingIntegration-mapper
+fromversion: 5.0.0

@@ -1,8 +1,7 @@
 id: Google Chronicle Backstory IOC Details - Test
 version: -1
 name: Google Chronicle Backstory IOC Details - Test
-description: This playbook uses the Google Chronicle Backstory integration and tests
-  the various scenarios of the "gcb-list-ioc-details" command.
+description: This playbook uses the Google Chronicle Backstory integration and tests the various scenarios of the "gcb-list-ioc-details" command.
 starttaskid: "0"
 tasks:
   "0":
@@ -72,10 +71,7 @@ tasks:
       id: 838d40fb-2f47-4af9-84b3-1e69842520ec
       version: -1
       name: Get IoC details of Domain
-      description: Use this Command to submit an artifact indicator and return any
-        IoCs associated with that artifact. The IoC information is drawn from your
-        enterprise security systems and from the Chronicle's IoC partners (for example,
-        the DHS threat feed, ET Intelligence).
+      description: Use this Command to submit an artifact indicator and return any IoCs associated with that artifact. The IoC information is drawn from your enterprise security systems and from the Chronicle's IoC partners (for example, the DHS threat feed, ET Intelligence).
       script: Google Chronicle Backstory|||gcb-ioc-details
       type: regular
       iscommand: true
@@ -220,10 +216,7 @@ tasks:
       id: 1e73b1e8-2a05-4208-8bb1-8560bad65046
       version: -1
       name: Get IoC details of IP
-      description: Use this Command to submit an artifact indicator and return any
-        IoCs associated with that artifact. The IoC information is drawn from your
-        enterprise security systems and from the Chronicle's IoC partners (for example,
-        the DHS threat feed, ET Intelligence).
+      description: Use this Command to submit an artifact indicator and return any IoCs associated with that artifact. The IoC information is drawn from your enterprise security systems and from the Chronicle's IoC partners (for example, the DHS threat feed, ET Intelligence).
       script: Google Chronicle Backstory|||gcb-ioc-details
       type: regular
       iscommand: true
@@ -449,3 +442,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

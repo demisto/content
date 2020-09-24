@@ -121,8 +121,7 @@ tasks:
       id: b2617aaf-5e54-43f5-89fe-82fc78cd099b
       version: -1
       name: Verify required inputs
-      description: Verify that the required input values for retrieving the original
-        email exists.
+      description: Verify that the required input values for retrieving the original email exists.
       type: condition
       iscommand: false
       brand: ""
@@ -208,8 +207,7 @@ tasks:
       id: 25f6439f-778f-45a5-841a-53efe77d590c
       version: -1
       name: Was a matching email found?
-      description: Verify that an email object with a Message-Id that matches the
-        InReplayTo ID of the forwarded email was found.
+      description: Verify that an email object with a Message-Id that matches the InReplayTo ID of the forwarded email was found.
       type: condition
       iscommand: false
       brand: ""
@@ -390,10 +388,7 @@ tasks:
         simple: Email
       stringify: {}
       value:
-        simple: '${.={Subject: val[''EWS''][''Items''][''subject''], To: val[''EWS''][''Items''][''toRecipients''],
-          From: val[''EWS''][''Items''][''sender''], Text: val[''EWS''][''Items''][''textBody''],HTML:
-          val[''EWS''][''Items''][''body''], Headers: val[''EWS''][''Items''][''headers''],
-          ''HeadersMap'': val[''Email''][''0''][''HeadersMap''] }}'
+        simple: '${.={Subject: val[''EWS''][''Items''][''subject''], To: val[''EWS''][''Items''][''toRecipients''], From: val[''EWS''][''Items''][''sender''], Text: val[''EWS''][''Items''][''textBody''],HTML: val[''EWS''][''Items''][''body''], Headers: val[''EWS''][''Items''][''headers''], ''HeadersMap'': val[''Email''][''0''][''HeadersMap''] }}'
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -453,8 +448,7 @@ tasks:
       id: 427d5e37-2e56-4522-8e69-caabe8fd70d9
       version: -1
       name: Get attachments of the original email
-      description: Retrieve the attachments of the original email from EWS, including
-        file attachments and item attachments (other email, calendar item, etc.).
+      description: Retrieve the attachments of the original email from EWS, including file attachments and item attachments (other email, calendar item, etc.).
       script: EWS v2|||ews-get-attachment
       type: regular
       iscommand: true
@@ -544,6 +538,6 @@ outputs:
   type: unknown
 - contextPath: Email.HeadersMap
   description: The headers of the email.
-fromversion: 4.0.0
+fromversion: 5.0.0
 tests:
 - No test (no test was ever created for this playbook)

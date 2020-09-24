@@ -78,6 +78,8 @@ STATUS_OPTIONS = {
     'Deleted': 4
 }
 
+INTEGRATION_NAME = 'MicrosoftCloudAppSecurity'
+
 
 class Client(BaseClient):
     """
@@ -261,6 +263,24 @@ def alerts_to_human_readable(alerts):
     return human_readable
 
 
+def extract_ip_indicators(activities):
+    indicators = []
+    for activity in activities:
+        ip_address = dict_safe_get(activity, ['device', 'clientIP'])
+        indicators.append(Common.IP(
+            ip=ip_address,
+            dbot_score=Common.DBotScore(
+                ip_address,
+                DBotScoreType.IP,
+                INTEGRATION_NAME,
+                Common.DBotScore.NONE,
+            ),
+            geo_latitude=dict_safe_get(activity, ['location', 'latitude']),
+            geo_longitude=dict_safe_get(activity, ['location', 'longitude']),
+        ))
+    return indicators
+
+
 def arrange_alerts_descriptions(alerts):
     for alert in alerts:
         if alert.get('description') and '__siteIcon__' in alert.get('description'):
@@ -369,12 +389,14 @@ def list_activities_command(client, args):
     list_activities = activities_response_data.get('data') if activities_response_data.get('data') \
         else [activities_response_data]
     activities = arrange_entities_data(list_activities)
+    ip_indicators = extract_ip_indicators(activities)
     human_readable = activities_to_human_readable(activities)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MicrosoftCloudAppSecurity.Activities',
         outputs_key_field='_id',
-        outputs=activities
+        outputs=activities,
+        indicators=ip_indicators,
     )
 
 

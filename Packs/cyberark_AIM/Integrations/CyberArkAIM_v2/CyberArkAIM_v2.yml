@@ -94,3 +94,4 @@ script:
   type: python
 tests:
 - No tests
+fromversion: 5.0.0

@@ -93,8 +93,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email address of the bonus giver or receiver by which to filter results.
-        this email
+      description: Email address of the bonus giver or receiver by which to filter results. this email
       isArray: false
       name: user-email
       required: false
@@ -129,8 +128,7 @@ script:
       description: 'Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.'
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: 'The bonus message, e.g., "For signing up for the world''s
-        favorite employee recognition solution! #problem-solving"'
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -242,9 +240,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "The bonus message, e.g., \n+10 @george and @john for #execution with that customer #collaboration\
-        \ with the team, and #integrity on the known vulnerabilities to the application.\
-        \ \n\n+10 @francesco because he is fast and detailed\n"
+      description: "The bonus message, e.g., \n+10 @george and @john for #execution with that customer #collaboration with the team, and #integrity on the known vulnerabilities to the application. \n\n+10 @francesco because he is fast and detailed\n"
       isArray: false
       name: reason
       required: true
@@ -267,8 +263,7 @@ script:
       description: 'Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.'
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: 'The bonus message, e.g., "For signing up for the world''s
-        favorite employee recognition solution! #problem-solving"'
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -391,8 +386,7 @@ script:
       description: 'Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.'
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: 'The bonus message, e.g., "For signing up for the world''s
-        favorite employee recognition solution! #problem-solving"'
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -504,8 +498,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Example +10 @francesco @bumblebee for #integrity #collaboration
-        #execution'
+      description: 'Example +10 @francesco @bumblebee for #integrity #collaboration #execution'
       isArray: false
       name: reason
       required: true
@@ -522,8 +515,7 @@ script:
       description: 'Date the bonus was created (given), e.g., 2015-10-28T21:26:50Z.'
       type: Date
     - contextPath: Bonusly.Bonus.reason
-      description: 'The bonus message, e.g., "For signing up for the world''s
-        favorite employee recognition solution! #problem-solving"'
+      description: 'The bonus message, e.g., "For signing up for the world''s favorite employee recognition solution! #problem-solving"'
       type: String
     - contextPath: Bonusly.Bonus.reason_html
       description: HTML representation of the bonus.
@@ -640,7 +632,7 @@ script:
     name: bonusly-delete-bonus
     outputs:
     - contextPath: Bonusly.Bonus.message
-      description: Message 
+      description: Message
       type: Unknown
   dockerimage: demisto/python3:3.8.5.10845
   feed: false
@@ -653,3 +645,4 @@ script:
   type: python
 tests:
 - No tests
+fromversion: 5.0.0
