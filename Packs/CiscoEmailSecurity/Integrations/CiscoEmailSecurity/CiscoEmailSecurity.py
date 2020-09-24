@@ -195,7 +195,7 @@ def build_url_params_for_list_report(args, report_counter):
     return url_params
 
 
-def set_counter_to_output_prefix(report_counter):
+def set_var_to_output_prefix(report_counter):
     list_counter_words = report_counter.split('_')
     counter_words = ''
     for word in list_counter_words:
@@ -209,12 +209,13 @@ def list_report_command(client: Client, args: Dict[str, Any]):
     report_counter = args.get('report_counter')
     url_params = build_url_params_for_list_report(args, report_counter)
     report_response_data = client.list_report(url_params)
-    counter_output_prefix = set_counter_to_output_prefix(report_counter)
+    report_data = report_response_data.get('data', {}).get('resultSet', [None])[0]
+    counter_output_prefix = set_var_to_output_prefix(report_counter)
     return CommandResults(
         readable_output=f'{report_response_data}',
         outputs_prefix=f'CiscoEmailSecurity.Report.{counter_output_prefix}',
-        outputs_key_field='',
-        outputs=report_response_data
+        outputs_key_field=counter_output_prefix,
+        outputs=report_data
     )
 
 
@@ -481,8 +482,6 @@ def list_delete_quarantine_messages_command(client, args):
     total_count = dict_safe_get(delete_quarantine_messages_response, ['data', 'totalCount'], None)
     return CommandResults(
         readable_output=f'{total_count} messages successfully deleted from quarantine list',
-        outputs_prefix='CiscoEmailSecurity.QuarantineDeleteMessages',
-        outputs_key_field='mid'
     )
 
 
@@ -498,8 +497,6 @@ def list_release_quarantine_messages_command(client, args):
     total_count = dict_safe_get(release_quarantine_messages_response, ['data', 'totalCount'], None)
     return CommandResults(
         readable_output=f'{total_count} messages successfully released from quarantine list',
-        outputs_prefix='CiscoEmailSecurity.QuarantineDeleteMessages',
-        outputs_key_field='mid'
     )
 
 
@@ -517,10 +514,11 @@ def list_entries_get_command(client, args):
     list_type = args.get('list_type')
     url_params = build_url_filter_for_get_list_entries(args)
     list_entries_response = client.list_entries_get(url_params, list_type)
-    list_entries = list_entries_response.get('data')
+    list_entries = list_entries_response.get('data', [None])[0]
+    output_prefix = list_type.title()
     return CommandResults(
         readable_output=list_entries,
-        outputs_prefix='CiscoEmailSecurity.ListEntriesGet',
+        outputs_prefix=f'CiscoEmailSecurity.ListEntries.{output_prefix}',
         outputs_key_field='mid',
         outputs=list_entries
     )
@@ -549,9 +547,10 @@ def list_entries_add_command(client, args):
     request_body = build_request_body_for_add_list_entries(args)
     list_entries_response = client.list_entries_add(list_type, request_body)
     list_entries = list_entries_response.get('data')
+    output_prefix = list_type.title()
     return CommandResults(
         readable_output=list_entries,
-        outputs_prefix='CiscoEmailSecurity.listEntriesAdd',
+        outputs_prefix=f'CiscoEmailSecurity.listEntries.{output_prefix}',
         outputs_key_field='mid',
     )
 
