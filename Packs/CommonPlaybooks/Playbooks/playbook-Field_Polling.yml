@@ -74,12 +74,12 @@ tasks:
       PollingCommandArgName:
         simple: field
       PollingCommandName:
-        simple: PollingField
+        simple: CheckFieldValue
       Timeout:
         complex:
           root: inputs.timeout
       dt:
-        simple: PollingCheckField(val.field=='${inputs.field}' && val.exists==false).field
+        simple: CheckFieldValue(val.field=='${inputs.field}' && val.exists==false).field
     separatecontext: true
     loop:
       iscommand: false

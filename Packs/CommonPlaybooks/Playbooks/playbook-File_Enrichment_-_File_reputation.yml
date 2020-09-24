@@ -1,7 +1,7 @@
 id: file_enrichment_-_file_reputation
 version: -1
 name: File Enrichment - File reputation
-fromversion: 3.6.0
+fromversion: 5.0.0
 description: Get file reputation using one or more integrations
 starttaskid: "0"
 tasks:
@@ -62,8 +62,7 @@ tasks:
       id: 61a4a533-980d-4b46-816e-75bbf2550d0a
       version: -1
       name: Get MD5 reputation
-      description: Get the MD5 hash reputation from every integration that supports
-        the `!file` command.
+      description: Get the MD5 hash reputation from every integration that supports the `!file` command.
       scriptName: FileReputation
       type: regular
       iscommand: false
@@ -190,8 +189,7 @@ tasks:
       id: 092a1e7e-b7d8-4d50-8f6e-021c31701974
       version: -1
       name: Get SHA-256 reputation
-      description: Get the SHA-256 hash reputation from every integration that supports
-        the `!file` command.
+      description: Get the SHA-256 hash reputation from every integration that supports the `!file` command.
       scriptName: FileReputation
       type: regular
       iscommand: false
@@ -259,8 +257,7 @@ tasks:
       id: 9cd10068-c589-4c05-8a22-7ec3528b89de
       version: -1
       name: Get SHA-1 reputation
-      description: Get the SHA-1 hash reputation from every integration that supports
-        the `!file` command.
+      description: Get the SHA-1 hash reputation from every integration that supports the `!file` command.
       scriptName: FileReputation
       type: regular
       iscommand: false
@@ -351,4 +348,4 @@ outputs:
   description: The actual score
   type: number
 tests:
-  - No tests
+- No tests

@@ -5,8 +5,7 @@ name: InfoArmor VigilanteATI
 display: InfoArmor VigilanteATI
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
-description: VigilanteATI redefines Advanced Threat Intelligence. InfoArmor's VigilanteATI
-  platform and cyber threat services act as an extension of your IT security team.
+description: VigilanteATI redefines Advanced Threat Intelligence. InfoArmor's VigilanteATI platform and cyber threat services act as an extension of your IT security team.
 detaileddescription: |-
   For Risk Intelligence API Account navigate to Risk Intelligence -> Compromised Credentials -> My API Account
   For general API Account navigate to Edit Profile -> API Account
@@ -37,18 +36,28 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     import json
+
     import base64
+
     import binascii
+
     import hashlib
+
     import hmac
+
     import time
+
     import requests
+
     from datetime import datetime
 
+
     # disable insecure warnings
+
     requests.packages.urllib3.disable_warnings()
+
 
 
     if not demisto.params()['proxy']:
@@ -58,9 +67,13 @@ script:
         del os.environ['https_proxy']
 
     BASE_URL = demisto.params().get('url')
+
     API_KEY = demisto.params().get('apikey')
+
     API_SECRET = demisto.params().get('apisecret')
+
     VERIFY_SSL = not demisto.params().get('unsecure', False)
+
 
     def gen_hmac(method, timestamp, api_key, api_secret):
         """
@@ -746,32 +759,19 @@ script:
   - name: vigilante-query-infected-host-data
     arguments:
     - name: days_ago
-      description: Specifies how many days ago (in history) we should go back to fetch
-        data for. By default, this parameter is set to 1 which means it returns all
-        infected host data added to the database within the last 1 day. To return
-        data for all infected hosts you can set this value to be equal to 0, or set
-        it a high value such as 3650 days (or 10 years). (optional)
+      description: Specifies how many days ago (in history) we should go back to fetch data for. By default, this parameter is set to 1 which means it returns all infected host data added to the database within the last 1 day. To return data for all infected hosts you can set this value to be equal to 0, or set it a high value such as 3650 days (or 10 years). (optional)
     - name: limit
-      description: Specifies the maximum number of entries to return from this request.
-        By default this parameter is set to 20 which means it returns up to the first
-        20 infected hosts. The valid range for value of limit is from 1 (minimum)
-        to 50,000 (maximum). (optional)
+      description: Specifies the maximum number of entries to return from this request. By default this parameter is set to 20 which means it returns up to the first 20 infected hosts. The valid range for value of limit is from 1 (minimum) to 50,000 (maximum). (optional)
       defaultValue: "20"
     - name: token
-      description: The token required to retrieve the next page of results; if necessary.
-        When the result set is larger than the value of limit the API will return
-        a token along with the response so the client can request the next page of
-        results appropriately with the next API request. (optional)
+      description: The token required to retrieve the next page of results; if necessary. When the result set is larger than the value of limit the API will return a token along with the response so the client can request the next page of results appropriately with the next API request. (optional)
     - name: q_address
-      description: Query parameter specifying the alphanumeric version of the IPv4
-        address that will be used to query the database. (optional)
+      description: Query parameter specifying the alphanumeric version of the IPv4 address that will be used to query the database. (optional)
     - name: cc_ipaddress
-      description: Query parameter specifying the IP address of the infected host
-        was seen communicating with. (optional)
+      description: Query parameter specifying the IP address of the infected host was seen communicating with. (optional)
     outputs:
     - contextPath: VigilanteATI.InfectedHosts.ip
-      description: Alphanumeric version of the IPv4 address belonging to this infected
-        host.
+      description: Alphanumeric version of the IPv4 address belonging to this infected host.
       type: string
     - contextPath: VigilanteATI.InfectedHosts.port
       description: 'Port number used by the infected host. '
@@ -780,67 +780,43 @@ script:
       description: Domain name associated with the infected host. (e.g sample.com)
       type: string
     - contextPath: VigilanteATI.InfectedHosts.country
-      description: Country code representing the country the host is located in. (e.g
-        US)
+      description: Country code representing the country the host is located in. (e.g US)
       type: string
     - contextPath: VigilanteATI.InfectedHosts.malware
-      description: Name of the malware family we believe has infected the host. (e.g
-        c_zeroaccess)
+      description: Name of the malware family we believe has infected the host. (e.g c_zeroaccess)
       type: string
     - contextPath: VigilanteATI.InfectedHosts.c_and_c
-      description: IP address of the C&C the infected host was seen communicating
-        with.
+      description: IP address of the C&C the infected host was seen communicating with.
       type: string
     - contextPath: VigilanteATI.InfectedHosts.timestamp
-      description: Timestamp of when we last saw this infected host and imported it
-        into our database. (e.g 2015-10-10 12:01:01)
+      description: Timestamp of when we last saw this infected host and imported it into our database. (e.g 2015-10-10 12:01:01)
       type: date
     - contextPath: VigilanteATI.GetInfectedHostsToken
-      description: Token required to paginate the next set of results in. This is
-        only provided if host number of items in the response exceeds our max pagination
-        size. Otherwise it is set to an empty string. If empty, it means there is
-        no next page
+      description: Token required to paginate the next set of results in. This is only provided if host number of items in the response exceeds our max pagination size. Otherwise it is set to an empty string. If empty, it means there is no next page
       type: string
     - contextPath: VigilanteATI.InfectedHosts
-      description: Container for infected host objects. This is basically a list of
-        dictionaries (hosts).
-    description: Query all infected host data. This is the API call you want to use
-      to lookup infected host data using an IP address or a network range.
+      description: Container for infected host objects. This is basically a list of dictionaries (hosts).
+    description: Query all infected host data. This is the API call you want to use to lookup infected host data using an IP address or a network range.
   - name: vigilante-get-vulnerable-host-data
     arguments:
     - name: limit
-      description: Specifies the maximum number of entries to return from this request.
-        By default this parameter is set to 20 which means it returns up to the first
-        20 cards. The valid range for value of limit is from 1 (minimum) to 1,000
-        (maximum). (optional)
+      description: Specifies the maximum number of entries to return from this request. By default this parameter is set to 20 which means it returns up to the first 20 cards. The valid range for value of limit is from 1 (minimum) to 1,000 (maximum). (optional)
       defaultValue: "20"
     - name: re_token
-      description: The re_token required to retrieve the next page of results; if
-        necessary. When the result set is larger than the value of limit the API will
-        return a re_token along with the response so the client can request the next
-        page of results appropriately with the next API request. (optional)
+      description: The re_token required to retrieve the next page of results; if necessary. When the result set is larger than the value of limit the API will return a re_token along with the response so the client can request the next page of results appropriately with the next API request. (optional)
     - name: q_address
-      description: The q_address is IP address of the vulnerable one wishes to search.
-        If not provided, by default this parameter is set to '*', and thus, will not
-        have any constrains on q_address. (optional)
+      description: The q_address is IP address of the vulnerable one wishes to search. If not provided, by default this parameter is set to '*', and thus, will not have any constrains on q_address. (optional)
     - name: q_mask
-      description: The q_mask is mask one wishes to apply to the IP while searching.
-        If not provided, by default this parameter is set to '32', and thus, will
-        not have any constrains on q_address. (optional)
+      description: The q_mask is mask one wishes to apply to the IP while searching. If not provided, by default this parameter is set to '32', and thus, will not have any constrains on q_address. (optional)
     - name: q_type
-      description: The q_type is type of the vulnerable one wishes to search. If not
-        provided, by default this parameter is set to '*', and thus, will not have
-        any constrains on q_type. (optional)
+      description: The q_type is type of the vulnerable one wishes to search. If not provided, by default this parameter is set to '*', and thus, will not have any constrains on q_type. (optional)
     outputs:
     - contextPath: VigilanteATI.Hosts
-      description: Container for vulnerable host objects. This is basically a list
-        of dictionaries (hosts).
+      description: Container for vulnerable host objects. This is basically a list of dictionaries (hosts).
     - contextPath: VigilanteATI.Hosts.ip
-      description: Alphanumeric version of the IPv4 address belonging to this vulnerable
-        host.
+      description: Alphanumeric version of the IPv4 address belonging to this vulnerable host.
     - contextPath: VigilanteATI.Hosts.hostname
-      description: Hostname of the host. Obtained by doing a lookup using the given
-        IPv4 address. (e.g "sample.hostname.com")
+      description: Hostname of the host. Obtained by doing a lookup using the given IPv4 address. (e.g "sample.hostname.com")
     - contextPath: VigilanteATI.Hosts.type
       description: Vulnerability type/name. (e.g heartbleed)
     - contextPath: VigilanteATI.Hosts.port
@@ -848,8 +824,7 @@ script:
     - contextPath: VigilanteATI.Hosts.protocols
       description: Protocols that this might affect. (e.g "ssh")
     - contextPath: VigilanteATI.Hosts.url
-      description: URL field. Only applicable with certain vulnerability types such
-        as web shell.
+      description: URL field. Only applicable with certain vulnerability types such as web shell.
     - contextPath: VigilanteATI.Hosts.geoip
       description: JSon of all the data we have about the IP and its location.
     - contextPath: VigilanteATI.Hosts.geoip.timezone
@@ -887,16 +862,11 @@ script:
       description: Region Code (e.g 13)
       type: string
     - contextPath: VigilanteATI.Hosts.timestamp
-      description: Timestamp of when we found this vulnerable host and imported it
-        into our database. (e.g 2015-10-10 12:01:01)
+      description: Timestamp of when we found this vulnerable host and imported it into our database. (e.g 2015-10-10 12:01:01)
       type: date
     - contextPath: VigilanteATI.GetVulnerableHostsToken
-      description: The re_token parameter value required to retrieve the next page
-        of results. The token is valid for 5 minutes. The value is null if count is
-        equal to either 0 or total.
-    description: Returns all vulnerable host data from VI feed for the given query.
-      This is the API call you want to use to download the entire feed of vulnerable
-      hosts that matches the query.
+      description: The re_token parameter value required to retrieve the next page of results. The token is valid for 5 minutes. The value is null if count is equal to either 0 or total.
+    description: Returns all vulnerable host data from VI feed for the given query. This is the API call you want to use to download the entire feed of vulnerable hosts that matches the query.
   - name: vigilante-query-ecrime-db
     arguments:
     - name: query
@@ -905,25 +875,17 @@ script:
     - name: q_forum
       description: 'Specifies a specific forum to search. '
     - name: q_start_date
-      description: Specifies the search start date; only posts on or after q_start_date
-        are retrieved. e.g 2017-10-01)
+      description: Specifies the search start date; only posts on or after q_start_date are retrieved. e.g 2017-10-01)
     - name: q_end_date
-      description: Specifies the search end date; only posts on or before q_end_date
-        are retrieved. (e.g 2017-10-03)
+      description: Specifies the search end date; only posts on or before q_end_date are retrieved. (e.g 2017-10-03)
     - name: limit
-      description: Specifies the maximum number of posts to return. By default limit
-        is set to 10, which means the result set is limited to the first 10 posts.
-        limit must be between 1 and 100, inclusive.
+      description: Specifies the maximum number of posts to return. By default limit is set to 10, which means the result set is limited to the first 10 posts. limit must be between 1 and 100, inclusive.
       defaultValue: "10"
     - name: re_token
-      description: The re_token required to retrieve the next page of results when
-        the result set is larger than limit. If this parameter is specified, all other
-        parameters are ignored.
+      description: The re_token required to retrieve the next page of results when the result set is larger than limit. If this parameter is specified, all other parameters are ignored.
     outputs:
     - contextPath: VigilanteATI.ECrimeQueryToken
-      description: The re_token parameter value required to retrieve the next page
-        of results. The token is valid for 5 minutes. The value is null if count is
-        equal to either 0 or total.
+      description: The re_token parameter value required to retrieve the next page of results. The token is valid for 5 minutes. The value is null if count is equal to either 0 or total.
       type: string
     - contextPath: VigilanteATI.ECrimePosts.title
       description: base64 encoded, matching search terms highlighted via <mark> tags
@@ -940,63 +902,41 @@ script:
     - contextPath: VigilanteATI.ECrimePosts.post
       description: base64 encoded, matching search terms highlighted via <mark> tags
       type: string
-    description: Query the eCrime intelligence database. This is the API call you
-      want to use to do a full text search on eCrime intelligence data, such as hacker
-      chatter.
+    description: Query the eCrime intelligence database. This is the API call you want to use to do a full text search on eCrime intelligence data, such as hacker chatter.
   - name: vigilante-search-leaks
     arguments:
     - name: leak_id
-      description: If set this parameter determines which leak the user wants to return
-        metadata for. This is used primarily when you want to get information on just
-        a single leak instead of a set of leaks.
+      description: If set this parameter determines which leak the user wants to return metadata for. This is used primarily when you want to get information on just a single leak instead of a set of leaks.
     - name: days_ago
-      description: Specifies how many days ago (in history) we should go back to fetch
-        leak data for. By default this parameter is set to 7 which means it returns
-        all leaks added to the database within the last 7 days. To return data for
-        all leaks you can set this value to be equal to 0.
+      description: Specifies how many days ago (in history) we should go back to fetch leak data for. By default this parameter is set to 7 which means it returns all leaks added to the database within the last 7 days. To return data for all leaks you can set this value to be equal to 0.
     - name: keyword
-      description: Allows you to specify a string keyword to search for. The keyword
-        specified is used to search metadata associated with a leak and return any
-        matching results. You can search by domain names, hacker groups, affected
-        companies, etc.
+      description: Allows you to specify a string keyword to search for. The keyword specified is used to search metadata associated with a leak and return any matching results. You can search by domain names, hacker groups, affected companies, etc.
     - name: limit
-      description: Specifies the maximum number of leaks to return from this request.
-        By default this parameter is set to 20 which means it returns up to the first
-        20 leaks. The valid range for value of limit is from 1 (minimum) to 1,000
-        (maximum). (optional)
+      description: Specifies the maximum number of leaks to return from this request. By default this parameter is set to 20 which means it returns up to the first 20 leaks. The valid range for value of limit is from 1 (minimum) to 1,000 (maximum). (optional)
       defaultValue: "20"
     - name: token
-      description: The token required to retrieve the next page of results; if necessary.
-        When the result set is larger than the value of limit the API will return
-        a token along with the response so the client can request the next page of
-        results appropriately with the next API request. (optional)
+      description: The token required to retrieve the next page of results; if necessary. When the result set is larger than the value of limit the API will return a token along with the response so the client can request the next page of results appropriately with the next API request. (optional)
     outputs:
     - contextPath: VigilanteATI.Leaks.leak_id
-      description: Unique identifier for the leak. We internally use MD5 sums to identify
-        leaks, so this will be a MD5 sum
+      description: Unique identifier for the leak. We internally use MD5 sums to identify leaks, so this will be a MD5 sum
       type: string
     - contextPath: VigilanteATI.Leaks.title
       description: Title of the leak.
     - contextPath: VigilanteATI.Leaks.description
       description: A short leak description
     - contextPath: VigilanteATI.Leaks.leak_type
-      description: 'Type of the leak. Currently we feature the following leak designations:
-        "Database dump", "Credentials dump" or "Credit card dump". As our service
-        grows we will add new leak types into the system.'
+      description: 'Type of the leak. Currently we feature the following leak designations: "Database dump", "Credentials dump" or "Credit card dump". As our service grows we will add new leak types into the system.'
     - contextPath: VigilanteATI.Leaks.source_refs
-      description: List of sources (URIs) where this leak was available at the time
-        VigilanteATI team harvested it.
+      description: List of sources (URIs) where this leak was available at the time VigilanteATI team harvested it.
       type: string
     - contextPath: VigilanteATI.Leaks.import_date
       description: The date the leak was first imported into the VigilanteATI database.
       type: date
     - contextPath: VigilanteATI.Leaks.attackers
-      description: A list of attackers (hackers) who claimed responsibility for the
-        breach/leak.
+      description: A list of attackers (hackers) who claimed responsibility for the breach/leak.
       type: string
     - contextPath: VigilanteATI.Leaks.score
-      description: An integer, in a range of 0 to 100, of how confident we are this
-        leak is legitimate.
+      description: An integer, in a range of 0 to 100, of how confident we are this leak is legitimate.
       type: number
     - contextPath: VigilanteATI.Leaks.num_domains_affected
       description: Number of domains affected by the leak.
@@ -1005,8 +945,7 @@ script:
       description: A list of target industry verticals affected by the leak.
       type: string
     - contextPath: VigilanteATI.Leaks.attack_method
-      description: The method of attack on the target; if published. This is usually
-                     "SQLi", "phishing", "social engineering", etc.
+      description: The method of attack on the target; if published. This is usually "SQLi", "phishing", "social engineering", etc.
       type: string
     - contextPath: VigilanteATI.Leaks.media_refs
       description: A list of media articles covering the data leak.
@@ -1014,47 +953,30 @@ script:
       description: List of entities targeted by this leak.
       type: string
     - contextPath: VigilanteATI.Leaks.num_entries
-      description: Total number of account credentials (email/password pairs) harvested
-        from this leak.
+      description: Total number of account credentials (email/password pairs) harvested from this leak.
       type: number
     - contextPath: VigilanteATI.Leaks.password_hash
-      description: Type of password hash; only present if leaked passwords have been
-        hashed.
+      description: Type of password hash; only present if leaked passwords have been hashed.
       type: string
     - contextPath: VigilanteATI.LeakInfoToken
-      description: Token required to paginate the next set of results in. This is
-        only provided if the number of items in the response exceeds our max pagination
-        size. Otherwise it is set to an empty string.
+      description: Token required to paginate the next set of results in. This is only provided if the number of items in the response exceeds our max pagination size. Otherwise it is set to an empty string.
       type: string
     description: ' Retrieves the list of leaks from database.'
   - name: vigilante-get-leak
     arguments:
     - name: leak_id
       required: true
-      description: An identifier (MD5 sum) that uniquely represents this leak in our
-        database.
+      description: An identifier (MD5 sum) that uniquely represents this leak in our database.
     - name: limit
-      description: Specifies the maximum number of account credentials to return from
-        this request. By default this parameter is set to 20 which means it returns
-        up to the first 20 accounts harvested from this leak. The valid range for
-        value of limit is from 1 (minimum) to 10,000 (maximum). (optional)
+      description: Specifies the maximum number of account credentials to return from this request. By default this parameter is set to 20 which means it returns up to the first 20 accounts harvested from this leak. The valid range for value of limit is from 1 (minimum) to 10,000 (maximum). (optional)
       defaultValue: "20"
     - name: domains
-      description: A comma delimited list of domains to use a filter for returning
-        the harvested credentials. This parameter is used to return only a subset
-        of the leak that matches a particular email domain, rather than the whole
-        leak. By default this parameter is set to empty string which means it returns
-        all harvested credentials, regardless of the email domain they belong to.
-        (optional)
+      description: A comma delimited list of domains to use a filter for returning the harvested credentials. This parameter is used to return only a subset of the leak that matches a particular email domain, rather than the whole leak. By default this parameter is set to empty string which means it returns all harvested credentials, regardless of the email domain they belong to. (optional)
     - name: token
-      description: The token required to retrieve the next page of results; if necessary.
-        When the result set is larger than the value of limit the API will return
-        a token along with the response so the client can request the next page of
-        results appropriately with the next API request. (optional)
+      description: The token required to retrieve the next page of results; if necessary. When the result set is larger than the value of limit the API will return a token along with the response so the client can request the next page of results appropriately with the next API request. (optional)
     outputs:
     - contextPath: VigilanteATI.Leaks.leak_id
-      description: Unique identifier for the leak from which the accounts come from.
-        (MD5 sum)
+      description: Unique identifier for the leak from which the accounts come from. (MD5 sum)
       type: string
     - contextPath: VigilanteATI.Leaks.accounts
       description: Container for account objects. This is just a list of dictionaries.
@@ -1062,138 +984,88 @@ script:
       description: Email domain which the account belongs to.
       type: string
     - contextPath: VigilanteATI.Leaks.accounts.type_id
-      description: Type of account. At the moment we only support accounts of type
-        1, which are email addresses. As we expand our service we will add support
-        for additional types such as usernames.
+      description: Type of account. At the moment we only support accounts of type 1, which are email addresses. As we expand our service we will add support for additional types such as usernames.
       type: number
     - contextPath: VigilanteATI.Leaks.accounts.email
-      description: A plaintext form of the email address from the account. The email
-        address will always be lowercased.
+      description: A plaintext form of the email address from the account. The email address will always be lowercased.
       type: string
     - contextPath: VigilanteATI.Leaks.accounts.password
-      description: The encrypted password found in this leaked account credential.
-        This field is the BASE64 encoded representation of the encrypted data. You
-        will need to decrypt this password using a decryption key provided to you.
+      description: The encrypted password found in this leaked account credential. This field is the BASE64 encoded representation of the encrypted data. You will need to decrypt this password using a decryption key provided to you.
       type: string
     - contextPath: VigilanteATI.LeakAccountsToken
-      description: Token required to paginate the next set of results in. This is
-        only provided if the number of items in the response exceeds our max pagination
-        size. Otherwise it is set to an empty string.
+      description: Token required to paginate the next set of results in. This is only provided if the number of items in the response exceeds our max pagination size. Otherwise it is set to an empty string.
       type: string
-    description: ' Retrieves the list of account credentials that belong to a particular
-      leak.'
+    description: ' Retrieves the list of account credentials that belong to a particular leak.'
   - name: vigilante-query-accounts
     arguments:
     - name: emails
       required: true
-      description: The string (or comma delimited list of strings) that uniquely identifier
-        the account we are trying to match on. In the current version of the API the
-        only acceptable types of account identifiers are email address and SHA512
-        hashes of email addresses. Please note that if you're populating this argument
-        with a list of email addresses or SHA512 hashes we do not allow mixing of
-        the two types. The list must be either only email addresses, or only hashes.
-        Any email address provided in account_identifier must adhere to RFC 2822.
-        (required)
+      description: The string (or comma delimited list of strings) that uniquely identifier the account we are trying to match on. In the current version of the API the only acceptable types of account identifiers are email address and SHA512 hashes of email addresses. Please note that if you're populating this argument with a list of email addresses or SHA512 hashes we do not allow mixing of the two types. The list must be either only email addresses, or only hashes. Any email address provided in account_identifier must adhere to RFC 2822. (required)
       isArray: true
     - name: limit
-      description: Upper bounds for how many results we will return. By default this
-        is set to 20. (optional)
+      description: Upper bounds for how many results we will return. By default this is set to 20. (optional)
       defaultValue: "20"
     - name: days_ago
-      description: Used to specify a time range on matching against the given account
-        identifier. By default we will run the query against our entire database,
-        without restricting results to a time range. (optional)
+      description: Used to specify a time range on matching against the given account identifier. By default we will run the query against our entire database, without restricting results to a time range. (optional)
     outputs:
     - contextPath: VigilanteATI.Account.leak_id
       description: Leak ID related to that account
       type: string
     - contextPath: VigilanteATI.Account.type_id
-      description: Type of account. At the moment we only support accounts of type
-        1, which are email addresses. As we expand our service we will add support
-        for additional types such as usernames.
+      description: Type of account. At the moment we only support accounts of type 1, which are email addresses. As we expand our service we will add support for additional types such as usernames.
       type: number
     - contextPath: VigilanteATI.Account.source_type
-      description: Denotes type of data. Value of 1 indicates compromised credentials.
-        Value of 2 means that these are Endangered Credentials, and the password field
-        contains a JSON dictionary instead of a password.
+      description: Denotes type of data. Value of 1 indicates compromised credentials. Value of 2 means that these are Endangered Credentials, and the password field contains a JSON dictionary instead of a password.
       type: number
     - contextPath: VigilanteATI.Account.email
-      description: A plaintext form of the email address from the account. The email
-        address will always be lowercased.
+      description: A plaintext form of the email address from the account. The email address will always be lowercased.
       type: string
     - contextPath: VigilanteATI.Account.password
-      description: The encrypted password found in this leaked account credential.
-        This field is the BASE64 encoded representation of the encrypted data. You
-        will need to decrypt this password using a decryption key provided to you.
+      description: The encrypted password found in this leaked account credential. This field is the BASE64 encoded representation of the encrypted data. You will need to decrypt this password using a decryption key provided to you.
       type: string
     - contextPath: VigilanteATI.AccountQueryToken
-      description: Token required to paginate the next set of results in. This is
-        only provided if the number of items in the response exceeds our max pagination
-        size. Otherwise it is set to an empty string.
+      description: Token required to paginate the next set of results in. This is only provided if the number of items in the response exceeds our max pagination size. Otherwise it is set to an empty string.
       type: string
-    description: Performs a query to match the given account identifier against database
-      of leaked credentials.
+    description: Performs a query to match the given account identifier against database of leaked credentials.
   - name: vigilante-query-domains
     arguments:
     - name: domain
       required: true
-      description: The string that uniquely identifies the domain we are trying to
-        match on. Domain names provided as domain_identifier must adhere to RFC 1035.
+      description: The string that uniquely identifies the domain we are trying to match on. Domain names provided as domain_identifier must adhere to RFC 1035.
     - name: days_ago
-      description: If this parameter is supplied, the API will only search the previous
-        n days for the domains. The maximum value allowed is 365 days if supplied.
-        If this parameter is not included, the will not be restricted by time.
+      description: If this parameter is supplied, the API will only search the previous n days for the domains. The maximum value allowed is 365 days if supplied. If this parameter is not included, the will not be restricted by time.
     - name: limit
-      description: Upper bounds for how many results we will return. By default this
-        is set to 20.
+      description: Upper bounds for how many results we will return. By default this is set to 20.
       defaultValue: "20"
     - name: token
-      description: The token required to retrieve the next page of results; if necessary.
-        When the result set is larger than our max page size the API returns a token
-        along with the response so the client can request the next page appropriately
-        with the next API request. (optional)
+      description: The token required to retrieve the next page of results; if necessary. When the result set is larger than our max page size the API returns a token along with the response so the client can request the next page appropriately with the next API request. (optional)
     outputs:
     - contextPath: VigilanteATI.Domain.domain
       description: The domain name you queried for.
       type: string
     - contextPath: VigilanteATI.Domain.accounts
-      description: Container for results. List of dictionaries, each representing
-        a single pair of account credentials with associated metadata.
+      description: Container for results. List of dictionaries, each representing a single pair of account credentials with associated metadata.
     - contextPath: VigilanteATI.Domain.accounts.source_type
-      description: Denotes type of data. Value of 1 indicates compromised credentials.
-        Value of 2 means that these are Endangered Credentials, and the password field
-        contains a JSON dictionary instead of a password.
+      description: Denotes type of data. Value of 1 indicates compromised credentials. Value of 2 means that these are Endangered Credentials, and the password field contains a JSON dictionary instead of a password.
       type: number
     - contextPath: VigilanteATI.Domain.accounts.email
-      description: A plaintext form of the email address from the account. The email
-        address will always be lowercased.
+      description: A plaintext form of the email address from the account. The email address will always be lowercased.
       type: string
     - contextPath: VigilanteATI.Domain.accounts.password
-      description: The encrypted password found in this leaked account credential.
-        This field is the BASE64 encoded representation of the encrypted data. You
-        will need to decrypt this password using a decryption key provided to you.
+      description: The encrypted password found in this leaked account credential. This field is the BASE64 encoded representation of the encrypted data. You will need to decrypt this password using a decryption key provided to you.
       type: string
     - contextPath: VigilanteATI.DomainQueryToken
-      description: Token required to paginate the next set of results in. This is
-        only provided if the number of items in the response exceeds our max pagination
-        size. Otherwise it is set to an empty string.
+      description: Token required to paginate the next set of results in. This is only provided if the number of items in the response exceeds our max pagination size. Otherwise it is set to an empty string.
       type: string
     - contextPath: VigilanteATI.Domain.accounts.leak_id
-      description: Identifier of the leak where this account came from. You can use
-        this ID to correlate account data to the leak.
+      description: Identifier of the leak where this account came from. You can use this ID to correlate account data to the leak.
       type: string
-    description: ' Performs a query to match the given domain name against our database
-      of leaked credentials.'
+    description: ' Performs a query to match the given domain name against our database of leaked credentials.'
   - name: vigilante-watchlist-add-accounts
     arguments:
     - name: account_identifiers
       required: true
-      description: Command separated string containing account identifiers to add
-        to your watchlist. All identifiers must be of the same type as specified by
-        the type parameter. Identifiers cannot be longer than 255 characters. Multiple
-        occurrences of an identifier in the array are treated as a single identifier.
-        The maximum number of account identifiers allowed per request is 100. Email
-        addresses must adhere to RFC 2822.
+      description: Command separated string containing account identifiers to add to your watchlist. All identifiers must be of the same type as specified by the type parameter. Identifiers cannot be longer than 255 characters. Multiple occurrences of an identifier in the array are treated as a single identifier. The maximum number of account identifiers allowed per request is 100. Email addresses must adhere to RFC 2822.
     - name: type
       required: true
       auto: PREDEFINED
@@ -1202,28 +1074,21 @@ script:
       - domain
       description: The type of each account identifier, either "email" or "domain"
     - name: tag
-      description: A textual note to associate with each account identifier. Tags
-        cannot be longer than 255 characters. (optional)
+      description: A textual note to associate with each account identifier. Tags cannot be longer than 255 characters. (optional)
     description: Add account identifiers to your watchlist.
   - name: vigilante-watchlist-remove-accounts
     arguments:
     - name: account_identifiers
       required: true
-      description: Comma separated string containing account identifiers to remove
-        from your watchlist. Multiple occurrences of an identifier in the array are
-        treated as a single identifier. The maximum number of account identifiers
-        allowed per request is 100. (required)
+      description: Comma separated string containing account identifiers to remove from your watchlist. Multiple occurrences of an identifier in the array are treated as a single identifier. The maximum number of account identifiers allowed per request is 100. (required)
     description: Remove account identifiers from your watchlist
   - name: vigilante-get-watchlist
     arguments:
     - name: limit
-      description: Specifies the maximum number of identifiers to return. By default
-        limit is set to 20, which means the result set is limited to the most recently
-        added 20 identifiers. limit must be between 1 and 5000, inclusive. (optional)
+      description: Specifies the maximum number of identifiers to return. By default limit is set to 20, which means the result set is limited to the most recently added 20 identifiers. limit must be between 1 and 5000, inclusive. (optional)
       defaultValue: "20"
     - name: token
-      description: The token required to retrieve the next page of results. If this
-        parameter is specified, the limit parameter is ignored. (optional)
+      description: The token required to retrieve the next page of results. If this parameter is specified, the limit parameter is ignored. (optional)
     outputs:
     - contextPath: VigilanteATI.Watchlist
       description: Watchlist of accounts
@@ -1238,8 +1103,7 @@ script:
     - contextPath: VigilanteATI.Watchlist.tag
       description: identifier tag
     - contextPath: VigilanteATI.WatchlistQueryToken
-      description: The token parameter value required to retrieve the next page of
-        results. The value is null if there are no more pages of results to retrieve.
+      description: The token parameter value required to retrieve the next page of results. The value is null if there are no more pages of results to retrieve.
       type: string
     description: Retrieve account identifiers on your watchlist.
   - name: vigilante-account-usage-info
@@ -1247,4 +1111,5 @@ script:
     description: Returns the usage data for your account.
   runonce: false
 tests:
-  - InfoArmorVigilanteATITest
+- InfoArmorVigilanteATITest
+fromversion: 5.0.0

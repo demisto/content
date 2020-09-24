@@ -10,7 +10,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* PollingField 
+* CheckFieldValue 
 
 ### Commands
 This playbook does not use any commands.
