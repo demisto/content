@@ -1,8 +1,7 @@
 id: Google Chronicle Backstory List Alerts - Test
 version: -1
 name: Google Chronicle Backstory List Alerts - Test
-description: This playbook uses the Google Chronicle Backstory integration and tests
-  the various scenarios of the "gcb-list-alerts" command.
+description: This playbook uses the Google Chronicle Backstory integration and tests the various scenarios of the "gcb-list-alerts" command.
 starttaskid: "0"
 tasks:
   "0":
@@ -74,9 +73,7 @@ tasks:
       id: 36a0c0d0-8a93-475a-8292-0a160c8c994b
       version: -1
       name: Get list of alerts
-      description: List all the alerts tracked within your enterprise for the specified
-        time range. Both the parsed alerts and their corresponding raw alert logs
-        are returned.
+      description: List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
       script: Google Chronicle Backstory|||gcb-list-alerts
       type: regular
       iscommand: true
@@ -191,9 +188,7 @@ tasks:
       id: b245ebdf-bb92-40a8-8efa-a237081ba23c
       version: -1
       name: Invalid start time argument
-      description: List all the alerts tracked within your enterprise for the specified
-        time range. Both the parsed alerts and their corresponding raw alert logs
-        are returned.
+      description: List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
       script: Google Chronicle Backstory|||gcb-list-alerts
       type: regular
       iscommand: true
@@ -228,9 +223,7 @@ tasks:
       id: c536235a-73d7-40d3-8d4d-ceb6750e1ffe
       version: -1
       name: Is Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -260,9 +253,7 @@ tasks:
       id: 50fa9767-adc9-4c2c-827c-624aa8781bf8
       version: -1
       name: Invalid page size argument
-      description: List all the alerts tracked within your enterprise for the specified
-        time range. Both the parsed alerts and their corresponding raw alert logs
-        are returned.
+      description: List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
       script: Google Chronicle Backstory|||gcb-list-alerts
       type: regular
       iscommand: true
@@ -297,9 +288,7 @@ tasks:
       id: 1476195e-6f4b-4e6c-89c2-e554458e2839
       version: -1
       name: Is Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -329,9 +318,7 @@ tasks:
       id: 7e681bd6-fc02-4c64-8cc3-a136bddbac12
       version: -1
       name: Invalid preset time range argument
-      description: List all the alerts tracked within your enterprise for the specified
-        time range. Both the parsed alerts and their corresponding raw alert logs
-        are returned.
+      description: List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
       script: Google Chronicle Backstory|||gcb-list-alerts
       type: regular
       iscommand: true
@@ -366,9 +353,7 @@ tasks:
       id: 1727fb71-c5d8-4a6b-83b9-752e5c22c348
       version: -1
       name: Is Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -499,3 +484,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

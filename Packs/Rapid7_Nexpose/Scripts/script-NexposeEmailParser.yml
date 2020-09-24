@@ -2,9 +2,11 @@ commonfields:
   id: NexposeEmailParser
   version: -1
 name: NexposeEmailParser
-script: |-
+script: >-
   var entries = executeCommand('getEntries', {});
+
   var report = 0;
+
   if (!args.entryID) {
       for (var i = 0; i < entries.length; i++) {
           if (entries[i].File) {
@@ -18,8 +20,11 @@ script: |-
   } else {
       report = getFileByEntryID(args.entryID);
   }
+
   var contents = [];
+
   var nodes = report.split(/<\/node>/);
+
   for (var i=0; i < nodes.length; i++) {
       var nodeRegexp = /<node address="(.*)" status="(.*)" device-id="(.*)" site-name="(.*)" site-importance="(.*)" scan-template=".*" risk-score="(.*)">/g;
       var match = nodeRegexp.exec(nodes[i]);
@@ -56,6 +61,7 @@ script: |-
           }
       }
   }
+
   return [{Contents: contents,
            ContentsFormat: formats.table,
            Type: entryTypes.note},
@@ -70,14 +76,11 @@ comment: |-
 system: true
 args:
 - name: entryID
-  description: ID of the entry containing the Nexpose report. If none is provided,
-    the script will iterate and find a relevant entry.
+  description: ID of the entry containing the Nexpose report. If none is provided, the script will iterate and find a relevant entry.
 - name: minRiskScore
-  description: Minimal Risk Score an item in the report needs to reach in order to
-    trigger an incident. Leave empty to trigger for any risk score.
+  description: Minimal Risk Score an item in the report needs to reach in order to trigger an incident. Leave empty to trigger for any risk score.
 - name: minVulnCount
-  description: Minimal Vulnerability Count an item in the report needs to reach in
-    order to trigger an incident. Leave empty to trigger for any count.
+  description: Minimal Vulnerability Count an item in the report needs to reach in order to trigger an incident. Leave empty to trigger for any count.
 - name: defaultNexposeSeverity
   description: Severity to be set on triggered incidents
 scripttarget: 0
@@ -85,3 +88,4 @@ dependson:
   must:
   - nexpose
 timeout: 0s
+fromversion: 5.0.0

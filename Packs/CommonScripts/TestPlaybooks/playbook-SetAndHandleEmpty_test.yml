@@ -1,7 +1,7 @@
 id: SetAndHandleEmpty test
 version: -1
 name: SetAndHandleEmpty test
-fromversion: 4.5.0
+fromversion: 5.0.0
 starttaskid: '0'
 tasks:
   '0':

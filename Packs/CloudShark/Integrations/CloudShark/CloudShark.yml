@@ -159,3 +159,4 @@ script:
   subtype: python3
 tests:
 - CloudShark - Test Playbook
+fromversion: 5.0.0

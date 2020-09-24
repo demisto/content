@@ -2,7 +2,7 @@ id: endpoint_enrichment_-_generic_test
 version: -1
 name: Endpoint Enrichment - Generic Test
 description: ""
-fromversion: "3.5.0"
+fromversion: "5.0.0"
 starttaskid: "0"
 tasks:
   "0":

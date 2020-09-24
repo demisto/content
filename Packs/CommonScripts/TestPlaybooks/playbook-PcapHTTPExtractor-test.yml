@@ -110,8 +110,7 @@ tasks:
       id: 6529ce01-dc41-45fd-8c5c-fcacd64511d6
       version: -1
       name: PcapHTTPExtractor
-      description: Allows to parse and extract http flows (requests & responses) from
-        a pcap/pcapng file.
+      description: Allows to parse and extract http flows (requests & responses) from a pcap/pcapng file.
       scriptName: PcapHTTPExtractor
       type: regular
       iscommand: false
@@ -246,3 +245,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

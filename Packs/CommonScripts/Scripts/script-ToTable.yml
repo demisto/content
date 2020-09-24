@@ -2,17 +2,22 @@ commonfields:
   id: ToTable
   version: -1
 name: ToTable
-script: |-
+script: >-
   var data = args.data;
+
   var headers = args.columns ? args.columns.split(',') : null;
+
   if(!Array.isArray(data)) {
       data = [data]
   }
+
   var flatData = [];
+
   data.forEach(function(element) {
     var flattenObject = treeToFlattenObject(element);
     flatData.push(flattenObject);
   });
+
   return {Type: entryTypes.note, Contents: tableToMarkdown(args.title, flatData, headers), ContentsFormat: formats.markdown};
 type: javascript
 tags:
@@ -28,6 +33,6 @@ args:
 - name: title
   description: Title for the table
 - name: columns
-  description: Comma-separated list of columns to display. Accepts nested columns
-    using dot notation.
+  description: Comma-separated list of columns to display. Accepts nested columns using dot notation.
 scripttarget: 0
+fromversion: 5.0.0

@@ -1,7 +1,7 @@
 id: TestCommonPython
 version: -1
 name: TestCommonPython
-fromversion: 4.5.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -125,8 +125,7 @@ tasks:
       id: a3463a8b-4734-432a-8395-5c4ced7adc5e
       version: -1
       name: Test tableToMarkdown
-      description: Tests underscoreToCamelCase and tableToMarkDown with and without
-        headerTransform
+      description: Tests underscoreToCamelCase and tableToMarkDown with and without headerTransform
       scriptName: TestPYCommonServer
       type: regular
       iscommand: false
@@ -526,9 +525,8 @@ tasks:
     task:
       id: 3857d09f-bc71-4758-88cf-2234fc14a987
       version: -1
-      name: CallTableToMarkdown encoding non-ascii chars 
-      description: Tests that tableToMarkdown handles encoding of non-ascii
-        chars in nested dicts (python 2)
+      name: CallTableToMarkdown encoding non-ascii chars
+      description: Tests that tableToMarkdown handles encoding of non-ascii chars in nested dicts (python 2)
       scriptName: CallTableToMarkdown
       type: regular
       iscommand: false
