@@ -774,7 +774,6 @@ script:
       description: Device IDs on which an indicator ran.
       type: string
     name: cs-device-ran-on
-  dockerimage45: demisto/python3:3.8.3.9324
   dockerimage: demisto/python3:3.8.5.10845
   isfetch: true
   longRunning: false
