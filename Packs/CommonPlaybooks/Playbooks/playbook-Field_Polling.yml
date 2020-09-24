@@ -6,8 +6,7 @@ fromversion: 5.0.0
 id: Field Polling - Generic
 version: -1
 name: Field Polling - Generic
-description: This playbook will poll a field for whether a value exists and whether
-  it contains a specific value.
+description: This playbook polls a field to check if a specific value exists.
 starttaskid: "0"
 tasks:
   "0":
@@ -141,26 +140,26 @@ inputs:
   value: {}
   required: true
   description: The field to poll for a value. Ensure that you use the lower case version
-    of the field. For example; the Details field should be details
+    of the field. For example, the Details field should be details.
   playbookInputQuery:
 - key: value
   value:
     simple: .+
   required: true
-  description: The regex to check the field for. By default this is .+ which matches
+  description: The regex to check the field for. By default the regex contains .+, which matches
     anything other than None.
   playbookInputQuery:
 - key: frequency
   value:
     simple: "1"
   required: true
-  description: How often to check (in minutes)
+  description: How often to check (in minutes).
   playbookInputQuery:
 - key: timeout
   value:
     simple: "10"
   required: true
-  description: When to timeout (in minutes)
+  description: When to timeout (in minutes).
   playbookInputQuery:
 outputs: []
 tests:
