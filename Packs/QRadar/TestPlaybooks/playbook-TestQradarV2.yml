@@ -692,8 +692,7 @@ tasks:
       interval:
         simple: "1"
       query_expression:
-        simple: SELECT DOMAINNAME(1) AS 'Domain name' FROM events GROUP BY 'Domain
-          name'
+        simple: SELECT DOMAINNAME(1) AS 'Domain name' FROM events GROUP BY 'Domain name'
       range: {}
       timeout:
         simple: "60"
@@ -756,8 +755,7 @@ tasks:
       id: 20f5dda6-98a7-4e9d-8225-7bcf334f9d54
       version: -1
       name: qradar-create-reference-set
-      description: Creates a new reference set. If the provided name is already in
-        use, this command will fail
+      description: Creates a new reference set. If the provided name is already in use, this command will fail
       script: '|||qradar-create-reference-set'
       type: regular
       iscommand: true
@@ -831,9 +829,7 @@ tasks:
       id: 9c505702-14b9-47d3-8744-084c3fc0fe27
       version: -1
       name: qradar-get-reference-by-name
-      description: Information about the reference set that had data added or updated.
-        This returns information set but not the contained data. This feature is supported
-        from version 8.1 and upward.
+      description: Information about the reference set that had data added or updated. This returns information set but not the contained data. This feature is supported from version 8.1 and upward.
       script: '|||qradar-get-reference-by-name'
       type: regular
       iscommand: true
@@ -943,9 +939,7 @@ tasks:
       id: 1fe915dc-6604-441c-8cde-3fa7a25996b5
       version: -1
       name: qradar-get-reference-by-name
-      description: Information about the reference set that had data added or updated.
-        This returns information set but not the contained data. This feature is supported
-        from version 8.1 and upward.
+      description: Information about the reference set that had data added or updated. This returns information set but not the contained data. This feature is supported from version 8.1 and upward.
       script: '|||qradar-get-reference-by-name'
       type: regular
       iscommand: true
@@ -1255,3 +1249,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

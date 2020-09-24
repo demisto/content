@@ -1,6 +1,6 @@
 id: Traps Quarantine Event
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Traps Quarantine Event
 description: This playbook accepts a file hash and quarantines this file using Traps.
 starttaskid: "0"
@@ -238,8 +238,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: Traps.QuarantineResult(val.Status == 'pending' || val.Status == 'in
-          progress').OperationID
+        simple: Traps.QuarantineResult(val.Status == 'pending' || val.Status == 'in progress').OperationID
     separatecontext: true
     loop:
       iscommand: false
@@ -309,4 +308,4 @@ inputs:
   description: Traps event ID. The playbook quarantines the related files.
 outputs: []
 tests:
-  - No Test
+- No Test

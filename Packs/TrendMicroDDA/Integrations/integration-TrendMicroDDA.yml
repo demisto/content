@@ -5,8 +5,7 @@ name: Trend Micro Deep Discovery Analyzer Beta
 display: Trend Micro Deep Discovery Analyzer (Beta)
 category: Forensics & Malware Analysis
 image: data:image/png;base64,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
-description: Deep Discovery Analyzer is a turnkey appliance that uses virtual images
-  of endpoint configurations to analyze and detect targeted attacks.
+description: Deep Discovery Analyzer is a turnkey appliance that uses virtual images of endpoint configurations to analyze and detect targeted attacks.
 detaileddescription: |-
   In order to allow the integration to work, the following configurations are required:
   1) Enter the DDA server and port into the server parameter in the integration
@@ -48,23 +47,38 @@ configuration:
   type: 0
   required: false
 script:
-  script: |-
+  script: >-
     import hashlib
+
     from datetime import datetime, timedelta
+
     import uuid
+
     import json
+
     import requests
+
     from requests.adapters import HTTPAdapter
+
     from requests.packages.urllib3.util.retry import Retry
+
     import re
+
     import platform
+
     import os.path
+
     import copy
+
     import requests
+
     from collections import OrderedDict
 
+
     # disable insecure warnings
+
     requests.packages.urllib3.disable_warnings()
+
 
     if not demisto.params().get("proxy", True):
         del os.environ["HTTP_PROXY"]
@@ -73,6 +87,7 @@ script:
         del os.environ["https_proxy"]
 
     #HELPER FUNCTIONS#
+
 
     def load_host_url():
         ''' loads the host url from the configuration or strips the server url to get valid host url '''
@@ -170,12 +185,19 @@ script:
             return True
 
     #GLOBAL VARIABLES#
+
     API_KEY = demisto.params()['apiKey']
+
     PROTOCOL_VERSION = demisto.params()['protocol_version']
+
     SERVER_URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+
     USE_SSL = not demisto.params().get('insecure', True)
+
     UUID = str(uuid.uuid4())
+
     HOST = load_host_url()
+
 
     DEFAULT_HEADERS = {
         'Host' : HOST,
@@ -189,10 +211,14 @@ script:
         'X-DTAS-SourceName': 'DemistoIntegration',
     }
 
+
     #for fetch incident
+
     CURRENT_TIME = datetime.utcnow()
 
+
     #COMMAND FUNCTIONS#
+
 
     def register():
         headers_register = copy.deepcopy(DEFAULT_HEADERS)
@@ -779,7 +805,9 @@ script:
         })
 
     # EXECUTION
+
     LOG('command is %s' % (demisto.command(), ))
+
 
     try:
         register()
@@ -880,8 +908,7 @@ script:
     arguments:
     - name: sha1
       description: SHA1 of the submission
-    description: Retrieves IOC for a given submission, returns an error if submission
-      has no IOC
+    description: Retrieves IOC for a given submission, returns an error if submission has no IOC
   - name: trendmicro-dda-get-report
     arguments:
     - name: sha1
@@ -894,8 +921,7 @@ script:
       - "1"
       - "2"
       - "3"
-      description: DDA severity score (greater or equal to) for which the submission
-        will be considered malicious
+      description: DDA severity score (greater or equal to) for which the submission will be considered malicious
       defaultValue: "1"
     - name: verbose
       auto: PREDEFINED
@@ -991,12 +1017,10 @@ script:
     arguments:
     - name: interval_start
       required: true
-      description: Interval start time, given in format ~~YYYY-MM-DD HH:MM:SS, e.g.
-        2008-11-22 19:53:42
+      description: Interval start time, given in format ~~YYYY-MM-DD HH:MM:SS, e.g. 2008-11-22 19:53:42
     - name: interval_end
       required: true
-      description: Interval end time, given in format YYYY-MM-DD HH:MM:SS, e.g. 2008-11-22
-        19:53:42
+      description: Interval end time, given in format YYYY-MM-DD HH:MM:SS, e.g. 2008-11-22 19:53:42
     - name: interval_type
       auto: PREDEFINED
       predefined:
@@ -1004,8 +1028,7 @@ script:
       - "1"
       description: '0: Submission time, 1: Completion time'
       defaultValue: "0"
-    description: Retrieves a list of SHA1 of samples submitted within the given time
-      interval
+    description: Retrieves a list of SHA1 of samples submitted within the given time interval
   - name: trendmicro-dda-check-status
     arguments:
     - name: sha1
@@ -1057,8 +1080,7 @@ script:
       - "1"
       - "2"
       - "3"
-      description: DDA severity score (greater or equal to) for which the submission
-        will be considered malicious
+      description: DDA severity score (greater or equal to) for which the submission will be considered malicious
       defaultValue: "1"
     description: Retrieves a brief XML report of a given submission
   runonce: false
@@ -1066,3 +1088,4 @@ script:
 beta: true
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually
+fromversion: 5.0.0

@@ -2,9 +2,11 @@ commonfields:
   id: CSHuntByIOC
   version: -1
 name: CSHuntByIOC
-script: |-
+script: >-
   res = []
+
   t = []
+
   for v in argToList(demisto.args()['value']):
       e = demisto.executeCommand("cs-device-ran-on", {"type": demisto.args()['type'], "value": v})[0]
       if isError(e):
@@ -41,4 +43,5 @@ dependson:
   - cs-device-ran-on
 timeout: 0s
 tests:
-  - No Test
+- No Test
+fromversion: 5.0.0
