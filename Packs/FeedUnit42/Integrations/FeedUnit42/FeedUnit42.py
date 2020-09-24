@@ -159,141 +159,143 @@ def parse_relationships(indicators: list, relationships: list = [], pivots: list
     return indicators
 
 
-def get_playbooks_urls():
-    return [
-        'chafer.json',
-        'cozyduke.json',
-        'darkhydrus.json',
-        'dragonok.json',
-        'hangover.json',
-        'inception.json',
-        'konni.json',
-        'menupass.json',
-        'oilrig.json',
-        'patchwork.json',
-        'pickaxe.json',
-        'pkplug.json',
-        'rancor.json',
-        'reaper.json',
-        'sofacy.json',
-        'th3bug.json',
-        'tick.json',
-        'windshift.json',
-    ]
+class PlaybookProcessor:
+    base_url = 'https://pan-unit42.github.io/playbook_viewer/playbook_json/'
 
+    def __init__(self, feed_tags: List, tlp_color: Optional[str]):
+        self.feed_tags = feed_tags
+        self.tlp_color = tlp_color
+        self.playbook_suffixes = self.get_playbooks_urls()
 
-def get_playbook_data(url):
-    json_url = 'https://pan-unit42.github.io/playbook_viewer/playbook_json/' + url
-    raw_json = requests.get(json_url)
+    @staticmethod
+    def get_playbooks_urls():
+        return [
+            'chafer.json',
+            'cozyduke.json',
+            'darkhydrus.json',
+            'dragonok.json',
+            'hangover.json',
+            'inception.json',
+            'konni.json',
+            'menupass.json',
+            'oilrig.json',
+            'patchwork.json',
+            'pickaxe.json',
+            'pkplug.json',
+            'rancor.json',
+            'reaper.json',
+            'sofacy.json',
+            'th3bug.json',
+            'tick.json',
+            'windshift.json',
+        ]
 
-    try:
-        bundle = raw_json.json()
+    def get_playbook_data(self, url):
+        json_url = PlaybookProcessor.base_url + url
+        raw_json = requests.get(json_url)
 
-        if bundle.get('type', '') == 'bundle' and bundle.get('spec_version', '') == '2.0':
-            return bundle
-        else:
-            return_error('{} - no valid stix 2.0 bundle found'.format(url))
-    except Exception as e:
-        return_error('{} - could not parse json from file\n{}'.format(url, e))
+        try:
+            bundle = raw_json.json()
 
-    return {}
+            if bundle.get('type', '') == 'bundle' and bundle.get('spec_version', '') == '2.0':
+                return bundle
+            else:
+                return_error('{} - no valid stix 2.0 bundle found'.format(url))
+        except Exception as e:
+            return_error('{} - could not parse json from file\n{}'.format(url, e))
 
+        return {}
 
-def sort_objects(all_objects):
-    report_object = {}
-    malware_objects = []
-    indicator_objects = []
-    relationship_objects = []
-    attack_pattern_objects = []
+    def sort_objects(self, all_objects):
+        report_object = {}
+        malware_objects = []
+        indicator_objects = []
+        relationship_objects = []
+        attack_pattern_objects = []
 
-    for obj in all_objects:
-        if obj['type'] == 'report':
-            report_object = obj
+        for obj in all_objects:
+            if obj['type'] == 'report':
+                report_object = objz
 
-        elif obj['type'] == 'indicator':
-            indicator_objects.append(obj)
+            elif obj['type'] == 'indicator':
+                indicator_objects.append(obj)
 
-        elif obj['type'] == 'malware':
-            malware_objects.append(obj)
+            elif obj['type'] == 'malware':
+                malware_objects.append(obj)
 
-        elif obj['type'] == 'relationship':
-            relationship_objects.append(obj)
+            elif obj['type'] == 'relationship':
+                relationship_objects.append(obj)
 
-        elif obj['type'] == 'attack-pattern':
-            attack_pattern_objects.append(obj)
+            elif obj['type'] == 'attack-pattern':
+                attack_pattern_objects.append(obj)
 
-    return report_object, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects
+        return report_object, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects
 
+    def process_report(self, report_object: Dict):
+        report = dict()  # type: Dict[str, Any]
 
-def process_report(report_object: Dict, feed_tags: list = [], tlp_color: Optional[str] = None):
-    report = dict()  # type: Dict[str, Any]
+        report['type'] = 'STIX Report'
+        report['value'] = report_object.get('name')
+        report['fields'] = {
+            'stixid': report_object.get('id'),
+            'published': report_object.get('published'),
+            'stixdescription': report_object.get('description', ''),
+            "reportedby": 'Unit42',
+            "tags": list((set(report_object.get('labels'))).union(set(self.feed_tags))),
+        }
+        if self.tlp_color:
+            report['fields']['trafficlightprotocol'] = self.tlp_color
 
-    report['type'] = 'STIX Report'
-    report['value'] = report_object.get('name')
-    report['fields'] = {
-        'stixid': report_object.get('id'),
-        'published': report_object.get('published'),
-        'stixdescription': report_object.get('description', ''),
-        "reportedby": 'Unit42',
-        "tags": list((set(report_object.get('labels'))).union(set(feed_tags))),
-    }
-    if tlp_color:
-        report['fields']['trafficlightprotocol'] = tlp_color
+        report['rawJSON'] = {
+            'unit42_id': report_object.get('id'),
+            'unit42_labels': report_object.get('labels'),
+            'unit42_published': report_object.get('published'),
+            'unit42_created_date': report_object.get('created'),
+            'unit42_modified_date': report_object.get('modified'),
+            'unit42_description': report_object.get('description'),
+            'unit42_object_refs': report_object.get('object_refs')
+        }
 
-    report['rawJSON'] = {
-        'unit42_id': report_object.get('id'),
-        'unit42_labels': report_object.get('labels'),
-        'unit42_published': report_object.get('published'),
-        'unit42_created_date': report_object.get('created'),
-        'unit42_modified_date': report_object.get('modified'),
-        'unit42_description': report_object.get('description'),
-        'unit42_object_refs': report_object.get('object_refs')
-    }
+        connected_objects_ids = [obj_id for obj_id in report_object.get('object_refs') if obj_id.startswith('indicator')]
 
-    connected_objects_ids = [obj_id for obj_id in report_object.get('object_refs') if obj_id.startswith('indicator')]
+        return report, connected_objects_ids
 
-    return report, connected_objects_ids
+    def process_connected_objects(self, indicator_objects: List, connected_objects_ids: List):
+        raw_indicators = []
 
+        for indicator in indicator_objects:
+            if indicator.get('id') in connected_objects_ids:
+                raw_indicators.append(indicator)
 
-def process_connected_objects(indicator_objects: List, connected_objects_ids: List, feed_tags: list = [],
-                              tlp_color: Optional[str] = None):
-    raw_indicators = []
+        return parse_indicators(raw_indicators)
 
-    for indicator in indicator_objects:
-        if indicator.get('id') in connected_objects_ids:
-            raw_indicators.append(indicator)
+    def process_playbook(self, bundle: Dict):
+        objects = bundle.get('objects', [])
 
-    return parse_indicators(raw_indicators, feed_tags, tlp_color)
+        report_object, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects = \
+            PlaybookProcessor.sort_objects(objects)
 
-
-def process_playbook(bundle: Dict, feed_tags: list = [], tlp_color: Optional[str] = None):
-    objects = bundle.get('objects', [])
-
-    report_object, malware_objects, indicator_objects, relationship_objects, attack_pattern_objects = \
-        sort_objects(objects)
-
-    report, connected_objects_ids = process_report(report_object, feed_tags, tlp_color)
-    related_indicators = process_connected_objects(indicator_objects, connected_objects_ids, feed_tags, tlp_color)
-
-    if report:
-        report = parse_relationships([report], relationship_objects, malware_objects + attack_pattern_objects)
-        return report
-
-    return {}
-
-
-def process_playbooks(feed_tags: list = [], tlp_color: Optional[str] = None):
-    reports = []
-
-    suffixes = get_playbooks_urls()
-    for suffix in suffixes:
-        bundle = get_playbook_data(suffix)
-        report = process_playbook(bundle, feed_tags, tlp_color)
+        report, connected_objects_ids = self.process_report(report_object)
+        related_indicators = self.process_connected_objects(indicator_objects, connected_objects_ids)
 
         if report:
-            reports.append(report)
+            report = parse_relationships([report], relationship_objects, malware_objects + attack_pattern_objects)
+            return report
 
-    return reports
+        return {}
+
+    def process_playbooks(self):
+        reports = []
+
+        suffixes = self.get_playbooks_urls()
+        for suffix in suffixes:
+            bundle = self.get_playbook_data(suffix)
+            report = self.process_playbook(bundle)
+
+            if report:
+                reports.append(report)
+
+        return reports
 
 
 def test_module(client: Client) -> str:
