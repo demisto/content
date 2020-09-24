@@ -1,0 +1,30 @@
+category: Authentication
+commonfields:
+  id: User-Audit_XSOAR
+  version: -1
+configuration:
+- additionalinfo: Add the URL till Tenant name
+  display: Demisto Tenant URL
+  name: url
+  required: true
+  type: 0
+- display: Demisto Instance API Key
+  name: apikey
+  required: true
+  type: 4
+description: The integration fetches the audit logs  for XSOAR.
+display: User-Audit_XSOAR
+name: User-Audit_XSOAR
+script:
+  commands:
+  - arguments: []
+    description: Fetches the user audit details from XSOAR Instance
+    name: user-audit-demisto
+  dockerimage: demisto/python3:3.8.2.6981
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

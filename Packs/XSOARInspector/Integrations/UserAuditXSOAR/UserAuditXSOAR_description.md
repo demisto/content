@@ -1,0 +1,1 @@
+This integration enables you to fetch the audit logs and dump it on common location.

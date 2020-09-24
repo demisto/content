@@ -1,0 +1,14 @@
+{
+    "name": "XSOAR Inspector",
+    "description": "XSOAR Audit playbook will run as a JOB on top of it to generate the report for deleted content from XSOAR.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ashish Bansal and Mohan Mittal",
+    "url": "",
+    "email": "",
+    "created": "2020-09-24T09:12:25Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

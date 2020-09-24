@@ -1,0 +1,355 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4c6ed359-5bb6-4951-8db1-cd70aea99261
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: XSOAR Inspector
+inputs: []
+name: XSOAR Inspector
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e2fd0a5b-35c9-4c7a-893a-e99aa79d2cf0
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: e2fd0a5b-35c9-4c7a-893a-e99aa79d2cf0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: User-Audit_XSOAR
+      description: Fetches the user audit details from XSOAR Instance
+      id: 8ab37f52-dcb2-4f76-8cff-b2d16a36c65b
+      iscommand: true
+      name: Retrieve XSOAR audit inspector logs file
+      script: User-Audit_XSOAR|||user-audit-demisto
+      type: regular
+      version: -1
+    taskid: 8ab37f52-dcb2-4f76-8cff-b2d16a36c65b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      encoding: {}
+      entryID:
+        simple: ${File.EntryID}
+      maxFileSize: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Load the contents of a file into context.
+      id: 1ebd26c1-b28a-478e-883d-3f56c4dcce7f
+      iscommand: false
+      name: Read Audit Logs File
+      script: ReadFile
+      type: regular
+      version: -1
+    taskid: 1ebd26c1-b28a-478e-883d-3f56c4dcce7f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input:
+        simple: ${FileData}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Loads a json from string input, and returns a json object result
+      id: 273755c4-a852-4918-8611-b41ea1fffcc7
+      iscommand: false
+      name: Create Json File and add it to the context Data
+      script: LoadJSON
+      type: regular
+      version: -1
+    taskid: 273755c4-a852-4918-8611-b41ea1fffcc7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      table:
+        simple: ${JsonObject.audits(val.type=='delete')=(({ user, id, action, object,
+          type, modified }) => ({user, id, action, object, type, modified}))(val)}
+      title:
+        simple: Suspicious Activities
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Converts a given array to an HTML table
+      id: 9c77f47c-d5f8-48d4-80fb-c9840bbb2623
+      iscommand: false
+      name: Extract the Suspicious Activities from the audit logs
+      script: ConvertTableToHTML
+      type: regular
+      version: -1
+    taskid: 9c77f47c-d5f8-48d4-80fb-c9840bbb2623
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      bodyType: {}
+      cc: {}
+      flag: {}
+      from: {}
+      headers: {}
+      htmlBody:
+        simple: "<!DOCTYPE html>\n<html>\n<head>\n<style>\ntable, th, td {\n  border:\
+          \ 1px solid black;\n  border-collapse: collapse;\n}\nth, td {\n  padding:\
+          \ 15px;\n  text-align: left;\n}\n#t01 {\n  width: 100%;    \n  background-color:\
+          \ #f1f1c1;\n}\n</style>\n</head>\n<body>\nDear Admin, <br> \nPlease find\
+          \ attached the details of activities which deemed to be suspicious from\
+          \ an audit perspective.\n\n${HTMLTable}\n\n<br> <br>\nPlease monitor the\
+          \ above activities and take necessary action(s) as required to make sure\
+          \ that none of the actual production content is broken or become non-functional.\
+          \ <br> <br> \n\nRegards, <br> \nService Automation Team. <br> \n</body>\n\
+          </html>"
+      importance: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: XSOAR  Inspector - Suspicious Audit logs
+      templateParams: {}
+      to: {}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends an email using Microsoft Graph.
+      id: 98676896-23da-49e3-8480-ef85c4f03e5c
+      iscommand: true
+      name: Inform XSOAR administrators
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 98676896-23da-49e3-8480-ef85c4f03e5c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dest-dir:
+        simple: /var/log/useraudit
+      entry: {}
+      fileID:
+        simple: ${File.EntryID}
+      system: {}
+      timeout: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: remoteaccess
+      description: commands.server.remoteacess.copyto.description
+      id: 57ff988b-b1d6-4c2e-84a9-0b6e032daffb
+      iscommand: true
+      name: Dump Audit Logs for SIEM forwarding
+      script: remoteaccess|||copy-to
+      type: regular
+      version: -1
+    taskid: 57ff988b-b1d6-4c2e-84a9-0b6e032daffb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: a6be09ce-f0d8-4415-8fb0-6e04f4f12d9a
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: a6be09ce-f0d8-4415-8fb0-6e04f4f12d9a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${HTMLTable}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 32752ed0-178c-4bb1-8756-7858f36ba719
+      iscommand: false
+      name: Any suspicious activities being identified?
+      script: Exists
+      type: condition
+      version: -1
+    taskid: 32752ed0-178c-4bb1-8756-7858f36ba719
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
