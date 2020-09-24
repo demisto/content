@@ -385,7 +385,8 @@ class TestSampleTesting:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert len(filterd_tests) == RANDOM_TESTS_NUM
-        assert content_packs == {"Base", "DeveloperTools"}
+        assert "Base" in content_packs
+        assert "DeveloperTools" in content_packs
 
     def test_sample_tests__with_test(self, mocker):
         """
