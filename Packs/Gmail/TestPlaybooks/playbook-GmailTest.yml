@@ -1307,7 +1307,7 @@ tasks:
       message-id:
         simple: ${Gmail.SentMail.ID}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -1448,7 +1448,7 @@ tasks:
                   simple: ID
       permanent: {}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
