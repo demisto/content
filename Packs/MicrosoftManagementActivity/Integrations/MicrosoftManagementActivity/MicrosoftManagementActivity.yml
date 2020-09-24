@@ -186,7 +186,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The timeout for the content requesting http call.
+      description: The timeout (in seconds) for the content requesting HTTP call. Default is 10 seconds.
       isArray: false
       name: timeout
       required: false
