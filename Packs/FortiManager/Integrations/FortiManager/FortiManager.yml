@@ -56,6 +56,241 @@ script:
     description: List all devices in the instance ADOM
     execution: false
     name: fortimanager-devices-list
+    outputs:
+    - contextPath: FortiManager.Address.adm_pass
+      description: 'ADOM password.'
+      type: String
+    - contextPath: FortiManager.Address.adm_usr
+      description: 'ADOM user.'
+      type: String
+    - contextPath: FortiManager.Address.app_ver
+      description: 'Device app version.'
+      type: String
+    - contextPath: FortiManager.Address.av_ver
+      description: 'Device AV version.'
+      type: String
+    - contextPath: FortiManager.Address.beta
+      description: 'Beta.'
+      type: Number
+    - contextPath: FortiManager.Address.branch_pt
+      description: 'Branch pt.'
+      type: Number
+    - contextPath: FortiManager.Address.build
+      description: 'Build.'
+      type: Number
+    - contextPath: FortiManager.Address.checksum
+      description: 'Checksum.'
+      type: String
+    - contextPath: FortiManager.Address.conf_status
+      description: 'Conf status'
+      type: String
+    - contextPath: FortiManager.Address.conn_mode
+      description: 'Conn mode'
+      type: String
+    - contextPath: FortiManager.Address.conn_status
+      description: 'Conn status.'
+      type: String
+    - contextPath: FortiManager.Address.db_status
+      description: 'DB status.'
+      type: String
+    - contextPath: FortiManager.Address.desc
+      description: 'Desc.'
+      type: String
+    - contextPath: FortiManager.Address.dev_status
+      description: 'Device status.'
+      type: String
+    - contextPath: FortiManager.Address.fap_cnt
+      description: 'Fap count.'
+      type: Number
+    - contextPath: FortiManager.Address.faz.full_act
+      description: 'Full act.'
+      type: Number
+    - contextPath: FortiManager.Address.faz.perm
+      description: 'Perm.'
+      type: Number
+    - contextPath: FortiManager.Address.faz.quota
+      description: 'Quota'
+      type: Number
+    - contextPath: FortiManager.Address.faz.used
+      description: 'Used.'
+      type: Number
+    - contextPath: FortiManager.Address.fex_cnt
+      description: 'Fex count.'
+      type: Number
+    - contextPath: FortiManager.Address.flags
+      description: 'Flags.'
+      type: String
+    - contextPath: FortiManager.Address.foslic_cpu
+      description: 'Foslic cpu.'
+      type: Number
+    - contextPath: FortiManager.Address.foslic_dr_site
+      description: 'Foslic dr site.'
+      type: String
+    - contextPath: FortiManager.Address.foslic_inst_time
+      description: 'Foslic inst time.'
+      type: Number
+    - contextPath: FortiManager.Address.foslic_last_sync
+      description: 'Foslic Last sync.'
+      type: Number
+    - contextPath: FortiManager.Address.foslic_ram
+      description: 'Foslic RAM.'
+      type: Number
+    - contextPath: FortiManager.Address.foslic_type
+      description: 'Foslic Type.'
+      type: String
+    - contextPath: FortiManager.Address.foslic_utm
+      description: 'Foslic UTM.'
+      type: String
+    - contextPath: FortiManager.Address.fsw_cnt
+      description: 'FSW count.'
+      type: Number
+    - contextPath: FortiManager.Address.ha_group_id
+      description: 'Ha group id.'
+      type: Number
+    - contextPath: FortiManager.Address.ha_group_name
+      description: 'Ha group name.'
+      type: String
+    - contextPath: FortiManager.Address.ha_mode
+      description: 'Ha mode.'
+      type: String
+    - contextPath: FortiManager.Address.hdisk_size
+      description: 'Hard disk size.'
+      type: Number
+    - contextPath: FortiManager.Address.hostname
+      description: 'Hostname.'
+      type: String
+    - contextPath: FortiManager.Address.hw_rev_major
+      description: 'HW rev major.'
+      type: Number
+    - contextPath: FortiManager.Address.hw_rev_minor
+      description: 'HW rev minor.'
+      type: Number
+    - contextPath: FortiManager.Address.ip
+      description: 'Device IP.'
+      type: String
+    - contextPath: FortiManager.Address.ips_ext
+      description: 'External IP.'
+      type: Number
+    - contextPath: FortiManager.Address.ips_ver
+      description: 'IP version.'
+      type: String
+    - contextPath: FortiManager.Address.last_checked
+      description: 'Last checked.'
+      type: Number
+    - contextPath: FortiManager.Address.last_resync
+      description: 'Last resync.'
+      type: Number
+    - contextPath: FortiManager.Address.latitude
+      description: 'Latitude.'
+      type: String
+    - contextPath: FortiManager.Address.lic_flags
+      description: 'Lic flags.'
+      type: Number
+    - contextPath: FortiManager.Address.lic_region
+      description: 'Lic region.'
+      type: String
+    - contextPath: FortiManager.Address.location_from
+      description: 'Location from.'
+      type: String
+    - contextPath: FortiManager.Address.logdisk_size
+      description: 'Log disk size.'
+      type: Number
+    - contextPath: FortiManager.Address.longitude
+      description: 'Longitude.'
+      type: String
+    - contextPath: FortiManager.Address.maxvdom
+      description: 'Max VDOM.'
+      type: Number
+    - contextPath: FortiManager.Address.meta_fields
+      description: 'Meta fields.'
+      type: String
+    - contextPath: FortiManager.Address.mgmt_id
+      description: 'Management ID.'
+      type: Number
+    - contextPath: FortiManager.Address.mgmt_if
+      description: 'Management IF.'
+      type: String
+    - contextPath: FortiManager.Address.mgmt_mode
+      description: 'Management mode.'
+      type: String
+    - contextPath: FortiManager.Address.mgt_vdom
+      description: 'Management VDOM.'
+      type: String
+    - contextPath: FortiManager.Address.module_sn
+      description: 'Module sn.'
+      type: String
+    - contextPath: FortiManager.Address.mr
+      description: 'Mr.'
+      type: Number
+    - contextPath: FortiManager.Address.name
+      description: 'Device name.'
+      type: String
+    - contextPath: FortiManager.Address.os_type
+      description: ''
+      type: String
+    - contextPath: FortiManager.Address.os_ver
+      description: ''
+      type: String
+    - contextPath: FortiManager.Address.patch
+      description: ''
+      type: Number
+    - contextPath: FortiManager.Address.platform_str
+      description: ''
+      type: String
+    - contextPath: FortiManager.Address.prefer_img_ver
+      description: ''
+      type: String
+    - contextPath: FortiManager.Address.prio
+      description: ''
+      type: Number
+    - contextPath: FortiManager.Address.psk
+      description: ''
+      type: String
+    - contextPath: FortiManager.Address.role
+      description: ''
+      type: String
+    - contextPath: FortiManager.Address.sn
+      description: ''
+      type: String
+    - contextPath: FortiManager.Address.vdom.comments
+      description: ''
+      type: String
+    - contextPath: FortiManager.Address.vdom.name
+      description: ''
+      type: String
+    - contextPath: FortiManager.Address.vdom.opmode
+      description: ''
+      type: String
+    - contextPath: FortiManager.Address.vdom.rtm_prof_id
+      description: ''
+      type: Number
+    - contextPath: FortiManager.Address.vdom.status
+      description: ''
+      type: String
+    - contextPath: FortiManager.Address.vdom.vpn_id
+      description: ''
+      type: Number
+    - contextPath: FortiManager.Address.version
+      description: ''
+      type: Number
+    - contextPath: FortiManager.Address.vm_cpu
+      description: ''
+      type: Number
+    - contextPath: FortiManager.Address.vm_cpu_limit
+      description: ''
+      type: Number
+    - contextPath: FortiManager.Address.vm_lic_expire
+      description: ''
+      type: Number
+    - contextPath: FortiManager.Address.vm_mem
+      description: ''
+      type: Number
+    - contextPath: FortiManager.Address.vm_mem_limit
+      description: ''
+      type: Number
+    - contextPath: FortiManager.Address.vm_status
+      description: ''
+      type: Number
   - arguments:
     - default: false
       description: The ADOM from which to fetch the device groups. Leave empty to
@@ -104,6 +339,100 @@ script:
     description: List ADOM firewall IPv4 addresses
     execution: false
     name: fortimanager-addresses-list
+    outputs:
+    - contextPath: FortiManager.Address._image-base64
+      description: 'Base64 of the address image'
+      type: String
+    - contextPath: FortiManager.Address.allow-routing
+      description: 'Enable/disable use of this address in the static route configuration.'
+      type: String
+    - contextPath: FortiManager.Address.associated-interface
+      description: 'Network interface associated with address.'
+      type: String
+    - contextPath: FortiManager.Address.cache-ttl
+      description: 'Defines the minimal TTL of individual IP addresses in FQDN cache measured in seconds.'
+      type: Number
+    - contextPath: FortiManager.Address.color
+      description: 'Color of icon on the GUI.'
+      type: Number
+    - contextPath: FortiManager.Address.comment
+      description: 'Comments attached to the address.'
+      type: String
+    - contextPath: FortiManager.Address.country
+      description: 'IP addresses associated to a specific country.'
+      type: String
+    - contextPath: FortiManager.Address.dynamic_mapping
+      description: 'Address dynamic mapping information.'
+      type: String
+    - contextPath: FortiManager.Address.end-ip
+      description: 'Final IP address (inclusive) in the range for the address.'
+      type: String
+    - contextPath: FortiManager.Address.epg-name
+      description: 'Endpoint group name.'
+      type: String
+    - contextPath: FortiManager.Address.filter
+      description: 'Match criteria filter.'
+      type: String
+    - contextPath: FortiManager.Address.fqdn
+      description: 'Fully Qualified Domain Name address.'
+      type: String
+    - contextPath: FortiManager.Address.list.ip
+      description: 'IP list associated with the address.'
+      type: String
+    - contextPath: FortiManager.Address.name
+      description: 'Address name.'
+      type: String
+    - contextPath: FortiManager.Address.obj-id
+      description: 'Object ID for NSX.'
+      type: String
+    - contextPath: FortiManager.Address.organization
+      description: 'Organization domain name (Syntax: organization/domain).'
+      type: String
+    - contextPath: FortiManager.Address.policy-group
+      description: 'Policy group name.'
+      type: String
+    - contextPath: FortiManager.Address.sdn
+      description: 'SDN.'
+      type: String
+    - contextPath: FortiManager.Address.sdn-tag
+      description: 'SDN Tag.'
+      type: String
+    - contextPath: FortiManager.Address.start-ip
+      description: 'First IP address (inclusive) in the range for the address.'
+      type: String
+    - contextPath: FortiManager.Address.subnet
+      description: 'IP address and subnet mask of address.'
+      type: String
+    - contextPath: FortiManager.Address.subnet-name
+      description: 'Subnet name.'
+      type: String
+    - contextPath: FortiManager.Address.tagging.category
+      description: 'Tag category.'
+      type: String
+    - contextPath: FortiManager.Address.tagging.name
+      description: 'Tagging entry name.'
+      type: String
+    - contextPath: FortiManager.Address.tagging.tags
+      description: 'Tags.'
+      type: String
+    - contextPath: FortiManager.Address.tenant
+      description: 'Tenant.'
+      type: String
+    - contextPath: FortiManager.Address.type
+      description: 'Type of address.'
+      type: String
+    - contextPath: FortiManager.Address.uuid
+      description: 'Universally Unique Identifier (UUID; automatically assigned but can be manually reset).'
+      type: String
+    - contextPath: FortiManager.Address.visibility
+      description: 'Enable/disable address visibility in the GUI.'
+      type: String
+    - contextPath: FortiManager.Address.wildcard
+      description: 'IP address and wildcard netmask.'
+      type: String
+    - contextPath: FortiManager.Address.wildcard-fqdn
+      description: 'Fully Qualified Domain Name with wildcard characters.'
+      type: String
   - arguments:
     - default: false
       description: The ADOM from which to fetch the address groups. Leave empty to

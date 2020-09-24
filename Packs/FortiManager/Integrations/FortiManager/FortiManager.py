@@ -129,12 +129,14 @@ def list_adom_devices_command(client, args):
     devices_data = client.fortimanager_api_call("get", f"/dvmdb/{get_global_or_adom(client, args)}/device"
                                                        f"{get_specific_entity(args.get('device'))}")
 
+    headers = ['name', 'ip', 'hostname', 'os_type', 'adm_usr', 'app_ver', 'vdom']
+
     return CommandResults(
         outputs_prefix='FortiManager.Device',
         outputs_key_field='name',
         outputs=devices_data,
         readable_output=tableToMarkdown(f"ADOM {get_global_or_adom(client, args)} Devices", devices_data,
-                                        removeNull=True, headerTransform=string_to_table_header),
+                                        removeNull=True, headerTransform=string_to_table_header, headers=headers),
         raw_response=devices_data,
     )
 
