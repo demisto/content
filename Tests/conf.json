@@ -567,7 +567,7 @@
             "playbookID": "secureworks_test"
         },
         {
-            "integrations": "ServiceNow",
+            "integrations": "ServiceNow v2",
             "playbookID": "servicenow_test_new"
         },
         {
