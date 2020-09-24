@@ -10,10 +10,10 @@ query = incident[0].get('CustomFields', {}).get('unassignedincidents', '0')
 incident_ids = set(query)
 
 if query == '0':
-    html = f"<h1 style={GREEN_HTML_STYLE}0 </h2>"
+    html = f"<h1 style={GREEN_HTML_STYLE}0 </h1>"
 
 else:
-    html = f"<h1 style={RED_HTML_STYLE}{len(incident_ids)}</h2>"
+    html = f"<h1 style={RED_HTML_STYLE}{len(incident_ids)}</h1>"
 
 demisto.results({
     'ContentsFormat': formats['html'],
