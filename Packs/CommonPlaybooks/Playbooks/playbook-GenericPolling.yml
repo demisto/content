@@ -9,7 +9,7 @@ description: |-
   1. Initiate the operation.
   2. Poll to check if the operation completed.
   3. (optional) Get the results of the operation.
-fromversion: 4.0.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -227,8 +227,7 @@ inputs:
   value:
     simple: "10"
   required: true
-  description: Amount of time to poll before declaring a timeout and resuming the playbook
-    (in minutes).
+  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
 - key: dt
   value: {}
   required: true

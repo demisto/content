@@ -113,8 +113,7 @@ tasks:
       id: f5737d3a-6140-42b6-865d-012df10ca064
       version: -1
       name: VerifyAddress
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -229,8 +228,7 @@ tasks:
       id: 0e46783f-5922-4b93-8281-4c3ed9cf6290
       version: -1
       name: VerifyVendor
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -266,8 +264,7 @@ tasks:
       id: a79ae53c-2ee5-4e5c-8793-383ccaf26167
       version: -1
       name: VerifyDomainName
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -303,8 +300,7 @@ tasks:
       id: ed6fff0a-5e9d-4768-89f8-d29fc399c247
       version: -1
       name: VerifyTLD
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -416,8 +412,7 @@ tasks:
       id: 8ce4cbca-14d9-4c28-87b3-7794106d58d3
       version: -1
       name: VerifyDomainName
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -529,8 +524,7 @@ tasks:
       id: 5f660cf3-6165-44d5-8440-778aadbb13de
       version: -1
       name: VerifyFileName
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -590,8 +584,7 @@ tasks:
       id: 7586c858-8a25-4c7f-8ebc-3bacbf77b208
       version: -1
       name: VerifyVendor
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -627,8 +620,7 @@ tasks:
       id: 909be2b0-4056-4559-8b55-dd3de10b0163
       version: -1
       name: VerifyDomainTld
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -664,8 +656,7 @@ tasks:
       id: 86167ca4-00d1-4c0b-821b-2bb1496bb8d5
       version: -1
       name: VerifyFileHash
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -709,3 +700,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
