@@ -30,7 +30,7 @@ def build_indicator_list(indicator_list: List[str]) -> List[str]:
     if 'ALL' in indicator_list:
         # Replaces "ALL" for all types supported on XSOAR.
         result = ['user-account', 'domain', 'email-address', 'file-md5', 'file-sha1', 'file-sha256', 'hostname',
-                          'ipv4-addr', 'ipv6-addr', 'registry-key-value', 'url']
+                  'ipv4-addr', 'ipv6-addr', 'registry-key-value', 'url']
         # Checks for additional types not supported by XSOAR, and adds them.
         for indicator in indicator_list:
             if not XSOHR_TYPES.get(indicator.lower(), ''):
