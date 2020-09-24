@@ -741,6 +741,16 @@ def incidents(incidents=None):
         )
 
 
+def incident():
+    """Retrieves the current incident
+
+    Returns:
+      dict: dict representing an incident object
+
+    """
+    return incidents()[0]
+
+
 def setContext(contextPath, value):
     """(Script only)
     Sets given value in path in the context data
@@ -859,7 +869,15 @@ def createIncidents(incidents, lastRun=None, userID=None):
     Creates incident in long running execution
 
     Args:
-      incidents (list): List of incident objects to create
+      incidents (list):
+        List of incident objects to create, with the following required keys, and some common optional keys
+            - name (required) - str
+            - type (required - if not provided will create unclassified incident) - str
+            - labels (optonal) - list of {"type": _, "value": _} objects
+            - rawJSON (required) - str
+            - occurred (optional) - str
+            - details (optional) - str
+            - severity (optional) - str
       lastRun (dict): the LastRun object to set (Default value = None)
       userID lastIndicator: The user associated with the request (Default value = None)
 

@@ -18,7 +18,7 @@ Use Cases
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://bonus.ly/api/v1/\) | True |
+| url | Server URL \(e.g. `https://bonus.ly/api/v1/` \) | True |
 | api_key | API Key | True |
 | incidentType | Incident type | False |
 | insecure | Trust any certificate \(not secure\) | False |

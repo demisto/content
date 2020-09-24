@@ -2,8 +2,9 @@ commonfields:
   id: ConferSetSeverity
   version: -1
 name: ConferSetSeverity
-script: |-
+script: >-
   # Severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low, 0 - Unknown
+
   levelDict = {'DETECTED_MALWARE_APP': 3, 'FILELESS': 3, 'KNOWN_APT': 3, 'KNOWN_BACKDOOR': 3, 'KNOWN_DOWNLOADER': 3, 'KNOWN_DROPPER': 3, 'KNOWN_KEYLOGGER': 3, 'KNOWN_PASSWORD_STEALER': 3, \
                'KNOWN_RANSOMWARE': 3, 'KNOWN_ROGUE': 3, 'KNOWN_ROOTKIT': 3, 'KNOWN_WORM': 3, 'MALWARE_APP': 3, 'RUN_MALWARE_APP': 3, 'MALWARE_DROP': 3, 'COMPANY_BLACKLIST': 3, \
                'PHONE_HOME': 2, 'INJECT_CODE': 2, 'GET_CONTACTS': 2, 'FILE_TRANSFER': 2, 'CODE_DROP': 2, 'RUN_CMD_SHELL': 2, 'COMPROMISED_PROCESS': 2, 'BUFFER_OVERFLOW_CALL': 2, \
@@ -13,7 +14,9 @@ script: |-
                'SUSPICIOUS_SITE': 1, 'DETECTED_SUSPECT_APP': 1, 'LOW_REPUTATION_SITE': 1, 'IRC': 1, 'UNKNOWN_APP': 1, 'SUSPICIOUS_DOMAIN': 1, 'SUSPICIOUS_BEHAVIOR': 1, 'HAS_SUSPECT_CODE': 1, \
                'ACCESS_EMAIL_DATA': 1, 'NETWORK_ACCESS': 1}
   levelTranslate = {4: 'Critical', 3: 'High', 2: 'Medium', 1: 'Low', 0: 'Unknown'}
+
   incDetails = demisto.incidents()[0]['details']
+
   if incDetails:
       try:
           inc = json.loads(incDetails)
@@ -44,3 +47,4 @@ dependson:
   must:
   - confer
 timeout: 0s
+fromversion: 5.0.0

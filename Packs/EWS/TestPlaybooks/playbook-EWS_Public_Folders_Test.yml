@@ -38,9 +38,7 @@ tasks:
       id: afa7fd40-59b1-4b4f-869e-266afabe5d05
       version: -1
       name: ews-find-folders
-      description: Get folders information for a mailbox. Only folders with read permissions
-        will be return as a result. Notice that your visual folders on the mailbox
-        (like Inbox, etc) is under the folder "Top of Information Store".
+      description: Get folders information for a mailbox. Only folders with read permissions will be return as a result. Notice that your visual folders on the mailbox (like Inbox, etc) is under the folder "Top of Information Store".
       script: '|||ews-find-folders'
       type: regular
       iscommand: true
@@ -93,8 +91,7 @@ tasks:
       id: ee559217-5399-41b9-8778-abab57420f2f
       version: -1
       name: ews-search-mailbox
-      description: Search items in a specific mailbox. Notice that a proper permissions
-        needed for this operation to search in another target mailbox than the default.
+      description: Search items in a specific mailbox. Notice that a proper permissions needed for this operation to search in another target mailbox than the default.
       script: '|||ews-search-mailbox'
       type: regular
       iscommand: true
@@ -125,8 +122,7 @@ tasks:
       id: 3affa4ea-b4a8-4ca8-823b-c9baa7619948
       version: -1
       name: ews-get-items-from-folder
-      description: Get items from a specific folder in a mailbox. The items will return
-        order by created time, first item is the most recent item.
+      description: Get items from a specific folder in a mailbox. The items will return order by created time, first item is the most recent item.
       script: '|||ews-get-items-from-folder'
       type: regular
       iscommand: true
@@ -161,3 +157,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
