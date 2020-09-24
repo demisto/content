@@ -372,12 +372,18 @@ def get_private_packs(private_index_path):
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
             if metadata:
-                private_packs.append({
+                private_pack = {
                     'id': metadata.get('id'),
-                    'price': metadata.get('price'),
-                    'vendorId': metadata.get('vendorId'),
-                    'vendorName': metadata.get('vendorName')
-                })
+                    'price': metadata.get('price')
+                }
+
+                if metadata.get('vendorId') is not None:
+                    private_pack['vendorId'] = metadata.get('vendorId')
+                if metadata.get('vendorName') is not None:
+                    private_pack['vendorName'] = metadata.get('vendorName')
+
+                private_packs.append(private_pack)
+
         except ValueError as e:
             print_error(f'Invalid JSON in the metadata file [{metadata_file_path}]: {str(e)}')
 
