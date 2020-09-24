@@ -81,6 +81,7 @@ script:
       description: CLI command to run (e.g. debug plugins cloud_services gpcs query
         querystring limit=9000 action getGPaaSLast90DaysUniqueUsers)
     description: Run a custom CLI command on Prisma Access
+    deprecated: true
   - name: prisma-access-active-users
     arguments:
     - name: limit
@@ -90,6 +91,7 @@ script:
     - contextPath: PrismaAccess.ActiveUsers
       description: Active Users on Prisma Access
     description: Query currently active users.
+    deprecated: true
   dockerimage: demisto/netmiko:1.0.0.7647
   runonce: false
   subtype: python3
