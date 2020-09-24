@@ -1,0 +1,228 @@
+{
+ "details": {
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_type",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_severity",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_owner",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotstatus",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotsource",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_phase",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_roles",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_detectorid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_awsfindingtype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_awsfindingid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_securitygroupid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_awsinstanceid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_awsinstancename",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "AWS Security Hub Details",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "",
+    "isVisible": true,
+    "name": "AWS Instance Details",
+    "query": {
+     "tags": [
+      "ec2_instance_details"
+     ]
+    },
+    "queryType": "warRoomFilter",
+    "readOnly": true,
+    "type": "invTimeline"
+   },
+   {
+    "description": "",
+    "isVisible": true,
+    "name": "Work Plan",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "type": "workplan"
+   },
+   {
+    "description": "",
+    "isVisible": true,
+    "name": "Notes",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "type": "notes"
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_attachment",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Investigation Summary Report",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "type": ""
+   },
+   {
+    "description": "",
+    "isVisible": true,
+    "name": "Bad or Suspicious Indicators",
+    "query": "reputation:Bad or reputation:Suspicious",
+    "queryType": "input",
+    "readOnly": true,
+    "type": "indicators"
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_dbotcreated",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_occurred",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotduedate",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbotmodified",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_dbottotaltime",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Timeline Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_labels",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Labels",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "type": "labels"
+   },
+   {
+    "description": "",
+    "isVisible": true,
+    "name": "Evidence",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "type": "evidence"
+   },
+   {
+    "description": "",
+    "isVisible": true,
+    "name": "Linked Incidents",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "type": "linkedIncidents"
+   },
+   {
+    "description": "",
+    "isVisible": true,
+    "name": "Team",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "type": "team"
+   },
+   {
+    "description": "",
+    "isVisible": true,
+    "name": "Automation Highlights",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "type": "findings"
+   }
+  ]
+ },
+ "group": "incident",
+ "id": "5b00e8d7-2f51-436a-8f82-e5889a4d2c3a",
+ "name": "AWS Security Hub layout (custom)",
+ "system": false,
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "description": ""
+}

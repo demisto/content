@@ -1,0 +1,606 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: d93eba71-70a0-4501-8130-404f0b79c4f2
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: AWS GuardDuty | Backdoor
+inputs: []
+name: AWS GuardDuty | Backdoor
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 67fa4087-1a2a-434b-8668-1d98416f7d7a
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 67fa4087-1a2a-434b-8668-1d98416f7d7a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      clientContext: {}
+      extend-context:
+        simple: PSoutput=AWS.Lambda.InvokedFunctions.Payload
+      functionName:
+        simple: get-ps-log
+      invocationType:
+        simple: RequestResponse
+      logType:
+        simple: None
+      payload:
+        simple: '{"account_id": "${incident.accountid}", "instance_id": "${incident.awsinstanceid}",
+          "region": "${incident.regionid}"}'
+      qualifier: {}
+      region:
+        simple: us-east-2
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName:
+        simple: demisto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Invokes a Lambda function. Specify just a function name to invoke
+        the latest version of the function. To invoke a published version, use the
+        Qualifier parameter to specify a version or alias .  If you use the RequestResponse
+        (synchronous) invocation option, the function will be invoked only once. If
+        you use the Event (asynchronous) invocation option, the function will be invoked
+        at least once in response to an event and the function must be idempotent
+        to handle this.  For functions with a long timeout, your client may be disconnected
+        during synchronous invocation while it waits for a response. Configure your
+        demisto server to allow for long connections with timeout or keep-alive settings.
+      id: 37333e25-d9f2-467a-8696-23647c8f3be9
+      iscommand: true
+      name: Get Running Processes (lambda)
+      script: '|||aws-lambda-invoke'
+      type: regular
+      version: -1
+    taskid: 37333e25-d9f2-467a-8696-23647c8f3be9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Should ${incident.awsinstanceid} be removed from the ASG?
+      cc:
+      format: ""
+      methods: []
+      replyOptions:
+      - "Yes"
+      - "No"
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      "No":
+      - "14"
+      "Yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ee5d9485-e63f-40a2-8686-4c63a6cc421e
+      iscommand: false
+      name: Should this instance be removed from the ASG?
+      type: condition
+      version: -1
+    taskid: ee5d9485-e63f-40a2-8686-4c63a6cc421e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      clientContext: {}
+      functionName:
+        simple: detach-from-asg
+      invocationType:
+        simple: RequestResponse
+      logType: {}
+      payload:
+        simple: '{"account_id": "${incident.accountid}", "instance_id": "${incident.awsinstanceid}",
+          "region": "${incident.regionid}", "asg_name": "web-asg"} '
+      qualifier: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Invokes a Lambda function. Specify just a function name to invoke
+        the latest version of the function. To invoke a published version, use the
+        Qualifier parameter to specify a version or alias .  If you use the RequestResponse
+        (synchronous) invocation option, the function will be invoked only once. If
+        you use the Event (asynchronous) invocation option, the function will be invoked
+        at least once in response to an event and the function must be idempotent
+        to handle this.  For functions with a long timeout, your client may be disconnected
+        during synchronous invocation while it waits for a response. Configure your
+        demisto server to allow for long connections with timeout or keep-alive settings.
+      id: 2bb32252-e207-47b6-8d0e-f5fccd817985
+      iscommand: true
+      name: Remove Instance from ASG (lambda)
+      script: '|||aws-lambda-invoke'
+      type: regular
+      version: -1
+    taskid: 2bb32252-e207-47b6-8d0e-f5fccd817985
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1915
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attachmentId: {}
+      deleteOnTermination: {}
+      description: {}
+      groups:
+        simple: ${AWS.EC2.SecurityGroups.GroupId}
+      networkInterfaceId:
+        simple: ${AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId}
+      region:
+        simple: ${incident.regionid}
+      roleArn:
+        simple: arn:aws:iam::${incident.accountid}:role/demisto-role
+      roleSessionDuration: {}
+      roleSessionName:
+        simple: demisto
+      sourceDestCheck: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Modifies the specified network interface attribute. You can specify
+        only one attribute at a time.
+      id: 261f5c0b-6bbd-43ff-8352-4f391b67ec1e
+      iscommand: true
+      name: Remove Security Group (ec2)
+      script: '|||aws-ec2-modify-network-interface-attribute'
+      type: regular
+      version: -1
+    taskid: 261f5c0b-6bbd-43ff-8352-4f391b67ec1e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2090
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: aeb46a1c-f3b5-4c51-8fc4-c8f6c0fa66dd
+      iscommand: false
+      name: Remediate
+      type: title
+      version: -1
+      description: ''
+    taskid: aeb46a1c-f3b5-4c51-8fc4-c8f6c0fa66dd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      array:
+        complex:
+          accessor: Payload
+          root: AWS.Lambda.InvokedFunctions
+          transformers:
+          - operator: ParseJSON
+      name:
+        simple: ps
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c69f55f6-ed04-48cc-8239-c3e30dda30e2
+      iscommand: false
+      name: Print to War room
+      script: 388c5adb-4ef5-4a3b-8b08-79c27a8dd93b
+      type: regular
+      version: -1
+    taskid: c69f55f6-ed04-48cc-8239-c3e30dda30e2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 91e063dc-f094-4f25-8456-644d3bb24bd0
+      iscommand: false
+      name: Return
+      type: title
+      version: -1
+      description: ''
+    taskid: 91e063dc-f094-4f25-8456-644d3bb24bd0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filters: {}
+      instanceIds:
+        simple: ${incident.awsinstanceid}
+      region:
+        simple: ${incident.regionid}
+      roleArn:
+        simple: arn:aws:iam::${incident.accountid}:role/demisto-role
+      roleSessionDuration: {}
+      roleSessionName:
+        simple: demisto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Describes one or more of your instances.
+      id: f49111ad-b74a-420a-865e-ae0ef895c486
+      iscommand: true
+      name: Get Instance Details (ec2)
+      script: '|||aws-ec2-describe-instances'
+      type: regular
+      version: -1
+    taskid: f49111ad-b74a-420a-865e-ae0ef895c486
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 865
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filters:
+        simple: name=group-name,values=deny-all
+      groupIds: {}
+      groupNames: {}
+      region:
+        simple: ${incident.regionid}
+      roleArn:
+        simple: arn:aws:iam::${incident.accountid}:role/demisto-role
+      roleSessionDuration: {}
+      roleSessionName:
+        simple: demisto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Describes one or more of your security groups.
+      id: faaf6f0a-72da-46ee-8a8d-f7b0903f1b30
+      iscommand: true
+      name: Get Deny-all SG (ec2)
+      script: '|||aws-ec2-describe-security-groups'
+      type: regular
+      version: -1
+    taskid: faaf6f0a-72da-46ee-8a8d-f7b0903f1b30
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1040
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "18"
+      "yes":
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${AWS.EC2.SecurityGroups.GroupName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 72e9253e-dcbd-475a-855b-7643784167e2
+      iscommand: false
+      name: Does SG Exist
+      script: Exists
+      type: condition
+      version: -1
+    taskid: 72e9253e-dcbd-475a-855b-7643784167e2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1215
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Deny All
+      groupName:
+        simple: deny-all
+      region:
+        simple: ${incident.regionid}
+      roleArn:
+        simple: arn:aws:iam::${incident.accountid}:role/demisto-role
+      roleSessionDuration: {}
+      roleSessionName:
+        simple: demisto
+      vpcId:
+        simple: ${AWS.EC2.Instances.VpcId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a security group.
+      id: 04c10c89-f24e-41d7-8361-1ddb0ec5f0ef
+      iscommand: true
+      name: Create deny-all (ec2)
+      script: '|||aws-ec2-create-security-group'
+      type: regular
+      version: -1
+    taskid: 04c10c89-f24e-41d7-8361-1ddb0ec5f0ef
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1390
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: RealSG.
+      filters:
+        simple: name=group-name,values=deny-all
+      groupIds: {}
+      groupNames: {}
+      region:
+        simple: ${incident.regionid}
+      roleArn:
+        simple: arn:aws:iam::${incident.accountid}:role/demisto-role
+      roleSessionDuration: {}
+      roleSessionName:
+        simple: demisto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Describes one or more of your security groups.
+      id: 8654a594-0fa6-4577-8d09-78e8c1ec380a
+      iscommand: true
+      name: Get Deny-all SG (ec2)
+      script: '|||aws-ec2-describe-security-groups'
+      type: regular
+      version: -1
+    taskid: 8654a594-0fa6-4577-8d09-78e8c1ec380a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1740
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      clientContext: {}
+      extend-context:
+        simple: PSoutput=AWS.Lambda.InvokedFunctions.Payload
+      functionName:
+        simple: create-deny-all-sg
+      invocationType:
+        simple: RequestResponse
+      logType:
+        simple: None
+      payload:
+        simple: '{"account_id": "${incident.accountid}", "vpc_id": "${AWS.EC2.Instances.VpcId}",
+          "region": "${incident.regionid}"}'
+      qualifier: {}
+      region:
+        simple: us-east-2
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName:
+        simple: demisto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Invokes a Lambda function. Specify just a function name to invoke
+        the latest version of the function. To invoke a published version, use the
+        Qualifier parameter to specify a version or alias .  If you use the RequestResponse
+        (synchronous) invocation option, the function will be invoked only once. If
+        you use the Event (asynchronous) invocation option, the function will be invoked
+        at least once in response to an event and the function must be idempotent
+        to handle this.  For functions with a long timeout, your client may be disconnected
+        during synchronous invocation while it waits for a response. Configure your
+        demisto server to allow for long connections with timeout or keep-alive settings.
+      id: fccca7a8-7fc1-41f3-8bf8-8612a7419868
+      iscommand: true
+      name: Create deny-all SG (lambda)
+      script: '|||aws-lambda-invoke'
+      type: regular
+      version: -1
+    taskid: fccca7a8-7fc1-41f3-8bf8-8612a7419868
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1530
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2280,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

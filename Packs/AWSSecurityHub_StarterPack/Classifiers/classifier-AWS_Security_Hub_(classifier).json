@@ -1,0 +1,53 @@
+{
+ "defaultIncidentType": "AWS Security Hub",
+ "feed": false,
+ "id": "aba08143-51df-4a27-82dc-9498f20ab3b5",
+ "keyTypeMap": {
+  "product\/aws\/guardduty": "AWS Guard Duty",
+  "product\/aws\/securityhub": "AWS Security Hub"
+ },
+ "name": "AWS Security Hub (classifier)",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": {
+   "accessor": "",
+   "filters": [
+
+   ],
+   "root": "ProductArn",
+   "transformers": [
+    {
+     "args": {
+      "delimiter": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "::"
+       }
+      }
+     },
+     "operator": "split"
+    },
+    {
+     "args": {
+      "index": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "1"
+       }
+      }
+     },
+     "operator": "atIndex"
+    }
+   ]
+  },
+  "simple": ""
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "description": ""
+}

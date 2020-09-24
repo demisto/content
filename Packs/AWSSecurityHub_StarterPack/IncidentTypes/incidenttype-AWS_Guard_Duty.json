@@ -1,0 +1,21 @@
+{
+ "autorun": true,
+ "color": "#1ee8b5",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "AWS Guard Duty",
+ "locked": false,
+ "name": "AWS Guard Duty",
+ "playbookId": "59082749-35c6-40c6-87cc-2eb2854edabb",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

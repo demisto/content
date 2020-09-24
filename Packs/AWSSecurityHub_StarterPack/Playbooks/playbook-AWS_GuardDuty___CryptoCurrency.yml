@@ -1,0 +1,83 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: d93eba71-70a0-4501-8130-404f0b79c4f2
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: AWS GuardDuty | CryptoCurrency
+inputs: []
+name: AWS GuardDuty | CryptoCurrency
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7ed94773-c835-4e47-8ecc-1087964e0885
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7ed94773-c835-4e47-8ecc-1087964e0885
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 70815660-b9f9-4b90-840f-5dd06de66c61
+      iscommand: false
+      name: 213ecbf6-bf30-4ae5-89ff-9316eb1f4a90
+      playbookId: 213ecbf6-bf30-4ae5-89ff-9316eb1f4a90
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 70815660-b9f9-4b90-840f-5dd06de66c61
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

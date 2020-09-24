@@ -1,0 +1,828 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: d93eba71-70a0-4501-8130-404f0b79c4f2
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: AWS Guard Duty | Starter Pack
+inputs: []
+name: AWS Guard Duty | Starter Pack
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5e7880a8-d54d-4688-86da-48ee8cce8c64
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5e7880a8-d54d-4688-86da-48ee8cce8c64
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 3275,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fe39c263-524c-4b64-86d3-cf0f1e7dce6d
+      iscommand: false
+      name: Resolve
+      type: title
+      version: -1
+      description: ''
+    taskid: fe39c263-524c-4b64-86d3-cf0f1e7dce6d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 3275,
+          "y": 895
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: Recon
+      label: Recon
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: Backdoor
+      label: Backdoor
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: Discovery
+      label: Discovery
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: CryptoCurrency
+      label: CryptoCurrency
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: Exfiltration
+      label: Exfiltration
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: Impact
+      label: Impact
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: PenTest
+      label: PenTest
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: Persistence
+      label: Persistence
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: Policy
+      label: Policy
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: PrivilegeEscalation
+      label: PrivilegeEscalation
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: ResourceConsumption
+      label: ResourceConsumption
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: Stealth
+      label: Stealth
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: Trojan
+      label: Trojan
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: startWith
+          right:
+            value:
+              simple: UnauthorizedAccess
+      label: UnauthorizedAccess
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.awsfindingtype
+          operator: isEqualString
+          right:
+            value:
+              simple: Behavior
+      label: Behavior
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "21"
+      Backdoor:
+      - "6"
+      Behavior:
+      - "7"
+      CryptoCurrency:
+      - "8"
+      Discovery:
+      - "9"
+      Exfiltration:
+      - "10"
+      Impact:
+      - "11"
+      PenTest:
+      - "12"
+      Persistence:
+      - "13"
+      Policy:
+      - "14"
+      PrivilegeEscalation:
+      - "15"
+      Recon:
+      - "16"
+      ResourceConsumption:
+      - "17"
+      Stealth:
+      - "18"
+      Trojan:
+      - "19"
+      UnauthorizedAccess:
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Split each finding category into it's own playbook
+      id: 98eed659-b017-4029-8729-e8a4cc9567b5
+      iscommand: false
+      name: Finding Check
+      type: condition
+      version: -1
+    taskid: 98eed659-b017-4029-8729-e8a4cc9567b5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 3275,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ec31e4e2-d412-4d20-85fa-cbb35464609b
+      iscommand: false
+      name: 2ad97c64-b1ef-4a79-818c-f3f7b4f314fa
+      playbookId: 2ad97c64-b1ef-4a79-818c-f3f7b4f314fa
+      type: playbook
+      version: -1
+      description: ''
+    taskid: ec31e4e2-d412-4d20-85fa-cbb35464609b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 38e490dc-320b-48b1-85c3-8c2306eba5fa
+      iscommand: false
+      name: 044431b8-60c5-4da7-82e6-ccb11f60e50f
+      playbookId: 044431b8-60c5-4da7-82e6-ccb11f60e50f
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 38e490dc-320b-48b1-85c3-8c2306eba5fa
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 83340392-07e4-4dd9-8e6a-b52136de1cad
+      iscommand: false
+      name: 2c58afde-cf49-44ce-8a10-16c1d0f4fc07
+      playbookId: 2c58afde-cf49-44ce-8a10-16c1d0f4fc07
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 83340392-07e4-4dd9-8e6a-b52136de1cad
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 056e7ba1-5e8f-4568-85e2-2a6b0ad94c1f
+      iscommand: false
+      name: 8db0c320-5ebe-437e-8ac0-4ac8bed550c9
+      playbookId: 8db0c320-5ebe-437e-8ac0-4ac8bed550c9
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 056e7ba1-5e8f-4568-85e2-2a6b0ad94c1f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a307fcf4-6acc-4f57-8d5f-c40e3f348188
+      iscommand: false
+      name: ebccfc2d-da13-4456-87b2-aa8ab8c7ee35
+      playbookId: ebccfc2d-da13-4456-87b2-aa8ab8c7ee35
+      type: playbook
+      version: -1
+      description: ''
+    taskid: a307fcf4-6acc-4f57-8d5f-c40e3f348188
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 720
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e288bfc3-9c43-4f9b-827f-ab7ab647ac3f
+      iscommand: false
+      name: a0b578b2-4005-47f4-81d4-1ba263c67ef5
+      playbookId: a0b578b2-4005-47f4-81d4-1ba263c67ef5
+      type: playbook
+      version: -1
+      description: ''
+    taskid: e288bfc3-9c43-4f9b-827f-ab7ab647ac3f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 720
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 013f221c-fc71-4505-8bb3-ab83b1347403
+      iscommand: false
+      name: 3bb77dbc-2b8e-4632-85be-b039b3008e4a
+      playbookId: 3bb77dbc-2b8e-4632-85be-b039b3008e4a
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 013f221c-fc71-4505-8bb3-ab83b1347403
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 720
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 718001f5-018c-41f1-83cc-e311da50a41d
+      iscommand: false
+      name: 541e09f1-9cfb-4bae-8f5a-0e50ecaf244e
+      playbookId: 541e09f1-9cfb-4bae-8f5a-0e50ecaf244e
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 718001f5-018c-41f1-83cc-e311da50a41d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 720
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 19ade090-bf49-40f9-8872-f0baa15bc8df
+      iscommand: false
+      name: 0a01a0be-f2bb-4c62-84b8-db3810af51ca
+      playbookId: 0a01a0be-f2bb-4c62-84b8-db3810af51ca
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 19ade090-bf49-40f9-8872-f0baa15bc8df
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 720
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9e5f329e-f26f-4a10-8d3c-d879ff3eac46
+      iscommand: false
+      name: 5bb3abb4-15e5-43a7-8bae-9c299226e80c
+      playbookId: 5bb3abb4-15e5-43a7-8bae-9c299226e80c
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 9e5f329e-f26f-4a10-8d3c-d879ff3eac46
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 720
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cf3b27c2-4e33-49e6-87cf-d5681b36bbee
+      iscommand: false
+      name: 65d65fd3-617f-4353-8b3d-b9e77cb31a1b
+      playbookId: 65d65fd3-617f-4353-8b3d-b9e77cb31a1b
+      type: playbook
+      version: -1
+      description: ''
+    taskid: cf3b27c2-4e33-49e6-87cf-d5681b36bbee
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 720
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 037735c3-a83c-4eec-8124-a4cda65ae74c
+      iscommand: false
+      name: b1308882-4437-4b8b-8dda-46bcb264aee7
+      playbookId: b1308882-4437-4b8b-8dda-46bcb264aee7
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 037735c3-a83c-4eec-8124-a4cda65ae74c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 4780,
+          "y": 720
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d1c8cb1b-e909-4b63-8090-e7a4e9f1f97b
+      iscommand: false
+      name: d38f880c-f089-41d6-8460-cf01c6e9d50d
+      playbookId: d38f880c-f089-41d6-8460-cf01c6e9d50d
+      type: playbook
+      version: -1
+      description: ''
+    taskid: d1c8cb1b-e909-4b63-8090-e7a4e9f1f97b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 5210,
+          "y": 720
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 04f84b6d-1457-4ac6-8563-4151d8cefc8f
+      iscommand: false
+      name: 2adbdaf7-e9bc-473f-83f0-5fe89658f223
+      playbookId: 2adbdaf7-e9bc-473f-83f0-5fe89658f223
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 04f84b6d-1457-4ac6-8563-4151d8cefc8f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 5640,
+          "y": 720
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b7b04566-74fb-441e-86b7-edb26e136bc9
+      iscommand: false
+      name: 7bd6ed32-2f9d-4635-83ad-b98f2f920fce
+      playbookId: 7bd6ed32-2f9d-4635-83ad-b98f2f920fce
+      type: playbook
+      version: -1
+      description: ''
+    taskid: b7b04566-74fb-441e-86b7-edb26e136bc9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 6070,
+          "y": 720
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c0e9944a-b08b-474a-8732-f08a65ace119
+      iscommand: false
+      name: Unknown Finding Type
+      type: regular
+      version: -1
+    taskid: c0e9944a-b08b-474a-8732-f08a65ace119
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 6500,
+          "y": 720
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      detectorId:
+        simple: ${lists.aws_master_detector}
+      findingIds:
+        simple: ${incident.awsfindingid}
+      region:
+        simple: ${incident.regionid}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName:
+        simple: demisto
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Archives Amazon GuardDuty findings specified by the list of finding
+        IDs.
+      id: 21cf58c3-f1f5-4167-8c89-8678e4123049
+      iscommand: true
+      name: Archive GD Finding
+      script: '|||aws-gd-archive-findings'
+      type: regular
+      version: -1
+    taskid: 21cf58c3-f1f5-4167-8c89-8678e4123049
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3162.5,
+          "y": 370
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listName:
+        simple: aws_master_detector
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Check if list exist in demisto lists.
+      id: 8656d1df-0f5c-43e9-8760-eafecf3c722d
+      iscommand: false
+      name: getList
+      script: IsListExist
+      type: condition
+      version: -1
+    taskid: 8656d1df-0f5c-43e9-8760-eafecf3c722d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 3275,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 6830,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

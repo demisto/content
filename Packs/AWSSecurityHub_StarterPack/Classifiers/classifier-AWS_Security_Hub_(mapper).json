@@ -1,0 +1,19 @@
+{
+ "feed": false,
+ "id": "0aeb52e3-0b99-42e0-8899-20612d8fb27d",
+ "name": "AWS Security Hub (mapper)",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": null,
+  "simple": ""
+ },
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "description": "",
+ "keyTypeMap": {
+
+ }
+}

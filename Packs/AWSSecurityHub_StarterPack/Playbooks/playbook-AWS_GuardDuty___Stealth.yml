@@ -1,0 +1,83 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: d93eba71-70a0-4501-8130-404f0b79c4f2
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: AWS GuardDuty | Stealth
+inputs: []
+name: AWS GuardDuty | Stealth
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5dbc33a6-fcb6-49ad-8819-28f0c7cceb51
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5dbc33a6-fcb6-49ad-8819-28f0c7cceb51
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1d27d397-274d-4e6e-80a9-ad10ab509561
+      iscommand: false
+      name: 213ecbf6-bf30-4ae5-89ff-9316eb1f4a90
+      playbookId: 213ecbf6-bf30-4ae5-89ff-9316eb1f4a90
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 1d27d397-274d-4e6e-80a9-ad10ab509561
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

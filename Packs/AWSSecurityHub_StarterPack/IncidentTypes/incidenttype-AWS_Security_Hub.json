@@ -1,0 +1,23 @@
+{
+ "autorun": true,
+ "color": "#9FA8DA",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "AWS Security Hub",
+ "layout": "5b00e8d7-2f51-436a-8f82-e5889a4d2c3a",
+ "locked": false,
+ "name": "AWS Security Hub",
+ "playbookId": "ff2943d4-ffd4-4744-848c-f2b3b667072e",
+ "readonly": false,
+ "reputationCalc": 0,
+ "sla": 168,
+ "system": false,
+ "version": -1,
+ "weeks": 1,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}
