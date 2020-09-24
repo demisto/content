@@ -2,7 +2,7 @@ id: JOB - Integrations and Playbooks Health Check - Lists handling
 version: -1
 name: JOB - Integrations and Playbooks Health Check - Lists handling
 description: This playbook is triggered by a 'JOB - Integrations and Playbooks Health'
-  playbook and is responsible for creating nor updating related XSOAR lists.
+  playbook and is responsible for creating or updating related XSOAR lists.
 starttaskid: "0"
 tasks:
   "0":
@@ -39,8 +39,8 @@ tasks:
     task:
       id: 475c1efe-7fff-4c17-88e3-cfe5543bd6af
       version: -1
-      name: Create failing playbooks name  list
-      description: Create new failing playbook names list
+      name: Create failing playbooks name list
+      description: Create a failing playbook names list.
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -110,7 +110,7 @@ tasks:
       id: 3ae9c1fe-5747-40a1-86f5-5bafb1d00b7a
       version: -1
       name: Create failing incidents data  list
-      description: Create new failing incidents list
+      description: Create a failing incidents list.
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -215,7 +215,7 @@ tasks:
       id: 3d359f44-93af-4d58-8959-825dc7f231b0
       version: -1
       name: Create failing incident commands  list
-      description: Create new failing incident commands list
+      description: Create a failing incident commands list.
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -257,7 +257,7 @@ tasks:
       id: 18e29e9c-26d9-4a69-8e24-1e6adc683fc2
       version: -1
       name: Create failing unassigned incident list
-      description: Create new unassigned failed incidents list
+      description: Create an unassigned failed incidents list.
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -305,7 +305,7 @@ tasks:
       id: 9b28b578-f06e-4fe3-819a-cd304e3b7878
       version: -1
       name: Create error entries ID list
-      description: Create new error entries ID list
+      description: Create an error entries ID list.
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -347,7 +347,7 @@ tasks:
       id: d63ba3f0-000b-4b4c-896a-57037c185166
       version: -1
       name: Create failing incidents ID
-      description: Create new failing incidents ID list
+      description: Create a failing incidents ID list.
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -388,8 +388,8 @@ tasks:
     task:
       id: d091b317-c775-4bb3-8917-ba51b3288fea
       version: -1
-      name: Checks if failing incident commands list exist
-      description: Checks whether the failing incident commands list exist.
+      name: Checks if failing incident commands list exists
+      description: Checks whether the failing incident commands list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -430,8 +430,8 @@ tasks:
     task:
       id: a6833f85-ccc4-4236-8c59-c3d903393a1d
       version: -1
-      name: Checks if error entries ID list exist
-      description: Checks whether the error entries ID list exist.
+      name: Checks if error entries ID list exists
+      description: Checks whether the error entries ID list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -472,8 +472,8 @@ tasks:
     task:
       id: 17891723-9ca0-49c5-827e-93aa5c4e3c83
       version: -1
-      name: Checks if failing playbooks name list exist
-      description: Checks whether the failing playbooks name list exist.
+      name: Checks if failing playbooks name list exists
+      description: Checks whether the failing playbooks name list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -515,7 +515,7 @@ tasks:
       id: 5159d991-1437-4060-81e0-9f5bf9475429
       version: -1
       name: Checks if unassigned failed incidents list exists
-      description: Checks whether the failed incidents list exist.
+      description: Checks whether the failed incidents list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -557,7 +557,7 @@ tasks:
       id: 47b639c6-be4e-462d-81a6-748b14bcd8c3
       version: -1
       name: Sets error entries ID to list
-      description: Set data in error entries ID list
+      description: Set data in error entries ID list.
       script: Builtin|||setList
       type: regular
       iscommand: true
@@ -598,7 +598,7 @@ tasks:
       id: ffa161bc-857f-447b-840b-8cef9672a254
       version: -1
       name: Sets unassigned failed incidents to list
-      description: Set data in unassigned failed incidents list
+      description: Set data in the unassigned failed incidents list.
       script: Builtin|||setList
       type: regular
       iscommand: true
@@ -646,7 +646,7 @@ tasks:
       id: f049d8f1-270c-4826-8559-6a981fe0b5eb
       version: -1
       name: Sets failing playbook names to list
-      description: Set data in failing playbook names list
+      description: Set data in the failing playbook names list
       script: Builtin|||setList
       type: regular
       iscommand: true
@@ -687,8 +687,8 @@ tasks:
     task:
       id: 4a409038-586d-467e-8640-0cc48ef9a9c2
       version: -1
-      name: Checks if failing incidents ID list exist
-      description: Checks whether the failing incidents ID list exist.
+      name: Checks if failing incidents ID list exists
+      description: Checks whether the failing incidents ID list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -729,8 +729,8 @@ tasks:
     task:
       id: ff585d67-0df1-48f6-8595-86603a777185
       version: -1
-      name: Checks if failing incidents dates list exist
-      description: Checks whether the failing incidents dates list exist.
+      name: Checks if failing incidents dates list exists
+      description: Checks whether the failing incidents dates list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -772,7 +772,7 @@ tasks:
       id: d40aa1a7-062f-4b21-81d7-7d77b5eda23d
       version: -1
       name: Sets failing incident IDs to list
-      description: Set data in failing incidents ID list
+      description: Set data in the failing incidents ID list.
       script: Builtin|||setList
       type: regular
       iscommand: true
@@ -814,7 +814,7 @@ tasks:
       id: f25ee995-1bfa-4e6e-87ec-669c2981f8d5
       version: -1
       name: Sets failing incidents dates to list
-      description: Set data in failing incidents list
+      description: Set data in the failing incidents list.
       script: Builtin|||setList
       type: regular
       iscommand: true
@@ -855,8 +855,8 @@ tasks:
     task:
       id: 544f2357-3672-47d1-82d9-db1189999e8d
       version: -1
-      name: Checks if failed integrations categories list exist
-      description: Checks whether the failed integrations categories list exist.
+      name: Checks if failed integrations categories list exists
+      description: Checks whether the failed integrations categories list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -898,7 +898,7 @@ tasks:
       id: a5b4becc-f439-417d-8b21-4bc949c99828
       version: -1
       name: Creates Failing Integrations Category list
-      description: Create new  failing integrations category list
+      description: Create a failing integrations category list.
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -940,7 +940,7 @@ tasks:
       id: f66cbc56-4b07-43cd-8aca-40ba67943789
       version: -1
       name: Sets failing integrations category to list
-      description: Set data in a failing integrations category list
+      description: Set data in the failing integrations category list.
       script: Builtin|||setList
       type: regular
       iscommand: true
@@ -1009,8 +1009,8 @@ tasks:
     task:
       id: 2cc9e285-c32d-4ee3-85de-5b6fa770726e
       version: -1
-      name: Checks if failing instance list exist
-      description: Checks whether the failing instance list exist.
+      name: Checks if failing instance list exists
+      description: Checks whether the failing instance list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -1052,7 +1052,7 @@ tasks:
       id: 6f3208bf-1285-43ec-810f-bb1b95d6109e
       version: -1
       name: Sets failing instance names to list
-      description: Set data in failing instance names list
+      description: Set data in the failing instance names list.
       script: Builtin|||setList
       type: regular
       iscommand: true
@@ -1135,8 +1135,8 @@ tasks:
     task:
       id: a7763191-6777-4163-81ae-a9bca37d200a
       version: -1
-      name: Checks if checked integrations list exist
-      description: Checks whether the  checked integrations list exist.
+      name: Checks if checked integrations list exists
+      description: Checks whether the  checked integrations list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -1178,7 +1178,7 @@ tasks:
       id: e9614873-e66f-48aa-8b6c-1b8f666844ac
       version: -1
       name: 'Sets succeed checked integrations to list '
-      description: Set data in checked integrations list
+      description: Set data in the checked integrations list.
       script: Builtin|||setList
       type: regular
       iscommand: true
@@ -1220,7 +1220,7 @@ tasks:
       id: 046241de-4185-4494-89b1-e15d53f7aad9
       version: -1
       name: 'Adds failed checked integrations to list '
-      description: Add data to checked integrations list
+      description: Add data to the checked integrations list.
       script: Builtin|||addToList
       type: regular
       iscommand: true
@@ -1262,7 +1262,7 @@ tasks:
       id: df4d9b9c-bf41-4153-8b91-7b614944e7f4
       version: -1
       name: Creates checked integrations list
-      description: Create new checked integrations list
+      description: Create a checked integrations list.
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -1333,7 +1333,7 @@ tasks:
       id: f0ab0594-a831-46f2-862c-5aedcd0645f9
       version: -1
       name: Sets Command names to list
-      description: Set data in Command names  list
+      description: Set data in the Command names list.
       script: Builtin|||setList
       type: regular
       iscommand: true
@@ -1513,7 +1513,7 @@ tasks:
       id: 1f40b3b3-2801-4095-8af4-acddda709ec1
       version: -1
       name: Creates failing integrations table list
-      description: Create new integrations table list
+      description: Create an integrations table list.
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -1548,7 +1548,7 @@ tasks:
       id: 7d500941-bb9e-46c9-8840-d68adf74ffbd
       version: -1
       name: Creates failing incidents table list
-      description: Create new incidents table list
+      description: Create an incidents table list.
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -1583,7 +1583,7 @@ tasks:
       id: 644790dc-380f-43fc-8070-f95c119b1699
       version: -1
       name: Sets incidents table to list
-      description: Set data in incidents table list
+      description: Set data in the incidents table list.
       script: Builtin|||setList
       type: regular
       iscommand: true
@@ -1617,8 +1617,8 @@ tasks:
     task:
       id: dd756ca5-ca89-40d0-85ee-9780e6d6598f
       version: -1
-      name: Checks if integrations table list exist
-      description: Checks whether the integrations table list exist.
+      name: Checks if integrations table list exists
+      description: Checks whether the integrations table list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -1659,8 +1659,8 @@ tasks:
     task:
       id: 37ceaddc-b5ad-4217-8994-57ba892ad62a
       version: -1
-      name: Checks if incidents table list exist
-      description: Checks whether the incidents table list exist.
+      name: Checks if incidents table list exists
+      description: Checks whether the incidents table list exists.
       type: condition
       iscommand: false
       brand: ""
