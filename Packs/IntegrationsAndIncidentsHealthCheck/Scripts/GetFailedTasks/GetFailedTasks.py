@@ -37,7 +37,7 @@ for incident in total_incidents:
         for task in tasks:
             entry = {
                 "Incident ID": incident.get("id"),
-                "Playbook Name": task.get("ancestors", [''], [0]),
+                "Playbook Name": task.get("ancestors", [''])[0],
                 "Task Name": task.get("task", {}).get("name"),
                 "Error Entry ID": task.get("entries"),
                 "Number of Errors": len(task.get("entries", [])),
