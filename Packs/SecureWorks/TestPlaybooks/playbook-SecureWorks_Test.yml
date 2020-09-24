@@ -201,14 +201,7 @@ tasks:
       id: 7aa37d61-c369-4e91-8a42-f537d8f9509b
       version: -1
       name: secure-works-get-tickets-updates
-      description: Retrieves tickets from 24 hours prior to when the updates command
-        is executed. If a limit is specified, it will retrieve up to that many tickets
-        (max is 500 tickets). Tickets must be updated within the last 24 hours to
-        be visible in the command results. When executing this command you also receive
-        the ticket worklogs. In order to view the attachment information of a specific
-        ticket, you must use the get-ticket command. This command will return the
-        list of attachments available for that particular ticket. Use acknowledge
-        to confirm the updates.
+      description: Retrieves tickets from 24 hours prior to when the updates command is executed. If a limit is specified, it will retrieve up to that many tickets (max is 500 tickets). Tickets must be updated within the last 24 hours to be visible in the command results. When executing this command you also receive the ticket worklogs. In order to view the attachment information of a specific ticket, you must use the get-ticket command. This command will return the list of attachments available for that particular ticket. Use acknowledge to confirm the updates.
       script: Dell Secureworks|||secure-works-get-tickets-updates
       type: regular
       iscommand: true
@@ -240,8 +233,7 @@ tasks:
       id: 5c75753e-75fd-4ce5-86fe-ec0646b727c4
       version: -1
       name: secure-works-get-tickets-ids
-      description: Get a list of ticket IDs in the same order as the tickets returned
-        by the GET /tickets/updates command.
+      description: Get a list of ticket IDs in the same order as the tickets returned by the GET /tickets/updates command.
       script: Dell Secureworks|||secure-works-get-tickets-ids
       type: regular
       iscommand: true
@@ -271,8 +263,7 @@ tasks:
       id: d6e39a34-3a8f-49b2-80e5-c44ed2ce4263
       version: -1
       name: secure-works-get-ticket-count
-      description: Retrieve a count of tickets that have been updated and not yet
-        acknowledged
+      description: Retrieve a count of tickets that have been updated and not yet acknowledged
       script: Dell Secureworks|||secure-works-get-ticket-count
       type: regular
       iscommand: true
@@ -491,3 +482,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
