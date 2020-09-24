@@ -182,7 +182,7 @@
                    "geocountry": [{"id": 1, "slug": "apartment", "value": "apartment"}],
                    "stixdescription": "hello", "stixaliases": "aaa",
                    "creationdate": 1487960014, "stixprimarymotivation": [{"id": 1, "slug": "food", "value": "food"}],
-                   "updateddate": 1595568692, "stixid": 1}
+                   "updateddate": 1595568692, "stixid": 1, "trafficlightprotocol": "AMBER"}
     },
     {
         "type": "STIX Threat Actor",
@@ -247,7 +247,7 @@
                    [{"id": 2, "slug": "house", "value": "house"}],
                    "stixdescription": "hello world", "stixaliases": "bbb",
                    "creationdate": 1589572143, "stixprimarymotivation": [{"id": 2, "slug": "sports", "value": "sports"}],
-                   "updateddate": 1595627719, "stixid": 2}
+                   "updateddate": 1595627719, "stixid": 2, "trafficlightprotocol": "AMBER"}
     }
   ]
 }
