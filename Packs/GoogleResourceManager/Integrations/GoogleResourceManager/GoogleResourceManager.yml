@@ -466,7 +466,6 @@ script:
       description: Type of the parent resource.
       type: String
   dockerimage: demisto/gvault:1.0.0.11675
-  dockerimage45: demisto/gvault
   isfetch: false
   runonce: false
   script: ''
