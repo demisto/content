@@ -5,17 +5,20 @@ from typing import Counter
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+instances_category_data = []
 incident = demisto.incidents()
-instancesCategory = incident[0].get('CustomFields', {}).get('integrationsfailedcategories', "0")
-instancesCategoryData = []
-if instancesCategory:
-    instancescollections: Counter = collections.Counter(instancesCategory)
-    topInstances = instancescollections.most_common(10)
-    for instance in topInstances:
+instances_category = incident[0].get('CustomFields', {}).get('integrationsfailedcategories', "0")
+
+if instances_category:
+    instances_collections: Counter = collections.Counter(instances_category)
+    top_instances = instances_collections.most_common(10)
+
+    for instance in top_instances:
         random_number = random.randint(0, 16777215)
         hex_number = str(hex(random_number))  # convert to hexadecimal
         color = '#' + hex_number[2:]  # remove 0x and prepend '#'
-        instanceWidgetData = {
+
+        instance_widget_data = {
             "data": [
                 instance[1]
             ],
@@ -24,19 +27,20 @@ if instancesCategory:
             "label": str(instance[0]),
             "color": color
         }
-        instancesCategoryData.append(instanceWidgetData)
+
+        instances_category_data.append(instance_widget_data)
+
     data = {
         "Type": 17,
         "ContentsFormat": "pie",
         "Contents": {
             "stats":
-                instancesCategoryData,
+                instances_category_data,
             "params": {
                 "layout": "horizontal"
             }
         }
     }
-    demisto.results(data)
 
 else:
     data = {
@@ -49,8 +53,8 @@ else:
                         0
                     ],
                     "groups": None,
-                    "name": "N\A",
-                    "label": "N\A",
+                    "name": "N\\A",
+                    "label": "N\\A",
                     "color": "rgb(255, 23, 68)"
                 },
             ],
@@ -59,4 +63,5 @@ else:
             }
         }
     }
-    demisto.results(data)
+
+demisto.results(data)
