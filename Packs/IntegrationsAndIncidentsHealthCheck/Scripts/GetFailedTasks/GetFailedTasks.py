@@ -1,65 +1,74 @@
-from typing import List
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 args = demisto.args()
 query = args["query"]
 
-totalIncidents = []
-incidentsOutput = []
-totalFailedIncidents = []
-pager = 0
-incidents_to_fetch = True
-numberofFailed = 0
-numberofErrors = 0
-totalNumbers = []  # type: List
-while incidents_to_fetch:
-    getIncidents = demisto.executeCommand("getIncidents", {"query": query, "page": pager})
-    incidents = getIncidents[0]["Contents"]["data"]
-    totalIncidents.extend(incidents)
-    pager += 1
-    if len(incidents) < 100:
-        incidents_to_fetch = False
+page_number = 0
+number_of_failed = 0
+number_of_errors = 0
+total_incidents = []
+incidents_output = []
+totalNumbers: List = []
+total_failed_incidents = []
 
-for incident in totalIncidents:
-    tasks = demisto.executeCommand("demisto-api-post",
-                                   {"uri": "investigation/" + str(incident["id"]) + "/workplan/tasks", "body": {
-                                       "states": ["Error"], "types": ["regular", "condition", "collection"]}})[0][
-        "Contents"]["response"]
+while True:
+    get_incidents_result = demisto.executeCommand("getIncidents", {"query": query, "page": page_number})
+    incidents_data = get_incidents_result[0]["Contents"]["data"]
+    total_incidents.extend(incidents_data)
+    page_number += 1
+
+    if len(incidents_data) < 100:
+        break
+
+for incident in total_incidents:
+    tasks = demisto.executeCommand(
+        "demisto-api-post",
+        {
+            "uri": f'investigation/{str(incident["id"])}/workplan/tasks',
+            "body": {
+                "states": ["Error"],
+                "types": ["regular", "condition", "collection"]
+            }
+        }
+    )[0]["Contents"]["response"]
+
     if tasks:
         for task in tasks:
-            entries = {}
-            entries["Incident ID"] = incident["id"]
-            entries["Playbook Name"] = task["ancestors"][0]
-            entries["Task Name"] = task["task"]["name"]
-            entries["Error Entry ID"] = task["entries"]
-            entries["Number of Errors"] = len(task["entries"])
-            entries["Task ID"] = task["id"]
-            entries["Incident Created Date"] = incident["created"].replace("T", " ")
-            # entries["Incident Created Date"] = incident["created"].split("T")[0]
-            entries["Command Name"] = task["task"]["scriptId"].replace('|||', '')
-            entries["Incident Owner"] = incident["owner"]
-            if task["task"]["description"]:
-                entries["Command Description"] = task["task"]["description"]
-            incidentsOutput.append(entries)
-            numberofFailed = numberofFailed + 1
-            numberofErrors = numberofErrors + entries["Number of Errors"]
-numbers = {}
-numbers["total of failed incidents"] = numberofFailed
-numbers["Number of total errors"] = numberofErrors
-totalFailedIncidents.append(numbers)
+            entry = {
+                "Incident ID": incident.get("id"),
+                "Playbook Name": task.get("ancestors", [''], [0]),
+                "Task Name": task.get("task", {}).get("name"),
+                "Error Entry ID": task.get("entries"),
+                "Number of Errors": len(task.get("entries", [])),
+                "Task ID": task.get("id"),
+                "Incident Created Date": incident.get("created", '').replace("T", " "),
+                "Command Name": task.get("task", {}).get("scriptId", '').replace('|||', ''),
+                "Incident Owner": incident["owner"]
+            }
+            if task.get("task", {}).get("description"):
+                entry["Command Description"] = task.get("task", {}).get("description")
+
+            incidents_output.append(entry)
+
+            number_of_failed = number_of_failed + 1
+            number_of_errors = number_of_errors + entry["Number of Errors"]
+
+total_failed_incidents.append({
+    'total of failed incidents': number_of_failed,
+    'Number of total errors': number_of_errors
+})
 
 demisto.results({
     'Type': entryTypes['note'],
-    'Contents': incidentsOutput,
+    'Contents': incidents_output,
     'ContentsFormat': formats['json'],
     'ReadableContentsFormat': formats['markdown'],
-    'HumanReadable': tableToMarkdown("GetFailedTasks:", incidentsOutput,
+    'HumanReadable': tableToMarkdown("GetFailedTasks:", incidents_output,
                                      ["Incident Created Date", "Incident ID", "Task Name", "Task ID", "Playbook Name",
                                       "Command Name", "Error Entry ID"]),
     'EntryContext': {
-        "GetFailedTasks": incidentsOutput,
-        "NumberofFailedIncidents": totalFailedIncidents
+        "GetFailedTasks": incidents_output,
+        "NumberofFailedIncidents": total_failed_incidents
     }
 })
