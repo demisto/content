@@ -42,7 +42,7 @@ def test_build_url_params_for_list_report():
 
     """
     from CiscoEmailSecurity import build_url_params_for_list_report
-    res = build_url_params_for_list_report(test_data['args_for_list_report'])
+    res = build_url_params_for_list_report(test_data['args_for_list_report'], 'reporting_system')
     assert res == test_data['url_params_for_list_reports']
 
 
@@ -229,8 +229,8 @@ def test_list_get_quarantine_message_details_command(requests_mock):
     """
     from CiscoEmailSecurity import list_get_quarantine_message_details_command
     requests_mock.post("https://ciscoemailsecurity/sma/api/v2.0/login", json=test_data['data_for_login'])
-    requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages?mid=None&quarantineType=spam",
-                      json=test_data['quarantine_message_details_response_data'])
+    requests_mock.get("https://ciscoemailsecurity/sma/api/v2.0/quarantine/messages/details?mid=None"
+                      "&quarantineType=spam", json=test_data['quarantine_message_details_response_data'])
 
     client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
@@ -276,7 +276,6 @@ def test_list_delete_quarantine_messages_command(requests_mock):
                      "insecure": False, "proxy": False})
     res = list_delete_quarantine_messages_command(client, {"messages_ids": "1234"})
     assert res.readable_output == test_data['quarantine_delete_message_response_data']
-    assert res.outputs_prefix == 'CiscoEmailSecurity.QuarantineDeleteMessages'
 
 
 def test_list_release_quarantine_messages_command(requests_mock):
@@ -299,7 +298,6 @@ def test_list_release_quarantine_messages_command(requests_mock):
                      "insecure": False, "proxy": False})
     res = list_release_quarantine_messages_command(client, {"messages_ids": "1234"})
     assert res.readable_output == test_data['quarantine_release_message_response_data']
-    assert res.outputs_prefix == 'CiscoEmailSecurity.QuarantineDeleteMessages'
 
 
 def test_build_url_filter_for_get_list_entries():
@@ -313,8 +311,8 @@ def test_build_url_filter_for_get_list_entries():
 
     """
     from CiscoEmailSecurity import build_url_filter_for_get_list_entries
-    res = build_url_filter_for_get_list_entries({"list_type": "safelist", "view_by": "bla"})
-    assert res == "?action=view&limit=20&offset=0&quarantineType=spam&orderDir=desc&viewBy=bla"
+    res = build_url_filter_for_get_list_entries({"list_type": "safelist", "view_by": "bla", "order_by": "bla"})
+    assert res == "?action=view&limit=20&offset=0&quarantineType=spam&orderDir=desc&viewBy=bla&orderBy=bla"
 
 
 def test_list_entries_get_command(requests_mock):
@@ -354,8 +352,8 @@ def test_build_request_body_for_add_list_entries():
     from CiscoEmailSecurity import build_request_body_for_add_list_entries
     res_request_body = build_request_body_for_add_list_entries({"list_type": "safelist",
                                                                 "action": "add", "recipient_addresses":
-                                                                ["user.com", "user.com"],
-                                                                "sender_list": ["acme.com"],
+                                                                "user.com,user.com",
+                                                                "sender_list": "acme.com",
                                                                 "view_by": "recipient"})
     assert res_request_body == {"action": "add", "quarantineType": "spam", "viewBy": "recipient",
                                 "recipientAddresses": ["user.com", "user.com"], "senderList": ["acme.com"]}
@@ -380,10 +378,10 @@ def test_list_entries_add_command(requests_mock):
     client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
     res = list_entries_add_command(client, {"list_type": "safelist", "action": "add", "limit": "25",
-                                            "recipient_addresses": ["user.com", "user.com"],
-                                            "sender_list": ["acme.com"], "view_by": "recipient"})
+                                            "recipient_addresses": "user.com,user.com",
+                                            "sender_list": "acme.com", "view_by": "recipient"})
     assert res.readable_output == test_data['add_list_entries_context']
-    assert res.outputs_prefix == 'CiscoEmailSecurity.listEntriesAdd'
+    assert res.outputs_prefix == 'CiscoEmailSecurity.listEntries.Safelist'
 
 
 def test_build_request_body_for_delete_list_entries():
@@ -398,7 +396,7 @@ def test_build_request_body_for_delete_list_entries():
     """
     from CiscoEmailSecurity import build_request_body_for_delete_list_entries
     res_request_body = build_request_body_for_delete_list_entries({"list_type": "safelist",
-                                                                   "sender_list": ["acme.com"],
+                                                                   "sender_list": "acme.com",
                                                                    "view_by": "recipient"})
     assert res_request_body == {"quarantineType": "spam", "viewBy": "recipient", "senderList": ["acme.com"]}
 
@@ -421,7 +419,7 @@ def test_list_entries_delete_command(requests_mock):
 
     client = Client({"api_username": "a", "api_password": "b", "base_url": "https://ciscoemailsecurity/",
                      "insecure": False, "proxy": False})
-    res = list_entries_delete_command(client, {"list_type": "safelist", "sender_list": ["acme.com"],
+    res = list_entries_delete_command(client, {"list_type": "safelist", "sender_list": "acme.com",
                                                "view_by": "recipient"})
     assert res.readable_output == test_data['delete_list_entries_context']
     assert res.outputs_prefix == 'CiscoEmailSecurity.listEntriesDelete'

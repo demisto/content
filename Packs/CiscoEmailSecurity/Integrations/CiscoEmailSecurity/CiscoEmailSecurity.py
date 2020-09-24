@@ -514,13 +514,13 @@ def arrange_list_entries_for_context(list_entries):
     sender_list = []
     recipient_list = []
     for obj in list_entries:
-        if 'senderList' in obj.kyes():
+        if 'senderList' in obj.keys():
             sender_list.append(obj)
 
         else:
             recipient_list.append(obj)
 
-    list_entries_context = {'sender_list': sender_list, 'recipient_list': recipient_list}
+    list_entries_context = {'sender_lists': sender_list, 'recipient_lists': recipient_list}
     return list_entries_context
 
 
@@ -589,8 +589,6 @@ def list_entries_delete_command(client, args):
     list_entries = list_entries_response.get('data')
     return CommandResults(
         readable_output=list_entries,
-        outputs_prefix='CiscoEmailSecurity.listEntriesDelete',
-        outputs_key_field='mid',
     )
 
 

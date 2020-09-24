@@ -23,7 +23,7 @@
     "device_group": "cisco"
   },
 
-  "url_params_for_list_reports": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&device_type=email&offset=1&limit=1&filterBy=name&filter_operator=is&filter_value=name&device_group=cisco",
+  "url_params_for_list_reports": "/reporting_system?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&device_type=esa",
 
   "args_for_list_messages": {
     "start_date": "2017-02-14 09:51:46",
@@ -695,7 +695,7 @@
                                       "mid": 170
   }],
 
-  "spam_quarantine_human_readable": "### CiscoEmailSecurity SpamQuarantine\n|recipient|to_address|from_address|subject|date|\n|---|---|---|---|---|\n| test@test.com | user.com | danel | [SPAM] Spam | 21 Nov 2018 14:31 (GMT) |\n",
+  "spam_quarantine_human_readable": "### CiscoEmailSecurity The Quarantine Messages\n|message_id|recipient|to_address|from_address|subject|date|\n|---|---|---|---|---|---|\n| 170 | test@test.com | user.com | danel | [SPAM] Spam | 21 Nov 2018 14:31 (GMT) |\n",
 
   "quarantine_message_details_response_data": {
                                                 "data": {
@@ -754,19 +754,9 @@
 
   "quarantine_message_details_human_readable": "### CiscoEmailSecurity QuarantineMessageDetails\n|recipient|to_address|from_address|subject|date|\n|---|---|---|---|---|\n| av_deliver@vm30bsd0004.ibqa | Surya Allena <sallena@cisco.com> | testuser <testuser@cisco.com> | [SUSPICIOUS MESSAGE] [SUSPECTED SPAM] Testing VOF | 16 Nov 2018 13:58 (GMT) |\n",
 
-  "quarantine_delete_message_response_data": {
-                                              "data": {
-                                              "action": "delete",
-                                              "totalCount": 1
-                                              }
-  },
+  "quarantine_delete_message_response_data": "None messages successfully deleted from quarantine list",
 
-  "quarantine_release_message_response_data": {
-    "data": {
-              "action": "release",
-              "totalCount": 1
-    }
-  },
+  "quarantine_release_message_response_data": "None messages successfully released from quarantine list",
 
   "get_list_entries_response": {
     "meta": {
