@@ -1,6 +1,6 @@
 import shutil
 import dateparser
-from typing import List, Tuple, Dict, Callable, Any, Optional, Union
+from typing import List, Tuple, Dict, Callable, Any, Union
 
 from CommonServerPython import *
 
@@ -97,7 +97,7 @@ MIRROR_DIRECTION = {
 }
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
     """
     Converts an XSOAR argument to a timestamp (seconds from epoch).
     This function is used to quickly validate an argument provided to XSOAR
@@ -119,7 +119,6 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
     if arg is None:
         if required is True:
             raise ValueError(f'Missing "{arg_name}"')
-        return None
 
     if isinstance(arg, str) and arg.isdigit():
         # timestamp is a str containing digits - we just convert it to int
@@ -1938,6 +1937,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     # get latest comments and files
     entries = []
     attachments_res = client.get_ticket_attachments(ticket_id)
+    file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
     if 'result' in attachments_res:
         attachments = attachments_res['result']
         for attachment in attachments:
@@ -1947,14 +1947,13 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 required=False
             )
 
-        file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
-        if file_entries:
-            for file_ in file_entries:
-                if file_.get('File') == attachment.get('file_name'):
-                    if last_update > entry_time:  # type: ignore
-                        continue
-                    else:
-                        entries.append(file_)
+            if file_entries:
+                for file_ in file_entries:
+                    if file_.get('File') == attachment.get('file_name'):
+                        if last_update > entry_time:
+                            continue
+                        else:
+                            entries.append(file_)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
