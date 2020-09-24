@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: 6aaa5c3c-a581-469b-8839-a87116728826
     type: start
     task:
-      id: '0'
+      id: 6aaa5c3c-a581-469b-8839-a87116728826
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: 695801a2-951c-4d51-87d2-adf759f848a5
     type: regular
     task:
-      id: '1'
+      id: 695801a2-951c-4d51-87d2-adf759f848a5
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: 2fada8e3-5484-4065-826c-879ed78415ea
     type: regular
     task:
-      id: '2'
+      id: 2fada8e3-5484-4065-826c-879ed78415ea
       version: -1
       name: talos-get-indicators
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: 89b8db2b-8cce-4c03-8902-92013abbeac4
     type: title
     task:
-      id: '3'
+      id: 89b8db2b-8cce-4c03-8902-92013abbeac4
       version: -1
       name: Test Done
       type: title

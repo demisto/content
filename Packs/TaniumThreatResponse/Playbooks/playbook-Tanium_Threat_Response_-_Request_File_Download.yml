@@ -1,7 +1,7 @@
 elasticcommonfields: {}
 id: Tanium Threat Response - Request File Download
 version: -1
-fromversion: ""
+fromversion: "5.0.0"
 name: Tanium Threat Response - Request File Download
 description: Request file download from Tanium.
 starttaskid: "0"
@@ -425,44 +425,42 @@ inputs:
   value: {}
   required: true
   description: Connection name.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: destination-type
   value: {}
   required: true
   description: 'Type of destination: ip_address or computer_name.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: path
   value: {}
   required: true
   description: Path of file.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: download-file
   value:
     simple: "true"
   required: false
-  description: If true, the file will be downloaded, otherwise, only a file download
-    object will be created.
-  playbookInputQuery: null
+  description: If true, the file will be downloaded, otherwise, only a file download object will be created.
+  playbookInputQuery:
 - key: delete-connection
   value:
     simple: "true"
   required: false
-  description: If true, the connection will be deleted in the end of the playbook,
-    otherwise, it will remain open.
-  playbookInputQuery: null
+  description: If true, the connection will be deleted in the end of the playbook, otherwise, it will remain open.
+  playbookInputQuery:
 - key: remote
   value: {}
   required: true
   description: True if remote connection.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: connection-timeout
   value: {}
   required: false
   description: Connection timeout, in milliseconds.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File.ID
   description: File download entry ID.
   type: string
 tests:
-  - No test
+- No test
