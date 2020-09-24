@@ -1,4 +1,4 @@
-comment: Data output script for populating dashboard pie graph widget with the failing
+comment: Data output script for populating the dashboard pie graph widget with the failing
   integrations.
 commonfields:
   id: IntegrationsCheck-Widget-IntegrationsCategory

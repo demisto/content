@@ -13,7 +13,7 @@
   },
   "toDate": "0001-01-01T00:00:00Z"
  },
- "description": "Showing in a bar chart top failed playbook names",
+ "description": "A bar chart showing the top failed playbook names.",
  "id": "Failing-Playbook-Names-Bar",
  "isPredefined": true,
  "name": "Top Failed Playbook Names",

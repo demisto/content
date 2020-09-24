@@ -1,5 +1,5 @@
-comment: Health Check dynamic section, showing in a pie chart the top ten commands
-  of the failed incidents.
+comment: Health Check dynamic section, showing the top ten commands
+  of the failed incidents in a pie chart.
 commonfields:
   id: IncidentsCheck-PlaybooksFailingCommands
   version: -1

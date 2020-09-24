@@ -1,8 +1,8 @@
 args:
 - defaultValue: -status:closed -category:job
-  description: optional, default value is "-status:closed and runStatus:error"
+  description: The query by which to retrieve failed tasks. Optional. The default value is "-status:closed and runStatus:error"
   name: query
-comment: Gets failed tasks details for incidents based on a query. if rerun = true
+comment: Gets failed tasks details for incidents based on a query. If rerun = true
   is provided, the automation will also re-run the failed tasks.
 dockerimage: demisto/python3:3.8.5.10845
 commonfields:

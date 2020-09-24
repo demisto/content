@@ -13,7 +13,7 @@
   },
   "toDate": "0001-01-01T00:00:00Z"
  },
- "description": "Showing a number widget of Failed integrations",
+ "description": "A number widget showing the failed integrations.",
  "id": "Failing-Instances-Number",
  "isPredefined": true,
  "name": "Number Of Failed Instances",
