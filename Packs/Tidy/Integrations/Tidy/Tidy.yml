@@ -12,7 +12,7 @@ configuration:
 - additionalinfo: Endpoint user to be installed. (Can overide in command)
   display: User
   hidden: false
-  name: user
+  name: hostname
   required: true
   type: 0
 - additionalinfo: User login password. (Can overide in command)
@@ -27,35 +27,35 @@ name: Tidy
 script:
   commands:
   - arguments:
-      - default: false
-        description: Packages to install.
-        isArray: true
-        name: packages
-        required: true
-        secret: false
+    - default: false
+      description: Packages to install.
+      isArray: true
+      name: packages
+      required: true
+      secret: false
     deprecated: false
     description: Install homebrew packages
     execution: false
     name: tidy-homebrew
     outputs:
-      - contextPath: Tidy.Endpoint.Hostname
-        description: Endpoint hostname.
-        type: String
-      - contextPath: Tidy.Endpoint.IP
-        description: Endpoint IP.
-        type: String
-      - contextPath: Tidy.Endpoint.OperatingSystem
-        description: Endpoint operating system.
-        type: String
-      - contextPath: Tidy.Endpoint.User
-        description: Endpoint logged user.
-        type: String
-      - contextPath: Tidy.Endpoint.Git.Repo
-        description: HTTPS/SSH repository address.
-        type: String
-      - contextPath: Tidy.Endpoint.Git.EndpointPath
-        description: Repository cloned into this path.
-        type: String
+    - contextPath: Tidy.Endpoint.Hostname
+      description: Endpoint hostname.
+      type: String
+    - contextPath: Tidy.Endpoint.IP
+      description: Endpoint IP.
+      type: String
+    - contextPath: Tidy.Endpoint.OperatingSystem
+      description: Endpoint operating system.
+      type: String
+    - contextPath: Tidy.Endpoint.User
+      description: Endpoint logged user.
+      type: String
+    - contextPath: Tidy.Endpoint.Git.Repo
+      description: HTTPS/SSH repository address.
+      type: String
+    - contextPath: Tidy.Endpoint.Git.EndpointPath
+      description: Repository cloned into this path.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false

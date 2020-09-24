@@ -1,0 +1,18 @@
+---
+- name: Tidy project
+  hosts: all
+  roles:
+    - role: avanov.pyenv
+      vars:
+        pyenv_env: "{{}}{{ env }}"
+        pyenv_python_versions: "{{ pyenv_python_versions if pyenv_python_versions is defiend }}"
+        pyenv_global: "{{ pyenv_global if pyenv_global is defiend }}"
+        pyenv_update_git_install: yes
+        pyenv_setting_path: "{{ pyenv_setting_path if pyenv_setting_path is defiend }}"
+      when: pyenv_setting_path is defiend and pyenv_python_versions is defiend and pyenv_global is defiend
+    - role: andrewrothstein.go
+      vars:
+        go_ver: "{{ golang_version if golang_version is defiend }}"
+      when: golang_version is defined
+#    - role: geerlingguy.homebrew
+

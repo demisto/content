@@ -369,7 +369,7 @@ def test_ip(requests_mock):
     assert isinstance(response.indicators, list)
     assert len(response.indicators) == 1
     assert isinstance(response.indicators[0], Common.IP)
-    assert response.indicators[0].endpoint == ip_to_check
+    assert response.indicators[0].hostname == ip_to_check
 
 
 def test_domain(requests_mock):

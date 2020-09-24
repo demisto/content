@@ -8,3 +8,4 @@ ptyprocess==0.6.0
 python-daemon==2.2.4
 pyyaml==5.3.1
 six==1.15.0
+paramiko==2.7.2
