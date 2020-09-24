@@ -374,7 +374,7 @@ inputs:
     simple: "false"
   required: false
   description: |-
-    Should the playbook should fail on unsupported file type?
+    Should the playbook fail on unsupported file type?
     use true or false.
   playbookInputQuery:
 outputs:
