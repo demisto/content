@@ -2,9 +2,10 @@ commonfields:
   id: SbQuota
   version: -1
 name: SbQuota
-script: |2
+script: >2
 
   resp = demisto.executeCommand("sb-quota", demisto.args())
+
 
   if isError(resp[0]):
       demisto.results(resp)
@@ -20,8 +21,7 @@ type: python
 subtype: python2
 tags:
 - sandblast
-comment: Use the Quote API to have a client application get the current license and
-  quota status of the API Key that you use
+comment: Use the Quote API to have a client application get the current license and quota status of the API Key that you use
 system: true
 args: []
 scripttarget: 0
@@ -29,3 +29,4 @@ timeout: 0s
 dependson:
   must:
   - sb-quota
+fromversion: 5.0.0

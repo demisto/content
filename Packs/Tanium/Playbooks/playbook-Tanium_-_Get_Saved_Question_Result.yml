@@ -1,6 +1,6 @@
 id: Tanium - Get Saved Question Result
 version: -1
-fromversion: ""
+fromversion: "5.0.0"
 name: Tanium - Get Saved Question Result
 description: 'This playbook used generic polling to gets saved question result.'
 starttaskid: "0"
@@ -134,4 +134,4 @@ outputs:
 - contextPath: Tanium.SavedQuestionResult.SavedQuestionID
   description: The unique ID of the saved question object.
 tests:
-  - Tanium v2 - Test
+- Tanium v2 - Test
