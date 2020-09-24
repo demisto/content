@@ -1,5 +1,6 @@
 import collections
 import random
+from typing import Counter
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -16,7 +17,7 @@ for full_date in list_content:
 
 lists_data = []
 if list_content != ['']:
-    list_collections = collections.Counter(datesOnlyList)
+    list_collections: Counter = collections.Counter(datesOnlyList)
     top_lists = list_collections.most_common(10)
     lists_number = len(top_lists)
     list_number = 0

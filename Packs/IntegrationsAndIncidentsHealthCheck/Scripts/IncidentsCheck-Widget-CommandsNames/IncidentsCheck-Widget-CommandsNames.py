@@ -1,5 +1,6 @@
 import collections
 import random
+from typing import Counter
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -11,7 +12,7 @@ list_data = demisto.executeCommand("getList", {"listName": "XSOAR Health - Faile
 list_content = list_data[0].get('Contents').split(",")
 
 if list_content != ['']:
-    list_collections = collections.Counter(list_content)
+    list_collections: Counter = collections.Counter(list_content)
     top_lists = list_collections.most_common(10)
     lists_number = len(top_lists)
     list_number = 0
