@@ -659,7 +659,7 @@ def prepare_query_for_fetch_incidents(params: Dict[str, str], start_time: int) -
         return query[:where_search_end] + ' LastModifiedDate > {} and'.format(
             start_time) + query[where_search_end:]
 
-    max_incidents = params.get('max_incidents', '10')
+    max_incidents = params.get('max_fetch', '10')
     validate_max_incidents(max_incidents)
 
     if not params.get('type', ''):
@@ -737,7 +737,7 @@ def validate_params_for_fetch_incidents(params: Dict[str, Any]) -> None:
             if where_count > 1:
                 raise ValueError(MESSAGES['MULTIPLE_WHERE_CLAUSE_ERROR'])
         else:
-            validate_max_incidents(params.get('max_incidents', 10))
+            validate_max_incidents(params.get('max_fetch', 10))
             if not params.get('type', ''):
                 raise ValueError(MESSAGES['PARAMETER_TYPE_EMPTY_ERROR'])
 
@@ -2805,7 +2805,7 @@ def main():
         validate_params_for_fetch_incidents(demisto.params())
 
         # Get first fetch time from integration params.
-        first_fetch_time = demisto.params().get('firstFetchTimestamp')
+        first_fetch_time = demisto.params().get('first_fetch')
 
         # getting numeric value from string representation
         start_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)

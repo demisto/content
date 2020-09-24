@@ -6,14 +6,48 @@ from datetime import datetime
 from distutils.version import LooseVersion
 
 from demisto_sdk.commands.common.tools import find_type
-from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR, FileType
-
+from demisto_sdk.commands.common.constants import TEST_PLAYBOOKS_DIR, INTEGRATIONS_DIR, CONF_PATH, PACKS_DIR,\
+    FileType, PACKS_PACK_META_FILE_NAME, PACK_METADATA_SUPPORT
 
 INITIAL_FROM_VERSION = "4.5.0"
 SKIPPED_PACKS = [
     'DeprecatedContent',
     'NonSupported'
 ]
+CERTIFIED_PACKS = {
+    'xsoar',
+    'partner',
+}
+
+
+def get_pack_metadata(file_path):
+    """
+    Args:
+        file_path: The Pack metadata file path
+
+    Returns:
+        The file content.
+    """
+    with open(file_path) as pack_metadata:
+        return json.load(pack_metadata)
+
+
+def is_pack_certified(pack_path):
+    """
+        Checks whether the pack is certified or not (Supported by xsoar/partner).
+        Tests are not being collected for uncertified packs.
+    Args:
+        pack_path: The pack path
+
+    Returns:
+        True if the pack is certified, False otherwise.
+
+    """
+    pack_metadata_path = os.path.join(pack_path, PACKS_PACK_META_FILE_NAME)
+    if not os.path.isfile(pack_metadata_path):
+        return False
+    pack_metadata = get_pack_metadata(pack_metadata_path)
+    return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() in CERTIFIED_PACKS
 
 
 def get_integration_data(file_path):
@@ -82,6 +116,8 @@ def run():
             continue
 
         pack_path = os.path.join(PACKS_DIR, pack_name)
+        if not is_pack_certified(pack_path):
+            continue
         pack_integrations = []
         pack_test_playbooks = []
 

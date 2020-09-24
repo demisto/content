@@ -407,17 +407,18 @@ def test_indicator_field_mapping():
     expected_res = {'service': 'Passive Total',
                     'firstseenbysource': datetime.fromtimestamp(1590810346, timezone.utc).isoformat(), 'tags': ['s3']}
     assert indicator_field_mapping('domain', {'value': '007blog.icu', 'Timestamp': '1590810346'},
-                                   tags=['s3']) == expected_res
+                                   tags=['s3'], tlp_color='') == expected_res
 
     expected_res = {'service': 'Passive Total', 'siscategory': 'category',
                     'threattypes': [{'threatcategory': 'Phishing'}],
                     'sismatchtype': 'type',
-                    'sisexpiration': '2020-06-15T00:25:44+00:00', 'tags': ['s3']}
+                    'sisexpiration': '2020-06-15T00:25:44+00:00', 'tags': ['s3'],
+                    'trafficlightprotocol': 'AMBER'}
 
     assert indicator_field_mapping('phish', {'value': '007blog.icu', 'type': 'URL', 'MatchType': 'type',
                                              'Category': 'category',
                                              'Expiration': '2020-06-15 00:25:44.0',
-                                             }, tags=['s3']) == expected_res
+                                             }, tags=['s3'], tlp_color='AMBER') == expected_res
     expected_res = {'service': 'Passive Total', 'sismalwaretype': 'category',
                     'threattypes': [{'threatcategory': 'Malware'}],
                     'sismatchtype': 'type',
@@ -428,7 +429,7 @@ def test_indicator_field_mapping():
                                     'MaliciousExpiration': '2020-06-15 00:25:44.0',
                                     'MalwareType': 'category',
                                     'Expiration': '2020-06-15 00:25:44.0',
-                                    }, tags=['s3']) == expected_res
+                                    }, tags=['s3'], tlp_color=None) == expected_res
 
 
 @pytest.mark.parametrize('first_fetch_interval', ['invalid_str_value', '1day', ' '])

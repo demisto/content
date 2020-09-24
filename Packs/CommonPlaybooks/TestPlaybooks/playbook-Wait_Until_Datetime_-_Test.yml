@@ -1,6 +1,6 @@
 id: Wait Until Datetime - Test
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Wait Until Datetime - Test
 starttaskid: '0'
 tasks:
@@ -37,8 +37,7 @@ tasks:
       id: 6459d844-482a-4ddb-88bb-c3ea983300bc
       version: -1
       name: Wait Until Datetime
-      description: Pauses execution until the date and time that was specified in
-        the plabyook input is reached.
+      description: Pauses execution until the date and time that was specified in the plabyook input is reached.
       playbookName: Wait Until Datetime
       type: playbook
       iscommand: false
@@ -151,9 +150,7 @@ tasks:
       id: af3bbfcb-c132-49f2-88ac-b3f2ce5136d5
       version: -1
       name: Did we wait the time needed?
-      description: Checks whether the time right now is equal to or later than the
-        future time that was chosen previously, which means we waited for the time
-        needed.
+      description: Checks whether the time right now is equal to or later than the future time that was chosen previously, which means we waited for the time needed.
       type: condition
       iscommand: false
       brand: ''
@@ -290,11 +287,7 @@ tasks:
       - '7'
     scriptarguments:
       message:
-        simple: The condition that checks if the time right now is past the future
-          time that we set - failed. This means that the playbook did not sleep for
-          the amount of time that we expected. Either the calculation of time difference
-          between the time now and the future time was wrong, or there is a bug in
-          the logic, or with the Sleep command.
+        simple: The condition that checks if the time right now is past the future time that we set - failed. This means that the playbook did not sleep for the amount of time that we expected. Either the calculation of time difference between the time now and the future time was wrong, or there is a bug in the logic, or with the Sleep command.
     separatecontext: false
     view: |-
       {
