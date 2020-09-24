@@ -1,0 +1,70 @@
+args:
+- description: Object to update e.g. ${myobject}
+  isArray: true
+  name: original_object
+  required: true
+- description: Name of the key to update. If the key does not exist in original object
+    it will be created. e.g. 'mykey'
+  name: key_to_update
+  required: true
+- description: New values to store in key. Supports array or comma-separated items
+    e.g 'item1,item2,item3'
+  isArray: true
+  name: values
+  required: true
+- description: Index to update. e.g '0'. If not provided, will attempt to update all
+    items in the order given for the values argument
+  name: index
+- description: Context key for new object to be stored
+  name: context_key
+comment: |-
+  Updates the values within an array of objects for a given key.
+
+  Example Command:
+  !UpdateObject original_object=${myobject} key_to_update="Key1" values="newval1,newval2,newval3"
+
+  Results:
+
+  Original Object (myobject):
+  [
+      {
+          'Key1': 'oldval1',
+          'Key2': 'key2val1'
+      }, {
+          'Key1': 'oldval2',
+          'Key2': 'key2val2'
+      }, {
+          'Key1': 'oldval3',
+          'Key2': 'key2val3'
+      }
+  ]
+
+  Updated Object (mynewobject):
+  [
+      {
+          'Key1': 'newval1',
+          'Key2': 'key2val1'
+      }, {
+          'Key1': 'newval2',
+          'Key2': 'key2val2'
+      }, {
+          'Key1': 'newval3',
+          'Key2': 'key2val3'
+      }
+  ]
+commonfields:
+  id: UpdateObject
+  version: -1
+dockerimage: demisto/python3:3.8.5.10845
+enabled: true
+name: UpdateObject
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
