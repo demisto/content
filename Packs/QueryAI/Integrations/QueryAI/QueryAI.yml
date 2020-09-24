@@ -96,5 +96,6 @@ script:
 defaultmapperin: QueryAI-mapper
 defaultclassifier: QueryAI
 tests:
-  - No tests
+- No tests
 
+fromversion: 5.0.0

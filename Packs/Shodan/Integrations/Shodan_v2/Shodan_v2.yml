@@ -388,3 +388,4 @@ script:
   type: python
 tests:
 - "Test-Shodan_v2"
+fromversion: 5.0.0

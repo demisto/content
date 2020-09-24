@@ -602,7 +602,7 @@ def epoch_to_iso(ms_passed_since_epoch):
     """
     Converts epoch (miliseconds) to ISO string
     """
-    if ms_passed_since_epoch >= 0:
+    if isinstance(ms_passed_since_epoch, int) and ms_passed_since_epoch >= 0:
         return datetime.utcfromtimestamp(ms_passed_since_epoch / 1000.0).strftime(
             "%Y-%m-%dT%H:%M:%S.%fZ"
         )
@@ -613,13 +613,13 @@ def print_debug_msg(msg, lock: Lock = None):
     """
     Prints a debug message with QRadarMsg prefix, while handling lock.acquire (if available)
     """
-    err_msg = f"QRadarMsg - {msg}"
+    debug_msg = f"QRadarMsg - {msg}"
     if lock:
         if lock.acquire(timeout=LOCK_WAIT_TIME):
-            demisto.debug(err_msg)
+            demisto.debug(debug_msg)
             lock.release()
     else:
-        demisto.debug(err_msg)
+        demisto.debug(debug_msg)
 
 
 def filter_dict_null(d):
@@ -960,8 +960,8 @@ def fetch_incidents_long_running_events(
                 events_limit=events_limit,
             )
         )
-        for future in concurrent.futures.as_completed(futures):
-            enriched_offenses.append(future.result())
+    for future in concurrent.futures.as_completed(futures):
+        enriched_offenses.append(future.result())
 
     if is_reset_triggered(client.lock, handle_reset=True):
         return
@@ -1264,18 +1264,16 @@ def enrich_single_offense_res_with_source_and_destination_address(
     asset_ips = set()
     if isinstance(offense.get("source_address_ids"), list):
         for i in range(len(offense["source_address_ids"])):
+            source_address = src_adrs[offense["source_address_ids"][i]]
             if not skip_enrichment:
-                offense["source_address_ids"][i] = src_adrs[
-                    offense["source_address_ids"][i]
-                ]
-            asset_ips.add(src_adrs[offense["source_address_ids"][i]])
+                offense["source_address_ids"][i] = source_address
+            asset_ips.add(source_address)
     if isinstance(offense.get("local_destination_address_ids"), list):
         for i in range(len(offense["local_destination_address_ids"])):
+            destination_address = dst_adrs[offense["local_destination_address_ids"][i]]
             if not skip_enrichment:
-                offense["local_destination_address_ids"][i] = dst_adrs[
-                    offense["local_destination_address_ids"][i]
-                ]
-            asset_ips.add(dst_adrs[offense["local_destination_address_ids"][i]])
+                offense["local_destination_address_ids"][i] = destination_address
+            asset_ips.add(destination_address)
 
     return asset_ips
 
