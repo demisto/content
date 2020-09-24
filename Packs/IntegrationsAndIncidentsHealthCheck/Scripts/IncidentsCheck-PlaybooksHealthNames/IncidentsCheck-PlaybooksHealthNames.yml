@@ -1,5 +1,5 @@
-comment: Health Check dynamic section, showing in a bar chart the top ten playbook
-  names of the failed incidents.
+comment: Health Check dynamic section, showing the top ten playbook
+  names of the failed incidents in a bar chart.
 commonfields:
   id: IncidentsCheck-PlaybooksHealthNames
   version: -1
