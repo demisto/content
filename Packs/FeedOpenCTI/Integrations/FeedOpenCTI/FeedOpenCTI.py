@@ -33,8 +33,8 @@ def build_indicator_list(indicator_list: List[str]) -> List[str]:
                           'ipv4-addr', 'ipv6-addr', 'registry-key-value', 'url']
         # Checks for additional types not supported by XSOAR, and adds them.
         for indicator in indicator_list:
-            if not XSOHR_TYPES[indicator.lower()]:
-                result.append()
+            if not XSOHR_TYPES.get(indicator.lower(), ''):
+                result.append(indicator)
     else:
         result = [indicator.lower() for indicator in indicator_list]
     return result
