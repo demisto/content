@@ -2,13 +2,16 @@ commonfields:
   id: CreateEmailHtmlBody
   version: -1
 name: CreateEmailHtmlBody
-script: |
+script: >
   //replace all occurences of textToReplace with replaceWith string
+
   String.prototype.replaceAll = function(textToReplace,replaceWith) {
       return this.split(textToReplace).join(replaceWith);
   };
 
+
   // get a specific label from incident labels
+
   var getLabel = function(incident,path) {
       label = path.split('.')[2];
       for (var i=0; i<incident.labels.length; i++) {
@@ -19,16 +22,23 @@ script: |
       return null;
   };
 
+
   var res = executeCommand("getList", {"listName": args.listTemplate});
+
 
   if (res[0].Type == entryTypes.error) {
       return res;
   }
 
+
   // Finding all placeholders and creating a map with values
+
   var html = res[0].Contents;
+
   var reg = /\${(.+?)}/g;
+
   var map = {};
+
 
   while (found = reg.exec(html)) {
       var path = found[1];
@@ -50,7 +60,9 @@ script: |
       }
   }
 
+
   // replacing all placeholders with values
+
   for (var path in map) {
       // if value found replace. Otherwise will leave placeholder
       if (map[path]) {
@@ -60,8 +72,11 @@ script: |
       }
   }
 
+
   // setting to contesxt so it override an oder entry if there is (using EntryContext in the returned object only append)
+
   setContext(args.key,html);
+
 
   return {
       ContentsFormat: formats.json,
@@ -100,8 +115,7 @@ args:
   predefined:
   - "yes"
   - "no"
-  description: if true, replace path not found with empty string, otherwise leave
-    as is
+  description: if true, replace path not found with empty string, otherwise leave as is
   defaultValue: "no"
 outputs:
 - contextPath: htmlBody
@@ -110,3 +124,4 @@ scripttarget: 0
 runonce: false
 tests:
 - CreateEmailHtmlBody_test_pb
+fromversion: 5.0.0

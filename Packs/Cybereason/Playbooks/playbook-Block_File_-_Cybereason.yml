@@ -1,9 +1,8 @@
 id: Block File - Cybereason
 version: -1
 name: Block File - Cybereason
-fromversion: 4.5.0
-description: This playbook accepts an MD5 hash and blocks the file using the Cybereason
-  integration.
+fromversion: 5.0.0
+description: This playbook accepts an MD5 hash and blocks the file using the Cybereason integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -97,8 +96,7 @@ tasks:
       id: 0f02e921-eb9a-47bd-8d9c-93759602036f
       version: -1
       name: Is there an MD5 to block?
-      description: Checks if there is a value for the MD5 input field. This task does
-        not verify that the value is actually an MD5 hash, just that a value exists in the MD5 field.
+      description: Checks if there is a value for the MD5 input field. This task does not verify that the value is actually an MD5 hash, just that a value exists in the MD5 field.
       type: condition
       iscommand: false
       brand: ""
@@ -222,4 +220,4 @@ outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
   description: Last block sensor ID
 tests:
-  - No Test
+- No Test

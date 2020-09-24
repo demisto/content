@@ -1,9 +1,8 @@
 id: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test
 version: -1
-fromversion: 4.1.0
+fromversion: 5.0.0
 name: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test
-description: Test playbook for "Digital Defense FrontlineVM - Scan Asset Not Recently
-  Scanned"
+description: Test playbook for "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned"
 starttaskid: '0'
 tasks:
   '0':

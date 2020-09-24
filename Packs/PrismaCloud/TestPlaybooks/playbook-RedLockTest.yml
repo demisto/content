@@ -266,8 +266,7 @@ tasks:
       id: 48c2bd10-b9e7-4dbe-8263-68180d86559f
       version: -1
       name: Open the Alert
-      description: Re-open the alerts matching the given filter.  Must provide either
-        policy IDs or alert IDs.
+      description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
       script: '|||redlock-reopen-alerts'
       type: regular
       iscommand: true
@@ -390,8 +389,7 @@ tasks:
       id: bbda63e8-3913-46ae-8327-364bfd699e79
       version: -1
       name: Dismiss Alert
-      description: Dismiss the alerts matching the given filter. Must provide either
-        policy IDs or alert IDs.
+      description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
       script: '|||redlock-dismiss-alerts'
       type: regular
       iscommand: true
@@ -507,8 +505,7 @@ tasks:
       id: 8f4ef273-dab0-4fe5-84de-5a1a7d5beb61
       version: -1
       name: Return alert To Open State
-      description: Re-open the alerts matching the given filter.  Must provide either
-        policy IDs or alert IDs.
+      description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
       script: '|||redlock-reopen-alerts'
       type: regular
       iscommand: true
@@ -716,8 +713,7 @@ tasks:
       id: 9f3d69c7-426a-48de-843f-17d10e35bea6
       version: -1
       name: Return alert To Dismissed State
-      description: Dismiss the alerts matching the given filter. Must provide either
-        policy IDs or alert IDs.
+      description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
       script: '|||redlock-dismiss-alerts'
       type: regular
       iscommand: true
@@ -846,3 +842,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
