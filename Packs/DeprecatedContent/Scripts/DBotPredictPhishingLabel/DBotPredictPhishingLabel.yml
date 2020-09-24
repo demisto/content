@@ -23,8 +23,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: The email body. It's better to use text body if possible, HTML is also
-    valid (HTML tags will be removed).
+  description: The email body. It's better to use text body if possible, HTML is also valid (HTML tags will be removed).
   isArray: false
   name: emailBody
   required: false
@@ -61,4 +60,4 @@ dockerimage: demisto/dl:1.1
 runonce: false
 tests:
 - No tests
-fromversion: 4.1.0
+fromversion: 5.0.0

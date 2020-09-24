@@ -2,9 +2,11 @@ commonfields:
   id: VolRunCmds
   version: -1
 name: VolRunCmds
-script: |-
+script: >-
   var cmds = args.cmds.split(',');
+
   var resultarr = [];
+
   for (var i = 0; i < cmds.length; i++) {
       var cmdline = cmds[i];
       if (args.profile) {
@@ -41,6 +43,7 @@ script: |-
           }
       }
   }
+
   return resultarr;
 type: javascript
 tags:
@@ -48,8 +51,7 @@ tags:
 - forensics
 - volatility
 - server
-comment: Execute volatility with command and return tabular output. Incase where proper
-  json output is not supported, scripts returns error. User should use raw command.
+comment: Execute volatility with command and return tabular output. Incase where proper json output is not supported, scripts returns error. User should use raw command.
 system: true
 args:
 - name: cmds
@@ -66,3 +68,4 @@ args:
 scripttarget: 0
 dependson: {}
 timeout: 0s
+fromversion: 5.0.0
