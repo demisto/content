@@ -3,22 +3,59 @@ commonfields:
   id: Tidy
   version: -1
 configuration:
-- additionalinfo: Private key for authenticating with clients
-  display: Private key
+- additionalinfo: Endpoint IP/URL to be installed. (Can overide in command)
+  display: Endpoint
   hidden: false
-  name: private_key
-  required: false
+  name: ip
+  required: true
+  type: 0
+- additionalinfo: Endpoint user to be installed. (Can overide in command)
+  display: User
+  hidden: false
+  name: user
+  required: true
+  type: 0
+- additionalinfo: User login password. (Can overide in command)
+  display: Password
+  hidden: false
+  name: password
+  required: true
   type: 4
-- display: Proxy
-  hidden: false
-  name: proxy
-  required: false
-  type: 8
 description: Tidy integration handle endpoints enviorment installation.
 display: Tidy
 name: Tidy
 script:
   commands:
+  - arguments:
+      - default: false
+        description: Packages to install.
+        isArray: true
+        name: packages
+        required: true
+        secret: false
+    deprecated: false
+    description: Install homebrew packages
+    execution: false
+    name: tidy-homebrew
+    outputs:
+      - contextPath: Tidy.Endpoint.Hostname
+        description: Endpoint hostname.
+        type: String
+      - contextPath: Tidy.Endpoint.IP
+        description: Endpoint IP.
+        type: String
+      - contextPath: Tidy.Endpoint.OperatingSystem
+        description: Endpoint operating system.
+        type: String
+      - contextPath: Tidy.Endpoint.User
+        description: Endpoint logged user.
+        type: String
+      - contextPath: Tidy.Endpoint.Git.Repo
+        description: HTTPS/SSH repository address.
+        type: String
+      - contextPath: Tidy.Endpoint.Git.EndpointPath
+        description: Repository cloned into this path.
+        type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -112,12 +149,6 @@ script:
       name: repos
       required: true
       secret: false
-    - default: false
-      description: Endpoint path to clone repository into.
-      isArray: false
-      name: endpoint_path
-      required: true
-      secret: false
     deprecated: false
     description: Clone git repositories.
     execution: false
@@ -141,7 +172,46 @@ script:
     - contextPath: Tidy.Endpoint.Git.EndpointPath
       description: Repository cloned into this path.
       type: String
-  dockerimage: demisto/python3:3.8.3.9324
+  - arguments:
+    - default: false
+      description: Github token with public key admin permissions.
+      isArray: false
+      name: github-token
+      required: true
+      secret: false
+    deprecated: false
+    description: Generate ssh configuration and deploy public key in GitHub.
+    execution: false
+    name: tidy-github-ssh-key
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: .zshrc
+      description: Shell init file.
+      isArray: true
+      name: file
+      predefined:
+      - '.bash_profile '
+      - ' .zshrc '
+      - ' .bashrc '
+      - ' .profile '
+      required: true
+      secret: false
+    deprecated: false
+    description: Define enviorment variables in shell (~/.zshrc , ~/.bash_proifile
+      , ...)
+    execution: false
+    name: tidy-env-vars
+  - arguments:
+    - default: false
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Set zsh shell as default and set p10k tool for convinience.
+    execution: false
+    name: tidy-zsh
+  dockerimage: galrabin/tidy:latest
   feed: false
   isfetch: false
   longRunning: false
