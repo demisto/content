@@ -727,7 +727,7 @@ def kv_store_collection_config(service):
 
 def kv_store_collection_add_entries(service):
     args = demisto.args()
-    kv_store_data = args['kv_store_data']
+    kv_store_data = args.get('kv_store_data', '').encode('utf-8')
     kv_store_collection_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
     service.kvstore[kv_store_collection_name].data.insert(kv_store_data)

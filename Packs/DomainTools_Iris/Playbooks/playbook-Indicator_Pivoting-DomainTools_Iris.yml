@@ -1,9 +1,7 @@
 id: Indicator Pivoting - DomainTools Iris
 version: -1
 name: Indicator Pivoting - DomainTools Iris
-description: Pivots are used to gather data that share a common attribute with a domain.
-  For instance, pivoting on an IP Address will give you back all domains related to
-  that IP address.
+description: Pivots are used to gather data that share a common attribute with a domain. For instance, pivoting on an IP Address will give you back all domains related to that IP address.
 starttaskid: '0'
 tasks:
   '0':
@@ -617,11 +615,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"11_3_#default#\": 0.29,\n    \"12_3_#default#\"\
-  : 0.59,\n    \"13_3_#default#\": 0.6,\n    \"14_3_#default#\": 0.29,\n    \"15_3_#default#\"\
-  : 0.19,\n    \"16_18_#default#\": 0.16,\n    \"4_3_#default#\": 0.2\n  },\n  \"\
-  paper\": {\n    \"dimensions\": {\n      \"height\": 1025,\n      \"width\": 4170,\n\
-  \      \"x\": -1450,\n      \"y\": -300\n    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {\n    \"11_3_#default#\": 0.29,\n    \"12_3_#default#\": 0.59,\n    \"13_3_#default#\": 0.6,\n    \"14_3_#default#\": 0.29,\n    \"15_3_#default#\": 0.19,\n    \"16_18_#default#\": 0.16,\n    \"4_3_#default#\": 0.2\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1025,\n      \"width\": 4170,\n      \"x\": -1450,\n      \"y\": -300\n    }\n  }\n}"
 inputs:
 - key: IPAddress
   value:
@@ -946,6 +940,6 @@ outputs:
   description: The tracking code of Google Analytics.
   type: Number
 sourceplaybookid: Indicator Pivoting - DomainTools Iris
-fromversion: 4.1.0
+fromversion: 5.0.0
 tests:
 - DomainTools Iris - Test

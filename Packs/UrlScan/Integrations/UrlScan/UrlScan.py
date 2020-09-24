@@ -74,7 +74,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
             demisto.results(blacklisted_message)
             return response_json
 
-        return_error('Error in API call to URLScan.io [%d] - %s' % (r.status_code, r.reason))
+        return_error('Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason, error_description))
 
     return r.json()
 
