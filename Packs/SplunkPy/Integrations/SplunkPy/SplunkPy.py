@@ -13,6 +13,7 @@ import requests
 import urllib3
 import io
 import re
+from time import sleep
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
@@ -198,15 +199,14 @@ def notable_to_incident(event):
         incident["occurred"] = event["_time"]
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
+
     event = replace_keys(event) if REPLACE_FLAG else event
     incident["rawJSON"] = json.dumps(event)
     labels = []
-    if demisto.get(demisto.params(), 'parseNotableEventsRaw'):
-        isParseNotableEventsRaw = demisto.params()['parseNotableEventsRaw']
-        if isParseNotableEventsRaw:
-            rawDict = rawToDict(event['_raw'])
-            for rawKey in rawDict:
-                labels.append({'type': rawKey, 'value': rawDict[rawKey]})
+    if demisto.params().get('parseNotableEventsRaw'):
+        rawDict = rawToDict(event['_raw'])
+        for rawKey in rawDict:
+            labels.append({'type': rawKey, 'value': rawDict[rawKey]})
     if demisto.get(event, 'security_domain'):
         labels.append({'type': 'security_domain', 'value': event["security_domain"]})
     incident['labels'] = labels
@@ -459,7 +459,7 @@ def splunk_results_command(service):
 
 def fetch_incidents(service):
     last_run = demisto.getLastRun() and demisto.getLastRun()['time']
-    search_offset = demisto.getLastRun().get('offset', 0)
+    search_offset = dict_safe_get(demisto.getLastRun(), ['offset'], 0)
 
     incidents = []
     current_time_for_fetch = datetime.utcnow()
@@ -474,7 +474,7 @@ def fetch_incidents(service):
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         current_time_for_fetch = current_time_in_splunk
 
-    if len(last_run) == 0:
+    if not last_run or len(last_run) == 0:
         fetch_time_in_minutes = parse_time_to_minutes()
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
@@ -877,6 +877,43 @@ def get_store_data(service):
         yield store.data.query(**query)
 
 
+def get_reader(stream):
+    return results.ResultsReader(io.BufferedReader(ResponseReaderWrapper(stream)))
+
+
+def splunk_realtime(service, query):
+    job_kwargs = {"search_mode": "realtime",
+                  "latest_time": "rt",
+                  "earliest_time": "rt"}
+
+    try:
+        for item in filter(lambda x: not isinstance(x, results.Message), get_reader(service.jobs.export(query, **job_kwargs))):
+            yield item
+    except Exception as error:
+        return_error(str(error), error)
+
+
+def get_splunk_query(demisto_params):
+    search_query = [demisto_params.get('fetchQuery', '')]
+    for field in demisto_params.get('extractFields', '').split(','):
+        field_trimmed = field.strip()
+        if field_trimmed:
+            search_query.append('{}={}'.format(field_trimmed, field_trimmed))
+    return ' | eval '.join(search_query)
+
+
+def real_time_search(service):
+    search_query = get_splunk_query(demisto.params())
+    incident = [None]
+    while True:
+        for item in splunk_realtime(service, search_query):
+            incident[0] = notable_to_incident(item)
+            try:
+                demisto.createIncidents(incident)
+            except Exception as error:
+                return_error(str(error), error)
+
+
 def main():
     if demisto.command() == 'splunk-parse-raw':
         splunk_parse_raw_command()
@@ -908,10 +945,10 @@ def main():
             pass
         else:
             raise
-
     if service is None:
         demisto.error("Could not connect to SplunkPy")
-
+    if demisto.command() == 'long-running-execution':
+        real_time_search(service)
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         test_module(service)

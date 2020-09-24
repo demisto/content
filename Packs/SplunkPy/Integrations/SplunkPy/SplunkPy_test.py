@@ -438,3 +438,21 @@ def test_fetch_incidents(mocker):
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
+
+
+data_test_get_splunk_query = [
+    ({}, ''),
+    ({'fetchQuery': 'the query'}, 'the query'),
+    ({'fetchQuery': 'the query', 'extractFields': ''}, 'the query'),
+    ({'fetchQuery': 'the query', 'extractFields': 'test'}, 'the query | eval test=test'),
+    (
+        {'fetchQuery': 'the query', 'extractFields': 'test, test2 ,test3'},
+        'the query | eval test=test | eval test2=test2 | eval test3=test3'
+    )
+]
+
+
+@pytest.mark.parametrize('params, expected_query', data_test_get_splunk_query)
+def test_get_splunk_query(params, expected_query):
+    output = splunk.get_splunk_query(params)
+    assert output == expected_query, 'get_splunk_query({})\n\treturns:\n\t{}\n\tinstead:{}'.format(params, output, expected_query)
