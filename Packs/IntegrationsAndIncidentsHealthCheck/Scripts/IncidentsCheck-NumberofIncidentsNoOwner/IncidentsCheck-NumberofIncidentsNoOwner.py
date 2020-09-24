@@ -1,17 +1,19 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+RED_HTML_STYLE = "color:#FF1744;text-align:center;font-size:800%;>"
+GREEN_HTML_STYLE = "color:#00CD33;text-align:center;font-size:800%;>"
+
 incident = demisto.incidents()
-htmlstyle1 = "color:#FF1744;text-align:center;font-size:800%;>"  # color red
-htmlstyle2 = "color:#00CD33;text-align:center;font-size:800%;>"  # color green
 query = incident[0].get('CustomFields', {}).get('unassignedincidents', '0')
-incidentnumbers = set(query)
-incidentnumbers_count = len(incidentnumbers)
+
+incident_ids = set(query)
+
 if query == '0':
-    html = "<h1 style=" + htmlstyle2 + "0 </h2>"
+    html = f"<h1 style={GREEN_HTML_STYLE}0 </h2>"
 
 else:
-    html = "<h1 style=" + htmlstyle1 + str(incidentnumbers_count) + "</h2>"
+    html = f"<h1 style={RED_HTML_STYLE}{len(incident_ids)}</h2>"
 
 demisto.results({
     'ContentsFormat': formats['html'],
