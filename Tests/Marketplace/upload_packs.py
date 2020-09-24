@@ -374,7 +374,7 @@ def get_private_packs(private_index_path):
             if metadata:
                 private_pack = {
                     'id': metadata.get('id'),
-                    'price': metadata.get('price')
+                    'price': metadata.get('price'),
                 }
 
                 if metadata.get('vendorId') is not None:
