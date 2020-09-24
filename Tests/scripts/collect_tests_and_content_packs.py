@@ -1168,9 +1168,9 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, two_be
         else:
             logging.debug("Running Sanity check only")
 
-            tests.add('TestCommonPython')  # test with no integration configured
-            tests.add('HelloWorld-Test')  # test with integration configured
-            packs_to_install.add("HelloWorld")
+        tests.add('TestCommonPython')  # test with no integration configured
+        tests.add('HelloWorld-Test')  # test with integration configured
+        packs_to_install.add("HelloWorld")
 
     if changed_common:
         tests.add('TestCommonPython')
