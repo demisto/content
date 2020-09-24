@@ -415,7 +415,7 @@ class TestChangedCommonTesting:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        assert content_packs == {"DeveloperTools", 'Base'}
+        assert content_packs == {"DeveloperTools", 'Base', 'fake_pack'}
 
 
 class TestPackageFilesModified:
