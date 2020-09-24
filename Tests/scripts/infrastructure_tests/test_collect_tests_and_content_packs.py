@@ -441,7 +441,7 @@ class TestNoChange:
         filterd_tests, content_packs = get_mock_test_list('4.1.0', get_modified_files_ret, mocker)
 
         assert len(filterd_tests) >= RANDOM_TESTS_NUM
-        assert content_packs == {"Base", "DeveloperTools", "HelloWorld", 'fake_pack'}
+        assert content_packs == {"Base", "DeveloperTools", "HelloWorld"}
 
 
 def create_get_modified_files_ret(modified_files_list=[], modified_tests_list=[], changed_common=[], is_conf_json=False,
