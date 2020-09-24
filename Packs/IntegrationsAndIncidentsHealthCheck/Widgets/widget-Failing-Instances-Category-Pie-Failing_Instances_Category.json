@@ -13,7 +13,7 @@
   },
   "toDate": "0001-01-01T00:00:00Z"
  },
- "description": "Showing in a pie widget Failed instances category",
+ "description": "A pie widget showing the failed instances category.",
  "id": "Failing-Instances-Category-Pie",
  "isPredefined": true,
  "name": "Failed Instances Category",
