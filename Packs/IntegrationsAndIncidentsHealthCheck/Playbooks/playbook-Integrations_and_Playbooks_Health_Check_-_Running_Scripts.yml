@@ -41,7 +41,7 @@ tasks:
     task:
       id: 6b5ad945-d3e5-4bad-8157-ab13ac785c28
       version: -1
-      name: Search for currently failing Integrations
+      name: Search for currently failing integrations
       description: Executes a test for all integration instances available and returns
         detailed information about succeeded and failed integration instances.
       scriptName: FailedInstances
@@ -84,7 +84,7 @@ tasks:
       id: 7a426f07-5f3b-418d-813d-27bb69b17967
       version: -1
       name: Creates failed Integrations grid
-      description: Creates a Grid table for failed instances information.
+      description: Creates a Grid table for failed instance information.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -126,7 +126,7 @@ tasks:
       id: 8c617c6e-6205-433a-8965-efb7b6fc5ef5
       version: -1
       name: Set scripts result
-      description: Adds the scripts result from previous tasks to incident data
+      description: Adds the scripts result from previous tasks to the incident data.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -714,7 +714,7 @@ tasks:
       id: 83bb5b2d-495d-4bf2-83df-0a92153102c8
       version: -1
       name: Search for incidents with errors
-      description: Gets failed tasks details for incidents based on a query.
+      description: Uses a query to get failed task details for incidents.
       scriptName: GetFailedTasks
       type: regular
       iscommand: false
@@ -758,7 +758,7 @@ tasks:
       id: 72d1d45b-65d4-431a-8e2b-73dd00d4f661
       version: -1
       name: Create failed playbook tasks grid
-      description: Creates a Grid table for failed incidents information.
+      description: Creates a Grid table for failed incident information.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -885,7 +885,7 @@ tasks:
       id: fc81e1a2-887b-4000-80fc-92c26798491b
       version: -1
       name: Checks if found failed integrations
-      description: Checks if 'failedinstances' script found any results.
+      description: Checks if the 'failedinstances' script found any results.
       type: condition
       iscommand: false
       brand: ""
