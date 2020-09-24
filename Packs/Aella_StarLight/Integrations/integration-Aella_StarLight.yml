@@ -51,18 +51,27 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     import requests
+
     import json
+
     import time
+
     import datetime
+
     import os
 
+
     import urllib3
+
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+
     from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 
     if not demisto.params()['proxy']:
         del os.environ['HTTP_PROXY']
@@ -71,13 +80,20 @@ script:
         del os.environ['https_proxy']
 
     ''' GLOBAL VARS '''
+
     URL = demisto.getParam('url') + '/aellaelastic'
+
     USERNAME = demisto.getParam('credentials')['identifier']
+
     PASSWORD = demisto.getParam('credentials')['password']
+
     FETCH_INTERVAL = demisto.getParam('fetch_interval')
+
     VALIDATE_CERT = not demisto.params().get('insecure', True)
 
+
     ''' HELPER FUNCTIONS '''
+
     def make_rest_call(end_point, username, password, action_result,
         headers={}, params=None,
         data=None, method='get'):
@@ -119,6 +135,7 @@ script:
         return
 
     ''' FUNCTIONS '''
+
     def fetch_incidents_command():
         fetch_interval = demisto.getParam('fetch_interval')
         if fetch_interval is None:
@@ -380,7 +397,9 @@ script:
             demisto.results(return_error('Failed to get event'))
 
     ''' EXECUTION CODE '''
+
     demisto.info('Command is {}'.format(demisto.command()))
+
 
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
@@ -439,3 +458,4 @@ script:
   runonce: false
 tests:
 - No test
+fromversion: 5.0.0

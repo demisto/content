@@ -20,8 +20,7 @@ args:
   - "true"
   - "false"
   defaultValue: "true"
-  description: Should we use HEAD instead of GET. Safer but might not be the same
-    response.
+  description: Should we use HEAD instead of GET. Safer but might not be the same response.
 - name: use_system_proxy
   auto: PREDEFINED
   predefined:
@@ -40,3 +39,4 @@ outputs:
 - contextPath: URL.Data
   description: The URL redirects from the given URL
 scripttarget: 0
+fromversion: 5.0.0

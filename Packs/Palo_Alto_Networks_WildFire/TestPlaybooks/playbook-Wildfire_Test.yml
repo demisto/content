@@ -704,10 +704,7 @@ tasks:
       id: 1d6f64dd-7ee0-4a8c-8987-5e4a9ec8ecdb
       version: -1
       name: commentsToContext
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
+      description: "Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. \nFor accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -1113,10 +1110,7 @@ tasks:
       id: 893e50e4-2b6b-466e-8295-2c670e64ef10
       version: -1
       name: comments to context
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
+      description: "Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. \nFor accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -1334,10 +1328,7 @@ tasks:
       id: d7d81965-3245-4dc1-8901-7b8689d5bda1
       version: -1
       name: Comments of warning message to context
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
+      description: "Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. \nFor accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -1507,3 +1498,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
