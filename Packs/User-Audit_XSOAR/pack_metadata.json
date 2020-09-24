@@ -1,0 +1,14 @@
+{
+    "name": "User-Audit_XSOAR",
+    "description": "XSOAR Audit integration with fetch and save the audit logs for XSOAR Tenants. You can ingest these logs in SIEM or we also have another playbook that can be run along this integration that will help you generate the report for delete actions  that are performed on XSOAR objects.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ashish Bansal",
+    "url": "",
+    "email": "",
+    "created": "2020-09-24T09:01:23Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
