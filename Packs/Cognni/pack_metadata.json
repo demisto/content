@@ -4,8 +4,8 @@
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Cognni",
-    "url": "",
-    "email": "",
+    "url": "https://github.com/AVAILOTECH/x2o-demisto-content",
+    "email": "support@cognni.ai",
     "created": "2020-09-24T16:39:50Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
@@ -13,5 +13,15 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": []
+    "githubUser": [],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        }
+    }
 }

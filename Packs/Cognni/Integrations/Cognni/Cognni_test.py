@@ -69,7 +69,7 @@ def test_say_hello():
     No mock is needed here because the say_hello_command does not call
     any external API.
     """
-    from HelloWorld import Client, say_hello_command
+    from Cognni import Client, say_hello_command
 
     client = Client(base_url='https://test.com/api/v1', verify=False, auth=('test', 'test'))
     args = {
@@ -87,7 +87,7 @@ def test_start_scan(requests_mock):
     API response when the correct start_scan API request is performed. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, scan_start_command
+    from Cognni import Client, scan_start_command
 
     mock_response = {
         'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
@@ -126,7 +126,7 @@ def test_status_scan(requests_mock):
     should be COMPLETE while for scan ID 200 is RUNNING. Checks the output of
     the command function with the expected output.
     """
-    from HelloWorld import Client, scan_status_command
+    from Cognni import Client, scan_status_command
 
     mock_response = {
         'scan_id': '100',
@@ -185,7 +185,7 @@ def test_scan_results(mocker, requests_mock):
     get_scan_results API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, scan_results_command
+    from Cognni import Client, scan_results_command
     from CommonServerPython import Common
 
     mock_response = util_load_json('test_data/scan_results.json')
@@ -223,7 +223,7 @@ def test_search_alerts(requests_mock):
     get_alerts API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, search_alerts_command
+    from Cognni import Client, search_alerts_command
 
     mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get(
@@ -264,7 +264,7 @@ def test_get_alert(requests_mock):
     get_alerts API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, get_alert_command
+    from Cognni import Client, get_alert_command
 
     mock_response = util_load_json('test_data/get_alert.json')
     requests_mock.get('https://test.com/api/v1/get_alert_details?alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0',
@@ -300,7 +300,7 @@ def test_update_alert_status(requests_mock):
     get_alerts API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, update_alert_status_command
+    from Cognni import Client, update_alert_status_command
 
     mock_response = util_load_json('test_data/update_alert_status.json')
     requests_mock.get(
@@ -338,7 +338,7 @@ def test_ip(requests_mock):
     ip reputation API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, ip_reputation_command
+    from Cognni import Client, ip_reputation_command
     from CommonServerPython import Common
 
     ip_to_check = '151.1.1.1'
@@ -379,7 +379,7 @@ def test_domain(requests_mock):
     domain reputation API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, domain_reputation_command
+    from Cognni import Client, domain_reputation_command
     from CommonServerPython import Common
 
     domain_to_check = 'google.com'
@@ -426,7 +426,7 @@ def test_fetch_incidents(requests_mock):
     get_alert API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, fetch_incidents
+    from Cognni import Client, fetch_incidents
 
     mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get(
